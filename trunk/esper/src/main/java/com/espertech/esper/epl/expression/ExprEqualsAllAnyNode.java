@@ -79,9 +79,16 @@ public class ExprEqualsAllAnyNode extends ExprNode
             if (propType.isArray())
             {
                 hasCollectionOrArray = true;
-                comparedTypes.add(propType.getComponentType());
+                if (propType.getComponentType() != Object.class)
+                {
+                    comparedTypes.add(propType.getComponentType());
+                }
             }
             else if (JavaClassHelper.isImplementsInterface(propType, Collection.class))
+            {
+                hasCollectionOrArray = true;
+            }
+            else if (JavaClassHelper.isImplementsInterface(propType, Map.class))
             {
                 hasCollectionOrArray = true;
             }
@@ -132,10 +139,6 @@ public class ExprEqualsAllAnyNode extends ExprNode
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-        if ((mustCoerce) && (leftResult != null))
-        {
-            leftResult = coercer.coerceBoxed((Number) leftResult);
-        }
 
         if (hasCollectionOrArray)
         {
@@ -150,6 +153,12 @@ public class ExprEqualsAllAnyNode extends ExprNode
         }
         else
         {
+            // coerce early if testing without collections
+            if ((mustCoerce) && (leftResult != null))
+            {
+                leftResult = coercer.coerceBoxed((Number) leftResult);
+            }
+
             if (isAll)
             {
                 return compareAll(leftResult, eventsPerStream, isNewData);
@@ -283,6 +292,19 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     hasNonNullRow = true;
                 }
+                else if (rightResult instanceof Map)
+                {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    Map coll = (Map) rightResult;
+                    if (coll.containsKey(leftResult))
+                    {
+                        return false;
+                    }
+                    hasNonNullRow = true;
+                }
                 else if (rightResult.getClass().isArray())
                 {
                     int arrayLength = Array.getLength(rightResult);
@@ -312,8 +334,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
                             {
                                 continue;
                             }
+                            Number left = coercer.coerceBoxed((Number) leftResult);
                             Number right = coercer.coerceBoxed((Number) item);
-                            if (leftResult.equals(right))
+                            if (left.equals(right))
                             {
                                 return false;
                             }
@@ -335,8 +358,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     else
                     {
+                        Number left = coercer.coerceBoxed((Number) leftResult);
                         Number right = coercer.coerceBoxed((Number) rightResult);
-                        if (leftResult.equals(right))
+                        if (left.equals(right))
                         {
                             return false;
                         }
@@ -378,6 +402,19 @@ public class ExprEqualsAllAnyNode extends ExprNode
                         return false;
                     }
                 }
+                else if (rightResult instanceof Map)
+                {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    Map coll = (Map) rightResult;
+                    if (!coll.containsKey(leftResult))
+                    {
+                        return false;
+                    }
+                    hasNonNullRow = true;
+                }
                 else if (rightResult.getClass().isArray())
                 {
                     int arrayLength = Array.getLength(rightResult);
@@ -407,8 +444,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
                             {
                                 continue;
                             }
+                            Number left = coercer.coerceBoxed((Number) leftResult);
                             Number right = coercer.coerceBoxed((Number) item);
-                            if (!leftResult.equals(right))
+                            if (!left.equals(right))
                             {
                                 return false;
                             }
@@ -430,8 +468,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     else
                     {
+                        Number left = coercer.coerceBoxed((Number) leftResult);
                         Number right = coercer.coerceBoxed((Number) rightResult);
-                        if (!leftResult.equals(right))
+                        if (!left.equals(right))
                         {
                             return false;
                         }
@@ -570,6 +609,19 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     hasNonNullRow = true;
                 }
+                else if (rightResult instanceof Map)
+                {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    Map coll = (Map) rightResult;
+                    if (!coll.containsKey(leftResult))
+                    {
+                        return true;
+                    }
+                    hasNonNullRow = true;
+                }
                 else if (rightResult.getClass().isArray())
                 {
                     int arrayLength = Array.getLength(rightResult);
@@ -600,8 +652,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
                             {
                                 continue;
                             }
+                            Number left = coercer.coerceBoxed((Number) leftResult);
                             Number right = coercer.coerceBoxed((Number) item);
-                            if (!leftResult.equals(right))
+                            if (!left.equals(right))
                             {
                                 return true;
                             }
@@ -624,8 +677,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     else
                     {
+                        Number left = coercer.coerceBoxed((Number) leftResult);
                         Number right = coercer.coerceBoxed((Number) rightResult);
-                        if (!leftResult.equals(right))
+                        if (!left.equals(right))
                         {
                             return true;
                         }
@@ -667,6 +721,19 @@ public class ExprEqualsAllAnyNode extends ExprNode
                         return true;
                     }
                 }
+                else if (rightResult instanceof Map)
+                {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    Map coll = (Map) rightResult;
+                    if (coll.containsKey(leftResult))
+                    {
+                        return true;
+                    }
+                    hasNonNullRow = true;
+                }
                 else if (rightResult.getClass().isArray())
                 {
                     int arrayLength = Array.getLength(rightResult);
@@ -696,8 +763,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
                             {
                                 continue;
                             }
+                            Number left = coercer.coerceBoxed((Number) leftResult);
                             Number right = coercer.coerceBoxed((Number) item);
-                            if (leftResult.equals(right))
+                            if (left.equals(right))
                             {
                                 return true;
                             }
@@ -720,8 +788,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     else
                     {
+                        Number left = coercer.coerceBoxed((Number) leftResult);
                         Number right = coercer.coerceBoxed((Number) rightResult);
-                        if (leftResult.equals(right))
+                        if (left.equals(right))
                         {
                             return true;
                         }

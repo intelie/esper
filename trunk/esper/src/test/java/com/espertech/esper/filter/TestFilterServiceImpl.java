@@ -180,6 +180,11 @@ public class TestFilterServiceImpl extends TestCase
                 log.debug(".matchFound Removing callbackTwo");
                 filterService.remove(callbackTwo);
             }
+
+            public boolean isSubSelect()
+            {
+                return false;
+            }
         };
 
         filterService.add(spec, callbackOne);

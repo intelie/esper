@@ -177,7 +177,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
         // In a join statements if the same event type or it's deep super types are used in the join more then once,
         // then this is a self-join and the statement handle must know to dispatch the results together
-        boolean canSelfJoin = isPotentialSelfJoin(compiledSpec.getStreamSpecs());
+        boolean canSelfJoin = isPotentialSelfJoin(compiledSpec);
         statementContext.getEpStatementHandle().setCanSelfJoin(canSelfJoin);
 
         // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start
@@ -267,18 +267,22 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return statementDesc;
     }
 
-    private boolean isPotentialSelfJoin(List<StreamSpecCompiled> streamSpecs)
+    private boolean isPotentialSelfJoin(StatementSpecCompiled spec)
     {
-        // not a join (pattern doesn't count)
-        if (streamSpecs.size() == 1)
+        // not a self join (pattern doesn't count)
+        if ((spec.getStreamSpecs().size() <= 1) && (spec.getSubSelectExpressions().isEmpty()))
         {
             return false;
         }
 
         // join - determine types joined
         List<EventType> filteredTypes = new ArrayList<EventType>();
+
+        // consider subqueryes
+        Set<EventType> optSubselectTypes = populateSubqueryTypes(spec.getSubSelectExpressions());
+
         boolean hasFilterStream = false;
-        for (StreamSpecCompiled streamSpec : streamSpecs)
+        for (StreamSpecCompiled streamSpec : spec.getStreamSpecs())
         {
             if (streamSpec instanceof FilterStreamSpecCompiled)
             {
@@ -297,17 +301,18 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
         }
 
-        if (filteredTypes.size() == 1)
+        if ((filteredTypes.size() == 1) && (optSubselectTypes.isEmpty()))
         {
             return false;
         }
+        
         // pattern-only streams are not self-joins
         if (!hasFilterStream)
         {
             return false;
         }
 
-        // is type overlap
+        // is type overlap in filters
         for (int i = 0; i < filteredTypes.size(); i++)
         {
             for (int j = i + 1; j < filteredTypes.size(); j++)
@@ -341,7 +346,70 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 }
             }
         }
+
+        // analyze subselect types
+        if (!optSubselectTypes.isEmpty())
+        {
+            for (int i = 0; i < filteredTypes.size(); i++)
+            {
+                EventType typeOne = filteredTypes.get(i);
+                if (optSubselectTypes.contains(typeOne))
+                {
+                    return true;
+                }
+
+                if (typeOne.getSuperTypes() != null)
+                {
+                    for (EventType typeOneSuper : typeOne.getSuperTypes())
+                    {
+                        if (optSubselectTypes.contains(typeOneSuper))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        
         return false;
+    }
+
+    private Set<EventType> populateSubqueryTypes(List<ExprSubselectNode> subSelectExpressions)
+    {
+        Set<EventType> set = null;
+        for (ExprSubselectNode subselect : subSelectExpressions)
+        {
+            for (StreamSpecCompiled streamSpec : subselect.getStatementSpecCompiled().getStreamSpecs())
+            {
+                if (streamSpec instanceof FilterStreamSpecCompiled)
+                {
+                    EventType type = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec().getFilterForEventType();
+                    if (set == null)
+                    {
+                        set = new HashSet<EventType>();
+                    }
+                    set.add(type);
+                }
+                else if (streamSpec instanceof PatternStreamSpecCompiled)
+                {
+                    EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(((PatternStreamSpecCompiled)streamSpec).getEvalNode());
+                    List<EvalFilterNode> filterNodes = evalNodeAnalysisResult.getFilterNodes();
+                    for (EvalFilterNode filterNode : filterNodes)
+                    {
+                        if (set == null)
+                        {
+                            set = new HashSet<EventType>();
+                        }
+                        set.add(filterNode.getFilterSpec().getFilterForEventType());
+                    }
+                }
+            }            
+        }
+        if (set == null)
+        {
+            return Collections.EMPTY_SET;
+        }
+        return set;
     }
 
     public synchronized void start(String statementId)

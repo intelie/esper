@@ -27,20 +27,6 @@ public class TestSubselectAllAnySomeExpr extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("ArrayBean", SupportBeanArrayCollMap.class);
     }
 
-    // TODO:
-    // - look at entity SQL, expose Collections methods
-    //
-    // Collections.unionSet(expression, ...expression)
-    // Collections.intersectionSet(expression, ...expression)
-    // Collections.differenceSet(expression, ...expression)
-    // Collections.subselect(subselect)
-    // Collections.isEmpty(expression)
-    // Collections.overlaps(expression, SETOF(subselect))
-    // Collections.overlaps(expression, {1, 2, 3})
-    // Collections.overlaps(expression, {1, 2, 3})
-    // ROWS(subselect)
-    // entity SQL en-us/library/bb738456.aspx
-
     public void testRelationalOpAll()
     {
         String[] fields = "g,ge,l,le".split(",");

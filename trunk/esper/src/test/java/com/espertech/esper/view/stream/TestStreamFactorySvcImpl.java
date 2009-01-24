@@ -35,12 +35,12 @@ public class TestStreamFactorySvcImpl extends TestCase
     public void testInvalidJoin()
     {
         streams = new EventStream[3];
-        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, null, true).getFirst();
+        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, null, true, false).getFirst();
 
         try
         {
             // try to reuse the same filter spec object, should fail
-            streamFactoryService.createStream(filterSpecs[0], supportFilterService, null, true);
+            streamFactoryService.createStream(filterSpecs[0], supportFilterService, null, true, false);
             fail();
         }
         catch (IllegalStateException ex)
@@ -52,9 +52,9 @@ public class TestStreamFactorySvcImpl extends TestCase
     public void testCreateJoin()
     {
         streams = new EventStream[3];
-        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, null, true).getFirst();
-        streams[1] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, null, true).getFirst();
-        streams[2] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, null, true).getFirst();
+        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, null, true, false).getFirst();
+        streams[1] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, null, true, false).getFirst();
+        streams[2] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, null, true, false).getFirst();
 
         // Streams are reused
         assertNotSame(streams[0], streams[1]);
@@ -71,22 +71,22 @@ public class TestStreamFactorySvcImpl extends TestCase
     public void testDropJoin()
     {
         streams = new EventStream[3];
-        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, null, true).getFirst();
-        streams[1] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, null, true).getFirst();
-        streams[2] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, null, true).getFirst();
+        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, null, true, false).getFirst();
+        streams[1] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, null, true, false).getFirst();
+        streams[2] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, null, true, false).getFirst();
 
-        streamFactoryService.dropStream(filterSpecs[0], supportFilterService, true);
-        streamFactoryService.dropStream(filterSpecs[1], supportFilterService, true);
+        streamFactoryService.dropStream(filterSpecs[0], supportFilterService, true, false);
+        streamFactoryService.dropStream(filterSpecs[1], supportFilterService, true, false);
         assertEquals(2, supportFilterService.getRemoved().size());
 
         // Filter removed
-        streamFactoryService.dropStream(filterSpecs[2], supportFilterService, true);
+        streamFactoryService.dropStream(filterSpecs[2], supportFilterService, true, false);
         assertEquals(3, supportFilterService.getRemoved().size());
 
         // Something already removed
         try
         {
-            streamFactoryService.dropStream(filterSpecs[2], supportFilterService, true);
+            streamFactoryService.dropStream(filterSpecs[2], supportFilterService, true, false);
             TestCase.fail();
         }
         catch (IllegalStateException ex)
@@ -99,10 +99,10 @@ public class TestStreamFactorySvcImpl extends TestCase
     {
         EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false, null);
         streams = new EventStream[4];
-        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false).getFirst();
-        streams[1] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false).getFirst();
-        streams[2] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, stmtHande, false).getFirst();
-        streams[3] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, stmtHande, false).getFirst();
+        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false, false).getFirst();
+        streams[1] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false, false).getFirst();
+        streams[2] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, stmtHande, false, false).getFirst();
+        streams[3] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, stmtHande, false, false).getFirst();
 
         // Streams are reused
         assertSame(streams[0], streams[1]);
@@ -120,26 +120,26 @@ public class TestStreamFactorySvcImpl extends TestCase
     {
         EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false, null);
         streams = new EventStream[4];
-        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false).getFirst();
-        streams[1] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false).getFirst();
-        streams[2] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, stmtHande, false).getFirst();
-        streams[3] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, stmtHande, false).getFirst();
+        streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false, false).getFirst();
+        streams[1] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false, false).getFirst();
+        streams[2] = streamFactoryService.createStream(filterSpecs[1], supportFilterService, stmtHande, false, false).getFirst();
+        streams[3] = streamFactoryService.createStream(filterSpecs[2], supportFilterService, stmtHande, false, false).getFirst();
 
-        streamFactoryService.dropStream(filterSpecs[0], supportFilterService, false);
-        streamFactoryService.dropStream(filterSpecs[1], supportFilterService, false);
+        streamFactoryService.dropStream(filterSpecs[0], supportFilterService, false, false);
+        streamFactoryService.dropStream(filterSpecs[1], supportFilterService, false, false);
         assertEquals(0, supportFilterService.getRemoved().size());
 
         // Filter removed
-        streamFactoryService.dropStream(filterSpecs[0], supportFilterService, false);
+        streamFactoryService.dropStream(filterSpecs[0], supportFilterService, false, false);
         assertEquals(1, supportFilterService.getRemoved().size());
 
-        streamFactoryService.dropStream(filterSpecs[2], supportFilterService, false);
+        streamFactoryService.dropStream(filterSpecs[2], supportFilterService, false, false);
         assertEquals(2, supportFilterService.getRemoved().size());
 
         // Something already removed
         try
         {
-            streamFactoryService.dropStream(filterSpecs[2], supportFilterService, false);
+            streamFactoryService.dropStream(filterSpecs[2], supportFilterService, false,  false);
             TestCase.fail();
         }
         catch (IllegalStateException ex)

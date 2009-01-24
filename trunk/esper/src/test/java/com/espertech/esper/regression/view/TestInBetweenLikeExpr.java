@@ -23,7 +23,7 @@ public class TestInBetweenLikeExpr extends TestCase
         epService.initialize();
     }
 
-    public void testObjectIn()
+    public void testInObject()
     {
         epService.getEPAdministrator().getConfiguration().addEventType("ArrayBean", SupportBeanArrayCollMap.class);
         String stmtText = "select s0.anyObject in (objectArr) as value from ArrayBean s0";
@@ -161,7 +161,7 @@ public class TestInBetweenLikeExpr extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new Object[] {1d, 2L}));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false});
         epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new Object[] {null, 2}));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, true});
         stmt.destroy();
 
         // Object array
@@ -182,7 +182,7 @@ public class TestInBetweenLikeExpr extends TestCase
 
         tryString(model, caseExpr,
                     new String[] {"0", "a", "b", "c", "d", null},
-                    new boolean[] {false, true, true, true, false, false});
+                    new Boolean[] {false, true, true, true, false, null});
 
         caseExpr = "select string not in (\"a\", \"b\", \"c\") as result from " + SupportBean.class.getName();
         model = new EPStatementObjectModel();
@@ -192,64 +192,64 @@ public class TestInBetweenLikeExpr extends TestCase
 
         tryString("string not in ('a', 'b', 'c')",
                     new String[] {"0", "a", "b", "c", "d", null},
-                    new boolean[] {true, false, false, false, true, true});
+                    new Boolean[] {true, false, false, false, true, null});
     }
 
     public void testInStringExpr()
     {
         tryString("string in ('a', 'b', 'c')",
                     new String[] {"0", "a", "b", "c", "d", null},
-                    new boolean[] {false, true, true, true, false, false});
+                    new Boolean[] {false, true, true, true, false, null});
 
         tryString("string in ('a')",
                     new String[] {"0", "a", "b", "c", "d", null},
-                    new boolean[] {false, true, false, false, false, false});
+                    new Boolean[] {false, true, false, false, false, null});
 
         tryString("string in ('a', 'b')",
                     new String[] {"0", "b", "a", "c", "d", null},
-                    new boolean[] {false, true, true, false, false, false});
+                    new Boolean[] {false, true, true, false, false, null});
 
         tryString("string in ('a', null)",
                     new String[] {"0", "b", "a", "c", "d", null},
-                    new boolean[] {false, false, true, false, false, true});
+                    new Boolean[] {null, null, true, null, null, null});
 
         tryString("string in (null)",
                     new String[] {"0", null, "b"},
-                    new boolean[] {false, true, false});
+                    new Boolean[] {null, null, null});
 
         tryString("string not in ('a', 'b', 'c')",
                     new String[] {"0", "a", "b", "c", "d", null},
-                    new boolean[] {true, false, false, false, true, true});
+                    new Boolean[] {true, false, false, false, true, null});
 
         tryString("string not in (null)",
                     new String[] {"0", null, "b"},
-                    new boolean[] {true, false, true});
+                    new Boolean[] {null, null, null});
     }
 
     public void testBetweenStringExpr()
     {
         String[] input = null;
-        boolean[] result = null;
+        Boolean[] result = null;
 
         input = new String[] {"0",    "a1", "a10", "c", "d",    null, "a0", "b9", "b90"};
-        result = new boolean[] {false, true, true, false, false, false, true, true, false};
+        result = new Boolean[] {false, true, true, false, false, false, true, true, false};
         tryString("string between 'a0' and 'b9'", input, result);
         tryString("string between 'b9' and 'a0'", input, result);
 
         tryString("string between null and 'b9'",
                     new String[] {"0", null, "a0", "b9"},
-                    new boolean[] {false, false, false, false});
+                    new Boolean[] {false, false, false, false});
 
         tryString("string between null and null",
                     new String[] {"0", null, "a0", "b9"},
-                    new boolean[] {false, false, false, false});
+                    new Boolean[] {false, false, false, false});
 
         tryString("string between 'a0' and null",
                     new String[] {"0", null, "a0", "b9"},
-                    new boolean[] {false, false, false, false});
+                    new Boolean[] {false, false, false, false});
 
         input = new String[] {"0",    "a1", "a10", "c", "d",    null, "a0", "b9", "b90"};
-        result = new boolean[] {true, false, false, true, true, false, false, false, true};
+        result = new Boolean[] {true, false, false, true, true, false, false, false, true};
         tryString("string not between 'a0' and 'b9'", input, result);
         tryString("string not between 'b9' and 'a0'", input, result);
     }
@@ -257,49 +257,49 @@ public class TestInBetweenLikeExpr extends TestCase
     public void testInNumericExpr()
     {
         Double[] input = new Double[] {1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d};
-        boolean[] result = new boolean[] {false, false, true, false, false, true, true};
+        Boolean[] result = new Boolean[] {false, null, true, false, false, true, true};
         tryNumeric("doubleBoxed in (1.1d, 7/3.5, 2*6/3, 0)", input, result);
 
         tryNumeric("doubleBoxed in (7/3d, null)",
                     new Double[] {2d, 7/3d, null},
-                    new boolean[] {false, true, true});
+                    new Boolean[] {null, true, null});
 
         tryNumeric("doubleBoxed in (5,5,5,5,5, -1)",
                     new Double[] {5.0, 5d, 0d, null, -1d},
-                    new boolean[] {true, true, false, false, true});
+                    new Boolean[] {true, true, false, null, true});
 
         tryNumeric("doubleBoxed not in (1.1d, 7/3.5, 2*6/3, 0)",
                     new Double[] {1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d},
-                    new boolean[] {true, true, false, true, true, false, false});
+                    new Boolean[] {true, null, false, true, true, false, false});
     }
 
     public void testBetweenNumericExpr()
     {
         Double[] input = new Double[] {1d, null, 1.1d, 2d, 1.0999999999, 2d, 4d, 15d, 15.00001d};
-        boolean[] result = new boolean[] {false, false, true, true, false, true, true, true, false};
+        Boolean[] result = new Boolean[] {false, false, true, true, false, true, true, true, false};
         tryNumeric("doubleBoxed between 1.1 and 15", input, result);
         tryNumeric("doubleBoxed between 15 and 1.1", input, result);
 
         tryNumeric("doubleBoxed between null and 15",
                     new Double[] {1d, null, 1.1d},
-                    new boolean[] {false, false, false});
+                    new Boolean[] {false, false, false});
 
         tryNumeric("doubleBoxed between 15 and null",
                     new Double[] {1d, null, 1.1d},
-                    new boolean[] {false, false, false});
+                    new Boolean[] {false, false, false});
 
         tryNumeric("doubleBoxed between null and null",
                     new Double[] {1d, null, 1.1d},
-                    new boolean[] {false, false, false});
+                    new Boolean[] {false, false, false});
 
         input = new Double[] {1d, null, 1.1d, 2d, 1.0999999999, 2d, 4d, 15d, 15.00001d};
-        result = new boolean[] {true, false, false, false, true, false, false, false, true};
+        result = new Boolean[] {true, false, false, false, true, false, false, false, true};
         tryNumeric("doubleBoxed not between 1.1 and 15", input, result);
         tryNumeric("doubleBoxed not between 15 and 1.1", input, result);
 
         tryNumeric("doubleBoxed not between 15 and null",
                     new Double[] {1d, null, 1.1d},
-                    new boolean[] {false, false, false});
+                    new Boolean[] {false, false, false});
     }
 
     public void testInBoolExpr()
@@ -349,8 +349,8 @@ public class TestInBetweenLikeExpr extends TestCase
         sendAndAssert(1, 1.1f, 1.0d, 4L, true);
         sendAndAssert(1, 1.1f, 1.2d, 1L, true);
         sendAndAssert(1, null, 1.2d, 1L, true);
-        sendAndAssert(null, null, 1.2d, 1L, true);
-        sendAndAssert(null, 11f, 1.2d, 1L, false);
+        sendAndAssert(null, null, 1.2d, 1L, null);
+        sendAndAssert(null, 11f, 1.2d, 1L, null);
 
         selectTestCase.stop();
     }
@@ -415,7 +415,7 @@ public class TestInBetweenLikeExpr extends TestCase
         }
     }
 
-    private void sendAndAssert(Integer intBoxed, Float floatBoxed, double doublePrimitive, boolean result)
+    private void sendAndAssert(Integer intBoxed, Float floatBoxed, double doublePrimitive, Boolean result)
     {
         SupportBean bean = new SupportBean();
         bean.setIntBoxed(intBoxed);
@@ -442,7 +442,7 @@ public class TestInBetweenLikeExpr extends TestCase
         assertEquals(result, event.get("result"));
     }
 
-    private void sendAndAssert(int intPrimitive, int shortBoxed, Long longBoxed, boolean result)
+    private void sendAndAssert(int intPrimitive, int shortBoxed, Long longBoxed, Boolean result)
     {
         SupportBean bean = new SupportBean();
         bean.setIntPrimitive(intPrimitive);
@@ -455,7 +455,7 @@ public class TestInBetweenLikeExpr extends TestCase
         assertEquals(result, event.get("result"));
     }
 
-    private void sendAndAssert(Integer intBoxed, Float floatBoxed, double doublePrimitve, Long longBoxed, boolean result)
+    private void sendAndAssert(Integer intBoxed, Float floatBoxed, double doublePrimitve, Long longBoxed, Boolean result)
     {
         SupportBean bean = new SupportBean();
         bean.setIntBoxed(intBoxed);
@@ -486,7 +486,7 @@ public class TestInBetweenLikeExpr extends TestCase
         selectTestCase.stop();
     }
 
-    private void tryNumeric(String expr, Double[] input, boolean[] result)
+    private void tryNumeric(String expr, Double[] input, Boolean[] result)
     {
         String caseExpr = "select " + expr + " as result from " + SupportBean.class.getName();
 
@@ -503,7 +503,7 @@ public class TestInBetweenLikeExpr extends TestCase
         selectTestCase.stop();
     }
 
-    private void tryString(String expression, String[] input, boolean[] result)
+    private void tryString(String expression, String[] input, Boolean[] result)
     {
         String caseExpr = "select " + expression + " as result from " + SupportBean.class.getName();
 
@@ -520,7 +520,7 @@ public class TestInBetweenLikeExpr extends TestCase
         selectTestCase.stop();
     }
 
-    private void tryString(EPStatementObjectModel model, String epl, String[] input, boolean[] result) throws Exception
+    private void tryString(EPStatementObjectModel model, String epl, String[] input, Boolean[] result) throws Exception
     {
         EPStatement selectTestCase = epService.getEPAdministrator().create(model);
         assertEquals(epl, model.toEPL());

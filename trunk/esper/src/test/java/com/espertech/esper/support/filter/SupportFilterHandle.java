@@ -14,6 +14,11 @@ public class SupportFilterHandle implements FilterHandleCallback
         lastEvent = event;
     }
 
+    public boolean isSubSelect()
+    {
+        return false;
+    }
+
     public int getCountInvoked()
     {
         return countInvoked;

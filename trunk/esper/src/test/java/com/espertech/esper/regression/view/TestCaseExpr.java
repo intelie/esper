@@ -525,31 +525,31 @@ public class TestCaseExpr extends TestCase
 
         EPStatement selectTestCase = epService.getEPAdministrator().createEPL(caseExpr);
         selectTestCase.addListener(testListener);
-        assertEquals(Float.class, selectTestCase.getEventType().getPropertyType("p1"));
+        assertEquals(Double.class, selectTestCase.getEventType().getPropertyType("p1"));
 
         sendSupportBeanEvent(1, 10L, 3.0f, 4.0);
         EventBean event = testListener.getAndResetLastNewData()[0];
-        assertEquals(10f, event.get("p1"));
+        assertEquals(10d, event.get("p1"));
 
         sendSupportBeanEvent(1, 15L, 3.0f, 4.0);
         event = testListener.getAndResetLastNewData()[0];
-        assertEquals(25f, event.get("p1"));
+        assertEquals(25d, event.get("p1"));
 
         sendSupportBeanEvent(2, 1L, 3.0f, 4.0);
         event = testListener.getAndResetLastNewData()[0];
-        assertEquals(9f, event.get("p1"));
+        assertEquals(9d, event.get("p1"));
 
         sendSupportBeanEvent(2, 1L, 3.0f, 4.0);
         event = testListener.getAndResetLastNewData()[0];
-        assertEquals(12.0F, event.get("p1"));
+        assertEquals(12.0d, event.get("p1"));
 
         sendSupportBeanEvent(5, 1L, 1.0f, 1.0);
         event = testListener.getAndResetLastNewData()[0];
-        assertEquals(11.0F, event.get("p1"));
+        assertEquals(11.0d, event.get("p1"));
 
         sendSupportBeanEvent(5, 1L, 1.0f, 1.0);
         event = testListener.getAndResetLastNewData()[0];
-        assertEquals(16f, event.get("p1"));
+        assertEquals(16d, event.get("p1"));
     }
 
     public void testCaseSyntax2EnumChecks()

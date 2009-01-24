@@ -348,4 +348,129 @@
 			<programlisting><![CDATA[select * from PersonLocationEvent where name regexp '*Jack*']]></programlisting>
 		</sect1>		
 
+		<sect1 id="epl-operator-anysome">
+			<title>The '<literal>any</literal>' and '<literal>some</literal>' Keywords</title>
+			
+			<para>
+				The <literal>any</literal> operator is true if the expression returns true for one or more of the values returned by a list of expressions including array, <literal>Collection</literal> and <literal>Map</literal> values.
+			</para>
+
+			<para>
+				The synopsis for the <literal>any</literal> keyword is as follows:
+			</para>
+			<synopsis><emphasis>expression</emphasis> <emphasis>operator</emphasis> any (<emphasis>expression</emphasis> [,<emphasis>expression</emphasis>...] )</synopsis>
+
+			<para>
+				The left-hand expression is evaluated and compared to each expression result using the given operator, which must yield a Boolean result. The result of <literal>any</literal> is "true" if any true result is obtained. The result is "false" if no true result is found (including the special case where the expressions are collections that return no rows). 
+			</para>
+
+			<para>
+				The <emphasis>operator</emphasis> can be any of the following values: <literal>=, !=, &lt;&gt;, &lt;, &lt;=, &gt;, &gt;=</literal>.
+			</para>
+
+			<para>
+				The <literal>some</literal> keyword is a synonym for <literal>any</literal>. The <literal>in</literal> construct is equivalent to <literal>= any</literal>.
+			</para>
+		
+			<para>
+				<emphasis>Expression</emphasis> may also return an array, a <literal>java.util.Collection</literal> or a <literal>java.util.Map</literal>. Thus event properties that are lists, sets or maps may provide values to compare against.
+			</para>
+
+			<para>
+				All expressions must be of the same type or a compatible type. The <literal>any</literal> keyword coerces number values to compatible types. If <emphasis>expression</emphasis> returns an array, then the component type of the array must be compatible, unless the component type of the array is <literal>Object</literal>.
+			</para>
+
+			<para>
+				If <emphasis>expression</emphasis> returns an array, the operation compares each element of the array.
+			</para>
+			<para>
+				If <emphasis>expression</emphasis> returns a <literal>Collection</literal>, the operation determines if the collection contains the value returned by the left-hand expression,  applying <literal>contains</literal> semantics. 
+				When using relationship operators <literal>&lt;, &lt;=, &gt;, &gt;=</literal> the operator applies to each element in the collection, and non-numeric elements are ignored.
+			</para>
+			<para>
+				If <emphasis>expression</emphasis> returns a <literal>Map</literal>, the operation determines if the map contains the key value returned by the left-hand expression, applying <literal>containsKey</literal> semantics.
+				When using relationship operators <literal>&lt;, &lt;=, &gt;, &gt;=</literal> the operator applies to each key in the map, and non-numeric map keys are ignored.
+			</para>
+
+			<para>
+				 Constants, arrays, <literal>Collection</literal> and <literal>Map</literal> expressions or event properties can be used combined.
+			</para>
+			<para>
+				The next statement demonstrates the use of the <literal>any</literal> operator: 
+			</para>
+
+			<programlisting><![CDATA[select * from ProductOrder where category != any (categoryArray)]]></programlisting>
+
+			<para>
+				The above query selects ProductOrder event that have a category field and a category array, and returns only those events in which the category value is not in the array.
+			</para>
+
+			<para>
+				Note that if there are no successes and at least one right-hand row yields null for the operator's result, the result of the <literal>any</literal> construct will be null, not false. This is in accordance with SQL's normal rules for Boolean combinations of null values. 
+			</para>
+		</sect1>
+
+		<sect1 id="epl-operator-all">
+			<title>The '<literal>all</literal>' Keyword</title>
+			
+			<para>
+				The <literal>all</literal> operator is true if the expression returns true for all of the values returned by a list of expressions including array, <literal>Collection</literal> and <literal>Map</literal> values.
+			</para>
+
+			<para>
+				The synopsis for the <literal>all</literal> keyword is as follows:
+			</para>
+			<synopsis><emphasis>expression</emphasis> <emphasis>operator</emphasis> all (<emphasis>expression</emphasis> [,<emphasis>expression</emphasis>...] )</synopsis>
+
+			<para>
+				The left-hand expression is evaluated and compared to each expression result using the given operator, which must yield a Boolean result. The result of <literal>all</literal> is "true" if all rows yield true (including the special case where the expressions are collections that returns no rows). The result is "false" if any false result is found. The result is <literal>null</literal> if the comparison does not return false for any row, and it returns <literal>null</literal> for at least one row.
+			</para>
+
+			<para>
+				The <emphasis>operator</emphasis> can be any of the following values: <literal>=, !=, &lt;&gt;, &lt;, &lt;=, &gt;, &gt;=</literal>.
+			</para>
+
+			<para>
+				The <literal>not in</literal> construct is equivalent to <literal>!= all</literal>.
+			</para>
+		
+			<para>
+				<emphasis>Expression</emphasis> may also return an array, a <literal>java.util.Collection</literal> or a <literal>java.util.Map</literal>. Thus event properties that are lists, sets or maps may provide values to compare against.
+			</para>
+
+			<para>
+				All expressions must be of the same type or a compatible type. The <literal>all</literal> keyword coerces number values to compatible types. If <emphasis>expression</emphasis> returns an array, then the component type of the array must be compatible, unless the component type of the array is <literal>Object</literal>.
+			</para>
+
+			<para>
+				If <emphasis>expression</emphasis> returns an array, the operation compares each element of the array.
+			</para>
+			<para>
+				If <emphasis>expression</emphasis> returns a <literal>Collection</literal>, the operation determines if the collection contains the value returned by the left-hand expression,  applying <literal>contains</literal> semantics. 
+				When using relationship operators <literal>&lt;, &lt;=, &gt;, &gt;=</literal> the operator applies to each element in the collection, and non-numeric elements are ignored.
+			</para>
+			<para>
+				If <emphasis>expression</emphasis> returns a <literal>Map</literal>, the operation determines if the map contains the key value returned by the left-hand expression, applying <literal>containsKey</literal> semantics.
+				When using relationship operators <literal>&lt;, &lt;=, &gt;, &gt;=</literal> the operator applies to each key in the map, and non-numeric map keys are ignored.
+			</para>
+
+			<para>
+				 Constants, arrays, <literal>Collection</literal> and <literal>Map</literal> expressions or event properties can be used combined.
+			</para>
+
+			<para>
+				The next statement demonstrates the use of the <literal>all</literal> operator: 
+			</para>
+
+			<programlisting><![CDATA[select * from ProductOrder where category = all (categoryArray)]]></programlisting>
+
+			<para>
+				The above query selects ProductOrder event that have a category field and a category array, and returns only those events in which the category value matches all values in the array.
+			</para>
+
+			<para>
+				Note that if there are no successes and at least one right-hand row yields null for the operator's result, the result of the <literal>all</literal> construct will be null, not false. This is in accordance with SQL's normal rules for Boolean combinations of null values.
+			</para>
+		</sect1>
+
 </chapter>

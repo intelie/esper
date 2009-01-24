@@ -22,4 +22,6 @@ public interface FilterHandleCallback extends FilterHandle
      * @param event - the event received that matches the filter specification
      */
     public void matchFound(EventBean event);
+
+    public boolean isSubSelect();
 }

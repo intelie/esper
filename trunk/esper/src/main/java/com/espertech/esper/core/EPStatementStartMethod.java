@@ -129,7 +129,7 @@ public class EPStatementStartMethod
 
             // Since only for non-joins we get the existing stream's lock and try to reuse it's views
             Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
-                    services.getFilterService(), statementContext.getEpStatementHandle(), false);
+                    services.getFilterService(), statementContext.getEpStatementHandle(), false, false);
             eventStreamParentViewable = streamLockPair.getFirst();
 
             // Use the re-used stream's lock for all this statement's locking needs
@@ -182,7 +182,7 @@ public class EPStatementStartMethod
                 if (streamSpec instanceof FilterStreamSpecCompiled)
                 {
                     FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
-                    services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), false);
+                    services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), false, false);
                 }
                 for (StopCallback stopCallback : stopCallbacks)
                 {
@@ -294,7 +294,7 @@ public class EPStatementStartMethod
         // Create view factories and parent view based on a filter specification
         // Since only for non-joins we get the existing stream's lock and try to reuse it's views
         Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
-                services.getFilterService(), statementContext.getEpStatementHandle(), false);
+                services.getFilterService(), statementContext.getEpStatementHandle(), false, false);
         eventStreamParentViewable = streamLockPair.getFirst();
 
         // Use the re-used stream's lock for all this statement's locking needs
@@ -324,7 +324,7 @@ public class EPStatementStartMethod
             public void stop()
             {
                 statementContext.getStatementStopService().fireStatementStopped();
-                services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), false);
+                services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), false,false);
                 String windowName = statementSpec.getCreateWindowDesc().getWindowName();
                 services.getNamedWindowService().removeProcessor(windowName);
             }
@@ -500,7 +500,7 @@ public class EPStatementStartMethod
 
                 // Since only for non-joins we get the existing stream's lock and try to reuse it's views
                 Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
-                        services.getFilterService(), statementContext.getEpStatementHandle(), isJoin);
+                        services.getFilterService(), statementContext.getEpStatementHandle(), isJoin, false);
                 eventStreamParentViewable[i] = streamLockPair.getFirst();
 
                 // Use the re-used stream's lock for all this statement's locking needs
@@ -627,7 +627,7 @@ public class EPStatementStartMethod
                     if (streamSpec instanceof FilterStreamSpecCompiled)
                     {
                         FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
-                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin);
+                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin, false);
                     }
                 }
                 for (StopCallback stopCallback : stopCallbacks)
@@ -640,7 +640,7 @@ public class EPStatementStartMethod
                     if (subqueryStreamSpec instanceof FilterStreamSpecCompiled)
                     {
                         FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) subselect.getStatementSpecCompiled().getStreamSpecs().get(0);
-                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin);
+                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin, true);
                     }
                 }
             }
@@ -1182,7 +1182,7 @@ public class EPStatementStartMethod
 
                 // Register filter, create view factories
                 Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
-                        services.getFilterService(), statementContext.getEpStatementHandle(), isJoin);
+                        services.getFilterService(), statementContext.getEpStatementHandle(), isJoin, true);
                 Viewable viewable = streamLockPair.getFirst();
                 ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), filterStreamSpec.getOptions(), statementContext);
                 subselect.setRawEventType(viewFactoryChain.getEventType());

@@ -119,7 +119,6 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
         }
 
         // Filter and check each row.
-        boolean hasNonNullRow = false;
         boolean hasNullRow = false;
         for (EventBean subselectEvent : matchingEvents)
         {
@@ -147,17 +146,12 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
                 rightResult = events[0].getUnderlying();
             }
 
-            if (leftResult == null)
+            if (rightResult == null)
             {
-                if (rightResult == null)
-                {
-                    return !isNotIn;
-                }
-                continue;
+                hasNullRow = true;
             }
-            if (rightResult != null)
+            else
             {
-                hasNonNullRow = true;
                 if (!mustCoerce)
                 {
                     if (leftResult.equals(rightResult))
@@ -175,13 +169,9 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
                     }
                 }
             }
-            else
-            {
-                hasNullRow = true;
-            }
         }
 
-        if ((!hasNonNullRow) || (hasNullRow))
+        if (hasNullRow)
         {
             return null;
         }

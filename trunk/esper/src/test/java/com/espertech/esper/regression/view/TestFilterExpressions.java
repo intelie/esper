@@ -469,10 +469,10 @@ public class TestFilterExpressions extends TestCase
         try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{true, false, false});
 
         text = "select * from " + SupportBean.class.getName() + "(intBoxed in (doubleBoxed))";
-        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{true, false, false});
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{false, false, false});
 
         text = "select * from " + SupportBean.class.getName() + "(intBoxed not in (doubleBoxed))";
-        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{false, true, true});
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{false, false, false});
 
         text = "select * from " + SupportBean.class.getName() + "(intBoxed in [doubleBoxed:10))";
         try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, 2}, new Double[]{null, null, 1d}, new boolean[]{false, false, true});

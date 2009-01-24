@@ -24,49 +24,24 @@ public class TestSubselectIn extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    // TODO
-    public void testOrderOfEvaluation()
+    public void testOrderOfEvaluationSubselectFirst()
     {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
-        String viewExpr = "insert into NewStream select * from SupportBean(intPrimitive<10) where intPrimitive not in (select intPrimitive from SupportBean.std:unique(intPrimitive))";
+        String viewExpr = "select * from SupportBean(intPrimitive<10) where intPrimitive not in (select intPrimitive from SupportBean.std:unique(intPrimitive))";
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(viewExpr);
         stmtOne.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
-        assertTrue(listener.getAndClearIsInvoked());
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E2", 5));
-        assertFalse(listener.getAndClearIsInvoked());
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E3", 6));
-        assertTrue(listener.getAndClearIsInvoked());
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E4", 7));
-        assertTrue(listener.getAndClearIsInvoked());
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E5", 6));
         assertFalse(listener.getAndClearIsInvoked());
 
         stmtOne.destroy();
 
-        String viewExprTwo = "insert into NewStream select * from SupportBean where intPrimitive not in (select intPrimitive from SupportBean(intPrimitive<10).std:unique(intPrimitive))";
+        String viewExprTwo = "select * from SupportBean where intPrimitive not in (select intPrimitive from SupportBean(intPrimitive<10).std:unique(intPrimitive))";
         EPStatement stmtTwo = epService.getEPAdministrator().createEPL(viewExprTwo);
         stmtTwo.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
-        assertTrue(listener.getAndClearIsInvoked());
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E2", 5));
-        assertFalse(listener.getAndClearIsInvoked());
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E3", 6));
-        assertTrue(listener.getAndClearIsInvoked());
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E4", 7));
-        assertTrue(listener.getAndClearIsInvoked());
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E5", 6));
         assertFalse(listener.getAndClearIsInvoked());
     }
 
@@ -223,7 +198,7 @@ public class TestSubselectIn extends TestCase
 
         epService.getEPRuntime().sendEvent(new SupportBean_S1(-2, null));
         epService.getEPRuntime().sendEvent(new SupportBean_S0(5, null));
-        assertEquals(5, listener.assertOneGetNewAndReset().get("id"));
+        assertFalse(listener.isInvoked());
     }
 
     public void testInNullableCoercion()
@@ -244,12 +219,12 @@ public class TestSubselectIn extends TestCase
         sendBean("A", 0, 0L);
         assertFalse(listener.isInvoked());
         sendBean("A", null, null);
-        assertEquals(null, listener.assertOneGetNewAndReset().get("longBoxed"));
+        assertFalse(listener.isInvoked());
 
         sendBean("B", 99, null);
 
         sendBean("A", null, null);
-        assertEquals(null, listener.assertOneGetNewAndReset().get("longBoxed"));
+        assertFalse(listener.isInvoked());
         sendBean("A", null, 99l);
         assertEquals(99L, listener.assertOneGetNewAndReset().get("longBoxed"));
 
@@ -279,7 +254,7 @@ public class TestSubselectIn extends TestCase
         sendBean("B", null, null);
 
         sendBean("A", null, null);
-        assertEquals(null, listener.assertOneGetNewAndReset().get("intBoxed"));
+        assertFalse(listener.isInvoked());
 
         sendBean("A", 1, 1l);
         assertEquals(1, listener.assertOneGetNewAndReset().get("intBoxed"));
@@ -297,7 +272,7 @@ public class TestSubselectIn extends TestCase
         sendBean("B", 1, 1l);
 
         sendBean("A", null, null);
-        assertEquals(null, listener.assertOneGetNewAndReset().get("intBoxed"));
+        assertFalse(listener.isInvoked());
 
         sendBean("A", 1, 1l);
         assertFalse(listener.isInvoked());
@@ -354,7 +329,7 @@ public class TestSubselectIn extends TestCase
         sendBean("B", null, null);
 
         sendBean("A", 1, 1L);
-        assertEquals(1L, listener.assertOneGetNewAndReset().get("longBoxed"));
+        assertFalse(listener.isInvoked());
         sendBean("A", null, null);
         assertFalse(listener.isInvoked());
 
@@ -371,7 +346,7 @@ public class TestSubselectIn extends TestCase
         assertFalse(listener.isInvoked());
 
         sendBean("A", null, 97l);
-        assertEquals(97L, listener.assertOneGetNewAndReset().get("longBoxed"));
+        assertFalse(listener.isInvoked());
     }
 
     public void testInvalid()

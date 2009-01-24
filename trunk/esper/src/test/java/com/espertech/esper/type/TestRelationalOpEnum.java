@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import com.espertech.esper.support.bean.SupportBean;
+
 public class TestRelationalOpEnum extends TestCase
 {
     boolean[][] expected = new boolean[][] { { false, false, true },  //GT
@@ -121,7 +123,7 @@ public class TestRelationalOpEnum extends TestCase
         tryInvalid(boolean.class);
         tryInvalid(long.class);
         tryInvalid(short.class);
-        tryInvalid(Integer.class);
+        tryInvalid(SupportBean.class);
     }
 
     private void tryInvalid(Class clazz)

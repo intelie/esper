@@ -447,7 +447,8 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(SupportBean.class, JavaClassHelper.getCompareToCoercionType(SupportBean.class, SupportBean.class));
         assertEquals(Object.class, JavaClassHelper.getCompareToCoercionType(SupportBean.class, SupportBean_A.class));
 
-        tryInvalidGetRelational(Boolean.class, BigInteger.class);
+        assertEquals("Types cannot be compared: java.lang.Boolean and java.math.BigInteger",
+                tryInvalidGetRelational(Boolean.class, BigInteger.class));
         tryInvalidGetRelational(String.class, BigDecimal.class);
         tryInvalidGetRelational(String.class, int.class);
         tryInvalidGetRelational(Long.class, String.class);
@@ -620,16 +621,17 @@ public class TestJavaClassHelper extends TestCase
         assertTrue(JavaClassHelper.isJavaBuiltinDataType(null));
     }
 
-    private void tryInvalidGetRelational(Class classOne, Class classTwo)
+    private String tryInvalidGetRelational(Class classOne, Class classTwo)
     {
         try
         {
             JavaClassHelper.getCompareToCoercionType(classOne, classTwo);
             fail();
+            return null;
         }
         catch (CoercionException ex)
         {
-            // Expected
+            return ex.getMessage();
         }
     }
 
@@ -679,7 +681,7 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(SupportBean.class, JavaClassHelper.getCommonCoercionType(new Class[] {SupportBean.class, null, SupportBean.class, SupportBean.class}));
         assertEquals(Object.class, JavaClassHelper.getCommonCoercionType(new Class[] {SupportBean.class, SupportBean_A.class, null, SupportBean.class, SupportBean.class}));
 
-        tryInvalidGetCommonCoercionType(new Class[] {String.class, Boolean.class});
+        assertEquals("Cannot coerce to String type java.lang.Boolean", tryInvalidGetCommonCoercionType(new Class[] {String.class, Boolean.class}));
         tryInvalidGetCommonCoercionType(new Class[] {String.class, String.class, Boolean.class});
         tryInvalidGetCommonCoercionType(new Class[] {Boolean.class, String.class, Boolean.class});
         tryInvalidGetCommonCoercionType(new Class[] {Boolean.class, Boolean.class, String.class});
@@ -794,16 +796,17 @@ public class TestJavaClassHelper extends TestCase
         assertFalse(JavaClassHelper.isBigNumberType(Double.class));
     }
 
-    private void tryInvalidGetCommonCoercionType(Class[] types)
+    private String tryInvalidGetCommonCoercionType(Class[] types)
     {
         try
         {
             JavaClassHelper.getCommonCoercionType(types);
             fail();
+            return null;
         }
         catch (CoercionException ex)
         {
-            // expected
+            return ex.getMessage();
         }
     }
 

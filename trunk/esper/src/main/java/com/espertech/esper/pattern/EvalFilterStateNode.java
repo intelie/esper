@@ -150,6 +150,11 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         return data;
     }
 
+    public boolean isSubSelect()
+    {
+        return false;
+    }
+
     public final String toString()
     {
         StringBuilder buffer = new StringBuilder();

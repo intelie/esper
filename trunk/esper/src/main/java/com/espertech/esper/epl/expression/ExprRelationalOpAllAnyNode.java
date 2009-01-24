@@ -78,7 +78,19 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
         for (int i = 0; i < this.getChildNodes().size() - 1; i++)
         {
             Class propType = this.getChildNodes().get(i + 1).getType();
-            if ((propType.isArray() || JavaClassHelper.isImplementsInterface(propType, Collection.class)))
+            if (propType.isArray())
+            {
+                hasCollectionOrArray = true;
+                if (propType.getComponentType() != Object.class)
+                {
+                    comparedTypes.add(propType.getComponentType());
+                }
+            }
+            else if (JavaClassHelper.isImplementsInterface(propType, Collection.class))
+            {
+                hasCollectionOrArray = true;
+            }
+            else if (JavaClassHelper.isImplementsInterface(propType, Map.class))
             {
                 hasCollectionOrArray = true;
             }
@@ -145,6 +157,40 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
                     Collection coll = (Collection) valueRight;
                     hasRows = true;
                     for (Object item : coll)
+                    {
+                        if (!(item instanceof Number))
+                        {
+                            if (isAll && item == null)
+                            {
+                                return null;
+                            }
+                            continue;
+                        }
+                        hasNonNullRow = true;
+                        if (valueLeft != null)
+                        {
+                            if (isAll)
+                            {
+                                if (!computer.compare(valueLeft, item))
+                                {
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                if (computer.compare(valueLeft, item))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (valueRight instanceof Map)
+                {
+                    Map coll = (Map) valueRight;
+                    hasRows = true;
+                    for (Object item : coll.keySet())
                     {
                         if (!(item instanceof Number))
                         {

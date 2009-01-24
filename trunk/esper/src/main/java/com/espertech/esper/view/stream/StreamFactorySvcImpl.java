@@ -86,7 +86,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * @param epStatementHandle is the statement resource lock
      * @return newly createdStatement event stream, not reusing existing instances
      */
-    public Pair<EventStream, ManagedLock> createStream(final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin)
+    public Pair<EventStream, ManagedLock> createStream(final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect)
     {
         if (log.isDebugEnabled())
         {
@@ -95,7 +95,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
 
         // Check if a stream for this filter already exists
         Pair<EventStream, EPStatementHandleCallback> pair = null;
-        boolean forceNewStream = (isJoin) || (!isReuseViews);
+        boolean forceNewStream = (isJoin) || (!isReuseViews) || (isSubSelect);
         if (forceNewStream)
         {
             pair = eventStreamsIdentity.get(filterSpec);
@@ -139,6 +139,11 @@ public class StreamFactorySvcImpl implements StreamFactoryService
                     }
                     eventStream.insert(result);
                 }
+
+                public boolean isSubSelect()
+                {
+                    return isSubSelect;
+                }
             };
         }
         else
@@ -148,6 +153,10 @@ public class StreamFactorySvcImpl implements StreamFactoryService
                 public void matchFound(EventBean event)
                 {
                     eventStream.insert(event);
+                }
+                public boolean isSubSelect()
+                {
+                    return isSubSelect;
                 }
             };
         }
@@ -175,10 +184,10 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * See the method of the same name in {@link com.espertech.esper.view.stream.StreamFactoryService}.
      * @param filterSpec is the filter definition
      */
-    public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin)
+    public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin, boolean isSubSelect)
     {
         Pair<EventStream, EPStatementHandleCallback> pair = null;
-        boolean forceNewStream = (isJoin) || (!isReuseViews);
+        boolean forceNewStream = (isJoin) || (!isReuseViews) || (isSubSelect);
 
         if (forceNewStream)
         {

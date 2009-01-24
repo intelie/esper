@@ -14,6 +14,7 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.ThreadWorkQueue;
+import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecCompiled;
@@ -54,12 +55,12 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
     };
 
-    private ThreadLocal<HashMap<EPStatementHandle, Object>> matchesPerStmtThreadLocal =
-            new ThreadLocal<HashMap<EPStatementHandle, Object>>()
+    private ThreadLocal<HashMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal =
+            new ThreadLocal<HashMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>>()
     {
-        protected synchronized HashMap<EPStatementHandle, Object> initialValue()
+        protected synchronized HashMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> initialValue()
         {
-            return new HashMap<EPStatementHandle, Object>(10000);
+            return new HashMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(10000);
         }
     };
 
@@ -632,7 +633,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             return;
         }
 
-        HashMap<EPStatementHandle, Object> stmtCallbacks = matchesPerStmtThreadLocal.get();
+        HashMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> stmtCallbacks = matchesPerStmtThreadLocal.get();
         Object[] matchArray = matches.getArray();
         int entryCount = matches.size();
 
@@ -644,10 +645,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             // Self-joins require that the internal dispatch happens after all streams are evaluated
             if (handle.isCanSelfJoin())
             {
-                List<FilterHandleCallback> callbacks = (List<FilterHandleCallback>) stmtCallbacks.get(handle);
+                ArrayDequeJDK6Backport<FilterHandleCallback> callbacks = stmtCallbacks.get(handle);
                 if (callbacks == null)
                 {
-                    callbacks = new ArrayList<FilterHandleCallback>();
+                    callbacks = new ArrayDequeJDK6Backport<FilterHandleCallback>();
                     stmtCallbacks.put(handle, callbacks);
                 }
                 callbacks.add(handleCallback.getFilterCallback());
@@ -678,10 +679,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             return;
         }
 
-        for (Map.Entry<EPStatementHandle, Object> entry : stmtCallbacks.entrySet())
+        for (Map.Entry<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> entry : stmtCallbacks.entrySet())
         {
             EPStatementHandle handle = entry.getKey();
-            List<FilterHandleCallback> callbackList = (List<FilterHandleCallback>) entry.getValue();
+            ArrayDequeJDK6Backport<FilterHandleCallback> callbackList = entry.getValue();
 
             if ((MetricReportingPath.isMetricsEnabled) && (handle.getMetricsHandle().isEnabled()))            
             {
@@ -766,7 +767,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
     }
 
-    private void processStatementFilterMultiple(EPStatementHandle handle, List<FilterHandleCallback> callbackList, EventBean event)
+    private void processStatementFilterMultiple(EPStatementHandle handle, ArrayDequeJDK6Backport<FilterHandleCallback> callbackList, EventBean event)
     {
         handle.getStatementLock().acquireLock(services.getStatementLockFactory());
         try
@@ -776,9 +777,21 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 services.getVariableService().setLocalVersion();
             }
 
+            // sub-selects always go first
             for (FilterHandleCallback callback : callbackList)
             {
-                callback.matchFound(event);
+                if (callback.isSubSelect())
+                {
+                    callback.matchFound(event);
+                }
+            }
+
+            for (FilterHandleCallback callback : callbackList)
+            {
+                if (!callback.isSubSelect())
+                {
+                    callback.matchFound(event);
+                }
             }
 
             // internal join processing, if applicable

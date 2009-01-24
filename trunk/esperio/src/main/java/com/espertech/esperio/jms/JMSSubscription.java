@@ -51,4 +51,9 @@ public class JMSSubscription extends BaseSubscription
         }
         ((JMSOutputAdapter) (adapter)).send(event, jmsMessageMarshaller);
     }
+
+    public boolean isSubSelect()
+    {
+        return false; 
+    }
 }

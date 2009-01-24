@@ -86,11 +86,11 @@ public class TestExprRelationalOpNode extends TestCase
         assertEquals(false, opNode.evaluate(null, false));
 
         opNode = makeNode(null, Integer.class, 2, Integer.class);
-        assertEquals(false, opNode.evaluate(null, false));
+        assertEquals(null, opNode.evaluate(null, false));
         opNode = makeNode(1, Integer.class, null, Integer.class);
-        assertEquals(false, opNode.evaluate(null, false));
+        assertEquals(null, opNode.evaluate(null, false));
         opNode = makeNode(null, Integer.class, null, Integer.class);
-        assertEquals(false, opNode.evaluate(null, false));
+        assertEquals(null, opNode.evaluate(null, false));
     }
 
     public void testToExpressionString() throws Exception

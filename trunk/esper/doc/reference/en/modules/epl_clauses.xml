@@ -2284,16 +2284,26 @@ where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())
 		</orderedlist>
 
 		<para>
+			The order of evaluation of subqueries relative to the containing statement is guaranteed: If the containing statement and its subqueries are reacting to the same type of event, the subquery will receive the
+			event first before the containing statement's clauses are evaluated. The order of evaluation of subqueries is not guaranteed between subqueries.
+		</para>
+
+		<para>
 			Performance of your statement containing one or more subqueries principally depends on two parameters. First, if your subquery correlates one or more columns in the subquery stream with the enclosing statement's streams via equals '=', the engine automatically builds the appropriate indexes for fast row retrieval based on the key values correlated (joined). The second parameter is the number of rows found in the subquery stream and the complexity of the filter criteria (<literal>where</literal> clause), as each row in the subquery stream must evaluate against the <literal>where</literal> clause filter.
 		</para>
 
 		<sect2 id="epl-subqueries-exists">
-			<title>The '<literal>exists</literal>' keyword</title>
+			<title>The '<literal>exists</literal>' Keyword</title>
 
 			<para>
 				The <literal>exists</literal> condition is considered "to be met" if the subquery returns at least one row. The <literal>not exists</literal> condition is considered true if the subquery returns no rows.
 			</para>
 			
+			<para>
+				The synopsis for the <literal>exists</literal> keyword is as follows:
+			</para>
+			<synopsis>exists (<emphasis>subquery</emphasis>)</synopsis>
+
 			<para>
 				Let's take a look at a simple example. The following is an EPL statement that uses the <literal>exists</literal> condition:
 			</para>
@@ -2307,24 +2317,127 @@ where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())
 		</sect2>
 
 		<sect2 id="epl-subqueries-in">
-			<title>The '<literal>in</literal>' keyword</title>
+			<title>The '<literal>in</literal>' and '<literal>not in</literal>' Keywords</title>
 			
 			<para>
 				The <literal>in</literal> subquery condition is true if the value of an expression matches one or more of the values returned by the subquery. Consequently, the <literal>not in</literal> condition is true if the value of an expression matches none of the values returned by the subquery.
 			</para>
 			
 			<para>
+				The synopsis for the <literal>in</literal> keyword is as follows:
+			</para>
+			<synopsis><emphasis>expression</emphasis> in (<emphasis>subquery</emphasis>)</synopsis>
+
+			<para>
+				The right-hand side subquery must return exactly one column.
+			</para>
+
+			<para>
 				The next statement demonstrates the use of the <literal>in</literal> subquery condition: 
 			</para>
 
-			<programlisting><![CDATA[select assetId from RFIDEvent as RFID 
-  where zone in (select zone from ZoneUpdate.win:time(10 min) where status = 'closed' )]]></programlisting>
+			<programlisting><![CDATA[select assetId from RFIDEvent
+  where zone in (select zone from ZoneUpdate(status = 'closed').win:time(10 min))]]></programlisting>
 
 			<para>
 				The above statement demonstrated the <literal>in</literal> subquery to select RFID events for which the zone status is in a closed state. 
 			</para>
+
+			<para>
+				Note that if the left-hand expression yields null, or if there are no equal right-hand values and at least one right-hand row yields null, the result of the <literal>in</literal> construct will be null, not false (or true for <literal>not-in</literal>). This is in accordance with SQL's normal rules for Boolean combinations of null values.
+			</para>
 		</sect2>
 
+		<sect2 id="epl-subqueries-anysome">
+			<title>The '<literal>any</literal>' and '<literal>some</literal>' Keywords</title>
+			
+			<para>
+				The <literal>any</literal> subquery condition is true if the expression returns true for one or more of the values returned by the subquery.
+			</para>
+
+			<para>
+				The synopsis for the <literal>any</literal> keyword is as follows:
+			</para>
+			<synopsis><emphasis>expression</emphasis> <emphasis>operator</emphasis> any (<emphasis>subquery</emphasis>)
+<emphasis>expression</emphasis> <emphasis>operator</emphasis> some (<emphasis>subquery</emphasis>)</synopsis>
+
+			<para>
+				The left-hand expression is evaluated and compared to each row of the subquery result using the given operator, which must yield a Boolean result. The result of <literal>any</literal> is "true" if any true result is obtained. The result is "false" if no true result is found (including the special case where the subquery returns no rows). 
+			</para>
+
+			<para>
+				The <emphasis>operator</emphasis> can be any of the following values: <literal>=, !=, &lt;&gt;, &lt;, &lt;=, &gt;, &gt;=</literal>.
+			</para>
+
+			<para>
+				The <literal>some</literal> keyword is a synonym for <literal>any</literal>. The <literal>in</literal> construct is equivalent to <literal>= any</literal>.
+			</para>
+		
+			<para>
+				The right-hand side subquery must return exactly one column.
+			</para>
+
+			<para>
+				The next statement demonstrates the use of the <literal>any</literal> subquery condition: 
+			</para>
+
+			<programlisting><![CDATA[select * from ProductOrder as ord
+  where quantity < any
+    (select minimumQuantity from MinimumQuantity.win:keepall())]]></programlisting>
+
+			<para>
+				The above query compares ProductOrder event's quantity value with all rows from the MinimumQuantity stream of events and returns only those ProductOrder events that have a quantity that is less then any of the minimum quantity values of the MinimumQuantity events.
+			</para>
+
+			<para>
+				Note that if there are no successes and at least one right-hand row yields null for the operator's result, the result of the <literal>any</literal> construct will be null, not false. This is in accordance with SQL's normal rules for Boolean combinations of null values. 
+			</para>
+		</sect2>
+
+		<sect2 id="epl-subqueries-all">
+			<title>The '<literal>all</literal>' Keyword</title>
+			
+			<para>
+				The <literal>all</literal> subquery condition is true if the expression returns true for all of the values returned by the subquery.
+			</para>
+
+			<para>
+				The synopsis for the <literal>all</literal> keyword is as follows:
+			</para>
+			<synopsis><emphasis>expression</emphasis> <emphasis>operator</emphasis> all (<emphasis>subquery</emphasis>)</synopsis>
+
+			<para>
+				The left-hand expression is evaluated and compared to each row of the subquery result using the given operator, which must yield a Boolean result. The result of <literal>all</literal> is "true" if all rows yield true (including the special case where the subquery returns no rows). The result is "false" if any false result is found. The result is <literal>null</literal> if the comparison does not return false for any row, and it returns <literal>null</literal> for at least one row.
+			</para>
+
+			<para>
+				The <emphasis>operator</emphasis> can be any of the following values: <literal>=, !=, &lt;&gt;, &lt;, &lt;=, &gt;, &gt;=</literal>.
+			</para>
+
+			<para>
+				The <literal>not in</literal> construct is equivalent to <literal>!= all</literal>.
+			</para>
+		
+			<para>
+				The right-hand side subquery must return exactly one column.
+			</para>
+
+			<para>
+				The next statement demonstrates the use of the <literal>all</literal> subquery condition: 
+			</para>
+
+			<programlisting><![CDATA[select * from ProductOrder as ord
+  where quantity < all
+    (select minimumQuantity from MinimumQuantity.win:keepall())]]></programlisting>
+
+			<para>
+				The above query compares ProductOrder event's quantity value with all rows from the MinimumQuantity stream of events and returns only those ProductOrder events that have a quantity that is less then all of the minimum quantity values of the MinimumQuantity events.
+			</para>
+
+			<para>
+				Note that if there are no successes and at least one right-hand row yields null for the operator's result, the result of the <literal>all</literal> construct will be null, not false. This is in accordance with SQL's normal rules for Boolean combinations of null values.
+			</para>
+		</sect2>
     </sect1>
 
 	<sect1 id="histdata_overview" revision="1">

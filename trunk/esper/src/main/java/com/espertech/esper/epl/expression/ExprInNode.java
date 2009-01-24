@@ -73,10 +73,17 @@ public class ExprInNode extends ExprNode
         for (int i = 0; i < this.getChildNodes().size() - 1; i++)
         {
             Class propType = this.getChildNodes().get(i + 1).getType();
+            if (propType == null)
+            {
+                continue;
+            }
             if (propType.isArray())
             {
                 hasCollectionOrArray = true;
-                comparedTypes.add(propType.getComponentType());
+                if (propType.getComponentType() != Object.class)
+                {
+                    comparedTypes.add(propType.getComponentType());
+                }
             }
             else if (JavaClassHelper.isImplementsInterface(propType, Collection.class))
             {
@@ -136,21 +143,11 @@ public class ExprInNode extends ExprNode
                 inPropResult = coercer.coerceBoxed((Number) inPropResult);
             }
 
-            // coerce upfront when comparing single values, coerce later when comparing against collections
-            if (mustCoerce)
-            {
-                if (inPropResult != null)
-                {
-                    inPropResult = coercer.coerceBoxed((Number) inPropResult);
-                }
-            }
-
             int len = this.getChildNodes().size() - 1;
             if ((len > 0) && (inPropResult == null))
             {
                 return null;
             }
-            boolean hasNonNullRow = false;
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
@@ -162,7 +159,6 @@ public class ExprInNode extends ExprNode
                     continue;
                 }
 
-                hasNonNullRow = true;
                 if (!mustCoerce)
                 {
                     if (rightResult.equals(inPropResult))
@@ -180,7 +176,7 @@ public class ExprInNode extends ExprNode
                 }
             }
 
-            if ((!hasNonNullRow) || (hasNullRow))
+            if (hasNullRow)
             {
                 return null;
             }
@@ -189,7 +185,6 @@ public class ExprInNode extends ExprNode
         else
         {
             int len = this.getChildNodes().size() - 1;
-            boolean hasNonNullRow = false;
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
@@ -197,7 +192,6 @@ public class ExprInNode extends ExprNode
 
                 if (rightResult == null)
                 {
-                    hasNonNullRow = true;
                     continue;
                 }
                 if (rightResult instanceof Collection)
@@ -206,7 +200,6 @@ public class ExprInNode extends ExprNode
                     {
                         return null;
                     }
-                    hasNonNullRow = true;
                     Collection coll = (Collection) rightResult;
                     if (coll.contains(inPropResult))
                     {
@@ -219,7 +212,6 @@ public class ExprInNode extends ExprNode
                     {
                         return null;
                     }
-                    hasNonNullRow = true;
                     Map coll = (Map) rightResult;
                     if (coll.containsKey(inPropResult))
                     {
@@ -241,7 +233,6 @@ public class ExprInNode extends ExprNode
                             hasNullRow = true;
                             continue;
                         }
-                        hasNonNullRow = true;
                         if (!mustCoerce)
                         {
                             if (inPropResult.equals(item))
@@ -270,7 +261,6 @@ public class ExprInNode extends ExprNode
                     {
                         return null;
                     }
-                    hasNonNullRow = true;
                     if (!mustCoerce)
                     {
                         if (inPropResult.equals(rightResult))
@@ -290,7 +280,7 @@ public class ExprInNode extends ExprNode
                 }
             }
 
-            if ((!hasNonNullRow) || (hasNullRow))
+            if (hasNullRow)
             {
                 return null;
             }
