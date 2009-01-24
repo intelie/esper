@@ -320,7 +320,7 @@ select detail?.direction? from OrderEvent]]></programlisting>
 
 		<indexterm><primary>event</primary><secondary>Java object</secondary></indexterm>
 		<para>
-			Plain-old Java object events are object instances that expose event properties through JavaBeans-style getter methods. Events classes or interfaces do not have to be fully compliant to the JavaBean specification; however for the Esper engine to obtain event properties, the required JavaBean getter methods must be present.
+			Plain-old Java object events are object instances that expose event properties through JavaBeans-style getter methods. Events classes or interfaces do not have to be fully compliant to the JavaBean specification; however for the Esper engine to obtain event properties, the required JavaBean getter methods must be present or an accessor-style and accessor-methods may be defined via configuration.
 		</para>
 
 		<para>
@@ -1000,6 +1000,10 @@ Document doc = builderFactory.newDocumentBuilder().parse(source);]]></programlis
 				</para>
 				
 				<para>
+					Set the <literal>xpath-property-expr</literal> option if you need namespace-aware document traversal, such as when your schema mixes several namespaces and element names are overlapping.
+				</para>
+
+				<para>
 					The below table samples several property expressions and the XPath expression generated for each, without namespace prefixes to keep the example simple:
 				</para>
 				
@@ -1373,7 +1377,7 @@ such event metadata and event data into one of the built-in event representation
 
         <para>
 			To extract information from a coarse-grained event or to perform bulk operations on the rows of the property graph in an event, Esper provides a convenient syntax: 
-			When specifying a filter expression in a pattern or in a <literal>select</literal> clause, it may contain a property selection syntax, as further described in <xref linkend="epl-propertyselect"/>.
+			When specifying a filter expression in a pattern or in a <literal>select</literal> clause, it may contain a contained-event selection syntax, as further described in <xref linkend="epl-containedeventselect"/>.
 		</para>
 
 	</sect1>

@@ -5,6 +5,10 @@ package com.espertech.esper.event.util;
  */
 public class OutputValueRendererJSONString implements OutputValueRenderer
 {
+    public OutputValueRendererJSONString()
+    {
+    }
+
     public void render(Object object, StringBuilder buf)
     {
         if (object == null)

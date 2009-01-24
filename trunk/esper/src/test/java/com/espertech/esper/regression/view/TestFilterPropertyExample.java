@@ -1,7 +1,6 @@
 package com.espertech.esper.regression.view;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.util.EventRendererProvider;
 import com.espertech.esper.client.util.JSONEventRenderer;
 import com.espertech.esper.regression.event.SupportXML;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -248,7 +247,7 @@ public class TestFilterPropertyExample extends TestCase
 
     private void printRows(EventBean[] rows)
     {
-        JSONEventRenderer renderer = EventRendererProvider.getJSONRenderer(rows[0].getEventType());
+        JSONEventRenderer renderer = epService.getEPRuntime().getEventRenderer().getJSONRenderer(rows[0].getEventType());
         for (int i = 0; i < rows.length; i++)
         {
             System.out.println(renderer.render("event#" + i, rows[i]));

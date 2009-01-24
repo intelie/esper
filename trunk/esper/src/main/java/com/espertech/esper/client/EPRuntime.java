@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+import com.espertech.esper.client.util.EventRenderer;
+
 import java.util.Map;
 import java.util.Set;
 import java.net.URI;
@@ -223,4 +225,6 @@ public interface EPRuntime
      * @return proxy to execute upon, that also provides the event type of the returned results
      */
     public EPOnDemandPreparedQuery prepareQuery(String epl);
+
+    public EventRenderer getEventRenderer();
 }

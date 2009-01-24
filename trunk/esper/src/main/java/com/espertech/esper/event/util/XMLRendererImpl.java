@@ -9,6 +9,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Array;
 import java.util.Stack;
+import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Renderer for XML-formatted properties.
@@ -17,8 +19,10 @@ public class XMLRendererImpl implements XMLEventRenderer
 {
     private static final Log log = LogFactory.getLog(XMLRendererImpl.class);
     private final static String NEWLINE = System.getProperty("line.separator");
+    
     private final RendererMeta meta;
     private final XMLRenderingOptions options;
+    private final RendererMetaOptions rendererMetaOptions;
 
     /**
      * Ctor.
@@ -27,7 +31,8 @@ public class XMLRendererImpl implements XMLEventRenderer
      */
     public XMLRendererImpl(EventType eventType, XMLRenderingOptions options)
     {
-        meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), new RendererMetaOptions(options.isPreventLooping(), true));
+        rendererMetaOptions = new RendererMetaOptions(options.isPreventLooping(), true);
+        meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), rendererMetaOptions);
         this.options = options;
     }
 
@@ -52,7 +57,7 @@ public class XMLRendererImpl implements XMLEventRenderer
         buf.append('>');
         buf.append(NEWLINE);
 
-        recursiveRender(event, buf, 1, meta);
+        recursiveRender(event, buf, 1, meta, rendererMetaOptions);
             
         buf.append("</");
         buf.append(getFirstWord(rootElementName));
@@ -129,6 +134,49 @@ public class XMLRendererImpl implements XMLEventRenderer
                 buf.append('>');
                 buf.append(NEWLINE);
             }
+        }
+
+        GetterPair[] mappedProps = meta.getMappedProperties();
+        for (GetterPair mappedProp : mappedProps)
+        {
+            Object value = mappedProp.getGetter().get(event);
+
+            if ((value != null) && (!(value instanceof Map)))
+            {
+                log.warn("Property '" + mappedProp.getName() + "' expected to return Map and returned " + value.getClass() + " instead");
+                continue;
+            }
+
+            ident(buf, level);
+            buf.append('<');
+            buf.append(mappedProp.getName());
+
+            if (value != null)
+            {
+                Map map = (Map) value;
+                if (!map.isEmpty())
+                {
+                    Iterator<Map.Entry> it = map.entrySet().iterator();
+                    for (;it.hasNext();)
+                    {
+                        Map.Entry entry = it.next();
+                        if ((entry.getKey() == null) || (entry.getValue() == null))
+                        {
+                            continue;
+                        }
+
+                        buf.append(" ");
+                        buf.append(entry.getKey().toString());
+                        buf.append("=\"");
+                        OutputValueRenderer out = OutputValueRendererFactory.getOutputValueRenderer(entry.getValue().getClass(), rendererMetaOptions);
+                        out.render(entry.getValue(), buf);
+                        buf.append("\"");
+                    }
+                }
+            }
+
+            buf.append("/>");
+            buf.append(NEWLINE);
         }
 
         NestedGetterPair[] nestedProps = meta.getNestedProperties();
@@ -208,7 +256,7 @@ public class XMLRendererImpl implements XMLEventRenderer
         buf.append(' ');
     }
 
-    private static void recursiveRender(EventBean event, StringBuilder buf, int level, RendererMeta meta)
+    private static void recursiveRender(EventBean event, StringBuilder buf, int level, RendererMeta meta, RendererMetaOptions rendererMetaOptions)
     {
         GetterPair[] simpleProps = meta.getSimpleProperties();
         for (GetterPair simpleProp : simpleProps)
@@ -266,6 +314,66 @@ public class XMLRendererImpl implements XMLEventRenderer
             }
         }
 
+        GetterPair[] mappedProps = meta.getMappedProperties();
+        for (GetterPair mappedProp : mappedProps)
+        {
+            Object value = mappedProp.getGetter().get(event);
+
+            if ((value != null) && (!(value instanceof Map)))
+            {
+                log.warn("Property '" + mappedProp.getName() + "' expected to return Map and returned " + value.getClass() + " instead");
+                continue;
+            }
+
+            ident(buf, level);
+            buf.append('<');
+            buf.append(mappedProp.getName());
+            buf.append('>');
+            buf.append(NEWLINE);
+
+            if (value != null)
+            {
+                Map map = (Map) value;
+                if (!map.isEmpty())
+                {
+                    String localDelimiter = "";
+                    Iterator<Map.Entry> it = map.entrySet().iterator();
+                    for (;it.hasNext();)
+                    {
+                        Map.Entry entry = it.next();
+                        if (entry.getKey() == null)
+                        {
+                            continue;
+                        }
+
+                        buf.append(localDelimiter);
+                        ident(buf, level + 1);
+                        buf.append('<');
+                        buf.append(entry.getKey().toString());
+                        buf.append('>');
+
+                        if (entry.getValue() != null)
+                        {
+                            OutputValueRenderer out = OutputValueRendererFactory.getOutputValueRenderer(entry.getValue().getClass(), rendererMetaOptions);
+                            out.render(entry.getValue(), buf);
+                        }
+
+                        buf.append('<');
+                        buf.append(entry.getKey().toString());
+                        buf.append('>');
+                        localDelimiter = NEWLINE;
+                    }
+                }
+            }
+
+            buf.append(NEWLINE);
+            ident(buf, level);
+            buf.append("</");
+            buf.append(mappedProp.getName());
+            buf.append('>');
+            buf.append(NEWLINE);
+        }
+
         NestedGetterPair[] nestedProps = meta.getNestedProperties();
         for (NestedGetterPair nestedProp : nestedProps)
         {
@@ -284,7 +392,7 @@ public class XMLRendererImpl implements XMLEventRenderer
                     buf.append("null");
                     continue;
                 }
-                renderElementFragment((EventBean) value, buf, level, nestedProp);
+                renderElementFragment((EventBean) value, buf, level, nestedProp, rendererMetaOptions);
             }
             else
             {
@@ -303,13 +411,13 @@ public class XMLRendererImpl implements XMLEventRenderer
                     {
                         continue;
                     }
-                    renderElementFragment(arrayItem, buf, level, nestedProp);
+                    renderElementFragment(arrayItem, buf, level, nestedProp, rendererMetaOptions);
                 }
             }
         }
     }
 
-    private static void renderElementFragment(EventBean eventBean, StringBuilder buf, int level, NestedGetterPair nestedProp)
+    private static void renderElementFragment(EventBean eventBean, StringBuilder buf, int level, NestedGetterPair nestedProp, RendererMetaOptions rendererMetaOptions)
     {
         ident(buf, level);
         buf.append('<');
@@ -317,7 +425,7 @@ public class XMLRendererImpl implements XMLEventRenderer
         buf.append('>');
         buf.append(NEWLINE);
 
-        recursiveRender(eventBean, buf, level + 1, nestedProp.getMetadata());
+        recursiveRender(eventBean, buf, level + 1, nestedProp.getMetadata(), rendererMetaOptions);
 
         ident(buf, level);
         buf.append("</");

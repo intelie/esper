@@ -3,7 +3,6 @@ package com.espertech.esper.regression.event;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.util.EventRendererProvider;
 import com.espertech.esper.client.util.XMLRenderingOptions;
 import com.espertech.esper.event.util.OutputValueRendererXMLString;
 import com.espertech.esper.support.bean.SupportBean;
@@ -36,7 +35,7 @@ public class TestEventRendererXML extends TestCase
         EPStatement statement = epService.getEPAdministrator().createEPL("select * from SupportBean");
         epService.getEPRuntime().sendEvent(bean);
 
-        String result = EventRendererProvider.renderXML("supportBean", statement.iterator().next());
+        String result = epService.getEPRuntime().getEventRenderer().renderXML("supportBean", statement.iterator().next());
         //System.out.println(result);
         String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<supportBean>\n" +
@@ -65,7 +64,7 @@ public class TestEventRendererXML extends TestCase
                 "</supportBean>";
         assertEquals(removeNewline(expected), removeNewline(result));
 
-        result = EventRendererProvider.renderXML("supportBean", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
+        result = epService.getEPRuntime().getEventRenderer().renderXML("supportBean", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
         System.out.println(result);
         expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<supportBean boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" string=\"a\\u000ac\">\n" +
@@ -108,7 +107,7 @@ public class TestEventRendererXML extends TestCase
         dataOuter.put("innerarray", new Map[] {dataArrayOne, dataArrayTwo, dataArrayThree});
         epService.getEPRuntime().sendEvent(dataOuter, "OuterMap");
 
-        String result = EventRendererProvider.renderXML("outerMap", statement.iterator().next());
+        String result = epService.getEPRuntime().getEventRenderer().renderXML("outerMap", statement.iterator().next());
         System.out.println(result);
         String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<outerMap>\n" +
@@ -134,7 +133,7 @@ public class TestEventRendererXML extends TestCase
                 "</outerMap>";
         assertEquals(removeNewline(expected), removeNewline(result));
 
-        result = EventRendererProvider.renderXML("outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
+        result = epService.getEPRuntime().getEventRenderer().renderXML("outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
         System.out.println(result);
         expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +

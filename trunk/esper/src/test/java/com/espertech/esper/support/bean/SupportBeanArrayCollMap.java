@@ -13,6 +13,12 @@ public class SupportBeanArrayCollMap
     private Long longBoxed;
     private Object[] objectArr;
     private Object anyObject;
+    private Map<String, Object> otherMap;
+
+    public SupportBeanArrayCollMap()
+    {
+        this.anyObject = anyObject;
+    }
 
     public SupportBeanArrayCollMap(Object anyObject)
     {
@@ -151,6 +157,16 @@ public class SupportBeanArrayCollMap
     public void setAnyObject(Object anyObject)
     {
         this.anyObject = anyObject;
+    }
+
+    public Map<String, Object> getOtherMap()
+    {
+        return otherMap;
+    }
+
+    public void setOtherMap(Map<String, Object> otherMap)
+    {
+        this.otherMap = otherMap;
     }
 
     private static HashMap<Long, String> convertMap(Long[] longArr)

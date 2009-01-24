@@ -1815,34 +1815,36 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 		</para>
 
 		<para>
-			The <literal>EventRendererProvider</literal> class provides access to JSON and XML rendering. For repeated rendering of events of the same event type or subtypes, it is recommended to obtain a <literal>JSONEventRenderer</literal> or <literal>XMLEventRenderer</literal> instance and use the <literal>render</literal> method provided by the interface. This allows the renderer implementations to cache event type metadata for fast rendering.
+			The <literal>EventRenderer</literal> interface accessible from the runtime interface via the <literal>getEventRenderer</literal> method provides access to JSON and XML rendering. For repeated rendering of events of the same event type or subtypes, it is recommended to obtain a <literal>JSONEventRenderer</literal> or <literal>XMLEventRenderer</literal> instance and use the <literal>render</literal> method provided by the interface. This allows the renderer implementations to cache event type metadata for fast rendering.
 		</para>
 
 		<para>
 			In this example we show how one may obtain a renderer for repeated rendering of events of the same type, assuming that <literal>statement</literal> is an instance of <literal>EPStatement</literal>:
 		</para>
-		<programlisting><![CDATA[JSONEventRenderer renderer = EventRendererProvider.getJSONRenderer(statement.getEventType());]]></programlisting>
+		<programlisting><![CDATA[JSONEventRenderer jsonRenderer = epService.getEPRuntime().
+    getEventRenderer().getJSONRenderer(statement.getEventType());]]></programlisting>
 
 		<para>
 			Assuming that <literal>event</literal> is an instance of <literal>EventBean</literal>, this code snippet renders an event into the JSON format:
 		</para>
-		<programlisting><![CDATA[String jsonEventText = renderer.render("MyEvent", event);]]></programlisting>
+		<programlisting><![CDATA[String jsonEventText = jsonRenderer.render("MyEvent", event);]]></programlisting>
 
 		<para>
 			The XML renderer works the same:
 		</para>
-		<programlisting><![CDATA[XMLEventRenderer renderer = EventRendererProvider.getXMLRenderer(statement.getEventType());]]></programlisting>
+		<programlisting><![CDATA[XMLEventRenderer xmlRenderer = epService.getEPRuntime().
+    getEventRenderer().getXMLRenderer(statement.getEventType());]]></programlisting>
 
 		<para>
 			...and...
 		</para>
-		<programlisting><![CDATA[String xmlEventText = renderer.render("MyEvent", event);]]></programlisting>
+		<programlisting><![CDATA[String xmlEventText = xmlRenderer.render("MyEvent", event);]]></programlisting>
 		
 		<para>
 			If the event type is not known in advance or if you application does not want to obtain a renderer instance per event type for fast rendering, your application can use one of the following methods to render an event to a XML or JSON textual format:
 		</para>
-		<programlisting><![CDATA[String json = EventRendererProvider.renderJSON(event);
-String xml = EventRendererProvider.renderXML(event);]]></programlisting>
+		<programlisting><![CDATA[String json = epService.getEPRuntime().getEventRenderer().renderJSON(event);
+String xml = epService.getEPRuntime().getEventRenderer().renderXML(event);]]></programlisting>
 
 		<para>
 			Use the <literal>JSONRenderingOptions</literal> or <literal>XMLRenderingOptions</literal> classes to control how events are rendered.
@@ -1860,11 +1862,11 @@ String xml = EventRendererProvider.renderXML(event);]]></programlisting>
 			</para>
 
 			<para>
-				The renderer does not format properties that require an index for access. For example, if your event representation is backed by POJO objects and your getter method is <literal>getValue(int index)</literal>, the indexed property values are not part of the JSON text.
+				The renderer does render indexed properties, it does not render indexed properties that require an index, i.e. if your event representation is backed by POJO objects and your getter method is <literal>getValue(int index)</literal>, the indexed property values are not part of the JSON text. This is because the implementation has no way to determine how many index keys there are. A workaround is to have a method such as <literal>Object[] getValue()</literal> instead.
 			</para>
 
 			<para>
-				The renderer does not format properties of type Map (except for the Map event representation) or that require a Map key for access. For example, if your event representation is backed by POJO objects and your getter method is <literal>getValue(String key)</literal>, the mapped property values are not part of the JSON text.
+				The same is true for mapped properties that the renderer also renders.  If a property requires a Map key for access, i.e. your getter method is <literal>getValue(String key)</literal>, such property values are not part of the result text as there is no way for the implementation to determine the key set.
 			</para>
 		</sect2>
 
@@ -1884,11 +1886,11 @@ String xml = EventRendererProvider.renderXML(event);]]></programlisting>
 			</para>
 
 			<para>
-				The renderer does not format properties that require an index for access. For example, if your event representation is backed by POJO objects and your getter method is <literal>getValue(int index)</literal>, the indexed property values are not part of the XML text.
+				The renderer does render indexed properties, it does not render indexed properties that require an index, i.e. if your event representation is backed by POJO objects and your getter method is <literal>getValue(int index)</literal>, the indexed property values are not part of the XML text. This is because the implementation has no way to determine how many index keys there are. A workaround is to have a method such as <literal>Object[] getValue()</literal> instead.
 			</para>
 
 			<para>
-				The renderer does not format properties of type Map (except for the Map event representation) or that require a Map key for access. For example, if your event representation is backed by POJO objects and your getter method is <literal>getValue(String key)</literal>, the mapped property values are not part of the XML text.
+				The same is true for mapped properties that the renderer also renders.  If a property requires a Map key for access, i.e. your getter method is <literal>getValue(String key)</literal>, such property values are not part of the result text as there is no way for the implementation to determine the key set.
 			</para>
 		</sect2>
 	</sect1>

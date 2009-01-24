@@ -20,11 +20,8 @@ public class RendererMeta
 
     private final GetterPair[] simpleProperties;
     private final GetterPair[] indexProperties;
+    private final GetterPair[] mappedProperties;
     private final NestedGetterPair[] nestedProperties;
-
-    private static OutputValueRenderer jsonStringOutput = new OutputValueRendererJSONString();
-    private static OutputValueRenderer xmlStringOutput = new OutputValueRendererXMLString();
-    private static OutputValueRenderer baseOutput = new OutputValueRendererBase();
 
     /**
      * Ctor.
@@ -36,6 +33,7 @@ public class RendererMeta
     {
         ArrayList<GetterPair> gettersSimple = new ArrayList<GetterPair>();
         ArrayList<GetterPair> gettersIndexed = new ArrayList<GetterPair>();
+        ArrayList<GetterPair> gettersMapped = new ArrayList<GetterPair>();
         ArrayList<NestedGetterPair> gettersNested = new ArrayList<NestedGetterPair>();
 
         EventPropertyDescriptor[] descriptors = eventType.getPropertyDescriptors();
@@ -51,7 +49,7 @@ public class RendererMeta
                     log.warn("No getter returned for event type '" + eventType.getName() + "' and property '" + propertyName + "'");
                     continue;
                 }
-                gettersSimple.add(new GetterPair(getter, propertyName, getOutput(desc.getPropertyType(), options)));
+                gettersSimple.add(new GetterPair(getter, propertyName, OutputValueRendererFactory.getOutputValueRenderer(desc.getPropertyType(), options)));
             }
 
             if (desc.isIndexed() && !desc.isRequiresIndex() && (!desc.isFragment()))
@@ -62,7 +60,18 @@ public class RendererMeta
                     log.warn("No getter returned for event type '" + eventType.getName() + "' and property '" + propertyName + "'");
                     continue;
                 }
-                gettersIndexed.add(new GetterPair(getter, propertyName, getOutput(desc.getPropertyType(), options)));
+                gettersIndexed.add(new GetterPair(getter, propertyName, OutputValueRendererFactory.getOutputValueRenderer(desc.getPropertyType(), options)));
+            }
+
+            if (desc.isMapped() && !desc.isRequiresMapkey() && (!desc.isFragment()))
+            {
+                EventPropertyGetter getter = eventType.getGetter(propertyName);
+                if (getter == null)
+                {
+                    log.warn("No getter returned for event type '" + eventType.getName() + "' and property '" + propertyName + "'");
+                    continue;
+                }
+                gettersMapped.add(new GetterPair(getter, propertyName, OutputValueRendererFactory.getOutputValueRenderer(desc.getPropertyType(), options)));
             }
 
             if (desc.isFragment())
@@ -96,6 +105,7 @@ public class RendererMeta
 
         simpleProperties = gettersSimple.toArray(new GetterPair[gettersSimple.size()]);
         indexProperties = gettersIndexed.toArray(new GetterPair[gettersIndexed.size()]);
+        mappedProperties = gettersMapped.toArray(new GetterPair[gettersMapped.size()]);
         nestedProperties = gettersNested.toArray(new NestedGetterPair[gettersNested.size()]);
     }
 
@@ -126,26 +136,8 @@ public class RendererMeta
         return nestedProperties;
     }
 
-    private OutputValueRenderer getOutput(Class type, RendererMetaOptions options)
+    public GetterPair[] getMappedProperties()
     {
-        if (type.isArray())
-        {
-            type = type.getComponentType();
-        }
-        if ((type == String.class) || (type == Character.class) || (type == char.class))
-        {
-            if (options.isXMLOutput())
-            {
-                return xmlStringOutput;
-            }
-            else
-            {
-                return jsonStringOutput;
-            }
-        }
-        else
-        {
-            return baseOutput;
-        }
+        return mappedProperties;
     }
 }

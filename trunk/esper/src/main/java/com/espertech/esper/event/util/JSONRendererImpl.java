@@ -9,6 +9,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Array;
 import java.util.Stack;
+import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Render for the JSON format.
@@ -16,9 +18,12 @@ import java.util.Stack;
 public class JSONRendererImpl implements JSONEventRenderer
 {
     private static final Log log = LogFactory.getLog(JSONRendererImpl.class);
+
     private final static String NEWLINE = System.getProperty("line.separator");
     private final static String COMMA_DELIMITER_NEWLINE = "," + NEWLINE;
+
     private final RendererMeta meta;
+    private final RendererMetaOptions rendererOptions;
 
     /**
      * Ctor.
@@ -27,7 +32,8 @@ public class JSONRendererImpl implements JSONEventRenderer
      */
     public JSONRendererImpl(EventType eventType, JSONRenderingOptions options)
     {
-        meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), new RendererMetaOptions(options.isPreventLooping(), false));
+        rendererOptions = new RendererMetaOptions(options.isPreventLooping(), false);
+        meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), rendererOptions);
     }
 
     public String render(String title, EventBean event)
@@ -42,7 +48,7 @@ public class JSONRendererImpl implements JSONEventRenderer
         buf.append("\": {");
         buf.append(NEWLINE);
 
-        recursiveRender(event, buf, 2, meta);
+        recursiveRender(event, buf, 2, meta, rendererOptions);
         
         ident(buf, 1);
         buf.append('}');
@@ -68,7 +74,7 @@ public class JSONRendererImpl implements JSONEventRenderer
         buf.append(' ');
     }
 
-    private static void recursiveRender(EventBean event, StringBuilder buf, int level, RendererMeta meta)
+    private static void recursiveRender(EventBean event, StringBuilder buf, int level, RendererMeta meta, RendererMetaOptions rendererOptions)
     {
         String delimiter = "";
 
@@ -125,6 +131,77 @@ public class JSONRendererImpl implements JSONEventRenderer
             delimiter = COMMA_DELIMITER_NEWLINE;
         }
 
+        GetterPair[] mappedProps = meta.getMappedProperties();
+        for (GetterPair mappedProp : mappedProps)
+        {
+            Object value = mappedProp.getGetter().get(event);
+
+            if ((value != null) && (!(value instanceof Map)))
+            {
+                log.warn("Property '" + mappedProp.getName() + "' expected to return Map and returned " + value.getClass() + " instead");
+                continue;
+            }
+
+            buf.append(delimiter);
+            ident(buf, level);
+
+            buf.append('\"');
+            buf.append(mappedProp.getName());
+            buf.append("\": ");
+
+            if (value == null)
+            {
+                buf.append("null");
+            }
+            else
+            {
+                Map map = (Map) value;
+                if (map.isEmpty())
+                {
+                    buf.append("{}");
+                }
+                else
+                {
+                    buf.append('{');
+                    buf.append(NEWLINE);
+
+                    String localDelimiter = "";
+                    Iterator<Map.Entry> it = map.entrySet().iterator();
+                    for (;it.hasNext();)
+                    {
+                        Map.Entry entry = it.next();
+                        if (entry.getKey() == null)
+                        {
+                            continue;
+                        }
+
+                        buf.append(localDelimiter);
+                        ident(buf, level + 1);
+                        buf.append('\"');
+                        buf.append(entry.getKey().toString());
+                        buf.append("\": ");
+
+                        if (entry.getValue() == null)
+                        {
+                            buf.append("null");
+                        }
+                        else
+                        {
+                            OutputValueRenderer out = OutputValueRendererFactory.getOutputValueRenderer(entry.getValue().getClass(), rendererOptions);
+                            out.render(entry.getValue(), buf);
+                        }
+                        localDelimiter = COMMA_DELIMITER_NEWLINE;
+                    }
+                }
+            }
+            
+            buf.append(NEWLINE);
+            ident(buf, level);
+            buf.append('}');
+
+            delimiter = COMMA_DELIMITER_NEWLINE;
+        }
+
         NestedGetterPair[] nestedProps = meta.getNestedProperties();
         for (NestedGetterPair nestedProp : nestedProps)
         {
@@ -153,7 +230,7 @@ public class JSONRendererImpl implements JSONEventRenderer
                 buf.append('{');
                 buf.append(NEWLINE);
                 
-                recursiveRender(nestedEventBean, buf, level + 1, nestedProp.getMetadata());
+                recursiveRender(nestedEventBean, buf, level + 1, nestedProp.getMetadata(), rendererOptions);
 
                 ident(buf, level);
                 buf.append('}');
@@ -186,7 +263,7 @@ public class JSONRendererImpl implements JSONEventRenderer
                     buf.append('{');
                     buf.append(NEWLINE);
 
-                    recursiveRender(arrayItem, buf, level + 2, nestedProp.getMetadata());
+                    recursiveRender(arrayItem, buf, level + 2, nestedProp.getMetadata(), rendererOptions);
 
                     ident(buf, level + 1);
                     buf.append('}');

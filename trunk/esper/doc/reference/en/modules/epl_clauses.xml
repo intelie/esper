@@ -676,7 +676,7 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 				The <emphasis>stream_def</emphasis> syntax for a filter-based event stream is as below:
 			</para>
 	
-			<synopsis><emphasis>event_stream_name</emphasis> [(<emphasis>filter_criteria</emphasis>)] [<emphasis>property_selection</emphasis>] [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
+			<synopsis><emphasis>event_stream_name</emphasis> [(<emphasis>filter_criteria</emphasis>)] [<emphasis>contained_selection</emphasis>] [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
 	
 			<para>
 			  The <emphasis>event_stream_name</emphasis> is either the name of an event type or name of an event stream populated by an <literal>insert into</literal> statement or the name of a named window.
@@ -687,7 +687,7 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 			</para>
 
 			<para>
-			  The <emphasis>property_selection</emphasis> is optional and is for use with coarse-grained events that have properties that are themselves one or more events, see <xref linkend="epl-propertyselect"/> for the synopsis and examples.
+			  The <emphasis>contained_selection</emphasis> is optional and is for use with coarse-grained events that have properties that are themselves one or more events, see <xref linkend="epl-containedeventselect"/> for the synopsis and examples.
 			</para>
 			
 			<para>
@@ -2034,7 +2034,7 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 		</para>
 
 		<para>
-			In a join and outer join, your statement must declare a data window view or other view onto each stream. Streams that are marked as unidirectional and named windows as well as database or methods in a join are an exception and do not require a view to be specified. If you are joining an event to itself via property selection, views also do not need to be specified.
+			In a join and outer join, your statement must declare a data window view or other view onto each stream. Streams that are marked as unidirectional and named windows as well as database or methods in a join are an exception and do not require a view to be specified. If you are joining an event to itself via contained-event selection, views also do not need to be specified.
 		</para>
 
 		<para>
@@ -3776,23 +3776,23 @@ having sum(price) > var_threshold]]></programlisting>
 		</sect2>
 	</sect1>		
 
-	<sect1 id="epl-propertyselect">
-	   <title>Property Selection</title>
+	<sect1 id="epl-containedeventselect">
+	   <title>Contained-Event Selection</title>
 	   
 		<para>
-			Property selection is for use when an event contains properties that are themselves events. For example when application events are coarse-grained structures and you need to perform bulk operations on the rows of the property graph in an event.
+			Contained-event selection is for use when an event contains properties that are themselves events. For example when application events are coarse-grained structures and you need to perform bulk operations on the rows of the property graph in an event.
 		</para>
 
 		<para>
-			Use the property selection syntax in a filter expression such as in a pattern, <literal>from</literal> clause, subselect, on-select and on-delete. This section provides the synopsis and examples.
+			Use the contained-event selection syntax in a filter expression such as in a pattern, <literal>from</literal> clause, subselect, on-select and on-delete. This section provides the synopsis and examples.
 		</para>
 
 		<para>
-			To review, in the <literal>from</literal> clause a <emphasis>property_selection</emphasis> may appear after the event stream name and filter criteria, and before any view specifications.
+			To review, in the <literal>from</literal> clause a <emphasis>contained_selection</emphasis> may appear after the event stream name and filter criteria, and before any view specifications.
 		</para>
 
 		<para>
-			The synopsis for <emphasis>property_selection</emphasis> is as follows:
+			The synopsis for <emphasis>contained_selection</emphasis> is as follows:
 		</para>
 		<synopsis>[select <emphasis>select_expressions</emphasis> from] <emphasis>property_expression</emphasis> [as <emphasis>property_alias</emphasis>] [where <emphasis>filter_expression</emphasis>]</synopsis>
 
@@ -3851,12 +3851,12 @@ having sum(price) > var_threshold]]></programlisting>
 </mediaorder>]]></programlisting>
 
 		<para>
-			The next query utilizes the property selection syntax to return each book:
+			The next query utilizes the contained-event selection syntax to return each book:
 		</para>
 		<programlisting><![CDATA[select * from MediaOrder[books.book]]]></programlisting>
 
 		<para>
-			The result of the above query is one event per book. Output events contain only the book properties and not any of the order-level properties.
+			The result of the above query is one event per book. Output events contain only the book properties and not any of the mediaorder-level properties.
 		</para>
 
 		<para>
@@ -3864,12 +3864,12 @@ having sum(price) > var_threshold]]></programlisting>
 		</para>
 		
 		<para>
-			 To better illustrate the position of the property selection syntax in a statement, consider the next two queries:
+			 To better illustrate the position of the contained-event selection syntax in a statement, consider the next two queries:
 		</para>
 		<programlisting><![CDATA[select * from MediaOrder(orderId='PO200901')[books.book]]]></programlisting>
 
 		<para>
-			The above query the returns each book only for media orders with a given order id. This query illustrates a property selection and a view: 
+			The above query the returns each book only for media orders with a given order id. This query illustrates a contained-event selection and a view: 
 		</para>
 		<programlisting><![CDATA[select count(*) from MediaOrder[books.book].std:unique(bookId)]]></programlisting>
 		
@@ -3878,11 +3878,11 @@ having sum(price) > var_threshold]]></programlisting>
 		</para>
 
 		<para>
-			Property selection can be staggered. When staggering multiple property selections the staggered property selection is relative to its parent.
+			Contained-event selection can be staggered. When staggering multiple contained-event selections the staggered contained-event selection is relative to its parent.
 		</para>
 
 		<para>
-			This example demonstrates staggering property selections by selecting each review of each book:
+			This example demonstrates staggering contained-event selections by selecting each review of each book:
 		</para>
 		<programlisting><![CDATA[select * from MediaOrder[books.book][review]]]></programlisting>
 
@@ -3891,7 +3891,17 @@ having sum(price) > var_threshold]]></programlisting>
 		</para>
 		
 		<para>
-			The property selection syntax is part of the filter expression and may therefore occur in patterns and anywhere a filter expression is valid. 
+			The following is not valid:
+		</para>
+		<programlisting><![CDATA[// not valid
+select * from MediaOrder[books.book.review]]]></programlisting>
+
+		<para>
+			The <literal>book</literal> property in an indexed property (an array or collection) and thereby requires an index in order to determine which book to use. The expression <literal>books.book[1].review</literal> is valid and means all reviews of the second (index 1) book.
+		</para>
+		
+		<para>
+			The contained-event selection syntax is part of the filter expression and may therefore occur in patterns and anywhere a filter expression is valid. 
 		</para>
 
 		<para>
@@ -3900,28 +3910,12 @@ having sum(price) > var_threshold]]></programlisting>
 		<programlisting>select * from pattern [c=Cancel -&gt; books=MediaOrder(orderId = c.orderId)[books.book] ]</programlisting>
 	
 		<para>
-			When used in a pattern, a filter with a property selection returns an array of events, similar to the match-until clause in patterns. The above statement returns, in the <literal>books</literal> property, an
+			When used in a pattern, a filter with a contained-event selection returns an array of events, similar to the match-until clause in patterns. The above statement returns, in the <literal>books</literal> property, an
 			array of book events.
 		</para>
 
-		<para>
-			Please note these limitations:
-		</para>
-		<orderedlist spacing="compact">
-			<listitem>
-				<para>
-					Sub-selects, aggregation functions and the <literal>prev</literal> and <literal>prior</literal> operators are not available in property selection.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Expressions in the <literal>select</literal> and <literal>where</literal> clause of a property selection can only reference properties relative to the current event and property.
-				</para>
-			</listitem>
-		</orderedlist>
-
-		<sect2 id="epl-propertyselect-select" revision="1">
-			<title>Select Clause in a Property Selection</title>
+		<sect2 id="epl-containedeventselect-select" revision="1">
+			<title>Select Clause in a Contained-Event Selection</title>
 
 			<para>
 				 The optional <literal>select</literal> clause provides control over which fields are available in output events. The expressions in the select clause apply only to the properties available underneath the property in the <literal>from</literal> clause, and the properties of the enclosing event.
@@ -3956,14 +3950,17 @@ having sum(price) > var_threshold]]></programlisting>
 			<para>
 				The next query's <literal>select</literal> clause selects each review for each book, and the order id as well as the book id of each book:
 			</para>
-			<programlisting><![CDATA[select * from MediaOrder[select orderId, bookId from books.book][select * from review]]]></programlisting>
+			<programlisting><![CDATA[select * from MediaOrder[select orderId, bookId from books.book][select * from review]
+// ... equivalent to ...
+select * from MediaOrder[select orderId, bookId from books.book][review]]]]></programlisting>
 	
 			<para>
 				Listeners to the statement above receive an event for each review of each book. Each output event has all properties of the review row, and in addition the <literal>bookId</literal> of each book and the <literal>orderId</literal> of the order.
+				Thus <literal>bookId</literal> and <literal>orderId</literal> are found in each result event, duplicated when there are multiple reviews per book and order.
 			</para>
 
 			<para>
-				 As has been discussed as part of the <literal>select</literal> clause, the wildcard (<literal>*</literal>) and <emphasis>property_alias</emphasis><literal>.*</literal> do not copy properties for performance reasons. The wildcard syntax instead specifies the underlying type, and additional properties are added onto that underlying type if required. Only one wildcard (<literal>*</literal>) and <emphasis>property_alias</emphasis><literal>.*</literal> (unless used with a column rename) may therefore occur in the <literal>select</literal> clause list of expressions.
+				 The above query uses wildcard <literal>(*)</literal> to select all properties from reviews. As has been discussed as part of the <literal>select</literal> clause, the wildcard (<literal>*</literal>) and <emphasis>property_alias</emphasis><literal>.*</literal> do not copy properties for performance reasons. The wildcard syntax instead specifies the underlying type, and additional properties are added onto that underlying type if required. Only one wildcard (<literal>*</literal>) and <emphasis>property_alias</emphasis><literal>.*</literal> (unless used with a column rename) may therefore occur in the <literal>select</literal> clause list of expressions.
 			</para>
 
 			<para>
@@ -3976,7 +3973,7 @@ having sum(price) > var_threshold]]></programlisting>
 			<programlisting><![CDATA[select * from MediaOrder[books.book][review]]]></programlisting>
 
 			<para>
-				The following query is not a valid query, since the order id and book id are not part of the property selection:
+				The following query is not a valid query, since the order id and book id are not part of the contained-event selection:
 			</para>
 			<programlisting><![CDATA[// Invalid select clause: orderId and bookId not produced.
 select orderId, bookId from MediaOrder[books.book][review]]]></programlisting>
@@ -4008,10 +4005,27 @@ select * from MediaOrder[books.book as book][select book.*, reviewId, comment fr
   [select mo.* as mediaOrder, book.* as book, review.* as review from review as review] as mo
 // .. and a sample consumer of ReviewStream...
 select mediaOrder.orderId, book.bookId, review.reviewId from ReviewStream]]></programlisting>
+
+			<para>
+				Please note these limitations:
+			</para>
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						Sub-selects, aggregation functions and the <literal>prev</literal> and <literal>prior</literal> operators are not available in contained-event selection.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Expressions in the <literal>select</literal> and <literal>where</literal> clause of a contained-event selection can only reference properties relative to the current event and property.
+					</para>
+				</listitem>
+			</orderedlist>
+
 		</sect2>
 	
-		<sect2 id="epl-propertyselect-where" revision="1">
-			<title>Where Clause in a Property Selection</title>
+		<sect2 id="epl-containedeventselect-where" revision="1">
+			<title>Where Clause in a Contained-Event Selection</title>
 			<para>
 				The optional <literal>where</literal> clause may be used to filter out properties at the same level that the where-clause occurs.
 			</para>
@@ -4032,10 +4046,10 @@ select mediaOrder.orderId, book.bookId, review.reviewId from ReviewStream]]></pr
 	
 		</sect2>
 
-		<sect2 id="epl-propertyselect-join" revision="1">
-			<title>Property Selection and Joins</title>
+		<sect2 id="epl-containedeventselect-join" revision="1">
+			<title>Contained-Event Selection and Joins</title>
 			<para>
-				This section discusses property selection in joins.
+				This section discusses contained-event selection in joins.
 			</para>
 
 			<para>

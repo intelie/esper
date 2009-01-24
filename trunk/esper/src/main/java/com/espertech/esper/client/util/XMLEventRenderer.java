@@ -8,7 +8,7 @@ import com.espertech.esper.client.EventBean;
  * A renderer is dedicated to rendering only a certain type of events and subtypes of that type, as the
  * render cache type metadata and prepares structures to enable fast rendering.
  * <p>
- * For rendering events of different types, use a quick-access method in {@link EventRendererProvider}.
+ * For rendering events of different types, use a quick-access method in {@link EventRenderer}.
  */
 public interface XMLEventRenderer
 {

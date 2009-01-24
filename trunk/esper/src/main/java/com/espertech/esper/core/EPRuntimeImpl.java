@@ -21,12 +21,14 @@ import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.util.EventRenderer;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.schedule.ScheduleHandle;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.timer.TimerCallback;
 import com.espertech.esper.util.*;
+import com.espertech.esper.event.util.EventRendererImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,6 +48,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     private volatile UnmatchedListener unmatchedListener;
     private AtomicLong routedInternal;
     private AtomicLong routedExternal;
+    private EventRenderer eventRenderer;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
     {
@@ -1041,6 +1044,15 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     public EventSender getEventSender(URI uri[]) throws EventTypeException
     {
         return services.getEventAdapterService().getDynamicTypeEventSender(this, uri);
+    }
+
+    public EventRenderer getEventRenderer()
+    {
+        if (eventRenderer == null)
+        {
+            eventRenderer = new EventRendererImpl();
+        }
+        return eventRenderer;
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);

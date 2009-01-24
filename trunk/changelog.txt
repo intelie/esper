@@ -34,7 +34,7 @@ With Esper 3 integer division returns Double values, and Integer division can be
 - Changes to methods in Configuration and ConfigurationOperations as the term "alias" was replaced by "name"
 - new method on statement addListenerWithReplay
 - property selection
-- null > 1 returned true/false; coercion of float and long returned float not double
+- new =/> ANY/SOME/ALL; Corrected bug where "1 in (3, null)" yielded false but should be null; null > 1 returned true/false; coercion of float and long returned float not double
 - subselect order of eval well defined (sub-select first)
   
 Changes in version 2.3

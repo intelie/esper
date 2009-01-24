@@ -1,14 +1,12 @@
 package com.espertech.esper.client.util;
 
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.util.JSONRendererImpl;
-import com.espertech.esper.event.util.XMLRendererImpl;
+import com.espertech.esper.client.EventType;
 
 /**
  * Provider for rendering services of {@link EventBean} events.
  */
-public class EventRendererProvider
+public interface EventRenderer
 {
     /**
      * Returns a render for the JSON format, valid only for the given event type and its subtypes.
@@ -16,20 +14,14 @@ public class EventRendererProvider
      * @param options rendering options
      * @return JSON format renderer
      */
-    public static JSONEventRenderer getJSONRenderer(EventType eventType, JSONRenderingOptions options)
-    {
-        return new JSONRendererImpl(eventType, options);
-    }
+    public JSONEventRenderer getJSONRenderer(EventType eventType, JSONRenderingOptions options);
 
     /**
      * Returns a render for the JSON format, valid only for the given event type and its subtypes.
      * @param eventType to return renderer for
      * @return JSON format renderer
      */
-    public static JSONEventRenderer getJSONRenderer(EventType eventType)
-    {
-        return new JSONRendererImpl(eventType, new JSONRenderingOptions());
-    }
+    public JSONEventRenderer getJSONRenderer(EventType eventType);
 
     /**
      * Quick-access method to render a given event in the JSON format.
@@ -40,10 +32,7 @@ public class EventRendererProvider
      * @param event the event to render
      * @return JSON formatted text
      */
-    public static String renderJSON(String title, EventBean event)
-    {
-        return renderJSON(title, event, new JSONRenderingOptions());
-    }
+    public String renderJSON(String title, EventBean event);
 
     /**
      * Quick-access method to render a given event in the JSON format.
@@ -55,14 +44,14 @@ public class EventRendererProvider
      * @param options are JSON rendering options
      * @return JSON formatted text
      */
-    public static String renderJSON(String title, EventBean event, JSONRenderingOptions options)
-    {
-        if (event == null)
-        {
-            return null;
-        }
-        return getJSONRenderer(event.getEventType(), options).render(title, event);
-    }
+    public String renderJSON(String title, EventBean event, JSONRenderingOptions options);
+
+    /**
+     * Returns a render for the XML format, valid only for the given event type and its subtypes.
+     * @param eventType to return renderer for
+     * @return XML format renderer
+     */
+    public XMLEventRenderer getXMLRenderer(EventType eventType);
 
     /**
      * Returns a render for the XML format, valid only for the given event type and its subtypes.
@@ -70,20 +59,7 @@ public class EventRendererProvider
      * @param options rendering options
      * @return XML format renderer
      */
-    public static XMLEventRenderer getXMLRenderer(EventType eventType, XMLRenderingOptions options)
-    {
-        return new XMLRendererImpl(eventType, options);
-    }
-
-    /**
-     * Returns a render for the XML format, valid only for the given event type and its subtypes.
-     * @param eventType to return renderer for
-     * @return XML format renderer
-     */
-    public static XMLEventRenderer getXMLRenderer(EventType eventType)
-    {
-        return new XMLRendererImpl(eventType, new XMLRenderingOptions());
-    }
+    public XMLEventRenderer getXMLRenderer(EventType eventType, XMLRenderingOptions options);
 
     /**
      * Quick-access method to render a given event in the XML format.
@@ -94,10 +70,7 @@ public class EventRendererProvider
      * @param event the event to render
      * @return XML formatted text
      */
-    public static String renderXML(String rootElementName, EventBean event)
-    {
-        return renderXML(rootElementName, event, new XMLRenderingOptions());
-    }
+    public String renderXML(String rootElementName, EventBean event);
 
     /**
      * Quick-access method to render a given event in the XML format.
@@ -109,12 +82,5 @@ public class EventRendererProvider
      * @param options are XML rendering options
      * @return XML formatted text
      */
-    public static String renderXML(String rootElementName, EventBean event, XMLRenderingOptions options)
-    {
-        if (event == null)
-        {
-            return null;
-        }
-        return getXMLRenderer(event.getEventType(), options).render(rootElementName, event);
-    }
+    public String renderXML(String rootElementName, EventBean event, XMLRenderingOptions options);
 }
