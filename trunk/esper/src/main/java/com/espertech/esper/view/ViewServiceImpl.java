@@ -77,9 +77,10 @@ public final class ViewServiceImpl implements ViewService
 
         // obtain count of data windows
         int dataWindowCount = 0;
-        int nonDataWindowCount = 0;
-        for (ViewFactory factory : viewFactories)
+        int firstNonDataWindowIndex = -1;
+        for (int i = 0; i < viewFactories.size(); i++)
         {
+            ViewFactory factory = viewFactories.get(i);
             if (factory instanceof DataWindowViewFactory)
             {
                 dataWindowCount++;
@@ -89,27 +90,27 @@ public final class ViewServiceImpl implements ViewService
             {
                 continue;
             }
-            nonDataWindowCount++;
+            if (firstNonDataWindowIndex == -1)
+            {
+                firstNonDataWindowIndex = i;
+            }
         }
 
-        // validate combination of views
-        if (!context.getConfigSnapshot().getEngineDefaults().getViewResources().isAllowMultipleExpiryPolicies() &&
-            !options.isRetainUnion() &&
-            !options.isRetainIntersection() &&
-            dataWindowCount > 1)
+        boolean isAllowMultipleExpiry = context.getConfigSnapshot().getEngineDefaults().getViewResources().isAllowMultipleExpiryPolicies();
+        boolean isRetainIntersection = options.isRetainIntersection();
+        boolean isRetainUnion = options.isRetainUnion();
+
+        // Set the default to retain-intersection unless allow-multiple-expiry is turned on
+        if ((!isAllowMultipleExpiry) && (!isRetainUnion))
         {
-            throw new ViewProcessingException("Multiple data window views are not allowed by default configuration, please use one of the retain keywords or the change configuration");
+            isRetainIntersection = true;
         }
 
         // handle multiple data windows with retain union.
         // wrap view factories into the union view factory and handle a group-by, if present
-        if ((options.isRetainUnion() || options.isRetainIntersection()) && nonDataWindowCount > 0)
+        if ((isRetainUnion || isRetainIntersection) && dataWindowCount > 1)
         {
-            throw new ViewProcessingException("Retain keywords require that only data windows views are specified");
-        }
-        if ((options.isRetainUnion() || options.isRetainIntersection()) && dataWindowCount > 1)
-        {
-            viewFactories = getRetainViewFactories(parentEventType, viewFactories, options.isRetainUnion(),  context);
+            viewFactories = getRetainViewFactories(parentEventType, viewFactories, isRetainUnion,  context);
         }
 
         return new ViewFactoryChain(parentEventType, viewFactories);
@@ -120,6 +121,8 @@ public final class ViewServiceImpl implements ViewService
     {
         Set<Integer> groupByFactory = new HashSet<Integer>();
         Set<Integer> mergeFactory = new HashSet<Integer>();
+        List<ViewFactory> derivedValueViews = new ArrayList<ViewFactory>();
+        List<ViewFactory> dataWindowViews = new ArrayList<ViewFactory>();
         for (int i = 0; i < viewFactories.size(); i++)
         {
             ViewFactory factory = viewFactories.get(i);
@@ -127,23 +130,31 @@ public final class ViewServiceImpl implements ViewService
             {
                 groupByFactory.add(i);
             }
-            if (factory instanceof MergeViewFactory)
+            else if (factory instanceof MergeViewFactory)
             {
                 mergeFactory.add(i);
+            }
+            else if (factory instanceof DataWindowViewFactory)
+            {
+                dataWindowViews.add(factory);
+            }
+            else
+            {
+                derivedValueViews.add(factory);
             }
         }
 
         if (groupByFactory.size() > 1)
         {
-            throw new ViewProcessingException("Multiple group-by views are not allowed in conjuntion with retain keywords");
+            throw new ViewProcessingException("Multiple group-by views are not allowed in conjuntion with multiple data windows");
         }
         if ((!groupByFactory.isEmpty()) && (groupByFactory.iterator().next() != 0))
         {
-            throw new ViewProcessingException("The group-by view must occur in the first position in conjuntion with retain keywords");
+            throw new ViewProcessingException("The group-by view must occur in the first position in conjuntion with multiple data windows");
         }
         if ((!groupByFactory.isEmpty()) && (mergeFactory.iterator().next() != (viewFactories.size() - 1)))
         {
-            throw new ViewProcessingException("The merge view cannot be used in conjuntion with retain keywords");
+            throw new ViewProcessingException("The merge view cannot be used in conjuntion with multiple data windows");
         }
 
         GroupByViewFactory groupByViewFactory = null;
@@ -154,21 +165,19 @@ public final class ViewServiceImpl implements ViewService
             mergeViewFactory = (MergeViewFactory) viewFactories.remove(viewFactories.size() - 1);
         }
 
-        List<ViewFactory> retainViewFactories = new ArrayList<ViewFactory>(viewFactories);
-
-        ViewFactory retainPolicy = null;
+        ViewFactory retainPolicy;
         if (isUnion)
         {
             UnionViewFactory viewFactory = (UnionViewFactory) context.getViewResolutionService().create("internal", "union");
             viewFactory.setParentEventType(parentEventType);
-            viewFactory.setViewFactories(retainViewFactories);
+            viewFactory.setViewFactories(dataWindowViews);
             retainPolicy = viewFactory;
         }
         else
         {
             IntersectViewFactory viewFactory = (IntersectViewFactory) context.getViewResolutionService().create("internal", "intersect");
             viewFactory.setParentEventType(parentEventType);
-            viewFactory.setViewFactories(retainViewFactories);
+            viewFactory.setViewFactories(dataWindowViews);
             retainPolicy = viewFactory;
         }
 
@@ -177,7 +186,12 @@ public final class ViewServiceImpl implements ViewService
         if (groupByViewFactory != null)
         {
             nonRetainViewFactories.add(0, groupByViewFactory);
+            nonRetainViewFactories.addAll(derivedValueViews);
             nonRetainViewFactories.add(mergeViewFactory);
+        }
+        else
+        {
+            nonRetainViewFactories.addAll(derivedValueViews);
         }
 
         return nonRetainViewFactories;

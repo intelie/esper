@@ -16,6 +16,27 @@ public class TestDataWindowIntersectExpiry extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
+    public void testIntersectAndDerivedValue()
+    {
+        init(false);
+        String[] fields = new String[] {"total"};
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean.std:unique(intPrimitive).std:unique(intBoxed).stat:uni(doublePrimitive)");
+        stmt.addListener(listener);
+
+        sendEvent("E1", 1, 10, 100d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr(100d));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {100d});
+
+        sendEvent("E2", 2, 20, 50d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr(150d));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {150d});
+
+        sendEvent("E3", 1, 20, 20d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr(20d));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {20d});
+    }
+
     public void testIntersectGroupBy()
     {
         init(false);
@@ -467,7 +488,7 @@ public class TestDataWindowIntersectExpiry extends TestCase
         epService.getEPRuntime().sendEvent(bean);
     }
 
-    private Object[][] toArr(String ...values)
+    private Object[][] toArr(Object ...values)
     {
         Object[][] arr = new Object[values.length][];
         for (int i = 0; i < values.length; i++)

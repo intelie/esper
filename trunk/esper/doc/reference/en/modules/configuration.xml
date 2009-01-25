@@ -1361,21 +1361,20 @@ config.getEngineDefaults().getViewResources().setShareViews(false);]]></programl
 				<title>Configuring Multi-Expiry Policy Defaults</title>
 
 				<para>
-				   By default Esper requires the use of either the <literal>retain-union</literal> or the <literal>retain-intersection</literal> keyword when combining multiple data window views. This setting may be used when a retain keyword 
-				   is not desired and for backward compatibility.
+				   By default, when combining multiple data window views, Esper applies an intersection of the data windows unless the <literal>retain-union</literal> keyword is provided which instructs to apply an union. The setting described herein may be used primarily for backward compatibility to instruct that intersection should not be the default.
 				</para>
 								
 				<para>
-				   This is a sample statement that specifies multiple expiry policies:
+				   Here is a sample statement that specifies multiple expiry policies:
 				</para>
 				<programlisting><![CDATA[select * from MyEvent.std:unique(price).std:unique(quantity)]]></programlisting>
 
 				<para>
-				   The above statement would not compile as it does not use a retain keyword. If the setting herein is set to true, it does compile.
+				   By default Esper applies intersection as described in <xref linkend="epl-from-clause-view-multidatawindow"/>. 
 				</para>
 				
 				<para>
-				   The next code snippet outlines the API to allow multiple expiry policies without retain keyword:
+				   Here is the setting to allow multiple data windows without the intersection default:
 				</para>
 				<programlisting><![CDATA[Configuration config = new Configuration();
 config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);]]></programlisting>
@@ -1385,7 +1384,7 @@ config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(tru
 				</para>
 
 				<para>
-				   It is recommended to leave the default setting at false and use one of the <literal>retain</literal> keywords.
+				   It is recommended to leave the default setting at false.
 				</para>
 
 			</sect3>

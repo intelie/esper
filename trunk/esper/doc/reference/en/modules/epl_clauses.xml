@@ -666,7 +666,7 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 		</para>
 
 		<para>
-			For all streams with the exception of historical sources your query may employ data window views as outlined below. The <literal>retain-union</literal> and <literal>retain-intersection</literal> keywords build a union or intersection of two or more data windows as described in <xref linkend="epl-from-clause-view-multidatawindow"/>.
+			For all streams with the exception of historical sources your query may employ data window views as outlined below. The <literal>retain-intersection</literal> (the default) and <literal>retain-union</literal> keywords build a union or intersection of two or more data windows as described in <xref linkend="epl-from-clause-view-multidatawindow"/>.
 		</para>
 
         <sect2 id="epl-from-clause-filter" >
@@ -956,24 +956,27 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 		   </para>
 		   
 		   <para>
-			   EPL allows the freedom to use multiple data window views onto a stream and thus combine expiry policies. Combining data windows into a union or intersection can achieve a useful strategy for retaining events and expiring events
-			   that are no longer of interest. Named windows and the <literal>on-delete</literal> syntax provide an additional degree of freedom.
+			   EPL allows the freedom to use multiple data window views onto a stream and thus combine expiry policies. Combining data windows into a intersection (the default) or a union can achieve a useful strategy for retaining events and expiring events that are no longer of interest. Named windows and the <literal>on-delete</literal> syntax provide an additional degree of freedom.
 		   </para>
 
 		   <para>
-			   In order to combine two or more data window views, EPL requires that either the <emphasis>retain-union</emphasis> or <emphasis>retain-intersection</emphasis> keyword be specified for a stream.
+			   In order to combine two or more data window views there is no keyword required. The <emphasis>retain-intersection</emphasis> keyword is the default and the <emphasis>retain-union</emphasis> keyword may instead be provided for a stream.
 		   </para>
 
 			<para>
-				The concept of union and intersection come from Set mathematics. In the language of Set mathematics, two sets A and B can be "added" together: The union of A and B is the set of all things which are members of either A or B. The intersection of A and B is the set of all things which are members of both A and B, i.e. the members two sets have "in common".
+				The concept of union and intersection come from Set mathematics. In the language of Set mathematics, two sets A and B can be "added" together: The intersection of A and B is the set of all things which are members of both A and B, i.e. the members two sets have "in common". The union of A and B is the set of all things which are members of either A or B. 
 			</para>
+
+		   <para>
+			   Use the <emphasis>retain-intersection</emphasis> (the default) keyword to retain an intersection of all events as defined by two or more data windows. All events removed from any of the intersected data windows are entered into the remove stream. This is the default behavior if neither retain keyword is specified.
+		   </para>
 
 		   <para>
 			   Use the <emphasis>retain-union</emphasis> keyword to retain a union of all events as defined by two or more data windows. Only events removed from all data windows are entered into the remove stream.
 		   </para>
 
 		   <para>
-			   Use the <emphasis>retain-intersection</emphasis> keyword to retain an intersection of all events as defined by two or more data windows. All events removed from any of the intersected data windows are entered into the remove stream.
+				As you can see, it is the remove stream that the combined multiple data windows provide which differs when retaining an intersection and retaining a union, the insert stream is the same to all data windows and their staggered views.
 		   </para>
 
 		   <para>

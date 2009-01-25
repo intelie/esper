@@ -16,6 +16,27 @@ public class TestDataWindowUnionExpiry extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
     
+    public void testUnionAndDerivedValue()
+    {
+        init(false);
+        String[] fields = new String[] {"total"};
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean.std:unique(intPrimitive).std:unique(intBoxed).stat:uni(doublePrimitive) retain-union");
+        stmt.addListener(listener);
+
+        sendEvent("E1", 1, 10, 100d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr(100d));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {100d});
+
+        sendEvent("E2", 2, 20, 50d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr(150d));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {150d});
+
+        sendEvent("E3", 1, 20, 20d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr(170d));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {170d});
+    }
+
     public void testUnionGroupBy()
     {
         init(false);
@@ -426,14 +447,8 @@ public class TestDataWindowUnionExpiry extends TestCase
         init(false);
         String text = null;
 
-        text = "select * from SupportBean.std:unique(string).std:unique(intPrimitive).stat:uni(intPrimitive) retain-union";
-        tryInvalid(text, "Error starting statement: Retain keywords require that only data windows views are specified [select * from SupportBean.std:unique(string).std:unique(intPrimitive).stat:uni(intPrimitive) retain-union]");
-
         text = "select string from SupportBean.std:groupby(string).std:groupby(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union";
-        tryInvalid(text, "Error starting statement: Multiple group-by views are not allowed in conjuntion with retain keywords [select string from SupportBean.std:groupby(string).std:groupby(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union]");
-
-        text = "select string from SupportBean.std:unique(string).std:unique(intPrimitive)";
-        tryInvalid(text, "Error starting statement: Multiple data window views are not allowed by default configuration, please use one of the retain keywords or the change configuration [select string from SupportBean.std:unique(string).std:unique(intPrimitive)]");
+        tryInvalid(text, "Error starting statement: Multiple group-by views are not allowed in conjuntion with multiple data windows [select string from SupportBean.std:groupby(string).std:groupby(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union]");
 
         text = "select string from SupportBean.std:groupby(string).std:unique(string).std:merge(string) retain-union";
         tryInvalid(text, "Error starting statement: Error attaching view to parent view: Group by view for this merge view could not be found among parent views [select string from SupportBean.std:groupby(string).std:unique(string).std:merge(string) retain-union]");
@@ -472,7 +487,7 @@ public class TestDataWindowUnionExpiry extends TestCase
         epService.getEPRuntime().sendEvent(bean);
     }
 
-    private Object[][] toArr(String ...values)
+    private Object[][] toArr(Object ...values)
     {
         Object[][] arr = new Object[values.length][];
         for (int i = 0; i < values.length; i++)
