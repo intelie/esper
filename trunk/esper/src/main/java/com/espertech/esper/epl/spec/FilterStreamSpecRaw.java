@@ -27,14 +27,16 @@ import org.apache.commons.logging.LogFactory;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+import java.io.Serializable;
 
 /**
  * Unvalided filter-based stream specification.
  */
-public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw, MetaDefItem
+public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw, MetaDefItem, Serializable
 {
     private static Log log = LogFactory.getLog(FilterStreamSpecRaw.class);
     private FilterSpecRaw rawFilterSpec;
+    private static final long serialVersionUID = -7919060568262701953L;
 
 
     /**

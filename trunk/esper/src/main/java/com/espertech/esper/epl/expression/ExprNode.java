@@ -19,12 +19,13 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.io.Serializable;
 
 /**
  * Superclass for filter nodes in a filter expression tree. Allow
  * validation against stream event types and evaluation of events against filter tree.
  */
-public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefItem
+public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 0L;
 

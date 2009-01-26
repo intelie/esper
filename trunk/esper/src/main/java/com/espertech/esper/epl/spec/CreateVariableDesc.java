@@ -11,14 +11,17 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.epl.expression.ExprNode;
 
+import java.io.Serializable;
+
 /**
  * Descriptor for create-variable statements.
  */
-public class CreateVariableDesc implements MetaDefItem
+public class CreateVariableDesc implements MetaDefItem, Serializable
 {
     private String variableType;
     private String variableName;
     private ExprNode assignment;
+    private static final long serialVersionUID = -7864602464816397227L;
 
     /**
      * Ctor.

@@ -12,13 +12,15 @@ import com.espertech.esper.util.MetaDefItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Encapsulates the parsed select expressions in a select-clause in an EPL statement.
  */
-public class SelectClauseSpecCompiled implements MetaDefItem
+public class SelectClauseSpecCompiled implements MetaDefItem, Serializable
 {
 	private List<SelectClauseElementCompiled> selectClauseElements;
+    private static final long serialVersionUID = 5759170079421795146L;
 
     /**
      * Ctor.

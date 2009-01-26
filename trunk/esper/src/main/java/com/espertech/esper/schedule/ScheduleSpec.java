@@ -12,6 +12,7 @@ import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.type.ScheduleUnit;
 
 import java.util.*;
+import java.io.Serializable;
 
 /**
  * Holds a schedule specification which consists of a set of integer values or a null
@@ -19,11 +20,12 @@ import java.util.*;
  * There is always an element in the specification for each unit minutes, hours, day of month, month, and day of week.
  * There is optionally an element in the specification for the unit seconds.
  */
-public final class ScheduleSpec implements MetaDefItem
+public final class ScheduleSpec implements MetaDefItem, Serializable
 {
     // Per unit hold the set of valid integer values, or null if wildcarded.
     // The seconds unit is optional.
     private final EnumMap<ScheduleUnit, SortedSet<Integer>> unitValues;
+    private static final long serialVersionUID = -7050807714879367353L;
 
     /**
      * Constructor - validates that all mandatory schedule.

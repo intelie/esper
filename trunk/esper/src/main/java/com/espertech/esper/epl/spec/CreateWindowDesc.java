@@ -12,11 +12,12 @@ import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Specification for creating a named window.
  */
-public class CreateWindowDesc implements MetaDefItem
+public class CreateWindowDesc implements MetaDefItem, Serializable
 {
     private String windowName;
     private List<ViewSpec> viewSpecs;
@@ -24,6 +25,7 @@ public class CreateWindowDesc implements MetaDefItem
     private String insertFromWindow;
     private ExprNode insertFilter;
     private StreamSpecOptions streamSpecOptions;
+    private static final long serialVersionUID = 3889989851649484639L;
 
     /**
      * Ctor.

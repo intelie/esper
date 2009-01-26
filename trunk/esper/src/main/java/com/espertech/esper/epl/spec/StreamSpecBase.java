@@ -13,6 +13,7 @@ import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.io.Serializable;
 
 /**
  * Abstract base specification for a stream, consists simply of an optional stream name and a list of views
@@ -21,7 +22,7 @@ import java.util.LinkedList;
  * Implementation classes for views and patterns add additional information defining the
  * stream of events.
  */
-public abstract class StreamSpecBase implements MetaDefItem
+public abstract class StreamSpecBase implements MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 0L;
 

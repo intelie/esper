@@ -15,16 +15,18 @@ import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
 import java.util.Set;
+import java.io.Serializable;
 
 /**
  * Specification object for historical data poll via database SQL statement.
  */
-public class MethodStreamSpec extends StreamSpecBase implements StreamSpecRaw, StreamSpecCompiled, MetaDefItem
+public class MethodStreamSpec extends StreamSpecBase implements StreamSpecRaw, StreamSpecCompiled, MetaDefItem, Serializable
 {
     private String ident;
     private String className;
     private String methodName;
     private List<ExprNode> expressions;
+    private static final long serialVersionUID = -5290682188045211532L;
 
     /**
      * Ctor.

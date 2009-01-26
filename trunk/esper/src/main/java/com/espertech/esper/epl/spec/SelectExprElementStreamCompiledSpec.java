@@ -10,15 +10,18 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Mirror class to {@link SelectExprElementStreamRawSpec} but added the stream number for the name.
  */
-public class SelectExprElementStreamCompiledSpec implements MetaDefItem
+public class SelectExprElementStreamCompiledSpec implements MetaDefItem, Serializable
 {
     private final String streamName;
     private final String optionalName;
     private final int streamNumber;
     private final boolean isTaggedEvent;
+    private static final long serialVersionUID = 1220770708564056643L;
 
     /**
      * Ctor.

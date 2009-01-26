@@ -13,11 +13,12 @@ import com.espertech.esper.util.MetaDefItem;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Specification object representing a complete EPL statement including all EPL constructs.
  */
-public class StatementSpecRaw implements MetaDefItem
+public class StatementSpecRaw implements MetaDefItem, Serializable
 {
     private OnTriggerDesc onTriggerDesc;
     private CreateWindowDesc createWindowDesc;
@@ -35,6 +36,7 @@ public class StatementSpecRaw implements MetaDefItem
     private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
     private boolean existsSubstitutionParameters;
     private boolean hasVariables;
+    private static final long serialVersionUID = 5390766716794133693L;
 
     /**
      * Ctor.

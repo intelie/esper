@@ -19,11 +19,12 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.client.EPException;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Factory for making observer instances.
  */
-public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefItem
+public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefItem, Serializable
 {
     /**
      * Parameters.
@@ -39,6 +40,7 @@ public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefIte
      * Number of milliseconds after which the interval should fire.
      */
     protected long milliseconds;
+    private static final long serialVersionUID = -2808651894497586884L;
 
     public void setObserverParameters(List<ExprNode> params, MatchedEventConvertor convertor) throws ObserverParameterException
     {

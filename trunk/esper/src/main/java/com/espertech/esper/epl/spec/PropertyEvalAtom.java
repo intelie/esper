@@ -3,15 +3,18 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Atom in a specification for property evaluation.
  */
-public class PropertyEvalAtom implements MetaDefItem
+public class PropertyEvalAtom implements MetaDefItem, Serializable
 {
     private final String propertyName;
     private final String optionalAsName;
     private final SelectClauseSpecRaw optionalSelectClause;
     private final ExprNode optionalWhereClause;
+    private static final long serialVersionUID = -7123359550634592847L;
 
     /**
      * Ctor.

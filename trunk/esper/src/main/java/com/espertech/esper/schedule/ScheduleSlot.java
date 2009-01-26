@@ -10,13 +10,16 @@ package com.espertech.esper.schedule;
 
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * This class is a slot in a {@link ScheduleBucket} for sorting schedule service callbacks.
  */
-public class ScheduleSlot implements Comparable<ScheduleSlot>, MetaDefItem
+public class ScheduleSlot implements Comparable<ScheduleSlot>, MetaDefItem, Serializable
 {
     private int bucketNum;
     private int slotNum;
+    private static final long serialVersionUID = 4560709630904887631L;
 
     /**
      * Ctor.

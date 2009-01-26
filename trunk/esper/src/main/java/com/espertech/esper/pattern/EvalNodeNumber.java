@@ -11,6 +11,7 @@ package com.espertech.esper.pattern;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.util.Arrays;
+import java.io.Serializable;
 
 /**
  * A node number assigned to evaluation nodes in a tree-structure.
@@ -18,9 +19,10 @@ import java.util.Arrays;
  * Represents node numbers as an array of short. Root nodes get an empty array while each level of child
  * node adds an element. New child nodes are obtained from a parent and subsequent child nodes from the last sibling node.
  */
-public class EvalNodeNumber implements MetaDefItem
+public class EvalNodeNumber implements MetaDefItem, Serializable
 {
     private short[] number;
+    private static final long serialVersionUID = -2623267386821650096L;
 
     /**
      * Constructs a root node number.

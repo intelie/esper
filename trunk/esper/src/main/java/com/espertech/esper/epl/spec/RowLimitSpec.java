@@ -12,17 +12,19 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Spec for defining a row limit.
  */
-public class RowLimitSpec implements MetaDefItem
+public class RowLimitSpec implements MetaDefItem, Serializable
 {
     private final Integer numRows;
 	private final Integer optionalOffset;
 
     private final String numRowsVariable;
     private final String optionalOffsetVariable;
+    private static final long serialVersionUID = 584331495871950474L;
 
     /**
      * Ctor.

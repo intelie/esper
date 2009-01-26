@@ -12,13 +12,15 @@ import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.epl.metric.StatementMetricHandle;
 
+import java.io.Serializable;
+
 /**
  * Class exists once per statement and hold statement resource lock(s).
  * <p>
  * Use by {@link EPRuntimeImpl} for determining callback-statement affinity and locking of statement
  * resources.
  */
-public class EPStatementHandle implements MetaDefItem
+public class EPStatementHandle implements MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 0L;
 

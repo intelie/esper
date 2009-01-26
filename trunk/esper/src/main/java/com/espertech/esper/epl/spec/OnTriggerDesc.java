@@ -10,12 +10,15 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Specification for on-trigger statements.
  */
-public abstract class OnTriggerDesc implements MetaDefItem
+public abstract class OnTriggerDesc implements MetaDefItem, Serializable
 {
     private OnTriggerType onTriggerType;
+    private static final long serialVersionUID = -70427959082206739L;
 
     /**
      * Ctor.

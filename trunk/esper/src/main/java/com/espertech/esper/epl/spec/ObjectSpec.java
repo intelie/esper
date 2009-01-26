@@ -13,6 +13,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Encapsulates the information required to specify an object identification and construction.
@@ -22,11 +23,12 @@ import java.util.List;
  * A object construction specification can be equal to another specification. This information can be
  * important to determine reuse of any object.
  */
-public abstract class ObjectSpec implements MetaDefItem
+public abstract class ObjectSpec implements MetaDefItem, Serializable
 {
     private final String objectNamespace;
     private final String objectName;
     private final List<ExprNode> objectParameters;
+    private static final long serialVersionUID = 8376856305427395086L;
 
     /**
      * Constructor.

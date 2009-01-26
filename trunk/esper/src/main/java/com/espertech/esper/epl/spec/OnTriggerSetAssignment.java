@@ -11,13 +11,16 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.epl.expression.ExprNode;
 
+import java.io.Serializable;
+
 /**
  * Descriptor for an on-set assignment.
  */
-public class OnTriggerSetAssignment implements MetaDefItem
+public class OnTriggerSetAssignment implements MetaDefItem, Serializable
 {
     private String variableName;
     private ExprNode expression;
+    private static final long serialVersionUID = -3672553372059354285L;
 
     /**
      * Ctor.

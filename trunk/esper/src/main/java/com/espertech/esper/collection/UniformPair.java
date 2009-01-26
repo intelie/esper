@@ -10,15 +10,18 @@ package com.espertech.esper.collection;
 
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * General-purpose pair of values of any type. The pair only equals another pair if
  * the objects that form the pair equal, ie. first pair first object equals (.equals) the second pair first object,
  * and the first pair second object equals the second pair second object.
  */
-public final class UniformPair<T> implements MetaDefItem
+public final class UniformPair<T> implements MetaDefItem, Serializable
 {
     private T first;
     private T second;
+    private static final long serialVersionUID = -4974328655156016696L;
 
     /**
      * Construct pair of values.

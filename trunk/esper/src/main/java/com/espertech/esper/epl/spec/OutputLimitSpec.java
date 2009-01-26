@@ -13,11 +13,12 @@ import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Spec for defining an output rate
  */
-public class OutputLimitSpec implements MetaDefItem
+public class OutputLimitSpec implements MetaDefItem, Serializable
 {
 	private final OutputLimitLimitType displayLimit;
     private final OutputLimitRateType rateType;
@@ -27,6 +28,7 @@ public class OutputLimitSpec implements MetaDefItem
     private final List<OnTriggerSetAssignment> thenExpressions;    
     private final List<ExprNode> crontabAtSchedule;
     private final ExprTimePeriod timePeriodExpr;
+    private static final long serialVersionUID = 7314871194757342071L;
 
     /**
 	 * Ctor.

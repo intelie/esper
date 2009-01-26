@@ -14,13 +14,14 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Superclass of all nodes in an evaluation tree representing an event pattern expression.
  * Follows the Composite pattern. Child nodes do not carry references to parent nodes, the tree
  * is unidirectional.
  */
-public abstract class EvalNode implements MetaDefItem
+public abstract class EvalNode implements MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 0L;
 

@@ -18,11 +18,12 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.EPException;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Factory for {@link TimerWithinGuard} instances.
  */
-public class TimerWithinGuardFactory implements GuardFactory, MetaDefItem
+public class TimerWithinGuardFactory implements GuardFactory, MetaDefItem, Serializable
 {
     /**
      * Number of milliseconds.
@@ -33,6 +34,7 @@ public class TimerWithinGuardFactory implements GuardFactory, MetaDefItem
      * For converting matched-events maps to events-per-stream.
      */
     protected MatchedEventConvertor convertor;
+    private static final long serialVersionUID = -1026320055174163611L;
 
     public void setGuardParameters(List<ExprNode> params, MatchedEventConvertor convertor) throws GuardParameterException
     {

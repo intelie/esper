@@ -12,16 +12,19 @@ import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Contains the ON-clause criteria in an outer join.
  */
-public class OuterJoinDesc implements MetaDefItem
+public class OuterJoinDesc implements MetaDefItem, Serializable
 {
     private OuterJoinType outerJoinType;
     private ExprIdentNode leftNode;
     private ExprIdentNode rightNode;
     private ExprIdentNode[] addLeftNode;
     private ExprIdentNode[] addRightNode;
+    private static final long serialVersionUID = -2616847070429124382L;
 
     /**
      * Ctor.

@@ -4,16 +4,18 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 
 import java.util.Comparator;
 import java.text.Collator;
+import java.io.Serializable;
 
 /**
  * A comparator on multikeys with string values and using the Collator for comparing.
  * The multikeys must contain the same number of values.
  */
-public final class MultiKeyCollatingComparator implements Comparator<MultiKeyUntyped>, MetaDefItem
+public final class MultiKeyCollatingComparator implements Comparator<MultiKeyUntyped>, MetaDefItem, Serializable
 {
     private final boolean[] isDescendingValues;
     private final boolean[] stringTypedValue;
     private final Collator collator;
+    private static final long serialVersionUID = -1166857207888935691L;
 
     /**
      * Ctor.

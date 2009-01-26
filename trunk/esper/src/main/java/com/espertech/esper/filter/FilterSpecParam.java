@@ -11,11 +11,13 @@ package com.espertech.esper.filter;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * This class represents one filter parameter in an {@link FilterSpecCompiled} filter specification.
  * <p> Each filerting parameter has an attribute name and operator type.
  */
-public abstract class FilterSpecParam implements MetaDefItem
+public abstract class FilterSpecParam implements MetaDefItem, Serializable
 {
     /**
      * The property name of the filter parameter.
@@ -23,6 +25,7 @@ public abstract class FilterSpecParam implements MetaDefItem
     protected final String propertyName;
     
     private final FilterOperator filterOperator;
+    private static final long serialVersionUID = -677137265660114030L;
 
     FilterSpecParam(String propertyName, FilterOperator filterOperator)
     {

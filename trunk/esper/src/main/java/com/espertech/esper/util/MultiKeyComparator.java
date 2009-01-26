@@ -12,14 +12,16 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 
 import java.util.Comparator;
 import java.text.Collator;
+import java.io.Serializable;
 
 /**
  * A comparator on multikeys. The multikeys must contain the same
  * number of values.
  */
-public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, MetaDefItem
+public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, MetaDefItem, Serializable
 {
     private final boolean[] isDescendingValues;
+    private static final long serialVersionUID = -5990983090238885417L;
 
     /**
      * Ctor.

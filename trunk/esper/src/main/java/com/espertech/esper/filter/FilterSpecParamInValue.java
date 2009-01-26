@@ -11,10 +11,12 @@ package com.espertech.esper.filter;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Denotes a value for use by the in-keyword within a list of values
  */
-public interface FilterSpecParamInValue extends MetaDefItem
+public interface FilterSpecParamInValue extends MetaDefItem, Serializable
 {
     /**
      * Returns the actual value to filter for from prior matching events

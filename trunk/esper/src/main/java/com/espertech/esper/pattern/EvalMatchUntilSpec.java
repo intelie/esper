@@ -10,15 +10,18 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Specification for a range for the pattern-repeat operator.
  */
-public class EvalMatchUntilSpec implements MetaDefItem
+public class EvalMatchUntilSpec implements MetaDefItem, Serializable
 {
     private final Integer lowerBounds;
     private final Integer upperBounds;
     private final boolean hasBounds;
     private final boolean isTightlyBound;
+    private static final long serialVersionUID = -78885747872100470L;
 
     /**
      * Ctor.

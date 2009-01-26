@@ -10,6 +10,8 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Abstract base specification for a stream, consists simply of an optional stream name and a list of views
  * on to of the stream.
@@ -17,7 +19,7 @@ import com.espertech.esper.util.MetaDefItem;
  * Implementation classes for views and patterns add additional information defining the
  * stream of events.
  */
-public class StreamSpecOptions implements MetaDefItem
+public class StreamSpecOptions implements MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 0L;
 

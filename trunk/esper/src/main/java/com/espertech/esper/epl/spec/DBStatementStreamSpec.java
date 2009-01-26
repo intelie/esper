@@ -21,15 +21,17 @@ import com.espertech.esper.core.StatementContext;
 import java.util.List;
 import java.util.Set;
 import java.net.URI;
+import java.io.Serializable;
 
 /**
  * Specification object for historical data poll via database SQL statement.
  */
-public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecRaw, StreamSpecCompiled, MetaDefItem
+public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecRaw, StreamSpecCompiled, MetaDefItem, Serializable
 {
     private String databaseName;
     private String sqlWithSubsParams;
     private String metadataSQL;
+    private static final long serialVersionUID = -4034289101265714058L;
 
     /**
      * Ctor.

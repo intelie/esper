@@ -19,11 +19,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Factory for 'crontab' observers that indicate truth when a time point was reached.
  */
-public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
+public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem, Serializable
 {
     /**
      * Parameters.
@@ -39,6 +40,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
      * The schedule specification for the timer-at.
      */
     protected ScheduleSpec spec = null;
+    private static final long serialVersionUID = -4463261229142331396L;
 
     public void setObserverParameters(List<ExprNode> params, MatchedEventConvertor convertor) throws ObserverParameterException
     {

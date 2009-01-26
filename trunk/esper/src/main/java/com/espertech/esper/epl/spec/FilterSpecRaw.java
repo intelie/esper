@@ -12,6 +12,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Filter definition in an un-validated and un-resolved form.
@@ -19,11 +20,12 @@ import java.util.List;
  * Event type and expression nodes in this filter specification are not yet validated, optimized for resolved
  * against actual streams.
  */
-public class FilterSpecRaw implements MetaDefItem
+public class FilterSpecRaw implements MetaDefItem, Serializable
 {
     private String eventTypeName;
     private List<ExprNode> filterExpressions;
     private PropertyEvalSpec optionalPropertyEvalSpec;
+    private static final long serialVersionUID = 4316000245281974225L;
 
     /**
      * Ctor.

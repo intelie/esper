@@ -11,16 +11,19 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Represents a single item in a SELECT-clause, potentially unnamed
  * as no "as" tag may have been supplied in the syntax.
  * <p>
  * Compare to {@link SelectExprElementCompiledSpec} which carries a determined name.
  */
-public class SelectExprElementRawSpec implements MetaDefItem
+public class SelectExprElementRawSpec implements MetaDefItem, Serializable
 {
     private ExprNode selectExpression;
     private String optionalAsName;
+    private static final long serialVersionUID = -2943591690851195135L;
 
     /**
      * Ctor.

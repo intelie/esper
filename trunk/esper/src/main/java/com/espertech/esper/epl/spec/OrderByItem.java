@@ -11,13 +11,16 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.epl.expression.ExprNode;
 
+import java.io.Serializable;
+
 /**
  * Specification object to an element in the order-by expression.
  */
-public class OrderByItem implements MetaDefItem
+public class OrderByItem implements MetaDefItem, Serializable
 {
     private ExprNode exprNode;
     private boolean isDescending;
+    private static final long serialVersionUID = 4147598689501964350L;
 
     /**
      * Ctor.

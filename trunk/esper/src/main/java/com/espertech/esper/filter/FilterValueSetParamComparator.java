@@ -11,12 +11,13 @@ package com.espertech.esper.filter;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.util.Comparator;
+import java.io.Serializable;
 
 /**
  * Sort comparator for filter parameters that sorts filter parameters according to filter operator type, and
  * within the same filter operator sorts by event property name.
  */
-public class FilterValueSetParamComparator implements Comparator<FilterValueSetParam>, MetaDefItem
+public class FilterValueSetParamComparator implements Comparator<FilterValueSetParam>, MetaDefItem, Serializable
 {
     /**
      * Defines the sort order among filter operator types. The idea is to sort EQUAL-type operators first
@@ -45,6 +46,7 @@ public class FilterValueSetParamComparator implements Comparator<FilterValueSetP
      };
 
     private static int[] filterSortOrder;
+    private static final long serialVersionUID = -3001682034930099256L;
 
     static
     {

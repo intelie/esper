@@ -10,13 +10,16 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * For use in select clauses for specifying a selected stream: select a.* from MyEvent as a, MyOther as b
  */
-public class SelectExprElementStreamRawSpec implements MetaDefItem
+public class SelectExprElementStreamRawSpec implements MetaDefItem, Serializable
 {
     private String streamName;
     private String optionalAsName;
+    private static final long serialVersionUID = -662301837590211453L;
 
     /**
      * Ctor.
