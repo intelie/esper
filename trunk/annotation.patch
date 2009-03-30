@@ -1,0 +1,158 @@
+Index: esper/grammar/EsperEPL2Grammar.g
+===================================================================
+--- esper/grammar/EsperEPL2Grammar.g	(revision 1690)
++++ esper/grammar/EsperEPL2Grammar.g	(working copy)
+@@ -469,12 +469,14 @@
+ }
+ 
+ startPatternExpressionRule
+-	:	patternExpression
++	:	annotations?	
++		patternExpression
+ 		EOF!
+ 	;
+ 	
+ startEPLExpressionRule 
+-	:	eplExpression
++	:	annotations?	
++		eplExpression
+ 		EOF
+ 		-> ^(EPL_EXPR eplExpression) 
+ 	;
+@@ -485,6 +487,39 @@
+ 	;
+ 
+ //----------------------------------------------------------------------------
++// Annotations
++//----------------------------------------------------------------------------
++annotations
++    :   annotation+
++    ;
++
++annotation
++    :   '@' annotationName ( '(' ( elementValuePairs | elementValue )? ')' )?
++    ;
++    
++annotationName
++    : IDENT ('.' IDENT)*
++    ;
++
++elementValuePairs
++    :   elementValuePair (',' elementValuePair)*
++    ;
++
++elementValuePair
++    :   IDENT '=' elementValue
++    ;
++    
++elementValue
++    :   annotation
++    |   (elementValueArrayInitializer) -> elementValueArrayInitializer
++    |	constant
++    ;
++    
++elementValueArrayInitializer
++    :   '{' (elementValue (',' elementValue)*)? (',')? '}'
++    ;
++    
++//----------------------------------------------------------------------------
+ // EPL expression
+ //----------------------------------------------------------------------------
+ eplExpression 
+Index: esper/src/main/java/com/espertech/esper/client/annotation/EPL.java
+===================================================================
+--- esper/src/main/java/com/espertech/esper/client/annotation/EPL.java	(revision 0)
++++ esper/src/main/java/com/espertech/esper/client/annotation/EPL.java	(revision 0)
+@@ -0,0 +1,10 @@
++package com.espertech.esper.client.annotation;
++
++public @interface EPL 
++{
++    String name();
++    String description();
++    String onUpdate();
++    String onRemoveStream();
++    Tag[] tags();
++}
+Index: esper/src/main/java/com/espertech/esper/client/annotation/Tag.java
+===================================================================
+--- esper/src/main/java/com/espertech/esper/client/annotation/Tag.java	(revision 0)
++++ esper/src/main/java/com/espertech/esper/client/annotation/Tag.java	(revision 0)
+@@ -0,0 +1,8 @@
++package com.espertech.esper.client.annotation;
++
++public @interface Tag
++{
++    public String name();
++    public String type();
++    public String value();
++}
+\ No newline at end of file
+Index: esper/src/main/java/com/espertech/esper/client/annotation/EPL.java
+===================================================================
+--- esper/src/main/java/com/espertech/esper/client/annotation/EPL.java	(revision 0)
++++ esper/src/main/java/com/espertech/esper/client/annotation/EPL.java	(revision 0)
+@@ -0,0 +1,10 @@
++package com.espertech.esper.client.annotation;
++
++public @interface EPL 
++{
++    String name();
++    String description();
++    String onUpdate();
++    String onRemoveStream();
++    Tag[] tags();
++}
+Index: esper/src/main/java/com/espertech/esper/client/annotation/Tag.java
+===================================================================
+--- esper/src/main/java/com/espertech/esper/client/annotation/Tag.java	(revision 0)
++++ esper/src/main/java/com/espertech/esper/client/annotation/Tag.java	(revision 0)
+@@ -0,0 +1,8 @@
++package com.espertech.esper.client.annotation;
++
++public @interface Tag
++{
++    public String name();
++    public String type();
++    public String value();
++}
+\ No newline at end of file
+Index: esper/src/test/java/com/espertech/esper/epl/parse/TestEPLParser.java
+===================================================================
+--- esper/src/test/java/com/espertech/esper/epl/parse/TestEPLParser.java	(revision 1690)
++++ esper/src/test/java/com/espertech/esper/epl/parse/TestEPLParser.java	(working copy)
+@@ -640,6 +640,34 @@
+         assertIsValid("select * from A where exp > ANY (select a from B)");
+         assertIsValid("select * from A where 1 <= ANY (select a from B)");
+         assertIsValid("select * from A where {1,2,3} > ALL (1,2,3)");
++
++        // annotations
++        assertIsValid("@SOMEANNOTATION select * from B");
++        assertIsValid("@SomeOther(a=1, b=true, c='a', d=\"alal\") select * from B");
++        assertIsValid("@SomeOther(@inner2(a=3)) select * from B");
++        assertIsValid("@SomeOther(@inner1) select * from B");
++        assertIsValid("@SomeOther(tags=@inner1(a=4), moretags=@inner2(a=3)) select * from B");
++        assertIsValid("@SomeOther(innerdata={1, 2, 3}) select * from B");
++        assertIsValid("@SomeOther(innerdata={1, 2, 3}) select * from B");
++        String text = "@EPL(\n" +
++                "  name=\"MyStmtName\", \n" +
++                "  description=\"Selects all fields\", \n" +
++                "  onUpdate=\"some test\", \n" +
++                "  onUpdateRemove=\"some text\", \n" +
++                "  tags=@Tags" +
++                ")\n" +
++                "select * from MyField";
++        assertIsValid(text);
++        text = "@EPL(name=\"MyStmtName\"," +
++                "  tags=@Tags(" +
++                "    {@Tag(name=\"vehicleId\", type='int', value=100), " +
++                "     @Tag(name=\"vehicleId\", type='int', value=100)" +
++                "    } " +
++                "  )" +
++                ")\n" +
++                "select * from MyField";
++        System.out.println(text);
++        assertIsValid(text);
+     }
+ 
+     public void testBitWiseCases() throws Exception
