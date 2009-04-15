@@ -3,6 +3,7 @@ package com.espertech.esper.regression.epl;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportBean_B;
@@ -27,6 +28,29 @@ public class TestNamedWindowSelect extends TestCase
         listenerSelect = new SupportUpdateListener();
         listenerSelectTwo = new SupportUpdateListener();
         listenerConsumer = new SupportUpdateListener();
+    }
+
+    public void testPatternTimedSelect()
+    {
+        // test for JIRA ESPER-332
+        sendTimer(0, epService);
+
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select * from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextCreate);
+
+        String stmtTextOnSelect = "on pattern [ every timer:interval(10 sec)] select string from MyWindow having count(string) > 0";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtTextOnSelect);
+        stmt.addListener(listenerConsumer);
+
+        String stmtTextInsertOne = "insert into MyWindow select * from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsertOne);
+
+        sendTimer(11000, epService);
+        assertFalse(listenerConsumer.isInvoked());
+
+        sendSupportBean("E1", 1);        
+        sendTimer(21000, epService);
+        assertEquals("E1", listenerConsumer.assertOneGetNewAndReset().get("string"));
     }
 
     public void testInsertIntoWildcard()
@@ -524,5 +548,12 @@ public class TestNamedWindowSelect extends TestCase
         bean.setIntPrimitive(intPrimitive);
         epService.getEPRuntime().sendEvent(bean);
         return bean;
+    }
+
+    private void sendTimer(long timeInMSec, EPServiceProvider epService)
+    {
+        CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
+        EPRuntime runtime = epService.getEPRuntime();
+        runtime.sendEvent(event);
     }
 }

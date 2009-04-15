@@ -90,7 +90,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
 
         // process matches
         UniformPair<EventBean[]> pair = resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
-        newData = pair.getFirst();
+        newData = (pair != null ? pair.getFirst() : null);
 
         if (internalEventRouter != null)
         {
