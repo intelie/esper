@@ -14,6 +14,7 @@ public class EventTypeMetadata
     private final TypeClass typeClass;
     private final boolean isApplicationConfigured;
     private final ApplicationType optionalApplicationType;
+    private final boolean isPropertyAgnostic;   // Type accepts any property name (i.e. no-schema XML type)
 
     /**
      * Ctor.
@@ -23,7 +24,7 @@ public class EventTypeMetadata
      * @param applicationConfigured true if configured by the application
      * @param applicationType type of application class or null if not an application type
      */
-    protected EventTypeMetadata(String primaryName, Set<String> secondaryNames, TypeClass typeClass, boolean applicationConfigured, ApplicationType applicationType)
+    protected EventTypeMetadata(String primaryName, Set<String> secondaryNames, TypeClass typeClass, boolean applicationConfigured, ApplicationType applicationType, boolean isPropertyAgnostic)
     {
         if (typeClass.isPublic())
         {
@@ -38,6 +39,7 @@ public class EventTypeMetadata
         this.typeClass = typeClass;
         isApplicationConfigured = applicationConfigured;
         this.optionalApplicationType = applicationType;
+        this.isPropertyAgnostic = isPropertyAgnostic;
     }
 
     /**
@@ -52,7 +54,7 @@ public class EventTypeMetadata
         {
             throw new IllegalArgumentException("Type class " + typeClass + " invalid");
         }
-        return new EventTypeMetadata(name, null, typeClass, true, null);
+        return new EventTypeMetadata(name, null, typeClass, true, null, false);
     }
 
     /**
@@ -77,7 +79,7 @@ public class EventTypeMetadata
                 secondaryNames.add(clazz.getName());
             }
         }
-        return new EventTypeMetadata(name, secondaryNames, TypeClass.APPLICATION, isConfigured, ApplicationType.CLASS);
+        return new EventTypeMetadata(name, secondaryNames, TypeClass.APPLICATION, isConfigured, ApplicationType.CLASS, false);
     }
 
     /**
@@ -85,9 +87,9 @@ public class EventTypeMetadata
      * @param name type name
      * @return instance
      */
-    public static EventTypeMetadata createXMLType(String name)
+    public static EventTypeMetadata createXMLType(String name, boolean isPropertyAgnostic)
     {
-        return new EventTypeMetadata(name, null, TypeClass.APPLICATION, true, ApplicationType.XML);
+        return new EventTypeMetadata(name, null, TypeClass.APPLICATION, true, ApplicationType.XML, isPropertyAgnostic);
     }
 
     /**
@@ -97,7 +99,7 @@ public class EventTypeMetadata
      */
     public static EventTypeMetadata createAnonymous(String associationName)
     {
-        return new EventTypeMetadata(associationName, null, TypeClass.ANONYMOUS, false, null);
+        return new EventTypeMetadata(associationName, null, TypeClass.ANONYMOUS, false, null, false);
     }
 
     /**
@@ -107,7 +109,7 @@ public class EventTypeMetadata
      * @param insertInto true for insert-into
      * @return instance
      */
-    public static EventTypeMetadata createWrapper(String eventTypeName, boolean namedWindow, boolean insertInto)
+    public static EventTypeMetadata createWrapper(String eventTypeName, boolean namedWindow, boolean insertInto, boolean isPropertyAgnostic)
     {
         TypeClass typeClass;
         if (namedWindow)
@@ -122,7 +124,7 @@ public class EventTypeMetadata
         {
             throw new IllegalStateException("Unknown Wrapper type, cannot create metadata");
         }
-        return new EventTypeMetadata(eventTypeName, null, typeClass, false, null);
+        return new EventTypeMetadata(eventTypeName, null, typeClass, false, null, isPropertyAgnostic);
     }
 
     /**

@@ -59,11 +59,11 @@ public class ExprVariableNode extends ExprNode
         try
         {
             streamTypeService.resolveByPropertyName(variableName);
-            throw new ExprValidationException("The variable by name '" + variableName + " is ambigous to a property of the same name");
+            throw new ExprValidationException("The variable by name '" + variableName + "' is ambigous to a property of the same name");
         }
         catch (DuplicatePropertyException e)
         {
-            throw new ExprValidationException("The variable by name '" + variableName + " is ambigous to a property of the same name");
+            throw new ExprValidationException("The variable by name '" + variableName + "' is ambigous to a property of the same name");
         }
         catch (PropertyNotFoundException e)
         {
