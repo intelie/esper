@@ -38,6 +38,9 @@ public class TestNamedWindowSelect extends TestCase
         String stmtTextCreate = "create window MyWindow.win:keepall() as select * from " + SupportBean.class.getName();
         epService.getEPAdministrator().createEPL(stmtTextCreate);
 
+        String stmtCount = "on pattern[every timer:interval(10 sec)] select count(eve), eve from MyWindow as eve";
+        epService.getEPAdministrator().createEPL(stmtCount);
+
         String stmtTextOnSelect = "on pattern [ every timer:interval(10 sec)] select string from MyWindow having count(string) > 0";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtTextOnSelect);
         stmt.addListener(listenerConsumer);
@@ -48,8 +51,11 @@ public class TestNamedWindowSelect extends TestCase
         sendTimer(11000, epService);
         assertFalse(listenerConsumer.isInvoked());
 
-        sendSupportBean("E1", 1);        
         sendTimer(21000, epService);
+        assertFalse(listenerConsumer.isInvoked());
+
+        sendSupportBean("E1", 1);
+        sendTimer(31000, epService);
         assertEquals("E1", listenerConsumer.assertOneGetNewAndReset().get("string"));
     }
 
