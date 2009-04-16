@@ -119,57 +119,73 @@ public final class IndexTreeBuilder
         if (remainingParameters.isEmpty())
         {
             currentNode.getNodeRWLock().writeLock().lock();
-            currentNode.add(filterCallback);
-            currentNode.getNodeRWLock().writeLock().unlock();
+            try
+            {
+                currentNode.add(filterCallback);
+            }            
+            finally
+            {
+                currentNode.getNodeRWLock().writeLock().unlock();
+            }
             return;
         }
 
         // Need to find an existing index that matches one of the filter parameters
         currentNode.getNodeRWLock().readLock().lock();
-        Pair<FilterValueSetParam, FilterParamIndexBase> pair = IndexHelper.findIndex(remainingParameters, currentNode.getIndizes());
-
-        // Found an index matching a filter parameter
-        if (pair != null)
+        Pair<FilterValueSetParam, FilterParamIndexBase> pair;
+        try
         {
-            remainingParameters.remove(pair.getFirst());
-            Object filterForValue = pair.getFirst().getFilterForValue();
-            FilterParamIndexBase index = pair.getSecond();
-            treePathInfo.add(index, filterForValue);
-            addToIndex(index, filterForValue, treePathInfo);
-            currentNode.getNodeRWLock().readLock().unlock();
-            return;
+            pair = IndexHelper.findIndex(remainingParameters, currentNode.getIndizes());
+
+            // Found an index matching a filter parameter
+            if (pair != null)
+            {
+                remainingParameters.remove(pair.getFirst());
+                Object filterForValue = pair.getFirst().getFilterForValue();
+                FilterParamIndexBase index = pair.getSecond();
+                treePathInfo.add(index, filterForValue);
+                addToIndex(index, filterForValue, treePathInfo);
+                return;
+            }
         }
-        currentNode.getNodeRWLock().readLock().unlock();
+        finally
+        {
+            currentNode.getNodeRWLock().readLock().unlock();
+        }
 
         // An index for any of the filter parameters was not found, create one
         currentNode.getNodeRWLock().writeLock().lock();
-        pair = IndexHelper.findIndex(remainingParameters, currentNode.getIndizes());
-
-        // Attempt to find an index again this time under a write lock
-        if (pair != null)
+        try
         {
-            remainingParameters.remove(pair.getFirst());
-            Object filterForValue = pair.getFirst().getFilterForValue();
-            FilterParamIndexBase index = pair.getSecond();
-            treePathInfo.add(index, filterForValue);
-            addToIndex(index, filterForValue, treePathInfo);
-            currentNode.getNodeRWLock().writeLock().unlock();
-            return;
+            pair = IndexHelper.findIndex(remainingParameters, currentNode.getIndizes());
+
+            // Attempt to find an index again this time under a write lock
+            if (pair != null)
+            {
+                remainingParameters.remove(pair.getFirst());
+                Object filterForValue = pair.getFirst().getFilterForValue();
+                FilterParamIndexBase index = pair.getSecond();
+                treePathInfo.add(index, filterForValue);
+                addToIndex(index, filterForValue, treePathInfo);
+                return;
+            }
+
+            // No index found that matches any parameters, create a new one
+            // Pick the next parameter for an index
+            FilterValueSetParam parameterPickedForIndex = remainingParameters.first();
+            remainingParameters.remove(parameterPickedForIndex);
+
+            FilterParamIndexBase index = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
+                    parameterPickedForIndex.getFilterOperator());
+
+            currentNode.getIndizes().add(index);
+            treePathInfo.add(index, parameterPickedForIndex.getFilterForValue());
+            addToIndex(index, parameterPickedForIndex.getFilterForValue(), treePathInfo);
         }
-
-        // No index found that matches any parameters, create a new one
-        // Pick the next parameter for an index
-        FilterValueSetParam parameterPickedForIndex = remainingParameters.first();
-        remainingParameters.remove(parameterPickedForIndex);
-
-        FilterParamIndexBase index = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
-                parameterPickedForIndex.getFilterOperator());
-
-        currentNode.getIndizes().add(index);
-        treePathInfo.add(index, parameterPickedForIndex.getFilterForValue());
-        addToIndex(index, parameterPickedForIndex.getFilterForValue(), treePathInfo);
-
-        currentNode.getNodeRWLock().writeLock().unlock();
+        finally
+        {
+            currentNode.getNodeRWLock().writeLock().unlock();
+        }
     }
 
     // Remove an filterCallback from the current node, return true if the node is the node is empty now
@@ -183,18 +199,23 @@ public final class IndexTreeBuilder
         {
             currentNode.getNodeRWLock().writeLock().lock();
 
-            boolean isRemoved = currentNode.remove(filterCallback);
-            boolean isEmpty = currentNode.isEmpty();
-
-            if (!isRemoved)
+            try
             {
-                log.warn(".removeFromNode (" + currentThreadId + ") Could not find the filterCallback to be removed within the supplied node , node=" +
-                        currentNode + "  filterCallback=" + filterCallback);
+                boolean isRemoved = currentNode.remove(filterCallback);
+                boolean isEmpty = currentNode.isEmpty();
+
+                if (!isRemoved)
+                {
+                    log.warn(".removeFromNode (" + currentThreadId + ") Could not find the filterCallback to be removed within the supplied node , node=" +
+                            currentNode + "  filterCallback=" + filterCallback);
+                }
+
+                return isEmpty;
             }
-
-            currentNode.getNodeRWLock().writeLock().unlock();
-
-            return isEmpty;
+            finally
+            {
+                currentNode.getNodeRWLock().writeLock().unlock();
+            }
         }
 
         // Remove from index
@@ -202,33 +223,34 @@ public final class IndexTreeBuilder
         Object filteredForValue = nextPair.getSecond();
 
         currentNode.getNodeRWLock().writeLock().lock();
-        boolean isEmpty = removeFromIndex(nextIndex, treePathInfo, filteredForValue);
-
-        if (!isEmpty)
+        try
         {
-            currentNode.getNodeRWLock().writeLock().unlock();
-            return false;
-        }
+            boolean isEmpty = removeFromIndex(nextIndex, treePathInfo, filteredForValue);
 
-        // Remove the index if the index is now empty
-        if (nextIndex.size() == 0)
-        {
-            boolean isRemoved = currentNode.remove(nextIndex);
-
-            if (!isRemoved)
+            if (!isEmpty)
             {
-                log.warn(".removeFromNode (" + currentThreadId + ") Could not find the index in index list for removal, index=" +
-                        nextIndex.toString() + "  filterCallback=" + filterCallback);
-                currentNode.getNodeRWLock().writeLock().unlock();
                 return false;
             }
+
+            // Remove the index if the index is now empty
+            if (nextIndex.size() == 0)
+            {
+                boolean isRemoved = currentNode.remove(nextIndex);
+
+                if (!isRemoved)
+                {
+                    log.warn(".removeFromNode (" + currentThreadId + ") Could not find the index in index list for removal, index=" +
+                            nextIndex.toString() + "  filterCallback=" + filterCallback);
+                    return false;
+                }
+            }
+
+            return currentNode.isEmpty();
         }
-
-        boolean isEmptyNode = currentNode.isEmpty();
-
-        currentNode.getNodeRWLock().writeLock().unlock();
-
-        return isEmptyNode;
+        finally
+        {
+            currentNode.getNodeRWLock().writeLock().unlock();
+        }
     }
 
     // Remove filterCallback from index, returning true if index empty after removal
@@ -237,21 +259,54 @@ public final class IndexTreeBuilder
                                     Object filterForValue)
     {
         index.getReadWriteLock().writeLock().lock();
-
-        EventEvaluator eventEvaluator = index.get(filterForValue);
-
-        if (eventEvaluator == null)
+        try
         {
-            log.warn(".removeFromIndex (" + currentThreadId + ") Could not find the filterCallback value in index, index=" +
-                    index.toString() + "  value=" + filterForValue.toString() + "  filterCallback=" + filterCallback);
-            index.getReadWriteLock().writeLock().unlock();
-            return false;
-        }
+            EventEvaluator eventEvaluator = index.get(filterForValue);
 
-        if (eventEvaluator instanceof FilterHandleSetNode)
-        {
-            FilterHandleSetNode node = (FilterHandleSetNode) eventEvaluator;
-            boolean isEmpty = removeFromNode(node, treePathInfo);
+            if (eventEvaluator == null)
+            {
+                log.warn(".removeFromIndex (" + currentThreadId + ") Could not find the filterCallback value in index, index=" +
+                        index.toString() + "  value=" + filterForValue.toString() + "  filterCallback=" + filterCallback);
+                return false;
+            }
+
+            if (eventEvaluator instanceof FilterHandleSetNode)
+            {
+                FilterHandleSetNode node = (FilterHandleSetNode) eventEvaluator;
+                boolean isEmpty = removeFromNode(node, treePathInfo);
+
+                if (isEmpty)
+                {
+                    // Since we are holding a write lock to this index, there should not be a chance that
+                    // another thread had been adding anything to this FilterHandleSetNode
+                    index.remove(filterForValue);
+                }
+                int size = index.size();
+
+                return (size == 0);
+            }
+
+            FilterParamIndexBase nextIndex = (FilterParamIndexBase) eventEvaluator;
+            Pair<FilterParamIndexBase, Object> nextPair = treePathInfo.removeFirst();
+
+            if (nextPair == null)
+            {
+                log.fatal(".removeFromIndex Expected an inner index to this index, this=" + this.toString());
+                assert false;
+                return false;
+            }
+
+            if (nextPair.getFirst() != nextIndex)
+            {
+                log.fatal(".removeFromIndex Expected an index for filterCallback that differs from the found index, this=" + this.toString() +
+                        "  expected=" + nextPair.getFirst());
+                assert false;
+                return false;
+            }
+
+            Object nextExpressionValue = nextPair.getSecond();
+
+            boolean isEmpty = removeFromIndex(nextPair.getFirst(), treePathInfo, nextExpressionValue);
 
             if (isEmpty)
             {
@@ -260,45 +315,13 @@ public final class IndexTreeBuilder
                 index.remove(filterForValue);
             }
             int size = index.size();
-            index.getReadWriteLock().writeLock().unlock();
 
             return (size == 0);
         }
-
-        FilterParamIndexBase nextIndex = (FilterParamIndexBase) eventEvaluator;
-        Pair<FilterParamIndexBase, Object> nextPair = treePathInfo.removeFirst();
-
-        if (nextPair == null)
+        finally
         {
-            log.fatal(".removeFromIndex Expected an inner index to this index, this=" + this.toString());
             index.getReadWriteLock().writeLock().unlock();
-            assert false;
-            return false;
         }
-
-        if (nextPair.getFirst() != nextIndex)
-        {
-            log.fatal(".removeFromIndex Expected an index for filterCallback that differs from the found index, this=" + this.toString() +
-                    "  expected=" + nextPair.getFirst());
-            index.getReadWriteLock().writeLock().unlock();
-            assert false;
-            return false;
-        }
-
-        Object nextExpressionValue = nextPair.getSecond();
-
-        boolean isEmpty = removeFromIndex(nextPair.getFirst(), treePathInfo, nextExpressionValue);
-
-        if (isEmpty)
-        {
-            // Since we are holding a write lock to this index, there should not be a chance that
-            // another thread had been adding anything to this FilterHandleSetNode
-            index.remove(filterForValue);
-        }
-        int size = index.size();
-        index.getReadWriteLock().writeLock().unlock();
-
-        return (size == 0);
     }
 
      /**
@@ -319,69 +342,76 @@ public final class IndexTreeBuilder
         }
 
         index.getReadWriteLock().readLock().lock();
-        EventEvaluator eventEvaluator = index.get(filterForValue);
-
-        // The filter parameter value already existed in bean, add and release locks
-        if (eventEvaluator != null)
+        EventEvaluator eventEvaluator;
+        try
         {
-            boolean added = addToEvaluator(eventEvaluator, treePathInfo);
-            if (added)
+            eventEvaluator = index.get(filterForValue);
+
+            // The filter parameter value already existed in bean, add and release locks
+            if (eventEvaluator != null)
             {
-                index.getReadWriteLock().readLock().unlock();
-                return;
+                boolean added = addToEvaluator(eventEvaluator, treePathInfo);
+                if (added)
+                {
+                    return;
+                }
             }
         }
-        index.getReadWriteLock().readLock().unlock();
+        finally
+        {
+            index.getReadWriteLock().readLock().unlock();
+        }
 
         // new filter parameter value, need a write lock
         index.getReadWriteLock().writeLock().lock();
-
-        eventEvaluator = index.get(filterForValue);
-
-        // It may exist now since another thread could have added the entry
-        if (eventEvaluator != null)
+        try
         {
-            boolean added = addToEvaluator(eventEvaluator, treePathInfo);
-            if (added)
+            eventEvaluator = index.get(filterForValue);
+
+            // It may exist now since another thread could have added the entry
+            if (eventEvaluator != null)
             {
-                index.getReadWriteLock().writeLock().unlock();
+                boolean added = addToEvaluator(eventEvaluator, treePathInfo);
+                if (added)
+                {
+                    return;
+                }
+
+                // The found eventEvaluator must be converted to a new FilterHandleSetNode
+                FilterParamIndexBase nextIndex = (FilterParamIndexBase) eventEvaluator;
+                FilterHandleSetNode newNode = new FilterHandleSetNode();
+                newNode.add(nextIndex);
+                index.put(filterForValue, newNode);
+                addToNode(newNode, treePathInfo);
+
                 return;
             }
 
-            // The found eventEvaluator must be converted to a new FilterHandleSetNode
-            FilterParamIndexBase nextIndex = (FilterParamIndexBase) eventEvaluator;
-            FilterHandleSetNode newNode = new FilterHandleSetNode();
-            newNode.add(nextIndex);
-            index.put(filterForValue, newNode);
-            addToNode(newNode, treePathInfo);
+            // The index does not currently have this filterCallback value,
+            // if there are no remaining parameters, create a node
+            if (remainingParameters.isEmpty())
+            {
+                FilterHandleSetNode node = new FilterHandleSetNode();
+                addToNode(node, treePathInfo);
+                index.put(filterForValue, node);
+                return;
+            }
 
-            index.getReadWriteLock().writeLock().unlock();
-            return;
+            // If there are remaining parameters, create a new index for the next parameter
+            FilterValueSetParam parameterPickedForIndex = remainingParameters.first();
+            remainingParameters.remove(parameterPickedForIndex);
+
+            FilterParamIndexBase nextIndex = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
+                    parameterPickedForIndex.getFilterOperator());
+
+            index.put(filterForValue, nextIndex);
+            treePathInfo.add(nextIndex, parameterPickedForIndex.getFilterForValue());
+            addToIndex(nextIndex, parameterPickedForIndex.getFilterForValue(), treePathInfo);
         }
-
-        // The index does not currently have this filterCallback value,
-        // if there are no remaining parameters, create a node
-        if (remainingParameters.isEmpty())
+        finally
         {
-            FilterHandleSetNode node = new FilterHandleSetNode();
-            addToNode(node, treePathInfo);
-            index.put(filterForValue, node);
             index.getReadWriteLock().writeLock().unlock();
-            return;
         }
-
-        // If there are remaining parameters, create a new index for the next parameter
-        FilterValueSetParam parameterPickedForIndex = remainingParameters.first();
-        remainingParameters.remove(parameterPickedForIndex);
-
-        FilterParamIndexBase nextIndex = IndexFactory.createIndex(eventType, parameterPickedForIndex.getPropertyName(),
-                parameterPickedForIndex.getFilterOperator());
-
-        index.put(filterForValue, nextIndex);
-        treePathInfo.add(nextIndex, parameterPickedForIndex.getFilterForValue());
-        addToIndex(nextIndex, parameterPickedForIndex.getFilterForValue(), treePathInfo);
-
-        index.getReadWriteLock().writeLock().unlock();
     }
 
     /**
