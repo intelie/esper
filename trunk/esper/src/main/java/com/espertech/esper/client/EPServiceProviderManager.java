@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Factory for instances of {@link EPServiceProvider}.
@@ -81,6 +80,7 @@ public final class EPServiceProviderManager
         // New runtime
         EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, providerURI);
         runtimes.put(providerURI, runtime);
+        runtime.postInitialize();
 
         return runtime;
     }

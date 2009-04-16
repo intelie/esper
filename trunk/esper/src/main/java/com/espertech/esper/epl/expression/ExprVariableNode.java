@@ -12,7 +12,9 @@ import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.event.EventTypeSPI;
 
 /**
  * Represents a variable in an expression tree.
@@ -55,19 +57,33 @@ public class ExprVariableNode extends ExprNode
             throw new ExprValidationException("A variable by name '" + variableName + " has not been declared");
         }
 
-        // the variable name should not overlap with a property name
-        try
+        // determine if any types are property agnostic; If yes, resolve to variable
+        boolean hasPropertyAgnosticType = false;
+        EventType[] types = streamTypeService.getEventTypes();
+        for (int i = 0; i < streamTypeService.getEventTypes().length; i++)
         {
-            streamTypeService.resolveByPropertyName(variableName);
-            throw new ExprValidationException("The variable by name '" + variableName + "' is ambigous to a property of the same name");
+            if (types[i] instanceof EventTypeSPI)
+            {
+                hasPropertyAgnosticType |= ((EventTypeSPI) types[i]).getMetadata().isPropertyAgnostic();
+            }
         }
-        catch (DuplicatePropertyException e)
+
+        if (!hasPropertyAgnosticType)
         {
-            throw new ExprValidationException("The variable by name '" + variableName + "' is ambigous to a property of the same name");
-        }
-        catch (PropertyNotFoundException e)
-        {
-            // expected
+            // the variable name should not overlap with a property name
+            try
+            {
+                streamTypeService.resolveByPropertyName(variableName);
+                throw new ExprValidationException("The variable by name '" + variableName + "' is ambigous to a property of the same name");
+            }
+            catch (DuplicatePropertyException e)
+            {
+                throw new ExprValidationException("The variable by name '" + variableName + "' is ambigous to a property of the same name");
+            }
+            catch (PropertyNotFoundException e)
+            {
+                // expected
+            }
         }
 
         variableType = reader.getType();

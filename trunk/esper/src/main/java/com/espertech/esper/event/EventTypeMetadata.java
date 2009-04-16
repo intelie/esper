@@ -156,7 +156,7 @@ public class EventTypeMetadata
         {
             typeClass = TypeClass.ANONYMOUS;
         }
-        return new EventTypeMetadata(name, null, typeClass, configured, applicationType);
+        return new EventTypeMetadata(name, null, typeClass, configured, applicationType, false);
     }
 
     /**
@@ -211,6 +211,11 @@ public class EventTypeMetadata
     public String getPublicName()
     {
         return publicName;
+    }
+
+    public boolean isPropertyAgnostic()
+    {
+        return isPropertyAgnostic;
     }
 
     /**

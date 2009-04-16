@@ -30,6 +30,11 @@ public class OpentickPluginLoader implements PluginLoader
 
     private OpentickInputAdapter adapter;
 
+    public void postInitialize()
+    {
+        // no action required
+    }
+
     public void destroy()
     {
         log.info("Destroying adapter");

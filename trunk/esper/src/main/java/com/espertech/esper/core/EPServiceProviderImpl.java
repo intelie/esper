@@ -29,6 +29,7 @@ import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.Hashtable;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.logging.Log;
@@ -63,7 +64,39 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         configSnapshot = takeSnapshot(configuration);
         serviceListeners = new CopyOnWriteArraySet<EPServiceStateListener>();
         statementListeners = new CopyOnWriteArraySet<EPStatementStateListener>();
-        initialize();
+        doInitialize();
+    }
+
+    public void postInitialize()
+    {
+        try
+        {
+            Hashtable table = engine.getServices().getEngineEnvContext().getEnvironment();
+
+            for (Object key : table.keySet())
+            {
+                if (key.toString().startsWith("plugin-loader/"))
+                {
+                    Object value = table.get(key);
+                    if (value instanceof PluginLoader)
+                    {
+                        try
+                        {
+                            ((PluginLoader) value).postInitialize();
+                        }
+                        catch (Throwable t)
+                        {
+                            log.error("Error post-initializing plugin class " + value.getClass().getSimpleName(), t);
+                        }
+                    }
+                }
+            }
+        }
+        catch (NamingException e)
+        {
+            throw new EPException("Failed to use context to bind adapter loader", e);
+        }
+
     }
 
     /**
@@ -148,6 +181,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return engine.getServices().getStatementEventTypeRefService();
     }
 
+    public EngineEnvContext getEngineEnvContext()
+    {
+        return engine.getServices().getEngineEnvContext();
+    }
+
     public Context getContext()
     {
         return engine.getServices().getEngineEnvContext();
@@ -180,9 +218,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
                 Thread.currentThread().interrupt();
             }
 
-            engine.getRuntime().destroy();
             // plugin-loaders
-            List<ConfigurationPluginLoader> pluginLoaders = configSnapshot.getPluginLoaders();
+            List<ConfigurationPluginLoader> pluginLoaders = engine.getServices().getConfigSnapshot().getPluginLoaders();
             for (ConfigurationPluginLoader config : pluginLoaders) {
                 PluginLoader plugin = null;
                 try {
@@ -193,6 +230,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
                     // expected
                 }
             }
+            
+            engine.getRuntime().destroy();
             engine.getAdmin().destroy();
             engine.getServices().destroy();
 
@@ -208,6 +247,12 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     }
 
     public void initialize()
+    {
+        doInitialize();
+        postInitialize();
+    }
+
+    protected void doInitialize()
     {
         // This setting applies to all engines in a given VM
         ExecutionPathDebugLog.setDebugEnabled(configSnapshot.getEngineDefaults().getLogging().isEnableExecutionDebug());

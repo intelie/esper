@@ -59,6 +59,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
             groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
             aggregatorsPerGroup.put(groupByKey, groupAggregators);
         }
+        currentAggregatorRow = groupAggregators;
 
         // For this row, evaluate sub-expressions, enter result
         for (int j = 0; j < evaluators.length; j++)
@@ -78,6 +79,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
             groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
             aggregatorsPerGroup.put(groupByKey, groupAggregators);
         }
+        currentAggregatorRow = groupAggregators;
 
         // For this row, evaluate sub-expressions, enter result
         for (int j = 0; j < evaluators.length; j++)

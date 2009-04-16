@@ -15,11 +15,15 @@ import com.espertech.esper.dispatch.Dispatchable;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Dispatchable for dispatching events to update listeners.
  */
 public class PatternListenerDispatch implements Dispatchable
 {
+    private static Log log = LogFactory.getLog(PatternListenerDispatch.class);
     private final Set<UpdateListener> listeners;
 
     private EventBean singleEvent;
@@ -57,7 +61,7 @@ public class PatternListenerDispatch implements Dispatchable
 
     public void execute()
     {
-        EventBean[] eventArray = null;
+        EventBean[] eventArray;
 
         if (eventList != null)
         {
@@ -73,7 +77,16 @@ public class PatternListenerDispatch implements Dispatchable
 
         for (UpdateListener listener : listeners)
         {
-            listener.update(eventArray, null);
+            try
+            {
+                listener.update(eventArray, null);
+            }
+            catch (Throwable t)
+            {
+                String message = "Unexpected exception invoking listener update method on listener class '" + listener.getClass().getSimpleName() +
+                        "' : " + t.getClass().getSimpleName() + " : " + t.getMessage();
+                log.error(message, t);
+            }
         }
     }
 

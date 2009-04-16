@@ -96,6 +96,11 @@ public class SpringContextLoader implements PluginLoader
         }
     }
 
+    public void postInitialize()
+    {
+        // no action required
+    }
+
     private AbstractXmlApplicationContext createSpringApplicationContext(String configuration, boolean fromClassPath) throws BeansException
     {
         if (fromClassPath)

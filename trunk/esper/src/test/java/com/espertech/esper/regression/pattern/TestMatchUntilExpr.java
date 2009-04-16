@@ -235,6 +235,21 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         testCase.add("B1", "a[0]", events.getEvent("A1"), "b[0]", events.getEvent("B1"), "b[1]", null);
         testCaseList.addTest(testCase);
 
+        testCase = new EventExpressionCase("every [2] a=A");
+        testCase.add("A2", new Object[][] {
+                {"a[0]", events.getEvent("A1")},
+                {"a[1]", events.getEvent("A2")},
+                });
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("every [2] a=A until d=D");  // every has precedence; ESPER-339
+        testCase.add("D1", new Object[][] {
+                {"a[0]", events.getEvent("A1")},
+                {"a[1]", events.getEvent("A2")},
+                {"d", events.getEvent("D1")},
+                });
+        testCaseList.addTest(testCase);
+
         testCase = new EventExpressionCase("[3] (a=A or b=B)");
         testCase.add("B2", "a[0]", events.getEvent("A1"), "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"));
         testCaseList.addTest(testCase);

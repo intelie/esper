@@ -6,6 +6,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportBeanString;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -60,6 +61,33 @@ public class TestGroupByCount extends TestCase
         selectTestView.addListener(testListener);
 
         runAssertion();
+    }
+
+    public void testGroupByCountNestedAggregationAvg() throws Exception
+    {
+        // test for ESPER-328
+        String viewExpr = "select symbol, count(*) as cnt, avg(count(*)) as val from " + SupportMarketDataBean.class.getName() + ".win:length(3)" +
+                          "group by symbol order by symbol asc";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(viewExpr);
+        stmt.addListener(testListener);
+
+        sendEvent(SYMBOL_DELL, 50L);
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), "symbol,cnt,val".split(","), new Object[] {"DELL", 1L, 1d});
+
+        sendEvent(SYMBOL_DELL, 51L);
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), "symbol,cnt,val".split(","), new Object[] {"DELL", 2L, 1.5d});
+
+        sendEvent(SYMBOL_DELL, 52L);
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), "symbol,cnt,val".split(","), new Object[] {"DELL", 3L, 2d});
+
+        sendEvent("IBM", 52L);
+        EventBean[] events = testListener.getLastNewData();
+        ArrayAssertionUtil.assertProps(events[0], "symbol,cnt,val".split(","), new Object[] {"DELL", 2L, 2d});
+        ArrayAssertionUtil.assertProps(events[1], "symbol,cnt,val".split(","), new Object[] {"IBM", 1L, 1d});
+        testListener.reset();
+
+        sendEvent(SYMBOL_DELL, 53L);
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), "symbol,cnt,val".split(","), new Object[] {"DELL", 2L, 2.5d});
     }
 
     public void testCountOneViewCompile() throws Exception

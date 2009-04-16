@@ -38,6 +38,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     public void testVariableResolution() throws Exception
     {
+        // test for ESPER-341 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addVariable("var", int.class, 0);
 
@@ -50,7 +51,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         updateListener = new SupportUpdateListener();
 
         String stmtText = "select var from TestXMLNoSchemaType.win:length(100)";
-        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        epService.getEPAdministrator().createEPL(stmtText);
     }
 
     public void testSimpleXMLXPathProperties() throws Exception
@@ -473,6 +474,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     private static final Log log = LogFactory.getLog(TestNoSchemaXMLEvent.class);
 }
+
 
 
 

@@ -22,6 +22,11 @@ public class XSDSchemaMapper
 {
     private static final Log log = LogFactory.getLog(XSDSchemaMapper.class);
 
+    private static final int JAVA5_COMPLEX_TYPE = 13;
+    private static final int JAVA5_SIMPLE_TYPE = 14;
+    private static final int JAVA6_COMPLEX_TYPE = 15;
+    private static final int JAVA6_SIMPLE_TYPE = 16;
+
     /**
      * Loading and mapping of the schema to the internal representation.
      * @param schemaResource schema to load and map.
@@ -93,7 +98,7 @@ public class XSDSchemaMapper
             }
 
             XSElementDeclaration decl = (XSElementDeclaration) elements.item(i);
-            if (decl.getTypeDefinition().getTypeCategory() != XSTypeDefinition.COMPLEX_TYPE)
+            if (isComplexTypeCategory(decl.getTypeDefinition().getTypeCategory()))
             {
                 continue;
             }            
@@ -120,6 +125,16 @@ public class XSDSchemaMapper
         }
 
         return new SchemaModel(components, namesspaceList);
+    }
+
+    private static boolean isComplexTypeCategory(short typeCategory)
+    {
+        return (typeCategory == XSTypeDefinition.COMPLEX_TYPE) || (typeCategory == JAVA5_COMPLEX_TYPE) || (typeCategory == JAVA6_COMPLEX_TYPE);
+    }
+
+    private static boolean isSimpleTypeCategory(short typeCategory)
+    {
+        return (typeCategory == XSTypeDefinition.SIMPLE_TYPE) || (typeCategory == JAVA5_SIMPLE_TYPE) || (typeCategory == JAVA6_SIMPLE_TYPE);
     }
 
     private static SchemaElementComplex process(String complexElementName, String complexElementNamespace, XSComplexTypeDefinition complexActualElement, boolean isArray, Stack<NamespaceNamePair> nameNamespaceStack, int maxRecursiveDepth)
@@ -172,12 +187,12 @@ public class XSDSchemaMapper
                         XSElementDeclaration decl = (XSElementDeclaration) childParticle.getTerm();
                         boolean isArrayFlag = isArray(childParticle);
 
-                        if (decl.getTypeDefinition().getTypeCategory() == XSTypeDefinition.SIMPLE_TYPE) {
+                        if (isSimpleTypeCategory(decl.getTypeDefinition().getTypeCategory())) {
                             XSSimpleTypeDecl simpleType = (XSSimpleTypeDecl) decl.getTypeDefinition();
                             simpleElements.add(new SchemaElementSimple(decl.getName(), decl.getNamespace(), simpleType.getPrimitiveKind(), simpleType.getName(), isArrayFlag));
                         }
 
-                        if (decl.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE)
+                        if (isComplexTypeCategory(decl.getTypeDefinition().getTypeCategory()))
                         {
                             String name = decl.getName();
                             String namespace = decl.getNamespace();

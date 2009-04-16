@@ -62,6 +62,11 @@ public class TestExprOrNode extends TestCase
         orNode.addChildNode(new SupportBoolExprNode(false));
         orNode.addChildNode(new SupportBoolExprNode(false));
         assertFalse( (Boolean) orNode.evaluate(null, false));
+
+        orNode = new ExprOrNode();
+        orNode.addChildNode(new SupportExprNode(null, Boolean.class));
+        orNode.addChildNode(new SupportExprNode(false));
+        assertNull(orNode.evaluate(null, false));
     }
 
     public void testToExpressionString() throws Exception

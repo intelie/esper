@@ -216,13 +216,31 @@ public class StatementResultServiceImpl implements StatementResultService
 
         for (UpdateListener listener : statementListenerSet.listeners)
         {
-            listener.update(newEventArr, oldEventArr);
+            try
+            {
+                listener.update(newEventArr, oldEventArr);
+            }
+            catch (Throwable t)
+            {
+                String message = "Unexpected exception invoking listener update method on listener class '" + listener.getClass().getSimpleName() +
+                        "' : " + t.getClass().getSimpleName() + " : " + t.getMessage();
+                log.error(message, t);
+            }
         }
         if (!(statementListenerSet.stmtAwareListeners.isEmpty()))
         {
             for (StatementAwareUpdateListener listener : statementListenerSet.getStmtAwareListeners())
             {
-                listener.update(newEventArr, oldEventArr, epStatement, epServiceProvider);
+                try
+                {
+                    listener.update(newEventArr, oldEventArr, epStatement, epServiceProvider);
+                }
+                catch (Throwable t)
+                {
+                    String message = "Unexpected exception invoking listener update method on listener class '" + listener.getClass().getSimpleName() +
+                            "' : " + t.getClass().getSimpleName() + " : " + t.getMessage();
+                    log.error(message, t);
+                }
             }
         }
     }

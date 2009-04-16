@@ -6,11 +6,22 @@ import com.espertech.esper.core.EPServiceProviderSPI;
 import java.util.Properties;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Date;
 
 public class SupportPluginLoader implements PluginLoader
 {
     private static List<String> names = new LinkedList<String>();
     private static List<Properties> props = new LinkedList<Properties>();
+    private static List<Date> postInitializes = new LinkedList<Date>();
+    private static List<Date> destroys = new LinkedList<Date>();
+
+    public static void reset()
+    {
+        names.clear();
+        props.clear();
+        postInitializes.clear();
+        destroys.clear();        
+    }
 
     public static List<Properties> getProps()
     {
@@ -22,9 +33,24 @@ public class SupportPluginLoader implements PluginLoader
         return names;
     }
 
+    public static List<Date> getPostInitializes()
+    {
+        return postInitializes;
+    }
+
+    public static List<Date> getDestroys()
+    {
+        return destroys;
+    }
+
+    public void postInitialize()
+    {
+        postInitializes.add(new Date());
+    }
+
     public void destroy()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        destroys.add(new Date());
     }
 
     public void init(String name, Properties properties, EPServiceProviderSPI epService)

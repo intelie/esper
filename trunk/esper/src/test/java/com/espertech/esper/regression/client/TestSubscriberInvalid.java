@@ -33,20 +33,32 @@ public class TestSubscriberInvalid extends TestCase
 
     public void testInvocationTargetEx()
     {
-        // smoke test, need to consider log file
+        // smoke test, need to consider log file; test for ESPER-331 
         EPStatement stmt = epAdmin.createEPL("select * from SupportMarketDataBean");
         stmt.setSubscriber(new DummySubscriberException());
+        stmt.addListener(new UpdateListener() {
+            public void update(EventBean[] newEvents, EventBean[] oldEvents)
+            {
+                throw new RuntimeException("test exception 1");
+            }
+        });
+        stmt.addListener(new StatementAwareUpdateListener()
+        {
+            public void update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider epServiceProvider)
+            {
+                throw new RuntimeException("test exception 2");
+            }
+        });
+        stmt.addListenerWithReplay(new UpdateListener()
+        {
+            public void update(EventBean[] newEvents, EventBean[] oldEvents)
+            {
+                throw new RuntimeException("test exception 3");
+            }
+        });
 
-        try
-        {
-            epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 0, 0L, ""));
-            fail();
-        }
-        catch (EPException ex)
-        {
-            // expected
-            assertEquals(EPException.class.getName() + ": Invocation exception when invoking method 'update' on subscriber class 'DummySubscriberException' for parameters [SupportMarketDataBean symbol=IBM price=0.0 volume=0 feed=] : RuntimeException : DummySubscriberException-generated", ex.getMessage().trim());
-        }
+        // no exception expected
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 0, 0L, ""));
     }
 
     private void tryInvalid(Object subscriber, EPStatement stmt, String message)

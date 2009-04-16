@@ -19,12 +19,18 @@ import com.espertech.esper.view.Viewable;
 
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Statement implementation for EPL statements.
  */
 public class EPStatementImpl implements EPStatementSPI
 {
+    private static Log log = LogFactory.getLog(EPStatementImpl.class);
+
     private final EPStatementListenerSet statementListenerSet;
     private final String statementId;
     private final String statementName;
@@ -300,7 +306,16 @@ public class EPStatementImpl implements EPStatementSPI
             Iterator<EventBean> it = iterator();
             if (it == null)
             {
-                listener.update(null, null);
+                try
+                {
+                    listener.update(null, null);
+                }
+                catch (Throwable t)
+                {
+                    String message = "Unexpected exception invoking listener update method for replay on listener class '" + listener.getClass().getSimpleName() +
+                            "' : " + t.getClass().getSimpleName() + " : " + t.getMessage();
+                    log.error(message, t);
+                }
                 return;
             }
 
@@ -312,12 +327,30 @@ public class EPStatementImpl implements EPStatementSPI
 
             if (events.isEmpty())
             {
-                listener.update(null, null);
+                try
+                {
+                    listener.update(null, null);
+                }
+                catch (Throwable t)
+                {
+                    String message = "Unexpected exception invoking listener update method for replay on listener class '" + listener.getClass().getSimpleName() +
+                            "' : " + t.getClass().getSimpleName() + " : " + t.getMessage();
+                    log.error(message, t);
+                }
             }
             else
             {
                 EventBean[] iteratorResult = events.toArray(new EventBean[events.size()]);
-                listener.update(iteratorResult, null);
+                try
+                {
+                    listener.update(iteratorResult, null);
+                }
+                catch (Throwable t)
+                {
+                    String message = "Unexpected exception invoking listener update method for replay on listener class '" + listener.getClass().getSimpleName() +
+                            "' : " + t.getClass().getSimpleName() + " : " + t.getMessage();
+                    log.error(message, t);
+                }
             }
         }
         finally

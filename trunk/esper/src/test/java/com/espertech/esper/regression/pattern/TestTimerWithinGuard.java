@@ -287,6 +287,27 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         assertFalse(testListener.isInvoked());
     }
 
+    public void testMemLeak() throws Throwable {
+        // TODO - remove me
+        Configuration cf = new Configuration();
+        cf.addEventType(Ev.class);
+        EPServiceProvider ep = EPServiceProviderManager.getDefaultProvider(cf);
+        ep.getEPAdministrator().createPattern("every Ev(name='A') -> Ev(name='B') where timer:within(5 sec)");
+
+        while(true) {
+            long start = System.currentTimeMillis();
+            long c = 0;
+            while (System.currentTimeMillis() < start + 7000) {
+                ep.getEPRuntime().sendEvent(new Ev("A"));
+                c++;
+            }
+            System.out.println("sent in last 7 seconds: " + c);
+            //Thread.sleep(7000);
+            ep.getEPRuntime().sendEvent(new Ev("B"));
+            Thread.sleep(1000);
+        }
+    }    
+
     private void runAssertion(EPServiceProvider epService, SupportUpdateListener testListener)
     {
         sendEvent(epService);
@@ -314,5 +335,16 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
     {
         SupportBean event = new SupportBean();
         epService.getEPRuntime().sendEvent(event);
+    }
+
+    public static class Ev {
+        public String name;
+        private byte[] garbage = new byte[1024*10];
+        public Ev(String name) {
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
     }
 }

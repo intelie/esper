@@ -94,6 +94,9 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
             catch (InvocationTargetException e) {
                 handle(log, e, params, subscriber, startFastMethod);
             }
+            catch (Throwable t) {
+                handleThrowable(log, t, null, subscriber, startFastMethod);
+            }
         }
 
         EventBean[] newData = null;
@@ -116,6 +119,9 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
                     catch (InvocationTargetException e) {
                         handle(log, e, params, subscriber, updateFastMethod);
                     }
+                    catch (Throwable t) {
+                        handleThrowable(log, t, params, subscriber, updateFastMethod);
+                    }
                 }
             }
         }
@@ -132,6 +138,9 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
                     catch (InvocationTargetException e) {
                         handle(log, e, params, subscriber, updateRStreamFastMethod);
                     }
+                    catch (Throwable t) {
+                        handleThrowable(log, t, params, subscriber, updateRStreamFastMethod);
+                    }
                 }
             }
         }
@@ -142,6 +151,9 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
             }
             catch (InvocationTargetException e) {
                 handle(log, e, null, subscriber, endFastMethod);
+            }
+            catch (Throwable t) {
+                handleThrowable(log, t, null, subscriber, endFastMethod);
             }
         }
     }
@@ -155,13 +167,29 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
      * @param method the method to call
      * @throws EPException converted from the passed invocation exception
      */
-    protected static void handle(Log logger, InvocationTargetException e, Object[] params, Object subscriber, FastMethod method) throws EPException {
+    protected static void handle(Log logger, InvocationTargetException e, Object[] params, Object subscriber, FastMethod method) {
         String message = "Invocation exception when invoking method '" + method.getName() +
                 "' on subscriber class '" + subscriber.getClass().getSimpleName() +
                 "' for parameters " + ((params == null) ? "null" : Arrays.toString(params)) +
                 " : " + e.getTargetException().getClass().getSimpleName() + " : " + e.getTargetException().getMessage();
         logger.error(message, e.getTargetException());
-        throw new EPException(message, e.getTargetException());
+    }
+
+    /**
+     * Handle the exception, displaying a nice message and converting to {@link EPException}.
+     * @param logger is the logger to use for error logging
+     * @param t is the throwable
+     * @param params the method parameters
+     * @param subscriber the object to deliver to
+     * @param method the method to call
+     * @throws EPException converted from the passed invocation exception
+     */
+    protected static void handleThrowable(Log logger, Throwable t, Object[] params, Object subscriber, FastMethod method) {
+        String message = "Unexpected exception when invoking method '" + method.getName() +
+                "' on subscriber class '" + subscriber.getClass().getSimpleName() +
+                "' for parameters " + ((params == null) ? "null" : Arrays.toString(params)) +
+                " : " + t.getClass().getSimpleName() + " : " + t.getMessage();
+        logger.error(message, t);
     }
 
     private int count(EventBean[] events) {

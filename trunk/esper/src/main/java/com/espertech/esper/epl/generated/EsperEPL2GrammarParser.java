@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 EsperEPL2Grammar.g 2009-02-11 11:19:06
+// $ANTLR 3.1.1 EsperEPL2Grammar.g 2009-04-15 18:49:11
 
   package com.espertech.esper.epl.generated;
 
@@ -1314,7 +1314,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: i, patternInclusionExpression, onSetExpr, onSelectExpr, onDeleteExpr, eventFilterExpression
+            // elements: onDeleteExpr, i, eventFilterExpression, onSetExpr, onSelectExpr, patternInclusionExpression
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -1612,7 +1612,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: whereClause, onExprFrom, havingClause, orderByListExpr, selectionList, insertIntoExpr, groupByListExpr
+            // elements: groupByListExpr, whereClause, orderByListExpr, insertIntoExpr, onExprFrom, selectionList, havingClause
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1760,7 +1760,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: whereClause, onExprFrom
+            // elements: onExprFrom, whereClause
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -2418,7 +2418,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: expression, createWindowColumnList, ri, createWindowColumnList, i, ru, INSERT, i, ru, createWindowExprModelAfter, viewExpression, viewExpression, ri, createWindowExprModelAfter
+            // elements: i, i, createWindowExprModelAfter, INSERT, viewExpression, ri, expression, viewExpression, ri, createWindowColumnList, ru, ru, createWindowExprModelAfter, createWindowColumnList
             // token labels: ri, ru, i
             // rule labels: retval
             // token list labels: 
@@ -2710,7 +2710,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: n, expression, t
+            // elements: t, expression, n
             // token labels: t, n
             // rule labels: retval
             // token list labels: 
@@ -3464,7 +3464,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: insertIntoColumnList, i, s
+            // elements: s, insertIntoColumnList, i
             // token labels: s, i
             // rule labels: retval
             // token list labels: 
@@ -4093,7 +4093,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: outerJoinIdent, outerJoinIdent, outerJoinIdent, outerJoinIdent, streamExpression, streamExpression, streamExpression, streamExpression
+            // elements: streamExpression, streamExpression, streamExpression, streamExpression, outerJoinIdent, outerJoinIdent, outerJoinIdent, outerJoinIdent
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -4499,7 +4499,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: s, selectionList
+            // elements: selectionList, s
             // token labels: s
             // rule labels: retval
             // token list labels: 
@@ -5252,7 +5252,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: u, i, viewExpression, methodJoinExpression, patternInclusionExpression, databaseJoinExpression, eventFilterExpression, ri, ru
+            // elements: ru, u, i, viewExpression, eventFilterExpression, databaseJoinExpression, methodJoinExpression, patternInclusionExpression, ri
             // token labels: u, ri, ru, i
             // rule labels: retval
             // token list labels: 
@@ -5607,7 +5607,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: s2, s, i
+            // elements: s2, i, s
             // token labels: s2, s, i
             // rule labels: retval
             // token list labels: 
@@ -5763,7 +5763,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: expressionList, i, classIdentifier
+            // elements: classIdentifier, i, expressionList
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -5896,7 +5896,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: ns, nm, expressionWithTimeList
+            // elements: nm, expressionWithTimeList, ns
             // token labels: ns, nm
             // rule labels: retval
             // token list labels: 
@@ -6267,7 +6267,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: expression, d
+            // elements: d, expression
             // token labels: d
             // rule labels: retval
             // token list labels: 
@@ -6564,22 +6564,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     if ( (LA65_0==NUM_INT) ) {
                         int LA65_1 = input.LA(2);
 
-                        if ( (LA65_1==EVENTS) ) {
-                            alt65=2;
-                        }
-                        else if ( (LA65_1==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA65_1==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_1==TIMEPERIOD_MINUTE) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_1==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_1==MIN) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_1==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_1==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_1==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else if ( (LA65_1==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
@@ -6597,13 +6588,22 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA65_1==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_1==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_1==EVENTS) ) {
+                            alt65=2;
+                        }
+                        else if ( (LA65_1==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_1==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_1==TIMEPERIOD_MINUTE) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_1==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_1==MIN) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_1==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_1==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else {
@@ -6617,10 +6617,10 @@ public class EsperEPL2GrammarParser extends Parser {
                     else if ( (LA65_0==NUM_LONG) ) {
                         int LA65_2 = input.LA(2);
 
-                        if ( (LA65_2==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA65_2==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_2==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_2==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else if ( (LA65_2==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
@@ -6632,18 +6632,6 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA65_2==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_2==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_2==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_2==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_2==EVENTS) ) {
-                            alt65=2;
-                        }
                         else if ( (LA65_2==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
@@ -6653,10 +6641,22 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA65_2==MIN) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_2==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_2==EVENTS) ) {
+                            alt65=2;
+                        }
+                        else if ( (LA65_2==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_2==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_2==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_2==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_2==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_2==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else {
@@ -6670,7 +6670,25 @@ public class EsperEPL2GrammarParser extends Parser {
                     else if ( (LA65_0==NUM_FLOAT) ) {
                         int LA65_3 = input.LA(2);
 
-                        if ( (LA65_3==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA65_3==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_3==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_3==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_3==TIMEPERIOD_MINUTE) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_3==MIN) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_3==EVENTS) ) {
+                            alt65=2;
+                        }
+                        else if ( (LA65_3==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else if ( (LA65_3==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
@@ -6686,24 +6704,6 @@ public class EsperEPL2GrammarParser extends Parser {
                             alt65=1;
                         }
                         else if ( (LA65_3==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_3==EVENTS) ) {
-                            alt65=2;
-                        }
-                        else if ( (LA65_3==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_3==TIMEPERIOD_MINUTE) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_3==MIN) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_3==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_3==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else if ( (LA65_3==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
@@ -6723,20 +6723,17 @@ public class EsperEPL2GrammarParser extends Parser {
                     else if ( (LA65_0==NUM_DOUBLE) ) {
                         int LA65_4 = input.LA(2);
 
-                        if ( (LA65_4==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
+                        if ( (LA65_4==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_4==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_4==TIMEPERIOD_MINUTE) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_4==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_4==MIN) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_4==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
-                        }
-                        else if ( (LA65_4==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
-                            alt65=1;
+                        else if ( (LA65_4==EVENTS) ) {
+                            alt65=2;
                         }
                         else if ( (LA65_4==TIMEPERIOD_SECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
@@ -6747,22 +6744,25 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (LA65_4==TIMEPERIOD_SEC) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_4==EVENTS) ) {
-                            alt65=2;
-                        }
-                        else if ( (LA65_4==TIMEPERIOD_MINUTES) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_4==TIMEPERIOD_MILLISECONDS) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_4==TIMEPERIOD_MINUTE) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_4==TIMEPERIOD_MILLISECOND) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
-                        else if ( (LA65_4==MIN) && (synpred2_EsperEPL2Grammar())) {
+                        else if ( (LA65_4==TIMEPERIOD_MILLISEC) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else if ( (LA65_4==TIMEPERIOD_HOURS) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else if ( (LA65_4==TIMEPERIOD_HOUR) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_4==TIMEPERIOD_DAYS) && (synpred2_EsperEPL2Grammar())) {
+                            alt65=1;
+                        }
+                        else if ( (LA65_4==TIMEPERIOD_DAY) && (synpred2_EsperEPL2Grammar())) {
                             alt65=1;
                         }
                         else {
@@ -6989,7 +6989,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: k, i, k, k, timePeriod, k, number, onSetExpr, expression, crontabLimitParameterSet
+            // elements: number, k, k, timePeriod, expression, k, crontabLimitParameterSet, i, onSetExpr, k
             // token labels: k, i
             // rule labels: retval
             // token list labels: 
@@ -7297,7 +7297,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: c, n2, o, i2, n1, i1
+            // elements: i2, c, o, i1, n1, n2
             // token labels: c, o, i2, i1
             // rule labels: n1, retval, n2
             // token list labels: 
@@ -7946,7 +7946,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: elseClause, expression, whenClause
+                    // elements: expression, whenClause, elseClause
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -8881,7 +8881,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: subSelectGroupExpression, a, evalRelationalExpression, a, expressionList, expressionList, evalRelationalExpression, evalRelationalExpression, evalRelationalExpression, evalRelationalExpression, subSelectGroupExpression
+            // elements: evalRelationalExpression, expressionList, evalRelationalExpression, evalRelationalExpression, expressionList, subSelectGroupExpression, subSelectGroupExpression, evalRelationalExpression, a, a, evalRelationalExpression
             // token labels: a
             // rule labels: retval
             // token list labels: 
@@ -9423,7 +9423,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: concatenationExpr, subSelectGroupExpression, concatenationExpr, g, concatenationExpr, expressionList
+                    // elements: concatenationExpr, concatenationExpr, concatenationExpr, expressionList, g, subSelectGroupExpression
                     // token labels: g
                     // rule labels: retval
                     // token list labels: 
@@ -9774,7 +9774,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: l, expression, expression, r, r, l, expression, concatenationExpr, r, concatenationExpr, IN_SET, expression, r, concatenationExpr, concatenationExpr, l, l
+                            // elements: expression, r, r, concatenationExpr, expression, IN_SET, r, l, concatenationExpr, l, concatenationExpr, r, concatenationExpr, l, l, expression, expression
                             // token labels: r, l
                             // rule labels: retval
                             // token list labels: 
@@ -9897,7 +9897,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: inSubSelectQuery, inSubSelectQuery, concatenationExpr, concatenationExpr
+                            // elements: concatenationExpr, concatenationExpr, inSubSelectQuery, inSubSelectQuery
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -9954,7 +9954,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: concatenationExpr, betweenList, BETWEEN, betweenList, concatenationExpr
+                            // elements: betweenList, concatenationExpr, concatenationExpr, BETWEEN, betweenList
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -10037,7 +10037,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: stringconstant, concatenationExpr, stringconstant, concatenationExpr, LIKE
+                            // elements: stringconstant, concatenationExpr, LIKE, stringconstant, concatenationExpr
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -11447,7 +11447,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: ri, ru, viewExpression, eventFilterExpression, i
+            // elements: eventFilterExpression, ri, i, viewExpression, ru
             // token labels: ri, ru, i
             // rule labels: retval
             // token list labels: 
@@ -12937,7 +12937,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: funcIdent, libFunctionArgs, classIdentifierNonGreedy
+            // elements: libFunctionArgs, classIdentifierNonGreedy, funcIdent
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -13563,7 +13563,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: OR_EXPR, andExpression, andExpression
+            // elements: andExpression, andExpression, OR_EXPR
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -13832,7 +13832,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: qualifyExpression, qualifyExpression, qualifyExpression, matchUntilRange, qualifyExpression, matchUntilRange
+            // elements: matchUntilRange, qualifyExpression, qualifyExpression, qualifyExpression, qualifyExpression, matchUntilRange
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -13930,7 +13930,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "qualifyExpression"
-    // EsperEPL2Grammar.g:1044:1: qualifyExpression : (e= EVERY_EXPR | n= NOT_EXPR )? guardPostFix -> {e != null}? ^( EVERY_EXPR guardPostFix ) -> {n != null}? ^( PATTERN_NOT_EXPR guardPostFix ) -> guardPostFix ;
+    // EsperEPL2Grammar.g:1044:1: qualifyExpression : ( (e= EVERY_EXPR | n= NOT_EXPR ) (r= matchUntilRange )? )? guardPostFix -> {e != null && r == null}? ^( EVERY_EXPR guardPostFix ) -> {n != null && r == null}? ^( PATTERN_NOT_EXPR guardPostFix ) -> {e != null && r != null}? ^( EVERY_EXPR ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix ) ) -> {n != null && r != null}? ^( PATTERN_NOT_EXPR ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix ) ) -> guardPostFix ;
     public final EsperEPL2GrammarParser.qualifyExpression_return qualifyExpression() throws RecognitionException {
         EsperEPL2GrammarParser.qualifyExpression_return retval = new EsperEPL2GrammarParser.qualifyExpression_return();
         retval.start = input.LT(1);
@@ -13939,6 +13939,8 @@ public class EsperEPL2GrammarParser extends Parser {
 
         Token e=null;
         Token n=null;
+        EsperEPL2GrammarParser.matchUntilRange_return r = null;
+
         EsperEPL2GrammarParser.guardPostFix_return guardPostFix406 = null;
 
 
@@ -13947,35 +13949,83 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_NOT_EXPR=new RewriteRuleTokenStream(adaptor,"token NOT_EXPR");
         RewriteRuleTokenStream stream_EVERY_EXPR=new RewriteRuleTokenStream(adaptor,"token EVERY_EXPR");
         RewriteRuleSubtreeStream stream_guardPostFix=new RewriteRuleSubtreeStream(adaptor,"rule guardPostFix");
+        RewriteRuleSubtreeStream stream_matchUntilRange=new RewriteRuleSubtreeStream(adaptor,"rule matchUntilRange");
         try {
-            // EsperEPL2Grammar.g:1045:2: ( (e= EVERY_EXPR | n= NOT_EXPR )? guardPostFix -> {e != null}? ^( EVERY_EXPR guardPostFix ) -> {n != null}? ^( PATTERN_NOT_EXPR guardPostFix ) -> guardPostFix )
-            // EsperEPL2Grammar.g:1045:4: (e= EVERY_EXPR | n= NOT_EXPR )? guardPostFix
+            // EsperEPL2Grammar.g:1045:2: ( ( (e= EVERY_EXPR | n= NOT_EXPR ) (r= matchUntilRange )? )? guardPostFix -> {e != null && r == null}? ^( EVERY_EXPR guardPostFix ) -> {n != null && r == null}? ^( PATTERN_NOT_EXPR guardPostFix ) -> {e != null && r != null}? ^( EVERY_EXPR ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix ) ) -> {n != null && r != null}? ^( PATTERN_NOT_EXPR ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix ) ) -> guardPostFix )
+            // EsperEPL2Grammar.g:1045:4: ( (e= EVERY_EXPR | n= NOT_EXPR ) (r= matchUntilRange )? )? guardPostFix
             {
-            // EsperEPL2Grammar.g:1045:4: (e= EVERY_EXPR | n= NOT_EXPR )?
-            int alt143=3;
-            int LA143_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1045:4: ( (e= EVERY_EXPR | n= NOT_EXPR ) (r= matchUntilRange )? )?
+            int alt145=2;
+            int LA145_0 = input.LA(1);
 
-            if ( (LA143_0==EVERY_EXPR) ) {
-                alt143=1;
+            if ( ((LA145_0>=NOT_EXPR && LA145_0<=EVERY_EXPR)) ) {
+                alt145=1;
             }
-            else if ( (LA143_0==NOT_EXPR) ) {
-                alt143=2;
-            }
-            switch (alt143) {
+            switch (alt145) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1045:5: e= EVERY_EXPR
+                    // EsperEPL2Grammar.g:1045:5: (e= EVERY_EXPR | n= NOT_EXPR ) (r= matchUntilRange )?
                     {
-                    e=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_qualifyExpression6288); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_EVERY_EXPR.add(e);
+                    // EsperEPL2Grammar.g:1045:5: (e= EVERY_EXPR | n= NOT_EXPR )
+                    int alt143=2;
+                    int LA143_0 = input.LA(1);
 
+                    if ( (LA143_0==EVERY_EXPR) ) {
+                        alt143=1;
+                    }
+                    else if ( (LA143_0==NOT_EXPR) ) {
+                        alt143=2;
+                    }
+                    else {
+                        if (state.backtracking>0) {state.failed=true; return retval;}
+                        NoViableAltException nvae =
+                            new NoViableAltException("", 143, 0, input);
+
+                        throw nvae;
+                    }
+                    switch (alt143) {
+                        case 1 :
+                            // EsperEPL2Grammar.g:1045:6: e= EVERY_EXPR
+                            {
+                            e=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_qualifyExpression6289); if (state.failed) return retval; 
+                            if ( state.backtracking==0 ) stream_EVERY_EXPR.add(e);
+
+
+                            }
+                            break;
+                        case 2 :
+                            // EsperEPL2Grammar.g:1045:21: n= NOT_EXPR
+                            {
+                            n=(Token)match(input,NOT_EXPR,FOLLOW_NOT_EXPR_in_qualifyExpression6295); if (state.failed) return retval; 
+                            if ( state.backtracking==0 ) stream_NOT_EXPR.add(n);
+
+
+                            }
+                            break;
 
                     }
-                    break;
-                case 2 :
-                    // EsperEPL2Grammar.g:1045:20: n= NOT_EXPR
-                    {
-                    n=(Token)match(input,NOT_EXPR,FOLLOW_NOT_EXPR_in_qualifyExpression6294); if (state.failed) return retval; 
-                    if ( state.backtracking==0 ) stream_NOT_EXPR.add(n);
+
+                    // EsperEPL2Grammar.g:1045:33: (r= matchUntilRange )?
+                    int alt144=2;
+                    int LA144_0 = input.LA(1);
+
+                    if ( (LA144_0==LBRACK) ) {
+                        alt144=1;
+                    }
+                    switch (alt144) {
+                        case 1 :
+                            // EsperEPL2Grammar.g:1045:34: r= matchUntilRange
+                            {
+                            pushFollow(FOLLOW_matchUntilRange_in_qualifyExpression6301);
+                            r=matchUntilRange();
+
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_matchUntilRange.add(r.getTree());
+
+                            }
+                            break;
+
+                    }
 
 
                     }
@@ -13983,7 +14033,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_guardPostFix_in_qualifyExpression6300);
+            pushFollow(FOLLOW_guardPostFix_in_qualifyExpression6310);
             guardPostFix406=guardPostFix();
 
             state._fsp--;
@@ -13992,7 +14042,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: guardPostFix, guardPostFix, guardPostFix, EVERY_EXPR
+            // elements: EVERY_EXPR, guardPostFix, matchUntilRange, matchUntilRange, guardPostFix, guardPostFix, guardPostFix, EVERY_EXPR, guardPostFix
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -14002,9 +14052,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1047:3: -> {e != null}? ^( EVERY_EXPR guardPostFix )
-            if (e != null) {
-                // EsperEPL2Grammar.g:1047:19: ^( EVERY_EXPR guardPostFix )
+            // 1047:3: -> {e != null && r == null}? ^( EVERY_EXPR guardPostFix )
+            if (e != null && r == null) {
+                // EsperEPL2Grammar.g:1047:32: ^( EVERY_EXPR guardPostFix )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot(stream_EVERY_EXPR.nextNode(), root_1);
@@ -14015,9 +14065,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1048:3: -> {n != null}? ^( PATTERN_NOT_EXPR guardPostFix )
-            if (n != null) {
-                // EsperEPL2Grammar.g:1048:19: ^( PATTERN_NOT_EXPR guardPostFix )
+            else // 1048:3: -> {n != null && r == null}? ^( PATTERN_NOT_EXPR guardPostFix )
+            if (n != null && r == null) {
+                // EsperEPL2Grammar.g:1048:32: ^( PATTERN_NOT_EXPR guardPostFix )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(PATTERN_NOT_EXPR, "PATTERN_NOT_EXPR"), root_1);
@@ -14028,7 +14078,51 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1049:3: -> guardPostFix
+            else // 1049:3: -> {e != null && r != null}? ^( EVERY_EXPR ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix ) )
+            if (e != null && r != null) {
+                // EsperEPL2Grammar.g:1049:32: ^( EVERY_EXPR ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix ) )
+                {
+                CommonTree root_1 = (CommonTree)adaptor.nil();
+                root_1 = (CommonTree)adaptor.becomeRoot(stream_EVERY_EXPR.nextNode(), root_1);
+
+                // EsperEPL2Grammar.g:1049:45: ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix )
+                {
+                CommonTree root_2 = (CommonTree)adaptor.nil();
+                root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_EXPR, "MATCH_UNTIL_EXPR"), root_2);
+
+                adaptor.addChild(root_2, stream_matchUntilRange.nextTree());
+                adaptor.addChild(root_2, stream_guardPostFix.nextTree());
+
+                adaptor.addChild(root_1, root_2);
+                }
+
+                adaptor.addChild(root_0, root_1);
+                }
+
+            }
+            else // 1050:3: -> {n != null && r != null}? ^( PATTERN_NOT_EXPR ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix ) )
+            if (n != null && r != null) {
+                // EsperEPL2Grammar.g:1050:32: ^( PATTERN_NOT_EXPR ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix ) )
+                {
+                CommonTree root_1 = (CommonTree)adaptor.nil();
+                root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(PATTERN_NOT_EXPR, "PATTERN_NOT_EXPR"), root_1);
+
+                // EsperEPL2Grammar.g:1050:51: ^( MATCH_UNTIL_EXPR matchUntilRange guardPostFix )
+                {
+                CommonTree root_2 = (CommonTree)adaptor.nil();
+                root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_EXPR, "MATCH_UNTIL_EXPR"), root_2);
+
+                adaptor.addChild(root_2, stream_matchUntilRange.nextTree());
+                adaptor.addChild(root_2, stream_guardPostFix.nextTree());
+
+                adaptor.addChild(root_1, root_2);
+                }
+
+                adaptor.addChild(root_0, root_1);
+                }
+
+            }
+            else // 1051:3: -> guardPostFix
             {
                 adaptor.addChild(root_0, stream_guardPostFix.nextTree());
 
@@ -14061,7 +14155,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "guardPostFix"
-    // EsperEPL2Grammar.g:1052:1: guardPostFix : ( atomicExpression | l= LPAREN patternExpression RPAREN ) (w= WHERE guardExpression )? -> {$w != null}? ^( GUARD_EXPR ( atomicExpression )? ( patternExpression )? guardExpression ) -> ( atomicExpression )? ( patternExpression )? ;
+    // EsperEPL2Grammar.g:1054:1: guardPostFix : ( atomicExpression | l= LPAREN patternExpression RPAREN ) (w= WHERE guardExpression )? -> {$w != null}? ^( GUARD_EXPR ( atomicExpression )? ( patternExpression )? guardExpression ) -> ( atomicExpression )? ( patternExpression )? ;
     public final EsperEPL2GrammarParser.guardPostFix_return guardPostFix() throws RecognitionException {
         EsperEPL2GrammarParser.guardPostFix_return retval = new EsperEPL2GrammarParser.guardPostFix_return();
         retval.start = input.LT(1);
@@ -14088,31 +14182,31 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_atomicExpression=new RewriteRuleSubtreeStream(adaptor,"rule atomicExpression");
         RewriteRuleSubtreeStream stream_patternExpression=new RewriteRuleSubtreeStream(adaptor,"rule patternExpression");
         try {
-            // EsperEPL2Grammar.g:1053:2: ( ( atomicExpression | l= LPAREN patternExpression RPAREN ) (w= WHERE guardExpression )? -> {$w != null}? ^( GUARD_EXPR ( atomicExpression )? ( patternExpression )? guardExpression ) -> ( atomicExpression )? ( patternExpression )? )
-            // EsperEPL2Grammar.g:1053:4: ( atomicExpression | l= LPAREN patternExpression RPAREN ) (w= WHERE guardExpression )?
+            // EsperEPL2Grammar.g:1055:2: ( ( atomicExpression | l= LPAREN patternExpression RPAREN ) (w= WHERE guardExpression )? -> {$w != null}? ^( GUARD_EXPR ( atomicExpression )? ( patternExpression )? guardExpression ) -> ( atomicExpression )? ( patternExpression )? )
+            // EsperEPL2Grammar.g:1055:4: ( atomicExpression | l= LPAREN patternExpression RPAREN ) (w= WHERE guardExpression )?
             {
-            // EsperEPL2Grammar.g:1053:4: ( atomicExpression | l= LPAREN patternExpression RPAREN )
-            int alt144=2;
-            int LA144_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1055:4: ( atomicExpression | l= LPAREN patternExpression RPAREN )
+            int alt146=2;
+            int LA146_0 = input.LA(1);
 
-            if ( (LA144_0==IDENT||LA144_0==TICKED_STRING_LITERAL) ) {
-                alt144=1;
+            if ( (LA146_0==IDENT||LA146_0==TICKED_STRING_LITERAL) ) {
+                alt146=1;
             }
-            else if ( (LA144_0==LPAREN) ) {
-                alt144=2;
+            else if ( (LA146_0==LPAREN) ) {
+                alt146=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 144, 0, input);
+                    new NoViableAltException("", 146, 0, input);
 
                 throw nvae;
             }
-            switch (alt144) {
+            switch (alt146) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1053:5: atomicExpression
+                    // EsperEPL2Grammar.g:1055:5: atomicExpression
                     {
-                    pushFollow(FOLLOW_atomicExpression_in_guardPostFix6343);
+                    pushFollow(FOLLOW_atomicExpression_in_guardPostFix6391);
                     atomicExpression407=atomicExpression();
 
                     state._fsp--;
@@ -14122,18 +14216,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1053:24: l= LPAREN patternExpression RPAREN
+                    // EsperEPL2Grammar.g:1055:24: l= LPAREN patternExpression RPAREN
                     {
-                    l=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardPostFix6349); if (state.failed) return retval; 
+                    l=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardPostFix6397); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(l);
 
-                    pushFollow(FOLLOW_patternExpression_in_guardPostFix6351);
+                    pushFollow(FOLLOW_patternExpression_in_guardPostFix6399);
                     patternExpression408=patternExpression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_patternExpression.add(patternExpression408.getTree());
-                    RPAREN409=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardPostFix6353); if (state.failed) return retval; 
+                    RPAREN409=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardPostFix6401); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN409);
 
 
@@ -14142,21 +14236,21 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1053:59: (w= WHERE guardExpression )?
-            int alt145=2;
-            int LA145_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1055:59: (w= WHERE guardExpression )?
+            int alt147=2;
+            int LA147_0 = input.LA(1);
 
-            if ( (LA145_0==WHERE) ) {
-                alt145=1;
+            if ( (LA147_0==WHERE) ) {
+                alt147=1;
             }
-            switch (alt145) {
+            switch (alt147) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1053:60: w= WHERE guardExpression
+                    // EsperEPL2Grammar.g:1055:60: w= WHERE guardExpression
                     {
-                    w=(Token)match(input,WHERE,FOLLOW_WHERE_in_guardPostFix6359); if (state.failed) return retval; 
+                    w=(Token)match(input,WHERE,FOLLOW_WHERE_in_guardPostFix6407); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_WHERE.add(w);
 
-                    pushFollow(FOLLOW_guardExpression_in_guardPostFix6361);
+                    pushFollow(FOLLOW_guardExpression_in_guardPostFix6409);
                     guardExpression410=guardExpression();
 
                     state._fsp--;
@@ -14171,7 +14265,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: atomicExpression, patternExpression, guardExpression, atomicExpression, patternExpression
+            // elements: atomicExpression, guardExpression, patternExpression, atomicExpression, patternExpression
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -14181,20 +14275,20 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1054:3: -> {$w != null}? ^( GUARD_EXPR ( atomicExpression )? ( patternExpression )? guardExpression )
+            // 1056:3: -> {$w != null}? ^( GUARD_EXPR ( atomicExpression )? ( patternExpression )? guardExpression )
             if (w != null) {
-                // EsperEPL2Grammar.g:1054:20: ^( GUARD_EXPR ( atomicExpression )? ( patternExpression )? guardExpression )
+                // EsperEPL2Grammar.g:1056:20: ^( GUARD_EXPR ( atomicExpression )? ( patternExpression )? guardExpression )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(GUARD_EXPR, "GUARD_EXPR"), root_1);
 
-                // EsperEPL2Grammar.g:1054:33: ( atomicExpression )?
+                // EsperEPL2Grammar.g:1056:33: ( atomicExpression )?
                 if ( stream_atomicExpression.hasNext() ) {
                     adaptor.addChild(root_1, stream_atomicExpression.nextTree());
 
                 }
                 stream_atomicExpression.reset();
-                // EsperEPL2Grammar.g:1054:51: ( patternExpression )?
+                // EsperEPL2Grammar.g:1056:51: ( patternExpression )?
                 if ( stream_patternExpression.hasNext() ) {
                     adaptor.addChild(root_1, stream_patternExpression.nextTree());
 
@@ -14206,15 +14300,15 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1055:3: -> ( atomicExpression )? ( patternExpression )?
+            else // 1057:3: -> ( atomicExpression )? ( patternExpression )?
             {
-                // EsperEPL2Grammar.g:1055:6: ( atomicExpression )?
+                // EsperEPL2Grammar.g:1057:6: ( atomicExpression )?
                 if ( stream_atomicExpression.hasNext() ) {
                     adaptor.addChild(root_0, stream_atomicExpression.nextTree());
 
                 }
                 stream_atomicExpression.reset();
-                // EsperEPL2Grammar.g:1055:24: ( patternExpression )?
+                // EsperEPL2Grammar.g:1057:24: ( patternExpression )?
                 if ( stream_patternExpression.hasNext() ) {
                     adaptor.addChild(root_0, stream_patternExpression.nextTree());
 
@@ -14250,7 +14344,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "atomicExpression"
-    // EsperEPL2Grammar.g:1058:1: atomicExpression : ( observerExpression | patternFilterExpression );
+    // EsperEPL2Grammar.g:1060:1: atomicExpression : ( observerExpression | patternFilterExpression );
     public final EsperEPL2GrammarParser.atomicExpression_return atomicExpression() throws RecognitionException {
         EsperEPL2GrammarParser.atomicExpression_return retval = new EsperEPL2GrammarParser.atomicExpression_return();
         retval.start = input.LT(1);
@@ -14264,44 +14358,44 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
         try {
-            // EsperEPL2Grammar.g:1059:2: ( observerExpression | patternFilterExpression )
-            int alt146=2;
-            int LA146_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1061:2: ( observerExpression | patternFilterExpression )
+            int alt148=2;
+            int LA148_0 = input.LA(1);
 
-            if ( (LA146_0==IDENT) ) {
-                int LA146_1 = input.LA(2);
+            if ( (LA148_0==IDENT) ) {
+                int LA148_1 = input.LA(2);
 
-                if ( (LA146_1==COLON) ) {
-                    alt146=1;
+                if ( (LA148_1==COLON) ) {
+                    alt148=1;
                 }
-                else if ( (LA146_1==EOF||(LA146_1>=OR_EXPR && LA146_1<=AND_EXPR)||LA146_1==WHERE||LA146_1==UNTIL||(LA146_1>=EQUALS && LA146_1<=RPAREN)||(LA146_1>=LBRACK && LA146_1<=RBRACK)||LA146_1==FOLLOWED_BY) ) {
-                    alt146=2;
+                else if ( (LA148_1==EOF||(LA148_1>=OR_EXPR && LA148_1<=AND_EXPR)||LA148_1==WHERE||LA148_1==UNTIL||(LA148_1>=EQUALS && LA148_1<=RPAREN)||(LA148_1>=LBRACK && LA148_1<=RBRACK)||LA148_1==FOLLOWED_BY) ) {
+                    alt148=2;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 146, 1, input);
+                        new NoViableAltException("", 148, 1, input);
 
                     throw nvae;
                 }
             }
-            else if ( (LA146_0==TICKED_STRING_LITERAL) ) {
-                alt146=2;
+            else if ( (LA148_0==TICKED_STRING_LITERAL) ) {
+                alt148=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 146, 0, input);
+                    new NoViableAltException("", 148, 0, input);
 
                 throw nvae;
             }
-            switch (alt146) {
+            switch (alt148) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1059:4: observerExpression
+                    // EsperEPL2Grammar.g:1061:4: observerExpression
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_observerExpression_in_atomicExpression6403);
+                    pushFollow(FOLLOW_observerExpression_in_atomicExpression6451);
                     observerExpression411=observerExpression();
 
                     state._fsp--;
@@ -14311,11 +14405,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1059:25: patternFilterExpression
+                    // EsperEPL2Grammar.g:1061:25: patternFilterExpression
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_patternFilterExpression_in_atomicExpression6407);
+                    pushFollow(FOLLOW_patternFilterExpression_in_atomicExpression6455);
                     patternFilterExpression412=patternFilterExpression();
 
                     state._fsp--;
@@ -14350,7 +14444,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "observerExpression"
-    // EsperEPL2Grammar.g:1062:1: observerExpression : ns= IDENT COLON (nm= IDENT | a= AT ) LPAREN ( expressionWithTimeList )? RPAREN -> {$a != null}? ^( OBSERVER_EXPR $ns ^( IDENT[$a.text] ) ( expressionWithTimeList )? ) -> ^( OBSERVER_EXPR $ns $nm ( expressionWithTimeList )? ) ;
+    // EsperEPL2Grammar.g:1064:1: observerExpression : ns= IDENT COLON (nm= IDENT | a= AT ) LPAREN ( expressionWithTimeList )? RPAREN -> {$a != null}? ^( OBSERVER_EXPR $ns ^( IDENT[$a.text] ) ( expressionWithTimeList )? ) -> ^( OBSERVER_EXPR $ns $nm ( expressionWithTimeList )? ) ;
     public final EsperEPL2GrammarParser.observerExpression_return observerExpression() throws RecognitionException {
         EsperEPL2GrammarParser.observerExpression_return retval = new EsperEPL2GrammarParser.observerExpression_return();
         retval.start = input.LT(1);
@@ -14379,46 +14473,46 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
         RewriteRuleSubtreeStream stream_expressionWithTimeList=new RewriteRuleSubtreeStream(adaptor,"rule expressionWithTimeList");
         try {
-            // EsperEPL2Grammar.g:1063:2: (ns= IDENT COLON (nm= IDENT | a= AT ) LPAREN ( expressionWithTimeList )? RPAREN -> {$a != null}? ^( OBSERVER_EXPR $ns ^( IDENT[$a.text] ) ( expressionWithTimeList )? ) -> ^( OBSERVER_EXPR $ns $nm ( expressionWithTimeList )? ) )
-            // EsperEPL2Grammar.g:1063:4: ns= IDENT COLON (nm= IDENT | a= AT ) LPAREN ( expressionWithTimeList )? RPAREN
+            // EsperEPL2Grammar.g:1065:2: (ns= IDENT COLON (nm= IDENT | a= AT ) LPAREN ( expressionWithTimeList )? RPAREN -> {$a != null}? ^( OBSERVER_EXPR $ns ^( IDENT[$a.text] ) ( expressionWithTimeList )? ) -> ^( OBSERVER_EXPR $ns $nm ( expressionWithTimeList )? ) )
+            // EsperEPL2Grammar.g:1065:4: ns= IDENT COLON (nm= IDENT | a= AT ) LPAREN ( expressionWithTimeList )? RPAREN
             {
-            ns=(Token)match(input,IDENT,FOLLOW_IDENT_in_observerExpression6422); if (state.failed) return retval; 
+            ns=(Token)match(input,IDENT,FOLLOW_IDENT_in_observerExpression6470); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_IDENT.add(ns);
 
-            COLON413=(Token)match(input,COLON,FOLLOW_COLON_in_observerExpression6424); if (state.failed) return retval; 
+            COLON413=(Token)match(input,COLON,FOLLOW_COLON_in_observerExpression6472); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_COLON.add(COLON413);
 
-            // EsperEPL2Grammar.g:1063:19: (nm= IDENT | a= AT )
-            int alt147=2;
-            int LA147_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1065:19: (nm= IDENT | a= AT )
+            int alt149=2;
+            int LA149_0 = input.LA(1);
 
-            if ( (LA147_0==IDENT) ) {
-                alt147=1;
+            if ( (LA149_0==IDENT) ) {
+                alt149=1;
             }
-            else if ( (LA147_0==AT) ) {
-                alt147=2;
+            else if ( (LA149_0==AT) ) {
+                alt149=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 147, 0, input);
+                    new NoViableAltException("", 149, 0, input);
 
                 throw nvae;
             }
-            switch (alt147) {
+            switch (alt149) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1063:20: nm= IDENT
+                    // EsperEPL2Grammar.g:1065:20: nm= IDENT
                     {
-                    nm=(Token)match(input,IDENT,FOLLOW_IDENT_in_observerExpression6429); if (state.failed) return retval; 
+                    nm=(Token)match(input,IDENT,FOLLOW_IDENT_in_observerExpression6477); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(nm);
 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1063:31: a= AT
+                    // EsperEPL2Grammar.g:1065:31: a= AT
                     {
-                    a=(Token)match(input,AT,FOLLOW_AT_in_observerExpression6435); if (state.failed) return retval; 
+                    a=(Token)match(input,AT,FOLLOW_AT_in_observerExpression6483); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_AT.add(a);
 
 
@@ -14427,21 +14521,21 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            LPAREN414=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_observerExpression6438); if (state.failed) return retval; 
+            LPAREN414=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_observerExpression6486); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LPAREN.add(LPAREN414);
 
-            // EsperEPL2Grammar.g:1063:44: ( expressionWithTimeList )?
-            int alt148=2;
-            int LA148_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1065:44: ( expressionWithTimeList )?
+            int alt150=2;
+            int LA150_0 = input.LA(1);
 
-            if ( (LA148_0==WINDOW||LA148_0==ESCAPE||(LA148_0>=NOT_EXPR && LA148_0<=EVERY_EXPR)||(LA148_0>=SUM && LA148_0<=COUNT)||LA148_0==CASE||LA148_0==OUTER||(LA148_0>=JOIN && LA148_0<=FULL)||(LA148_0>=EVENTS && LA148_0<=LAST)||(LA148_0>=UNIDIRECTIONAL && LA148_0<=CURRENT_TIMESTAMP)||LA148_0==SNAPSHOT||(LA148_0>=VARIABLE && LA148_0<=AT)||(LA148_0>=BOOLEAN_TRUE && LA148_0<=VALUE_NULL)||LA148_0==NUM_DOUBLE||LA148_0==IDENT||LA148_0==LPAREN||(LA148_0>=STAR && LA148_0<=LBRACK)||(LA148_0>=STRING_LITERAL && LA148_0<=QUOTED_STRING_LITERAL)||(LA148_0>=PLUS && LA148_0<=MINUS)||LA148_0==LCURLY||LA148_0==NUM_INT||LA148_0==QUESTION||(LA148_0>=TICKED_STRING_LITERAL && LA148_0<=NUM_FLOAT)) ) {
-                alt148=1;
+            if ( (LA150_0==WINDOW||LA150_0==ESCAPE||(LA150_0>=NOT_EXPR && LA150_0<=EVERY_EXPR)||(LA150_0>=SUM && LA150_0<=COUNT)||LA150_0==CASE||LA150_0==OUTER||(LA150_0>=JOIN && LA150_0<=FULL)||(LA150_0>=EVENTS && LA150_0<=LAST)||(LA150_0>=UNIDIRECTIONAL && LA150_0<=CURRENT_TIMESTAMP)||LA150_0==SNAPSHOT||(LA150_0>=VARIABLE && LA150_0<=AT)||(LA150_0>=BOOLEAN_TRUE && LA150_0<=VALUE_NULL)||LA150_0==NUM_DOUBLE||LA150_0==IDENT||LA150_0==LPAREN||(LA150_0>=STAR && LA150_0<=LBRACK)||(LA150_0>=STRING_LITERAL && LA150_0<=QUOTED_STRING_LITERAL)||(LA150_0>=PLUS && LA150_0<=MINUS)||LA150_0==LCURLY||LA150_0==NUM_INT||LA150_0==QUESTION||(LA150_0>=TICKED_STRING_LITERAL && LA150_0<=NUM_FLOAT)) ) {
+                alt150=1;
             }
-            switch (alt148) {
+            switch (alt150) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1063:44: expressionWithTimeList
+                    // EsperEPL2Grammar.g:1065:44: expressionWithTimeList
                     {
-                    pushFollow(FOLLOW_expressionWithTimeList_in_observerExpression6440);
+                    pushFollow(FOLLOW_expressionWithTimeList_in_observerExpression6488);
                     expressionWithTimeList415=expressionWithTimeList();
 
                     state._fsp--;
@@ -14453,13 +14547,13 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            RPAREN416=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_observerExpression6443); if (state.failed) return retval; 
+            RPAREN416=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_observerExpression6491); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN416);
 
 
 
             // AST REWRITE
-            // elements: IDENT, expressionWithTimeList, nm, ns, expressionWithTimeList, ns
+            // elements: nm, ns, ns, IDENT, expressionWithTimeList, expressionWithTimeList
             // token labels: ns, nm
             // rule labels: retval
             // token list labels: 
@@ -14471,22 +14565,22 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1064:3: -> {$a != null}? ^( OBSERVER_EXPR $ns ^( IDENT[$a.text] ) ( expressionWithTimeList )? )
+            // 1066:3: -> {$a != null}? ^( OBSERVER_EXPR $ns ^( IDENT[$a.text] ) ( expressionWithTimeList )? )
             if (a != null) {
-                // EsperEPL2Grammar.g:1064:20: ^( OBSERVER_EXPR $ns ^( IDENT[$a.text] ) ( expressionWithTimeList )? )
+                // EsperEPL2Grammar.g:1066:20: ^( OBSERVER_EXPR $ns ^( IDENT[$a.text] ) ( expressionWithTimeList )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OBSERVER_EXPR, "OBSERVER_EXPR"), root_1);
 
                 adaptor.addChild(root_1, stream_ns.nextNode());
-                // EsperEPL2Grammar.g:1064:40: ^( IDENT[$a.text] )
+                // EsperEPL2Grammar.g:1066:40: ^( IDENT[$a.text] )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(IDENT, (a!=null?a.getText():null)), root_2);
 
                 adaptor.addChild(root_1, root_2);
                 }
-                // EsperEPL2Grammar.g:1064:58: ( expressionWithTimeList )?
+                // EsperEPL2Grammar.g:1066:58: ( expressionWithTimeList )?
                 if ( stream_expressionWithTimeList.hasNext() ) {
                     adaptor.addChild(root_1, stream_expressionWithTimeList.nextTree());
 
@@ -14497,16 +14591,16 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1065:3: -> ^( OBSERVER_EXPR $ns $nm ( expressionWithTimeList )? )
+            else // 1067:3: -> ^( OBSERVER_EXPR $ns $nm ( expressionWithTimeList )? )
             {
-                // EsperEPL2Grammar.g:1065:6: ^( OBSERVER_EXPR $ns $nm ( expressionWithTimeList )? )
+                // EsperEPL2Grammar.g:1067:6: ^( OBSERVER_EXPR $ns $nm ( expressionWithTimeList )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OBSERVER_EXPR, "OBSERVER_EXPR"), root_1);
 
                 adaptor.addChild(root_1, stream_ns.nextNode());
                 adaptor.addChild(root_1, stream_nm.nextNode());
-                // EsperEPL2Grammar.g:1065:30: ( expressionWithTimeList )?
+                // EsperEPL2Grammar.g:1067:30: ( expressionWithTimeList )?
                 if ( stream_expressionWithTimeList.hasNext() ) {
                     adaptor.addChild(root_1, stream_expressionWithTimeList.nextTree());
 
@@ -14545,7 +14639,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "guardExpression"
-    // EsperEPL2Grammar.g:1068:1: guardExpression : IDENT COLON IDENT LPAREN ( expressionWithTimeList )? RPAREN ;
+    // EsperEPL2Grammar.g:1070:1: guardExpression : IDENT COLON IDENT LPAREN ( expressionWithTimeList )? RPAREN ;
     public final EsperEPL2GrammarParser.guardExpression_return guardExpression() throws RecognitionException {
         EsperEPL2GrammarParser.guardExpression_return retval = new EsperEPL2GrammarParser.guardExpression_return();
         retval.start = input.LT(1);
@@ -14567,35 +14661,35 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree RPAREN422_tree=null;
 
         try {
-            // EsperEPL2Grammar.g:1069:2: ( IDENT COLON IDENT LPAREN ( expressionWithTimeList )? RPAREN )
-            // EsperEPL2Grammar.g:1069:4: IDENT COLON IDENT LPAREN ( expressionWithTimeList )? RPAREN
+            // EsperEPL2Grammar.g:1071:2: ( IDENT COLON IDENT LPAREN ( expressionWithTimeList )? RPAREN )
+            // EsperEPL2Grammar.g:1071:4: IDENT COLON IDENT LPAREN ( expressionWithTimeList )? RPAREN
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            IDENT417=(Token)match(input,IDENT,FOLLOW_IDENT_in_guardExpression6492); if (state.failed) return retval;
+            IDENT417=(Token)match(input,IDENT,FOLLOW_IDENT_in_guardExpression6540); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             IDENT417_tree = (CommonTree)adaptor.create(IDENT417);
             adaptor.addChild(root_0, IDENT417_tree);
             }
-            COLON418=(Token)match(input,COLON,FOLLOW_COLON_in_guardExpression6494); if (state.failed) return retval;
-            IDENT419=(Token)match(input,IDENT,FOLLOW_IDENT_in_guardExpression6497); if (state.failed) return retval;
+            COLON418=(Token)match(input,COLON,FOLLOW_COLON_in_guardExpression6542); if (state.failed) return retval;
+            IDENT419=(Token)match(input,IDENT,FOLLOW_IDENT_in_guardExpression6545); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             IDENT419_tree = (CommonTree)adaptor.create(IDENT419);
             adaptor.addChild(root_0, IDENT419_tree);
             }
-            LPAREN420=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardExpression6499); if (state.failed) return retval;
-            // EsperEPL2Grammar.g:1069:31: ( expressionWithTimeList )?
-            int alt149=2;
-            int LA149_0 = input.LA(1);
+            LPAREN420=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardExpression6547); if (state.failed) return retval;
+            // EsperEPL2Grammar.g:1071:31: ( expressionWithTimeList )?
+            int alt151=2;
+            int LA151_0 = input.LA(1);
 
-            if ( (LA149_0==WINDOW||LA149_0==ESCAPE||(LA149_0>=NOT_EXPR && LA149_0<=EVERY_EXPR)||(LA149_0>=SUM && LA149_0<=COUNT)||LA149_0==CASE||LA149_0==OUTER||(LA149_0>=JOIN && LA149_0<=FULL)||(LA149_0>=EVENTS && LA149_0<=LAST)||(LA149_0>=UNIDIRECTIONAL && LA149_0<=CURRENT_TIMESTAMP)||LA149_0==SNAPSHOT||(LA149_0>=VARIABLE && LA149_0<=AT)||(LA149_0>=BOOLEAN_TRUE && LA149_0<=VALUE_NULL)||LA149_0==NUM_DOUBLE||LA149_0==IDENT||LA149_0==LPAREN||(LA149_0>=STAR && LA149_0<=LBRACK)||(LA149_0>=STRING_LITERAL && LA149_0<=QUOTED_STRING_LITERAL)||(LA149_0>=PLUS && LA149_0<=MINUS)||LA149_0==LCURLY||LA149_0==NUM_INT||LA149_0==QUESTION||(LA149_0>=TICKED_STRING_LITERAL && LA149_0<=NUM_FLOAT)) ) {
-                alt149=1;
+            if ( (LA151_0==WINDOW||LA151_0==ESCAPE||(LA151_0>=NOT_EXPR && LA151_0<=EVERY_EXPR)||(LA151_0>=SUM && LA151_0<=COUNT)||LA151_0==CASE||LA151_0==OUTER||(LA151_0>=JOIN && LA151_0<=FULL)||(LA151_0>=EVENTS && LA151_0<=LAST)||(LA151_0>=UNIDIRECTIONAL && LA151_0<=CURRENT_TIMESTAMP)||LA151_0==SNAPSHOT||(LA151_0>=VARIABLE && LA151_0<=AT)||(LA151_0>=BOOLEAN_TRUE && LA151_0<=VALUE_NULL)||LA151_0==NUM_DOUBLE||LA151_0==IDENT||LA151_0==LPAREN||(LA151_0>=STAR && LA151_0<=LBRACK)||(LA151_0>=STRING_LITERAL && LA151_0<=QUOTED_STRING_LITERAL)||(LA151_0>=PLUS && LA151_0<=MINUS)||LA151_0==LCURLY||LA151_0==NUM_INT||LA151_0==QUESTION||(LA151_0>=TICKED_STRING_LITERAL && LA151_0<=NUM_FLOAT)) ) {
+                alt151=1;
             }
-            switch (alt149) {
+            switch (alt151) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1069:32: expressionWithTimeList
+                    // EsperEPL2Grammar.g:1071:32: expressionWithTimeList
                     {
-                    pushFollow(FOLLOW_expressionWithTimeList_in_guardExpression6503);
+                    pushFollow(FOLLOW_expressionWithTimeList_in_guardExpression6551);
                     expressionWithTimeList421=expressionWithTimeList();
 
                     state._fsp--;
@@ -14607,7 +14701,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            RPAREN422=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardExpression6507); if (state.failed) return retval;
+            RPAREN422=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardExpression6555); if (state.failed) return retval;
 
             }
 
@@ -14635,7 +14729,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "matchUntilRange"
-    // EsperEPL2Grammar.g:1073:1: matchUntilRange : LBRACK (l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )? | db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )? | DOT DOT r= NUM_INT | DOT db3= NUM_DOUBLE ) RBRACK -> {$l != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r) -> {$l != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $l) -> {$l != null && c1 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r) -> {$l != null}? ^( MATCH_UNTIL_RANGE_BOUNDED $l) -> {$db != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $r) -> {$db != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $db) -> {$db != null && db2 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $db2) -> {$db3 != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $db3) -> {$r != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $r) -> ^( MATCH_UNTIL_RANGE_HALFCLOSED $db) ;
+    // EsperEPL2Grammar.g:1075:1: matchUntilRange : LBRACK (l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )? | db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )? | DOT DOT r= NUM_INT | DOT db3= NUM_DOUBLE ) RBRACK -> {$l != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r) -> {$l != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $l) -> {$l != null && c1 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r) -> {$l != null}? ^( MATCH_UNTIL_RANGE_BOUNDED $l) -> {$db != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $r) -> {$db != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $db) -> {$db != null && db2 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $db2) -> {$db3 != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $db3) -> {$r != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $r) -> ^( MATCH_UNTIL_RANGE_HALFCLOSED $db) ;
     public final EsperEPL2GrammarParser.matchUntilRange_return matchUntilRange() throws RecognitionException {
         EsperEPL2GrammarParser.matchUntilRange_return retval = new EsperEPL2GrammarParser.matchUntilRange_return();
         retval.start = input.LT(1);
@@ -14677,39 +14771,39 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_NUM_INT=new RewriteRuleTokenStream(adaptor,"token NUM_INT");
 
         try {
-            // EsperEPL2Grammar.g:1074:2: ( LBRACK (l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )? | db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )? | DOT DOT r= NUM_INT | DOT db3= NUM_DOUBLE ) RBRACK -> {$l != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r) -> {$l != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $l) -> {$l != null && c1 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r) -> {$l != null}? ^( MATCH_UNTIL_RANGE_BOUNDED $l) -> {$db != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $r) -> {$db != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $db) -> {$db != null && db2 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $db2) -> {$db3 != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $db3) -> {$r != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $r) -> ^( MATCH_UNTIL_RANGE_HALFCLOSED $db) )
-            // EsperEPL2Grammar.g:1074:4: LBRACK (l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )? | db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )? | DOT DOT r= NUM_INT | DOT db3= NUM_DOUBLE ) RBRACK
+            // EsperEPL2Grammar.g:1076:2: ( LBRACK (l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )? | db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )? | DOT DOT r= NUM_INT | DOT db3= NUM_DOUBLE ) RBRACK -> {$l != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r) -> {$l != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $l) -> {$l != null && c1 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r) -> {$l != null}? ^( MATCH_UNTIL_RANGE_BOUNDED $l) -> {$db != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $r) -> {$db != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $db) -> {$db != null && db2 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $db2) -> {$db3 != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $db3) -> {$r != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $r) -> ^( MATCH_UNTIL_RANGE_HALFCLOSED $db) )
+            // EsperEPL2Grammar.g:1076:4: LBRACK (l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )? | db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )? | DOT DOT r= NUM_INT | DOT db3= NUM_DOUBLE ) RBRACK
             {
-            LBRACK423=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_matchUntilRange6521); if (state.failed) return retval; 
+            LBRACK423=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_matchUntilRange6569); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LBRACK.add(LBRACK423);
 
-            // EsperEPL2Grammar.g:1074:11: (l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )? | db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )? | DOT DOT r= NUM_INT | DOT db3= NUM_DOUBLE )
-            int alt154=4;
+            // EsperEPL2Grammar.g:1076:11: (l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )? | db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )? | DOT DOT r= NUM_INT | DOT db3= NUM_DOUBLE )
+            int alt156=4;
             switch ( input.LA(1) ) {
             case NUM_INT:
                 {
-                alt154=1;
+                alt156=1;
                 }
                 break;
             case NUM_DOUBLE:
                 {
-                alt154=2;
+                alt156=2;
                 }
                 break;
             case DOT:
                 {
-                int LA154_3 = input.LA(2);
+                int LA156_3 = input.LA(2);
 
-                if ( (LA154_3==DOT) ) {
-                    alt154=3;
+                if ( (LA156_3==DOT) ) {
+                    alt156=3;
                 }
-                else if ( (LA154_3==NUM_DOUBLE) ) {
-                    alt154=4;
+                else if ( (LA156_3==NUM_DOUBLE) ) {
+                    alt156=4;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 154, 3, input);
+                        new NoViableAltException("", 156, 3, input);
 
                     throw nvae;
                 }
@@ -14718,53 +14812,53 @@ public class EsperEPL2GrammarParser extends Parser {
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 154, 0, input);
+                    new NoViableAltException("", 156, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt154) {
+            switch (alt156) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1075:4: l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )?
+                    // EsperEPL2Grammar.g:1077:4: l= NUM_INT ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )?
                     {
-                    l=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6530); if (state.failed) return retval; 
+                    l=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6578); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_INT.add(l);
 
-                    // EsperEPL2Grammar.g:1075:14: ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )?
-                    int alt151=3;
-                    int LA151_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1077:14: ( (d1= DOT DOT (r= NUM_INT )? ) | (c1= COLON r= NUM_INT ) )?
+                    int alt153=3;
+                    int LA153_0 = input.LA(1);
 
-                    if ( (LA151_0==DOT) ) {
-                        alt151=1;
+                    if ( (LA153_0==DOT) ) {
+                        alt153=1;
                     }
-                    else if ( (LA151_0==COLON) ) {
-                        alt151=2;
+                    else if ( (LA153_0==COLON) ) {
+                        alt153=2;
                     }
-                    switch (alt151) {
+                    switch (alt153) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1075:17: (d1= DOT DOT (r= NUM_INT )? )
+                            // EsperEPL2Grammar.g:1077:17: (d1= DOT DOT (r= NUM_INT )? )
                             {
-                            // EsperEPL2Grammar.g:1075:17: (d1= DOT DOT (r= NUM_INT )? )
-                            // EsperEPL2Grammar.g:1075:18: d1= DOT DOT (r= NUM_INT )?
+                            // EsperEPL2Grammar.g:1077:17: (d1= DOT DOT (r= NUM_INT )? )
+                            // EsperEPL2Grammar.g:1077:18: d1= DOT DOT (r= NUM_INT )?
                             {
-                            d1=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6538); if (state.failed) return retval; 
+                            d1=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6586); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_DOT.add(d1);
 
-                            DOT424=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6540); if (state.failed) return retval; 
+                            DOT424=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6588); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_DOT.add(DOT424);
 
-                            // EsperEPL2Grammar.g:1075:30: (r= NUM_INT )?
-                            int alt150=2;
-                            int LA150_0 = input.LA(1);
+                            // EsperEPL2Grammar.g:1077:30: (r= NUM_INT )?
+                            int alt152=2;
+                            int LA152_0 = input.LA(1);
 
-                            if ( (LA150_0==NUM_INT) ) {
-                                alt150=1;
+                            if ( (LA152_0==NUM_INT) ) {
+                                alt152=1;
                             }
-                            switch (alt150) {
+                            switch (alt152) {
                                 case 1 :
-                                    // EsperEPL2Grammar.g:1075:30: r= NUM_INT
+                                    // EsperEPL2Grammar.g:1077:30: r= NUM_INT
                                     {
-                                    r=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6544); if (state.failed) return retval; 
+                                    r=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6592); if (state.failed) return retval; 
                                     if ( state.backtracking==0 ) stream_NUM_INT.add(r);
 
 
@@ -14780,15 +14874,15 @@ public class EsperEPL2GrammarParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // EsperEPL2Grammar.g:1076:17: (c1= COLON r= NUM_INT )
+                            // EsperEPL2Grammar.g:1078:17: (c1= COLON r= NUM_INT )
                             {
-                            // EsperEPL2Grammar.g:1076:17: (c1= COLON r= NUM_INT )
-                            // EsperEPL2Grammar.g:1076:18: c1= COLON r= NUM_INT
+                            // EsperEPL2Grammar.g:1078:17: (c1= COLON r= NUM_INT )
+                            // EsperEPL2Grammar.g:1078:18: c1= COLON r= NUM_INT
                             {
-                            c1=(Token)match(input,COLON,FOLLOW_COLON_in_matchUntilRange6568); if (state.failed) return retval; 
+                            c1=(Token)match(input,COLON,FOLLOW_COLON_in_matchUntilRange6616); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_COLON.add(c1);
 
-                            r=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6572); if (state.failed) return retval; 
+                            r=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6620); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_NUM_INT.add(r);
 
 
@@ -14804,40 +14898,40 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1078:8: db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )?
+                    // EsperEPL2Grammar.g:1080:8: db= NUM_DOUBLE (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )?
                     {
-                    db=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_matchUntilRange6594); if (state.failed) return retval; 
+                    db=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_matchUntilRange6642); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_DOUBLE.add(db);
 
-                    // EsperEPL2Grammar.g:1078:22: (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )?
-                    int alt153=3;
-                    int LA153_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1080:22: (d1= DOT (r= NUM_INT )? | db2= NUM_DOUBLE )?
+                    int alt155=3;
+                    int LA155_0 = input.LA(1);
 
-                    if ( (LA153_0==DOT) ) {
-                        alt153=1;
+                    if ( (LA155_0==DOT) ) {
+                        alt155=1;
                     }
-                    else if ( (LA153_0==NUM_DOUBLE) ) {
-                        alt153=2;
+                    else if ( (LA155_0==NUM_DOUBLE) ) {
+                        alt155=2;
                     }
-                    switch (alt153) {
+                    switch (alt155) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1079:27: d1= DOT (r= NUM_INT )?
+                            // EsperEPL2Grammar.g:1081:27: d1= DOT (r= NUM_INT )?
                             {
-                            d1=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6626); if (state.failed) return retval; 
+                            d1=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6674); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_DOT.add(d1);
 
-                            // EsperEPL2Grammar.g:1079:35: (r= NUM_INT )?
-                            int alt152=2;
-                            int LA152_0 = input.LA(1);
+                            // EsperEPL2Grammar.g:1081:35: (r= NUM_INT )?
+                            int alt154=2;
+                            int LA154_0 = input.LA(1);
 
-                            if ( (LA152_0==NUM_INT) ) {
-                                alt152=1;
+                            if ( (LA154_0==NUM_INT) ) {
+                                alt154=1;
                             }
-                            switch (alt152) {
+                            switch (alt154) {
                                 case 1 :
-                                    // EsperEPL2Grammar.g:1079:35: r= NUM_INT
+                                    // EsperEPL2Grammar.g:1081:35: r= NUM_INT
                                     {
-                                    r=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6630); if (state.failed) return retval; 
+                                    r=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6678); if (state.failed) return retval; 
                                     if ( state.backtracking==0 ) stream_NUM_INT.add(r);
 
 
@@ -14850,9 +14944,9 @@ public class EsperEPL2GrammarParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // EsperEPL2Grammar.g:1081:27: db2= NUM_DOUBLE
+                            // EsperEPL2Grammar.g:1083:27: db2= NUM_DOUBLE
                             {
-                            db2=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_matchUntilRange6690); if (state.failed) return retval; 
+                            db2=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_matchUntilRange6738); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_NUM_DOUBLE.add(db2);
 
 
@@ -14865,27 +14959,27 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1083:8: DOT DOT r= NUM_INT
+                    // EsperEPL2Grammar.g:1085:8: DOT DOT r= NUM_INT
                     {
-                    DOT425=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6727); if (state.failed) return retval; 
+                    DOT425=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6775); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DOT.add(DOT425);
 
-                    DOT426=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6729); if (state.failed) return retval; 
+                    DOT426=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6777); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DOT.add(DOT426);
 
-                    r=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6733); if (state.failed) return retval; 
+                    r=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_matchUntilRange6781); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_INT.add(r);
 
 
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Grammar.g:1084:8: DOT db3= NUM_DOUBLE
+                    // EsperEPL2Grammar.g:1086:8: DOT db3= NUM_DOUBLE
                     {
-                    DOT427=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6742); if (state.failed) return retval; 
+                    DOT427=(Token)match(input,DOT,FOLLOW_DOT_in_matchUntilRange6790); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DOT.add(DOT427);
 
-                    db3=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_matchUntilRange6746); if (state.failed) return retval; 
+                    db3=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_matchUntilRange6794); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_DOUBLE.add(db3);
 
 
@@ -14894,13 +14988,13 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            RBRACK428=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_matchUntilRange6757); if (state.failed) return retval; 
+            RBRACK428=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_matchUntilRange6805); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK428);
 
 
 
             // AST REWRITE
-            // elements: l, l, r, l, r, r, r, l, db, db, db3, db, db2, db
+            // elements: l, l, db, db3, r, db, r, db, r, db, l, l, r, db2
             // token labels: db, r, l, db2, db3
             // rule labels: retval
             // token list labels: 
@@ -14915,9 +15009,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1087:3: -> {$l != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r)
+            // 1089:3: -> {$l != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r)
             if (l != null && d1 != null && r != null) {
-                // EsperEPL2Grammar.g:1087:47: ^( MATCH_UNTIL_RANGE_CLOSED $l $r)
+                // EsperEPL2Grammar.g:1089:47: ^( MATCH_UNTIL_RANGE_CLOSED $l $r)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_CLOSED, "MATCH_UNTIL_RANGE_CLOSED"), root_1);
@@ -14929,9 +15023,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1088:3: -> {$l != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $l)
+            else // 1090:3: -> {$l != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $l)
             if (l != null && d1 != null) {
-                // EsperEPL2Grammar.g:1088:34: ^( MATCH_UNTIL_RANGE_HALFOPEN $l)
+                // EsperEPL2Grammar.g:1090:34: ^( MATCH_UNTIL_RANGE_HALFOPEN $l)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_HALFOPEN, "MATCH_UNTIL_RANGE_HALFOPEN"), root_1);
@@ -14942,9 +15036,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1089:3: -> {$l != null && c1 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r)
+            else // 1091:3: -> {$l != null && c1 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $l $r)
             if (l != null && c1 != null) {
-                // EsperEPL2Grammar.g:1089:34: ^( MATCH_UNTIL_RANGE_CLOSED $l $r)
+                // EsperEPL2Grammar.g:1091:34: ^( MATCH_UNTIL_RANGE_CLOSED $l $r)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_CLOSED, "MATCH_UNTIL_RANGE_CLOSED"), root_1);
@@ -14956,9 +15050,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1090:3: -> {$l != null}? ^( MATCH_UNTIL_RANGE_BOUNDED $l)
+            else // 1092:3: -> {$l != null}? ^( MATCH_UNTIL_RANGE_BOUNDED $l)
             if (l != null) {
-                // EsperEPL2Grammar.g:1090:20: ^( MATCH_UNTIL_RANGE_BOUNDED $l)
+                // EsperEPL2Grammar.g:1092:20: ^( MATCH_UNTIL_RANGE_BOUNDED $l)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_BOUNDED, "MATCH_UNTIL_RANGE_BOUNDED"), root_1);
@@ -14969,9 +15063,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1091:3: -> {$db != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $r)
+            else // 1093:3: -> {$db != null && d1 != null && r != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $r)
             if (db != null && d1 != null && r != null) {
-                // EsperEPL2Grammar.g:1091:48: ^( MATCH_UNTIL_RANGE_CLOSED $db $r)
+                // EsperEPL2Grammar.g:1093:48: ^( MATCH_UNTIL_RANGE_CLOSED $db $r)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_CLOSED, "MATCH_UNTIL_RANGE_CLOSED"), root_1);
@@ -14983,9 +15077,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1092:3: -> {$db != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $db)
+            else // 1094:3: -> {$db != null && d1 != null}? ^( MATCH_UNTIL_RANGE_HALFOPEN $db)
             if (db != null && d1 != null) {
-                // EsperEPL2Grammar.g:1092:35: ^( MATCH_UNTIL_RANGE_HALFOPEN $db)
+                // EsperEPL2Grammar.g:1094:35: ^( MATCH_UNTIL_RANGE_HALFOPEN $db)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_HALFOPEN, "MATCH_UNTIL_RANGE_HALFOPEN"), root_1);
@@ -14996,9 +15090,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1093:3: -> {$db != null && db2 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $db2)
+            else // 1095:3: -> {$db != null && db2 != null}? ^( MATCH_UNTIL_RANGE_CLOSED $db $db2)
             if (db != null && db2 != null) {
-                // EsperEPL2Grammar.g:1093:36: ^( MATCH_UNTIL_RANGE_CLOSED $db $db2)
+                // EsperEPL2Grammar.g:1095:36: ^( MATCH_UNTIL_RANGE_CLOSED $db $db2)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_CLOSED, "MATCH_UNTIL_RANGE_CLOSED"), root_1);
@@ -15010,9 +15104,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1094:3: -> {$db3 != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $db3)
+            else // 1096:3: -> {$db3 != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $db3)
             if (db3 != null) {
-                // EsperEPL2Grammar.g:1094:22: ^( MATCH_UNTIL_RANGE_HALFCLOSED $db3)
+                // EsperEPL2Grammar.g:1096:22: ^( MATCH_UNTIL_RANGE_HALFCLOSED $db3)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_HALFCLOSED, "MATCH_UNTIL_RANGE_HALFCLOSED"), root_1);
@@ -15023,9 +15117,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1095:3: -> {$r != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $r)
+            else // 1097:3: -> {$r != null}? ^( MATCH_UNTIL_RANGE_HALFCLOSED $r)
             if (r != null) {
-                // EsperEPL2Grammar.g:1095:20: ^( MATCH_UNTIL_RANGE_HALFCLOSED $r)
+                // EsperEPL2Grammar.g:1097:20: ^( MATCH_UNTIL_RANGE_HALFCLOSED $r)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_HALFCLOSED, "MATCH_UNTIL_RANGE_HALFCLOSED"), root_1);
@@ -15036,9 +15130,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1096:3: -> ^( MATCH_UNTIL_RANGE_HALFCLOSED $db)
+            else // 1098:3: -> ^( MATCH_UNTIL_RANGE_HALFCLOSED $db)
             {
-                // EsperEPL2Grammar.g:1096:6: ^( MATCH_UNTIL_RANGE_HALFCLOSED $db)
+                // EsperEPL2Grammar.g:1098:6: ^( MATCH_UNTIL_RANGE_HALFCLOSED $db)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MATCH_UNTIL_RANGE_HALFCLOSED, "MATCH_UNTIL_RANGE_HALFCLOSED"), root_1);
@@ -15077,7 +15171,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "eventFilterExpression"
-    // EsperEPL2Grammar.g:1104:1: eventFilterExpression : (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )? -> ^( EVENT_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? ) ;
+    // EsperEPL2Grammar.g:1106:1: eventFilterExpression : (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )? -> ^( EVENT_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? ) ;
     public final EsperEPL2GrammarParser.eventFilterExpression_return eventFilterExpression() throws RecognitionException {
         EsperEPL2GrammarParser.eventFilterExpression_return retval = new EsperEPL2GrammarParser.eventFilterExpression_return();
         retval.start = input.LT(1);
@@ -15108,28 +15202,28 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_classIdentifier=new RewriteRuleSubtreeStream(adaptor,"rule classIdentifier");
          paraphrases.push("filter specification"); 
         try {
-            // EsperEPL2Grammar.g:1107:5: ( (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )? -> ^( EVENT_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? ) )
-            // EsperEPL2Grammar.g:1107:9: (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )?
+            // EsperEPL2Grammar.g:1109:5: ( (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )? -> ^( EVENT_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? ) )
+            // EsperEPL2Grammar.g:1109:9: (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )?
             {
-            // EsperEPL2Grammar.g:1107:9: (i= IDENT EQUALS )?
-            int alt155=2;
-            int LA155_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1109:9: (i= IDENT EQUALS )?
+            int alt157=2;
+            int LA157_0 = input.LA(1);
 
-            if ( (LA155_0==IDENT) ) {
-                int LA155_1 = input.LA(2);
+            if ( (LA157_0==IDENT) ) {
+                int LA157_1 = input.LA(2);
 
-                if ( (LA155_1==EQUALS) ) {
-                    alt155=1;
+                if ( (LA157_1==EQUALS) ) {
+                    alt157=1;
                 }
             }
-            switch (alt155) {
+            switch (alt157) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1107:10: i= IDENT EQUALS
+                    // EsperEPL2Grammar.g:1109:10: i= IDENT EQUALS
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_eventFilterExpression6942); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_eventFilterExpression6990); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
-                    EQUALS429=(Token)match(input,EQUALS,FOLLOW_EQUALS_in_eventFilterExpression6944); if (state.failed) return retval; 
+                    EQUALS429=(Token)match(input,EQUALS,FOLLOW_EQUALS_in_eventFilterExpression6992); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_EQUALS.add(EQUALS429);
 
 
@@ -15138,38 +15232,38 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_classIdentifier_in_eventFilterExpression6953);
+            pushFollow(FOLLOW_classIdentifier_in_eventFilterExpression7001);
             classIdentifier430=classIdentifier();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_classIdentifier.add(classIdentifier430.getTree());
-            // EsperEPL2Grammar.g:1109:9: ( LPAREN ( expressionList )? RPAREN )?
-            int alt157=2;
-            int LA157_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1111:9: ( LPAREN ( expressionList )? RPAREN )?
+            int alt159=2;
+            int LA159_0 = input.LA(1);
 
-            if ( (LA157_0==LPAREN) ) {
-                alt157=1;
+            if ( (LA159_0==LPAREN) ) {
+                alt159=1;
             }
-            switch (alt157) {
+            switch (alt159) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1109:10: LPAREN ( expressionList )? RPAREN
+                    // EsperEPL2Grammar.g:1111:10: LPAREN ( expressionList )? RPAREN
                     {
-                    LPAREN431=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventFilterExpression6964); if (state.failed) return retval; 
+                    LPAREN431=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventFilterExpression7012); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(LPAREN431);
 
-                    // EsperEPL2Grammar.g:1109:17: ( expressionList )?
-                    int alt156=2;
-                    int LA156_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1111:17: ( expressionList )?
+                    int alt158=2;
+                    int LA158_0 = input.LA(1);
 
-                    if ( (LA156_0==WINDOW||LA156_0==ESCAPE||(LA156_0>=NOT_EXPR && LA156_0<=EVERY_EXPR)||(LA156_0>=SUM && LA156_0<=COUNT)||LA156_0==CASE||LA156_0==OUTER||(LA156_0>=JOIN && LA156_0<=FULL)||(LA156_0>=EVENTS && LA156_0<=LAST)||(LA156_0>=UNIDIRECTIONAL && LA156_0<=CURRENT_TIMESTAMP)||LA156_0==SNAPSHOT||(LA156_0>=VARIABLE && LA156_0<=AT)||(LA156_0>=BOOLEAN_TRUE && LA156_0<=VALUE_NULL)||LA156_0==NUM_DOUBLE||LA156_0==IDENT||LA156_0==LPAREN||(LA156_0>=STRING_LITERAL && LA156_0<=QUOTED_STRING_LITERAL)||(LA156_0>=PLUS && LA156_0<=MINUS)||LA156_0==LCURLY||LA156_0==NUM_INT||LA156_0==QUESTION||(LA156_0>=TICKED_STRING_LITERAL && LA156_0<=NUM_FLOAT)) ) {
-                        alt156=1;
+                    if ( (LA158_0==WINDOW||LA158_0==ESCAPE||(LA158_0>=NOT_EXPR && LA158_0<=EVERY_EXPR)||(LA158_0>=SUM && LA158_0<=COUNT)||LA158_0==CASE||LA158_0==OUTER||(LA158_0>=JOIN && LA158_0<=FULL)||(LA158_0>=EVENTS && LA158_0<=LAST)||(LA158_0>=UNIDIRECTIONAL && LA158_0<=CURRENT_TIMESTAMP)||LA158_0==SNAPSHOT||(LA158_0>=VARIABLE && LA158_0<=AT)||(LA158_0>=BOOLEAN_TRUE && LA158_0<=VALUE_NULL)||LA158_0==NUM_DOUBLE||LA158_0==IDENT||LA158_0==LPAREN||(LA158_0>=STRING_LITERAL && LA158_0<=QUOTED_STRING_LITERAL)||(LA158_0>=PLUS && LA158_0<=MINUS)||LA158_0==LCURLY||LA158_0==NUM_INT||LA158_0==QUESTION||(LA158_0>=TICKED_STRING_LITERAL && LA158_0<=NUM_FLOAT)) ) {
+                        alt158=1;
                     }
-                    switch (alt156) {
+                    switch (alt158) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1109:17: expressionList
+                            // EsperEPL2Grammar.g:1111:17: expressionList
                             {
-                            pushFollow(FOLLOW_expressionList_in_eventFilterExpression6966);
+                            pushFollow(FOLLOW_expressionList_in_eventFilterExpression7014);
                             expressionList432=expressionList();
 
                             state._fsp--;
@@ -15181,7 +15275,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     }
 
-                    RPAREN433=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventFilterExpression6969); if (state.failed) return retval; 
+                    RPAREN433=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventFilterExpression7017); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN433);
 
 
@@ -15190,18 +15284,18 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1110:9: ( propertyExpression )?
-            int alt158=2;
-            int LA158_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1112:9: ( propertyExpression )?
+            int alt160=2;
+            int LA160_0 = input.LA(1);
 
-            if ( (LA158_0==LBRACK) ) {
-                alt158=1;
+            if ( (LA160_0==LBRACK) ) {
+                alt160=1;
             }
-            switch (alt158) {
+            switch (alt160) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1110:9: propertyExpression
+                    // EsperEPL2Grammar.g:1112:9: propertyExpression
                     {
-                    pushFollow(FOLLOW_propertyExpression_in_eventFilterExpression6981);
+                    pushFollow(FOLLOW_propertyExpression_in_eventFilterExpression7029);
                     propertyExpression434=propertyExpression();
 
                     state._fsp--;
@@ -15216,7 +15310,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: i, propertyExpression, classIdentifier, expressionList
+            // elements: expressionList, classIdentifier, propertyExpression, i
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -15227,27 +15321,27 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1111:9: -> ^( EVENT_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? )
+            // 1113:9: -> ^( EVENT_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? )
             {
-                // EsperEPL2Grammar.g:1111:12: ^( EVENT_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? )
+                // EsperEPL2Grammar.g:1113:12: ^( EVENT_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_FILTER_EXPR, "EVENT_FILTER_EXPR"), root_1);
 
-                // EsperEPL2Grammar.g:1111:32: ( $i)?
+                // EsperEPL2Grammar.g:1113:32: ( $i)?
                 if ( stream_i.hasNext() ) {
                     adaptor.addChild(root_1, stream_i.nextNode());
 
                 }
                 stream_i.reset();
                 adaptor.addChild(root_1, stream_classIdentifier.nextTree());
-                // EsperEPL2Grammar.g:1111:52: ( propertyExpression )?
+                // EsperEPL2Grammar.g:1113:52: ( propertyExpression )?
                 if ( stream_propertyExpression.hasNext() ) {
                     adaptor.addChild(root_1, stream_propertyExpression.nextTree());
 
                 }
                 stream_propertyExpression.reset();
-                // EsperEPL2Grammar.g:1111:72: ( expressionList )?
+                // EsperEPL2Grammar.g:1113:72: ( expressionList )?
                 if ( stream_expressionList.hasNext() ) {
                     adaptor.addChild(root_1, stream_expressionList.nextTree());
 
@@ -15289,7 +15383,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "propertyExpression"
-    // EsperEPL2Grammar.g:1114:1: propertyExpression : propertyExpressionAtomic ( propertyExpressionAtomic )* -> ^( EVENT_FILTER_PROPERTY_EXPR ( propertyExpressionAtomic )+ ) ;
+    // EsperEPL2Grammar.g:1116:1: propertyExpression : propertyExpressionAtomic ( propertyExpressionAtomic )* -> ^( EVENT_FILTER_PROPERTY_EXPR ( propertyExpressionAtomic )+ ) ;
     public final EsperEPL2GrammarParser.propertyExpression_return propertyExpression() throws RecognitionException {
         EsperEPL2GrammarParser.propertyExpression_return retval = new EsperEPL2GrammarParser.propertyExpression_return();
         retval.start = input.LT(1);
@@ -15303,31 +15397,31 @@ public class EsperEPL2GrammarParser extends Parser {
 
         RewriteRuleSubtreeStream stream_propertyExpressionAtomic=new RewriteRuleSubtreeStream(adaptor,"rule propertyExpressionAtomic");
         try {
-            // EsperEPL2Grammar.g:1115:2: ( propertyExpressionAtomic ( propertyExpressionAtomic )* -> ^( EVENT_FILTER_PROPERTY_EXPR ( propertyExpressionAtomic )+ ) )
-            // EsperEPL2Grammar.g:1115:4: propertyExpressionAtomic ( propertyExpressionAtomic )*
+            // EsperEPL2Grammar.g:1117:2: ( propertyExpressionAtomic ( propertyExpressionAtomic )* -> ^( EVENT_FILTER_PROPERTY_EXPR ( propertyExpressionAtomic )+ ) )
+            // EsperEPL2Grammar.g:1117:4: propertyExpressionAtomic ( propertyExpressionAtomic )*
             {
-            pushFollow(FOLLOW_propertyExpressionAtomic_in_propertyExpression7026);
+            pushFollow(FOLLOW_propertyExpressionAtomic_in_propertyExpression7074);
             propertyExpressionAtomic435=propertyExpressionAtomic();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_propertyExpressionAtomic.add(propertyExpressionAtomic435.getTree());
-            // EsperEPL2Grammar.g:1115:29: ( propertyExpressionAtomic )*
-            loop159:
+            // EsperEPL2Grammar.g:1117:29: ( propertyExpressionAtomic )*
+            loop161:
             do {
-                int alt159=2;
-                int LA159_0 = input.LA(1);
+                int alt161=2;
+                int LA161_0 = input.LA(1);
 
-                if ( (LA159_0==LBRACK) ) {
-                    alt159=1;
+                if ( (LA161_0==LBRACK) ) {
+                    alt161=1;
                 }
 
 
-                switch (alt159) {
+                switch (alt161) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1115:30: propertyExpressionAtomic
+            	    // EsperEPL2Grammar.g:1117:30: propertyExpressionAtomic
             	    {
-            	    pushFollow(FOLLOW_propertyExpressionAtomic_in_propertyExpression7029);
+            	    pushFollow(FOLLOW_propertyExpressionAtomic_in_propertyExpression7077);
             	    propertyExpressionAtomic436=propertyExpressionAtomic();
 
             	    state._fsp--;
@@ -15338,7 +15432,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop159;
+            	    break loop161;
                 }
             } while (true);
 
@@ -15355,9 +15449,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1116:9: -> ^( EVENT_FILTER_PROPERTY_EXPR ( propertyExpressionAtomic )+ )
+            // 1118:9: -> ^( EVENT_FILTER_PROPERTY_EXPR ( propertyExpressionAtomic )+ )
             {
-                // EsperEPL2Grammar.g:1116:12: ^( EVENT_FILTER_PROPERTY_EXPR ( propertyExpressionAtomic )+ )
+                // EsperEPL2Grammar.g:1118:12: ^( EVENT_FILTER_PROPERTY_EXPR ( propertyExpressionAtomic )+ )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_FILTER_PROPERTY_EXPR, "EVENT_FILTER_PROPERTY_EXPR"), root_1);
@@ -15403,7 +15497,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "propertyExpressionAtomic"
-    // EsperEPL2Grammar.g:1119:1: propertyExpressionAtomic : LBRACK ( SELECT propertySelectionList FROM )? eventProperty ( AS IDENT )? ( WHERE expression )? RBRACK -> ^( EVENT_FILTER_PROPERTY_EXPR_ATOM ( propertySelectionList )? eventProperty ( IDENT )? ^( WHERE_EXPR ( expression )? ) ) ;
+    // EsperEPL2Grammar.g:1121:1: propertyExpressionAtomic : LBRACK ( SELECT propertySelectionList FROM )? eventProperty ( AS IDENT )? ( WHERE expression )? RBRACK -> ^( EVENT_FILTER_PROPERTY_EXPR_ATOM ( propertySelectionList )? eventProperty ( IDENT )? ^( WHERE_EXPR ( expression )? ) ) ;
     public final EsperEPL2GrammarParser.propertyExpressionAtomic_return propertyExpressionAtomic() throws RecognitionException {
         EsperEPL2GrammarParser.propertyExpressionAtomic_return retval = new EsperEPL2GrammarParser.propertyExpressionAtomic_return();
         retval.start = input.LT(1);
@@ -15442,33 +15536,33 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_propertySelectionList=new RewriteRuleSubtreeStream(adaptor,"rule propertySelectionList");
         RewriteRuleSubtreeStream stream_eventProperty=new RewriteRuleSubtreeStream(adaptor,"rule eventProperty");
         try {
-            // EsperEPL2Grammar.g:1120:2: ( LBRACK ( SELECT propertySelectionList FROM )? eventProperty ( AS IDENT )? ( WHERE expression )? RBRACK -> ^( EVENT_FILTER_PROPERTY_EXPR_ATOM ( propertySelectionList )? eventProperty ( IDENT )? ^( WHERE_EXPR ( expression )? ) ) )
-            // EsperEPL2Grammar.g:1120:4: LBRACK ( SELECT propertySelectionList FROM )? eventProperty ( AS IDENT )? ( WHERE expression )? RBRACK
+            // EsperEPL2Grammar.g:1122:2: ( LBRACK ( SELECT propertySelectionList FROM )? eventProperty ( AS IDENT )? ( WHERE expression )? RBRACK -> ^( EVENT_FILTER_PROPERTY_EXPR_ATOM ( propertySelectionList )? eventProperty ( IDENT )? ^( WHERE_EXPR ( expression )? ) ) )
+            // EsperEPL2Grammar.g:1122:4: LBRACK ( SELECT propertySelectionList FROM )? eventProperty ( AS IDENT )? ( WHERE expression )? RBRACK
             {
-            LBRACK437=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_propertyExpressionAtomic7059); if (state.failed) return retval; 
+            LBRACK437=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_propertyExpressionAtomic7107); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LBRACK.add(LBRACK437);
 
-            // EsperEPL2Grammar.g:1120:11: ( SELECT propertySelectionList FROM )?
-            int alt160=2;
-            int LA160_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1122:11: ( SELECT propertySelectionList FROM )?
+            int alt162=2;
+            int LA162_0 = input.LA(1);
 
-            if ( (LA160_0==SELECT) ) {
-                alt160=1;
+            if ( (LA162_0==SELECT) ) {
+                alt162=1;
             }
-            switch (alt160) {
+            switch (alt162) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1120:12: SELECT propertySelectionList FROM
+                    // EsperEPL2Grammar.g:1122:12: SELECT propertySelectionList FROM
                     {
-                    SELECT438=(Token)match(input,SELECT,FOLLOW_SELECT_in_propertyExpressionAtomic7062); if (state.failed) return retval; 
+                    SELECT438=(Token)match(input,SELECT,FOLLOW_SELECT_in_propertyExpressionAtomic7110); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_SELECT.add(SELECT438);
 
-                    pushFollow(FOLLOW_propertySelectionList_in_propertyExpressionAtomic7064);
+                    pushFollow(FOLLOW_propertySelectionList_in_propertyExpressionAtomic7112);
                     propertySelectionList439=propertySelectionList();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_propertySelectionList.add(propertySelectionList439.getTree());
-                    FROM440=(Token)match(input,FROM,FOLLOW_FROM_in_propertyExpressionAtomic7066); if (state.failed) return retval; 
+                    FROM440=(Token)match(input,FROM,FOLLOW_FROM_in_propertyExpressionAtomic7114); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_FROM.add(FROM440);
 
 
@@ -15477,27 +15571,27 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_eventProperty_in_propertyExpressionAtomic7070);
+            pushFollow(FOLLOW_eventProperty_in_propertyExpressionAtomic7118);
             eventProperty441=eventProperty();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_eventProperty.add(eventProperty441.getTree());
-            // EsperEPL2Grammar.g:1120:62: ( AS IDENT )?
-            int alt161=2;
-            int LA161_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1122:62: ( AS IDENT )?
+            int alt163=2;
+            int LA163_0 = input.LA(1);
 
-            if ( (LA161_0==AS) ) {
-                alt161=1;
+            if ( (LA163_0==AS) ) {
+                alt163=1;
             }
-            switch (alt161) {
+            switch (alt163) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1120:63: AS IDENT
+                    // EsperEPL2Grammar.g:1122:63: AS IDENT
                     {
-                    AS442=(Token)match(input,AS,FOLLOW_AS_in_propertyExpressionAtomic7073); if (state.failed) return retval; 
+                    AS442=(Token)match(input,AS,FOLLOW_AS_in_propertyExpressionAtomic7121); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_AS.add(AS442);
 
-                    IDENT443=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyExpressionAtomic7075); if (state.failed) return retval; 
+                    IDENT443=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyExpressionAtomic7123); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(IDENT443);
 
 
@@ -15506,21 +15600,21 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1120:74: ( WHERE expression )?
-            int alt162=2;
-            int LA162_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1122:74: ( WHERE expression )?
+            int alt164=2;
+            int LA164_0 = input.LA(1);
 
-            if ( (LA162_0==WHERE) ) {
-                alt162=1;
+            if ( (LA164_0==WHERE) ) {
+                alt164=1;
             }
-            switch (alt162) {
+            switch (alt164) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1120:75: WHERE expression
+                    // EsperEPL2Grammar.g:1122:75: WHERE expression
                     {
-                    WHERE444=(Token)match(input,WHERE,FOLLOW_WHERE_in_propertyExpressionAtomic7080); if (state.failed) return retval; 
+                    WHERE444=(Token)match(input,WHERE,FOLLOW_WHERE_in_propertyExpressionAtomic7128); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_WHERE.add(WHERE444);
 
-                    pushFollow(FOLLOW_expression_in_propertyExpressionAtomic7082);
+                    pushFollow(FOLLOW_expression_in_propertyExpressionAtomic7130);
                     expression445=expression();
 
                     state._fsp--;
@@ -15532,13 +15626,13 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            RBRACK446=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_propertyExpressionAtomic7086); if (state.failed) return retval; 
+            RBRACK446=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_propertyExpressionAtomic7134); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK446);
 
 
 
             // AST REWRITE
-            // elements: eventProperty, IDENT, propertySelectionList, expression
+            // elements: expression, IDENT, eventProperty, propertySelectionList
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -15548,32 +15642,32 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1121:9: -> ^( EVENT_FILTER_PROPERTY_EXPR_ATOM ( propertySelectionList )? eventProperty ( IDENT )? ^( WHERE_EXPR ( expression )? ) )
+            // 1123:9: -> ^( EVENT_FILTER_PROPERTY_EXPR_ATOM ( propertySelectionList )? eventProperty ( IDENT )? ^( WHERE_EXPR ( expression )? ) )
             {
-                // EsperEPL2Grammar.g:1121:12: ^( EVENT_FILTER_PROPERTY_EXPR_ATOM ( propertySelectionList )? eventProperty ( IDENT )? ^( WHERE_EXPR ( expression )? ) )
+                // EsperEPL2Grammar.g:1123:12: ^( EVENT_FILTER_PROPERTY_EXPR_ATOM ( propertySelectionList )? eventProperty ( IDENT )? ^( WHERE_EXPR ( expression )? ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_FILTER_PROPERTY_EXPR_ATOM, "EVENT_FILTER_PROPERTY_EXPR_ATOM"), root_1);
 
-                // EsperEPL2Grammar.g:1121:46: ( propertySelectionList )?
+                // EsperEPL2Grammar.g:1123:46: ( propertySelectionList )?
                 if ( stream_propertySelectionList.hasNext() ) {
                     adaptor.addChild(root_1, stream_propertySelectionList.nextTree());
 
                 }
                 stream_propertySelectionList.reset();
                 adaptor.addChild(root_1, stream_eventProperty.nextTree());
-                // EsperEPL2Grammar.g:1121:83: ( IDENT )?
+                // EsperEPL2Grammar.g:1123:83: ( IDENT )?
                 if ( stream_IDENT.hasNext() ) {
                     adaptor.addChild(root_1, stream_IDENT.nextNode());
 
                 }
                 stream_IDENT.reset();
-                // EsperEPL2Grammar.g:1121:90: ^( WHERE_EXPR ( expression )? )
+                // EsperEPL2Grammar.g:1123:90: ^( WHERE_EXPR ( expression )? )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(WHERE_EXPR, "WHERE_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1121:103: ( expression )?
+                // EsperEPL2Grammar.g:1123:103: ( expression )?
                 if ( stream_expression.hasNext() ) {
                     adaptor.addChild(root_2, stream_expression.nextTree());
 
@@ -15615,7 +15709,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "propertySelectionList"
-    // EsperEPL2Grammar.g:1124:1: propertySelectionList : propertySelectionListElement ( COMMA propertySelectionListElement )* ;
+    // EsperEPL2Grammar.g:1126:1: propertySelectionList : propertySelectionListElement ( COMMA propertySelectionListElement )* ;
     public final EsperEPL2GrammarParser.propertySelectionList_return propertySelectionList() throws RecognitionException {
         EsperEPL2GrammarParser.propertySelectionList_return retval = new EsperEPL2GrammarParser.propertySelectionList_return();
         retval.start = input.LT(1);
@@ -15631,34 +15725,34 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree COMMA448_tree=null;
 
         try {
-            // EsperEPL2Grammar.g:1125:2: ( propertySelectionListElement ( COMMA propertySelectionListElement )* )
-            // EsperEPL2Grammar.g:1125:4: propertySelectionListElement ( COMMA propertySelectionListElement )*
+            // EsperEPL2Grammar.g:1127:2: ( propertySelectionListElement ( COMMA propertySelectionListElement )* )
+            // EsperEPL2Grammar.g:1127:4: propertySelectionListElement ( COMMA propertySelectionListElement )*
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_propertySelectionListElement_in_propertySelectionList7136);
+            pushFollow(FOLLOW_propertySelectionListElement_in_propertySelectionList7184);
             propertySelectionListElement447=propertySelectionListElement();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, propertySelectionListElement447.getTree());
-            // EsperEPL2Grammar.g:1125:33: ( COMMA propertySelectionListElement )*
-            loop163:
+            // EsperEPL2Grammar.g:1127:33: ( COMMA propertySelectionListElement )*
+            loop165:
             do {
-                int alt163=2;
-                int LA163_0 = input.LA(1);
+                int alt165=2;
+                int LA165_0 = input.LA(1);
 
-                if ( (LA163_0==COMMA) ) {
-                    alt163=1;
+                if ( (LA165_0==COMMA) ) {
+                    alt165=1;
                 }
 
 
-                switch (alt163) {
+                switch (alt165) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1125:34: COMMA propertySelectionListElement
+            	    // EsperEPL2Grammar.g:1127:34: COMMA propertySelectionListElement
             	    {
-            	    COMMA448=(Token)match(input,COMMA,FOLLOW_COMMA_in_propertySelectionList7139); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_propertySelectionListElement_in_propertySelectionList7142);
+            	    COMMA448=(Token)match(input,COMMA,FOLLOW_COMMA_in_propertySelectionList7187); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_propertySelectionListElement_in_propertySelectionList7190);
             	    propertySelectionListElement449=propertySelectionListElement();
 
             	    state._fsp--;
@@ -15669,7 +15763,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop163;
+            	    break loop165;
                 }
             } while (true);
 
@@ -15700,7 +15794,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "propertySelectionListElement"
-    // EsperEPL2Grammar.g:1128:1: propertySelectionListElement : (s= STAR -> PROPERTY_WILDCARD_SELECT[$s] | ( propertyStreamSelector )=> propertyStreamSelector | expression ( AS i= keywordAllowedIdent )? -> {identifier != null}? ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] ) -> ^( PROPERTY_SELECTION_ELEMENT_EXPR expression ) );
+    // EsperEPL2Grammar.g:1130:1: propertySelectionListElement : (s= STAR -> PROPERTY_WILDCARD_SELECT[$s] | ( propertyStreamSelector )=> propertyStreamSelector | expression ( AS i= keywordAllowedIdent )? -> {identifier != null}? ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] ) -> ^( PROPERTY_SELECTION_ELEMENT_EXPR expression ) );
     public final EsperEPL2GrammarParser.propertySelectionListElement_return propertySelectionListElement() throws RecognitionException {
         EsperEPL2GrammarParser.propertySelectionListElement_return retval = new EsperEPL2GrammarParser.propertySelectionListElement_return();
         retval.start = input.LT(1);
@@ -15724,14 +15818,14 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_keywordAllowedIdent=new RewriteRuleSubtreeStream(adaptor,"rule keywordAllowedIdent");
          String identifier = null; 
         try {
-            // EsperEPL2Grammar.g:1130:2: (s= STAR -> PROPERTY_WILDCARD_SELECT[$s] | ( propertyStreamSelector )=> propertyStreamSelector | expression ( AS i= keywordAllowedIdent )? -> {identifier != null}? ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] ) -> ^( PROPERTY_SELECTION_ELEMENT_EXPR expression ) )
-            int alt165=3;
-            alt165 = dfa165.predict(input);
-            switch (alt165) {
+            // EsperEPL2Grammar.g:1132:2: (s= STAR -> PROPERTY_WILDCARD_SELECT[$s] | ( propertyStreamSelector )=> propertyStreamSelector | expression ( AS i= keywordAllowedIdent )? -> {identifier != null}? ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] ) -> ^( PROPERTY_SELECTION_ELEMENT_EXPR expression ) )
+            int alt167=3;
+            alt167 = dfa167.predict(input);
+            switch (alt167) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1130:7: s= STAR
+                    // EsperEPL2Grammar.g:1132:7: s= STAR
                     {
-                    s=(Token)match(input,STAR,FOLLOW_STAR_in_propertySelectionListElement7168); if (state.failed) return retval; 
+                    s=(Token)match(input,STAR,FOLLOW_STAR_in_propertySelectionListElement7216); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_STAR.add(s);
 
 
@@ -15747,7 +15841,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1130:14: -> PROPERTY_WILDCARD_SELECT[$s]
+                    // 1132:14: -> PROPERTY_WILDCARD_SELECT[$s]
                     {
                         adaptor.addChild(root_0, (CommonTree)adaptor.create(PROPERTY_WILDCARD_SELECT, s));
 
@@ -15757,11 +15851,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1131:4: ( propertyStreamSelector )=> propertyStreamSelector
+                    // EsperEPL2Grammar.g:1133:4: ( propertyStreamSelector )=> propertyStreamSelector
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_propertyStreamSelector_in_propertySelectionListElement7184);
+                    pushFollow(FOLLOW_propertyStreamSelector_in_propertySelectionListElement7232);
                     propertyStreamSelector450=propertyStreamSelector();
 
                     state._fsp--;
@@ -15771,29 +15865,29 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1132:4: expression ( AS i= keywordAllowedIdent )?
+                    // EsperEPL2Grammar.g:1134:4: expression ( AS i= keywordAllowedIdent )?
                     {
-                    pushFollow(FOLLOW_expression_in_propertySelectionListElement7189);
+                    pushFollow(FOLLOW_expression_in_propertySelectionListElement7237);
                     expression451=expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_expression.add(expression451.getTree());
-                    // EsperEPL2Grammar.g:1132:15: ( AS i= keywordAllowedIdent )?
-                    int alt164=2;
-                    int LA164_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1134:15: ( AS i= keywordAllowedIdent )?
+                    int alt166=2;
+                    int LA166_0 = input.LA(1);
 
-                    if ( (LA164_0==AS) ) {
-                        alt164=1;
+                    if ( (LA166_0==AS) ) {
+                        alt166=1;
                     }
-                    switch (alt164) {
+                    switch (alt166) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1132:16: AS i= keywordAllowedIdent
+                            // EsperEPL2Grammar.g:1134:16: AS i= keywordAllowedIdent
                             {
-                            AS452=(Token)match(input,AS,FOLLOW_AS_in_propertySelectionListElement7192); if (state.failed) return retval; 
+                            AS452=(Token)match(input,AS,FOLLOW_AS_in_propertySelectionListElement7240); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_AS.add(AS452);
 
-                            pushFollow(FOLLOW_keywordAllowedIdent_in_propertySelectionListElement7196);
+                            pushFollow(FOLLOW_keywordAllowedIdent_in_propertySelectionListElement7244);
                             i=keywordAllowedIdent();
 
                             state._fsp--;
@@ -15821,9 +15915,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1133:3: -> {identifier != null}? ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] )
+                    // 1135:3: -> {identifier != null}? ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] )
                     if (identifier != null) {
-                        // EsperEPL2Grammar.g:1133:28: ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] )
+                        // EsperEPL2Grammar.g:1135:28: ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] )
                         {
                         CommonTree root_1 = (CommonTree)adaptor.nil();
                         root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(PROPERTY_SELECTION_ELEMENT_EXPR, "PROPERTY_SELECTION_ELEMENT_EXPR"), root_1);
@@ -15835,9 +15929,9 @@ public class EsperEPL2GrammarParser extends Parser {
                         }
 
                     }
-                    else // 1134:3: -> ^( PROPERTY_SELECTION_ELEMENT_EXPR expression )
+                    else // 1136:3: -> ^( PROPERTY_SELECTION_ELEMENT_EXPR expression )
                     {
-                        // EsperEPL2Grammar.g:1134:6: ^( PROPERTY_SELECTION_ELEMENT_EXPR expression )
+                        // EsperEPL2Grammar.g:1136:6: ^( PROPERTY_SELECTION_ELEMENT_EXPR expression )
                         {
                         CommonTree root_1 = (CommonTree)adaptor.nil();
                         root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(PROPERTY_SELECTION_ELEMENT_EXPR, "PROPERTY_SELECTION_ELEMENT_EXPR"), root_1);
@@ -15878,7 +15972,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "propertyStreamSelector"
-    // EsperEPL2Grammar.g:1137:1: propertyStreamSelector : s= IDENT DOT STAR ( AS i= IDENT )? -> ^( PROPERTY_SELECTION_STREAM $s ( $i)? ) ;
+    // EsperEPL2Grammar.g:1139:1: propertyStreamSelector : s= IDENT DOT STAR ( AS i= IDENT )? -> ^( PROPERTY_SELECTION_STREAM $s ( $i)? ) ;
     public final EsperEPL2GrammarParser.propertyStreamSelector_return propertyStreamSelector() throws RecognitionException {
         EsperEPL2GrammarParser.propertyStreamSelector_return retval = new EsperEPL2GrammarParser.propertyStreamSelector_return();
         retval.start = input.LT(1);
@@ -15902,33 +15996,33 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
 
         try {
-            // EsperEPL2Grammar.g:1138:2: (s= IDENT DOT STAR ( AS i= IDENT )? -> ^( PROPERTY_SELECTION_STREAM $s ( $i)? ) )
-            // EsperEPL2Grammar.g:1138:4: s= IDENT DOT STAR ( AS i= IDENT )?
+            // EsperEPL2Grammar.g:1140:2: (s= IDENT DOT STAR ( AS i= IDENT )? -> ^( PROPERTY_SELECTION_STREAM $s ( $i)? ) )
+            // EsperEPL2Grammar.g:1140:4: s= IDENT DOT STAR ( AS i= IDENT )?
             {
-            s=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyStreamSelector7240); if (state.failed) return retval; 
+            s=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyStreamSelector7288); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_IDENT.add(s);
 
-            DOT453=(Token)match(input,DOT,FOLLOW_DOT_in_propertyStreamSelector7242); if (state.failed) return retval; 
+            DOT453=(Token)match(input,DOT,FOLLOW_DOT_in_propertyStreamSelector7290); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_DOT.add(DOT453);
 
-            STAR454=(Token)match(input,STAR,FOLLOW_STAR_in_propertyStreamSelector7244); if (state.failed) return retval; 
+            STAR454=(Token)match(input,STAR,FOLLOW_STAR_in_propertyStreamSelector7292); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_STAR.add(STAR454);
 
-            // EsperEPL2Grammar.g:1138:21: ( AS i= IDENT )?
-            int alt166=2;
-            int LA166_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1140:21: ( AS i= IDENT )?
+            int alt168=2;
+            int LA168_0 = input.LA(1);
 
-            if ( (LA166_0==AS) ) {
-                alt166=1;
+            if ( (LA168_0==AS) ) {
+                alt168=1;
             }
-            switch (alt166) {
+            switch (alt168) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1138:22: AS i= IDENT
+                    // EsperEPL2Grammar.g:1140:22: AS i= IDENT
                     {
-                    AS455=(Token)match(input,AS,FOLLOW_AS_in_propertyStreamSelector7247); if (state.failed) return retval; 
+                    AS455=(Token)match(input,AS,FOLLOW_AS_in_propertyStreamSelector7295); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_AS.add(AS455);
 
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyStreamSelector7251); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyStreamSelector7299); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
@@ -15940,7 +16034,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: i, s
+            // elements: s, i
             // token labels: s, i
             // rule labels: retval
             // token list labels: 
@@ -15952,15 +16046,15 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1139:3: -> ^( PROPERTY_SELECTION_STREAM $s ( $i)? )
+            // 1141:3: -> ^( PROPERTY_SELECTION_STREAM $s ( $i)? )
             {
-                // EsperEPL2Grammar.g:1139:6: ^( PROPERTY_SELECTION_STREAM $s ( $i)? )
+                // EsperEPL2Grammar.g:1141:6: ^( PROPERTY_SELECTION_STREAM $s ( $i)? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(PROPERTY_SELECTION_STREAM, "PROPERTY_SELECTION_STREAM"), root_1);
 
                 adaptor.addChild(root_1, stream_s.nextNode());
-                // EsperEPL2Grammar.g:1139:37: ( $i)?
+                // EsperEPL2Grammar.g:1141:37: ( $i)?
                 if ( stream_i.hasNext() ) {
                     adaptor.addChild(root_1, stream_i.nextNode());
 
@@ -15999,7 +16093,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "patternFilterExpression"
-    // EsperEPL2Grammar.g:1142:1: patternFilterExpression : (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )? -> ^( PATTERN_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? ) ;
+    // EsperEPL2Grammar.g:1144:1: patternFilterExpression : (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )? -> ^( PATTERN_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? ) ;
     public final EsperEPL2GrammarParser.patternFilterExpression_return patternFilterExpression() throws RecognitionException {
         EsperEPL2GrammarParser.patternFilterExpression_return retval = new EsperEPL2GrammarParser.patternFilterExpression_return();
         retval.start = input.LT(1);
@@ -16030,28 +16124,28 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_classIdentifier=new RewriteRuleSubtreeStream(adaptor,"rule classIdentifier");
          paraphrases.push("filter specification"); 
         try {
-            // EsperEPL2Grammar.g:1145:5: ( (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )? -> ^( PATTERN_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? ) )
-            // EsperEPL2Grammar.g:1145:9: (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )?
+            // EsperEPL2Grammar.g:1147:5: ( (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )? -> ^( PATTERN_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? ) )
+            // EsperEPL2Grammar.g:1147:9: (i= IDENT EQUALS )? classIdentifier ( LPAREN ( expressionList )? RPAREN )? ( propertyExpression )?
             {
-            // EsperEPL2Grammar.g:1145:9: (i= IDENT EQUALS )?
-            int alt167=2;
-            int LA167_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1147:9: (i= IDENT EQUALS )?
+            int alt169=2;
+            int LA169_0 = input.LA(1);
 
-            if ( (LA167_0==IDENT) ) {
-                int LA167_1 = input.LA(2);
+            if ( (LA169_0==IDENT) ) {
+                int LA169_1 = input.LA(2);
 
-                if ( (LA167_1==EQUALS) ) {
-                    alt167=1;
+                if ( (LA169_1==EQUALS) ) {
+                    alt169=1;
                 }
             }
-            switch (alt167) {
+            switch (alt169) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1145:10: i= IDENT EQUALS
+                    // EsperEPL2Grammar.g:1147:10: i= IDENT EQUALS
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_patternFilterExpression7298); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_patternFilterExpression7346); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
-                    EQUALS456=(Token)match(input,EQUALS,FOLLOW_EQUALS_in_patternFilterExpression7300); if (state.failed) return retval; 
+                    EQUALS456=(Token)match(input,EQUALS,FOLLOW_EQUALS_in_patternFilterExpression7348); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_EQUALS.add(EQUALS456);
 
 
@@ -16060,38 +16154,38 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_classIdentifier_in_patternFilterExpression7309);
+            pushFollow(FOLLOW_classIdentifier_in_patternFilterExpression7357);
             classIdentifier457=classIdentifier();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_classIdentifier.add(classIdentifier457.getTree());
-            // EsperEPL2Grammar.g:1147:9: ( LPAREN ( expressionList )? RPAREN )?
-            int alt169=2;
-            int LA169_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1149:9: ( LPAREN ( expressionList )? RPAREN )?
+            int alt171=2;
+            int LA171_0 = input.LA(1);
 
-            if ( (LA169_0==LPAREN) ) {
-                alt169=1;
+            if ( (LA171_0==LPAREN) ) {
+                alt171=1;
             }
-            switch (alt169) {
+            switch (alt171) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1147:10: LPAREN ( expressionList )? RPAREN
+                    // EsperEPL2Grammar.g:1149:10: LPAREN ( expressionList )? RPAREN
                     {
-                    LPAREN458=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_patternFilterExpression7320); if (state.failed) return retval; 
+                    LPAREN458=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_patternFilterExpression7368); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(LPAREN458);
 
-                    // EsperEPL2Grammar.g:1147:17: ( expressionList )?
-                    int alt168=2;
-                    int LA168_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1149:17: ( expressionList )?
+                    int alt170=2;
+                    int LA170_0 = input.LA(1);
 
-                    if ( (LA168_0==WINDOW||LA168_0==ESCAPE||(LA168_0>=NOT_EXPR && LA168_0<=EVERY_EXPR)||(LA168_0>=SUM && LA168_0<=COUNT)||LA168_0==CASE||LA168_0==OUTER||(LA168_0>=JOIN && LA168_0<=FULL)||(LA168_0>=EVENTS && LA168_0<=LAST)||(LA168_0>=UNIDIRECTIONAL && LA168_0<=CURRENT_TIMESTAMP)||LA168_0==SNAPSHOT||(LA168_0>=VARIABLE && LA168_0<=AT)||(LA168_0>=BOOLEAN_TRUE && LA168_0<=VALUE_NULL)||LA168_0==NUM_DOUBLE||LA168_0==IDENT||LA168_0==LPAREN||(LA168_0>=STRING_LITERAL && LA168_0<=QUOTED_STRING_LITERAL)||(LA168_0>=PLUS && LA168_0<=MINUS)||LA168_0==LCURLY||LA168_0==NUM_INT||LA168_0==QUESTION||(LA168_0>=TICKED_STRING_LITERAL && LA168_0<=NUM_FLOAT)) ) {
-                        alt168=1;
+                    if ( (LA170_0==WINDOW||LA170_0==ESCAPE||(LA170_0>=NOT_EXPR && LA170_0<=EVERY_EXPR)||(LA170_0>=SUM && LA170_0<=COUNT)||LA170_0==CASE||LA170_0==OUTER||(LA170_0>=JOIN && LA170_0<=FULL)||(LA170_0>=EVENTS && LA170_0<=LAST)||(LA170_0>=UNIDIRECTIONAL && LA170_0<=CURRENT_TIMESTAMP)||LA170_0==SNAPSHOT||(LA170_0>=VARIABLE && LA170_0<=AT)||(LA170_0>=BOOLEAN_TRUE && LA170_0<=VALUE_NULL)||LA170_0==NUM_DOUBLE||LA170_0==IDENT||LA170_0==LPAREN||(LA170_0>=STRING_LITERAL && LA170_0<=QUOTED_STRING_LITERAL)||(LA170_0>=PLUS && LA170_0<=MINUS)||LA170_0==LCURLY||LA170_0==NUM_INT||LA170_0==QUESTION||(LA170_0>=TICKED_STRING_LITERAL && LA170_0<=NUM_FLOAT)) ) {
+                        alt170=1;
                     }
-                    switch (alt168) {
+                    switch (alt170) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1147:17: expressionList
+                            // EsperEPL2Grammar.g:1149:17: expressionList
                             {
-                            pushFollow(FOLLOW_expressionList_in_patternFilterExpression7322);
+                            pushFollow(FOLLOW_expressionList_in_patternFilterExpression7370);
                             expressionList459=expressionList();
 
                             state._fsp--;
@@ -16103,7 +16197,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     }
 
-                    RPAREN460=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_patternFilterExpression7325); if (state.failed) return retval; 
+                    RPAREN460=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_patternFilterExpression7373); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN460);
 
 
@@ -16112,18 +16206,18 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1148:9: ( propertyExpression )?
-            int alt170=2;
-            int LA170_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1150:9: ( propertyExpression )?
+            int alt172=2;
+            int LA172_0 = input.LA(1);
 
-            if ( (LA170_0==LBRACK) ) {
-                alt170=1;
+            if ( (LA172_0==LBRACK) ) {
+                alt172=1;
             }
-            switch (alt170) {
+            switch (alt172) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1148:9: propertyExpression
+                    // EsperEPL2Grammar.g:1150:9: propertyExpression
                     {
-                    pushFollow(FOLLOW_propertyExpression_in_patternFilterExpression7337);
+                    pushFollow(FOLLOW_propertyExpression_in_patternFilterExpression7385);
                     propertyExpression461=propertyExpression();
 
                     state._fsp--;
@@ -16138,7 +16232,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: i, propertyExpression, expressionList, classIdentifier
+            // elements: expressionList, i, classIdentifier, propertyExpression
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -16149,27 +16243,27 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1149:9: -> ^( PATTERN_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? )
+            // 1151:9: -> ^( PATTERN_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? )
             {
-                // EsperEPL2Grammar.g:1149:12: ^( PATTERN_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? )
+                // EsperEPL2Grammar.g:1151:12: ^( PATTERN_FILTER_EXPR ( $i)? classIdentifier ( propertyExpression )? ( expressionList )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(PATTERN_FILTER_EXPR, "PATTERN_FILTER_EXPR"), root_1);
 
-                // EsperEPL2Grammar.g:1149:34: ( $i)?
+                // EsperEPL2Grammar.g:1151:34: ( $i)?
                 if ( stream_i.hasNext() ) {
                     adaptor.addChild(root_1, stream_i.nextNode());
 
                 }
                 stream_i.reset();
                 adaptor.addChild(root_1, stream_classIdentifier.nextTree());
-                // EsperEPL2Grammar.g:1149:54: ( propertyExpression )?
+                // EsperEPL2Grammar.g:1151:54: ( propertyExpression )?
                 if ( stream_propertyExpression.hasNext() ) {
                     adaptor.addChild(root_1, stream_propertyExpression.nextTree());
 
                 }
                 stream_propertyExpression.reset();
-                // EsperEPL2Grammar.g:1149:74: ( expressionList )?
+                // EsperEPL2Grammar.g:1151:74: ( expressionList )?
                 if ( stream_expressionList.hasNext() ) {
                     adaptor.addChild(root_1, stream_expressionList.nextTree());
 
@@ -16211,7 +16305,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "classIdentifier"
-    // EsperEPL2Grammar.g:1152:1: classIdentifier : i1= escapableIdent ( DOT i2= escapableIdent )* -> ^( CLASS_IDENT[identifier] ) ;
+    // EsperEPL2Grammar.g:1154:1: classIdentifier : i1= escapableIdent ( DOT i2= escapableIdent )* -> ^( CLASS_IDENT[identifier] ) ;
     public final EsperEPL2GrammarParser.classIdentifier_return classIdentifier() throws RecognitionException {
         EsperEPL2GrammarParser.classIdentifier_return retval = new EsperEPL2GrammarParser.classIdentifier_return();
         retval.start = input.LT(1);
@@ -16229,10 +16323,10 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_escapableIdent=new RewriteRuleSubtreeStream(adaptor,"rule escapableIdent");
          String identifier = ""; 
         try {
-            // EsperEPL2Grammar.g:1154:2: (i1= escapableIdent ( DOT i2= escapableIdent )* -> ^( CLASS_IDENT[identifier] ) )
-            // EsperEPL2Grammar.g:1154:4: i1= escapableIdent ( DOT i2= escapableIdent )*
+            // EsperEPL2Grammar.g:1156:2: (i1= escapableIdent ( DOT i2= escapableIdent )* -> ^( CLASS_IDENT[identifier] ) )
+            // EsperEPL2Grammar.g:1156:4: i1= escapableIdent ( DOT i2= escapableIdent )*
             {
-            pushFollow(FOLLOW_escapableIdent_in_classIdentifier7387);
+            pushFollow(FOLLOW_escapableIdent_in_classIdentifier7435);
             i1=escapableIdent();
 
             state._fsp--;
@@ -16241,40 +16335,40 @@ public class EsperEPL2GrammarParser extends Parser {
             if ( state.backtracking==0 ) {
                identifier = (i1!=null?i1.result:null); 
             }
-            // EsperEPL2Grammar.g:1155:6: ( DOT i2= escapableIdent )*
-            loop171:
+            // EsperEPL2Grammar.g:1157:6: ( DOT i2= escapableIdent )*
+            loop173:
             do {
-                int alt171=2;
-                int LA171_0 = input.LA(1);
+                int alt173=2;
+                int LA173_0 = input.LA(1);
 
-                if ( (LA171_0==DOT) ) {
-                    int LA171_4 = input.LA(2);
+                if ( (LA173_0==DOT) ) {
+                    int LA173_4 = input.LA(2);
 
-                    if ( (LA171_4==IDENT) ) {
-                        int LA171_33 = input.LA(3);
+                    if ( (LA173_4==IDENT) ) {
+                        int LA173_33 = input.LA(3);
 
-                        if ( (LA171_33==EOF||(LA171_33>=OR_EXPR && LA171_33<=AND_EXPR)||(LA171_33>=WHERE && LA171_33<=AS)||LA171_33==SELECT||(LA171_33>=INNER && LA171_33<=ON)||(LA171_33>=GROUP && LA171_33<=HAVING)||LA171_33==OUTPUT||LA171_33==INSERT||LA171_33==ORDER||(LA171_33>=UNIDIRECTIONAL && LA171_33<=RETAININTERSECTION)||LA171_33==DELETE||LA171_33==SET||LA171_33==UNTIL||LA171_33==ROW_LIMIT_EXPR||(LA171_33>=IDENT && LA171_33<=COMMA)||(LA171_33>=DOT && LA171_33<=RPAREN)||(LA171_33>=LBRACK && LA171_33<=RBRACK)||LA171_33==FOLLOWED_BY) ) {
-                            alt171=1;
+                        if ( (LA173_33==EOF||(LA173_33>=OR_EXPR && LA173_33<=AND_EXPR)||(LA173_33>=WHERE && LA173_33<=AS)||LA173_33==SELECT||(LA173_33>=INNER && LA173_33<=ON)||(LA173_33>=GROUP && LA173_33<=HAVING)||LA173_33==OUTPUT||LA173_33==INSERT||LA173_33==ORDER||(LA173_33>=UNIDIRECTIONAL && LA173_33<=RETAININTERSECTION)||LA173_33==DELETE||LA173_33==SET||LA173_33==UNTIL||LA173_33==ROW_LIMIT_EXPR||(LA173_33>=IDENT && LA173_33<=COMMA)||(LA173_33>=DOT && LA173_33<=RPAREN)||(LA173_33>=LBRACK && LA173_33<=RBRACK)||LA173_33==FOLLOWED_BY) ) {
+                            alt173=1;
                         }
 
 
                     }
-                    else if ( (LA171_4==TICKED_STRING_LITERAL) ) {
-                        alt171=1;
+                    else if ( (LA173_4==TICKED_STRING_LITERAL) ) {
+                        alt173=1;
                     }
 
 
                 }
 
 
-                switch (alt171) {
+                switch (alt173) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1156:8: DOT i2= escapableIdent
+            	    // EsperEPL2Grammar.g:1158:8: DOT i2= escapableIdent
             	    {
-            	    DOT462=(Token)match(input,DOT,FOLLOW_DOT_in_classIdentifier7406); if (state.failed) return retval; 
+            	    DOT462=(Token)match(input,DOT,FOLLOW_DOT_in_classIdentifier7454); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_DOT.add(DOT462);
 
-            	    pushFollow(FOLLOW_escapableIdent_in_classIdentifier7410);
+            	    pushFollow(FOLLOW_escapableIdent_in_classIdentifier7458);
             	    i2=escapableIdent();
 
             	    state._fsp--;
@@ -16288,7 +16382,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop171;
+            	    break loop173;
                 }
             } while (true);
 
@@ -16305,9 +16399,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1158:6: -> ^( CLASS_IDENT[identifier] )
+            // 1160:6: -> ^( CLASS_IDENT[identifier] )
             {
-                // EsperEPL2Grammar.g:1158:9: ^( CLASS_IDENT[identifier] )
+                // EsperEPL2Grammar.g:1160:9: ^( CLASS_IDENT[identifier] )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(CLASS_IDENT, identifier), root_1);
@@ -16344,7 +16438,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "classIdentifierNonGreedy"
-    // EsperEPL2Grammar.g:1161:1: classIdentifierNonGreedy : i1= escapableIdent ( options {greedy=false; } : DOT i2= escapableIdent )* -> ^( CLASS_IDENT[identifier] ) ;
+    // EsperEPL2Grammar.g:1163:1: classIdentifierNonGreedy : i1= escapableIdent ( options {greedy=false; } : DOT i2= escapableIdent )* -> ^( CLASS_IDENT[identifier] ) ;
     public final EsperEPL2GrammarParser.classIdentifierNonGreedy_return classIdentifierNonGreedy() throws RecognitionException {
         EsperEPL2GrammarParser.classIdentifierNonGreedy_return retval = new EsperEPL2GrammarParser.classIdentifierNonGreedy_return();
         retval.start = input.LT(1);
@@ -16362,10 +16456,10 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_escapableIdent=new RewriteRuleSubtreeStream(adaptor,"rule escapableIdent");
          String identifier = ""; 
         try {
-            // EsperEPL2Grammar.g:1163:2: (i1= escapableIdent ( options {greedy=false; } : DOT i2= escapableIdent )* -> ^( CLASS_IDENT[identifier] ) )
-            // EsperEPL2Grammar.g:1163:4: i1= escapableIdent ( options {greedy=false; } : DOT i2= escapableIdent )*
+            // EsperEPL2Grammar.g:1165:2: (i1= escapableIdent ( options {greedy=false; } : DOT i2= escapableIdent )* -> ^( CLASS_IDENT[identifier] ) )
+            // EsperEPL2Grammar.g:1165:4: i1= escapableIdent ( options {greedy=false; } : DOT i2= escapableIdent )*
             {
-            pushFollow(FOLLOW_escapableIdent_in_classIdentifierNonGreedy7455);
+            pushFollow(FOLLOW_escapableIdent_in_classIdentifierNonGreedy7503);
             i1=escapableIdent();
 
             state._fsp--;
@@ -16374,23 +16468,23 @@ public class EsperEPL2GrammarParser extends Parser {
             if ( state.backtracking==0 ) {
                identifier = (i1!=null?i1.result:null); 
             }
-            // EsperEPL2Grammar.g:1164:6: ( options {greedy=false; } : DOT i2= escapableIdent )*
-            loop172:
+            // EsperEPL2Grammar.g:1166:6: ( options {greedy=false; } : DOT i2= escapableIdent )*
+            loop174:
             do {
-                int alt172=2;
-                int LA172_0 = input.LA(1);
+                int alt174=2;
+                int LA174_0 = input.LA(1);
 
-                if ( (LA172_0==DOT) ) {
+                if ( (LA174_0==DOT) ) {
                     switch ( input.LA(2) ) {
                     case IDENT:
                         {
-                        int LA172_2 = input.LA(3);
+                        int LA174_2 = input.LA(3);
 
-                        if ( (LA172_2==LPAREN) ) {
-                            alt172=2;
+                        if ( (LA174_2==LPAREN) ) {
+                            alt174=2;
                         }
-                        else if ( (LA172_2==DOT) ) {
-                            alt172=1;
+                        else if ( (LA174_2==DOT) ) {
+                            alt174=1;
                         }
 
 
@@ -16398,13 +16492,13 @@ public class EsperEPL2GrammarParser extends Parser {
                         break;
                     case TICKED_STRING_LITERAL:
                         {
-                        alt172=1;
+                        alt174=1;
                         }
                         break;
                     case MAX:
                     case MIN:
                         {
-                        alt172=2;
+                        alt174=2;
                         }
                         break;
 
@@ -16413,14 +16507,14 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
 
-                switch (alt172) {
+                switch (alt174) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1166:8: DOT i2= escapableIdent
+            	    // EsperEPL2Grammar.g:1168:8: DOT i2= escapableIdent
             	    {
-            	    DOT463=(Token)match(input,DOT,FOLLOW_DOT_in_classIdentifierNonGreedy7490); if (state.failed) return retval; 
+            	    DOT463=(Token)match(input,DOT,FOLLOW_DOT_in_classIdentifierNonGreedy7538); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_DOT.add(DOT463);
 
-            	    pushFollow(FOLLOW_escapableIdent_in_classIdentifierNonGreedy7494);
+            	    pushFollow(FOLLOW_escapableIdent_in_classIdentifierNonGreedy7542);
             	    i2=escapableIdent();
 
             	    state._fsp--;
@@ -16434,7 +16528,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop172;
+            	    break loop174;
                 }
             } while (true);
 
@@ -16451,9 +16545,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1168:6: -> ^( CLASS_IDENT[identifier] )
+            // 1170:6: -> ^( CLASS_IDENT[identifier] )
             {
-                // EsperEPL2Grammar.g:1168:9: ^( CLASS_IDENT[identifier] )
+                // EsperEPL2Grammar.g:1170:9: ^( CLASS_IDENT[identifier] )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(CLASS_IDENT, identifier), root_1);
@@ -16490,7 +16584,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "expressionList"
-    // EsperEPL2Grammar.g:1171:1: expressionList : expression ( COMMA expression )* ;
+    // EsperEPL2Grammar.g:1173:1: expressionList : expression ( COMMA expression )* ;
     public final EsperEPL2GrammarParser.expressionList_return expressionList() throws RecognitionException {
         EsperEPL2GrammarParser.expressionList_return retval = new EsperEPL2GrammarParser.expressionList_return();
         retval.start = input.LT(1);
@@ -16506,34 +16600,34 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree COMMA465_tree=null;
 
         try {
-            // EsperEPL2Grammar.g:1172:6: ( expression ( COMMA expression )* )
-            // EsperEPL2Grammar.g:1172:11: expression ( COMMA expression )*
+            // EsperEPL2Grammar.g:1174:6: ( expression ( COMMA expression )* )
+            // EsperEPL2Grammar.g:1174:11: expression ( COMMA expression )*
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_expression_in_expressionList7536);
+            pushFollow(FOLLOW_expression_in_expressionList7584);
             expression464=expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, expression464.getTree());
-            // EsperEPL2Grammar.g:1172:22: ( COMMA expression )*
-            loop173:
+            // EsperEPL2Grammar.g:1174:22: ( COMMA expression )*
+            loop175:
             do {
-                int alt173=2;
-                int LA173_0 = input.LA(1);
+                int alt175=2;
+                int LA175_0 = input.LA(1);
 
-                if ( (LA173_0==COMMA) ) {
-                    alt173=1;
+                if ( (LA175_0==COMMA) ) {
+                    alt175=1;
                 }
 
 
-                switch (alt173) {
+                switch (alt175) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1172:23: COMMA expression
+            	    // EsperEPL2Grammar.g:1174:23: COMMA expression
             	    {
-            	    COMMA465=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionList7539); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_expression_in_expressionList7542);
+            	    COMMA465=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionList7587); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_expression_in_expressionList7590);
             	    expression466=expression();
 
             	    state._fsp--;
@@ -16544,7 +16638,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop173;
+            	    break loop175;
                 }
             } while (true);
 
@@ -16575,7 +16669,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "expressionWithTimeList"
-    // EsperEPL2Grammar.g:1175:1: expressionWithTimeList : expressionWithTime ( COMMA expressionWithTime )* ;
+    // EsperEPL2Grammar.g:1177:1: expressionWithTimeList : expressionWithTime ( COMMA expressionWithTime )* ;
     public final EsperEPL2GrammarParser.expressionWithTimeList_return expressionWithTimeList() throws RecognitionException {
         EsperEPL2GrammarParser.expressionWithTimeList_return retval = new EsperEPL2GrammarParser.expressionWithTimeList_return();
         retval.start = input.LT(1);
@@ -16591,34 +16685,34 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree COMMA468_tree=null;
 
         try {
-            // EsperEPL2Grammar.g:1176:6: ( expressionWithTime ( COMMA expressionWithTime )* )
-            // EsperEPL2Grammar.g:1176:11: expressionWithTime ( COMMA expressionWithTime )*
+            // EsperEPL2Grammar.g:1178:6: ( expressionWithTime ( COMMA expressionWithTime )* )
+            // EsperEPL2Grammar.g:1178:11: expressionWithTime ( COMMA expressionWithTime )*
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList7570);
+            pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList7618);
             expressionWithTime467=expressionWithTime();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionWithTime467.getTree());
-            // EsperEPL2Grammar.g:1176:30: ( COMMA expressionWithTime )*
-            loop174:
+            // EsperEPL2Grammar.g:1178:30: ( COMMA expressionWithTime )*
+            loop176:
             do {
-                int alt174=2;
-                int LA174_0 = input.LA(1);
+                int alt176=2;
+                int LA176_0 = input.LA(1);
 
-                if ( (LA174_0==COMMA) ) {
-                    alt174=1;
+                if ( (LA176_0==COMMA) ) {
+                    alt176=1;
                 }
 
 
-                switch (alt174) {
+                switch (alt176) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1176:31: COMMA expressionWithTime
+            	    // EsperEPL2Grammar.g:1178:31: COMMA expressionWithTime
             	    {
-            	    COMMA468=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionWithTimeList7573); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList7576);
+            	    COMMA468=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionWithTimeList7621); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList7624);
             	    expressionWithTime469=expressionWithTime();
 
             	    state._fsp--;
@@ -16629,7 +16723,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop174;
+            	    break loop176;
                 }
             } while (true);
 
@@ -16660,7 +16754,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "expressionWithTime"
-    // EsperEPL2Grammar.g:1179:1: expressionWithTime : ( ( lastOperand )=> lastOperand | ( lastWeekdayOperand )=> lastWeekdayOperand | ( timePeriod )=> timePeriod | ( expressionQualifyable )=> expressionQualifyable | ( rangeOperand )=> rangeOperand | ( frequencyOperand )=> frequencyOperand | ( lastOperator )=> lastOperator | ( weekDayOperator )=> weekDayOperator | ( numericParameterList )=> numericParameterList | numberSetStar );
+    // EsperEPL2Grammar.g:1181:1: expressionWithTime : ( ( lastOperand )=> lastOperand | ( lastWeekdayOperand )=> lastWeekdayOperand | ( timePeriod )=> timePeriod | ( expressionQualifyable )=> expressionQualifyable | ( rangeOperand )=> rangeOperand | ( frequencyOperand )=> frequencyOperand | ( lastOperator )=> lastOperator | ( weekDayOperator )=> weekDayOperator | ( numericParameterList )=> numericParameterList | numberSetStar );
     public final EsperEPL2GrammarParser.expressionWithTime_return expressionWithTime() throws RecognitionException {
         EsperEPL2GrammarParser.expressionWithTime_return retval = new EsperEPL2GrammarParser.expressionWithTime_return();
         retval.start = input.LT(1);
@@ -16690,16 +16784,16 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
         try {
-            // EsperEPL2Grammar.g:1180:2: ( ( lastOperand )=> lastOperand | ( lastWeekdayOperand )=> lastWeekdayOperand | ( timePeriod )=> timePeriod | ( expressionQualifyable )=> expressionQualifyable | ( rangeOperand )=> rangeOperand | ( frequencyOperand )=> frequencyOperand | ( lastOperator )=> lastOperator | ( weekDayOperator )=> weekDayOperator | ( numericParameterList )=> numericParameterList | numberSetStar )
-            int alt175=10;
-            alt175 = dfa175.predict(input);
-            switch (alt175) {
+            // EsperEPL2Grammar.g:1182:2: ( ( lastOperand )=> lastOperand | ( lastWeekdayOperand )=> lastWeekdayOperand | ( timePeriod )=> timePeriod | ( expressionQualifyable )=> expressionQualifyable | ( rangeOperand )=> rangeOperand | ( frequencyOperand )=> frequencyOperand | ( lastOperator )=> lastOperator | ( weekDayOperator )=> weekDayOperator | ( numericParameterList )=> numericParameterList | numberSetStar )
+            int alt177=10;
+            alt177 = dfa177.predict(input);
+            switch (alt177) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1180:7: ( lastOperand )=> lastOperand
+                    // EsperEPL2Grammar.g:1182:7: ( lastOperand )=> lastOperand
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_lastOperand_in_expressionWithTime7602);
+                    pushFollow(FOLLOW_lastOperand_in_expressionWithTime7650);
                     lastOperand470=lastOperand();
 
                     state._fsp--;
@@ -16709,11 +16803,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1181:4: ( lastWeekdayOperand )=> lastWeekdayOperand
+                    // EsperEPL2Grammar.g:1183:4: ( lastWeekdayOperand )=> lastWeekdayOperand
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_lastWeekdayOperand_in_expressionWithTime7613);
+                    pushFollow(FOLLOW_lastWeekdayOperand_in_expressionWithTime7661);
                     lastWeekdayOperand471=lastWeekdayOperand();
 
                     state._fsp--;
@@ -16723,11 +16817,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1182:4: ( timePeriod )=> timePeriod
+                    // EsperEPL2Grammar.g:1184:4: ( timePeriod )=> timePeriod
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_timePeriod_in_expressionWithTime7624);
+                    pushFollow(FOLLOW_timePeriod_in_expressionWithTime7672);
                     timePeriod472=timePeriod();
 
                     state._fsp--;
@@ -16737,11 +16831,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Grammar.g:1183:4: ( expressionQualifyable )=> expressionQualifyable
+                    // EsperEPL2Grammar.g:1185:4: ( expressionQualifyable )=> expressionQualifyable
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_expressionQualifyable_in_expressionWithTime7635);
+                    pushFollow(FOLLOW_expressionQualifyable_in_expressionWithTime7683);
                     expressionQualifyable473=expressionQualifyable();
 
                     state._fsp--;
@@ -16751,11 +16845,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // EsperEPL2Grammar.g:1184:4: ( rangeOperand )=> rangeOperand
+                    // EsperEPL2Grammar.g:1186:4: ( rangeOperand )=> rangeOperand
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_rangeOperand_in_expressionWithTime7646);
+                    pushFollow(FOLLOW_rangeOperand_in_expressionWithTime7694);
                     rangeOperand474=rangeOperand();
 
                     state._fsp--;
@@ -16765,11 +16859,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // EsperEPL2Grammar.g:1185:5: ( frequencyOperand )=> frequencyOperand
+                    // EsperEPL2Grammar.g:1187:5: ( frequencyOperand )=> frequencyOperand
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_frequencyOperand_in_expressionWithTime7658);
+                    pushFollow(FOLLOW_frequencyOperand_in_expressionWithTime7706);
                     frequencyOperand475=frequencyOperand();
 
                     state._fsp--;
@@ -16779,11 +16873,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // EsperEPL2Grammar.g:1186:4: ( lastOperator )=> lastOperator
+                    // EsperEPL2Grammar.g:1188:4: ( lastOperator )=> lastOperator
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_lastOperator_in_expressionWithTime7669);
+                    pushFollow(FOLLOW_lastOperator_in_expressionWithTime7717);
                     lastOperator476=lastOperator();
 
                     state._fsp--;
@@ -16793,11 +16887,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // EsperEPL2Grammar.g:1187:4: ( weekDayOperator )=> weekDayOperator
+                    // EsperEPL2Grammar.g:1189:4: ( weekDayOperator )=> weekDayOperator
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_weekDayOperator_in_expressionWithTime7681);
+                    pushFollow(FOLLOW_weekDayOperator_in_expressionWithTime7729);
                     weekDayOperator477=weekDayOperator();
 
                     state._fsp--;
@@ -16807,11 +16901,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // EsperEPL2Grammar.g:1188:5: ( numericParameterList )=> numericParameterList
+                    // EsperEPL2Grammar.g:1190:5: ( numericParameterList )=> numericParameterList
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_numericParameterList_in_expressionWithTime7693);
+                    pushFollow(FOLLOW_numericParameterList_in_expressionWithTime7741);
                     numericParameterList478=numericParameterList();
 
                     state._fsp--;
@@ -16821,11 +16915,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 10 :
-                    // EsperEPL2Grammar.g:1189:4: numberSetStar
+                    // EsperEPL2Grammar.g:1191:4: numberSetStar
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_numberSetStar_in_expressionWithTime7698);
+                    pushFollow(FOLLOW_numberSetStar_in_expressionWithTime7746);
                     numberSetStar479=numberSetStar();
 
                     state._fsp--;
@@ -16860,7 +16954,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "expressionQualifyable"
-    // EsperEPL2Grammar.g:1192:1: expressionQualifyable : expression (a= ASC | d= DESC | s= TIMEPERIOD_SECONDS | s= TIMEPERIOD_SECOND | s= TIMEPERIOD_SEC )? -> {d != null || a != null}? ^( OBJECT_PARAM_ORDERED_EXPR expression ( $a)? ( $d)? ) -> {s != null}? ^( TIME_PERIOD ^( SECOND_PART expression ) ) -> expression ;
+    // EsperEPL2Grammar.g:1194:1: expressionQualifyable : expression (a= ASC | d= DESC | s= TIMEPERIOD_SECONDS | s= TIMEPERIOD_SECOND | s= TIMEPERIOD_SEC )? -> {d != null || a != null}? ^( OBJECT_PARAM_ORDERED_EXPR expression ( $a)? ( $d)? ) -> {s != null}? ^( TIME_PERIOD ^( SECOND_PART expression ) ) -> expression ;
     public final EsperEPL2GrammarParser.expressionQualifyable_return expressionQualifyable() throws RecognitionException {
         EsperEPL2GrammarParser.expressionQualifyable_return retval = new EsperEPL2GrammarParser.expressionQualifyable_return();
         retval.start = input.LT(1);
@@ -16883,86 +16977,86 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_TIMEPERIOD_SECONDS=new RewriteRuleTokenStream(adaptor,"token TIMEPERIOD_SECONDS");
         RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
         try {
-            // EsperEPL2Grammar.g:1193:2: ( expression (a= ASC | d= DESC | s= TIMEPERIOD_SECONDS | s= TIMEPERIOD_SECOND | s= TIMEPERIOD_SEC )? -> {d != null || a != null}? ^( OBJECT_PARAM_ORDERED_EXPR expression ( $a)? ( $d)? ) -> {s != null}? ^( TIME_PERIOD ^( SECOND_PART expression ) ) -> expression )
-            // EsperEPL2Grammar.g:1193:4: expression (a= ASC | d= DESC | s= TIMEPERIOD_SECONDS | s= TIMEPERIOD_SECOND | s= TIMEPERIOD_SEC )?
+            // EsperEPL2Grammar.g:1195:2: ( expression (a= ASC | d= DESC | s= TIMEPERIOD_SECONDS | s= TIMEPERIOD_SECOND | s= TIMEPERIOD_SEC )? -> {d != null || a != null}? ^( OBJECT_PARAM_ORDERED_EXPR expression ( $a)? ( $d)? ) -> {s != null}? ^( TIME_PERIOD ^( SECOND_PART expression ) ) -> expression )
+            // EsperEPL2Grammar.g:1195:4: expression (a= ASC | d= DESC | s= TIMEPERIOD_SECONDS | s= TIMEPERIOD_SECOND | s= TIMEPERIOD_SEC )?
             {
-            pushFollow(FOLLOW_expression_in_expressionQualifyable7709);
+            pushFollow(FOLLOW_expression_in_expressionQualifyable7757);
             expression480=expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_expression.add(expression480.getTree());
-            // EsperEPL2Grammar.g:1193:15: (a= ASC | d= DESC | s= TIMEPERIOD_SECONDS | s= TIMEPERIOD_SECOND | s= TIMEPERIOD_SEC )?
-            int alt176=6;
+            // EsperEPL2Grammar.g:1195:15: (a= ASC | d= DESC | s= TIMEPERIOD_SECONDS | s= TIMEPERIOD_SECOND | s= TIMEPERIOD_SEC )?
+            int alt178=6;
             switch ( input.LA(1) ) {
                 case ASC:
                     {
-                    alt176=1;
+                    alt178=1;
                     }
                     break;
                 case DESC:
                     {
-                    alt176=2;
+                    alt178=2;
                     }
                     break;
                 case TIMEPERIOD_SECONDS:
                     {
-                    alt176=3;
+                    alt178=3;
                     }
                     break;
                 case TIMEPERIOD_SECOND:
                     {
-                    alt176=4;
+                    alt178=4;
                     }
                     break;
                 case TIMEPERIOD_SEC:
                     {
-                    alt176=5;
+                    alt178=5;
                     }
                     break;
             }
 
-            switch (alt176) {
+            switch (alt178) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1193:16: a= ASC
+                    // EsperEPL2Grammar.g:1195:16: a= ASC
                     {
-                    a=(Token)match(input,ASC,FOLLOW_ASC_in_expressionQualifyable7714); if (state.failed) return retval; 
+                    a=(Token)match(input,ASC,FOLLOW_ASC_in_expressionQualifyable7762); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_ASC.add(a);
 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1193:22: d= DESC
+                    // EsperEPL2Grammar.g:1195:22: d= DESC
                     {
-                    d=(Token)match(input,DESC,FOLLOW_DESC_in_expressionQualifyable7718); if (state.failed) return retval; 
+                    d=(Token)match(input,DESC,FOLLOW_DESC_in_expressionQualifyable7766); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DESC.add(d);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1193:29: s= TIMEPERIOD_SECONDS
+                    // EsperEPL2Grammar.g:1195:29: s= TIMEPERIOD_SECONDS
                     {
-                    s=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable7722); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable7770); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECONDS.add(s);
 
 
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Grammar.g:1193:50: s= TIMEPERIOD_SECOND
+                    // EsperEPL2Grammar.g:1195:50: s= TIMEPERIOD_SECOND
                     {
-                    s=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable7726); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable7774); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECOND.add(s);
 
 
                     }
                     break;
                 case 5 :
-                    // EsperEPL2Grammar.g:1193:70: s= TIMEPERIOD_SEC
+                    // EsperEPL2Grammar.g:1195:70: s= TIMEPERIOD_SEC
                     {
-                    s=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable7730); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable7778); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SEC.add(s);
 
 
@@ -16974,7 +17068,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: expression, d, a, expression, expression
+            // elements: a, expression, expression, d, expression
             // token labels: d, a
             // rule labels: retval
             // token list labels: 
@@ -16986,21 +17080,21 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1194:3: -> {d != null || a != null}? ^( OBJECT_PARAM_ORDERED_EXPR expression ( $a)? ( $d)? )
+            // 1196:3: -> {d != null || a != null}? ^( OBJECT_PARAM_ORDERED_EXPR expression ( $a)? ( $d)? )
             if (d != null || a != null) {
-                // EsperEPL2Grammar.g:1194:32: ^( OBJECT_PARAM_ORDERED_EXPR expression ( $a)? ( $d)? )
+                // EsperEPL2Grammar.g:1196:32: ^( OBJECT_PARAM_ORDERED_EXPR expression ( $a)? ( $d)? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(OBJECT_PARAM_ORDERED_EXPR, "OBJECT_PARAM_ORDERED_EXPR"), root_1);
 
                 adaptor.addChild(root_1, stream_expression.nextTree());
-                // EsperEPL2Grammar.g:1194:71: ( $a)?
+                // EsperEPL2Grammar.g:1196:71: ( $a)?
                 if ( stream_a.hasNext() ) {
                     adaptor.addChild(root_1, stream_a.nextNode());
 
                 }
                 stream_a.reset();
-                // EsperEPL2Grammar.g:1194:75: ( $d)?
+                // EsperEPL2Grammar.g:1196:75: ( $d)?
                 if ( stream_d.hasNext() ) {
                     adaptor.addChild(root_1, stream_d.nextNode());
 
@@ -17011,14 +17105,14 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1195:3: -> {s != null}? ^( TIME_PERIOD ^( SECOND_PART expression ) )
+            else // 1197:3: -> {s != null}? ^( TIME_PERIOD ^( SECOND_PART expression ) )
             if (s != null) {
-                // EsperEPL2Grammar.g:1195:19: ^( TIME_PERIOD ^( SECOND_PART expression ) )
+                // EsperEPL2Grammar.g:1197:19: ^( TIME_PERIOD ^( SECOND_PART expression ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(TIME_PERIOD, "TIME_PERIOD"), root_1);
 
-                // EsperEPL2Grammar.g:1195:33: ^( SECOND_PART expression )
+                // EsperEPL2Grammar.g:1197:33: ^( SECOND_PART expression )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(SECOND_PART, "SECOND_PART"), root_2);
@@ -17032,7 +17126,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1196:3: -> expression
+            else // 1198:3: -> expression
             {
                 adaptor.addChild(root_0, stream_expression.nextTree());
 
@@ -17065,7 +17159,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "numberSetStar"
-    // EsperEPL2Grammar.g:1200:1: numberSetStar : STAR -> ^( NUMBERSETSTAR ) ;
+    // EsperEPL2Grammar.g:1202:1: numberSetStar : STAR -> ^( NUMBERSETSTAR ) ;
     public final EsperEPL2GrammarParser.numberSetStar_return numberSetStar() throws RecognitionException {
         EsperEPL2GrammarParser.numberSetStar_return retval = new EsperEPL2GrammarParser.numberSetStar_return();
         retval.start = input.LT(1);
@@ -17078,10 +17172,10 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_STAR=new RewriteRuleTokenStream(adaptor,"token STAR");
 
         try {
-            // EsperEPL2Grammar.g:1201:2: ( STAR -> ^( NUMBERSETSTAR ) )
-            // EsperEPL2Grammar.g:1201:4: STAR
+            // EsperEPL2Grammar.g:1203:2: ( STAR -> ^( NUMBERSETSTAR ) )
+            // EsperEPL2Grammar.g:1203:4: STAR
             {
-            STAR481=(Token)match(input,STAR,FOLLOW_STAR_in_numberSetStar7787); if (state.failed) return retval; 
+            STAR481=(Token)match(input,STAR,FOLLOW_STAR_in_numberSetStar7835); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_STAR.add(STAR481);
 
 
@@ -17097,9 +17191,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1202:3: -> ^( NUMBERSETSTAR )
+            // 1204:3: -> ^( NUMBERSETSTAR )
             {
-                // EsperEPL2Grammar.g:1202:6: ^( NUMBERSETSTAR )
+                // EsperEPL2Grammar.g:1204:6: ^( NUMBERSETSTAR )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NUMBERSETSTAR, "NUMBERSETSTAR"), root_1);
@@ -17136,7 +17230,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "lastWeekdayOperand"
-    // EsperEPL2Grammar.g:1205:1: lastWeekdayOperand : LW ;
+    // EsperEPL2Grammar.g:1207:1: lastWeekdayOperand : LW ;
     public final EsperEPL2GrammarParser.lastWeekdayOperand_return lastWeekdayOperand() throws RecognitionException {
         EsperEPL2GrammarParser.lastWeekdayOperand_return retval = new EsperEPL2GrammarParser.lastWeekdayOperand_return();
         retval.start = input.LT(1);
@@ -17148,12 +17242,12 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree LW482_tree=null;
 
         try {
-            // EsperEPL2Grammar.g:1206:2: ( LW )
-            // EsperEPL2Grammar.g:1206:4: LW
+            // EsperEPL2Grammar.g:1208:2: ( LW )
+            // EsperEPL2Grammar.g:1208:4: LW
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            LW482=(Token)match(input,LW,FOLLOW_LW_in_lastWeekdayOperand7807); if (state.failed) return retval;
+            LW482=(Token)match(input,LW,FOLLOW_LW_in_lastWeekdayOperand7855); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             LW482_tree = (CommonTree)adaptor.create(LW482);
             root_0 = (CommonTree)adaptor.becomeRoot(LW482_tree, root_0);
@@ -17185,7 +17279,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "lastOperand"
-    // EsperEPL2Grammar.g:1209:1: lastOperand : LAST ;
+    // EsperEPL2Grammar.g:1211:1: lastOperand : LAST ;
     public final EsperEPL2GrammarParser.lastOperand_return lastOperand() throws RecognitionException {
         EsperEPL2GrammarParser.lastOperand_return retval = new EsperEPL2GrammarParser.lastOperand_return();
         retval.start = input.LT(1);
@@ -17197,12 +17291,12 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree LAST483_tree=null;
 
         try {
-            // EsperEPL2Grammar.g:1210:2: ( LAST )
-            // EsperEPL2Grammar.g:1210:4: LAST
+            // EsperEPL2Grammar.g:1212:2: ( LAST )
+            // EsperEPL2Grammar.g:1212:4: LAST
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            LAST483=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperand7820); if (state.failed) return retval;
+            LAST483=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperand7868); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             LAST483_tree = (CommonTree)adaptor.create(LAST483);
             root_0 = (CommonTree)adaptor.becomeRoot(LAST483_tree, root_0);
@@ -17234,7 +17328,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "frequencyOperand"
-    // EsperEPL2Grammar.g:1213:1: frequencyOperand : STAR DIV ( number | i= IDENT | substitution ) -> {i!= null}? ^( NUMERIC_PARAM_FREQUENCY ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( NUMERIC_PARAM_FREQUENCY ( number )? ( substitution )? ) ;
+    // EsperEPL2Grammar.g:1215:1: frequencyOperand : STAR DIV ( number | i= IDENT | substitution ) -> {i!= null}? ^( NUMERIC_PARAM_FREQUENCY ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( NUMERIC_PARAM_FREQUENCY ( number )? ( substitution )? ) ;
     public final EsperEPL2GrammarParser.frequencyOperand_return frequencyOperand() throws RecognitionException {
         EsperEPL2GrammarParser.frequencyOperand_return retval = new EsperEPL2GrammarParser.frequencyOperand_return();
         retval.start = input.LT(1);
@@ -17258,49 +17352,49 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1214:2: ( STAR DIV ( number | i= IDENT | substitution ) -> {i!= null}? ^( NUMERIC_PARAM_FREQUENCY ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( NUMERIC_PARAM_FREQUENCY ( number )? ( substitution )? ) )
-            // EsperEPL2Grammar.g:1214:4: STAR DIV ( number | i= IDENT | substitution )
+            // EsperEPL2Grammar.g:1216:2: ( STAR DIV ( number | i= IDENT | substitution ) -> {i!= null}? ^( NUMERIC_PARAM_FREQUENCY ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( NUMERIC_PARAM_FREQUENCY ( number )? ( substitution )? ) )
+            // EsperEPL2Grammar.g:1216:4: STAR DIV ( number | i= IDENT | substitution )
             {
-            STAR484=(Token)match(input,STAR,FOLLOW_STAR_in_frequencyOperand7832); if (state.failed) return retval; 
+            STAR484=(Token)match(input,STAR,FOLLOW_STAR_in_frequencyOperand7880); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_STAR.add(STAR484);
 
-            DIV485=(Token)match(input,DIV,FOLLOW_DIV_in_frequencyOperand7834); if (state.failed) return retval; 
+            DIV485=(Token)match(input,DIV,FOLLOW_DIV_in_frequencyOperand7882); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_DIV.add(DIV485);
 
-            // EsperEPL2Grammar.g:1214:13: ( number | i= IDENT | substitution )
-            int alt177=3;
+            // EsperEPL2Grammar.g:1216:13: ( number | i= IDENT | substitution )
+            int alt179=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt177=1;
+                alt179=1;
                 }
                 break;
             case IDENT:
                 {
-                alt177=2;
+                alt179=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt177=3;
+                alt179=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 177, 0, input);
+                    new NoViableAltException("", 179, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt177) {
+            switch (alt179) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1214:14: number
+                    // EsperEPL2Grammar.g:1216:14: number
                     {
-                    pushFollow(FOLLOW_number_in_frequencyOperand7837);
+                    pushFollow(FOLLOW_number_in_frequencyOperand7885);
                     number486=number();
 
                     state._fsp--;
@@ -17310,18 +17404,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1214:21: i= IDENT
+                    // EsperEPL2Grammar.g:1216:21: i= IDENT
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_frequencyOperand7841); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_frequencyOperand7889); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1214:29: substitution
+                    // EsperEPL2Grammar.g:1216:29: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_frequencyOperand7843);
+                    pushFollow(FOLLOW_substitution_in_frequencyOperand7891);
                     substitution487=substitution();
 
                     state._fsp--;
@@ -17336,7 +17430,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: i, substitution, number
+            // elements: number, i, substitution
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -17347,19 +17441,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1215:3: -> {i!= null}? ^( NUMERIC_PARAM_FREQUENCY ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+            // 1217:3: -> {i!= null}? ^( NUMERIC_PARAM_FREQUENCY ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
             if (i!= null) {
-                // EsperEPL2Grammar.g:1215:18: ^( NUMERIC_PARAM_FREQUENCY ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+                // EsperEPL2Grammar.g:1217:18: ^( NUMERIC_PARAM_FREQUENCY ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NUMERIC_PARAM_FREQUENCY, "NUMERIC_PARAM_FREQUENCY"), root_1);
 
-                // EsperEPL2Grammar.g:1215:44: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
+                // EsperEPL2Grammar.g:1217:44: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1215:62: ^( EVENT_PROP_SIMPLE $i)
+                // EsperEPL2Grammar.g:1217:62: ^( EVENT_PROP_SIMPLE $i)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -17376,20 +17470,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1216:3: -> ^( NUMERIC_PARAM_FREQUENCY ( number )? ( substitution )? )
+            else // 1218:3: -> ^( NUMERIC_PARAM_FREQUENCY ( number )? ( substitution )? )
             {
-                // EsperEPL2Grammar.g:1216:6: ^( NUMERIC_PARAM_FREQUENCY ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1218:6: ^( NUMERIC_PARAM_FREQUENCY ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NUMERIC_PARAM_FREQUENCY, "NUMERIC_PARAM_FREQUENCY"), root_1);
 
-                // EsperEPL2Grammar.g:1216:32: ( number )?
+                // EsperEPL2Grammar.g:1218:32: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1216:40: ( substitution )?
+                // EsperEPL2Grammar.g:1218:40: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -17428,7 +17522,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "rangeOperand"
-    // EsperEPL2Grammar.g:1219:1: rangeOperand : ( number | i1= IDENT | substitution ) COLON ( number | i2= IDENT | substitution ) -> {i1 != null && i2 != null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) ) -> {i1 != null && i2 == null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ( number )? ( substitution )? ) -> {i1 == null && i2 != null}? ^( NUMERIC_PARAM_RANGE ( number )? ( substitution )? ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) ) -> ^( NUMERIC_PARAM_RANGE ( number )* ( substitution )* ) ;
+    // EsperEPL2Grammar.g:1221:1: rangeOperand : ( number | i1= IDENT | substitution ) COLON ( number | i2= IDENT | substitution ) -> {i1 != null && i2 != null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) ) -> {i1 != null && i2 == null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ( number )? ( substitution )? ) -> {i1 == null && i2 != null}? ^( NUMERIC_PARAM_RANGE ( number )? ( substitution )? ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) ) -> ^( NUMERIC_PARAM_RANGE ( number )* ( substitution )* ) ;
     public final EsperEPL2GrammarParser.rangeOperand_return rangeOperand() throws RecognitionException {
         EsperEPL2GrammarParser.rangeOperand_return retval = new EsperEPL2GrammarParser.rangeOperand_return();
         retval.start = input.LT(1);
@@ -17455,43 +17549,43 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1220:2: ( ( number | i1= IDENT | substitution ) COLON ( number | i2= IDENT | substitution ) -> {i1 != null && i2 != null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) ) -> {i1 != null && i2 == null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ( number )? ( substitution )? ) -> {i1 == null && i2 != null}? ^( NUMERIC_PARAM_RANGE ( number )? ( substitution )? ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) ) -> ^( NUMERIC_PARAM_RANGE ( number )* ( substitution )* ) )
-            // EsperEPL2Grammar.g:1220:4: ( number | i1= IDENT | substitution ) COLON ( number | i2= IDENT | substitution )
+            // EsperEPL2Grammar.g:1222:2: ( ( number | i1= IDENT | substitution ) COLON ( number | i2= IDENT | substitution ) -> {i1 != null && i2 != null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) ) -> {i1 != null && i2 == null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ( number )? ( substitution )? ) -> {i1 == null && i2 != null}? ^( NUMERIC_PARAM_RANGE ( number )? ( substitution )? ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) ) -> ^( NUMERIC_PARAM_RANGE ( number )* ( substitution )* ) )
+            // EsperEPL2Grammar.g:1222:4: ( number | i1= IDENT | substitution ) COLON ( number | i2= IDENT | substitution )
             {
-            // EsperEPL2Grammar.g:1220:4: ( number | i1= IDENT | substitution )
-            int alt178=3;
+            // EsperEPL2Grammar.g:1222:4: ( number | i1= IDENT | substitution )
+            int alt180=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt178=1;
+                alt180=1;
                 }
                 break;
             case IDENT:
                 {
-                alt178=2;
+                alt180=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt178=3;
+                alt180=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 178, 0, input);
+                    new NoViableAltException("", 180, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt178) {
+            switch (alt180) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1220:5: number
+                    // EsperEPL2Grammar.g:1222:5: number
                     {
-                    pushFollow(FOLLOW_number_in_rangeOperand7892);
+                    pushFollow(FOLLOW_number_in_rangeOperand7940);
                     number488=number();
 
                     state._fsp--;
@@ -17501,18 +17595,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1220:12: i1= IDENT
+                    // EsperEPL2Grammar.g:1222:12: i1= IDENT
                     {
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand7896); if (state.failed) return retval; 
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand7944); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i1);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1220:21: substitution
+                    // EsperEPL2Grammar.g:1222:21: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_rangeOperand7898);
+                    pushFollow(FOLLOW_substitution_in_rangeOperand7946);
                     substitution489=substitution();
 
                     state._fsp--;
@@ -17524,43 +17618,43 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            COLON490=(Token)match(input,COLON,FOLLOW_COLON_in_rangeOperand7901); if (state.failed) return retval; 
+            COLON490=(Token)match(input,COLON,FOLLOW_COLON_in_rangeOperand7949); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_COLON.add(COLON490);
 
-            // EsperEPL2Grammar.g:1220:41: ( number | i2= IDENT | substitution )
-            int alt179=3;
+            // EsperEPL2Grammar.g:1222:41: ( number | i2= IDENT | substitution )
+            int alt181=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt179=1;
+                alt181=1;
                 }
                 break;
             case IDENT:
                 {
-                alt179=2;
+                alt181=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt179=3;
+                alt181=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 179, 0, input);
+                    new NoViableAltException("", 181, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt179) {
+            switch (alt181) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1220:42: number
+                    // EsperEPL2Grammar.g:1222:42: number
                     {
-                    pushFollow(FOLLOW_number_in_rangeOperand7904);
+                    pushFollow(FOLLOW_number_in_rangeOperand7952);
                     number491=number();
 
                     state._fsp--;
@@ -17570,18 +17664,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1220:49: i2= IDENT
+                    // EsperEPL2Grammar.g:1222:49: i2= IDENT
                     {
-                    i2=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand7908); if (state.failed) return retval; 
+                    i2=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand7956); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i2);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1220:58: substitution
+                    // EsperEPL2Grammar.g:1222:58: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_rangeOperand7910);
+                    pushFollow(FOLLOW_substitution_in_rangeOperand7958);
                     substitution492=substitution();
 
                     state._fsp--;
@@ -17596,7 +17690,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: number, substitution, substitution, i2, number, i1, i2, number, i1, substitution
+            // elements: number, substitution, number, substitution, i2, i2, number, i1, i1, substitution
             // token labels: i2, i1
             // rule labels: retval
             // token list labels: 
@@ -17608,19 +17702,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1221:3: -> {i1 != null && i2 != null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) )
+            // 1223:3: -> {i1 != null && i2 != null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) )
             if (i1 != null && i2 != null) {
-                // EsperEPL2Grammar.g:1221:34: ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) )
+                // EsperEPL2Grammar.g:1223:34: ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NUMERIC_PARAM_RANGE, "NUMERIC_PARAM_RANGE"), root_1);
 
-                // EsperEPL2Grammar.g:1221:56: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) )
+                // EsperEPL2Grammar.g:1223:56: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1221:74: ^( EVENT_PROP_SIMPLE $i1)
+                // EsperEPL2Grammar.g:1223:74: ^( EVENT_PROP_SIMPLE $i1)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -17632,12 +17726,12 @@ public class EsperEPL2GrammarParser extends Parser {
 
                 adaptor.addChild(root_1, root_2);
                 }
-                // EsperEPL2Grammar.g:1221:100: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) )
+                // EsperEPL2Grammar.g:1223:100: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1221:118: ^( EVENT_PROP_SIMPLE $i2)
+                // EsperEPL2Grammar.g:1223:118: ^( EVENT_PROP_SIMPLE $i2)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -17654,19 +17748,19 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1222:3: -> {i1 != null && i2 == null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ( number )? ( substitution )? )
+            else // 1224:3: -> {i1 != null && i2 == null}? ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ( number )? ( substitution )? )
             if (i1 != null && i2 == null) {
-                // EsperEPL2Grammar.g:1222:34: ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1224:34: ^( NUMERIC_PARAM_RANGE ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) ) ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NUMERIC_PARAM_RANGE, "NUMERIC_PARAM_RANGE"), root_1);
 
-                // EsperEPL2Grammar.g:1222:56: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) )
+                // EsperEPL2Grammar.g:1224:56: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i1) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1222:74: ^( EVENT_PROP_SIMPLE $i1)
+                // EsperEPL2Grammar.g:1224:74: ^( EVENT_PROP_SIMPLE $i1)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -17678,13 +17772,13 @@ public class EsperEPL2GrammarParser extends Parser {
 
                 adaptor.addChild(root_1, root_2);
                 }
-                // EsperEPL2Grammar.g:1222:100: ( number )?
+                // EsperEPL2Grammar.g:1224:100: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1222:108: ( substitution )?
+                // EsperEPL2Grammar.g:1224:108: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -17695,31 +17789,31 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1223:3: -> {i1 == null && i2 != null}? ^( NUMERIC_PARAM_RANGE ( number )? ( substitution )? ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) )
+            else // 1225:3: -> {i1 == null && i2 != null}? ^( NUMERIC_PARAM_RANGE ( number )? ( substitution )? ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) )
             if (i1 == null && i2 != null) {
-                // EsperEPL2Grammar.g:1223:34: ^( NUMERIC_PARAM_RANGE ( number )? ( substitution )? ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) )
+                // EsperEPL2Grammar.g:1225:34: ^( NUMERIC_PARAM_RANGE ( number )? ( substitution )? ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NUMERIC_PARAM_RANGE, "NUMERIC_PARAM_RANGE"), root_1);
 
-                // EsperEPL2Grammar.g:1223:56: ( number )?
+                // EsperEPL2Grammar.g:1225:56: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1223:64: ( substitution )?
+                // EsperEPL2Grammar.g:1225:64: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
                 }
                 stream_substitution.reset();
-                // EsperEPL2Grammar.g:1223:78: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) )
+                // EsperEPL2Grammar.g:1225:78: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i2) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1223:96: ^( EVENT_PROP_SIMPLE $i2)
+                // EsperEPL2Grammar.g:1225:96: ^( EVENT_PROP_SIMPLE $i2)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -17736,20 +17830,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1224:3: -> ^( NUMERIC_PARAM_RANGE ( number )* ( substitution )* )
+            else // 1226:3: -> ^( NUMERIC_PARAM_RANGE ( number )* ( substitution )* )
             {
-                // EsperEPL2Grammar.g:1224:6: ^( NUMERIC_PARAM_RANGE ( number )* ( substitution )* )
+                // EsperEPL2Grammar.g:1226:6: ^( NUMERIC_PARAM_RANGE ( number )* ( substitution )* )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NUMERIC_PARAM_RANGE, "NUMERIC_PARAM_RANGE"), root_1);
 
-                // EsperEPL2Grammar.g:1224:28: ( number )*
+                // EsperEPL2Grammar.g:1226:28: ( number )*
                 while ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1224:36: ( substitution )*
+                // EsperEPL2Grammar.g:1226:36: ( substitution )*
                 while ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -17788,7 +17882,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "lastOperator"
-    // EsperEPL2Grammar.g:1227:1: lastOperator : ( number | i= IDENT | substitution ) LAST -> {i!= null}? ^( LAST_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( LAST_OPERATOR ( number )? ( substitution )? ) ;
+    // EsperEPL2Grammar.g:1229:1: lastOperator : ( number | i= IDENT | substitution ) LAST -> {i!= null}? ^( LAST_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( LAST_OPERATOR ( number )? ( substitution )? ) ;
     public final EsperEPL2GrammarParser.lastOperator_return lastOperator() throws RecognitionException {
         EsperEPL2GrammarParser.lastOperator_return retval = new EsperEPL2GrammarParser.lastOperator_return();
         retval.start = input.LT(1);
@@ -17809,43 +17903,43 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1228:2: ( ( number | i= IDENT | substitution ) LAST -> {i!= null}? ^( LAST_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( LAST_OPERATOR ( number )? ( substitution )? ) )
-            // EsperEPL2Grammar.g:1228:4: ( number | i= IDENT | substitution ) LAST
+            // EsperEPL2Grammar.g:1230:2: ( ( number | i= IDENT | substitution ) LAST -> {i!= null}? ^( LAST_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( LAST_OPERATOR ( number )? ( substitution )? ) )
+            // EsperEPL2Grammar.g:1230:4: ( number | i= IDENT | substitution ) LAST
             {
-            // EsperEPL2Grammar.g:1228:4: ( number | i= IDENT | substitution )
-            int alt180=3;
+            // EsperEPL2Grammar.g:1230:4: ( number | i= IDENT | substitution )
+            int alt182=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt180=1;
+                alt182=1;
                 }
                 break;
             case IDENT:
                 {
-                alt180=2;
+                alt182=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt180=3;
+                alt182=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 180, 0, input);
+                    new NoViableAltException("", 182, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt180) {
+            switch (alt182) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1228:5: number
+                    // EsperEPL2Grammar.g:1230:5: number
                     {
-                    pushFollow(FOLLOW_number_in_lastOperator8024);
+                    pushFollow(FOLLOW_number_in_lastOperator8072);
                     number493=number();
 
                     state._fsp--;
@@ -17855,18 +17949,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1228:12: i= IDENT
+                    // EsperEPL2Grammar.g:1230:12: i= IDENT
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_lastOperator8028); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_lastOperator8076); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1228:20: substitution
+                    // EsperEPL2Grammar.g:1230:20: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_lastOperator8030);
+                    pushFollow(FOLLOW_substitution_in_lastOperator8078);
                     substitution494=substitution();
 
                     state._fsp--;
@@ -17878,13 +17972,13 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            LAST495=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperator8033); if (state.failed) return retval; 
+            LAST495=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperator8081); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LAST.add(LAST495);
 
 
 
             // AST REWRITE
-            // elements: substitution, i, number
+            // elements: i, substitution, number
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -17895,19 +17989,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1229:3: -> {i!= null}? ^( LAST_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+            // 1231:3: -> {i!= null}? ^( LAST_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
             if (i!= null) {
-                // EsperEPL2Grammar.g:1229:18: ^( LAST_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+                // EsperEPL2Grammar.g:1231:18: ^( LAST_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(LAST_OPERATOR, "LAST_OPERATOR"), root_1);
 
-                // EsperEPL2Grammar.g:1229:34: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
+                // EsperEPL2Grammar.g:1231:34: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1229:52: ^( EVENT_PROP_SIMPLE $i)
+                // EsperEPL2Grammar.g:1231:52: ^( EVENT_PROP_SIMPLE $i)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -17924,20 +18018,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1230:3: -> ^( LAST_OPERATOR ( number )? ( substitution )? )
+            else // 1232:3: -> ^( LAST_OPERATOR ( number )? ( substitution )? )
             {
-                // EsperEPL2Grammar.g:1230:6: ^( LAST_OPERATOR ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1232:6: ^( LAST_OPERATOR ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(LAST_OPERATOR, "LAST_OPERATOR"), root_1);
 
-                // EsperEPL2Grammar.g:1230:22: ( number )?
+                // EsperEPL2Grammar.g:1232:22: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1230:30: ( substitution )?
+                // EsperEPL2Grammar.g:1232:30: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -17976,7 +18070,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "weekDayOperator"
-    // EsperEPL2Grammar.g:1233:1: weekDayOperator : ( number | i= IDENT | substitution ) WEEKDAY -> {i!= null}? ^( WEEKDAY_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( WEEKDAY_OPERATOR ( number )? ( substitution )? ) ;
+    // EsperEPL2Grammar.g:1235:1: weekDayOperator : ( number | i= IDENT | substitution ) WEEKDAY -> {i!= null}? ^( WEEKDAY_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( WEEKDAY_OPERATOR ( number )? ( substitution )? ) ;
     public final EsperEPL2GrammarParser.weekDayOperator_return weekDayOperator() throws RecognitionException {
         EsperEPL2GrammarParser.weekDayOperator_return retval = new EsperEPL2GrammarParser.weekDayOperator_return();
         retval.start = input.LT(1);
@@ -17997,43 +18091,43 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1234:2: ( ( number | i= IDENT | substitution ) WEEKDAY -> {i!= null}? ^( WEEKDAY_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( WEEKDAY_OPERATOR ( number )? ( substitution )? ) )
-            // EsperEPL2Grammar.g:1234:4: ( number | i= IDENT | substitution ) WEEKDAY
+            // EsperEPL2Grammar.g:1236:2: ( ( number | i= IDENT | substitution ) WEEKDAY -> {i!= null}? ^( WEEKDAY_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( WEEKDAY_OPERATOR ( number )? ( substitution )? ) )
+            // EsperEPL2Grammar.g:1236:4: ( number | i= IDENT | substitution ) WEEKDAY
             {
-            // EsperEPL2Grammar.g:1234:4: ( number | i= IDENT | substitution )
-            int alt181=3;
+            // EsperEPL2Grammar.g:1236:4: ( number | i= IDENT | substitution )
+            int alt183=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt181=1;
+                alt183=1;
                 }
                 break;
             case IDENT:
                 {
-                alt181=2;
+                alt183=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt181=3;
+                alt183=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 181, 0, input);
+                    new NoViableAltException("", 183, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt181) {
+            switch (alt183) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1234:5: number
+                    // EsperEPL2Grammar.g:1236:5: number
                     {
-                    pushFollow(FOLLOW_number_in_weekDayOperator8081);
+                    pushFollow(FOLLOW_number_in_weekDayOperator8129);
                     number496=number();
 
                     state._fsp--;
@@ -18043,18 +18137,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1234:12: i= IDENT
+                    // EsperEPL2Grammar.g:1236:12: i= IDENT
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekDayOperator8085); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekDayOperator8133); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1234:20: substitution
+                    // EsperEPL2Grammar.g:1236:20: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_weekDayOperator8087);
+                    pushFollow(FOLLOW_substitution_in_weekDayOperator8135);
                     substitution497=substitution();
 
                     state._fsp--;
@@ -18066,13 +18160,13 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            WEEKDAY498=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_weekDayOperator8090); if (state.failed) return retval; 
+            WEEKDAY498=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_weekDayOperator8138); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_WEEKDAY.add(WEEKDAY498);
 
 
 
             // AST REWRITE
-            // elements: number, i, substitution
+            // elements: substitution, number, i
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -18083,19 +18177,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1235:3: -> {i!= null}? ^( WEEKDAY_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+            // 1237:3: -> {i!= null}? ^( WEEKDAY_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
             if (i!= null) {
-                // EsperEPL2Grammar.g:1235:18: ^( WEEKDAY_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+                // EsperEPL2Grammar.g:1237:18: ^( WEEKDAY_OPERATOR ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(WEEKDAY_OPERATOR, "WEEKDAY_OPERATOR"), root_1);
 
-                // EsperEPL2Grammar.g:1235:37: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
+                // EsperEPL2Grammar.g:1237:37: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1235:55: ^( EVENT_PROP_SIMPLE $i)
+                // EsperEPL2Grammar.g:1237:55: ^( EVENT_PROP_SIMPLE $i)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -18112,20 +18206,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1236:3: -> ^( WEEKDAY_OPERATOR ( number )? ( substitution )? )
+            else // 1238:3: -> ^( WEEKDAY_OPERATOR ( number )? ( substitution )? )
             {
-                // EsperEPL2Grammar.g:1236:6: ^( WEEKDAY_OPERATOR ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1238:6: ^( WEEKDAY_OPERATOR ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(WEEKDAY_OPERATOR, "WEEKDAY_OPERATOR"), root_1);
 
-                // EsperEPL2Grammar.g:1236:25: ( number )?
+                // EsperEPL2Grammar.g:1238:25: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1236:33: ( substitution )?
+                // EsperEPL2Grammar.g:1238:33: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -18164,7 +18258,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "numericParameterList"
-    // EsperEPL2Grammar.g:1239:1: numericParameterList : LBRACK numericListParameter ( COMMA numericListParameter )* RBRACK -> ^( NUMERIC_PARAM_LIST ( numericListParameter )+ ) ;
+    // EsperEPL2Grammar.g:1241:1: numericParameterList : LBRACK numericListParameter ( COMMA numericListParameter )* RBRACK -> ^( NUMERIC_PARAM_LIST ( numericListParameter )+ ) ;
     public final EsperEPL2GrammarParser.numericParameterList_return numericParameterList() throws RecognitionException {
         EsperEPL2GrammarParser.numericParameterList_return retval = new EsperEPL2GrammarParser.numericParameterList_return();
         retval.start = input.LT(1);
@@ -18187,37 +18281,37 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleSubtreeStream stream_numericListParameter=new RewriteRuleSubtreeStream(adaptor,"rule numericListParameter");
         try {
-            // EsperEPL2Grammar.g:1240:2: ( LBRACK numericListParameter ( COMMA numericListParameter )* RBRACK -> ^( NUMERIC_PARAM_LIST ( numericListParameter )+ ) )
-            // EsperEPL2Grammar.g:1240:4: LBRACK numericListParameter ( COMMA numericListParameter )* RBRACK
+            // EsperEPL2Grammar.g:1242:2: ( LBRACK numericListParameter ( COMMA numericListParameter )* RBRACK -> ^( NUMERIC_PARAM_LIST ( numericListParameter )+ ) )
+            // EsperEPL2Grammar.g:1242:4: LBRACK numericListParameter ( COMMA numericListParameter )* RBRACK
             {
-            LBRACK499=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_numericParameterList8137); if (state.failed) return retval; 
+            LBRACK499=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_numericParameterList8185); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LBRACK.add(LBRACK499);
 
-            pushFollow(FOLLOW_numericListParameter_in_numericParameterList8139);
+            pushFollow(FOLLOW_numericListParameter_in_numericParameterList8187);
             numericListParameter500=numericListParameter();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_numericListParameter.add(numericListParameter500.getTree());
-            // EsperEPL2Grammar.g:1240:32: ( COMMA numericListParameter )*
-            loop182:
+            // EsperEPL2Grammar.g:1242:32: ( COMMA numericListParameter )*
+            loop184:
             do {
-                int alt182=2;
-                int LA182_0 = input.LA(1);
+                int alt184=2;
+                int LA184_0 = input.LA(1);
 
-                if ( (LA182_0==COMMA) ) {
-                    alt182=1;
+                if ( (LA184_0==COMMA) ) {
+                    alt184=1;
                 }
 
 
-                switch (alt182) {
+                switch (alt184) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1240:33: COMMA numericListParameter
+            	    // EsperEPL2Grammar.g:1242:33: COMMA numericListParameter
             	    {
-            	    COMMA501=(Token)match(input,COMMA,FOLLOW_COMMA_in_numericParameterList8142); if (state.failed) return retval; 
+            	    COMMA501=(Token)match(input,COMMA,FOLLOW_COMMA_in_numericParameterList8190); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_COMMA.add(COMMA501);
 
-            	    pushFollow(FOLLOW_numericListParameter_in_numericParameterList8144);
+            	    pushFollow(FOLLOW_numericListParameter_in_numericParameterList8192);
             	    numericListParameter502=numericListParameter();
 
             	    state._fsp--;
@@ -18228,11 +18322,11 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop182;
+            	    break loop184;
                 }
             } while (true);
 
-            RBRACK503=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_numericParameterList8148); if (state.failed) return retval; 
+            RBRACK503=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_numericParameterList8196); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK503);
 
 
@@ -18248,9 +18342,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1241:3: -> ^( NUMERIC_PARAM_LIST ( numericListParameter )+ )
+            // 1243:3: -> ^( NUMERIC_PARAM_LIST ( numericListParameter )+ )
             {
-                // EsperEPL2Grammar.g:1241:6: ^( NUMERIC_PARAM_LIST ( numericListParameter )+ )
+                // EsperEPL2Grammar.g:1243:6: ^( NUMERIC_PARAM_LIST ( numericListParameter )+ )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NUMERIC_PARAM_LIST, "NUMERIC_PARAM_LIST"), root_1);
@@ -18296,7 +18390,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "numericListParameter"
-    // EsperEPL2Grammar.g:1244:1: numericListParameter : ( rangeOperand | frequencyOperand | numberconstant );
+    // EsperEPL2Grammar.g:1246:1: numericListParameter : ( rangeOperand | frequencyOperand | numberconstant );
     public final EsperEPL2GrammarParser.numericListParameter_return numericListParameter() throws RecognitionException {
         EsperEPL2GrammarParser.numericListParameter_return retval = new EsperEPL2GrammarParser.numericListParameter_return();
         retval.start = input.LT(1);
@@ -18312,23 +18406,23 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
         try {
-            // EsperEPL2Grammar.g:1245:2: ( rangeOperand | frequencyOperand | numberconstant )
-            int alt183=3;
+            // EsperEPL2Grammar.g:1247:2: ( rangeOperand | frequencyOperand | numberconstant )
+            int alt185=3;
             switch ( input.LA(1) ) {
             case NUM_INT:
                 {
-                int LA183_1 = input.LA(2);
+                int LA185_1 = input.LA(2);
 
-                if ( (LA183_1==COMMA||LA183_1==RBRACK) ) {
-                    alt183=3;
+                if ( (LA185_1==COLON) ) {
+                    alt185=1;
                 }
-                else if ( (LA183_1==COLON) ) {
-                    alt183=1;
+                else if ( (LA185_1==COMMA||LA185_1==RBRACK) ) {
+                    alt185=3;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 183, 1, input);
+                        new NoViableAltException("", 185, 1, input);
 
                     throw nvae;
                 }
@@ -18336,18 +18430,18 @@ public class EsperEPL2GrammarParser extends Parser {
                 break;
             case NUM_LONG:
                 {
-                int LA183_2 = input.LA(2);
+                int LA185_2 = input.LA(2);
 
-                if ( (LA183_2==COMMA||LA183_2==RBRACK) ) {
-                    alt183=3;
+                if ( (LA185_2==COLON) ) {
+                    alt185=1;
                 }
-                else if ( (LA183_2==COLON) ) {
-                    alt183=1;
+                else if ( (LA185_2==COMMA||LA185_2==RBRACK) ) {
+                    alt185=3;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 183, 2, input);
+                        new NoViableAltException("", 185, 2, input);
 
                     throw nvae;
                 }
@@ -18355,18 +18449,18 @@ public class EsperEPL2GrammarParser extends Parser {
                 break;
             case NUM_FLOAT:
                 {
-                int LA183_3 = input.LA(2);
+                int LA185_3 = input.LA(2);
 
-                if ( (LA183_3==COMMA||LA183_3==RBRACK) ) {
-                    alt183=3;
+                if ( (LA185_3==COLON) ) {
+                    alt185=1;
                 }
-                else if ( (LA183_3==COLON) ) {
-                    alt183=1;
+                else if ( (LA185_3==COMMA||LA185_3==RBRACK) ) {
+                    alt185=3;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 183, 3, input);
+                        new NoViableAltException("", 185, 3, input);
 
                     throw nvae;
                 }
@@ -18374,18 +18468,18 @@ public class EsperEPL2GrammarParser extends Parser {
                 break;
             case NUM_DOUBLE:
                 {
-                int LA183_4 = input.LA(2);
+                int LA185_4 = input.LA(2);
 
-                if ( (LA183_4==COMMA||LA183_4==RBRACK) ) {
-                    alt183=3;
+                if ( (LA185_4==COLON) ) {
+                    alt185=1;
                 }
-                else if ( (LA183_4==COLON) ) {
-                    alt183=1;
+                else if ( (LA185_4==COMMA||LA185_4==RBRACK) ) {
+                    alt185=3;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 183, 4, input);
+                        new NoViableAltException("", 185, 4, input);
 
                     throw nvae;
                 }
@@ -18394,35 +18488,35 @@ public class EsperEPL2GrammarParser extends Parser {
             case IDENT:
             case QUESTION:
                 {
-                alt183=1;
+                alt185=1;
                 }
                 break;
             case STAR:
                 {
-                alt183=2;
+                alt185=2;
                 }
                 break;
             case PLUS:
             case MINUS:
                 {
-                alt183=3;
+                alt185=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 183, 0, input);
+                    new NoViableAltException("", 185, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt183) {
+            switch (alt185) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1245:4: rangeOperand
+                    // EsperEPL2Grammar.g:1247:4: rangeOperand
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_rangeOperand_in_numericListParameter8170);
+                    pushFollow(FOLLOW_rangeOperand_in_numericListParameter8218);
                     rangeOperand504=rangeOperand();
 
                     state._fsp--;
@@ -18432,11 +18526,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1246:5: frequencyOperand
+                    // EsperEPL2Grammar.g:1248:5: frequencyOperand
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_frequencyOperand_in_numericListParameter8176);
+                    pushFollow(FOLLOW_frequencyOperand_in_numericListParameter8224);
                     frequencyOperand505=frequencyOperand();
 
                     state._fsp--;
@@ -18446,11 +18540,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1247:4: numberconstant
+                    // EsperEPL2Grammar.g:1249:4: numberconstant
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_numberconstant_in_numericListParameter8181);
+                    pushFollow(FOLLOW_numberconstant_in_numericListParameter8229);
                     numberconstant506=numberconstant();
 
                     state._fsp--;
@@ -18485,7 +18579,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "eventProperty"
-    // EsperEPL2Grammar.g:1250:1: eventProperty : eventPropertyAtomic ( DOT eventPropertyAtomic )* -> ^( EVENT_PROP_EXPR ( eventPropertyAtomic )+ ) ;
+    // EsperEPL2Grammar.g:1252:1: eventProperty : eventPropertyAtomic ( DOT eventPropertyAtomic )* -> ^( EVENT_PROP_EXPR ( eventPropertyAtomic )+ ) ;
     public final EsperEPL2GrammarParser.eventProperty_return eventProperty() throws RecognitionException {
         EsperEPL2GrammarParser.eventProperty_return retval = new EsperEPL2GrammarParser.eventProperty_return();
         retval.start = input.LT(1);
@@ -18502,34 +18596,34 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
         RewriteRuleSubtreeStream stream_eventPropertyAtomic=new RewriteRuleSubtreeStream(adaptor,"rule eventPropertyAtomic");
         try {
-            // EsperEPL2Grammar.g:1251:2: ( eventPropertyAtomic ( DOT eventPropertyAtomic )* -> ^( EVENT_PROP_EXPR ( eventPropertyAtomic )+ ) )
-            // EsperEPL2Grammar.g:1251:4: eventPropertyAtomic ( DOT eventPropertyAtomic )*
+            // EsperEPL2Grammar.g:1253:2: ( eventPropertyAtomic ( DOT eventPropertyAtomic )* -> ^( EVENT_PROP_EXPR ( eventPropertyAtomic )+ ) )
+            // EsperEPL2Grammar.g:1253:4: eventPropertyAtomic ( DOT eventPropertyAtomic )*
             {
-            pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty8197);
+            pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty8245);
             eventPropertyAtomic507=eventPropertyAtomic();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_eventPropertyAtomic.add(eventPropertyAtomic507.getTree());
-            // EsperEPL2Grammar.g:1251:24: ( DOT eventPropertyAtomic )*
-            loop184:
+            // EsperEPL2Grammar.g:1253:24: ( DOT eventPropertyAtomic )*
+            loop186:
             do {
-                int alt184=2;
-                int LA184_0 = input.LA(1);
+                int alt186=2;
+                int LA186_0 = input.LA(1);
 
-                if ( (LA184_0==DOT) ) {
-                    alt184=1;
+                if ( (LA186_0==DOT) ) {
+                    alt186=1;
                 }
 
 
-                switch (alt184) {
+                switch (alt186) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1251:25: DOT eventPropertyAtomic
+            	    // EsperEPL2Grammar.g:1253:25: DOT eventPropertyAtomic
             	    {
-            	    DOT508=(Token)match(input,DOT,FOLLOW_DOT_in_eventProperty8200); if (state.failed) return retval; 
+            	    DOT508=(Token)match(input,DOT,FOLLOW_DOT_in_eventProperty8248); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_DOT.add(DOT508);
 
-            	    pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty8202);
+            	    pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty8250);
             	    eventPropertyAtomic509=eventPropertyAtomic();
 
             	    state._fsp--;
@@ -18540,7 +18634,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop184;
+            	    break loop186;
                 }
             } while (true);
 
@@ -18557,9 +18651,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1252:3: -> ^( EVENT_PROP_EXPR ( eventPropertyAtomic )+ )
+            // 1254:3: -> ^( EVENT_PROP_EXPR ( eventPropertyAtomic )+ )
             {
-                // EsperEPL2Grammar.g:1252:6: ^( EVENT_PROP_EXPR ( eventPropertyAtomic )+ )
+                // EsperEPL2Grammar.g:1254:6: ^( EVENT_PROP_EXPR ( eventPropertyAtomic )+ )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_1);
@@ -18605,7 +18699,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "eventPropertyAtomic"
-    // EsperEPL2Grammar.g:1255:1: eventPropertyAtomic : eventPropertyIdent (lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )? | lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )? | q1= QUESTION )? -> {lb!= null && $q == null}? ^( EVENT_PROP_INDEXED eventPropertyIdent $ni) -> {lb!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni) -> {lp!= null && $q == null}? ^( EVENT_PROP_MAPPED eventPropertyIdent $s) -> {lp!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s) -> {q1 != null}? ^( EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent ) -> ^( EVENT_PROP_SIMPLE eventPropertyIdent ) ;
+    // EsperEPL2Grammar.g:1257:1: eventPropertyAtomic : eventPropertyIdent (lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )? | lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )? | q1= QUESTION )? -> {lb!= null && $q == null}? ^( EVENT_PROP_INDEXED eventPropertyIdent $ni) -> {lb!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni) -> {lp!= null && $q == null}? ^( EVENT_PROP_MAPPED eventPropertyIdent $s) -> {lp!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s) -> {q1 != null}? ^( EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent ) -> ^( EVENT_PROP_SIMPLE eventPropertyIdent ) ;
     public final EsperEPL2GrammarParser.eventPropertyAtomic_return eventPropertyAtomic() throws RecognitionException {
         EsperEPL2GrammarParser.eventPropertyAtomic_return retval = new EsperEPL2GrammarParser.eventPropertyAtomic_return();
         retval.start = input.LT(1);
@@ -18641,60 +18735,60 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_NUM_INT=new RewriteRuleTokenStream(adaptor,"token NUM_INT");
         RewriteRuleSubtreeStream stream_eventPropertyIdent=new RewriteRuleSubtreeStream(adaptor,"rule eventPropertyIdent");
         try {
-            // EsperEPL2Grammar.g:1256:2: ( eventPropertyIdent (lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )? | lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )? | q1= QUESTION )? -> {lb!= null && $q == null}? ^( EVENT_PROP_INDEXED eventPropertyIdent $ni) -> {lb!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni) -> {lp!= null && $q == null}? ^( EVENT_PROP_MAPPED eventPropertyIdent $s) -> {lp!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s) -> {q1 != null}? ^( EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent ) -> ^( EVENT_PROP_SIMPLE eventPropertyIdent ) )
-            // EsperEPL2Grammar.g:1256:4: eventPropertyIdent (lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )? | lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )? | q1= QUESTION )?
+            // EsperEPL2Grammar.g:1258:2: ( eventPropertyIdent (lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )? | lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )? | q1= QUESTION )? -> {lb!= null && $q == null}? ^( EVENT_PROP_INDEXED eventPropertyIdent $ni) -> {lb!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni) -> {lp!= null && $q == null}? ^( EVENT_PROP_MAPPED eventPropertyIdent $s) -> {lp!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s) -> {q1 != null}? ^( EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent ) -> ^( EVENT_PROP_SIMPLE eventPropertyIdent ) )
+            // EsperEPL2Grammar.g:1258:4: eventPropertyIdent (lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )? | lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )? | q1= QUESTION )?
             {
-            pushFollow(FOLLOW_eventPropertyIdent_in_eventPropertyAtomic8228);
+            pushFollow(FOLLOW_eventPropertyIdent_in_eventPropertyAtomic8276);
             eventPropertyIdent510=eventPropertyIdent();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_eventPropertyIdent.add(eventPropertyIdent510.getTree());
-            // EsperEPL2Grammar.g:1256:23: (lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )? | lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )? | q1= QUESTION )?
-            int alt188=4;
+            // EsperEPL2Grammar.g:1258:23: (lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )? | lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )? | q1= QUESTION )?
+            int alt190=4;
             switch ( input.LA(1) ) {
                 case LBRACK:
                     {
-                    alt188=1;
+                    alt190=1;
                     }
                     break;
                 case LPAREN:
                     {
-                    alt188=2;
+                    alt190=2;
                     }
                     break;
                 case QUESTION:
                     {
-                    alt188=3;
+                    alt190=3;
                     }
                     break;
             }
 
-            switch (alt188) {
+            switch (alt190) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1257:4: lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )?
+                    // EsperEPL2Grammar.g:1259:4: lb= LBRACK ni= NUM_INT RBRACK (q= QUESTION )?
                     {
-                    lb=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_eventPropertyAtomic8237); if (state.failed) return retval; 
+                    lb=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_eventPropertyAtomic8285); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LBRACK.add(lb);
 
-                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_eventPropertyAtomic8241); if (state.failed) return retval; 
+                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_eventPropertyAtomic8289); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_INT.add(ni);
 
-                    RBRACK511=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_eventPropertyAtomic8243); if (state.failed) return retval; 
+                    RBRACK511=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_eventPropertyAtomic8291); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK511);
 
-                    // EsperEPL2Grammar.g:1257:32: (q= QUESTION )?
-                    int alt185=2;
-                    int LA185_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1259:32: (q= QUESTION )?
+                    int alt187=2;
+                    int LA187_0 = input.LA(1);
 
-                    if ( (LA185_0==QUESTION) ) {
-                        alt185=1;
+                    if ( (LA187_0==QUESTION) ) {
+                        alt187=1;
                     }
-                    switch (alt185) {
+                    switch (alt187) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1257:33: q= QUESTION
+                            // EsperEPL2Grammar.g:1259:33: q= QUESTION
                             {
-                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic8248); if (state.failed) return retval; 
+                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic8296); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUESTION.add(q);
 
 
@@ -18707,42 +18801,42 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1259:4: lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )?
+                    // EsperEPL2Grammar.g:1261:4: lp= LPAREN (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL ) RPAREN (q= QUESTION )?
                     {
-                    lp=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventPropertyAtomic8262); if (state.failed) return retval; 
+                    lp=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventPropertyAtomic8310); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(lp);
 
-                    // EsperEPL2Grammar.g:1259:14: (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL )
-                    int alt186=2;
-                    int LA186_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1261:14: (s= STRING_LITERAL | s= QUOTED_STRING_LITERAL )
+                    int alt188=2;
+                    int LA188_0 = input.LA(1);
 
-                    if ( (LA186_0==STRING_LITERAL) ) {
-                        alt186=1;
+                    if ( (LA188_0==STRING_LITERAL) ) {
+                        alt188=1;
                     }
-                    else if ( (LA186_0==QUOTED_STRING_LITERAL) ) {
-                        alt186=2;
+                    else if ( (LA188_0==QUOTED_STRING_LITERAL) ) {
+                        alt188=2;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
                         NoViableAltException nvae =
-                            new NoViableAltException("", 186, 0, input);
+                            new NoViableAltException("", 188, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt186) {
+                    switch (alt188) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1259:15: s= STRING_LITERAL
+                            // EsperEPL2Grammar.g:1261:15: s= STRING_LITERAL
                             {
-                            s=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_eventPropertyAtomic8267); if (state.failed) return retval; 
+                            s=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_eventPropertyAtomic8315); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_STRING_LITERAL.add(s);
 
 
                             }
                             break;
                         case 2 :
-                            // EsperEPL2Grammar.g:1259:34: s= QUOTED_STRING_LITERAL
+                            // EsperEPL2Grammar.g:1261:34: s= QUOTED_STRING_LITERAL
                             {
-                            s=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic8273); if (state.failed) return retval; 
+                            s=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic8321); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUOTED_STRING_LITERAL.add(s);
 
 
@@ -18751,21 +18845,21 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     }
 
-                    RPAREN512=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventPropertyAtomic8276); if (state.failed) return retval; 
+                    RPAREN512=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventPropertyAtomic8324); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN512);
 
-                    // EsperEPL2Grammar.g:1259:66: (q= QUESTION )?
-                    int alt187=2;
-                    int LA187_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1261:66: (q= QUESTION )?
+                    int alt189=2;
+                    int LA189_0 = input.LA(1);
 
-                    if ( (LA187_0==QUESTION) ) {
-                        alt187=1;
+                    if ( (LA189_0==QUESTION) ) {
+                        alt189=1;
                     }
-                    switch (alt187) {
+                    switch (alt189) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1259:67: q= QUESTION
+                            // EsperEPL2Grammar.g:1261:67: q= QUESTION
                             {
-                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic8281); if (state.failed) return retval; 
+                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic8329); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUESTION.add(q);
 
 
@@ -18778,9 +18872,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1261:4: q1= QUESTION
+                    // EsperEPL2Grammar.g:1263:4: q1= QUESTION
                     {
-                    q1=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic8295); if (state.failed) return retval; 
+                    q1=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic8343); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_QUESTION.add(q1);
 
 
@@ -18792,7 +18886,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: s, eventPropertyIdent, s, eventPropertyIdent, eventPropertyIdent, ni, ni, eventPropertyIdent, eventPropertyIdent, eventPropertyIdent
+            // elements: eventPropertyIdent, eventPropertyIdent, s, eventPropertyIdent, eventPropertyIdent, eventPropertyIdent, ni, s, eventPropertyIdent, ni
             // token labels: s, ni
             // rule labels: retval
             // token list labels: 
@@ -18804,9 +18898,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1264:3: -> {lb!= null && $q == null}? ^( EVENT_PROP_INDEXED eventPropertyIdent $ni)
+            // 1266:3: -> {lb!= null && $q == null}? ^( EVENT_PROP_INDEXED eventPropertyIdent $ni)
             if (lb!= null && q == null) {
-                // EsperEPL2Grammar.g:1264:33: ^( EVENT_PROP_INDEXED eventPropertyIdent $ni)
+                // EsperEPL2Grammar.g:1266:33: ^( EVENT_PROP_INDEXED eventPropertyIdent $ni)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_INDEXED, "EVENT_PROP_INDEXED"), root_1);
@@ -18818,9 +18912,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1265:3: -> {lb!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni)
+            else // 1267:3: -> {lb!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni)
             if (lb!= null && q != null) {
-                // EsperEPL2Grammar.g:1265:33: ^( EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni)
+                // EsperEPL2Grammar.g:1267:33: ^( EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_DYNAMIC_INDEXED, "EVENT_PROP_DYNAMIC_INDEXED"), root_1);
@@ -18832,9 +18926,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1266:3: -> {lp!= null && $q == null}? ^( EVENT_PROP_MAPPED eventPropertyIdent $s)
+            else // 1268:3: -> {lp!= null && $q == null}? ^( EVENT_PROP_MAPPED eventPropertyIdent $s)
             if (lp!= null && q == null) {
-                // EsperEPL2Grammar.g:1266:33: ^( EVENT_PROP_MAPPED eventPropertyIdent $s)
+                // EsperEPL2Grammar.g:1268:33: ^( EVENT_PROP_MAPPED eventPropertyIdent $s)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_MAPPED, "EVENT_PROP_MAPPED"), root_1);
@@ -18846,9 +18940,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1267:3: -> {lp!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s)
+            else // 1269:3: -> {lp!= null && $q != null}? ^( EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s)
             if (lp!= null && q != null) {
-                // EsperEPL2Grammar.g:1267:33: ^( EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s)
+                // EsperEPL2Grammar.g:1269:33: ^( EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s)
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_DYNAMIC_MAPPED, "EVENT_PROP_DYNAMIC_MAPPED"), root_1);
@@ -18860,9 +18954,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1268:3: -> {q1 != null}? ^( EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent )
+            else // 1270:3: -> {q1 != null}? ^( EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent )
             if (q1 != null) {
-                // EsperEPL2Grammar.g:1268:27: ^( EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent )
+                // EsperEPL2Grammar.g:1270:27: ^( EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_DYNAMIC_SIMPLE, "EVENT_PROP_DYNAMIC_SIMPLE"), root_1);
@@ -18873,9 +18967,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1269:3: -> ^( EVENT_PROP_SIMPLE eventPropertyIdent )
+            else // 1271:3: -> ^( EVENT_PROP_SIMPLE eventPropertyIdent )
             {
-                // EsperEPL2Grammar.g:1269:6: ^( EVENT_PROP_SIMPLE eventPropertyIdent )
+                // EsperEPL2Grammar.g:1271:6: ^( EVENT_PROP_SIMPLE eventPropertyIdent )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_1);
@@ -18914,7 +19008,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "eventPropertyIdent"
-    // EsperEPL2Grammar.g:1272:1: eventPropertyIdent : ipi= keywordAllowedIdent ( ESCAPECHAR DOT (ipi2= keywordAllowedIdent )? )* -> ^( IDENT[identifier] ) ;
+    // EsperEPL2Grammar.g:1274:1: eventPropertyIdent : ipi= keywordAllowedIdent ( ESCAPECHAR DOT (ipi2= keywordAllowedIdent )? )* -> ^( IDENT[identifier] ) ;
     public final EsperEPL2GrammarParser.eventPropertyIdent_return eventPropertyIdent() throws RecognitionException {
         EsperEPL2GrammarParser.eventPropertyIdent_return retval = new EsperEPL2GrammarParser.eventPropertyIdent_return();
         retval.start = input.LT(1);
@@ -18935,10 +19029,10 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_keywordAllowedIdent=new RewriteRuleSubtreeStream(adaptor,"rule keywordAllowedIdent");
          String identifier = ""; 
         try {
-            // EsperEPL2Grammar.g:1274:2: (ipi= keywordAllowedIdent ( ESCAPECHAR DOT (ipi2= keywordAllowedIdent )? )* -> ^( IDENT[identifier] ) )
-            // EsperEPL2Grammar.g:1274:4: ipi= keywordAllowedIdent ( ESCAPECHAR DOT (ipi2= keywordAllowedIdent )? )*
+            // EsperEPL2Grammar.g:1276:2: (ipi= keywordAllowedIdent ( ESCAPECHAR DOT (ipi2= keywordAllowedIdent )? )* -> ^( IDENT[identifier] ) )
+            // EsperEPL2Grammar.g:1276:4: ipi= keywordAllowedIdent ( ESCAPECHAR DOT (ipi2= keywordAllowedIdent )? )*
             {
-            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent8418);
+            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent8466);
             ipi=keywordAllowedIdent();
 
             state._fsp--;
@@ -18947,35 +19041,35 @@ public class EsperEPL2GrammarParser extends Parser {
             if ( state.backtracking==0 ) {
                identifier = ipi.result; 
             }
-            // EsperEPL2Grammar.g:1275:3: ( ESCAPECHAR DOT (ipi2= keywordAllowedIdent )? )*
-            loop190:
+            // EsperEPL2Grammar.g:1277:3: ( ESCAPECHAR DOT (ipi2= keywordAllowedIdent )? )*
+            loop192:
             do {
-                int alt190=2;
-                int LA190_0 = input.LA(1);
+                int alt192=2;
+                int LA192_0 = input.LA(1);
 
-                if ( (LA190_0==ESCAPECHAR) ) {
-                    alt190=1;
+                if ( (LA192_0==ESCAPECHAR) ) {
+                    alt192=1;
                 }
 
 
-                switch (alt190) {
+                switch (alt192) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1276:5: ESCAPECHAR DOT (ipi2= keywordAllowedIdent )?
+            	    // EsperEPL2Grammar.g:1278:5: ESCAPECHAR DOT (ipi2= keywordAllowedIdent )?
             	    {
-            	    ESCAPECHAR513=(Token)match(input,ESCAPECHAR,FOLLOW_ESCAPECHAR_in_eventPropertyIdent8430); if (state.failed) return retval; 
+            	    ESCAPECHAR513=(Token)match(input,ESCAPECHAR,FOLLOW_ESCAPECHAR_in_eventPropertyIdent8478); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_ESCAPECHAR.add(ESCAPECHAR513);
 
-            	    DOT514=(Token)match(input,DOT,FOLLOW_DOT_in_eventPropertyIdent8432); if (state.failed) return retval; 
+            	    DOT514=(Token)match(input,DOT,FOLLOW_DOT_in_eventPropertyIdent8480); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_DOT.add(DOT514);
 
-            	    // EsperEPL2Grammar.g:1276:24: (ipi2= keywordAllowedIdent )?
-            	    int alt189=2;
-            	    alt189 = dfa189.predict(input);
-            	    switch (alt189) {
+            	    // EsperEPL2Grammar.g:1278:24: (ipi2= keywordAllowedIdent )?
+            	    int alt191=2;
+            	    alt191 = dfa191.predict(input);
+            	    switch (alt191) {
             	        case 1 :
-            	            // EsperEPL2Grammar.g:1276:24: ipi2= keywordAllowedIdent
+            	            // EsperEPL2Grammar.g:1278:24: ipi2= keywordAllowedIdent
             	            {
-            	            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent8436);
+            	            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent8484);
             	            ipi2=keywordAllowedIdent();
 
             	            state._fsp--;
@@ -18995,7 +19089,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break;
 
             	default :
-            	    break loop190;
+            	    break loop192;
                 }
             } while (true);
 
@@ -19012,9 +19106,9 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1278:7: -> ^( IDENT[identifier] )
+            // 1280:7: -> ^( IDENT[identifier] )
             {
-                // EsperEPL2Grammar.g:1278:10: ^( IDENT[identifier] )
+                // EsperEPL2Grammar.g:1280:10: ^( IDENT[identifier] )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(IDENT, identifier), root_1);
@@ -19052,7 +19146,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "keywordAllowedIdent"
-    // EsperEPL2Grammar.g:1281:1: keywordAllowedIdent returns [String result] : (i1= IDENT | i2= TICKED_STRING_LITERAL | AT | COUNT | ESCAPE | EVERY_EXPR | SUM | AVG | MAX | MIN | COALESCE | MEDIAN | STDDEV | AVEDEV | EVENTS | FIRST | LAST | UNIDIRECTIONAL | RETAINUNION | RETAININTERSECTION | UNTIL | PATTERN | SQL | METADATASQL | PREVIOUS | PRIOR | WEEKDAY | LW | INSTANCEOF | CAST | SNAPSHOT | VARIABLE | WINDOW | LEFT | RIGHT | OUTER | FULL | JOIN );
+    // EsperEPL2Grammar.g:1283:1: keywordAllowedIdent returns [String result] : (i1= IDENT | i2= TICKED_STRING_LITERAL | AT | COUNT | ESCAPE | EVERY_EXPR | SUM | AVG | MAX | MIN | COALESCE | MEDIAN | STDDEV | AVEDEV | EVENTS | FIRST | LAST | UNIDIRECTIONAL | RETAINUNION | RETAININTERSECTION | UNTIL | PATTERN | SQL | METADATASQL | PREVIOUS | PRIOR | WEEKDAY | LW | INSTANCEOF | CAST | SNAPSHOT | VARIABLE | WINDOW | LEFT | RIGHT | OUTER | FULL | JOIN );
     public final EsperEPL2GrammarParser.keywordAllowedIdent_return keywordAllowedIdent() throws RecognitionException {
         EsperEPL2GrammarParser.keywordAllowedIdent_return retval = new EsperEPL2GrammarParser.keywordAllowedIdent_return();
         retval.start = input.LT(1);
@@ -19138,214 +19232,214 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree JOIN550_tree=null;
 
         try {
-            // EsperEPL2Grammar.g:1282:2: (i1= IDENT | i2= TICKED_STRING_LITERAL | AT | COUNT | ESCAPE | EVERY_EXPR | SUM | AVG | MAX | MIN | COALESCE | MEDIAN | STDDEV | AVEDEV | EVENTS | FIRST | LAST | UNIDIRECTIONAL | RETAINUNION | RETAININTERSECTION | UNTIL | PATTERN | SQL | METADATASQL | PREVIOUS | PRIOR | WEEKDAY | LW | INSTANCEOF | CAST | SNAPSHOT | VARIABLE | WINDOW | LEFT | RIGHT | OUTER | FULL | JOIN )
-            int alt191=38;
+            // EsperEPL2Grammar.g:1284:2: (i1= IDENT | i2= TICKED_STRING_LITERAL | AT | COUNT | ESCAPE | EVERY_EXPR | SUM | AVG | MAX | MIN | COALESCE | MEDIAN | STDDEV | AVEDEV | EVENTS | FIRST | LAST | UNIDIRECTIONAL | RETAINUNION | RETAININTERSECTION | UNTIL | PATTERN | SQL | METADATASQL | PREVIOUS | PRIOR | WEEKDAY | LW | INSTANCEOF | CAST | SNAPSHOT | VARIABLE | WINDOW | LEFT | RIGHT | OUTER | FULL | JOIN )
+            int alt193=38;
             switch ( input.LA(1) ) {
             case IDENT:
                 {
-                alt191=1;
+                alt193=1;
                 }
                 break;
             case TICKED_STRING_LITERAL:
                 {
-                alt191=2;
+                alt193=2;
                 }
                 break;
             case AT:
                 {
-                alt191=3;
+                alt193=3;
                 }
                 break;
             case COUNT:
                 {
-                alt191=4;
+                alt193=4;
                 }
                 break;
             case ESCAPE:
                 {
-                alt191=5;
+                alt193=5;
                 }
                 break;
             case EVERY_EXPR:
                 {
-                alt191=6;
+                alt193=6;
                 }
                 break;
             case SUM:
                 {
-                alt191=7;
+                alt193=7;
                 }
                 break;
             case AVG:
                 {
-                alt191=8;
+                alt193=8;
                 }
                 break;
             case MAX:
                 {
-                alt191=9;
+                alt193=9;
                 }
                 break;
             case MIN:
                 {
-                alt191=10;
+                alt193=10;
                 }
                 break;
             case COALESCE:
                 {
-                alt191=11;
+                alt193=11;
                 }
                 break;
             case MEDIAN:
                 {
-                alt191=12;
+                alt193=12;
                 }
                 break;
             case STDDEV:
                 {
-                alt191=13;
+                alt193=13;
                 }
                 break;
             case AVEDEV:
                 {
-                alt191=14;
+                alt193=14;
                 }
                 break;
             case EVENTS:
                 {
-                alt191=15;
+                alt193=15;
                 }
                 break;
             case FIRST:
                 {
-                alt191=16;
+                alt193=16;
                 }
                 break;
             case LAST:
                 {
-                alt191=17;
+                alt193=17;
                 }
                 break;
             case UNIDIRECTIONAL:
                 {
-                alt191=18;
+                alt193=18;
                 }
                 break;
             case RETAINUNION:
                 {
-                alt191=19;
+                alt193=19;
                 }
                 break;
             case RETAININTERSECTION:
                 {
-                alt191=20;
+                alt193=20;
                 }
                 break;
             case UNTIL:
                 {
-                alt191=21;
+                alt193=21;
                 }
                 break;
             case PATTERN:
                 {
-                alt191=22;
+                alt193=22;
                 }
                 break;
             case SQL:
                 {
-                alt191=23;
+                alt193=23;
                 }
                 break;
             case METADATASQL:
                 {
-                alt191=24;
+                alt193=24;
                 }
                 break;
             case PREVIOUS:
                 {
-                alt191=25;
+                alt193=25;
                 }
                 break;
             case PRIOR:
                 {
-                alt191=26;
+                alt193=26;
                 }
                 break;
             case WEEKDAY:
                 {
-                alt191=27;
+                alt193=27;
                 }
                 break;
             case LW:
                 {
-                alt191=28;
+                alt193=28;
                 }
                 break;
             case INSTANCEOF:
                 {
-                alt191=29;
+                alt193=29;
                 }
                 break;
             case CAST:
                 {
-                alt191=30;
+                alt193=30;
                 }
                 break;
             case SNAPSHOT:
                 {
-                alt191=31;
+                alt193=31;
                 }
                 break;
             case VARIABLE:
                 {
-                alt191=32;
+                alt193=32;
                 }
                 break;
             case WINDOW:
                 {
-                alt191=33;
+                alt193=33;
                 }
                 break;
             case LEFT:
                 {
-                alt191=34;
+                alt193=34;
                 }
                 break;
             case RIGHT:
                 {
-                alt191=35;
+                alt193=35;
                 }
                 break;
             case OUTER:
                 {
-                alt191=36;
+                alt193=36;
                 }
                 break;
             case FULL:
                 {
-                alt191=37;
+                alt193=37;
                 }
                 break;
             case JOIN:
                 {
-                alt191=38;
+                alt193=38;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 191, 0, input);
+                    new NoViableAltException("", 193, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt191) {
+            switch (alt193) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1282:4: i1= IDENT
+                    // EsperEPL2Grammar.g:1284:4: i1= IDENT
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_keywordAllowedIdent8475); if (state.failed) return retval;
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_keywordAllowedIdent8523); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i1_tree = (CommonTree)adaptor.create(i1);
                     adaptor.addChild(root_0, i1_tree);
@@ -19357,11 +19451,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1283:4: i2= TICKED_STRING_LITERAL
+                    // EsperEPL2Grammar.g:1285:4: i2= TICKED_STRING_LITERAL
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent8484); if (state.failed) return retval;
+                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent8532); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i2_tree = (CommonTree)adaptor.create(i2);
                     adaptor.addChild(root_0, i2_tree);
@@ -19373,11 +19467,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1284:4: AT
+                    // EsperEPL2Grammar.g:1286:4: AT
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    AT515=(Token)match(input,AT,FOLLOW_AT_in_keywordAllowedIdent8491); if (state.failed) return retval;
+                    AT515=(Token)match(input,AT,FOLLOW_AT_in_keywordAllowedIdent8539); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     AT515_tree = (CommonTree)adaptor.create(AT515);
                     adaptor.addChild(root_0, AT515_tree);
@@ -19389,11 +19483,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Grammar.g:1285:4: COUNT
+                    // EsperEPL2Grammar.g:1287:4: COUNT
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    COUNT516=(Token)match(input,COUNT,FOLLOW_COUNT_in_keywordAllowedIdent8498); if (state.failed) return retval;
+                    COUNT516=(Token)match(input,COUNT,FOLLOW_COUNT_in_keywordAllowedIdent8546); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     COUNT516_tree = (CommonTree)adaptor.create(COUNT516);
                     adaptor.addChild(root_0, COUNT516_tree);
@@ -19405,11 +19499,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // EsperEPL2Grammar.g:1286:4: ESCAPE
+                    // EsperEPL2Grammar.g:1288:4: ESCAPE
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    ESCAPE517=(Token)match(input,ESCAPE,FOLLOW_ESCAPE_in_keywordAllowedIdent8505); if (state.failed) return retval;
+                    ESCAPE517=(Token)match(input,ESCAPE,FOLLOW_ESCAPE_in_keywordAllowedIdent8553); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     ESCAPE517_tree = (CommonTree)adaptor.create(ESCAPE517);
                     adaptor.addChild(root_0, ESCAPE517_tree);
@@ -19421,11 +19515,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // EsperEPL2Grammar.g:1287:8: EVERY_EXPR
+                    // EsperEPL2Grammar.g:1289:8: EVERY_EXPR
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    EVERY_EXPR518=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_keywordAllowedIdent8516); if (state.failed) return retval;
+                    EVERY_EXPR518=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_keywordAllowedIdent8564); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     EVERY_EXPR518_tree = (CommonTree)adaptor.create(EVERY_EXPR518);
                     adaptor.addChild(root_0, EVERY_EXPR518_tree);
@@ -19437,11 +19531,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // EsperEPL2Grammar.g:1288:4: SUM
+                    // EsperEPL2Grammar.g:1290:4: SUM
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    SUM519=(Token)match(input,SUM,FOLLOW_SUM_in_keywordAllowedIdent8523); if (state.failed) return retval;
+                    SUM519=(Token)match(input,SUM,FOLLOW_SUM_in_keywordAllowedIdent8571); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     SUM519_tree = (CommonTree)adaptor.create(SUM519);
                     adaptor.addChild(root_0, SUM519_tree);
@@ -19453,11 +19547,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // EsperEPL2Grammar.g:1289:4: AVG
+                    // EsperEPL2Grammar.g:1291:4: AVG
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    AVG520=(Token)match(input,AVG,FOLLOW_AVG_in_keywordAllowedIdent8530); if (state.failed) return retval;
+                    AVG520=(Token)match(input,AVG,FOLLOW_AVG_in_keywordAllowedIdent8578); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     AVG520_tree = (CommonTree)adaptor.create(AVG520);
                     adaptor.addChild(root_0, AVG520_tree);
@@ -19469,11 +19563,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // EsperEPL2Grammar.g:1290:4: MAX
+                    // EsperEPL2Grammar.g:1292:4: MAX
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    MAX521=(Token)match(input,MAX,FOLLOW_MAX_in_keywordAllowedIdent8537); if (state.failed) return retval;
+                    MAX521=(Token)match(input,MAX,FOLLOW_MAX_in_keywordAllowedIdent8585); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MAX521_tree = (CommonTree)adaptor.create(MAX521);
                     adaptor.addChild(root_0, MAX521_tree);
@@ -19485,11 +19579,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 10 :
-                    // EsperEPL2Grammar.g:1291:4: MIN
+                    // EsperEPL2Grammar.g:1293:4: MIN
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    MIN522=(Token)match(input,MIN,FOLLOW_MIN_in_keywordAllowedIdent8544); if (state.failed) return retval;
+                    MIN522=(Token)match(input,MIN,FOLLOW_MIN_in_keywordAllowedIdent8592); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MIN522_tree = (CommonTree)adaptor.create(MIN522);
                     adaptor.addChild(root_0, MIN522_tree);
@@ -19501,11 +19595,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 11 :
-                    // EsperEPL2Grammar.g:1292:4: COALESCE
+                    // EsperEPL2Grammar.g:1294:4: COALESCE
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    COALESCE523=(Token)match(input,COALESCE,FOLLOW_COALESCE_in_keywordAllowedIdent8551); if (state.failed) return retval;
+                    COALESCE523=(Token)match(input,COALESCE,FOLLOW_COALESCE_in_keywordAllowedIdent8599); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     COALESCE523_tree = (CommonTree)adaptor.create(COALESCE523);
                     adaptor.addChild(root_0, COALESCE523_tree);
@@ -19517,11 +19611,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 12 :
-                    // EsperEPL2Grammar.g:1293:4: MEDIAN
+                    // EsperEPL2Grammar.g:1295:4: MEDIAN
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    MEDIAN524=(Token)match(input,MEDIAN,FOLLOW_MEDIAN_in_keywordAllowedIdent8558); if (state.failed) return retval;
+                    MEDIAN524=(Token)match(input,MEDIAN,FOLLOW_MEDIAN_in_keywordAllowedIdent8606); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MEDIAN524_tree = (CommonTree)adaptor.create(MEDIAN524);
                     adaptor.addChild(root_0, MEDIAN524_tree);
@@ -19533,11 +19627,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 13 :
-                    // EsperEPL2Grammar.g:1294:4: STDDEV
+                    // EsperEPL2Grammar.g:1296:4: STDDEV
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    STDDEV525=(Token)match(input,STDDEV,FOLLOW_STDDEV_in_keywordAllowedIdent8565); if (state.failed) return retval;
+                    STDDEV525=(Token)match(input,STDDEV,FOLLOW_STDDEV_in_keywordAllowedIdent8613); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     STDDEV525_tree = (CommonTree)adaptor.create(STDDEV525);
                     adaptor.addChild(root_0, STDDEV525_tree);
@@ -19549,11 +19643,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 14 :
-                    // EsperEPL2Grammar.g:1295:4: AVEDEV
+                    // EsperEPL2Grammar.g:1297:4: AVEDEV
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    AVEDEV526=(Token)match(input,AVEDEV,FOLLOW_AVEDEV_in_keywordAllowedIdent8572); if (state.failed) return retval;
+                    AVEDEV526=(Token)match(input,AVEDEV,FOLLOW_AVEDEV_in_keywordAllowedIdent8620); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     AVEDEV526_tree = (CommonTree)adaptor.create(AVEDEV526);
                     adaptor.addChild(root_0, AVEDEV526_tree);
@@ -19565,11 +19659,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 15 :
-                    // EsperEPL2Grammar.g:1296:4: EVENTS
+                    // EsperEPL2Grammar.g:1298:4: EVENTS
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    EVENTS527=(Token)match(input,EVENTS,FOLLOW_EVENTS_in_keywordAllowedIdent8579); if (state.failed) return retval;
+                    EVENTS527=(Token)match(input,EVENTS,FOLLOW_EVENTS_in_keywordAllowedIdent8627); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     EVENTS527_tree = (CommonTree)adaptor.create(EVENTS527);
                     adaptor.addChild(root_0, EVENTS527_tree);
@@ -19581,11 +19675,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 16 :
-                    // EsperEPL2Grammar.g:1297:4: FIRST
+                    // EsperEPL2Grammar.g:1299:4: FIRST
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    FIRST528=(Token)match(input,FIRST,FOLLOW_FIRST_in_keywordAllowedIdent8586); if (state.failed) return retval;
+                    FIRST528=(Token)match(input,FIRST,FOLLOW_FIRST_in_keywordAllowedIdent8634); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     FIRST528_tree = (CommonTree)adaptor.create(FIRST528);
                     adaptor.addChild(root_0, FIRST528_tree);
@@ -19597,11 +19691,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 17 :
-                    // EsperEPL2Grammar.g:1298:4: LAST
+                    // EsperEPL2Grammar.g:1300:4: LAST
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    LAST529=(Token)match(input,LAST,FOLLOW_LAST_in_keywordAllowedIdent8593); if (state.failed) return retval;
+                    LAST529=(Token)match(input,LAST,FOLLOW_LAST_in_keywordAllowedIdent8641); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     LAST529_tree = (CommonTree)adaptor.create(LAST529);
                     adaptor.addChild(root_0, LAST529_tree);
@@ -19613,11 +19707,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 18 :
-                    // EsperEPL2Grammar.g:1299:4: UNIDIRECTIONAL
+                    // EsperEPL2Grammar.g:1301:4: UNIDIRECTIONAL
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    UNIDIRECTIONAL530=(Token)match(input,UNIDIRECTIONAL,FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent8600); if (state.failed) return retval;
+                    UNIDIRECTIONAL530=(Token)match(input,UNIDIRECTIONAL,FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent8648); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     UNIDIRECTIONAL530_tree = (CommonTree)adaptor.create(UNIDIRECTIONAL530);
                     adaptor.addChild(root_0, UNIDIRECTIONAL530_tree);
@@ -19629,11 +19723,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 19 :
-                    // EsperEPL2Grammar.g:1300:4: RETAINUNION
+                    // EsperEPL2Grammar.g:1302:4: RETAINUNION
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    RETAINUNION531=(Token)match(input,RETAINUNION,FOLLOW_RETAINUNION_in_keywordAllowedIdent8607); if (state.failed) return retval;
+                    RETAINUNION531=(Token)match(input,RETAINUNION,FOLLOW_RETAINUNION_in_keywordAllowedIdent8655); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     RETAINUNION531_tree = (CommonTree)adaptor.create(RETAINUNION531);
                     adaptor.addChild(root_0, RETAINUNION531_tree);
@@ -19645,11 +19739,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 20 :
-                    // EsperEPL2Grammar.g:1301:4: RETAININTERSECTION
+                    // EsperEPL2Grammar.g:1303:4: RETAININTERSECTION
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    RETAININTERSECTION532=(Token)match(input,RETAININTERSECTION,FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent8614); if (state.failed) return retval;
+                    RETAININTERSECTION532=(Token)match(input,RETAININTERSECTION,FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent8662); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     RETAININTERSECTION532_tree = (CommonTree)adaptor.create(RETAININTERSECTION532);
                     adaptor.addChild(root_0, RETAININTERSECTION532_tree);
@@ -19661,11 +19755,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 21 :
-                    // EsperEPL2Grammar.g:1302:4: UNTIL
+                    // EsperEPL2Grammar.g:1304:4: UNTIL
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    UNTIL533=(Token)match(input,UNTIL,FOLLOW_UNTIL_in_keywordAllowedIdent8621); if (state.failed) return retval;
+                    UNTIL533=(Token)match(input,UNTIL,FOLLOW_UNTIL_in_keywordAllowedIdent8669); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     UNTIL533_tree = (CommonTree)adaptor.create(UNTIL533);
                     adaptor.addChild(root_0, UNTIL533_tree);
@@ -19677,11 +19771,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 22 :
-                    // EsperEPL2Grammar.g:1303:4: PATTERN
+                    // EsperEPL2Grammar.g:1305:4: PATTERN
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    PATTERN534=(Token)match(input,PATTERN,FOLLOW_PATTERN_in_keywordAllowedIdent8628); if (state.failed) return retval;
+                    PATTERN534=(Token)match(input,PATTERN,FOLLOW_PATTERN_in_keywordAllowedIdent8676); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PATTERN534_tree = (CommonTree)adaptor.create(PATTERN534);
                     adaptor.addChild(root_0, PATTERN534_tree);
@@ -19693,11 +19787,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 23 :
-                    // EsperEPL2Grammar.g:1304:4: SQL
+                    // EsperEPL2Grammar.g:1306:4: SQL
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    SQL535=(Token)match(input,SQL,FOLLOW_SQL_in_keywordAllowedIdent8635); if (state.failed) return retval;
+                    SQL535=(Token)match(input,SQL,FOLLOW_SQL_in_keywordAllowedIdent8683); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     SQL535_tree = (CommonTree)adaptor.create(SQL535);
                     adaptor.addChild(root_0, SQL535_tree);
@@ -19709,11 +19803,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 24 :
-                    // EsperEPL2Grammar.g:1305:4: METADATASQL
+                    // EsperEPL2Grammar.g:1307:4: METADATASQL
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    METADATASQL536=(Token)match(input,METADATASQL,FOLLOW_METADATASQL_in_keywordAllowedIdent8642); if (state.failed) return retval;
+                    METADATASQL536=(Token)match(input,METADATASQL,FOLLOW_METADATASQL_in_keywordAllowedIdent8690); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     METADATASQL536_tree = (CommonTree)adaptor.create(METADATASQL536);
                     adaptor.addChild(root_0, METADATASQL536_tree);
@@ -19725,11 +19819,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 25 :
-                    // EsperEPL2Grammar.g:1306:4: PREVIOUS
+                    // EsperEPL2Grammar.g:1308:4: PREVIOUS
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    PREVIOUS537=(Token)match(input,PREVIOUS,FOLLOW_PREVIOUS_in_keywordAllowedIdent8649); if (state.failed) return retval;
+                    PREVIOUS537=(Token)match(input,PREVIOUS,FOLLOW_PREVIOUS_in_keywordAllowedIdent8697); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PREVIOUS537_tree = (CommonTree)adaptor.create(PREVIOUS537);
                     adaptor.addChild(root_0, PREVIOUS537_tree);
@@ -19741,11 +19835,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 26 :
-                    // EsperEPL2Grammar.g:1307:4: PRIOR
+                    // EsperEPL2Grammar.g:1309:4: PRIOR
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    PRIOR538=(Token)match(input,PRIOR,FOLLOW_PRIOR_in_keywordAllowedIdent8656); if (state.failed) return retval;
+                    PRIOR538=(Token)match(input,PRIOR,FOLLOW_PRIOR_in_keywordAllowedIdent8704); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PRIOR538_tree = (CommonTree)adaptor.create(PRIOR538);
                     adaptor.addChild(root_0, PRIOR538_tree);
@@ -19757,11 +19851,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 27 :
-                    // EsperEPL2Grammar.g:1308:4: WEEKDAY
+                    // EsperEPL2Grammar.g:1310:4: WEEKDAY
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    WEEKDAY539=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_keywordAllowedIdent8663); if (state.failed) return retval;
+                    WEEKDAY539=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_keywordAllowedIdent8711); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     WEEKDAY539_tree = (CommonTree)adaptor.create(WEEKDAY539);
                     adaptor.addChild(root_0, WEEKDAY539_tree);
@@ -19773,11 +19867,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 28 :
-                    // EsperEPL2Grammar.g:1309:4: LW
+                    // EsperEPL2Grammar.g:1311:4: LW
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    LW540=(Token)match(input,LW,FOLLOW_LW_in_keywordAllowedIdent8670); if (state.failed) return retval;
+                    LW540=(Token)match(input,LW,FOLLOW_LW_in_keywordAllowedIdent8718); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     LW540_tree = (CommonTree)adaptor.create(LW540);
                     adaptor.addChild(root_0, LW540_tree);
@@ -19789,11 +19883,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 29 :
-                    // EsperEPL2Grammar.g:1310:4: INSTANCEOF
+                    // EsperEPL2Grammar.g:1312:4: INSTANCEOF
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    INSTANCEOF541=(Token)match(input,INSTANCEOF,FOLLOW_INSTANCEOF_in_keywordAllowedIdent8677); if (state.failed) return retval;
+                    INSTANCEOF541=(Token)match(input,INSTANCEOF,FOLLOW_INSTANCEOF_in_keywordAllowedIdent8725); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     INSTANCEOF541_tree = (CommonTree)adaptor.create(INSTANCEOF541);
                     adaptor.addChild(root_0, INSTANCEOF541_tree);
@@ -19805,11 +19899,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 30 :
-                    // EsperEPL2Grammar.g:1311:4: CAST
+                    // EsperEPL2Grammar.g:1313:4: CAST
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    CAST542=(Token)match(input,CAST,FOLLOW_CAST_in_keywordAllowedIdent8684); if (state.failed) return retval;
+                    CAST542=(Token)match(input,CAST,FOLLOW_CAST_in_keywordAllowedIdent8732); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     CAST542_tree = (CommonTree)adaptor.create(CAST542);
                     adaptor.addChild(root_0, CAST542_tree);
@@ -19821,11 +19915,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 31 :
-                    // EsperEPL2Grammar.g:1312:4: SNAPSHOT
+                    // EsperEPL2Grammar.g:1314:4: SNAPSHOT
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    SNAPSHOT543=(Token)match(input,SNAPSHOT,FOLLOW_SNAPSHOT_in_keywordAllowedIdent8691); if (state.failed) return retval;
+                    SNAPSHOT543=(Token)match(input,SNAPSHOT,FOLLOW_SNAPSHOT_in_keywordAllowedIdent8739); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     SNAPSHOT543_tree = (CommonTree)adaptor.create(SNAPSHOT543);
                     adaptor.addChild(root_0, SNAPSHOT543_tree);
@@ -19837,11 +19931,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 32 :
-                    // EsperEPL2Grammar.g:1313:4: VARIABLE
+                    // EsperEPL2Grammar.g:1315:4: VARIABLE
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    VARIABLE544=(Token)match(input,VARIABLE,FOLLOW_VARIABLE_in_keywordAllowedIdent8698); if (state.failed) return retval;
+                    VARIABLE544=(Token)match(input,VARIABLE,FOLLOW_VARIABLE_in_keywordAllowedIdent8746); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     VARIABLE544_tree = (CommonTree)adaptor.create(VARIABLE544);
                     adaptor.addChild(root_0, VARIABLE544_tree);
@@ -19853,11 +19947,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 33 :
-                    // EsperEPL2Grammar.g:1314:4: WINDOW
+                    // EsperEPL2Grammar.g:1316:4: WINDOW
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    WINDOW545=(Token)match(input,WINDOW,FOLLOW_WINDOW_in_keywordAllowedIdent8707); if (state.failed) return retval;
+                    WINDOW545=(Token)match(input,WINDOW,FOLLOW_WINDOW_in_keywordAllowedIdent8755); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     WINDOW545_tree = (CommonTree)adaptor.create(WINDOW545);
                     adaptor.addChild(root_0, WINDOW545_tree);
@@ -19869,11 +19963,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 34 :
-                    // EsperEPL2Grammar.g:1315:4: LEFT
+                    // EsperEPL2Grammar.g:1317:4: LEFT
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    LEFT546=(Token)match(input,LEFT,FOLLOW_LEFT_in_keywordAllowedIdent8714); if (state.failed) return retval;
+                    LEFT546=(Token)match(input,LEFT,FOLLOW_LEFT_in_keywordAllowedIdent8762); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     LEFT546_tree = (CommonTree)adaptor.create(LEFT546);
                     adaptor.addChild(root_0, LEFT546_tree);
@@ -19885,11 +19979,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 35 :
-                    // EsperEPL2Grammar.g:1316:4: RIGHT
+                    // EsperEPL2Grammar.g:1318:4: RIGHT
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    RIGHT547=(Token)match(input,RIGHT,FOLLOW_RIGHT_in_keywordAllowedIdent8721); if (state.failed) return retval;
+                    RIGHT547=(Token)match(input,RIGHT,FOLLOW_RIGHT_in_keywordAllowedIdent8769); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     RIGHT547_tree = (CommonTree)adaptor.create(RIGHT547);
                     adaptor.addChild(root_0, RIGHT547_tree);
@@ -19901,11 +19995,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 36 :
-                    // EsperEPL2Grammar.g:1317:4: OUTER
+                    // EsperEPL2Grammar.g:1319:4: OUTER
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    OUTER548=(Token)match(input,OUTER,FOLLOW_OUTER_in_keywordAllowedIdent8728); if (state.failed) return retval;
+                    OUTER548=(Token)match(input,OUTER,FOLLOW_OUTER_in_keywordAllowedIdent8776); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     OUTER548_tree = (CommonTree)adaptor.create(OUTER548);
                     adaptor.addChild(root_0, OUTER548_tree);
@@ -19917,11 +20011,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 37 :
-                    // EsperEPL2Grammar.g:1318:4: FULL
+                    // EsperEPL2Grammar.g:1320:4: FULL
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    FULL549=(Token)match(input,FULL,FOLLOW_FULL_in_keywordAllowedIdent8735); if (state.failed) return retval;
+                    FULL549=(Token)match(input,FULL,FOLLOW_FULL_in_keywordAllowedIdent8783); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     FULL549_tree = (CommonTree)adaptor.create(FULL549);
                     adaptor.addChild(root_0, FULL549_tree);
@@ -19933,11 +20027,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 38 :
-                    // EsperEPL2Grammar.g:1319:4: JOIN
+                    // EsperEPL2Grammar.g:1321:4: JOIN
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    JOIN550=(Token)match(input,JOIN,FOLLOW_JOIN_in_keywordAllowedIdent8742); if (state.failed) return retval;
+                    JOIN550=(Token)match(input,JOIN,FOLLOW_JOIN_in_keywordAllowedIdent8790); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     JOIN550_tree = (CommonTree)adaptor.create(JOIN550);
                     adaptor.addChild(root_0, JOIN550_tree);
@@ -19975,7 +20069,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "escapableIdent"
-    // EsperEPL2Grammar.g:1322:1: escapableIdent returns [String result] : (i1= IDENT | i2= TICKED_STRING_LITERAL );
+    // EsperEPL2Grammar.g:1324:1: escapableIdent returns [String result] : (i1= IDENT | i2= TICKED_STRING_LITERAL );
     public final EsperEPL2GrammarParser.escapableIdent_return escapableIdent() throws RecognitionException {
         EsperEPL2GrammarParser.escapableIdent_return retval = new EsperEPL2GrammarParser.escapableIdent_return();
         retval.start = input.LT(1);
@@ -19989,30 +20083,30 @@ public class EsperEPL2GrammarParser extends Parser {
         CommonTree i2_tree=null;
 
         try {
-            // EsperEPL2Grammar.g:1323:2: (i1= IDENT | i2= TICKED_STRING_LITERAL )
-            int alt192=2;
-            int LA192_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1325:2: (i1= IDENT | i2= TICKED_STRING_LITERAL )
+            int alt194=2;
+            int LA194_0 = input.LA(1);
 
-            if ( (LA192_0==IDENT) ) {
-                alt192=1;
+            if ( (LA194_0==IDENT) ) {
+                alt194=1;
             }
-            else if ( (LA192_0==TICKED_STRING_LITERAL) ) {
-                alt192=2;
+            else if ( (LA194_0==TICKED_STRING_LITERAL) ) {
+                alt194=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 192, 0, input);
+                    new NoViableAltException("", 194, 0, input);
 
                 throw nvae;
             }
-            switch (alt192) {
+            switch (alt194) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1323:4: i1= IDENT
+                    // EsperEPL2Grammar.g:1325:4: i1= IDENT
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableIdent8763); if (state.failed) return retval;
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableIdent8811); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i1_tree = (CommonTree)adaptor.create(i1);
                     adaptor.addChild(root_0, i1_tree);
@@ -20024,11 +20118,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1324:4: i2= TICKED_STRING_LITERAL
+                    // EsperEPL2Grammar.g:1326:4: i2= TICKED_STRING_LITERAL
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent8772); if (state.failed) return retval;
+                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent8820); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i2_tree = (CommonTree)adaptor.create(i2);
                     adaptor.addChild(root_0, i2_tree);
@@ -20065,7 +20159,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "timePeriod"
-    // EsperEPL2Grammar.g:1327:1: timePeriod : ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart ) -> ^( TIME_PERIOD ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? ) ;
+    // EsperEPL2Grammar.g:1329:1: timePeriod : ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart ) -> ^( TIME_PERIOD ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? ) ;
     public final EsperEPL2GrammarParser.timePeriod_return timePeriod() throws RecognitionException {
         EsperEPL2GrammarParser.timePeriod_return retval = new EsperEPL2GrammarParser.timePeriod_return();
         retval.start = input.LT(1);
@@ -20109,11 +20203,11 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_dayPart=new RewriteRuleSubtreeStream(adaptor,"rule dayPart");
         RewriteRuleSubtreeStream stream_hourPart=new RewriteRuleSubtreeStream(adaptor,"rule hourPart");
         try {
-            // EsperEPL2Grammar.g:1328:2: ( ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart ) -> ^( TIME_PERIOD ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? ) )
-            // EsperEPL2Grammar.g:1329:2: ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart )
+            // EsperEPL2Grammar.g:1330:2: ( ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart ) -> ^( TIME_PERIOD ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? ) )
+            // EsperEPL2Grammar.g:1331:2: ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart )
             {
-            // EsperEPL2Grammar.g:1329:2: ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart )
-            int alt203=5;
+            // EsperEPL2Grammar.g:1331:2: ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart )
+            int alt205=5;
             switch ( input.LA(1) ) {
             case NUM_INT:
                 {
@@ -20121,40 +20215,40 @@ public class EsperEPL2GrammarParser extends Parser {
                 case TIMEPERIOD_HOUR:
                 case TIMEPERIOD_HOURS:
                     {
-                    alt203=2;
-                    }
-                    break;
-                case TIMEPERIOD_MILLISEC:
-                case TIMEPERIOD_MILLISECOND:
-                case TIMEPERIOD_MILLISECONDS:
-                    {
-                    alt203=5;
+                    alt205=2;
                     }
                     break;
                 case MIN:
                 case TIMEPERIOD_MINUTE:
                 case TIMEPERIOD_MINUTES:
                     {
-                    alt203=3;
+                    alt205=3;
+                    }
+                    break;
+                case TIMEPERIOD_DAY:
+                case TIMEPERIOD_DAYS:
+                    {
+                    alt205=1;
+                    }
+                    break;
+                case TIMEPERIOD_MILLISEC:
+                case TIMEPERIOD_MILLISECOND:
+                case TIMEPERIOD_MILLISECONDS:
+                    {
+                    alt205=5;
                     }
                     break;
                 case TIMEPERIOD_SEC:
                 case TIMEPERIOD_SECOND:
                 case TIMEPERIOD_SECONDS:
                     {
-                    alt203=4;
-                    }
-                    break;
-                case TIMEPERIOD_DAY:
-                case TIMEPERIOD_DAYS:
-                    {
-                    alt203=1;
+                    alt205=4;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 203, 1, input);
+                        new NoViableAltException("", 205, 1, input);
 
                     throw nvae;
                 }
@@ -20164,43 +20258,43 @@ public class EsperEPL2GrammarParser extends Parser {
             case NUM_LONG:
                 {
                 switch ( input.LA(2) ) {
-                case TIMEPERIOD_SEC:
-                case TIMEPERIOD_SECOND:
-                case TIMEPERIOD_SECONDS:
+                case MIN:
+                case TIMEPERIOD_MINUTE:
+                case TIMEPERIOD_MINUTES:
                     {
-                    alt203=4;
+                    alt205=3;
+                    }
+                    break;
+                case TIMEPERIOD_DAY:
+                case TIMEPERIOD_DAYS:
+                    {
+                    alt205=1;
                     }
                     break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt203=5;
+                    alt205=5;
+                    }
+                    break;
+                case TIMEPERIOD_SEC:
+                case TIMEPERIOD_SECOND:
+                case TIMEPERIOD_SECONDS:
+                    {
+                    alt205=4;
                     }
                     break;
                 case TIMEPERIOD_HOUR:
                 case TIMEPERIOD_HOURS:
                     {
-                    alt203=2;
-                    }
-                    break;
-                case TIMEPERIOD_DAY:
-                case TIMEPERIOD_DAYS:
-                    {
-                    alt203=1;
-                    }
-                    break;
-                case MIN:
-                case TIMEPERIOD_MINUTE:
-                case TIMEPERIOD_MINUTES:
-                    {
-                    alt203=3;
+                    alt205=2;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 203, 2, input);
+                        new NoViableAltException("", 205, 2, input);
 
                     throw nvae;
                 }
@@ -20210,43 +20304,43 @@ public class EsperEPL2GrammarParser extends Parser {
             case NUM_FLOAT:
                 {
                 switch ( input.LA(2) ) {
-                case TIMEPERIOD_SEC:
-                case TIMEPERIOD_SECOND:
-                case TIMEPERIOD_SECONDS:
+                case TIMEPERIOD_DAY:
+                case TIMEPERIOD_DAYS:
                     {
-                    alt203=4;
-                    }
-                    break;
-                case TIMEPERIOD_HOUR:
-                case TIMEPERIOD_HOURS:
-                    {
-                    alt203=2;
+                    alt205=1;
                     }
                     break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt203=5;
+                    alt205=5;
                     }
                     break;
                 case MIN:
                 case TIMEPERIOD_MINUTE:
                 case TIMEPERIOD_MINUTES:
                     {
-                    alt203=3;
+                    alt205=3;
                     }
                     break;
-                case TIMEPERIOD_DAY:
-                case TIMEPERIOD_DAYS:
+                case TIMEPERIOD_SEC:
+                case TIMEPERIOD_SECOND:
+                case TIMEPERIOD_SECONDS:
                     {
-                    alt203=1;
+                    alt205=4;
+                    }
+                    break;
+                case TIMEPERIOD_HOUR:
+                case TIMEPERIOD_HOURS:
+                    {
+                    alt205=2;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 203, 3, input);
+                        new NoViableAltException("", 205, 3, input);
 
                     throw nvae;
                 }
@@ -20256,43 +20350,43 @@ public class EsperEPL2GrammarParser extends Parser {
             case NUM_DOUBLE:
                 {
                 switch ( input.LA(2) ) {
-                case TIMEPERIOD_HOUR:
-                case TIMEPERIOD_HOURS:
-                    {
-                    alt203=2;
-                    }
-                    break;
-                case TIMEPERIOD_DAY:
-                case TIMEPERIOD_DAYS:
-                    {
-                    alt203=1;
-                    }
-                    break;
-                case TIMEPERIOD_SEC:
-                case TIMEPERIOD_SECOND:
-                case TIMEPERIOD_SECONDS:
-                    {
-                    alt203=4;
-                    }
-                    break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt203=5;
+                    alt205=5;
                     }
                     break;
                 case MIN:
                 case TIMEPERIOD_MINUTE:
                 case TIMEPERIOD_MINUTES:
                     {
-                    alt203=3;
+                    alt205=3;
+                    }
+                    break;
+                case TIMEPERIOD_HOUR:
+                case TIMEPERIOD_HOURS:
+                    {
+                    alt205=2;
+                    }
+                    break;
+                case TIMEPERIOD_SEC:
+                case TIMEPERIOD_SECOND:
+                case TIMEPERIOD_SECONDS:
+                    {
+                    alt205=4;
+                    }
+                    break;
+                case TIMEPERIOD_DAY:
+                case TIMEPERIOD_DAYS:
+                    {
+                    alt205=1;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 203, 4, input);
+                        new NoViableAltException("", 205, 4, input);
 
                     throw nvae;
                 }
@@ -20302,43 +20396,43 @@ public class EsperEPL2GrammarParser extends Parser {
             case IDENT:
                 {
                 switch ( input.LA(2) ) {
-                case TIMEPERIOD_HOUR:
-                case TIMEPERIOD_HOURS:
-                    {
-                    alt203=2;
-                    }
-                    break;
                 case TIMEPERIOD_DAY:
                 case TIMEPERIOD_DAYS:
                     {
-                    alt203=1;
+                    alt205=1;
+                    }
+                    break;
+                case TIMEPERIOD_HOUR:
+                case TIMEPERIOD_HOURS:
+                    {
+                    alt205=2;
                     }
                     break;
                 case MIN:
                 case TIMEPERIOD_MINUTE:
                 case TIMEPERIOD_MINUTES:
                     {
-                    alt203=3;
+                    alt205=3;
                     }
                     break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt203=5;
+                    alt205=5;
                     }
                     break;
                 case TIMEPERIOD_SEC:
                 case TIMEPERIOD_SECOND:
                 case TIMEPERIOD_SECONDS:
                     {
-                    alt203=4;
+                    alt205=4;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 203, 5, input);
+                        new NoViableAltException("", 205, 5, input);
 
                     throw nvae;
                 }
@@ -20348,43 +20442,43 @@ public class EsperEPL2GrammarParser extends Parser {
             case QUESTION:
                 {
                 switch ( input.LA(2) ) {
-                case TIMEPERIOD_SEC:
-                case TIMEPERIOD_SECOND:
-                case TIMEPERIOD_SECONDS:
+                case MIN:
+                case TIMEPERIOD_MINUTE:
+                case TIMEPERIOD_MINUTES:
                     {
-                    alt203=4;
-                    }
-                    break;
-                case TIMEPERIOD_HOUR:
-                case TIMEPERIOD_HOURS:
-                    {
-                    alt203=2;
+                    alt205=3;
                     }
                     break;
                 case TIMEPERIOD_DAY:
                 case TIMEPERIOD_DAYS:
                     {
-                    alt203=1;
+                    alt205=1;
                     }
                     break;
                 case TIMEPERIOD_MILLISEC:
                 case TIMEPERIOD_MILLISECOND:
                 case TIMEPERIOD_MILLISECONDS:
                     {
-                    alt203=5;
+                    alt205=5;
                     }
                     break;
-                case MIN:
-                case TIMEPERIOD_MINUTE:
-                case TIMEPERIOD_MINUTES:
+                case TIMEPERIOD_SEC:
+                case TIMEPERIOD_SECOND:
+                case TIMEPERIOD_SECONDS:
                     {
-                    alt203=3;
+                    alt205=4;
+                    }
+                    break;
+                case TIMEPERIOD_HOUR:
+                case TIMEPERIOD_HOURS:
+                    {
+                    alt205=2;
                     }
                     break;
                 default:
                     if (state.backtracking>0) {state.failed=true; return retval;}
                     NoViableAltException nvae =
-                        new NoViableAltException("", 203, 6, input);
+                        new NoViableAltException("", 205, 6, input);
 
                     throw nvae;
                 }
@@ -20394,85 +20488,85 @@ public class EsperEPL2GrammarParser extends Parser {
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 203, 0, input);
+                    new NoViableAltException("", 205, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt203) {
+            switch (alt205) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1330:3: dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )?
+                    // EsperEPL2Grammar.g:1332:3: dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )?
                     {
-                    pushFollow(FOLLOW_dayPart_in_timePeriod8795);
+                    pushFollow(FOLLOW_dayPart_in_timePeriod8843);
                     dayPart551=dayPart();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_dayPart.add(dayPart551.getTree());
-                    // EsperEPL2Grammar.g:1330:11: ( hourPart )?
-                    int alt193=2;
+                    // EsperEPL2Grammar.g:1332:11: ( hourPart )?
+                    int alt195=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
-                            int LA193_1 = input.LA(2);
+                            int LA195_1 = input.LA(2);
 
-                            if ( ((LA193_1>=TIMEPERIOD_HOUR && LA193_1<=TIMEPERIOD_HOURS)) ) {
-                                alt193=1;
+                            if ( ((LA195_1>=TIMEPERIOD_HOUR && LA195_1<=TIMEPERIOD_HOURS)) ) {
+                                alt195=1;
                             }
                             }
                             break;
                         case NUM_LONG:
                             {
-                            int LA193_2 = input.LA(2);
+                            int LA195_2 = input.LA(2);
 
-                            if ( ((LA193_2>=TIMEPERIOD_HOUR && LA193_2<=TIMEPERIOD_HOURS)) ) {
-                                alt193=1;
+                            if ( ((LA195_2>=TIMEPERIOD_HOUR && LA195_2<=TIMEPERIOD_HOURS)) ) {
+                                alt195=1;
                             }
                             }
                             break;
                         case NUM_FLOAT:
                             {
-                            int LA193_3 = input.LA(2);
+                            int LA195_3 = input.LA(2);
 
-                            if ( ((LA193_3>=TIMEPERIOD_HOUR && LA193_3<=TIMEPERIOD_HOURS)) ) {
-                                alt193=1;
+                            if ( ((LA195_3>=TIMEPERIOD_HOUR && LA195_3<=TIMEPERIOD_HOURS)) ) {
+                                alt195=1;
                             }
                             }
                             break;
                         case NUM_DOUBLE:
                             {
-                            int LA193_4 = input.LA(2);
+                            int LA195_4 = input.LA(2);
 
-                            if ( ((LA193_4>=TIMEPERIOD_HOUR && LA193_4<=TIMEPERIOD_HOURS)) ) {
-                                alt193=1;
+                            if ( ((LA195_4>=TIMEPERIOD_HOUR && LA195_4<=TIMEPERIOD_HOURS)) ) {
+                                alt195=1;
                             }
                             }
                             break;
                         case IDENT:
                             {
-                            int LA193_5 = input.LA(2);
+                            int LA195_5 = input.LA(2);
 
-                            if ( ((LA193_5>=TIMEPERIOD_HOUR && LA193_5<=TIMEPERIOD_HOURS)) ) {
-                                alt193=1;
+                            if ( ((LA195_5>=TIMEPERIOD_HOUR && LA195_5<=TIMEPERIOD_HOURS)) ) {
+                                alt195=1;
                             }
                             }
                             break;
                         case QUESTION:
                             {
-                            int LA193_6 = input.LA(2);
+                            int LA195_6 = input.LA(2);
 
-                            if ( ((LA193_6>=TIMEPERIOD_HOUR && LA193_6<=TIMEPERIOD_HOURS)) ) {
-                                alt193=1;
+                            if ( ((LA195_6>=TIMEPERIOD_HOUR && LA195_6<=TIMEPERIOD_HOURS)) ) {
+                                alt195=1;
                             }
                             }
                             break;
                     }
 
-                    switch (alt193) {
+                    switch (alt195) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1330:11: hourPart
+                            // EsperEPL2Grammar.g:1332:11: hourPart
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod8797);
+                            pushFollow(FOLLOW_hourPart_in_timePeriod8845);
                             hourPart552=hourPart();
 
                             state._fsp--;
@@ -20484,70 +20578,70 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     }
 
-                    // EsperEPL2Grammar.g:1330:21: ( minutePart )?
-                    int alt194=2;
+                    // EsperEPL2Grammar.g:1332:21: ( minutePart )?
+                    int alt196=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
-                            int LA194_1 = input.LA(2);
+                            int LA196_1 = input.LA(2);
 
-                            if ( (LA194_1==MIN||(LA194_1>=TIMEPERIOD_MINUTE && LA194_1<=TIMEPERIOD_MINUTES)) ) {
-                                alt194=1;
+                            if ( (LA196_1==MIN||(LA196_1>=TIMEPERIOD_MINUTE && LA196_1<=TIMEPERIOD_MINUTES)) ) {
+                                alt196=1;
                             }
                             }
                             break;
                         case NUM_LONG:
                             {
-                            int LA194_2 = input.LA(2);
+                            int LA196_2 = input.LA(2);
 
-                            if ( (LA194_2==MIN||(LA194_2>=TIMEPERIOD_MINUTE && LA194_2<=TIMEPERIOD_MINUTES)) ) {
-                                alt194=1;
+                            if ( (LA196_2==MIN||(LA196_2>=TIMEPERIOD_MINUTE && LA196_2<=TIMEPERIOD_MINUTES)) ) {
+                                alt196=1;
                             }
                             }
                             break;
                         case NUM_FLOAT:
                             {
-                            int LA194_3 = input.LA(2);
+                            int LA196_3 = input.LA(2);
 
-                            if ( (LA194_3==MIN||(LA194_3>=TIMEPERIOD_MINUTE && LA194_3<=TIMEPERIOD_MINUTES)) ) {
-                                alt194=1;
+                            if ( (LA196_3==MIN||(LA196_3>=TIMEPERIOD_MINUTE && LA196_3<=TIMEPERIOD_MINUTES)) ) {
+                                alt196=1;
                             }
                             }
                             break;
                         case NUM_DOUBLE:
                             {
-                            int LA194_4 = input.LA(2);
+                            int LA196_4 = input.LA(2);
 
-                            if ( (LA194_4==MIN||(LA194_4>=TIMEPERIOD_MINUTE && LA194_4<=TIMEPERIOD_MINUTES)) ) {
-                                alt194=1;
+                            if ( (LA196_4==MIN||(LA196_4>=TIMEPERIOD_MINUTE && LA196_4<=TIMEPERIOD_MINUTES)) ) {
+                                alt196=1;
                             }
                             }
                             break;
                         case IDENT:
                             {
-                            int LA194_5 = input.LA(2);
+                            int LA196_5 = input.LA(2);
 
-                            if ( (LA194_5==MIN||(LA194_5>=TIMEPERIOD_MINUTE && LA194_5<=TIMEPERIOD_MINUTES)) ) {
-                                alt194=1;
+                            if ( (LA196_5==MIN||(LA196_5>=TIMEPERIOD_MINUTE && LA196_5<=TIMEPERIOD_MINUTES)) ) {
+                                alt196=1;
                             }
                             }
                             break;
                         case QUESTION:
                             {
-                            int LA194_6 = input.LA(2);
+                            int LA196_6 = input.LA(2);
 
-                            if ( (LA194_6==MIN||(LA194_6>=TIMEPERIOD_MINUTE && LA194_6<=TIMEPERIOD_MINUTES)) ) {
-                                alt194=1;
+                            if ( (LA196_6==MIN||(LA196_6>=TIMEPERIOD_MINUTE && LA196_6<=TIMEPERIOD_MINUTES)) ) {
+                                alt196=1;
                             }
                             }
                             break;
                     }
 
-                    switch (alt194) {
+                    switch (alt196) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1330:21: minutePart
+                            // EsperEPL2Grammar.g:1332:21: minutePart
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod8800);
+                            pushFollow(FOLLOW_minutePart_in_timePeriod8848);
                             minutePart553=minutePart();
 
                             state._fsp--;
@@ -20559,70 +20653,70 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     }
 
-                    // EsperEPL2Grammar.g:1330:33: ( secondPart )?
-                    int alt195=2;
+                    // EsperEPL2Grammar.g:1332:33: ( secondPart )?
+                    int alt197=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
-                            int LA195_1 = input.LA(2);
+                            int LA197_1 = input.LA(2);
 
-                            if ( ((LA195_1>=TIMEPERIOD_SEC && LA195_1<=TIMEPERIOD_SECONDS)) ) {
-                                alt195=1;
+                            if ( ((LA197_1>=TIMEPERIOD_SEC && LA197_1<=TIMEPERIOD_SECONDS)) ) {
+                                alt197=1;
                             }
                             }
                             break;
                         case NUM_LONG:
                             {
-                            int LA195_2 = input.LA(2);
+                            int LA197_2 = input.LA(2);
 
-                            if ( ((LA195_2>=TIMEPERIOD_SEC && LA195_2<=TIMEPERIOD_SECONDS)) ) {
-                                alt195=1;
+                            if ( ((LA197_2>=TIMEPERIOD_SEC && LA197_2<=TIMEPERIOD_SECONDS)) ) {
+                                alt197=1;
                             }
                             }
                             break;
                         case NUM_FLOAT:
                             {
-                            int LA195_3 = input.LA(2);
+                            int LA197_3 = input.LA(2);
 
-                            if ( ((LA195_3>=TIMEPERIOD_SEC && LA195_3<=TIMEPERIOD_SECONDS)) ) {
-                                alt195=1;
+                            if ( ((LA197_3>=TIMEPERIOD_SEC && LA197_3<=TIMEPERIOD_SECONDS)) ) {
+                                alt197=1;
                             }
                             }
                             break;
                         case NUM_DOUBLE:
                             {
-                            int LA195_4 = input.LA(2);
+                            int LA197_4 = input.LA(2);
 
-                            if ( ((LA195_4>=TIMEPERIOD_SEC && LA195_4<=TIMEPERIOD_SECONDS)) ) {
-                                alt195=1;
+                            if ( ((LA197_4>=TIMEPERIOD_SEC && LA197_4<=TIMEPERIOD_SECONDS)) ) {
+                                alt197=1;
                             }
                             }
                             break;
                         case IDENT:
                             {
-                            int LA195_5 = input.LA(2);
+                            int LA197_5 = input.LA(2);
 
-                            if ( ((LA195_5>=TIMEPERIOD_SEC && LA195_5<=TIMEPERIOD_SECONDS)) ) {
-                                alt195=1;
+                            if ( ((LA197_5>=TIMEPERIOD_SEC && LA197_5<=TIMEPERIOD_SECONDS)) ) {
+                                alt197=1;
                             }
                             }
                             break;
                         case QUESTION:
                             {
-                            int LA195_6 = input.LA(2);
+                            int LA197_6 = input.LA(2);
 
-                            if ( ((LA195_6>=TIMEPERIOD_SEC && LA195_6<=TIMEPERIOD_SECONDS)) ) {
-                                alt195=1;
+                            if ( ((LA197_6>=TIMEPERIOD_SEC && LA197_6<=TIMEPERIOD_SECONDS)) ) {
+                                alt197=1;
                             }
                             }
                             break;
                     }
 
-                    switch (alt195) {
+                    switch (alt197) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1330:33: secondPart
+                            // EsperEPL2Grammar.g:1332:33: secondPart
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod8803);
+                            pushFollow(FOLLOW_secondPart_in_timePeriod8851);
                             secondPart554=secondPart();
 
                             state._fsp--;
@@ -20634,18 +20728,18 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     }
 
-                    // EsperEPL2Grammar.g:1330:45: ( millisecondPart )?
-                    int alt196=2;
-                    int LA196_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1332:45: ( millisecondPart )?
+                    int alt198=2;
+                    int LA198_0 = input.LA(1);
 
-                    if ( (LA196_0==NUM_DOUBLE||LA196_0==IDENT||LA196_0==NUM_INT||LA196_0==QUESTION||(LA196_0>=NUM_LONG && LA196_0<=NUM_FLOAT)) ) {
-                        alt196=1;
+                    if ( (LA198_0==NUM_DOUBLE||LA198_0==IDENT||LA198_0==NUM_INT||LA198_0==QUESTION||(LA198_0>=NUM_LONG && LA198_0<=NUM_FLOAT)) ) {
+                        alt198=1;
                     }
-                    switch (alt196) {
+                    switch (alt198) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1330:45: millisecondPart
+                            // EsperEPL2Grammar.g:1332:45: millisecondPart
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod8806);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod8854);
                             millisecondPart555=millisecondPart();
 
                             state._fsp--;
@@ -20661,78 +20755,78 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1331:4: hourPart ( minutePart )? ( secondPart )? ( millisecondPart )?
+                    // EsperEPL2Grammar.g:1333:4: hourPart ( minutePart )? ( secondPart )? ( millisecondPart )?
                     {
-                    pushFollow(FOLLOW_hourPart_in_timePeriod8812);
+                    pushFollow(FOLLOW_hourPart_in_timePeriod8860);
                     hourPart556=hourPart();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_hourPart.add(hourPart556.getTree());
-                    // EsperEPL2Grammar.g:1331:13: ( minutePart )?
-                    int alt197=2;
+                    // EsperEPL2Grammar.g:1333:13: ( minutePart )?
+                    int alt199=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
                             {
-                            int LA197_1 = input.LA(2);
+                            int LA199_1 = input.LA(2);
 
-                            if ( (LA197_1==MIN||(LA197_1>=TIMEPERIOD_MINUTE && LA197_1<=TIMEPERIOD_MINUTES)) ) {
-                                alt197=1;
+                            if ( (LA199_1==MIN||(LA199_1>=TIMEPERIOD_MINUTE && LA199_1<=TIMEPERIOD_MINUTES)) ) {
+                                alt199=1;
                             }
                             }
                             break;
                         case NUM_LONG:
                             {
-                            int LA197_2 = input.LA(2);
+                            int LA199_2 = input.LA(2);
 
-                            if ( (LA197_2==MIN||(LA197_2>=TIMEPERIOD_MINUTE && LA197_2<=TIMEPERIOD_MINUTES)) ) {
-                                alt197=1;
+                            if ( (LA199_2==MIN||(LA199_2>=TIMEPERIOD_MINUTE && LA199_2<=TIMEPERIOD_MINUTES)) ) {
+                                alt199=1;
                             }
                             }
                             break;
                         case NUM_FLOAT:
                             {
-                            int LA197_3 = input.LA(2);
+                            int LA199_3 = input.LA(2);
 
-                            if ( (LA197_3==MIN||(LA197_3>=TIMEPERIOD_MINUTE && LA197_3<=TIMEPERIOD_MINUTES)) ) {
-                                alt197=1;
+                            if ( (LA199_3==MIN||(LA199_3>=TIMEPERIOD_MINUTE && LA199_3<=TIMEPERIOD_MINUTES)) ) {
+                                alt199=1;
                             }
                             }
                             break;
                         case NUM_DOUBLE:
                             {
-                            int LA197_4 = input.LA(2);
+                            int LA199_4 = input.LA(2);
 
-                            if ( (LA197_4==MIN||(LA197_4>=TIMEPERIOD_MINUTE && LA197_4<=TIMEPERIOD_MINUTES)) ) {
-                                alt197=1;
+                            if ( (LA199_4==MIN||(LA199_4>=TIMEPERIOD_MINUTE && LA199_4<=TIMEPERIOD_MINUTES)) ) {
+                                alt199=1;
                             }
                             }
                             break;
                         case IDENT:
                             {
-                            int LA197_5 = input.LA(2);
+                            int LA199_5 = input.LA(2);
 
-                            if ( (LA197_5==MIN||(LA197_5>=TIMEPERIOD_MINUTE && LA197_5<=TIMEPERIOD_MINUTES)) ) {
-                                alt197=1;
+                            if ( (LA199_5==MIN||(LA199_5>=TIMEPERIOD_MINUTE && LA199_5<=TIMEPERIOD_MINUTES)) ) {
+                                alt199=1;
                             }
                             }
                             break;
                         case QUESTION:
                             {
-                            int LA197_6 = input.LA(2);
+                            int LA199_6 = input.LA(2);
 
-                            if ( (LA197_6==MIN||(LA197_6>=TIMEPERIOD_MINUTE && LA197_6<=TIMEPERIOD_MINUTES)) ) {
-                                alt197=1;
+                            if ( (LA199_6==MIN||(LA199_6>=TIMEPERIOD_MINUTE && LA199_6<=TIMEPERIOD_MINUTES)) ) {
+                                alt199=1;
                             }
                             }
                             break;
                     }
 
-                    switch (alt197) {
+                    switch (alt199) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1331:13: minutePart
+                            // EsperEPL2Grammar.g:1333:13: minutePart
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod8814);
+                            pushFollow(FOLLOW_minutePart_in_timePeriod8862);
                             minutePart557=minutePart();
 
                             state._fsp--;
@@ -20744,117 +20838,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     }
 
-                    // EsperEPL2Grammar.g:1331:25: ( secondPart )?
-                    int alt198=2;
-                    switch ( input.LA(1) ) {
-                        case NUM_INT:
-                            {
-                            int LA198_1 = input.LA(2);
-
-                            if ( ((LA198_1>=TIMEPERIOD_SEC && LA198_1<=TIMEPERIOD_SECONDS)) ) {
-                                alt198=1;
-                            }
-                            }
-                            break;
-                        case NUM_LONG:
-                            {
-                            int LA198_2 = input.LA(2);
-
-                            if ( ((LA198_2>=TIMEPERIOD_SEC && LA198_2<=TIMEPERIOD_SECONDS)) ) {
-                                alt198=1;
-                            }
-                            }
-                            break;
-                        case NUM_FLOAT:
-                            {
-                            int LA198_3 = input.LA(2);
-
-                            if ( ((LA198_3>=TIMEPERIOD_SEC && LA198_3<=TIMEPERIOD_SECONDS)) ) {
-                                alt198=1;
-                            }
-                            }
-                            break;
-                        case NUM_DOUBLE:
-                            {
-                            int LA198_4 = input.LA(2);
-
-                            if ( ((LA198_4>=TIMEPERIOD_SEC && LA198_4<=TIMEPERIOD_SECONDS)) ) {
-                                alt198=1;
-                            }
-                            }
-                            break;
-                        case IDENT:
-                            {
-                            int LA198_5 = input.LA(2);
-
-                            if ( ((LA198_5>=TIMEPERIOD_SEC && LA198_5<=TIMEPERIOD_SECONDS)) ) {
-                                alt198=1;
-                            }
-                            }
-                            break;
-                        case QUESTION:
-                            {
-                            int LA198_6 = input.LA(2);
-
-                            if ( ((LA198_6>=TIMEPERIOD_SEC && LA198_6<=TIMEPERIOD_SECONDS)) ) {
-                                alt198=1;
-                            }
-                            }
-                            break;
-                    }
-
-                    switch (alt198) {
-                        case 1 :
-                            // EsperEPL2Grammar.g:1331:25: secondPart
-                            {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod8817);
-                            secondPart558=secondPart();
-
-                            state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart558.getTree());
-
-                            }
-                            break;
-
-                    }
-
-                    // EsperEPL2Grammar.g:1331:37: ( millisecondPart )?
-                    int alt199=2;
-                    int LA199_0 = input.LA(1);
-
-                    if ( (LA199_0==NUM_DOUBLE||LA199_0==IDENT||LA199_0==NUM_INT||LA199_0==QUESTION||(LA199_0>=NUM_LONG && LA199_0<=NUM_FLOAT)) ) {
-                        alt199=1;
-                    }
-                    switch (alt199) {
-                        case 1 :
-                            // EsperEPL2Grammar.g:1331:37: millisecondPart
-                            {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod8820);
-                            millisecondPart559=millisecondPart();
-
-                            state._fsp--;
-                            if (state.failed) return retval;
-                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart559.getTree());
-
-                            }
-                            break;
-
-                    }
-
-
-                    }
-                    break;
-                case 3 :
-                    // EsperEPL2Grammar.g:1332:4: minutePart ( secondPart )? ( millisecondPart )?
-                    {
-                    pushFollow(FOLLOW_minutePart_in_timePeriod8826);
-                    minutePart560=minutePart();
-
-                    state._fsp--;
-                    if (state.failed) return retval;
-                    if ( state.backtracking==0 ) stream_minutePart.add(minutePart560.getTree());
-                    // EsperEPL2Grammar.g:1332:15: ( secondPart )?
+                    // EsperEPL2Grammar.g:1333:25: ( secondPart )?
                     int alt200=2;
                     switch ( input.LA(1) ) {
                         case NUM_INT:
@@ -20915,9 +20899,119 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     switch (alt200) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1332:15: secondPart
+                            // EsperEPL2Grammar.g:1333:25: secondPart
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod8828);
+                            pushFollow(FOLLOW_secondPart_in_timePeriod8865);
+                            secondPart558=secondPart();
+
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_secondPart.add(secondPart558.getTree());
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Grammar.g:1333:37: ( millisecondPart )?
+                    int alt201=2;
+                    int LA201_0 = input.LA(1);
+
+                    if ( (LA201_0==NUM_DOUBLE||LA201_0==IDENT||LA201_0==NUM_INT||LA201_0==QUESTION||(LA201_0>=NUM_LONG && LA201_0<=NUM_FLOAT)) ) {
+                        alt201=1;
+                    }
+                    switch (alt201) {
+                        case 1 :
+                            // EsperEPL2Grammar.g:1333:37: millisecondPart
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod8868);
+                            millisecondPart559=millisecondPart();
+
+                            state._fsp--;
+                            if (state.failed) return retval;
+                            if ( state.backtracking==0 ) stream_millisecondPart.add(millisecondPart559.getTree());
+
+                            }
+                            break;
+
+                    }
+
+
+                    }
+                    break;
+                case 3 :
+                    // EsperEPL2Grammar.g:1334:4: minutePart ( secondPart )? ( millisecondPart )?
+                    {
+                    pushFollow(FOLLOW_minutePart_in_timePeriod8874);
+                    minutePart560=minutePart();
+
+                    state._fsp--;
+                    if (state.failed) return retval;
+                    if ( state.backtracking==0 ) stream_minutePart.add(minutePart560.getTree());
+                    // EsperEPL2Grammar.g:1334:15: ( secondPart )?
+                    int alt202=2;
+                    switch ( input.LA(1) ) {
+                        case NUM_INT:
+                            {
+                            int LA202_1 = input.LA(2);
+
+                            if ( ((LA202_1>=TIMEPERIOD_SEC && LA202_1<=TIMEPERIOD_SECONDS)) ) {
+                                alt202=1;
+                            }
+                            }
+                            break;
+                        case NUM_LONG:
+                            {
+                            int LA202_2 = input.LA(2);
+
+                            if ( ((LA202_2>=TIMEPERIOD_SEC && LA202_2<=TIMEPERIOD_SECONDS)) ) {
+                                alt202=1;
+                            }
+                            }
+                            break;
+                        case NUM_FLOAT:
+                            {
+                            int LA202_3 = input.LA(2);
+
+                            if ( ((LA202_3>=TIMEPERIOD_SEC && LA202_3<=TIMEPERIOD_SECONDS)) ) {
+                                alt202=1;
+                            }
+                            }
+                            break;
+                        case NUM_DOUBLE:
+                            {
+                            int LA202_4 = input.LA(2);
+
+                            if ( ((LA202_4>=TIMEPERIOD_SEC && LA202_4<=TIMEPERIOD_SECONDS)) ) {
+                                alt202=1;
+                            }
+                            }
+                            break;
+                        case IDENT:
+                            {
+                            int LA202_5 = input.LA(2);
+
+                            if ( ((LA202_5>=TIMEPERIOD_SEC && LA202_5<=TIMEPERIOD_SECONDS)) ) {
+                                alt202=1;
+                            }
+                            }
+                            break;
+                        case QUESTION:
+                            {
+                            int LA202_6 = input.LA(2);
+
+                            if ( ((LA202_6>=TIMEPERIOD_SEC && LA202_6<=TIMEPERIOD_SECONDS)) ) {
+                                alt202=1;
+                            }
+                            }
+                            break;
+                    }
+
+                    switch (alt202) {
+                        case 1 :
+                            // EsperEPL2Grammar.g:1334:15: secondPart
+                            {
+                            pushFollow(FOLLOW_secondPart_in_timePeriod8876);
                             secondPart561=secondPart();
 
                             state._fsp--;
@@ -20929,18 +21023,18 @@ public class EsperEPL2GrammarParser extends Parser {
 
                     }
 
-                    // EsperEPL2Grammar.g:1332:27: ( millisecondPart )?
-                    int alt201=2;
-                    int LA201_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1334:27: ( millisecondPart )?
+                    int alt203=2;
+                    int LA203_0 = input.LA(1);
 
-                    if ( (LA201_0==NUM_DOUBLE||LA201_0==IDENT||LA201_0==NUM_INT||LA201_0==QUESTION||(LA201_0>=NUM_LONG && LA201_0<=NUM_FLOAT)) ) {
-                        alt201=1;
+                    if ( (LA203_0==NUM_DOUBLE||LA203_0==IDENT||LA203_0==NUM_INT||LA203_0==QUESTION||(LA203_0>=NUM_LONG && LA203_0<=NUM_FLOAT)) ) {
+                        alt203=1;
                     }
-                    switch (alt201) {
+                    switch (alt203) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1332:27: millisecondPart
+                            // EsperEPL2Grammar.g:1334:27: millisecondPart
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod8831);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod8879);
                             millisecondPart562=millisecondPart();
 
                             state._fsp--;
@@ -20956,26 +21050,26 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Grammar.g:1333:4: secondPart ( millisecondPart )?
+                    // EsperEPL2Grammar.g:1335:4: secondPart ( millisecondPart )?
                     {
-                    pushFollow(FOLLOW_secondPart_in_timePeriod8837);
+                    pushFollow(FOLLOW_secondPart_in_timePeriod8885);
                     secondPart563=secondPart();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_secondPart.add(secondPart563.getTree());
-                    // EsperEPL2Grammar.g:1333:15: ( millisecondPart )?
-                    int alt202=2;
-                    int LA202_0 = input.LA(1);
+                    // EsperEPL2Grammar.g:1335:15: ( millisecondPart )?
+                    int alt204=2;
+                    int LA204_0 = input.LA(1);
 
-                    if ( (LA202_0==NUM_DOUBLE||LA202_0==IDENT||LA202_0==NUM_INT||LA202_0==QUESTION||(LA202_0>=NUM_LONG && LA202_0<=NUM_FLOAT)) ) {
-                        alt202=1;
+                    if ( (LA204_0==NUM_DOUBLE||LA204_0==IDENT||LA204_0==NUM_INT||LA204_0==QUESTION||(LA204_0>=NUM_LONG && LA204_0<=NUM_FLOAT)) ) {
+                        alt204=1;
                     }
-                    switch (alt202) {
+                    switch (alt204) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1333:15: millisecondPart
+                            // EsperEPL2Grammar.g:1335:15: millisecondPart
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod8839);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod8887);
                             millisecondPart564=millisecondPart();
 
                             state._fsp--;
@@ -20991,9 +21085,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // EsperEPL2Grammar.g:1334:4: millisecondPart
+                    // EsperEPL2Grammar.g:1336:4: millisecondPart
                     {
-                    pushFollow(FOLLOW_millisecondPart_in_timePeriod8845);
+                    pushFollow(FOLLOW_millisecondPart_in_timePeriod8893);
                     millisecondPart565=millisecondPart();
 
                     state._fsp--;
@@ -21008,7 +21102,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: dayPart, hourPart, minutePart, secondPart, millisecondPart
+            // elements: dayPart, millisecondPart, minutePart, secondPart, hourPart
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -21018,38 +21112,38 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1336:3: -> ^( TIME_PERIOD ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? )
+            // 1338:3: -> ^( TIME_PERIOD ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? )
             {
-                // EsperEPL2Grammar.g:1336:6: ^( TIME_PERIOD ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? )
+                // EsperEPL2Grammar.g:1338:6: ^( TIME_PERIOD ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(TIME_PERIOD, "TIME_PERIOD"), root_1);
 
-                // EsperEPL2Grammar.g:1336:20: ( dayPart )?
+                // EsperEPL2Grammar.g:1338:20: ( dayPart )?
                 if ( stream_dayPart.hasNext() ) {
                     adaptor.addChild(root_1, stream_dayPart.nextTree());
 
                 }
                 stream_dayPart.reset();
-                // EsperEPL2Grammar.g:1336:29: ( hourPart )?
+                // EsperEPL2Grammar.g:1338:29: ( hourPart )?
                 if ( stream_hourPart.hasNext() ) {
                     adaptor.addChild(root_1, stream_hourPart.nextTree());
 
                 }
                 stream_hourPart.reset();
-                // EsperEPL2Grammar.g:1336:39: ( minutePart )?
+                // EsperEPL2Grammar.g:1338:39: ( minutePart )?
                 if ( stream_minutePart.hasNext() ) {
                     adaptor.addChild(root_1, stream_minutePart.nextTree());
 
                 }
                 stream_minutePart.reset();
-                // EsperEPL2Grammar.g:1336:51: ( secondPart )?
+                // EsperEPL2Grammar.g:1338:51: ( secondPart )?
                 if ( stream_secondPart.hasNext() ) {
                     adaptor.addChild(root_1, stream_secondPart.nextTree());
 
                 }
                 stream_secondPart.reset();
-                // EsperEPL2Grammar.g:1336:63: ( millisecondPart )?
+                // EsperEPL2Grammar.g:1338:63: ( millisecondPart )?
                 if ( stream_millisecondPart.hasNext() ) {
                     adaptor.addChild(root_1, stream_millisecondPart.nextTree());
 
@@ -21088,7 +21182,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "dayPart"
-    // EsperEPL2Grammar.g:1339:1: dayPart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_DAYS | TIMEPERIOD_DAY ) -> {i!= null}? ^( DAY_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( DAY_PART ( number )? ( substitution )? ) ;
+    // EsperEPL2Grammar.g:1341:1: dayPart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_DAYS | TIMEPERIOD_DAY ) -> {i!= null}? ^( DAY_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( DAY_PART ( number )? ( substitution )? ) ;
     public final EsperEPL2GrammarParser.dayPart_return dayPart() throws RecognitionException {
         EsperEPL2GrammarParser.dayPart_return retval = new EsperEPL2GrammarParser.dayPart_return();
         retval.start = input.LT(1);
@@ -21112,43 +21206,43 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1340:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_DAYS | TIMEPERIOD_DAY ) -> {i!= null}? ^( DAY_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( DAY_PART ( number )? ( substitution )? ) )
-            // EsperEPL2Grammar.g:1340:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_DAYS | TIMEPERIOD_DAY )
+            // EsperEPL2Grammar.g:1342:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_DAYS | TIMEPERIOD_DAY ) -> {i!= null}? ^( DAY_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( DAY_PART ( number )? ( substitution )? ) )
+            // EsperEPL2Grammar.g:1342:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_DAYS | TIMEPERIOD_DAY )
             {
-            // EsperEPL2Grammar.g:1340:4: ( number | i= IDENT | substitution )
-            int alt204=3;
+            // EsperEPL2Grammar.g:1342:4: ( number | i= IDENT | substitution )
+            int alt206=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt204=1;
+                alt206=1;
                 }
                 break;
             case IDENT:
                 {
-                alt204=2;
+                alt206=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt204=3;
+                alt206=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 204, 0, input);
+                    new NoViableAltException("", 206, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt204) {
+            switch (alt206) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1340:5: number
+                    // EsperEPL2Grammar.g:1342:5: number
                     {
-                    pushFollow(FOLLOW_number_in_dayPart8883);
+                    pushFollow(FOLLOW_number_in_dayPart8931);
                     number566=number();
 
                     state._fsp--;
@@ -21158,18 +21252,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1340:12: i= IDENT
+                    // EsperEPL2Grammar.g:1342:12: i= IDENT
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_dayPart8887); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_dayPart8935); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1340:20: substitution
+                    // EsperEPL2Grammar.g:1342:20: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_dayPart8889);
+                    pushFollow(FOLLOW_substitution_in_dayPart8937);
                     substitution567=substitution();
 
                     state._fsp--;
@@ -21181,37 +21275,37 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1340:34: ( TIMEPERIOD_DAYS | TIMEPERIOD_DAY )
-            int alt205=2;
-            int LA205_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1342:34: ( TIMEPERIOD_DAYS | TIMEPERIOD_DAY )
+            int alt207=2;
+            int LA207_0 = input.LA(1);
 
-            if ( (LA205_0==TIMEPERIOD_DAYS) ) {
-                alt205=1;
+            if ( (LA207_0==TIMEPERIOD_DAYS) ) {
+                alt207=1;
             }
-            else if ( (LA205_0==TIMEPERIOD_DAY) ) {
-                alt205=2;
+            else if ( (LA207_0==TIMEPERIOD_DAY) ) {
+                alt207=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 205, 0, input);
+                    new NoViableAltException("", 207, 0, input);
 
                 throw nvae;
             }
-            switch (alt205) {
+            switch (alt207) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1340:35: TIMEPERIOD_DAYS
+                    // EsperEPL2Grammar.g:1342:35: TIMEPERIOD_DAYS
                     {
-                    TIMEPERIOD_DAYS568=(Token)match(input,TIMEPERIOD_DAYS,FOLLOW_TIMEPERIOD_DAYS_in_dayPart8893); if (state.failed) return retval; 
+                    TIMEPERIOD_DAYS568=(Token)match(input,TIMEPERIOD_DAYS,FOLLOW_TIMEPERIOD_DAYS_in_dayPart8941); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_DAYS.add(TIMEPERIOD_DAYS568);
 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1340:53: TIMEPERIOD_DAY
+                    // EsperEPL2Grammar.g:1342:53: TIMEPERIOD_DAY
                     {
-                    TIMEPERIOD_DAY569=(Token)match(input,TIMEPERIOD_DAY,FOLLOW_TIMEPERIOD_DAY_in_dayPart8897); if (state.failed) return retval; 
+                    TIMEPERIOD_DAY569=(Token)match(input,TIMEPERIOD_DAY,FOLLOW_TIMEPERIOD_DAY_in_dayPart8945); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_DAY.add(TIMEPERIOD_DAY569);
 
 
@@ -21223,7 +21317,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: number, i, substitution
+            // elements: i, number, substitution
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -21234,19 +21328,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1341:3: -> {i!= null}? ^( DAY_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+            // 1343:3: -> {i!= null}? ^( DAY_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
             if (i!= null) {
-                // EsperEPL2Grammar.g:1341:18: ^( DAY_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+                // EsperEPL2Grammar.g:1343:18: ^( DAY_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(DAY_PART, "DAY_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1341:29: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
+                // EsperEPL2Grammar.g:1343:29: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1341:47: ^( EVENT_PROP_SIMPLE $i)
+                // EsperEPL2Grammar.g:1343:47: ^( EVENT_PROP_SIMPLE $i)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -21263,20 +21357,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1342:3: -> ^( DAY_PART ( number )? ( substitution )? )
+            else // 1344:3: -> ^( DAY_PART ( number )? ( substitution )? )
             {
-                // EsperEPL2Grammar.g:1342:6: ^( DAY_PART ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1344:6: ^( DAY_PART ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(DAY_PART, "DAY_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1342:17: ( number )?
+                // EsperEPL2Grammar.g:1344:17: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1342:25: ( substitution )?
+                // EsperEPL2Grammar.g:1344:25: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -21315,7 +21409,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "hourPart"
-    // EsperEPL2Grammar.g:1345:1: hourPart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_HOURS | TIMEPERIOD_HOUR ) -> {i!= null}? ^( HOUR_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( HOUR_PART ( number )? ( substitution )? ) ;
+    // EsperEPL2Grammar.g:1347:1: hourPart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_HOURS | TIMEPERIOD_HOUR ) -> {i!= null}? ^( HOUR_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( HOUR_PART ( number )? ( substitution )? ) ;
     public final EsperEPL2GrammarParser.hourPart_return hourPart() throws RecognitionException {
         EsperEPL2GrammarParser.hourPart_return retval = new EsperEPL2GrammarParser.hourPart_return();
         retval.start = input.LT(1);
@@ -21339,43 +21433,43 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1346:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_HOURS | TIMEPERIOD_HOUR ) -> {i!= null}? ^( HOUR_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( HOUR_PART ( number )? ( substitution )? ) )
-            // EsperEPL2Grammar.g:1346:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_HOURS | TIMEPERIOD_HOUR )
+            // EsperEPL2Grammar.g:1348:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_HOURS | TIMEPERIOD_HOUR ) -> {i!= null}? ^( HOUR_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( HOUR_PART ( number )? ( substitution )? ) )
+            // EsperEPL2Grammar.g:1348:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_HOURS | TIMEPERIOD_HOUR )
             {
-            // EsperEPL2Grammar.g:1346:4: ( number | i= IDENT | substitution )
-            int alt206=3;
+            // EsperEPL2Grammar.g:1348:4: ( number | i= IDENT | substitution )
+            int alt208=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt206=1;
+                alt208=1;
                 }
                 break;
             case IDENT:
                 {
-                alt206=2;
+                alt208=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt206=3;
+                alt208=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 206, 0, input);
+                    new NoViableAltException("", 208, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt206) {
+            switch (alt208) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1346:5: number
+                    // EsperEPL2Grammar.g:1348:5: number
                     {
-                    pushFollow(FOLLOW_number_in_hourPart8946);
+                    pushFollow(FOLLOW_number_in_hourPart8994);
                     number570=number();
 
                     state._fsp--;
@@ -21385,18 +21479,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1346:12: i= IDENT
+                    // EsperEPL2Grammar.g:1348:12: i= IDENT
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_hourPart8950); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_hourPart8998); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1346:20: substitution
+                    // EsperEPL2Grammar.g:1348:20: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_hourPart8952);
+                    pushFollow(FOLLOW_substitution_in_hourPart9000);
                     substitution571=substitution();
 
                     state._fsp--;
@@ -21408,37 +21502,37 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1346:34: ( TIMEPERIOD_HOURS | TIMEPERIOD_HOUR )
-            int alt207=2;
-            int LA207_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1348:34: ( TIMEPERIOD_HOURS | TIMEPERIOD_HOUR )
+            int alt209=2;
+            int LA209_0 = input.LA(1);
 
-            if ( (LA207_0==TIMEPERIOD_HOURS) ) {
-                alt207=1;
+            if ( (LA209_0==TIMEPERIOD_HOURS) ) {
+                alt209=1;
             }
-            else if ( (LA207_0==TIMEPERIOD_HOUR) ) {
-                alt207=2;
+            else if ( (LA209_0==TIMEPERIOD_HOUR) ) {
+                alt209=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 207, 0, input);
+                    new NoViableAltException("", 209, 0, input);
 
                 throw nvae;
             }
-            switch (alt207) {
+            switch (alt209) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1346:35: TIMEPERIOD_HOURS
+                    // EsperEPL2Grammar.g:1348:35: TIMEPERIOD_HOURS
                     {
-                    TIMEPERIOD_HOURS572=(Token)match(input,TIMEPERIOD_HOURS,FOLLOW_TIMEPERIOD_HOURS_in_hourPart8956); if (state.failed) return retval; 
+                    TIMEPERIOD_HOURS572=(Token)match(input,TIMEPERIOD_HOURS,FOLLOW_TIMEPERIOD_HOURS_in_hourPart9004); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_HOURS.add(TIMEPERIOD_HOURS572);
 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1346:54: TIMEPERIOD_HOUR
+                    // EsperEPL2Grammar.g:1348:54: TIMEPERIOD_HOUR
                     {
-                    TIMEPERIOD_HOUR573=(Token)match(input,TIMEPERIOD_HOUR,FOLLOW_TIMEPERIOD_HOUR_in_hourPart8960); if (state.failed) return retval; 
+                    TIMEPERIOD_HOUR573=(Token)match(input,TIMEPERIOD_HOUR,FOLLOW_TIMEPERIOD_HOUR_in_hourPart9008); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_HOUR.add(TIMEPERIOD_HOUR573);
 
 
@@ -21461,19 +21555,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1347:3: -> {i!= null}? ^( HOUR_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+            // 1349:3: -> {i!= null}? ^( HOUR_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
             if (i!= null) {
-                // EsperEPL2Grammar.g:1347:18: ^( HOUR_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+                // EsperEPL2Grammar.g:1349:18: ^( HOUR_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(HOUR_PART, "HOUR_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1347:30: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
+                // EsperEPL2Grammar.g:1349:30: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1347:48: ^( EVENT_PROP_SIMPLE $i)
+                // EsperEPL2Grammar.g:1349:48: ^( EVENT_PROP_SIMPLE $i)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -21490,20 +21584,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1348:3: -> ^( HOUR_PART ( number )? ( substitution )? )
+            else // 1350:3: -> ^( HOUR_PART ( number )? ( substitution )? )
             {
-                // EsperEPL2Grammar.g:1348:6: ^( HOUR_PART ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1350:6: ^( HOUR_PART ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(HOUR_PART, "HOUR_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1348:18: ( number )?
+                // EsperEPL2Grammar.g:1350:18: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1348:26: ( substitution )?
+                // EsperEPL2Grammar.g:1350:26: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -21542,7 +21636,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "minutePart"
-    // EsperEPL2Grammar.g:1351:1: minutePart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN ) -> {i!= null}? ^( MINUTE_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( MINUTE_PART ( number )? ( substitution )? ) ;
+    // EsperEPL2Grammar.g:1353:1: minutePart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN ) -> {i!= null}? ^( MINUTE_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( MINUTE_PART ( number )? ( substitution )? ) ;
     public final EsperEPL2GrammarParser.minutePart_return minutePart() throws RecognitionException {
         EsperEPL2GrammarParser.minutePart_return retval = new EsperEPL2GrammarParser.minutePart_return();
         retval.start = input.LT(1);
@@ -21569,43 +21663,43 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1352:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN ) -> {i!= null}? ^( MINUTE_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( MINUTE_PART ( number )? ( substitution )? ) )
-            // EsperEPL2Grammar.g:1352:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN )
+            // EsperEPL2Grammar.g:1354:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN ) -> {i!= null}? ^( MINUTE_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( MINUTE_PART ( number )? ( substitution )? ) )
+            // EsperEPL2Grammar.g:1354:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN )
             {
-            // EsperEPL2Grammar.g:1352:4: ( number | i= IDENT | substitution )
-            int alt208=3;
+            // EsperEPL2Grammar.g:1354:4: ( number | i= IDENT | substitution )
+            int alt210=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt208=1;
+                alt210=1;
                 }
                 break;
             case IDENT:
                 {
-                alt208=2;
+                alt210=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt208=3;
+                alt210=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 208, 0, input);
+                    new NoViableAltException("", 210, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt208) {
+            switch (alt210) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1352:5: number
+                    // EsperEPL2Grammar.g:1354:5: number
                     {
-                    pushFollow(FOLLOW_number_in_minutePart9009);
+                    pushFollow(FOLLOW_number_in_minutePart9057);
                     number574=number();
 
                     state._fsp--;
@@ -21615,18 +21709,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1352:12: i= IDENT
+                    // EsperEPL2Grammar.g:1354:12: i= IDENT
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_minutePart9013); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_minutePart9061); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1352:20: substitution
+                    // EsperEPL2Grammar.g:1354:20: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_minutePart9015);
+                    pushFollow(FOLLOW_substitution_in_minutePart9063);
                     substitution575=substitution();
 
                     state._fsp--;
@@ -21638,55 +21732,55 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1352:34: ( TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN )
-            int alt209=3;
+            // EsperEPL2Grammar.g:1354:34: ( TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN )
+            int alt211=3;
             switch ( input.LA(1) ) {
             case TIMEPERIOD_MINUTES:
                 {
-                alt209=1;
+                alt211=1;
                 }
                 break;
             case TIMEPERIOD_MINUTE:
                 {
-                alt209=2;
+                alt211=2;
                 }
                 break;
             case MIN:
                 {
-                alt209=3;
+                alt211=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 209, 0, input);
+                    new NoViableAltException("", 211, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt209) {
+            switch (alt211) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1352:35: TIMEPERIOD_MINUTES
+                    // EsperEPL2Grammar.g:1354:35: TIMEPERIOD_MINUTES
                     {
-                    TIMEPERIOD_MINUTES576=(Token)match(input,TIMEPERIOD_MINUTES,FOLLOW_TIMEPERIOD_MINUTES_in_minutePart9019); if (state.failed) return retval; 
+                    TIMEPERIOD_MINUTES576=(Token)match(input,TIMEPERIOD_MINUTES,FOLLOW_TIMEPERIOD_MINUTES_in_minutePart9067); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MINUTES.add(TIMEPERIOD_MINUTES576);
 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1352:56: TIMEPERIOD_MINUTE
+                    // EsperEPL2Grammar.g:1354:56: TIMEPERIOD_MINUTE
                     {
-                    TIMEPERIOD_MINUTE577=(Token)match(input,TIMEPERIOD_MINUTE,FOLLOW_TIMEPERIOD_MINUTE_in_minutePart9023); if (state.failed) return retval; 
+                    TIMEPERIOD_MINUTE577=(Token)match(input,TIMEPERIOD_MINUTE,FOLLOW_TIMEPERIOD_MINUTE_in_minutePart9071); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MINUTE.add(TIMEPERIOD_MINUTE577);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1352:76: MIN
+                    // EsperEPL2Grammar.g:1354:76: MIN
                     {
-                    MIN578=(Token)match(input,MIN,FOLLOW_MIN_in_minutePart9027); if (state.failed) return retval; 
+                    MIN578=(Token)match(input,MIN,FOLLOW_MIN_in_minutePart9075); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_MIN.add(MIN578);
 
 
@@ -21698,7 +21792,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: substitution, number, i
+            // elements: substitution, i, number
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -21709,19 +21803,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1353:3: -> {i!= null}? ^( MINUTE_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+            // 1355:3: -> {i!= null}? ^( MINUTE_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
             if (i!= null) {
-                // EsperEPL2Grammar.g:1353:18: ^( MINUTE_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+                // EsperEPL2Grammar.g:1355:18: ^( MINUTE_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MINUTE_PART, "MINUTE_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1353:32: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
+                // EsperEPL2Grammar.g:1355:32: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1353:50: ^( EVENT_PROP_SIMPLE $i)
+                // EsperEPL2Grammar.g:1355:50: ^( EVENT_PROP_SIMPLE $i)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -21738,20 +21832,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1354:3: -> ^( MINUTE_PART ( number )? ( substitution )? )
+            else // 1356:3: -> ^( MINUTE_PART ( number )? ( substitution )? )
             {
-                // EsperEPL2Grammar.g:1354:6: ^( MINUTE_PART ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1356:6: ^( MINUTE_PART ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MINUTE_PART, "MINUTE_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1354:20: ( number )?
+                // EsperEPL2Grammar.g:1356:20: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1354:28: ( substitution )?
+                // EsperEPL2Grammar.g:1356:28: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -21790,7 +21884,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "secondPart"
-    // EsperEPL2Grammar.g:1357:1: secondPart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC ) -> {i!= null}? ^( SECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( SECOND_PART ( number )? ( substitution )? ) ;
+    // EsperEPL2Grammar.g:1359:1: secondPart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC ) -> {i!= null}? ^( SECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( SECOND_PART ( number )? ( substitution )? ) ;
     public final EsperEPL2GrammarParser.secondPart_return secondPart() throws RecognitionException {
         EsperEPL2GrammarParser.secondPart_return retval = new EsperEPL2GrammarParser.secondPart_return();
         retval.start = input.LT(1);
@@ -21817,43 +21911,43 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1358:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC ) -> {i!= null}? ^( SECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( SECOND_PART ( number )? ( substitution )? ) )
-            // EsperEPL2Grammar.g:1358:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC )
+            // EsperEPL2Grammar.g:1360:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC ) -> {i!= null}? ^( SECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( SECOND_PART ( number )? ( substitution )? ) )
+            // EsperEPL2Grammar.g:1360:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC )
             {
-            // EsperEPL2Grammar.g:1358:4: ( number | i= IDENT | substitution )
-            int alt210=3;
+            // EsperEPL2Grammar.g:1360:4: ( number | i= IDENT | substitution )
+            int alt212=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt210=1;
+                alt212=1;
                 }
                 break;
             case IDENT:
                 {
-                alt210=2;
+                alt212=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt210=3;
+                alt212=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 210, 0, input);
+                    new NoViableAltException("", 212, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt210) {
+            switch (alt212) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1358:5: number
+                    // EsperEPL2Grammar.g:1360:5: number
                     {
-                    pushFollow(FOLLOW_number_in_secondPart9077);
+                    pushFollow(FOLLOW_number_in_secondPart9125);
                     number579=number();
 
                     state._fsp--;
@@ -21863,18 +21957,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1358:12: i= IDENT
+                    // EsperEPL2Grammar.g:1360:12: i= IDENT
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_secondPart9081); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_secondPart9129); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1358:20: substitution
+                    // EsperEPL2Grammar.g:1360:20: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_secondPart9083);
+                    pushFollow(FOLLOW_substitution_in_secondPart9131);
                     substitution580=substitution();
 
                     state._fsp--;
@@ -21886,55 +21980,55 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1358:34: ( TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC )
-            int alt211=3;
+            // EsperEPL2Grammar.g:1360:34: ( TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC )
+            int alt213=3;
             switch ( input.LA(1) ) {
             case TIMEPERIOD_SECONDS:
                 {
-                alt211=1;
+                alt213=1;
                 }
                 break;
             case TIMEPERIOD_SECOND:
                 {
-                alt211=2;
+                alt213=2;
                 }
                 break;
             case TIMEPERIOD_SEC:
                 {
-                alt211=3;
+                alt213=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 211, 0, input);
+                    new NoViableAltException("", 213, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt211) {
+            switch (alt213) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1358:35: TIMEPERIOD_SECONDS
+                    // EsperEPL2Grammar.g:1360:35: TIMEPERIOD_SECONDS
                     {
-                    TIMEPERIOD_SECONDS581=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_secondPart9087); if (state.failed) return retval; 
+                    TIMEPERIOD_SECONDS581=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_secondPart9135); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECONDS.add(TIMEPERIOD_SECONDS581);
 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1358:56: TIMEPERIOD_SECOND
+                    // EsperEPL2Grammar.g:1360:56: TIMEPERIOD_SECOND
                     {
-                    TIMEPERIOD_SECOND582=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_secondPart9091); if (state.failed) return retval; 
+                    TIMEPERIOD_SECOND582=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_secondPart9139); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECOND.add(TIMEPERIOD_SECOND582);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1358:76: TIMEPERIOD_SEC
+                    // EsperEPL2Grammar.g:1360:76: TIMEPERIOD_SEC
                     {
-                    TIMEPERIOD_SEC583=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_secondPart9095); if (state.failed) return retval; 
+                    TIMEPERIOD_SEC583=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_secondPart9143); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SEC.add(TIMEPERIOD_SEC583);
 
 
@@ -21946,7 +22040,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: number, i, substitution
+            // elements: i, substitution, number
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -21957,19 +22051,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1359:3: -> {i!= null}? ^( SECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+            // 1361:3: -> {i!= null}? ^( SECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
             if (i!= null) {
-                // EsperEPL2Grammar.g:1359:18: ^( SECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+                // EsperEPL2Grammar.g:1361:18: ^( SECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(SECOND_PART, "SECOND_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1359:32: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
+                // EsperEPL2Grammar.g:1361:32: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1359:50: ^( EVENT_PROP_SIMPLE $i)
+                // EsperEPL2Grammar.g:1361:50: ^( EVENT_PROP_SIMPLE $i)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -21986,20 +22080,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1360:3: -> ^( SECOND_PART ( number )? ( substitution )? )
+            else // 1362:3: -> ^( SECOND_PART ( number )? ( substitution )? )
             {
-                // EsperEPL2Grammar.g:1360:6: ^( SECOND_PART ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1362:6: ^( SECOND_PART ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(SECOND_PART, "SECOND_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1360:20: ( number )?
+                // EsperEPL2Grammar.g:1362:20: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1360:28: ( substitution )?
+                // EsperEPL2Grammar.g:1362:28: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -22038,7 +22132,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "millisecondPart"
-    // EsperEPL2Grammar.g:1363:1: millisecondPart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC ) -> {i!= null}? ^( MILLISECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( MILLISECOND_PART ( number )? ( substitution )? ) ;
+    // EsperEPL2Grammar.g:1365:1: millisecondPart : ( number | i= IDENT | substitution ) ( TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC ) -> {i!= null}? ^( MILLISECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( MILLISECOND_PART ( number )? ( substitution )? ) ;
     public final EsperEPL2GrammarParser.millisecondPart_return millisecondPart() throws RecognitionException {
         EsperEPL2GrammarParser.millisecondPart_return retval = new EsperEPL2GrammarParser.millisecondPart_return();
         retval.start = input.LT(1);
@@ -22065,43 +22159,43 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
-            // EsperEPL2Grammar.g:1364:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC ) -> {i!= null}? ^( MILLISECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( MILLISECOND_PART ( number )? ( substitution )? ) )
-            // EsperEPL2Grammar.g:1364:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC )
+            // EsperEPL2Grammar.g:1366:2: ( ( number | i= IDENT | substitution ) ( TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC ) -> {i!= null}? ^( MILLISECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) ) -> ^( MILLISECOND_PART ( number )? ( substitution )? ) )
+            // EsperEPL2Grammar.g:1366:4: ( number | i= IDENT | substitution ) ( TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC )
             {
-            // EsperEPL2Grammar.g:1364:4: ( number | i= IDENT | substitution )
-            int alt212=3;
+            // EsperEPL2Grammar.g:1366:4: ( number | i= IDENT | substitution )
+            int alt214=3;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case NUM_INT:
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt212=1;
+                alt214=1;
                 }
                 break;
             case IDENT:
                 {
-                alt212=2;
+                alt214=2;
                 }
                 break;
             case QUESTION:
                 {
-                alt212=3;
+                alt214=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 212, 0, input);
+                    new NoViableAltException("", 214, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt212) {
+            switch (alt214) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1364:5: number
+                    // EsperEPL2Grammar.g:1366:5: number
                     {
-                    pushFollow(FOLLOW_number_in_millisecondPart9145);
+                    pushFollow(FOLLOW_number_in_millisecondPart9193);
                     number584=number();
 
                     state._fsp--;
@@ -22111,18 +22205,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1364:12: i= IDENT
+                    // EsperEPL2Grammar.g:1366:12: i= IDENT
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_millisecondPart9149); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_millisecondPart9197); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1364:20: substitution
+                    // EsperEPL2Grammar.g:1366:20: substitution
                     {
-                    pushFollow(FOLLOW_substitution_in_millisecondPart9151);
+                    pushFollow(FOLLOW_substitution_in_millisecondPart9199);
                     substitution585=substitution();
 
                     state._fsp--;
@@ -22134,55 +22228,55 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            // EsperEPL2Grammar.g:1364:34: ( TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC )
-            int alt213=3;
+            // EsperEPL2Grammar.g:1366:34: ( TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC )
+            int alt215=3;
             switch ( input.LA(1) ) {
             case TIMEPERIOD_MILLISECONDS:
                 {
-                alt213=1;
+                alt215=1;
                 }
                 break;
             case TIMEPERIOD_MILLISECOND:
                 {
-                alt213=2;
+                alt215=2;
                 }
                 break;
             case TIMEPERIOD_MILLISEC:
                 {
-                alt213=3;
+                alt215=3;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 213, 0, input);
+                    new NoViableAltException("", 215, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt213) {
+            switch (alt215) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1364:35: TIMEPERIOD_MILLISECONDS
+                    // EsperEPL2Grammar.g:1366:35: TIMEPERIOD_MILLISECONDS
                     {
-                    TIMEPERIOD_MILLISECONDS586=(Token)match(input,TIMEPERIOD_MILLISECONDS,FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart9155); if (state.failed) return retval; 
+                    TIMEPERIOD_MILLISECONDS586=(Token)match(input,TIMEPERIOD_MILLISECONDS,FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart9203); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISECONDS.add(TIMEPERIOD_MILLISECONDS586);
 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1364:61: TIMEPERIOD_MILLISECOND
+                    // EsperEPL2Grammar.g:1366:61: TIMEPERIOD_MILLISECOND
                     {
-                    TIMEPERIOD_MILLISECOND587=(Token)match(input,TIMEPERIOD_MILLISECOND,FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart9159); if (state.failed) return retval; 
+                    TIMEPERIOD_MILLISECOND587=(Token)match(input,TIMEPERIOD_MILLISECOND,FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart9207); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISECOND.add(TIMEPERIOD_MILLISECOND587);
 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1364:86: TIMEPERIOD_MILLISEC
+                    // EsperEPL2Grammar.g:1366:86: TIMEPERIOD_MILLISEC
                     {
-                    TIMEPERIOD_MILLISEC588=(Token)match(input,TIMEPERIOD_MILLISEC,FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart9163); if (state.failed) return retval; 
+                    TIMEPERIOD_MILLISEC588=(Token)match(input,TIMEPERIOD_MILLISEC,FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart9211); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISEC.add(TIMEPERIOD_MILLISEC588);
 
 
@@ -22194,7 +22288,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: substitution, i, number
+            // elements: i, substitution, number
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -22205,19 +22299,19 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1365:3: -> {i!= null}? ^( MILLISECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+            // 1367:3: -> {i!= null}? ^( MILLISECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
             if (i!= null) {
-                // EsperEPL2Grammar.g:1365:18: ^( MILLISECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
+                // EsperEPL2Grammar.g:1367:18: ^( MILLISECOND_PART ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) ) )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MILLISECOND_PART, "MILLISECOND_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1365:37: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
+                // EsperEPL2Grammar.g:1367:37: ^( EVENT_PROP_EXPR ^( EVENT_PROP_SIMPLE $i) )
                 {
                 CommonTree root_2 = (CommonTree)adaptor.nil();
                 root_2 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_EXPR, "EVENT_PROP_EXPR"), root_2);
 
-                // EsperEPL2Grammar.g:1365:55: ^( EVENT_PROP_SIMPLE $i)
+                // EsperEPL2Grammar.g:1367:55: ^( EVENT_PROP_SIMPLE $i)
                 {
                 CommonTree root_3 = (CommonTree)adaptor.nil();
                 root_3 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(EVENT_PROP_SIMPLE, "EVENT_PROP_SIMPLE"), root_3);
@@ -22234,20 +22328,20 @@ public class EsperEPL2GrammarParser extends Parser {
                 }
 
             }
-            else // 1366:3: -> ^( MILLISECOND_PART ( number )? ( substitution )? )
+            else // 1368:3: -> ^( MILLISECOND_PART ( number )? ( substitution )? )
             {
-                // EsperEPL2Grammar.g:1366:6: ^( MILLISECOND_PART ( number )? ( substitution )? )
+                // EsperEPL2Grammar.g:1368:6: ^( MILLISECOND_PART ( number )? ( substitution )? )
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(MILLISECOND_PART, "MILLISECOND_PART"), root_1);
 
-                // EsperEPL2Grammar.g:1366:25: ( number )?
+                // EsperEPL2Grammar.g:1368:25: ( number )?
                 if ( stream_number.hasNext() ) {
                     adaptor.addChild(root_1, stream_number.nextTree());
 
                 }
                 stream_number.reset();
-                // EsperEPL2Grammar.g:1366:33: ( substitution )?
+                // EsperEPL2Grammar.g:1368:33: ( substitution )?
                 if ( stream_substitution.hasNext() ) {
                     adaptor.addChild(root_1, stream_substitution.nextTree());
 
@@ -22286,7 +22380,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "number"
-    // EsperEPL2Grammar.g:1369:1: number : (ni= NUM_INT -> INT_TYPE[$ni] | nl= NUM_LONG -> LONG_TYPE[$nl] | nf= NUM_FLOAT -> FLOAT_TYPE[$nf] | nd= NUM_DOUBLE -> DOUBLE_TYPE[$nd] );
+    // EsperEPL2Grammar.g:1371:1: number : (ni= NUM_INT -> INT_TYPE[$ni] | nl= NUM_LONG -> LONG_TYPE[$nl] | nf= NUM_FLOAT -> FLOAT_TYPE[$nf] | nd= NUM_DOUBLE -> DOUBLE_TYPE[$nd] );
     public final EsperEPL2GrammarParser.number_return number() throws RecognitionException {
         EsperEPL2GrammarParser.number_return retval = new EsperEPL2GrammarParser.number_return();
         retval.start = input.LT(1);
@@ -22308,42 +22402,42 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_NUM_INT=new RewriteRuleTokenStream(adaptor,"token NUM_INT");
 
         try {
-            // EsperEPL2Grammar.g:1370:5: (ni= NUM_INT -> INT_TYPE[$ni] | nl= NUM_LONG -> LONG_TYPE[$nl] | nf= NUM_FLOAT -> FLOAT_TYPE[$nf] | nd= NUM_DOUBLE -> DOUBLE_TYPE[$nd] )
-            int alt214=4;
+            // EsperEPL2Grammar.g:1372:5: (ni= NUM_INT -> INT_TYPE[$ni] | nl= NUM_LONG -> LONG_TYPE[$nl] | nf= NUM_FLOAT -> FLOAT_TYPE[$nf] | nd= NUM_DOUBLE -> DOUBLE_TYPE[$nd] )
+            int alt216=4;
             switch ( input.LA(1) ) {
             case NUM_INT:
                 {
-                alt214=1;
+                alt216=1;
                 }
                 break;
             case NUM_LONG:
                 {
-                alt214=2;
+                alt216=2;
                 }
                 break;
             case NUM_FLOAT:
                 {
-                alt214=3;
+                alt216=3;
                 }
                 break;
             case NUM_DOUBLE:
                 {
-                alt214=4;
+                alt216=4;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 214, 0, input);
+                    new NoViableAltException("", 216, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt214) {
+            switch (alt216) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1370:9: ni= NUM_INT
+                    // EsperEPL2Grammar.g:1372:9: ni= NUM_INT
                     {
-                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_number9218); if (state.failed) return retval; 
+                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_number9266); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_INT.add(ni);
 
 
@@ -22359,7 +22453,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1370:20: -> INT_TYPE[$ni]
+                    // 1372:20: -> INT_TYPE[$ni]
                     {
                         adaptor.addChild(root_0, (CommonTree)adaptor.create(INT_TYPE, ni));
 
@@ -22369,9 +22463,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1371:9: nl= NUM_LONG
+                    // EsperEPL2Grammar.g:1373:9: nl= NUM_LONG
                     {
-                    nl=(Token)match(input,NUM_LONG,FOLLOW_NUM_LONG_in_number9235); if (state.failed) return retval; 
+                    nl=(Token)match(input,NUM_LONG,FOLLOW_NUM_LONG_in_number9283); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_LONG.add(nl);
 
 
@@ -22387,7 +22481,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1371:21: -> LONG_TYPE[$nl]
+                    // 1373:21: -> LONG_TYPE[$nl]
                     {
                         adaptor.addChild(root_0, (CommonTree)adaptor.create(LONG_TYPE, nl));
 
@@ -22397,9 +22491,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1372:9: nf= NUM_FLOAT
+                    // EsperEPL2Grammar.g:1374:9: nf= NUM_FLOAT
                     {
-                    nf=(Token)match(input,NUM_FLOAT,FOLLOW_NUM_FLOAT_in_number9252); if (state.failed) return retval; 
+                    nf=(Token)match(input,NUM_FLOAT,FOLLOW_NUM_FLOAT_in_number9300); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_FLOAT.add(nf);
 
 
@@ -22415,7 +22509,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1372:22: -> FLOAT_TYPE[$nf]
+                    // 1374:22: -> FLOAT_TYPE[$nf]
                     {
                         adaptor.addChild(root_0, (CommonTree)adaptor.create(FLOAT_TYPE, nf));
 
@@ -22425,9 +22519,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Grammar.g:1373:9: nd= NUM_DOUBLE
+                    // EsperEPL2Grammar.g:1375:9: nd= NUM_DOUBLE
                     {
-                    nd=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_number9269); if (state.failed) return retval; 
+                    nd=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_number9317); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_DOUBLE.add(nd);
 
 
@@ -22443,7 +22537,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1373:23: -> DOUBLE_TYPE[$nd]
+                    // 1375:23: -> DOUBLE_TYPE[$nd]
                     {
                         adaptor.addChild(root_0, (CommonTree)adaptor.create(DOUBLE_TYPE, nd));
 
@@ -22478,7 +22572,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "substitution"
-    // EsperEPL2Grammar.g:1376:1: substitution : q= QUESTION -> SUBSTITUTION[$q] ;
+    // EsperEPL2Grammar.g:1378:1: substitution : q= QUESTION -> SUBSTITUTION[$q] ;
     public final EsperEPL2GrammarParser.substitution_return substitution() throws RecognitionException {
         EsperEPL2GrammarParser.substitution_return retval = new EsperEPL2GrammarParser.substitution_return();
         retval.start = input.LT(1);
@@ -22491,10 +22585,10 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_QUESTION=new RewriteRuleTokenStream(adaptor,"token QUESTION");
 
         try {
-            // EsperEPL2Grammar.g:1377:2: (q= QUESTION -> SUBSTITUTION[$q] )
-            // EsperEPL2Grammar.g:1377:4: q= QUESTION
+            // EsperEPL2Grammar.g:1379:2: (q= QUESTION -> SUBSTITUTION[$q] )
+            // EsperEPL2Grammar.g:1379:4: q= QUESTION
             {
-            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_substitution9290); if (state.failed) return retval; 
+            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_substitution9338); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_QUESTION.add(q);
 
 
@@ -22510,7 +22604,7 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1377:15: -> SUBSTITUTION[$q]
+            // 1379:15: -> SUBSTITUTION[$q]
             {
                 adaptor.addChild(root_0, (CommonTree)adaptor.create(SUBSTITUTION, q));
 
@@ -22543,7 +22637,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "constant"
-    // EsperEPL2Grammar.g:1380:1: constant : ( numberconstant | stringconstant | t= BOOLEAN_TRUE -> ^( BOOL_TYPE[$t] ) | f= BOOLEAN_FALSE -> ^( BOOL_TYPE[$f] ) | nu= VALUE_NULL -> ^( NULL_TYPE[$nu] ) );
+    // EsperEPL2Grammar.g:1382:1: constant : ( numberconstant | stringconstant | t= BOOLEAN_TRUE -> ^( BOOL_TYPE[$t] ) | f= BOOLEAN_FALSE -> ^( BOOL_TYPE[$f] ) | nu= VALUE_NULL -> ^( NULL_TYPE[$nu] ) );
     public final EsperEPL2GrammarParser.constant_return constant() throws RecognitionException {
         EsperEPL2GrammarParser.constant_return retval = new EsperEPL2GrammarParser.constant_return();
         retval.start = input.LT(1);
@@ -22566,8 +22660,8 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_BOOLEAN_FALSE=new RewriteRuleTokenStream(adaptor,"token BOOLEAN_FALSE");
 
         try {
-            // EsperEPL2Grammar.g:1381:2: ( numberconstant | stringconstant | t= BOOLEAN_TRUE -> ^( BOOL_TYPE[$t] ) | f= BOOLEAN_FALSE -> ^( BOOL_TYPE[$f] ) | nu= VALUE_NULL -> ^( NULL_TYPE[$nu] ) )
-            int alt215=5;
+            // EsperEPL2Grammar.g:1383:2: ( numberconstant | stringconstant | t= BOOLEAN_TRUE -> ^( BOOL_TYPE[$t] ) | f= BOOLEAN_FALSE -> ^( BOOL_TYPE[$f] ) | nu= VALUE_NULL -> ^( NULL_TYPE[$nu] ) )
+            int alt217=5;
             switch ( input.LA(1) ) {
             case NUM_DOUBLE:
             case PLUS:
@@ -22576,45 +22670,45 @@ public class EsperEPL2GrammarParser extends Parser {
             case NUM_LONG:
             case NUM_FLOAT:
                 {
-                alt215=1;
+                alt217=1;
                 }
                 break;
             case STRING_LITERAL:
             case QUOTED_STRING_LITERAL:
                 {
-                alt215=2;
+                alt217=2;
                 }
                 break;
             case BOOLEAN_TRUE:
                 {
-                alt215=3;
+                alt217=3;
                 }
                 break;
             case BOOLEAN_FALSE:
                 {
-                alt215=4;
+                alt217=4;
                 }
                 break;
             case VALUE_NULL:
                 {
-                alt215=5;
+                alt217=5;
                 }
                 break;
             default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 215, 0, input);
+                    new NoViableAltException("", 217, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt215) {
+            switch (alt217) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1381:6: numberconstant
+                    // EsperEPL2Grammar.g:1383:6: numberconstant
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_numberconstant_in_constant9309);
+                    pushFollow(FOLLOW_numberconstant_in_constant9357);
                     numberconstant589=numberconstant();
 
                     state._fsp--;
@@ -22624,11 +22718,11 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1382:6: stringconstant
+                    // EsperEPL2Grammar.g:1384:6: stringconstant
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_stringconstant_in_constant9316);
+                    pushFollow(FOLLOW_stringconstant_in_constant9364);
                     stringconstant590=stringconstant();
 
                     state._fsp--;
@@ -22638,9 +22732,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1383:10: t= BOOLEAN_TRUE
+                    // EsperEPL2Grammar.g:1385:10: t= BOOLEAN_TRUE
                     {
-                    t=(Token)match(input,BOOLEAN_TRUE,FOLLOW_BOOLEAN_TRUE_in_constant9329); if (state.failed) return retval; 
+                    t=(Token)match(input,BOOLEAN_TRUE,FOLLOW_BOOLEAN_TRUE_in_constant9377); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_BOOLEAN_TRUE.add(t);
 
 
@@ -22656,9 +22750,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1383:25: -> ^( BOOL_TYPE[$t] )
+                    // 1385:25: -> ^( BOOL_TYPE[$t] )
                     {
-                        // EsperEPL2Grammar.g:1383:28: ^( BOOL_TYPE[$t] )
+                        // EsperEPL2Grammar.g:1385:28: ^( BOOL_TYPE[$t] )
                         {
                         CommonTree root_1 = (CommonTree)adaptor.nil();
                         root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(BOOL_TYPE, t), root_1);
@@ -22672,9 +22766,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Grammar.g:1384:10: f= BOOLEAN_FALSE
+                    // EsperEPL2Grammar.g:1386:10: f= BOOLEAN_FALSE
                     {
-                    f=(Token)match(input,BOOLEAN_FALSE,FOLLOW_BOOLEAN_FALSE_in_constant9349); if (state.failed) return retval; 
+                    f=(Token)match(input,BOOLEAN_FALSE,FOLLOW_BOOLEAN_FALSE_in_constant9397); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_BOOLEAN_FALSE.add(f);
 
 
@@ -22690,9 +22784,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1384:26: -> ^( BOOL_TYPE[$f] )
+                    // 1386:26: -> ^( BOOL_TYPE[$f] )
                     {
-                        // EsperEPL2Grammar.g:1384:29: ^( BOOL_TYPE[$f] )
+                        // EsperEPL2Grammar.g:1386:29: ^( BOOL_TYPE[$f] )
                         {
                         CommonTree root_1 = (CommonTree)adaptor.nil();
                         root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(BOOL_TYPE, f), root_1);
@@ -22706,9 +22800,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // EsperEPL2Grammar.g:1385:10: nu= VALUE_NULL
+                    // EsperEPL2Grammar.g:1387:10: nu= VALUE_NULL
                     {
-                    nu=(Token)match(input,VALUE_NULL,FOLLOW_VALUE_NULL_in_constant9369); if (state.failed) return retval; 
+                    nu=(Token)match(input,VALUE_NULL,FOLLOW_VALUE_NULL_in_constant9417); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_VALUE_NULL.add(nu);
 
 
@@ -22724,9 +22818,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1385:24: -> ^( NULL_TYPE[$nu] )
+                    // 1387:24: -> ^( NULL_TYPE[$nu] )
                     {
-                        // EsperEPL2Grammar.g:1385:27: ^( NULL_TYPE[$nu] )
+                        // EsperEPL2Grammar.g:1387:27: ^( NULL_TYPE[$nu] )
                         {
                         CommonTree root_1 = (CommonTree)adaptor.nil();
                         root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(NULL_TYPE, nu), root_1);
@@ -22765,7 +22859,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "numberconstant"
-    // EsperEPL2Grammar.g:1388:1: numberconstant : (m= MINUS | p= PLUS )? number -> {$m != null}? -> number ;
+    // EsperEPL2Grammar.g:1390:1: numberconstant : (m= MINUS | p= PLUS )? number -> {$m != null}? -> number ;
     public final EsperEPL2GrammarParser.numberconstant_return numberconstant() throws RecognitionException {
         EsperEPL2GrammarParser.numberconstant_return retval = new EsperEPL2GrammarParser.numberconstant_return();
         retval.start = input.LT(1);
@@ -22783,33 +22877,33 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_MINUS=new RewriteRuleTokenStream(adaptor,"token MINUS");
         RewriteRuleSubtreeStream stream_number=new RewriteRuleSubtreeStream(adaptor,"rule number");
         try {
-            // EsperEPL2Grammar.g:1389:2: ( (m= MINUS | p= PLUS )? number -> {$m != null}? -> number )
-            // EsperEPL2Grammar.g:1389:5: (m= MINUS | p= PLUS )? number
+            // EsperEPL2Grammar.g:1391:2: ( (m= MINUS | p= PLUS )? number -> {$m != null}? -> number )
+            // EsperEPL2Grammar.g:1391:5: (m= MINUS | p= PLUS )? number
             {
-            // EsperEPL2Grammar.g:1389:5: (m= MINUS | p= PLUS )?
-            int alt216=3;
-            int LA216_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1391:5: (m= MINUS | p= PLUS )?
+            int alt218=3;
+            int LA218_0 = input.LA(1);
 
-            if ( (LA216_0==MINUS) ) {
-                alt216=1;
+            if ( (LA218_0==MINUS) ) {
+                alt218=1;
             }
-            else if ( (LA216_0==PLUS) ) {
-                alt216=2;
+            else if ( (LA218_0==PLUS) ) {
+                alt218=2;
             }
-            switch (alt216) {
+            switch (alt218) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1389:6: m= MINUS
+                    // EsperEPL2Grammar.g:1391:6: m= MINUS
                     {
-                    m=(Token)match(input,MINUS,FOLLOW_MINUS_in_numberconstant9391); if (state.failed) return retval; 
+                    m=(Token)match(input,MINUS,FOLLOW_MINUS_in_numberconstant9439); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_MINUS.add(m);
 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1389:16: p= PLUS
+                    // EsperEPL2Grammar.g:1391:16: p= PLUS
                     {
-                    p=(Token)match(input,PLUS,FOLLOW_PLUS_in_numberconstant9397); if (state.failed) return retval; 
+                    p=(Token)match(input,PLUS,FOLLOW_PLUS_in_numberconstant9445); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_PLUS.add(p);
 
 
@@ -22818,7 +22912,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_number_in_numberconstant9401);
+            pushFollow(FOLLOW_number_in_numberconstant9449);
             number591=number();
 
             state._fsp--;
@@ -22837,12 +22931,12 @@ public class EsperEPL2GrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 1390:3: -> {$m != null}?
+            // 1392:3: -> {$m != null}?
             if (m != null) {
                 adaptor.addChild(root_0, adaptor.create((number591!=null?((CommonTree)number591.tree):null).getType(), "-" + (number591!=null?input.toString(number591.start,number591.stop):null)));
 
             }
-            else // 1391:3: -> number
+            else // 1393:3: -> number
             {
                 adaptor.addChild(root_0, stream_number.nextTree());
 
@@ -22875,7 +22969,7 @@ public class EsperEPL2GrammarParser extends Parser {
     };
 
     // $ANTLR start "stringconstant"
-    // EsperEPL2Grammar.g:1394:1: stringconstant : (sl= STRING_LITERAL -> ^( STRING_TYPE[$sl] ) | qsl= QUOTED_STRING_LITERAL -> ^( STRING_TYPE[$qsl] ) );
+    // EsperEPL2Grammar.g:1396:1: stringconstant : (sl= STRING_LITERAL -> ^( STRING_TYPE[$sl] ) | qsl= QUOTED_STRING_LITERAL -> ^( STRING_TYPE[$qsl] ) );
     public final EsperEPL2GrammarParser.stringconstant_return stringconstant() throws RecognitionException {
         EsperEPL2GrammarParser.stringconstant_return retval = new EsperEPL2GrammarParser.stringconstant_return();
         retval.start = input.LT(1);
@@ -22891,28 +22985,28 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_QUOTED_STRING_LITERAL=new RewriteRuleTokenStream(adaptor,"token QUOTED_STRING_LITERAL");
 
         try {
-            // EsperEPL2Grammar.g:1395:2: (sl= STRING_LITERAL -> ^( STRING_TYPE[$sl] ) | qsl= QUOTED_STRING_LITERAL -> ^( STRING_TYPE[$qsl] ) )
-            int alt217=2;
-            int LA217_0 = input.LA(1);
+            // EsperEPL2Grammar.g:1397:2: (sl= STRING_LITERAL -> ^( STRING_TYPE[$sl] ) | qsl= QUOTED_STRING_LITERAL -> ^( STRING_TYPE[$qsl] ) )
+            int alt219=2;
+            int LA219_0 = input.LA(1);
 
-            if ( (LA217_0==STRING_LITERAL) ) {
-                alt217=1;
+            if ( (LA219_0==STRING_LITERAL) ) {
+                alt219=1;
             }
-            else if ( (LA217_0==QUOTED_STRING_LITERAL) ) {
-                alt217=2;
+            else if ( (LA219_0==QUOTED_STRING_LITERAL) ) {
+                alt219=2;
             }
             else {
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
-                    new NoViableAltException("", 217, 0, input);
+                    new NoViableAltException("", 219, 0, input);
 
                 throw nvae;
             }
-            switch (alt217) {
+            switch (alt219) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1395:6: sl= STRING_LITERAL
+                    // EsperEPL2Grammar.g:1397:6: sl= STRING_LITERAL
                     {
-                    sl=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_stringconstant9430); if (state.failed) return retval; 
+                    sl=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_stringconstant9478); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_STRING_LITERAL.add(sl);
 
 
@@ -22928,9 +23022,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1395:24: -> ^( STRING_TYPE[$sl] )
+                    // 1397:24: -> ^( STRING_TYPE[$sl] )
                     {
-                        // EsperEPL2Grammar.g:1395:27: ^( STRING_TYPE[$sl] )
+                        // EsperEPL2Grammar.g:1397:27: ^( STRING_TYPE[$sl] )
                         {
                         CommonTree root_1 = (CommonTree)adaptor.nil();
                         root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(STRING_TYPE, sl), root_1);
@@ -22944,9 +23038,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1396:6: qsl= QUOTED_STRING_LITERAL
+                    // EsperEPL2Grammar.g:1398:6: qsl= QUOTED_STRING_LITERAL
                     {
-                    qsl=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant9446); if (state.failed) return retval; 
+                    qsl=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant9494); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_QUOTED_STRING_LITERAL.add(qsl);
 
 
@@ -22962,9 +23056,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"token retval",retval!=null?retval.tree:null);
 
                     root_0 = (CommonTree)adaptor.nil();
-                    // 1396:32: -> ^( STRING_TYPE[$qsl] )
+                    // 1398:32: -> ^( STRING_TYPE[$qsl] )
                     {
-                        // EsperEPL2Grammar.g:1396:35: ^( STRING_TYPE[$qsl] )
+                        // EsperEPL2Grammar.g:1398:35: ^( STRING_TYPE[$qsl] )
                         {
                         CommonTree root_1 = (CommonTree)adaptor.nil();
                         root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(STRING_TYPE, qsl), root_1);
@@ -23059,10 +23153,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred5_EsperEPL2Grammar
     public final void synpred5_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1131:4: ( propertyStreamSelector )
-        // EsperEPL2Grammar.g:1131:5: propertyStreamSelector
+        // EsperEPL2Grammar.g:1133:4: ( propertyStreamSelector )
+        // EsperEPL2Grammar.g:1133:5: propertyStreamSelector
         {
-        pushFollow(FOLLOW_propertyStreamSelector_in_synpred5_EsperEPL2Grammar7179);
+        pushFollow(FOLLOW_propertyStreamSelector_in_synpred5_EsperEPL2Grammar7227);
         propertyStreamSelector();
 
         state._fsp--;
@@ -23074,10 +23168,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred6_EsperEPL2Grammar
     public final void synpred6_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1180:7: ( lastOperand )
-        // EsperEPL2Grammar.g:1180:8: lastOperand
+        // EsperEPL2Grammar.g:1182:7: ( lastOperand )
+        // EsperEPL2Grammar.g:1182:8: lastOperand
         {
-        pushFollow(FOLLOW_lastOperand_in_synpred6_EsperEPL2Grammar7597);
+        pushFollow(FOLLOW_lastOperand_in_synpred6_EsperEPL2Grammar7645);
         lastOperand();
 
         state._fsp--;
@@ -23089,10 +23183,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred7_EsperEPL2Grammar
     public final void synpred7_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1181:4: ( lastWeekdayOperand )
-        // EsperEPL2Grammar.g:1181:5: lastWeekdayOperand
+        // EsperEPL2Grammar.g:1183:4: ( lastWeekdayOperand )
+        // EsperEPL2Grammar.g:1183:5: lastWeekdayOperand
         {
-        pushFollow(FOLLOW_lastWeekdayOperand_in_synpred7_EsperEPL2Grammar7608);
+        pushFollow(FOLLOW_lastWeekdayOperand_in_synpred7_EsperEPL2Grammar7656);
         lastWeekdayOperand();
 
         state._fsp--;
@@ -23104,10 +23198,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred8_EsperEPL2Grammar
     public final void synpred8_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1182:4: ( timePeriod )
-        // EsperEPL2Grammar.g:1182:5: timePeriod
+        // EsperEPL2Grammar.g:1184:4: ( timePeriod )
+        // EsperEPL2Grammar.g:1184:5: timePeriod
         {
-        pushFollow(FOLLOW_timePeriod_in_synpred8_EsperEPL2Grammar7619);
+        pushFollow(FOLLOW_timePeriod_in_synpred8_EsperEPL2Grammar7667);
         timePeriod();
 
         state._fsp--;
@@ -23119,10 +23213,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred9_EsperEPL2Grammar
     public final void synpred9_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1183:4: ( expressionQualifyable )
-        // EsperEPL2Grammar.g:1183:5: expressionQualifyable
+        // EsperEPL2Grammar.g:1185:4: ( expressionQualifyable )
+        // EsperEPL2Grammar.g:1185:5: expressionQualifyable
         {
-        pushFollow(FOLLOW_expressionQualifyable_in_synpred9_EsperEPL2Grammar7630);
+        pushFollow(FOLLOW_expressionQualifyable_in_synpred9_EsperEPL2Grammar7678);
         expressionQualifyable();
 
         state._fsp--;
@@ -23134,10 +23228,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred10_EsperEPL2Grammar
     public final void synpred10_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1184:4: ( rangeOperand )
-        // EsperEPL2Grammar.g:1184:5: rangeOperand
+        // EsperEPL2Grammar.g:1186:4: ( rangeOperand )
+        // EsperEPL2Grammar.g:1186:5: rangeOperand
         {
-        pushFollow(FOLLOW_rangeOperand_in_synpred10_EsperEPL2Grammar7641);
+        pushFollow(FOLLOW_rangeOperand_in_synpred10_EsperEPL2Grammar7689);
         rangeOperand();
 
         state._fsp--;
@@ -23149,10 +23243,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred11_EsperEPL2Grammar
     public final void synpred11_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1185:5: ( frequencyOperand )
-        // EsperEPL2Grammar.g:1185:6: frequencyOperand
+        // EsperEPL2Grammar.g:1187:5: ( frequencyOperand )
+        // EsperEPL2Grammar.g:1187:6: frequencyOperand
         {
-        pushFollow(FOLLOW_frequencyOperand_in_synpred11_EsperEPL2Grammar7653);
+        pushFollow(FOLLOW_frequencyOperand_in_synpred11_EsperEPL2Grammar7701);
         frequencyOperand();
 
         state._fsp--;
@@ -23164,10 +23258,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred12_EsperEPL2Grammar
     public final void synpred12_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1186:4: ( lastOperator )
-        // EsperEPL2Grammar.g:1186:5: lastOperator
+        // EsperEPL2Grammar.g:1188:4: ( lastOperator )
+        // EsperEPL2Grammar.g:1188:5: lastOperator
         {
-        pushFollow(FOLLOW_lastOperator_in_synpred12_EsperEPL2Grammar7664);
+        pushFollow(FOLLOW_lastOperator_in_synpred12_EsperEPL2Grammar7712);
         lastOperator();
 
         state._fsp--;
@@ -23179,10 +23273,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred13_EsperEPL2Grammar
     public final void synpred13_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1187:4: ( weekDayOperator )
-        // EsperEPL2Grammar.g:1187:5: weekDayOperator
+        // EsperEPL2Grammar.g:1189:4: ( weekDayOperator )
+        // EsperEPL2Grammar.g:1189:5: weekDayOperator
         {
-        pushFollow(FOLLOW_weekDayOperator_in_synpred13_EsperEPL2Grammar7675);
+        pushFollow(FOLLOW_weekDayOperator_in_synpred13_EsperEPL2Grammar7723);
         weekDayOperator();
 
         state._fsp--;
@@ -23194,10 +23288,10 @@ public class EsperEPL2GrammarParser extends Parser {
 
     // $ANTLR start synpred14_EsperEPL2Grammar
     public final void synpred14_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1188:5: ( numericParameterList )
-        // EsperEPL2Grammar.g:1188:6: numericParameterList
+        // EsperEPL2Grammar.g:1190:5: ( numericParameterList )
+        // EsperEPL2Grammar.g:1190:6: numericParameterList
         {
-        pushFollow(FOLLOW_numericParameterList_in_synpred14_EsperEPL2Grammar7688);
+        pushFollow(FOLLOW_numericParameterList_in_synpred14_EsperEPL2Grammar7736);
         numericParameterList();
 
         state._fsp--;
@@ -23411,9 +23505,9 @@ public class EsperEPL2GrammarParser extends Parser {
     protected DFA77 dfa77 = new DFA77(this);
     protected DFA109 dfa109 = new DFA109(this);
     protected DFA132 dfa132 = new DFA132(this);
-    protected DFA165 dfa165 = new DFA165(this);
-    protected DFA175 dfa175 = new DFA175(this);
-    protected DFA189 dfa189 = new DFA189(this);
+    protected DFA167 dfa167 = new DFA167(this);
+    protected DFA177 dfa177 = new DFA177(this);
+    protected DFA191 dfa191 = new DFA191(this);
     static final String DFA46_eotS =
         "\u0081\uffff";
     static final String DFA46_eofS =
@@ -23806,7 +23900,7 @@ public class EsperEPL2GrammarParser extends Parser {
         "\uffff\1\5\63\uffff\1\u00e5\63\uffff\1\5\63\uffff\1\5\63\uffff\1"+
         "\5\2\6\71\uffff\2\6\70\uffff\2\6\70\uffff\2\6\66\uffff\2\6\70\uffff"+
         "\2\6\70\uffff\2\6\70\uffff\2\6\71\uffff\2\6\66\uffff\2\6\160\uffff"+
-        "\1\0\30\uffff\1\0\30\uffff\1\0\30\uffff\1\0\30\uffff\1\0\30\uffff"+
+        "\1\0\30\uffff\1\0\5\uffff\1\0\53\uffff\1\0\5\uffff\1\0\53\uffff"+
         "\1\0\71\uffff\1\0\30\uffff\1\0\30\uffff\1\0\30\uffff\1\0\30\uffff"+
         "\1\0\53\uffff\1\0\u00a3\uffff";
     static final String DFA109_maxS =
@@ -23817,26 +23911,26 @@ public class EsperEPL2GrammarParser extends Parser {
         "\1\u00f7\63\uffff\1\u00fd\63\uffff\1\u00fd\63\uffff\1\u00fb\2\u00f4"+
         "\71\uffff\2\u00f4\70\uffff\2\u00f4\70\uffff\2\u00f4\66\uffff\2\u00f4"+
         "\70\uffff\2\u00f4\70\uffff\2\u00f4\70\uffff\2\u00f4\71\uffff\2\u00f4"+
-        "\66\uffff\2\u00f4\160\uffff\1\0\30\uffff\1\0\30\uffff\1\0\30\uffff"+
-        "\1\0\30\uffff\1\0\30\uffff\1\0\71\uffff\1\0\30\uffff\1\0\30\uffff"+
+        "\66\uffff\2\u00f4\160\uffff\1\0\30\uffff\1\0\5\uffff\1\0\53\uffff"+
+        "\1\0\5\uffff\1\0\53\uffff\1\0\71\uffff\1\0\30\uffff\1\0\30\uffff"+
         "\1\0\30\uffff\1\0\30\uffff\1\0\53\uffff\1\0\u00a3\uffff";
     static final String DFA109_acceptS =
         "\2\uffff\1\2\11\uffff\1\3\1\uffff\1\5\46\uffff\1\6\1\7\4\uffff"+
         "\1\1\45\uffff\1\10\1\4\u0276\uffff\71\6\2\uffff\70\6\2\uffff\70"+
         "\6\2\uffff\66\6\2\uffff\70\6\2\uffff\70\6\2\uffff\70\6\2\uffff\67"+
-        "\6\4\uffff\66\6\2\uffff\66\6\1\11\71\6\1\uffff\30\6\1\uffff\30\6"+
-        "\1\uffff\30\6\1\uffff\30\6\1\uffff\30\6\1\uffff\5\6\1\uffff\31\6"+
+        "\6\4\uffff\66\6\2\uffff\66\6\1\11\71\6\1\uffff\30\6\1\uffff\5\6"+
+        "\1\uffff\53\6\1\uffff\5\6\1\uffff\53\6\1\uffff\5\6\1\uffff\31\6"+
         "\1\uffff\31\6\1\uffff\30\6\1\uffff\30\6\1\uffff\30\6\1\uffff\30"+
-        "\6\1\uffff\53\6\1\uffff\36\6\1\uffff\31\6\2\uffff\31\6\1\uffff\63"+
-        "\6\1\uffff\32\6\1\uffff";
+        "\6\1\uffff\53\6\1\uffff\36\6\1\uffff\31\6\2\uffff\31\6\1\uffff\31"+
+        "\6\1\uffff\32\6\1\uffff\32\6";
     static final String DFA109_specialS =
         "\1\0\u0099\uffff\1\1\63\uffff\1\2\63\uffff\1\3\63\uffff\1\4\63"+
         "\uffff\1\5\63\uffff\1\6\63\uffff\1\7\63\uffff\1\10\63\uffff\1\11"+
         "\63\uffff\1\12\63\uffff\1\13\63\uffff\1\14\1\15\1\16\71\uffff\1"+
         "\17\1\20\70\uffff\1\21\1\22\70\uffff\1\23\1\24\66\uffff\1\25\1\26"+
         "\70\uffff\1\27\1\30\70\uffff\1\31\1\32\70\uffff\1\33\1\34\71\uffff"+
-        "\1\35\1\36\66\uffff\1\37\1\40\160\uffff\1\41\30\uffff\1\42\30\uffff"+
-        "\1\43\30\uffff\1\44\30\uffff\1\45\30\uffff\1\46\71\uffff\1\47\30"+
+        "\1\35\1\36\66\uffff\1\37\1\40\160\uffff\1\41\30\uffff\1\42\5\uffff"+
+        "\1\43\53\uffff\1\44\5\uffff\1\45\53\uffff\1\46\71\uffff\1\47\30"+
         "\uffff\1\50\30\uffff\1\51\30\uffff\1\52\30\uffff\1\53\53\uffff\1"+
         "\54\u00a3\uffff}>";
     static final String[] DFA109_transitionS = {
@@ -24768,10 +24862,10 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u0585\1\u0586\1\u0587\1\u0588\1\uffff\1\u0582\1\u0581\1"+
-            "\u0584\33\uffff\1\u057b\u00b3\uffff\1\u057a\2\uffff\1\u0583"+
-            "\1\u0570\5\uffff\1\u057e\1\u057f\1\u0580\1\u057c\1\u057d\1\u0576"+
-            "\1\u0577\1\u0578\1\u0579\1\u0575\1\u0573\1\u0574\1\u0571\1\u0572",
+            "\1\u0585\1\u0586\1\u0587\1\u0588\1\uffff\1\u0583\1\u0582\1"+
+            "\u0584\33\uffff\1\u057c\u00b3\uffff\1\u057b\2\uffff\1\u0570"+
+            "\1\u0571\5\uffff\1\u057f\1\u0580\1\u0581\1\u057d\1\u057e\1\u0577"+
+            "\1\u0578\1\u0579\1\u057a\1\u0576\1\u0574\1\u0575\1\u0572\1\u0573",
             "\1\u059e\1\u059f\1\u05a0\1\u05a1\1\uffff\1\u059b\1\u059a\1"+
             "\u059d\33\uffff\1\u0594\u00b3\uffff\1\u0593\2\uffff\1\u059c"+
             "\1\u0589\5\uffff\1\u0597\1\u0598\1\u0599\1\u0595\1\u0596\1\u058f"+
@@ -24832,10 +24926,10 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u05b7\1\u05b8\1\u05b9\1\u05ba\1\uffff\1\u05b4\1\u05b3\1"+
-            "\u05b6\33\uffff\1\u05ad\u00b3\uffff\1\u05ac\2\uffff\1\u05b5"+
-            "\1\u05a2\5\uffff\1\u05b0\1\u05b1\1\u05b2\1\u05ae\1\u05af\1\u05a8"+
-            "\1\u05a9\1\u05aa\1\u05ab\1\u05a7\1\u05a5\1\u05a6\1\u05a3\1\u05a4",
+            "\1\u05b7\1\u05b8\1\u05b9\1\u05ba\1\uffff\1\u05b5\1\u05b4\1"+
+            "\u05b6\33\uffff\1\u05ae\u00b3\uffff\1\u05ad\2\uffff\1\u05a2"+
+            "\1\u05a3\5\uffff\1\u05b1\1\u05b2\1\u05b3\1\u05af\1\u05b0\1\u05a9"+
+            "\1\u05aa\1\u05ab\1\u05ac\1\u05a8\1\u05a6\1\u05a7\1\u05a4\1\u05a5",
             "\1\u05d0\1\u05d1\1\u05d2\1\u05d3\1\uffff\1\u05cd\1\u05cc\1"+
             "\u05cf\33\uffff\1\u05c6\u00b3\uffff\1\u05c5\2\uffff\1\u05ce"+
             "\1\u05bb\5\uffff\1\u05c9\1\u05ca\1\u05cb\1\u05c7\1\u05c8\1\u05c1"+
@@ -25283,16 +25377,16 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u071c\1\u071d\1\u071e\1\u071f\1\uffff\1\u0718\1\u0717\1"+
-            "\u071b\2\uffff\1\u071a\30\uffff\1\u0711\u00b2\uffff\1\u0719"+
-            "\1\u0710\2\uffff\1\16\1\u0706\5\uffff\1\u0714\1\u0715\1\u0716"+
-            "\1\u0712\1\u0713\1\u070c\1\u070d\1\u070e\1\u070f\1\u070b\1\u0709"+
-            "\1\u070a\1\u0707\1\u0708",
-            "\1\u0737\1\u0738\1\u0739\1\u073a\1\uffff\1\u0733\1\u0732\1"+
-            "\u0736\2\uffff\1\u0735\30\uffff\1\u072c\u00b2\uffff\1\u0734"+
-            "\1\u072b\2\uffff\1\16\1\u0721\5\uffff\1\u072f\1\u0730\1\u0731"+
-            "\1\u072d\1\u072e\1\u0727\1\u0728\1\u0729\1\u072a\1\u0726\1\u0724"+
-            "\1\u0725\1\u0722\1\u0723",
+            "\1\u071d\1\u071e\1\u071f\1\u0720\1\uffff\1\u0719\1\u0718\1"+
+            "\u071c\2\uffff\1\u071b\30\uffff\1\u0712\u00b2\uffff\1\u071a"+
+            "\1\u0711\2\uffff\1\16\1\u0707\5\uffff\1\u0715\1\u0716\1\u0717"+
+            "\1\u0713\1\u0714\1\u070d\1\u070e\1\u070f\1\u0710\1\u070c\1\u070a"+
+            "\1\u070b\1\u0708\1\u0709",
+            "\1\u0738\1\u0739\1\u073a\1\u073b\1\uffff\1\u0734\1\u0733\1"+
+            "\u0737\2\uffff\1\u0736\30\uffff\1\u072d\u00b2\uffff\1\u0735"+
+            "\1\u072c\2\uffff\1\16\1\u0722\5\uffff\1\u0730\1\u0731\1\u0732"+
+            "\1\u072e\1\u072f\1\u0728\1\u0729\1\u072a\1\u072b\1\u0727\1\u0725"+
+            "\1\u0726\1\u0723\1\u0724",
             "",
             "",
             "",
@@ -25436,25 +25530,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\uffff",
             "",
             "",
@@ -25480,6 +25555,31 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
             "\1\uffff",
             "",
             "",
@@ -25500,12 +25600,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
             "",
             "",
             "",
@@ -27472,45 +27566,45 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index109_786 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA109_786==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1392;}
+                        if ( (LA109_786==RPAREN) ) {s = 1392;}
 
-                        else if ( (LA109_786==DIV) && (synpred3_EsperEPL2Grammar())) {s = 1393;}
+                        else if ( (LA109_786==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1393;}
 
-                        else if ( (LA109_786==MOD) && (synpred3_EsperEPL2Grammar())) {s = 1394;}
+                        else if ( (LA109_786==DIV) && (synpred3_EsperEPL2Grammar())) {s = 1394;}
 
-                        else if ( (LA109_786==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1395;}
+                        else if ( (LA109_786==MOD) && (synpred3_EsperEPL2Grammar())) {s = 1395;}
 
-                        else if ( (LA109_786==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1396;}
+                        else if ( (LA109_786==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1396;}
 
-                        else if ( (LA109_786==LOR) && (synpred3_EsperEPL2Grammar())) {s = 1397;}
+                        else if ( (LA109_786==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1397;}
 
-                        else if ( (LA109_786==LT) && (synpred3_EsperEPL2Grammar())) {s = 1398;}
+                        else if ( (LA109_786==LOR) && (synpred3_EsperEPL2Grammar())) {s = 1398;}
 
-                        else if ( (LA109_786==GT) && (synpred3_EsperEPL2Grammar())) {s = 1399;}
+                        else if ( (LA109_786==LT) && (synpred3_EsperEPL2Grammar())) {s = 1399;}
 
-                        else if ( (LA109_786==LE) && (synpred3_EsperEPL2Grammar())) {s = 1400;}
+                        else if ( (LA109_786==GT) && (synpred3_EsperEPL2Grammar())) {s = 1400;}
 
-                        else if ( (LA109_786==GE) && (synpred3_EsperEPL2Grammar())) {s = 1401;}
+                        else if ( (LA109_786==LE) && (synpred3_EsperEPL2Grammar())) {s = 1401;}
 
-                        else if ( (LA109_786==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 1402;}
+                        else if ( (LA109_786==GE) && (synpred3_EsperEPL2Grammar())) {s = 1402;}
 
-                        else if ( (LA109_786==IS) && (synpred3_EsperEPL2Grammar())) {s = 1403;}
+                        else if ( (LA109_786==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 1403;}
 
-                        else if ( (LA109_786==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 1404;}
+                        else if ( (LA109_786==IS) && (synpred3_EsperEPL2Grammar())) {s = 1404;}
 
-                        else if ( (LA109_786==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 1405;}
+                        else if ( (LA109_786==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 1405;}
 
-                        else if ( (LA109_786==BAND) && (synpred3_EsperEPL2Grammar())) {s = 1406;}
+                        else if ( (LA109_786==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 1406;}
 
-                        else if ( (LA109_786==BOR) && (synpred3_EsperEPL2Grammar())) {s = 1407;}
+                        else if ( (LA109_786==BAND) && (synpred3_EsperEPL2Grammar())) {s = 1407;}
 
-                        else if ( (LA109_786==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 1408;}
+                        else if ( (LA109_786==BOR) && (synpred3_EsperEPL2Grammar())) {s = 1408;}
 
-                        else if ( (LA109_786==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1409;}
+                        else if ( (LA109_786==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 1409;}
 
-                        else if ( (LA109_786==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1410;}
+                        else if ( (LA109_786==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1410;}
 
-                        else if ( (LA109_786==RPAREN) ) {s = 1411;}
+                        else if ( (LA109_786==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1411;}
 
                         else if ( (LA109_786==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1412;}
 
@@ -27594,45 +27688,45 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index109_844 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA109_844==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1442;}
+                        if ( (LA109_844==RPAREN) ) {s = 1442;}
 
-                        else if ( (LA109_844==DIV) && (synpred3_EsperEPL2Grammar())) {s = 1443;}
+                        else if ( (LA109_844==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1443;}
 
-                        else if ( (LA109_844==MOD) && (synpred3_EsperEPL2Grammar())) {s = 1444;}
+                        else if ( (LA109_844==DIV) && (synpred3_EsperEPL2Grammar())) {s = 1444;}
 
-                        else if ( (LA109_844==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1445;}
+                        else if ( (LA109_844==MOD) && (synpred3_EsperEPL2Grammar())) {s = 1445;}
 
-                        else if ( (LA109_844==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1446;}
+                        else if ( (LA109_844==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1446;}
 
-                        else if ( (LA109_844==LOR) && (synpred3_EsperEPL2Grammar())) {s = 1447;}
+                        else if ( (LA109_844==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1447;}
 
-                        else if ( (LA109_844==LT) && (synpred3_EsperEPL2Grammar())) {s = 1448;}
+                        else if ( (LA109_844==LOR) && (synpred3_EsperEPL2Grammar())) {s = 1448;}
 
-                        else if ( (LA109_844==GT) && (synpred3_EsperEPL2Grammar())) {s = 1449;}
+                        else if ( (LA109_844==LT) && (synpred3_EsperEPL2Grammar())) {s = 1449;}
 
-                        else if ( (LA109_844==LE) && (synpred3_EsperEPL2Grammar())) {s = 1450;}
+                        else if ( (LA109_844==GT) && (synpred3_EsperEPL2Grammar())) {s = 1450;}
 
-                        else if ( (LA109_844==GE) && (synpred3_EsperEPL2Grammar())) {s = 1451;}
+                        else if ( (LA109_844==LE) && (synpred3_EsperEPL2Grammar())) {s = 1451;}
 
-                        else if ( (LA109_844==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 1452;}
+                        else if ( (LA109_844==GE) && (synpred3_EsperEPL2Grammar())) {s = 1452;}
 
-                        else if ( (LA109_844==IS) && (synpred3_EsperEPL2Grammar())) {s = 1453;}
+                        else if ( (LA109_844==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 1453;}
 
-                        else if ( (LA109_844==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 1454;}
+                        else if ( (LA109_844==IS) && (synpred3_EsperEPL2Grammar())) {s = 1454;}
 
-                        else if ( (LA109_844==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 1455;}
+                        else if ( (LA109_844==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 1455;}
 
-                        else if ( (LA109_844==BAND) && (synpred3_EsperEPL2Grammar())) {s = 1456;}
+                        else if ( (LA109_844==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 1456;}
 
-                        else if ( (LA109_844==BOR) && (synpred3_EsperEPL2Grammar())) {s = 1457;}
+                        else if ( (LA109_844==BAND) && (synpred3_EsperEPL2Grammar())) {s = 1457;}
 
-                        else if ( (LA109_844==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 1458;}
+                        else if ( (LA109_844==BOR) && (synpred3_EsperEPL2Grammar())) {s = 1458;}
 
-                        else if ( (LA109_844==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1459;}
+                        else if ( (LA109_844==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 1459;}
 
-                        else if ( (LA109_844==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1460;}
+                        else if ( (LA109_844==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1460;}
 
-                        else if ( (LA109_844==RPAREN) ) {s = 1461;}
+                        else if ( (LA109_844==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1461;}
 
                         else if ( (LA109_844==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1462;}
 
@@ -28460,59 +28554,59 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index109_1247 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA109_1247==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1798;}
+                        if ( (LA109_1247==RPAREN) ) {s = 14;}
 
-                        else if ( (LA109_1247==DIV) && (synpred3_EsperEPL2Grammar())) {s = 1799;}
+                        else if ( (LA109_1247==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1799;}
 
-                        else if ( (LA109_1247==MOD) && (synpred3_EsperEPL2Grammar())) {s = 1800;}
+                        else if ( (LA109_1247==DIV) && (synpred3_EsperEPL2Grammar())) {s = 1800;}
 
-                        else if ( (LA109_1247==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1801;}
+                        else if ( (LA109_1247==MOD) && (synpred3_EsperEPL2Grammar())) {s = 1801;}
 
-                        else if ( (LA109_1247==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1802;}
+                        else if ( (LA109_1247==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1802;}
 
-                        else if ( (LA109_1247==LOR) && (synpred3_EsperEPL2Grammar())) {s = 1803;}
+                        else if ( (LA109_1247==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1803;}
 
-                        else if ( (LA109_1247==LT) && (synpred3_EsperEPL2Grammar())) {s = 1804;}
+                        else if ( (LA109_1247==LOR) && (synpred3_EsperEPL2Grammar())) {s = 1804;}
 
-                        else if ( (LA109_1247==GT) && (synpred3_EsperEPL2Grammar())) {s = 1805;}
+                        else if ( (LA109_1247==LT) && (synpred3_EsperEPL2Grammar())) {s = 1805;}
 
-                        else if ( (LA109_1247==LE) && (synpred3_EsperEPL2Grammar())) {s = 1806;}
+                        else if ( (LA109_1247==GT) && (synpred3_EsperEPL2Grammar())) {s = 1806;}
 
-                        else if ( (LA109_1247==GE) && (synpred3_EsperEPL2Grammar())) {s = 1807;}
+                        else if ( (LA109_1247==LE) && (synpred3_EsperEPL2Grammar())) {s = 1807;}
 
-                        else if ( (LA109_1247==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 1808;}
+                        else if ( (LA109_1247==GE) && (synpred3_EsperEPL2Grammar())) {s = 1808;}
 
-                        else if ( (LA109_1247==IS) && (synpred3_EsperEPL2Grammar())) {s = 1809;}
+                        else if ( (LA109_1247==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 1809;}
 
-                        else if ( (LA109_1247==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 1810;}
+                        else if ( (LA109_1247==IS) && (synpred3_EsperEPL2Grammar())) {s = 1810;}
 
-                        else if ( (LA109_1247==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 1811;}
+                        else if ( (LA109_1247==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 1811;}
 
-                        else if ( (LA109_1247==BAND) && (synpred3_EsperEPL2Grammar())) {s = 1812;}
+                        else if ( (LA109_1247==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 1812;}
 
-                        else if ( (LA109_1247==BOR) && (synpred3_EsperEPL2Grammar())) {s = 1813;}
+                        else if ( (LA109_1247==BAND) && (synpred3_EsperEPL2Grammar())) {s = 1813;}
 
-                        else if ( (LA109_1247==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 1814;}
+                        else if ( (LA109_1247==BOR) && (synpred3_EsperEPL2Grammar())) {s = 1814;}
 
-                        else if ( (LA109_1247==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1815;}
+                        else if ( (LA109_1247==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 1815;}
 
-                        else if ( (LA109_1247==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1816;}
+                        else if ( (LA109_1247==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1816;}
 
-                        else if ( (LA109_1247==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 1817;}
+                        else if ( (LA109_1247==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1817;}
 
-                        else if ( (LA109_1247==AS) && (synpred3_EsperEPL2Grammar())) {s = 1818;}
+                        else if ( (LA109_1247==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 1818;}
 
-                        else if ( (LA109_1247==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1819;}
+                        else if ( (LA109_1247==AS) && (synpred3_EsperEPL2Grammar())) {s = 1819;}
 
-                        else if ( (LA109_1247==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 1820;}
+                        else if ( (LA109_1247==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1820;}
 
-                        else if ( (LA109_1247==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 1821;}
+                        else if ( (LA109_1247==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 1821;}
 
-                        else if ( (LA109_1247==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 1822;}
+                        else if ( (LA109_1247==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 1822;}
 
-                        else if ( (LA109_1247==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 1823;}
+                        else if ( (LA109_1247==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 1823;}
 
-                        else if ( (LA109_1247==RPAREN) ) {s = 14;}
+                        else if ( (LA109_1247==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 1824;}
 
                          
                         input.seek(index109_1247);
@@ -28525,59 +28619,59 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index109_1248 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA109_1248==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1825;}
+                        if ( (LA109_1248==RPAREN) ) {s = 14;}
 
-                        else if ( (LA109_1248==DIV) && (synpred3_EsperEPL2Grammar())) {s = 1826;}
+                        else if ( (LA109_1248==STAR) && (synpred3_EsperEPL2Grammar())) {s = 1826;}
 
-                        else if ( (LA109_1248==MOD) && (synpred3_EsperEPL2Grammar())) {s = 1827;}
+                        else if ( (LA109_1248==DIV) && (synpred3_EsperEPL2Grammar())) {s = 1827;}
 
-                        else if ( (LA109_1248==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1828;}
+                        else if ( (LA109_1248==MOD) && (synpred3_EsperEPL2Grammar())) {s = 1828;}
 
-                        else if ( (LA109_1248==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1829;}
+                        else if ( (LA109_1248==PLUS) && (synpred3_EsperEPL2Grammar())) {s = 1829;}
 
-                        else if ( (LA109_1248==LOR) && (synpred3_EsperEPL2Grammar())) {s = 1830;}
+                        else if ( (LA109_1248==MINUS) && (synpred3_EsperEPL2Grammar())) {s = 1830;}
 
-                        else if ( (LA109_1248==LT) && (synpred3_EsperEPL2Grammar())) {s = 1831;}
+                        else if ( (LA109_1248==LOR) && (synpred3_EsperEPL2Grammar())) {s = 1831;}
 
-                        else if ( (LA109_1248==GT) && (synpred3_EsperEPL2Grammar())) {s = 1832;}
+                        else if ( (LA109_1248==LT) && (synpred3_EsperEPL2Grammar())) {s = 1832;}
 
-                        else if ( (LA109_1248==LE) && (synpred3_EsperEPL2Grammar())) {s = 1833;}
+                        else if ( (LA109_1248==GT) && (synpred3_EsperEPL2Grammar())) {s = 1833;}
 
-                        else if ( (LA109_1248==GE) && (synpred3_EsperEPL2Grammar())) {s = 1834;}
+                        else if ( (LA109_1248==LE) && (synpred3_EsperEPL2Grammar())) {s = 1834;}
 
-                        else if ( (LA109_1248==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 1835;}
+                        else if ( (LA109_1248==GE) && (synpred3_EsperEPL2Grammar())) {s = 1835;}
 
-                        else if ( (LA109_1248==IS) && (synpred3_EsperEPL2Grammar())) {s = 1836;}
+                        else if ( (LA109_1248==EQUALS) && (synpred3_EsperEPL2Grammar())) {s = 1836;}
 
-                        else if ( (LA109_1248==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 1837;}
+                        else if ( (LA109_1248==IS) && (synpred3_EsperEPL2Grammar())) {s = 1837;}
 
-                        else if ( (LA109_1248==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 1838;}
+                        else if ( (LA109_1248==SQL_NE) && (synpred3_EsperEPL2Grammar())) {s = 1838;}
 
-                        else if ( (LA109_1248==BAND) && (synpred3_EsperEPL2Grammar())) {s = 1839;}
+                        else if ( (LA109_1248==NOT_EQUAL) && (synpred3_EsperEPL2Grammar())) {s = 1839;}
 
-                        else if ( (LA109_1248==BOR) && (synpred3_EsperEPL2Grammar())) {s = 1840;}
+                        else if ( (LA109_1248==BAND) && (synpred3_EsperEPL2Grammar())) {s = 1840;}
 
-                        else if ( (LA109_1248==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 1841;}
+                        else if ( (LA109_1248==BOR) && (synpred3_EsperEPL2Grammar())) {s = 1841;}
 
-                        else if ( (LA109_1248==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1842;}
+                        else if ( (LA109_1248==BXOR) && (synpred3_EsperEPL2Grammar())) {s = 1842;}
 
-                        else if ( (LA109_1248==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1843;}
+                        else if ( (LA109_1248==AND_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1843;}
 
-                        else if ( (LA109_1248==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 1844;}
+                        else if ( (LA109_1248==OR_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1844;}
 
-                        else if ( (LA109_1248==AS) && (synpred3_EsperEPL2Grammar())) {s = 1845;}
+                        else if ( (LA109_1248==COMMA) && (synpred3_EsperEPL2Grammar())) {s = 1845;}
 
-                        else if ( (LA109_1248==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1846;}
+                        else if ( (LA109_1248==AS) && (synpred3_EsperEPL2Grammar())) {s = 1846;}
 
-                        else if ( (LA109_1248==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 1847;}
+                        else if ( (LA109_1248==NOT_EXPR) && (synpred3_EsperEPL2Grammar())) {s = 1847;}
 
-                        else if ( (LA109_1248==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 1848;}
+                        else if ( (LA109_1248==IN_SET) && (synpred3_EsperEPL2Grammar())) {s = 1848;}
 
-                        else if ( (LA109_1248==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 1849;}
+                        else if ( (LA109_1248==BETWEEN) && (synpred3_EsperEPL2Grammar())) {s = 1849;}
 
-                        else if ( (LA109_1248==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 1850;}
+                        else if ( (LA109_1248==LIKE) && (synpred3_EsperEPL2Grammar())) {s = 1850;}
 
-                        else if ( (LA109_1248==RPAREN) ) {s = 14;}
+                        else if ( (LA109_1248==REGEXP) && (synpred3_EsperEPL2Grammar())) {s = 1851;}
 
                          
                         input.seek(index109_1248);
@@ -28592,7 +28686,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1361);
@@ -28607,25 +28701,25 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1386);
                         if ( s>=0 ) return s;
                         break;
                     case 35 : 
-                        int LA109_1411 = input.LA(1);
+                        int LA109_1392 = input.LA(1);
 
                          
-                        int index109_1411 = input.index();
+                        int index109_1392 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
-                        input.seek(index109_1411);
+                        input.seek(index109_1392);
                         if ( s>=0 ) return s;
                         break;
                     case 36 : 
@@ -28637,25 +28731,25 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1436);
                         if ( s>=0 ) return s;
                         break;
                     case 37 : 
-                        int LA109_1461 = input.LA(1);
+                        int LA109_1442 = input.LA(1);
 
                          
-                        int index109_1461 = input.index();
+                        int index109_1442 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
-                        input.seek(index109_1461);
+                        input.seek(index109_1442);
                         if ( s>=0 ) return s;
                         break;
                     case 38 : 
@@ -28667,7 +28761,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1486);
@@ -28682,7 +28776,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1544);
@@ -28697,7 +28791,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1569);
@@ -28712,7 +28806,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1594);
@@ -28727,7 +28821,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1619);
@@ -28742,7 +28836,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1644);
@@ -28757,7 +28851,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         s = -1;
                         if ( (true) ) {s = 14;}
 
-                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1850;}
+                        else if ( (synpred3_EsperEPL2Grammar()) ) {s = 1851;}
 
                          
                         input.seek(index109_1688);
@@ -28775,36 +28869,35 @@ public class EsperEPL2GrammarParser extends Parser {
         "\u0430\uffff";
     static final String DFA132_eofS =
         "\1\uffff\1\104\1\170\6\uffff\1\u00ac\1\u00e0\u00ec\uffff\1\u0211"+
-        "\1\u0245\6\uffff\1\u0278\1\u02ac\127\uffff\1\u0315\1\u0349\6\uffff"+
-        "\1\u037c\1\u03b0\u02ce\uffff";
+        "\1\u0244\1\u0278\1\u02ac\135\uffff\1\u0315\1\u0348\1\u037c\1\u03b0"+
+        "\u02d4\uffff";
     static final String DFA132_minS =
         "\1\5\2\6\6\uffff\2\6\34\uffff\1\5\2\uffff\1\5\60\uffff\1\5\65\uffff"+
-        "\1\5\63\uffff\1\5\61\uffff\2\6\6\uffff\2\6\45\uffff\2\6\60\uffff"+
-        "\2\6\6\uffff\2\6\45\uffff\2\6\71\uffff\2\6\60\uffff\1\0\2\uffff"+
-        "\1\0\60\uffff\1\0\65\uffff\1\0\61\uffff\1\0\63\uffff\1\0\31\uffff"+
-        "\1\0\31\uffff\1\0\2\uffff\1\0\60\uffff\1\0\65\uffff\1\0\61\uffff"+
-        "\1\0\63\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff";
+        "\1\5\63\uffff\1\5\61\uffff\4\6\53\uffff\2\6\60\uffff\4\6\53\uffff"+
+        "\2\6\71\uffff\2\6\60\uffff\1\0\2\uffff\1\0\143\uffff\1\0\2\uffff"+
+        "\1\0\63\uffff\1\0\61\uffff\1\0\31\uffff\1\0\31\uffff\1\0\2\uffff"+
+        "\1\0\143\uffff\1\0\2\uffff\1\0\63\uffff\1\0\61\uffff\1\0\31\uffff"+
+        "\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff";
     static final String DFA132_maxS =
         "\1\u00fb\2\u00fa\6\uffff\2\u00fa\34\uffff\1\u00fb\2\uffff\1\u00fd"+
-        "\60\uffff\1\u00fb\65\uffff\1\u00fd\63\uffff\1\u00fd\61\uffff\2\u00fa"+
-        "\6\uffff\2\u00fa\45\uffff\2\u00f4\60\uffff\2\u00fa\6\uffff\2\u00fa"+
-        "\45\uffff\2\u00f4\71\uffff\2\u00f4\60\uffff\1\0\2\uffff\1\0\60\uffff"+
-        "\1\0\65\uffff\1\0\61\uffff\1\0\63\uffff\1\0\31\uffff\1\0\31\uffff"+
-        "\1\0\2\uffff\1\0\60\uffff\1\0\65\uffff\1\0\61\uffff\1\0\63\uffff"+
-        "\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff\1\0\31\uffff";
+        "\60\uffff\1\u00fb\65\uffff\1\u00fd\63\uffff\1\u00fd\61\uffff\4\u00fa"+
+        "\53\uffff\2\u00f4\60\uffff\4\u00fa\53\uffff\2\u00f4\71\uffff\2\u00f4"+
+        "\60\uffff\1\0\2\uffff\1\0\143\uffff\1\0\2\uffff\1\0\63\uffff\1\0"+
+        "\61\uffff\1\0\31\uffff\1\0\31\uffff\1\0\2\uffff\1\0\143\uffff\1"+
+        "\0\2\uffff\1\0\63\uffff\1\0\61\uffff\1\0\31\uffff\1\0\31\uffff\1"+
+        "\0\31\uffff\1\0\31\uffff";
     static final String DFA132_acceptS =
         "\3\uffff\6\1\2\uffff\34\1\1\uffff\2\1\1\uffff\60\1\1\uffff\65\1"+
-        "\1\uffff\63\1\1\uffff\61\1\2\uffff\6\1\2\uffff\34\1\1\2\74\uffff"+
-        "\6\1\2\uffff\34\1\167\uffff\2\1\1\uffff\60\1\1\uffff\65\1\1\uffff"+
-        "\61\1\1\uffff\63\1\65\uffff\2\1\1\uffff\60\1\1\uffff\65\1\1\uffff"+
-        "\61\1\1\uffff\63\1\150\uffff";
+        "\1\uffff\63\1\1\uffff\61\1\4\uffff\42\1\1\2\76\uffff\42\1\167\uffff"+
+        "\2\1\1\uffff\143\1\1\uffff\2\1\1\uffff\63\1\1\uffff\61\1\65\uffff"+
+        "\2\1\1\uffff\143\1\1\uffff\2\1\1\uffff\63\1\1\uffff\61\1\150\uffff";
     static final String DFA132_specialS =
         "\1\0\1\1\1\2\6\uffff\1\3\1\4\34\uffff\1\5\63\uffff\1\6\u009b\uffff"+
-        "\1\7\1\10\6\uffff\1\11\1\12\127\uffff\1\13\1\14\6\uffff\1\15\1\16"+
-        "\u0092\uffff\1\17\2\uffff\1\20\60\uffff\1\21\65\uffff\1\22\61\uffff"+
-        "\1\23\63\uffff\1\24\31\uffff\1\25\31\uffff\1\26\2\uffff\1\27\60"+
-        "\uffff\1\30\65\uffff\1\31\61\uffff\1\32\63\uffff\1\33\31\uffff\1"+
-        "\34\31\uffff\1\35\31\uffff\1\36\31\uffff}>";
+        "\1\7\1\10\1\11\1\12\135\uffff\1\13\1\14\1\15\1\16\u0098\uffff\1"+
+        "\17\2\uffff\1\20\143\uffff\1\21\2\uffff\1\22\63\uffff\1\23\61\uffff"+
+        "\1\24\31\uffff\1\25\31\uffff\1\26\2\uffff\1\27\143\uffff\1\30\2"+
+        "\uffff\1\31\63\uffff\1\32\61\uffff\1\33\31\uffff\1\34\31\uffff\1"+
+        "\35\31\uffff\1\36\31\uffff}>";
     static final String[] DFA132_transitionS = {
             "\1\41\4\uffff\1\5\3\uffff\1\6\2\uffff\1\7\1\10\1\11\1\12\1"+
             "\13\1\14\1\15\1\16\1\4\10\uffff\1\44\1\uffff\1\46\1\42\1\43"+
@@ -28878,12 +28971,12 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u0117\4\uffff\1\u00fb\3\uffff\1\u00fc\2\uffff\1\u00fd\1"+
-            "\u00fe\1\u00ff\1\u0100\1\u0101\1\u0102\1\u0103\1\u0104\1\u00fa"+
+            "\1\u0117\4\uffff\1\u00fd\3\uffff\1\u00fe\2\uffff\1\u00ff\1"+
+            "\u0100\1\u00f9\1\u00fa\1\u0101\1\u0102\1\u0103\1\u0104\1\u00fc"+
             "\10\uffff\1\u011a\1\uffff\1\u011c\1\u0118\1\u0119\1\u011b\12"+
             "\uffff\1\u0105\1\u0106\1\u0107\10\uffff\1\u0108\1\u0109\1\u010a"+
             "\1\u010c\1\u010d\1\u010e\1\u010f\1\u0110\1\uffff\1\u0111\1\u0112"+
-            "\1\u0113\1\u0114\2\uffff\1\u0115\1\uffff\1\u0116\1\u010b\1\u00f9"+
+            "\1\u0113\1\u0114\2\uffff\1\u0115\1\uffff\1\u0116\1\u010b\1\u00fb"+
             "\u008a\uffff\1\u00f7\37\uffff\1\u00f8",
             "",
             "",
@@ -28941,12 +29034,12 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\u0178\4\uffff\1\u015c\3\uffff\1\u015d\2\uffff\1\u015e\1"+
-            "\u015f\1\u0160\1\u0161\1\u0162\1\u0163\1\u0164\1\u0165\1\u015b"+
+            "\1\u0178\4\uffff\1\u015e\3\uffff\1\u015f\2\uffff\1\u0160\1"+
+            "\u0161\1\u015a\1\u015b\1\u0162\1\u0163\1\u0164\1\u0165\1\u015d"+
             "\10\uffff\1\u017b\1\uffff\1\u017d\1\u0179\1\u017a\1\u017c\12"+
             "\uffff\1\u0166\1\u0167\1\u0168\10\uffff\1\u0169\1\u016a\1\u016b"+
             "\1\u016d\1\u016e\1\u016f\1\u0170\1\u0171\1\uffff\1\u0172\1\u0173"+
-            "\1\u0174\1\u0175\2\uffff\1\u0176\1\uffff\1\u0177\1\u016c\1\u015a"+
+            "\1\u0174\1\u0175\2\uffff\1\u0176\1\uffff\1\u0177\1\u016c\1\u015c"+
             "\u008a\uffff\1\u0158\37\uffff\1\u0159",
             "",
             "",
@@ -29122,21 +29215,15 @@ public class EsperEPL2GrammarParser extends Parser {
             "\1\u0209\1\u0205\1\u0206\1\u01ff\1\u0200\1\u0201\1\u0202\1\u01fe"+
             "\1\u01fc\1\u01fd\1\u01fa\1\u01fb\1\uffff\1\u021e\2\uffff\1\u01f8"+
             "\1\u01f5",
-            "\1\u0257\1\u0258\1\u0259\1\u025a\1\u025b\1\u023f\1\u023e\1"+
-            "\u0256\2\uffff\1\u0248\14\uffff\1\u024d\1\u024f\1\u024c\1\u024e"+
-            "\1\u0249\7\uffff\1\u0238\1\uffff\1\u0240\1\u0241\4\uffff\1\u0242"+
-            "\5\uffff\1\u0243\1\u024a\1\u024b\35\uffff\1\u0255\1\u0254\1"+
-            "\u0253\6\uffff\1\u0244\173\uffff\1\u0247\1\u0237\1\u0228\1\u022b"+
-            "\1\u0246\1\u022d\1\u022a\1\u0251\1\u0250\2\uffff\1\u023b\1\u023c"+
-            "\1\u023d\1\u0239\1\u023a\1\u0233\1\u0234\1\u0235\1\u0236\1\u0232"+
-            "\1\u0230\1\u0231\1\u022e\1\u022f\1\uffff\1\u0252\2\uffff\1\u022c"+
-            "\1\u0229",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "\1\u0256\1\u0257\1\u0258\1\u0259\1\u025a\1\u023e\1\u023d\1"+
+            "\u0255\2\uffff\1\u0247\14\uffff\1\u024c\1\u024e\1\u024b\1\u024d"+
+            "\1\u0248\7\uffff\1\u0237\1\uffff\1\u023f\1\u0240\4\uffff\1\u0241"+
+            "\5\uffff\1\u0242\1\u0249\1\u024a\35\uffff\1\u0254\1\u0253\1"+
+            "\u0252\6\uffff\1\u0243\173\uffff\1\u0246\1\u0236\1\u025b\1\u022a"+
+            "\1\u0245\1\u022c\1\u0229\1\u0250\1\u024f\2\uffff\1\u023a\1\u023b"+
+            "\1\u023c\1\u0238\1\u0239\1\u0232\1\u0233\1\u0234\1\u0235\1\u0231"+
+            "\1\u022f\1\u0230\1\u022d\1\u022e\1\uffff\1\u0251\2\uffff\1\u022b"+
+            "\1\u0228",
             "\1\u028a\1\u028b\1\u028c\1\u028d\1\u028e\1\u0272\1\u0271\1"+
             "\u0289\2\uffff\1\u027b\14\uffff\1\u0280\1\u0282\1\u027f\1\u0281"+
             "\1\u027c\7\uffff\1\u026b\1\uffff\1\u0273\1\u0274\4\uffff\1\u0275"+
@@ -29150,11 +29237,17 @@ public class EsperEPL2GrammarParser extends Parser {
             "\u02bd\2\uffff\1\u02af\14\uffff\1\u02b4\1\u02b6\1\u02b3\1\u02b5"+
             "\1\u02b0\7\uffff\1\u029f\1\uffff\1\u02a7\1\u02a8\4\uffff\1\u02a9"+
             "\5\uffff\1\u02aa\1\u02b1\1\u02b2\35\uffff\1\u02bc\1\u02bb\1"+
-            "\u02ba\6\uffff\1\u02ab\173\uffff\1\u02ae\1\u029e\1\u02c3\1\u0290"+
-            "\1\u02ad\1\u0294\1\u0292\1\u02b8\1\u02b7\2\uffff\1\u02a2\1\u02a3"+
+            "\u02ba\6\uffff\1\u02ab\173\uffff\1\u02ae\1\u029e\1\u02c3\1\u0292"+
+            "\1\u02ad\1\u0294\1\u0291\1\u02b8\1\u02b7\2\uffff\1\u02a2\1\u02a3"+
             "\1\u02a4\1\u02a0\1\u02a1\1\u029a\1\u029b\1\u029c\1\u029d\1\u0299"+
             "\1\u0297\1\u0298\1\u0295\1\u0296\1\uffff\1\u02b9\2\uffff\1\u0293"+
-            "\1\u0291",
+            "\1\u0290",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -29253,21 +29346,15 @@ public class EsperEPL2GrammarParser extends Parser {
             "\1\u030d\1\u0309\1\u030a\1\u0303\1\u0304\1\u0305\1\u0306\1\u0302"+
             "\1\u0300\1\u0301\1\u02fe\1\u02ff\1\uffff\1\u0322\2\uffff\1\u02fc"+
             "\1\u02f9",
-            "\1\u035b\1\u035c\1\u035d\1\u035e\1\u035f\1\u0343\1\u0342\1"+
-            "\u035a\2\uffff\1\u034c\14\uffff\1\u0351\1\u0353\1\u0350\1\u0352"+
-            "\1\u034d\7\uffff\1\u033c\1\uffff\1\u0344\1\u0345\4\uffff\1\u0346"+
-            "\5\uffff\1\u0347\1\u034e\1\u034f\35\uffff\1\u0359\1\u0358\1"+
-            "\u0357\6\uffff\1\u0348\173\uffff\1\u034b\1\u033b\1\u032c\1\u032f"+
-            "\1\u034a\1\u0331\1\u032e\1\u0355\1\u0354\2\uffff\1\u033f\1\u0340"+
-            "\1\u0341\1\u033d\1\u033e\1\u0337\1\u0338\1\u0339\1\u033a\1\u0336"+
-            "\1\u0334\1\u0335\1\u0332\1\u0333\1\uffff\1\u0356\2\uffff\1\u0330"+
-            "\1\u032d",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
+            "\1\u035a\1\u035b\1\u035c\1\u035d\1\u035e\1\u0342\1\u0341\1"+
+            "\u0359\2\uffff\1\u034b\14\uffff\1\u0350\1\u0352\1\u034f\1\u0351"+
+            "\1\u034c\7\uffff\1\u033b\1\uffff\1\u0343\1\u0344\4\uffff\1\u0345"+
+            "\5\uffff\1\u0346\1\u034d\1\u034e\35\uffff\1\u0358\1\u0357\1"+
+            "\u0356\6\uffff\1\u0347\173\uffff\1\u034a\1\u033a\1\u035f\1\u032e"+
+            "\1\u0349\1\u0330\1\u032d\1\u0354\1\u0353\2\uffff\1\u033e\1\u033f"+
+            "\1\u0340\1\u033c\1\u033d\1\u0336\1\u0337\1\u0338\1\u0339\1\u0335"+
+            "\1\u0333\1\u0334\1\u0331\1\u0332\1\uffff\1\u0355\2\uffff\1\u032f"+
+            "\1\u032c",
             "\1\u038e\1\u038f\1\u0390\1\u0391\1\u0392\1\u0376\1\u0375\1"+
             "\u038d\2\uffff\1\u037f\14\uffff\1\u0384\1\u0386\1\u0383\1\u0385"+
             "\1\u0380\7\uffff\1\u036f\1\uffff\1\u0377\1\u0378\4\uffff\1\u0379"+
@@ -29281,11 +29368,17 @@ public class EsperEPL2GrammarParser extends Parser {
             "\u03c1\2\uffff\1\u03b3\14\uffff\1\u03b8\1\u03ba\1\u03b7\1\u03b9"+
             "\1\u03b4\7\uffff\1\u03a3\1\uffff\1\u03ab\1\u03ac\4\uffff\1\u03ad"+
             "\5\uffff\1\u03ae\1\u03b5\1\u03b6\35\uffff\1\u03c0\1\u03bf\1"+
-            "\u03be\6\uffff\1\u03af\173\uffff\1\u03b2\1\u03a2\1\u03c7\1\u0394"+
-            "\1\u03b1\1\u0398\1\u0396\1\u03bc\1\u03bb\2\uffff\1\u03a6\1\u03a7"+
+            "\u03be\6\uffff\1\u03af\173\uffff\1\u03b2\1\u03a2\1\u03c7\1\u0396"+
+            "\1\u03b1\1\u0398\1\u0395\1\u03bc\1\u03bb\2\uffff\1\u03a6\1\u03a7"+
             "\1\u03a8\1\u03a4\1\u03a5\1\u039e\1\u039f\1\u03a0\1\u03a1\1\u039d"+
             "\1\u039b\1\u039c\1\u0399\1\u039a\1\uffff\1\u03bd\2\uffff\1\u0397"+
-            "\1\u0395",
+            "\1\u0394",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -29488,111 +29581,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
             "",
             "",
             "",
@@ -29647,110 +29635,7 @@ public class EsperEPL2GrammarParser extends Parser {
             "\1\uffff",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
-            "",
-            "",
-            "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
-            "",
-            "",
             "",
             "",
             "",
@@ -29855,6 +29740,214 @@ public class EsperEPL2GrammarParser extends Parser {
             "\1\uffff",
             "",
             "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
             "",
             "",
             "",
@@ -30604,21 +30697,21 @@ public class EsperEPL2GrammarParser extends Parser {
 
                         else if ( (LA132_39==TICKED_STRING_LITERAL) ) {s = 248;}
 
-                        else if ( (LA132_39==AT) && (synpred4_EsperEPL2Grammar())) {s = 249;}
+                        else if ( (LA132_39==MAX) ) {s = 249;}
 
-                        else if ( (LA132_39==COUNT) && (synpred4_EsperEPL2Grammar())) {s = 250;}
+                        else if ( (LA132_39==MIN) ) {s = 250;}
 
-                        else if ( (LA132_39==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 251;}
+                        else if ( (LA132_39==AT) && (synpred4_EsperEPL2Grammar())) {s = 251;}
 
-                        else if ( (LA132_39==EVERY_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 252;}
+                        else if ( (LA132_39==COUNT) && (synpred4_EsperEPL2Grammar())) {s = 252;}
 
-                        else if ( (LA132_39==SUM) && (synpred4_EsperEPL2Grammar())) {s = 253;}
+                        else if ( (LA132_39==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 253;}
 
-                        else if ( (LA132_39==AVG) && (synpred4_EsperEPL2Grammar())) {s = 254;}
+                        else if ( (LA132_39==EVERY_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 254;}
 
-                        else if ( (LA132_39==MAX) ) {s = 255;}
+                        else if ( (LA132_39==SUM) && (synpred4_EsperEPL2Grammar())) {s = 255;}
 
-                        else if ( (LA132_39==MIN) ) {s = 256;}
+                        else if ( (LA132_39==AVG) && (synpred4_EsperEPL2Grammar())) {s = 256;}
 
                         else if ( (LA132_39==COALESCE) && (synpred4_EsperEPL2Grammar())) {s = 257;}
 
@@ -30691,21 +30784,21 @@ public class EsperEPL2GrammarParser extends Parser {
 
                         else if ( (LA132_91==TICKED_STRING_LITERAL) ) {s = 345;}
 
-                        else if ( (LA132_91==AT) && (synpred4_EsperEPL2Grammar())) {s = 346;}
+                        else if ( (LA132_91==MAX) ) {s = 346;}
 
-                        else if ( (LA132_91==COUNT) && (synpred4_EsperEPL2Grammar())) {s = 347;}
+                        else if ( (LA132_91==MIN) ) {s = 347;}
 
-                        else if ( (LA132_91==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 348;}
+                        else if ( (LA132_91==AT) && (synpred4_EsperEPL2Grammar())) {s = 348;}
 
-                        else if ( (LA132_91==EVERY_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 349;}
+                        else if ( (LA132_91==COUNT) && (synpred4_EsperEPL2Grammar())) {s = 349;}
 
-                        else if ( (LA132_91==SUM) && (synpred4_EsperEPL2Grammar())) {s = 350;}
+                        else if ( (LA132_91==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 350;}
 
-                        else if ( (LA132_91==AVG) && (synpred4_EsperEPL2Grammar())) {s = 351;}
+                        else if ( (LA132_91==EVERY_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 351;}
 
-                        else if ( (LA132_91==MAX) ) {s = 352;}
+                        else if ( (LA132_91==SUM) && (synpred4_EsperEPL2Grammar())) {s = 352;}
 
-                        else if ( (LA132_91==MIN) ) {s = 353;}
+                        else if ( (LA132_91==AVG) && (synpred4_EsperEPL2Grammar())) {s = 353;}
 
                         else if ( (LA132_91==COALESCE) && (synpred4_EsperEPL2Grammar())) {s = 354;}
 
@@ -30889,342 +30982,342 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index132_248 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA132_248==DOT) ) {s = 552;}
+                        if ( (LA132_248==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 552;}
 
-                        else if ( (LA132_248==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 553;}
+                        else if ( (LA132_248==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 553;}
 
-                        else if ( (LA132_248==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 554;}
+                        else if ( (LA132_248==LPAREN) && (synpred4_EsperEPL2Grammar())) {s = 554;}
 
-                        else if ( (LA132_248==LPAREN) && (synpred4_EsperEPL2Grammar())) {s = 555;}
+                        else if ( (LA132_248==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 555;}
 
-                        else if ( (LA132_248==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 556;}
+                        else if ( (LA132_248==STAR) && (synpred4_EsperEPL2Grammar())) {s = 556;}
 
-                        else if ( (LA132_248==STAR) && (synpred4_EsperEPL2Grammar())) {s = 557;}
+                        else if ( (LA132_248==DIV) && (synpred4_EsperEPL2Grammar())) {s = 557;}
 
-                        else if ( (LA132_248==DIV) && (synpred4_EsperEPL2Grammar())) {s = 558;}
+                        else if ( (LA132_248==MOD) && (synpred4_EsperEPL2Grammar())) {s = 558;}
 
-                        else if ( (LA132_248==MOD) && (synpred4_EsperEPL2Grammar())) {s = 559;}
+                        else if ( (LA132_248==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 559;}
 
-                        else if ( (LA132_248==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 560;}
+                        else if ( (LA132_248==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 560;}
 
-                        else if ( (LA132_248==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 561;}
+                        else if ( (LA132_248==LOR) && (synpred4_EsperEPL2Grammar())) {s = 561;}
 
-                        else if ( (LA132_248==LOR) && (synpred4_EsperEPL2Grammar())) {s = 562;}
+                        else if ( (LA132_248==LT) && (synpred4_EsperEPL2Grammar())) {s = 562;}
 
-                        else if ( (LA132_248==LT) && (synpred4_EsperEPL2Grammar())) {s = 563;}
+                        else if ( (LA132_248==GT) && (synpred4_EsperEPL2Grammar())) {s = 563;}
 
-                        else if ( (LA132_248==GT) && (synpred4_EsperEPL2Grammar())) {s = 564;}
+                        else if ( (LA132_248==LE) && (synpred4_EsperEPL2Grammar())) {s = 564;}
 
-                        else if ( (LA132_248==LE) && (synpred4_EsperEPL2Grammar())) {s = 565;}
+                        else if ( (LA132_248==GE) && (synpred4_EsperEPL2Grammar())) {s = 565;}
 
-                        else if ( (LA132_248==GE) && (synpred4_EsperEPL2Grammar())) {s = 566;}
+                        else if ( (LA132_248==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 566;}
 
-                        else if ( (LA132_248==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 567;}
+                        else if ( (LA132_248==IS) && (synpred4_EsperEPL2Grammar())) {s = 567;}
 
-                        else if ( (LA132_248==IS) && (synpred4_EsperEPL2Grammar())) {s = 568;}
+                        else if ( (LA132_248==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 568;}
 
-                        else if ( (LA132_248==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 569;}
+                        else if ( (LA132_248==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 569;}
 
-                        else if ( (LA132_248==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 570;}
+                        else if ( (LA132_248==BAND) && (synpred4_EsperEPL2Grammar())) {s = 570;}
 
-                        else if ( (LA132_248==BAND) && (synpred4_EsperEPL2Grammar())) {s = 571;}
+                        else if ( (LA132_248==BOR) && (synpred4_EsperEPL2Grammar())) {s = 571;}
 
-                        else if ( (LA132_248==BOR) && (synpred4_EsperEPL2Grammar())) {s = 572;}
+                        else if ( (LA132_248==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 572;}
 
-                        else if ( (LA132_248==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 573;}
+                        else if ( (LA132_248==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 573;}
 
-                        else if ( (LA132_248==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 574;}
+                        else if ( (LA132_248==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 574;}
 
-                        else if ( (LA132_248==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 575;}
+                        else if ( (LA132_248==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 575;}
 
-                        else if ( (LA132_248==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 576;}
+                        else if ( (LA132_248==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 576;}
 
-                        else if ( (LA132_248==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 577;}
+                        else if ( (LA132_248==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 577;}
 
-                        else if ( (LA132_248==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 578;}
+                        else if ( (LA132_248==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 578;}
 
-                        else if ( (LA132_248==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 579;}
+                        else if ( (LA132_248==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 579;}
 
-                        else if ( (LA132_248==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 580;}
+                        else if ( (LA132_248==EOF) && (synpred4_EsperEPL2Grammar())) {s = 580;}
 
-                        else if ( (LA132_248==EOF) && (synpred4_EsperEPL2Grammar())) {s = 581;}
+                        else if ( (LA132_248==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 581;}
 
-                        else if ( (LA132_248==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 582;}
+                        else if ( (LA132_248==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 582;}
 
-                        else if ( (LA132_248==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 583;}
+                        else if ( (LA132_248==AS) && (synpred4_EsperEPL2Grammar())) {s = 583;}
 
-                        else if ( (LA132_248==AS) && (synpred4_EsperEPL2Grammar())) {s = 584;}
+                        else if ( (LA132_248==FROM) && (synpred4_EsperEPL2Grammar())) {s = 584;}
 
-                        else if ( (LA132_248==FROM) && (synpred4_EsperEPL2Grammar())) {s = 585;}
+                        else if ( (LA132_248==ASC) && (synpred4_EsperEPL2Grammar())) {s = 585;}
 
-                        else if ( (LA132_248==ASC) && (synpred4_EsperEPL2Grammar())) {s = 586;}
+                        else if ( (LA132_248==DESC) && (synpred4_EsperEPL2Grammar())) {s = 586;}
 
-                        else if ( (LA132_248==DESC) && (synpred4_EsperEPL2Grammar())) {s = 587;}
+                        else if ( (LA132_248==THEN) && (synpred4_EsperEPL2Grammar())) {s = 587;}
 
-                        else if ( (LA132_248==THEN) && (synpred4_EsperEPL2Grammar())) {s = 588;}
+                        else if ( (LA132_248==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 588;}
 
-                        else if ( (LA132_248==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 589;}
+                        else if ( (LA132_248==END) && (synpred4_EsperEPL2Grammar())) {s = 589;}
 
-                        else if ( (LA132_248==END) && (synpred4_EsperEPL2Grammar())) {s = 590;}
+                        else if ( (LA132_248==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 590;}
 
-                        else if ( (LA132_248==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 591;}
+                        else if ( (LA132_248==COLON) && (synpred4_EsperEPL2Grammar())) {s = 591;}
 
-                        else if ( (LA132_248==COLON) && (synpred4_EsperEPL2Grammar())) {s = 592;}
+                        else if ( (LA132_248==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 592;}
 
-                        else if ( (LA132_248==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 593;}
+                        else if ( (LA132_248==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 593;}
 
-                        else if ( (LA132_248==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 594;}
+                        else if ( (LA132_248==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 594;}
 
-                        else if ( (LA132_248==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 595;}
+                        else if ( (LA132_248==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 595;}
 
-                        else if ( (LA132_248==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 596;}
+                        else if ( (LA132_248==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 596;}
 
-                        else if ( (LA132_248==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 597;}
+                        else if ( (LA132_248==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 597;}
 
-                        else if ( (LA132_248==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 598;}
+                        else if ( (LA132_248==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 598;}
 
-                        else if ( (LA132_248==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 599;}
+                        else if ( (LA132_248==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 599;}
 
-                        else if ( (LA132_248==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 600;}
+                        else if ( (LA132_248==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 600;}
 
-                        else if ( (LA132_248==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 601;}
+                        else if ( (LA132_248==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 601;}
 
-                        else if ( (LA132_248==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 602;}
+                        else if ( (LA132_248==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 602;}
 
-                        else if ( (LA132_248==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 603;}
+                        else if ( (LA132_248==DOT) ) {s = 603;}
 
                          
                         input.seek(index132_248);
                         if ( s>=0 ) return s;
                         break;
                     case 9 : 
-                        int LA132_255 = input.LA(1);
+                        int LA132_249 = input.LA(1);
 
                          
-                        int index132_255 = input.index();
+                        int index132_249 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA132_255==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 604;}
+                        if ( (LA132_249==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 604;}
 
-                        else if ( (LA132_255==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 605;}
+                        else if ( (LA132_249==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 605;}
 
-                        else if ( (LA132_255==LPAREN) ) {s = 606;}
+                        else if ( (LA132_249==LPAREN) ) {s = 606;}
 
-                        else if ( (LA132_255==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 607;}
+                        else if ( (LA132_249==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 607;}
 
-                        else if ( (LA132_255==STAR) && (synpred4_EsperEPL2Grammar())) {s = 608;}
+                        else if ( (LA132_249==STAR) && (synpred4_EsperEPL2Grammar())) {s = 608;}
 
-                        else if ( (LA132_255==DIV) && (synpred4_EsperEPL2Grammar())) {s = 609;}
+                        else if ( (LA132_249==DIV) && (synpred4_EsperEPL2Grammar())) {s = 609;}
 
-                        else if ( (LA132_255==MOD) && (synpred4_EsperEPL2Grammar())) {s = 610;}
+                        else if ( (LA132_249==MOD) && (synpred4_EsperEPL2Grammar())) {s = 610;}
 
-                        else if ( (LA132_255==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 611;}
+                        else if ( (LA132_249==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 611;}
 
-                        else if ( (LA132_255==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 612;}
+                        else if ( (LA132_249==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 612;}
 
-                        else if ( (LA132_255==LOR) && (synpred4_EsperEPL2Grammar())) {s = 613;}
+                        else if ( (LA132_249==LOR) && (synpred4_EsperEPL2Grammar())) {s = 613;}
 
-                        else if ( (LA132_255==LT) && (synpred4_EsperEPL2Grammar())) {s = 614;}
+                        else if ( (LA132_249==LT) && (synpred4_EsperEPL2Grammar())) {s = 614;}
 
-                        else if ( (LA132_255==GT) && (synpred4_EsperEPL2Grammar())) {s = 615;}
+                        else if ( (LA132_249==GT) && (synpred4_EsperEPL2Grammar())) {s = 615;}
 
-                        else if ( (LA132_255==LE) && (synpred4_EsperEPL2Grammar())) {s = 616;}
+                        else if ( (LA132_249==LE) && (synpred4_EsperEPL2Grammar())) {s = 616;}
 
-                        else if ( (LA132_255==GE) && (synpred4_EsperEPL2Grammar())) {s = 617;}
+                        else if ( (LA132_249==GE) && (synpred4_EsperEPL2Grammar())) {s = 617;}
 
-                        else if ( (LA132_255==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 618;}
+                        else if ( (LA132_249==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 618;}
 
-                        else if ( (LA132_255==IS) && (synpred4_EsperEPL2Grammar())) {s = 619;}
+                        else if ( (LA132_249==IS) && (synpred4_EsperEPL2Grammar())) {s = 619;}
 
-                        else if ( (LA132_255==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 620;}
+                        else if ( (LA132_249==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 620;}
 
-                        else if ( (LA132_255==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 621;}
+                        else if ( (LA132_249==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 621;}
 
-                        else if ( (LA132_255==BAND) && (synpred4_EsperEPL2Grammar())) {s = 622;}
+                        else if ( (LA132_249==BAND) && (synpred4_EsperEPL2Grammar())) {s = 622;}
 
-                        else if ( (LA132_255==BOR) && (synpred4_EsperEPL2Grammar())) {s = 623;}
+                        else if ( (LA132_249==BOR) && (synpred4_EsperEPL2Grammar())) {s = 623;}
 
-                        else if ( (LA132_255==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 624;}
+                        else if ( (LA132_249==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 624;}
 
-                        else if ( (LA132_255==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 625;}
+                        else if ( (LA132_249==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 625;}
 
-                        else if ( (LA132_255==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 626;}
+                        else if ( (LA132_249==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 626;}
 
-                        else if ( (LA132_255==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 627;}
+                        else if ( (LA132_249==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 627;}
 
-                        else if ( (LA132_255==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 628;}
+                        else if ( (LA132_249==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 628;}
 
-                        else if ( (LA132_255==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 629;}
+                        else if ( (LA132_249==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 629;}
 
-                        else if ( (LA132_255==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 630;}
+                        else if ( (LA132_249==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 630;}
 
-                        else if ( (LA132_255==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 631;}
+                        else if ( (LA132_249==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 631;}
 
-                        else if ( (LA132_255==EOF) && (synpred4_EsperEPL2Grammar())) {s = 632;}
+                        else if ( (LA132_249==EOF) && (synpred4_EsperEPL2Grammar())) {s = 632;}
 
-                        else if ( (LA132_255==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 633;}
+                        else if ( (LA132_249==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 633;}
 
-                        else if ( (LA132_255==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 634;}
+                        else if ( (LA132_249==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 634;}
 
-                        else if ( (LA132_255==AS) && (synpred4_EsperEPL2Grammar())) {s = 635;}
+                        else if ( (LA132_249==AS) && (synpred4_EsperEPL2Grammar())) {s = 635;}
 
-                        else if ( (LA132_255==FROM) && (synpred4_EsperEPL2Grammar())) {s = 636;}
+                        else if ( (LA132_249==FROM) && (synpred4_EsperEPL2Grammar())) {s = 636;}
 
-                        else if ( (LA132_255==ASC) && (synpred4_EsperEPL2Grammar())) {s = 637;}
+                        else if ( (LA132_249==ASC) && (synpred4_EsperEPL2Grammar())) {s = 637;}
 
-                        else if ( (LA132_255==DESC) && (synpred4_EsperEPL2Grammar())) {s = 638;}
+                        else if ( (LA132_249==DESC) && (synpred4_EsperEPL2Grammar())) {s = 638;}
 
-                        else if ( (LA132_255==THEN) && (synpred4_EsperEPL2Grammar())) {s = 639;}
+                        else if ( (LA132_249==THEN) && (synpred4_EsperEPL2Grammar())) {s = 639;}
 
-                        else if ( (LA132_255==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 640;}
+                        else if ( (LA132_249==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 640;}
 
-                        else if ( (LA132_255==END) && (synpred4_EsperEPL2Grammar())) {s = 641;}
+                        else if ( (LA132_249==END) && (synpred4_EsperEPL2Grammar())) {s = 641;}
 
-                        else if ( (LA132_255==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 642;}
+                        else if ( (LA132_249==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 642;}
 
-                        else if ( (LA132_255==COLON) && (synpred4_EsperEPL2Grammar())) {s = 643;}
+                        else if ( (LA132_249==COLON) && (synpred4_EsperEPL2Grammar())) {s = 643;}
 
-                        else if ( (LA132_255==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 644;}
+                        else if ( (LA132_249==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 644;}
 
-                        else if ( (LA132_255==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 645;}
+                        else if ( (LA132_249==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 645;}
 
-                        else if ( (LA132_255==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 646;}
+                        else if ( (LA132_249==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 646;}
 
-                        else if ( (LA132_255==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 647;}
+                        else if ( (LA132_249==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 647;}
 
-                        else if ( (LA132_255==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 648;}
+                        else if ( (LA132_249==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 648;}
 
-                        else if ( (LA132_255==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 649;}
+                        else if ( (LA132_249==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 649;}
 
-                        else if ( (LA132_255==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 650;}
+                        else if ( (LA132_249==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 650;}
 
-                        else if ( (LA132_255==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 651;}
+                        else if ( (LA132_249==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 651;}
 
-                        else if ( (LA132_255==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 652;}
+                        else if ( (LA132_249==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 652;}
 
-                        else if ( (LA132_255==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 653;}
+                        else if ( (LA132_249==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 653;}
 
-                        else if ( (LA132_255==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 654;}
+                        else if ( (LA132_249==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 654;}
 
-                        else if ( (LA132_255==DOT) && (synpred4_EsperEPL2Grammar())) {s = 655;}
+                        else if ( (LA132_249==DOT) && (synpred4_EsperEPL2Grammar())) {s = 655;}
 
                          
-                        input.seek(index132_255);
+                        input.seek(index132_249);
                         if ( s>=0 ) return s;
                         break;
                     case 10 : 
-                        int LA132_256 = input.LA(1);
+                        int LA132_250 = input.LA(1);
 
                          
-                        int index132_256 = input.index();
+                        int index132_250 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA132_256==LPAREN) ) {s = 656;}
+                        if ( (LA132_250==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 656;}
 
-                        else if ( (LA132_256==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 657;}
+                        else if ( (LA132_250==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 657;}
 
-                        else if ( (LA132_256==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 658;}
+                        else if ( (LA132_250==LPAREN) ) {s = 658;}
 
-                        else if ( (LA132_256==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 659;}
+                        else if ( (LA132_250==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 659;}
 
-                        else if ( (LA132_256==STAR) && (synpred4_EsperEPL2Grammar())) {s = 660;}
+                        else if ( (LA132_250==STAR) && (synpred4_EsperEPL2Grammar())) {s = 660;}
 
-                        else if ( (LA132_256==DIV) && (synpred4_EsperEPL2Grammar())) {s = 661;}
+                        else if ( (LA132_250==DIV) && (synpred4_EsperEPL2Grammar())) {s = 661;}
 
-                        else if ( (LA132_256==MOD) && (synpred4_EsperEPL2Grammar())) {s = 662;}
+                        else if ( (LA132_250==MOD) && (synpred4_EsperEPL2Grammar())) {s = 662;}
 
-                        else if ( (LA132_256==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 663;}
+                        else if ( (LA132_250==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 663;}
 
-                        else if ( (LA132_256==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 664;}
+                        else if ( (LA132_250==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 664;}
 
-                        else if ( (LA132_256==LOR) && (synpred4_EsperEPL2Grammar())) {s = 665;}
+                        else if ( (LA132_250==LOR) && (synpred4_EsperEPL2Grammar())) {s = 665;}
 
-                        else if ( (LA132_256==LT) && (synpred4_EsperEPL2Grammar())) {s = 666;}
+                        else if ( (LA132_250==LT) && (synpred4_EsperEPL2Grammar())) {s = 666;}
 
-                        else if ( (LA132_256==GT) && (synpred4_EsperEPL2Grammar())) {s = 667;}
+                        else if ( (LA132_250==GT) && (synpred4_EsperEPL2Grammar())) {s = 667;}
 
-                        else if ( (LA132_256==LE) && (synpred4_EsperEPL2Grammar())) {s = 668;}
+                        else if ( (LA132_250==LE) && (synpred4_EsperEPL2Grammar())) {s = 668;}
 
-                        else if ( (LA132_256==GE) && (synpred4_EsperEPL2Grammar())) {s = 669;}
+                        else if ( (LA132_250==GE) && (synpred4_EsperEPL2Grammar())) {s = 669;}
 
-                        else if ( (LA132_256==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 670;}
+                        else if ( (LA132_250==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 670;}
 
-                        else if ( (LA132_256==IS) && (synpred4_EsperEPL2Grammar())) {s = 671;}
+                        else if ( (LA132_250==IS) && (synpred4_EsperEPL2Grammar())) {s = 671;}
 
-                        else if ( (LA132_256==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 672;}
+                        else if ( (LA132_250==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 672;}
 
-                        else if ( (LA132_256==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 673;}
+                        else if ( (LA132_250==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 673;}
 
-                        else if ( (LA132_256==BAND) && (synpred4_EsperEPL2Grammar())) {s = 674;}
+                        else if ( (LA132_250==BAND) && (synpred4_EsperEPL2Grammar())) {s = 674;}
 
-                        else if ( (LA132_256==BOR) && (synpred4_EsperEPL2Grammar())) {s = 675;}
+                        else if ( (LA132_250==BOR) && (synpred4_EsperEPL2Grammar())) {s = 675;}
 
-                        else if ( (LA132_256==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 676;}
+                        else if ( (LA132_250==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 676;}
 
-                        else if ( (LA132_256==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 677;}
+                        else if ( (LA132_250==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 677;}
 
-                        else if ( (LA132_256==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 678;}
+                        else if ( (LA132_250==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 678;}
 
-                        else if ( (LA132_256==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 679;}
+                        else if ( (LA132_250==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 679;}
 
-                        else if ( (LA132_256==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 680;}
+                        else if ( (LA132_250==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 680;}
 
-                        else if ( (LA132_256==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 681;}
+                        else if ( (LA132_250==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 681;}
 
-                        else if ( (LA132_256==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 682;}
+                        else if ( (LA132_250==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 682;}
 
-                        else if ( (LA132_256==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 683;}
+                        else if ( (LA132_250==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 683;}
 
-                        else if ( (LA132_256==EOF) && (synpred4_EsperEPL2Grammar())) {s = 684;}
+                        else if ( (LA132_250==EOF) && (synpred4_EsperEPL2Grammar())) {s = 684;}
 
-                        else if ( (LA132_256==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 685;}
+                        else if ( (LA132_250==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 685;}
 
-                        else if ( (LA132_256==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 686;}
+                        else if ( (LA132_250==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 686;}
 
-                        else if ( (LA132_256==AS) && (synpred4_EsperEPL2Grammar())) {s = 687;}
+                        else if ( (LA132_250==AS) && (synpred4_EsperEPL2Grammar())) {s = 687;}
 
-                        else if ( (LA132_256==FROM) && (synpred4_EsperEPL2Grammar())) {s = 688;}
+                        else if ( (LA132_250==FROM) && (synpred4_EsperEPL2Grammar())) {s = 688;}
 
-                        else if ( (LA132_256==ASC) && (synpred4_EsperEPL2Grammar())) {s = 689;}
+                        else if ( (LA132_250==ASC) && (synpred4_EsperEPL2Grammar())) {s = 689;}
 
-                        else if ( (LA132_256==DESC) && (synpred4_EsperEPL2Grammar())) {s = 690;}
+                        else if ( (LA132_250==DESC) && (synpred4_EsperEPL2Grammar())) {s = 690;}
 
-                        else if ( (LA132_256==THEN) && (synpred4_EsperEPL2Grammar())) {s = 691;}
+                        else if ( (LA132_250==THEN) && (synpred4_EsperEPL2Grammar())) {s = 691;}
 
-                        else if ( (LA132_256==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 692;}
+                        else if ( (LA132_250==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 692;}
 
-                        else if ( (LA132_256==END) && (synpred4_EsperEPL2Grammar())) {s = 693;}
+                        else if ( (LA132_250==END) && (synpred4_EsperEPL2Grammar())) {s = 693;}
 
-                        else if ( (LA132_256==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 694;}
+                        else if ( (LA132_250==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 694;}
 
-                        else if ( (LA132_256==COLON) && (synpred4_EsperEPL2Grammar())) {s = 695;}
+                        else if ( (LA132_250==COLON) && (synpred4_EsperEPL2Grammar())) {s = 695;}
 
-                        else if ( (LA132_256==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 696;}
+                        else if ( (LA132_250==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 696;}
 
-                        else if ( (LA132_256==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 697;}
+                        else if ( (LA132_250==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 697;}
 
-                        else if ( (LA132_256==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 698;}
+                        else if ( (LA132_250==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 698;}
 
-                        else if ( (LA132_256==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 699;}
+                        else if ( (LA132_250==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 699;}
 
-                        else if ( (LA132_256==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 700;}
+                        else if ( (LA132_250==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 700;}
 
-                        else if ( (LA132_256==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 701;}
+                        else if ( (LA132_250==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 701;}
 
-                        else if ( (LA132_256==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 702;}
+                        else if ( (LA132_250==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 702;}
 
-                        else if ( (LA132_256==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 703;}
+                        else if ( (LA132_250==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 703;}
 
-                        else if ( (LA132_256==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 704;}
+                        else if ( (LA132_250==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 704;}
 
-                        else if ( (LA132_256==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 705;}
+                        else if ( (LA132_250==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 705;}
 
-                        else if ( (LA132_256==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 706;}
+                        else if ( (LA132_250==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 706;}
 
-                        else if ( (LA132_256==DOT) && (synpred4_EsperEPL2Grammar())) {s = 707;}
+                        else if ( (LA132_250==DOT) && (synpred4_EsperEPL2Grammar())) {s = 707;}
 
                          
-                        input.seek(index132_256);
+                        input.seek(index132_250);
                         if ( s>=0 ) return s;
                         break;
                     case 11 : 
@@ -31349,342 +31442,342 @@ public class EsperEPL2GrammarParser extends Parser {
                         int index132_345 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA132_345==DOT) ) {s = 812;}
+                        if ( (LA132_345==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 812;}
 
-                        else if ( (LA132_345==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 813;}
+                        else if ( (LA132_345==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 813;}
 
-                        else if ( (LA132_345==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 814;}
+                        else if ( (LA132_345==LPAREN) && (synpred4_EsperEPL2Grammar())) {s = 814;}
 
-                        else if ( (LA132_345==LPAREN) && (synpred4_EsperEPL2Grammar())) {s = 815;}
+                        else if ( (LA132_345==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 815;}
 
-                        else if ( (LA132_345==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 816;}
+                        else if ( (LA132_345==STAR) && (synpred4_EsperEPL2Grammar())) {s = 816;}
 
-                        else if ( (LA132_345==STAR) && (synpred4_EsperEPL2Grammar())) {s = 817;}
+                        else if ( (LA132_345==DIV) && (synpred4_EsperEPL2Grammar())) {s = 817;}
 
-                        else if ( (LA132_345==DIV) && (synpred4_EsperEPL2Grammar())) {s = 818;}
+                        else if ( (LA132_345==MOD) && (synpred4_EsperEPL2Grammar())) {s = 818;}
 
-                        else if ( (LA132_345==MOD) && (synpred4_EsperEPL2Grammar())) {s = 819;}
+                        else if ( (LA132_345==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 819;}
 
-                        else if ( (LA132_345==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 820;}
+                        else if ( (LA132_345==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 820;}
 
-                        else if ( (LA132_345==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 821;}
+                        else if ( (LA132_345==LOR) && (synpred4_EsperEPL2Grammar())) {s = 821;}
 
-                        else if ( (LA132_345==LOR) && (synpred4_EsperEPL2Grammar())) {s = 822;}
+                        else if ( (LA132_345==LT) && (synpred4_EsperEPL2Grammar())) {s = 822;}
 
-                        else if ( (LA132_345==LT) && (synpred4_EsperEPL2Grammar())) {s = 823;}
+                        else if ( (LA132_345==GT) && (synpred4_EsperEPL2Grammar())) {s = 823;}
 
-                        else if ( (LA132_345==GT) && (synpred4_EsperEPL2Grammar())) {s = 824;}
+                        else if ( (LA132_345==LE) && (synpred4_EsperEPL2Grammar())) {s = 824;}
 
-                        else if ( (LA132_345==LE) && (synpred4_EsperEPL2Grammar())) {s = 825;}
+                        else if ( (LA132_345==GE) && (synpred4_EsperEPL2Grammar())) {s = 825;}
 
-                        else if ( (LA132_345==GE) && (synpred4_EsperEPL2Grammar())) {s = 826;}
+                        else if ( (LA132_345==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 826;}
 
-                        else if ( (LA132_345==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 827;}
+                        else if ( (LA132_345==IS) && (synpred4_EsperEPL2Grammar())) {s = 827;}
 
-                        else if ( (LA132_345==IS) && (synpred4_EsperEPL2Grammar())) {s = 828;}
+                        else if ( (LA132_345==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 828;}
 
-                        else if ( (LA132_345==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 829;}
+                        else if ( (LA132_345==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 829;}
 
-                        else if ( (LA132_345==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 830;}
+                        else if ( (LA132_345==BAND) && (synpred4_EsperEPL2Grammar())) {s = 830;}
 
-                        else if ( (LA132_345==BAND) && (synpred4_EsperEPL2Grammar())) {s = 831;}
+                        else if ( (LA132_345==BOR) && (synpred4_EsperEPL2Grammar())) {s = 831;}
 
-                        else if ( (LA132_345==BOR) && (synpred4_EsperEPL2Grammar())) {s = 832;}
+                        else if ( (LA132_345==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 832;}
 
-                        else if ( (LA132_345==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 833;}
+                        else if ( (LA132_345==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 833;}
 
-                        else if ( (LA132_345==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 834;}
+                        else if ( (LA132_345==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 834;}
 
-                        else if ( (LA132_345==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 835;}
+                        else if ( (LA132_345==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 835;}
 
-                        else if ( (LA132_345==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 836;}
+                        else if ( (LA132_345==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 836;}
 
-                        else if ( (LA132_345==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 837;}
+                        else if ( (LA132_345==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 837;}
 
-                        else if ( (LA132_345==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 838;}
+                        else if ( (LA132_345==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 838;}
 
-                        else if ( (LA132_345==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 839;}
+                        else if ( (LA132_345==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 839;}
 
-                        else if ( (LA132_345==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 840;}
+                        else if ( (LA132_345==EOF) && (synpred4_EsperEPL2Grammar())) {s = 840;}
 
-                        else if ( (LA132_345==EOF) && (synpred4_EsperEPL2Grammar())) {s = 841;}
+                        else if ( (LA132_345==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 841;}
 
-                        else if ( (LA132_345==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 842;}
+                        else if ( (LA132_345==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 842;}
 
-                        else if ( (LA132_345==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 843;}
+                        else if ( (LA132_345==AS) && (synpred4_EsperEPL2Grammar())) {s = 843;}
 
-                        else if ( (LA132_345==AS) && (synpred4_EsperEPL2Grammar())) {s = 844;}
+                        else if ( (LA132_345==FROM) && (synpred4_EsperEPL2Grammar())) {s = 844;}
 
-                        else if ( (LA132_345==FROM) && (synpred4_EsperEPL2Grammar())) {s = 845;}
+                        else if ( (LA132_345==ASC) && (synpred4_EsperEPL2Grammar())) {s = 845;}
 
-                        else if ( (LA132_345==ASC) && (synpred4_EsperEPL2Grammar())) {s = 846;}
+                        else if ( (LA132_345==DESC) && (synpred4_EsperEPL2Grammar())) {s = 846;}
 
-                        else if ( (LA132_345==DESC) && (synpred4_EsperEPL2Grammar())) {s = 847;}
+                        else if ( (LA132_345==THEN) && (synpred4_EsperEPL2Grammar())) {s = 847;}
 
-                        else if ( (LA132_345==THEN) && (synpred4_EsperEPL2Grammar())) {s = 848;}
+                        else if ( (LA132_345==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 848;}
 
-                        else if ( (LA132_345==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 849;}
+                        else if ( (LA132_345==END) && (synpred4_EsperEPL2Grammar())) {s = 849;}
 
-                        else if ( (LA132_345==END) && (synpred4_EsperEPL2Grammar())) {s = 850;}
+                        else if ( (LA132_345==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 850;}
 
-                        else if ( (LA132_345==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 851;}
+                        else if ( (LA132_345==COLON) && (synpred4_EsperEPL2Grammar())) {s = 851;}
 
-                        else if ( (LA132_345==COLON) && (synpred4_EsperEPL2Grammar())) {s = 852;}
+                        else if ( (LA132_345==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 852;}
 
-                        else if ( (LA132_345==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 853;}
+                        else if ( (LA132_345==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 853;}
 
-                        else if ( (LA132_345==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 854;}
+                        else if ( (LA132_345==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 854;}
 
-                        else if ( (LA132_345==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 855;}
+                        else if ( (LA132_345==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 855;}
 
-                        else if ( (LA132_345==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 856;}
+                        else if ( (LA132_345==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 856;}
 
-                        else if ( (LA132_345==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 857;}
+                        else if ( (LA132_345==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 857;}
 
-                        else if ( (LA132_345==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 858;}
+                        else if ( (LA132_345==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 858;}
 
-                        else if ( (LA132_345==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 859;}
+                        else if ( (LA132_345==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 859;}
 
-                        else if ( (LA132_345==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 860;}
+                        else if ( (LA132_345==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 860;}
 
-                        else if ( (LA132_345==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 861;}
+                        else if ( (LA132_345==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 861;}
 
-                        else if ( (LA132_345==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 862;}
+                        else if ( (LA132_345==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 862;}
 
-                        else if ( (LA132_345==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 863;}
+                        else if ( (LA132_345==DOT) ) {s = 863;}
 
                          
                         input.seek(index132_345);
                         if ( s>=0 ) return s;
                         break;
                     case 13 : 
-                        int LA132_352 = input.LA(1);
+                        int LA132_346 = input.LA(1);
 
                          
-                        int index132_352 = input.index();
+                        int index132_346 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA132_352==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 864;}
+                        if ( (LA132_346==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 864;}
 
-                        else if ( (LA132_352==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 865;}
+                        else if ( (LA132_346==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 865;}
 
-                        else if ( (LA132_352==LPAREN) ) {s = 866;}
+                        else if ( (LA132_346==LPAREN) ) {s = 866;}
 
-                        else if ( (LA132_352==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 867;}
+                        else if ( (LA132_346==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 867;}
 
-                        else if ( (LA132_352==STAR) && (synpred4_EsperEPL2Grammar())) {s = 868;}
+                        else if ( (LA132_346==STAR) && (synpred4_EsperEPL2Grammar())) {s = 868;}
 
-                        else if ( (LA132_352==DIV) && (synpred4_EsperEPL2Grammar())) {s = 869;}
+                        else if ( (LA132_346==DIV) && (synpred4_EsperEPL2Grammar())) {s = 869;}
 
-                        else if ( (LA132_352==MOD) && (synpred4_EsperEPL2Grammar())) {s = 870;}
+                        else if ( (LA132_346==MOD) && (synpred4_EsperEPL2Grammar())) {s = 870;}
 
-                        else if ( (LA132_352==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 871;}
+                        else if ( (LA132_346==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 871;}
 
-                        else if ( (LA132_352==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 872;}
+                        else if ( (LA132_346==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 872;}
 
-                        else if ( (LA132_352==LOR) && (synpred4_EsperEPL2Grammar())) {s = 873;}
+                        else if ( (LA132_346==LOR) && (synpred4_EsperEPL2Grammar())) {s = 873;}
 
-                        else if ( (LA132_352==LT) && (synpred4_EsperEPL2Grammar())) {s = 874;}
+                        else if ( (LA132_346==LT) && (synpred4_EsperEPL2Grammar())) {s = 874;}
 
-                        else if ( (LA132_352==GT) && (synpred4_EsperEPL2Grammar())) {s = 875;}
+                        else if ( (LA132_346==GT) && (synpred4_EsperEPL2Grammar())) {s = 875;}
 
-                        else if ( (LA132_352==LE) && (synpred4_EsperEPL2Grammar())) {s = 876;}
+                        else if ( (LA132_346==LE) && (synpred4_EsperEPL2Grammar())) {s = 876;}
 
-                        else if ( (LA132_352==GE) && (synpred4_EsperEPL2Grammar())) {s = 877;}
+                        else if ( (LA132_346==GE) && (synpred4_EsperEPL2Grammar())) {s = 877;}
 
-                        else if ( (LA132_352==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 878;}
+                        else if ( (LA132_346==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 878;}
 
-                        else if ( (LA132_352==IS) && (synpred4_EsperEPL2Grammar())) {s = 879;}
+                        else if ( (LA132_346==IS) && (synpred4_EsperEPL2Grammar())) {s = 879;}
 
-                        else if ( (LA132_352==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 880;}
+                        else if ( (LA132_346==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 880;}
 
-                        else if ( (LA132_352==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 881;}
+                        else if ( (LA132_346==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 881;}
 
-                        else if ( (LA132_352==BAND) && (synpred4_EsperEPL2Grammar())) {s = 882;}
+                        else if ( (LA132_346==BAND) && (synpred4_EsperEPL2Grammar())) {s = 882;}
 
-                        else if ( (LA132_352==BOR) && (synpred4_EsperEPL2Grammar())) {s = 883;}
+                        else if ( (LA132_346==BOR) && (synpred4_EsperEPL2Grammar())) {s = 883;}
 
-                        else if ( (LA132_352==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 884;}
+                        else if ( (LA132_346==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 884;}
 
-                        else if ( (LA132_352==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 885;}
+                        else if ( (LA132_346==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 885;}
 
-                        else if ( (LA132_352==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 886;}
+                        else if ( (LA132_346==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 886;}
 
-                        else if ( (LA132_352==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 887;}
+                        else if ( (LA132_346==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 887;}
 
-                        else if ( (LA132_352==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 888;}
+                        else if ( (LA132_346==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 888;}
 
-                        else if ( (LA132_352==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 889;}
+                        else if ( (LA132_346==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 889;}
 
-                        else if ( (LA132_352==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 890;}
+                        else if ( (LA132_346==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 890;}
 
-                        else if ( (LA132_352==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 891;}
+                        else if ( (LA132_346==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 891;}
 
-                        else if ( (LA132_352==EOF) && (synpred4_EsperEPL2Grammar())) {s = 892;}
+                        else if ( (LA132_346==EOF) && (synpred4_EsperEPL2Grammar())) {s = 892;}
 
-                        else if ( (LA132_352==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 893;}
+                        else if ( (LA132_346==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 893;}
 
-                        else if ( (LA132_352==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 894;}
+                        else if ( (LA132_346==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 894;}
 
-                        else if ( (LA132_352==AS) && (synpred4_EsperEPL2Grammar())) {s = 895;}
+                        else if ( (LA132_346==AS) && (synpred4_EsperEPL2Grammar())) {s = 895;}
 
-                        else if ( (LA132_352==FROM) && (synpred4_EsperEPL2Grammar())) {s = 896;}
+                        else if ( (LA132_346==FROM) && (synpred4_EsperEPL2Grammar())) {s = 896;}
 
-                        else if ( (LA132_352==ASC) && (synpred4_EsperEPL2Grammar())) {s = 897;}
+                        else if ( (LA132_346==ASC) && (synpred4_EsperEPL2Grammar())) {s = 897;}
 
-                        else if ( (LA132_352==DESC) && (synpred4_EsperEPL2Grammar())) {s = 898;}
+                        else if ( (LA132_346==DESC) && (synpred4_EsperEPL2Grammar())) {s = 898;}
 
-                        else if ( (LA132_352==THEN) && (synpred4_EsperEPL2Grammar())) {s = 899;}
+                        else if ( (LA132_346==THEN) && (synpred4_EsperEPL2Grammar())) {s = 899;}
 
-                        else if ( (LA132_352==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 900;}
+                        else if ( (LA132_346==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 900;}
 
-                        else if ( (LA132_352==END) && (synpred4_EsperEPL2Grammar())) {s = 901;}
+                        else if ( (LA132_346==END) && (synpred4_EsperEPL2Grammar())) {s = 901;}
 
-                        else if ( (LA132_352==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 902;}
+                        else if ( (LA132_346==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 902;}
 
-                        else if ( (LA132_352==COLON) && (synpred4_EsperEPL2Grammar())) {s = 903;}
+                        else if ( (LA132_346==COLON) && (synpred4_EsperEPL2Grammar())) {s = 903;}
 
-                        else if ( (LA132_352==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 904;}
+                        else if ( (LA132_346==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 904;}
 
-                        else if ( (LA132_352==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 905;}
+                        else if ( (LA132_346==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 905;}
 
-                        else if ( (LA132_352==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 906;}
+                        else if ( (LA132_346==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 906;}
 
-                        else if ( (LA132_352==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 907;}
+                        else if ( (LA132_346==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 907;}
 
-                        else if ( (LA132_352==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 908;}
+                        else if ( (LA132_346==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 908;}
 
-                        else if ( (LA132_352==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 909;}
+                        else if ( (LA132_346==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 909;}
 
-                        else if ( (LA132_352==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 910;}
+                        else if ( (LA132_346==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 910;}
 
-                        else if ( (LA132_352==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 911;}
+                        else if ( (LA132_346==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 911;}
 
-                        else if ( (LA132_352==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 912;}
+                        else if ( (LA132_346==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 912;}
 
-                        else if ( (LA132_352==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 913;}
+                        else if ( (LA132_346==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 913;}
 
-                        else if ( (LA132_352==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 914;}
+                        else if ( (LA132_346==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 914;}
 
-                        else if ( (LA132_352==DOT) && (synpred4_EsperEPL2Grammar())) {s = 915;}
+                        else if ( (LA132_346==DOT) && (synpred4_EsperEPL2Grammar())) {s = 915;}
 
                          
-                        input.seek(index132_352);
+                        input.seek(index132_346);
                         if ( s>=0 ) return s;
                         break;
                     case 14 : 
-                        int LA132_353 = input.LA(1);
+                        int LA132_347 = input.LA(1);
 
                          
-                        int index132_353 = input.index();
+                        int index132_347 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA132_353==LPAREN) ) {s = 916;}
+                        if ( (LA132_347==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 916;}
 
-                        else if ( (LA132_353==ESCAPECHAR) && (synpred4_EsperEPL2Grammar())) {s = 917;}
+                        else if ( (LA132_347==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 917;}
 
-                        else if ( (LA132_353==LBRACK) && (synpred4_EsperEPL2Grammar())) {s = 918;}
+                        else if ( (LA132_347==LPAREN) ) {s = 918;}
 
-                        else if ( (LA132_353==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 919;}
+                        else if ( (LA132_347==QUESTION) && (synpred4_EsperEPL2Grammar())) {s = 919;}
 
-                        else if ( (LA132_353==STAR) && (synpred4_EsperEPL2Grammar())) {s = 920;}
+                        else if ( (LA132_347==STAR) && (synpred4_EsperEPL2Grammar())) {s = 920;}
 
-                        else if ( (LA132_353==DIV) && (synpred4_EsperEPL2Grammar())) {s = 921;}
+                        else if ( (LA132_347==DIV) && (synpred4_EsperEPL2Grammar())) {s = 921;}
 
-                        else if ( (LA132_353==MOD) && (synpred4_EsperEPL2Grammar())) {s = 922;}
+                        else if ( (LA132_347==MOD) && (synpred4_EsperEPL2Grammar())) {s = 922;}
 
-                        else if ( (LA132_353==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 923;}
+                        else if ( (LA132_347==PLUS) && (synpred4_EsperEPL2Grammar())) {s = 923;}
 
-                        else if ( (LA132_353==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 924;}
+                        else if ( (LA132_347==MINUS) && (synpred4_EsperEPL2Grammar())) {s = 924;}
 
-                        else if ( (LA132_353==LOR) && (synpred4_EsperEPL2Grammar())) {s = 925;}
+                        else if ( (LA132_347==LOR) && (synpred4_EsperEPL2Grammar())) {s = 925;}
 
-                        else if ( (LA132_353==LT) && (synpred4_EsperEPL2Grammar())) {s = 926;}
+                        else if ( (LA132_347==LT) && (synpred4_EsperEPL2Grammar())) {s = 926;}
 
-                        else if ( (LA132_353==GT) && (synpred4_EsperEPL2Grammar())) {s = 927;}
+                        else if ( (LA132_347==GT) && (synpred4_EsperEPL2Grammar())) {s = 927;}
 
-                        else if ( (LA132_353==LE) && (synpred4_EsperEPL2Grammar())) {s = 928;}
+                        else if ( (LA132_347==LE) && (synpred4_EsperEPL2Grammar())) {s = 928;}
 
-                        else if ( (LA132_353==GE) && (synpred4_EsperEPL2Grammar())) {s = 929;}
+                        else if ( (LA132_347==GE) && (synpred4_EsperEPL2Grammar())) {s = 929;}
 
-                        else if ( (LA132_353==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 930;}
+                        else if ( (LA132_347==EQUALS) && (synpred4_EsperEPL2Grammar())) {s = 930;}
 
-                        else if ( (LA132_353==IS) && (synpred4_EsperEPL2Grammar())) {s = 931;}
+                        else if ( (LA132_347==IS) && (synpred4_EsperEPL2Grammar())) {s = 931;}
 
-                        else if ( (LA132_353==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 932;}
+                        else if ( (LA132_347==SQL_NE) && (synpred4_EsperEPL2Grammar())) {s = 932;}
 
-                        else if ( (LA132_353==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 933;}
+                        else if ( (LA132_347==NOT_EQUAL) && (synpred4_EsperEPL2Grammar())) {s = 933;}
 
-                        else if ( (LA132_353==BAND) && (synpred4_EsperEPL2Grammar())) {s = 934;}
+                        else if ( (LA132_347==BAND) && (synpred4_EsperEPL2Grammar())) {s = 934;}
 
-                        else if ( (LA132_353==BOR) && (synpred4_EsperEPL2Grammar())) {s = 935;}
+                        else if ( (LA132_347==BOR) && (synpred4_EsperEPL2Grammar())) {s = 935;}
 
-                        else if ( (LA132_353==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 936;}
+                        else if ( (LA132_347==BXOR) && (synpred4_EsperEPL2Grammar())) {s = 936;}
 
-                        else if ( (LA132_353==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 937;}
+                        else if ( (LA132_347==AND_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 937;}
 
-                        else if ( (LA132_353==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 938;}
+                        else if ( (LA132_347==OR_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 938;}
 
-                        else if ( (LA132_353==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 939;}
+                        else if ( (LA132_347==GROUP) && (synpred4_EsperEPL2Grammar())) {s = 939;}
 
-                        else if ( (LA132_353==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 940;}
+                        else if ( (LA132_347==HAVING) && (synpred4_EsperEPL2Grammar())) {s = 940;}
 
-                        else if ( (LA132_353==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 941;}
+                        else if ( (LA132_347==OUTPUT) && (synpred4_EsperEPL2Grammar())) {s = 941;}
 
-                        else if ( (LA132_353==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 942;}
+                        else if ( (LA132_347==ORDER) && (synpred4_EsperEPL2Grammar())) {s = 942;}
 
-                        else if ( (LA132_353==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 943;}
+                        else if ( (LA132_347==ROW_LIMIT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 943;}
 
-                        else if ( (LA132_353==EOF) && (synpred4_EsperEPL2Grammar())) {s = 944;}
+                        else if ( (LA132_347==EOF) && (synpred4_EsperEPL2Grammar())) {s = 944;}
 
-                        else if ( (LA132_353==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 945;}
+                        else if ( (LA132_347==RPAREN) && (synpred4_EsperEPL2Grammar())) {s = 945;}
 
-                        else if ( (LA132_353==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 946;}
+                        else if ( (LA132_347==COMMA) && (synpred4_EsperEPL2Grammar())) {s = 946;}
 
-                        else if ( (LA132_353==AS) && (synpred4_EsperEPL2Grammar())) {s = 947;}
+                        else if ( (LA132_347==AS) && (synpred4_EsperEPL2Grammar())) {s = 947;}
 
-                        else if ( (LA132_353==FROM) && (synpred4_EsperEPL2Grammar())) {s = 948;}
+                        else if ( (LA132_347==FROM) && (synpred4_EsperEPL2Grammar())) {s = 948;}
 
-                        else if ( (LA132_353==ASC) && (synpred4_EsperEPL2Grammar())) {s = 949;}
+                        else if ( (LA132_347==ASC) && (synpred4_EsperEPL2Grammar())) {s = 949;}
 
-                        else if ( (LA132_353==DESC) && (synpred4_EsperEPL2Grammar())) {s = 950;}
+                        else if ( (LA132_347==DESC) && (synpred4_EsperEPL2Grammar())) {s = 950;}
 
-                        else if ( (LA132_353==THEN) && (synpred4_EsperEPL2Grammar())) {s = 951;}
+                        else if ( (LA132_347==THEN) && (synpred4_EsperEPL2Grammar())) {s = 951;}
 
-                        else if ( (LA132_353==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 952;}
+                        else if ( (LA132_347==ELSE) && (synpred4_EsperEPL2Grammar())) {s = 952;}
 
-                        else if ( (LA132_353==END) && (synpred4_EsperEPL2Grammar())) {s = 953;}
+                        else if ( (LA132_347==END) && (synpred4_EsperEPL2Grammar())) {s = 953;}
 
-                        else if ( (LA132_353==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 954;}
+                        else if ( (LA132_347==WHEN) && (synpred4_EsperEPL2Grammar())) {s = 954;}
 
-                        else if ( (LA132_353==COLON) && (synpred4_EsperEPL2Grammar())) {s = 955;}
+                        else if ( (LA132_347==COLON) && (synpred4_EsperEPL2Grammar())) {s = 955;}
 
-                        else if ( (LA132_353==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 956;}
+                        else if ( (LA132_347==RBRACK) && (synpred4_EsperEPL2Grammar())) {s = 956;}
 
-                        else if ( (LA132_353==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 957;}
+                        else if ( (LA132_347==RCURLY) && (synpred4_EsperEPL2Grammar())) {s = 957;}
 
-                        else if ( (LA132_353==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 958;}
+                        else if ( (LA132_347==TIMEPERIOD_SECONDS) && (synpred4_EsperEPL2Grammar())) {s = 958;}
 
-                        else if ( (LA132_353==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 959;}
+                        else if ( (LA132_347==TIMEPERIOD_SECOND) && (synpred4_EsperEPL2Grammar())) {s = 959;}
 
-                        else if ( (LA132_353==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 960;}
+                        else if ( (LA132_347==TIMEPERIOD_SEC) && (synpred4_EsperEPL2Grammar())) {s = 960;}
 
-                        else if ( (LA132_353==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 961;}
+                        else if ( (LA132_347==NOT_EXPR) && (synpred4_EsperEPL2Grammar())) {s = 961;}
 
-                        else if ( (LA132_353==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 962;}
+                        else if ( (LA132_347==IN_SET) && (synpred4_EsperEPL2Grammar())) {s = 962;}
 
-                        else if ( (LA132_353==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 963;}
+                        else if ( (LA132_347==BETWEEN) && (synpred4_EsperEPL2Grammar())) {s = 963;}
 
-                        else if ( (LA132_353==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 964;}
+                        else if ( (LA132_347==LIKE) && (synpred4_EsperEPL2Grammar())) {s = 964;}
 
-                        else if ( (LA132_353==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 965;}
+                        else if ( (LA132_347==REGEXP) && (synpred4_EsperEPL2Grammar())) {s = 965;}
 
-                        else if ( (LA132_353==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 966;}
+                        else if ( (LA132_347==ESCAPE) && (synpred4_EsperEPL2Grammar())) {s = 966;}
 
-                        else if ( (LA132_353==DOT) && (synpred4_EsperEPL2Grammar())) {s = 967;}
+                        else if ( (LA132_347==DOT) && (synpred4_EsperEPL2Grammar())) {s = 967;}
 
                          
-                        input.seek(index132_353);
+                        input.seek(index132_347);
                         if ( s>=0 ) return s;
                         break;
                     case 15 : 
@@ -31718,10 +31811,10 @@ public class EsperEPL2GrammarParser extends Parser {
                         if ( s>=0 ) return s;
                         break;
                     case 17 : 
-                        int LA132_552 = input.LA(1);
+                        int LA132_603 = input.LA(1);
 
                          
-                        int index132_552 = input.index();
+                        int index132_603 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred4_EsperEPL2Grammar()) ) {s = 967;}
@@ -31729,7 +31822,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (true) ) {s = 285;}
 
                          
-                        input.seek(index132_552);
+                        input.seek(index132_603);
                         if ( s>=0 ) return s;
                         break;
                     case 18 : 
@@ -31748,10 +31841,10 @@ public class EsperEPL2GrammarParser extends Parser {
                         if ( s>=0 ) return s;
                         break;
                     case 19 : 
-                        int LA132_656 = input.LA(1);
+                        int LA132_658 = input.LA(1);
 
                          
-                        int index132_656 = input.index();
+                        int index132_658 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred4_EsperEPL2Grammar()) ) {s = 967;}
@@ -31759,7 +31852,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (true) ) {s = 285;}
 
                          
-                        input.seek(index132_656);
+                        input.seek(index132_658);
                         if ( s>=0 ) return s;
                         break;
                     case 20 : 
@@ -31823,10 +31916,10 @@ public class EsperEPL2GrammarParser extends Parser {
                         if ( s>=0 ) return s;
                         break;
                     case 24 : 
-                        int LA132_812 = input.LA(1);
+                        int LA132_863 = input.LA(1);
 
                          
-                        int index132_812 = input.index();
+                        int index132_863 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred4_EsperEPL2Grammar()) ) {s = 967;}
@@ -31834,7 +31927,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (true) ) {s = 285;}
 
                          
-                        input.seek(index132_812);
+                        input.seek(index132_863);
                         if ( s>=0 ) return s;
                         break;
                     case 25 : 
@@ -31853,10 +31946,10 @@ public class EsperEPL2GrammarParser extends Parser {
                         if ( s>=0 ) return s;
                         break;
                     case 26 : 
-                        int LA132_916 = input.LA(1);
+                        int LA132_918 = input.LA(1);
 
                          
-                        int index132_916 = input.index();
+                        int index132_918 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred4_EsperEPL2Grammar()) ) {s = 967;}
@@ -31864,7 +31957,7 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (true) ) {s = 285;}
 
                          
-                        input.seek(index132_916);
+                        input.seek(index132_918);
                         if ( s>=0 ) return s;
                         break;
                     case 27 : 
@@ -31935,19 +32028,19 @@ public class EsperEPL2GrammarParser extends Parser {
             throw nvae;
         }
     }
-    static final String DFA165_eotS =
+    static final String DFA167_eotS =
         "\u0081\uffff";
-    static final String DFA165_eofS =
+    static final String DFA167_eofS =
         "\u0081\uffff";
-    static final String DFA165_minS =
+    static final String DFA167_minS =
         "\1\5\1\uffff\1\6\67\uffff\1\5\106\uffff";
-    static final String DFA165_maxS =
+    static final String DFA167_maxS =
         "\1\u00fd\1\uffff\1\u00fa\67\uffff\1\u00fb\106\uffff";
-    static final String DFA165_acceptS =
+    static final String DFA167_acceptS =
         "\1\uffff\1\1\1\uffff\1\3\126\uffff\1\2\46\uffff";
-    static final String DFA165_specialS =
+    static final String DFA167_specialS =
         "\72\uffff\1\0\106\uffff}>";
-    static final String[] DFA165_transitionS = {
+    static final String[] DFA167_transitionS = {
             "\1\3\4\uffff\1\3\2\uffff\2\3\2\uffff\11\3\1\uffff\1\3\6\uffff"+
             "\1\3\1\uffff\4\3\12\uffff\3\3\10\uffff\16\3\1\uffff\1\3\1\uffff"+
             "\3\3\14\uffff\3\3\171\uffff\1\3\1\uffff\1\2\3\uffff\1\3\1\uffff"+
@@ -32086,88 +32179,88 @@ public class EsperEPL2GrammarParser extends Parser {
             ""
     };
 
-    static final short[] DFA165_eot = DFA.unpackEncodedString(DFA165_eotS);
-    static final short[] DFA165_eof = DFA.unpackEncodedString(DFA165_eofS);
-    static final char[] DFA165_min = DFA.unpackEncodedStringToUnsignedChars(DFA165_minS);
-    static final char[] DFA165_max = DFA.unpackEncodedStringToUnsignedChars(DFA165_maxS);
-    static final short[] DFA165_accept = DFA.unpackEncodedString(DFA165_acceptS);
-    static final short[] DFA165_special = DFA.unpackEncodedString(DFA165_specialS);
-    static final short[][] DFA165_transition;
+    static final short[] DFA167_eot = DFA.unpackEncodedString(DFA167_eotS);
+    static final short[] DFA167_eof = DFA.unpackEncodedString(DFA167_eofS);
+    static final char[] DFA167_min = DFA.unpackEncodedStringToUnsignedChars(DFA167_minS);
+    static final char[] DFA167_max = DFA.unpackEncodedStringToUnsignedChars(DFA167_maxS);
+    static final short[] DFA167_accept = DFA.unpackEncodedString(DFA167_acceptS);
+    static final short[] DFA167_special = DFA.unpackEncodedString(DFA167_specialS);
+    static final short[][] DFA167_transition;
 
     static {
-        int numStates = DFA165_transitionS.length;
-        DFA165_transition = new short[numStates][];
+        int numStates = DFA167_transitionS.length;
+        DFA167_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA165_transition[i] = DFA.unpackEncodedString(DFA165_transitionS[i]);
+            DFA167_transition[i] = DFA.unpackEncodedString(DFA167_transitionS[i]);
         }
     }
 
-    class DFA165 extends DFA {
+    class DFA167 extends DFA {
 
-        public DFA165(BaseRecognizer recognizer) {
+        public DFA167(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 165;
-            this.eot = DFA165_eot;
-            this.eof = DFA165_eof;
-            this.min = DFA165_min;
-            this.max = DFA165_max;
-            this.accept = DFA165_accept;
-            this.special = DFA165_special;
-            this.transition = DFA165_transition;
+            this.decisionNumber = 167;
+            this.eot = DFA167_eot;
+            this.eof = DFA167_eof;
+            this.min = DFA167_min;
+            this.max = DFA167_max;
+            this.accept = DFA167_accept;
+            this.special = DFA167_special;
+            this.transition = DFA167_transition;
         }
         public String getDescription() {
-            return "1128:1: propertySelectionListElement : (s= STAR -> PROPERTY_WILDCARD_SELECT[$s] | ( propertyStreamSelector )=> propertyStreamSelector | expression ( AS i= keywordAllowedIdent )? -> {identifier != null}? ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] ) -> ^( PROPERTY_SELECTION_ELEMENT_EXPR expression ) );";
+            return "1130:1: propertySelectionListElement : (s= STAR -> PROPERTY_WILDCARD_SELECT[$s] | ( propertyStreamSelector )=> propertyStreamSelector | expression ( AS i= keywordAllowedIdent )? -> {identifier != null}? ^( PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier] ) -> ^( PROPERTY_SELECTION_ELEMENT_EXPR expression ) );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA165_58 = input.LA(1);
+                        int LA167_58 = input.LA(1);
 
                          
-                        int index165_58 = input.index();
+                        int index167_58 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA165_58==STAR) && (synpred5_EsperEPL2Grammar())) {s = 90;}
+                        if ( (LA167_58==STAR) && (synpred5_EsperEPL2Grammar())) {s = 90;}
 
-                        else if ( (LA165_58==WINDOW||LA165_58==ESCAPE||LA165_58==EVERY_EXPR||(LA165_58>=SUM && LA165_58<=COUNT)||LA165_58==OUTER||(LA165_58>=JOIN && LA165_58<=FULL)||(LA165_58>=EVENTS && LA165_58<=LAST)||(LA165_58>=UNIDIRECTIONAL && LA165_58<=PRIOR)||(LA165_58>=WEEKDAY && LA165_58<=CAST)||LA165_58==SNAPSHOT||(LA165_58>=VARIABLE && LA165_58<=AT)||LA165_58==IDENT||LA165_58==TICKED_STRING_LITERAL) ) {s = 3;}
+                        else if ( (LA167_58==WINDOW||LA167_58==ESCAPE||LA167_58==EVERY_EXPR||(LA167_58>=SUM && LA167_58<=COUNT)||LA167_58==OUTER||(LA167_58>=JOIN && LA167_58<=FULL)||(LA167_58>=EVENTS && LA167_58<=LAST)||(LA167_58>=UNIDIRECTIONAL && LA167_58<=PRIOR)||(LA167_58>=WEEKDAY && LA167_58<=CAST)||LA167_58==SNAPSHOT||(LA167_58>=VARIABLE && LA167_58<=AT)||LA167_58==IDENT||LA167_58==TICKED_STRING_LITERAL) ) {s = 3;}
 
                          
-                        input.seek(index165_58);
+                        input.seek(index167_58);
                         if ( s>=0 ) return s;
                         break;
             }
             if (state.backtracking>0) {state.failed=true; return -1;}
             NoViableAltException nvae =
-                new NoViableAltException(getDescription(), 165, _s, input);
+                new NoViableAltException(getDescription(), 167, _s, input);
             error(nvae);
             throw nvae;
         }
     }
-    static final String DFA175_eotS =
+    static final String DFA177_eotS =
         "\u0225\uffff";
-    static final String DFA175_eofS =
+    static final String DFA177_eofS =
         "\u0225\uffff";
-    static final String DFA175_minS =
-        "\1\5\2\0\6\6\60\uffff\1\u00dc\146\uffff\3\0\43\uffff\3\0\54\uffff"+
-        "\3\0\52\uffff\3\0\65\uffff\3\0\44\uffff\3\0\u00a1\uffff";
-    static final String DFA175_maxS =
-        "\1\u00fd\2\0\4\u00f4\1\u00fa\1\u00f4\60\uffff\1\u00f3\146\uffff"+
-        "\3\0\43\uffff\3\0\54\uffff\3\0\52\uffff\3\0\65\uffff\3\0\44\uffff"+
-        "\3\0\u00a1\uffff";
-    static final String DFA175_acceptS =
-        "\11\uffff\60\4\1\uffff\1\11\44\uffff\1\1\44\uffff\1\2\1\10\5\3"+
-        "\25\4\3\uffff\7\4\1\5\3\3\1\7\2\3\25\4\3\uffff\7\4\1\7\5\3\1\5\5"+
-        "\3\1\10\1\7\2\3\25\4\3\uffff\7\4\3\3\1\5\1\10\7\3\1\5\1\10\25\4"+
-        "\3\uffff\7\4\6\3\1\7\2\3\1\5\2\3\1\10\1\4\1\7\6\3\31\4\3\uffff\7"+
-        "\4\7\3\1\7\25\4\3\uffff\7\4\2\3\1\5\3\3\1\10\1\6\1\12\u0091\uffff";
-    static final String DFA175_specialS =
-        "\1\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\60\uffff\1\11\146\uffff\1"+
-        "\12\1\13\1\14\43\uffff\1\15\1\16\1\17\54\uffff\1\20\1\21\1\22\52"+
-        "\uffff\1\23\1\24\1\25\65\uffff\1\26\1\27\1\30\44\uffff\1\31\1\32"+
-        "\1\33\u00a1\uffff}>";
-    static final String[] DFA175_transitionS = {
+    static final String DFA177_minS =
+        "\1\5\2\0\6\6\60\uffff\1\u00dc\114\uffff\3\0\61\uffff\3\0\66\uffff"+
+        "\3\0\50\uffff\3\0\26\uffff\3\0\54\uffff\3\0\u00bc\uffff";
+    static final String DFA177_maxS =
+        "\1\u00fd\2\0\4\u00f4\1\u00fa\1\u00f4\60\uffff\1\u00f3\114\uffff"+
+        "\3\0\61\uffff\3\0\66\uffff\3\0\50\uffff\3\0\26\uffff\3\0\54\uffff"+
+        "\3\0\u00bc\uffff";
+    static final String DFA177_acceptS =
+        "\11\uffff\60\4\1\uffff\1\11\44\uffff\1\1\44\uffff\1\2\1\5\3\uffff"+
+        "\10\3\1\10\1\7\2\3\34\4\1\10\7\3\1\5\3\uffff\1\7\3\3\34\4\1\10\25"+
+        "\4\3\uffff\7\4\2\3\1\7\6\3\1\5\2\3\25\4\3\uffff\7\4\1\10\2\3\1\7"+
+        "\10\3\1\5\1\4\1\5\3\uffff\40\4\5\3\1\7\1\10\5\3\3\uffff\1\10\2\3"+
+        "\1\5\10\3\1\7\34\4\1\6\1\12\u0091\uffff";
+    static final String DFA177_specialS =
+        "\1\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\60\uffff\1\11\114\uffff\1"+
+        "\12\1\13\1\14\61\uffff\1\15\1\16\1\17\66\uffff\1\20\1\21\1\22\50"+
+        "\uffff\1\23\1\24\1\25\26\uffff\1\26\1\27\1\30\54\uffff\1\31\1\32"+
+        "\1\33\u00bc\uffff}>";
+    static final String[] DFA177_transitionS = {
             "\1\57\4\uffff\1\25\2\uffff\1\70\1\26\2\uffff\1\27\1\30\1\31"+
             "\1\32\1\33\1\34\1\35\1\36\1\24\1\uffff\1\11\6\uffff\1\62\1\uffff"+
             "\1\64\1\60\1\61\1\63\12\uffff\1\37\1\40\1\1\10\uffff\1\41\1"+
@@ -32178,54 +32271,54 @@ public class EsperEPL2GrammarParser extends Parser {
             "\3\1\uffff\1\10\1\uffff\1\22\1\4\1\5",
             "\1\uffff",
             "\1\uffff",
-            "\1\u00a6\1\u00a7\1\u00a8\1\u00a9\1\uffff\1\u009d\1\u009c\1"+
-            "\u00a5\6\uffff\1\u00ad\24\uffff\1\u0096\12\uffff\1\u00ae\3\uffff"+
-            "\1\u009e\1\u009f\14\uffff\1\u0085\12\uffff\1\u0087\1\u0086\1"+
-            "\u00b0\1\u00af\1\u00ac\1\u00ab\1\u00a2\1\u00a1\1\u00a0\1\u008a"+
-            "\1\u0089\1\u0088\177\uffff\1\u00a3\1\u0095\2\uffff\1\u00a4\1"+
-            "\u008b\2\uffff\1\u00aa\2\uffff\1\u0099\1\u009a\1\u009b\1\u0097"+
-            "\1\u0098\1\u0091\1\u0092\1\u0093\1\u0094\1\u0090\1\u008e\1\u008f"+
-            "\1\u008c\1\u008d",
-            "\1\u00cc\1\u00cd\1\u00ce\1\u00cf\1\uffff\1\u00c3\1\u00c2\1"+
-            "\u00cb\6\uffff\1\u00db\24\uffff\1\u00bc\12\uffff\1\u00d0\3\uffff"+
-            "\1\u00c4\1\u00c5\14\uffff\1\u00dc\12\uffff\1\u00d2\1\u00d1\1"+
-            "\u00d8\1\u00d7\1\u00da\1\u00d9\1\u00c8\1\u00c7\1\u00c6\1\u00d5"+
-            "\1\u00d4\1\u00d3\177\uffff\1\u00c9\1\u00bb\2\uffff\1\u00ca\1"+
-            "\u00b1\2\uffff\1\u00d6\2\uffff\1\u00bf\1\u00c0\1\u00c1\1\u00bd"+
-            "\1\u00be\1\u00b7\1\u00b8\1\u00b9\1\u00ba\1\u00b6\1\u00b4\1\u00b5"+
-            "\1\u00b2\1\u00b3",
-            "\1\u00fb\1\u00fc\1\u00fd\1\u00fe\1\uffff\1\u00f2\1\u00f1\1"+
-            "\u00fa\6\uffff\1\u0101\24\uffff\1\u00eb\12\uffff\1\u00dd\3\uffff"+
-            "\1\u00f3\1\u00f4\14\uffff\1\u0103\12\uffff\1\u0105\1\u0104\1"+
-            "\u00df\1\u00de\1\u0100\1\u00ff\1\u00f7\1\u00f6\1\u00f5\1\u0108"+
-            "\1\u0107\1\u0106\177\uffff\1\u00f8\1\u00ea\2\uffff\1\u00f9\1"+
-            "\u00e0\2\uffff\1\u0102\2\uffff\1\u00ee\1\u00ef\1\u00f0\1\u00ec"+
-            "\1\u00ed\1\u00e6\1\u00e7\1\u00e8\1\u00e9\1\u00e5\1\u00e3\1\u00e4"+
-            "\1\u00e1\1\u00e2",
-            "\1\u0128\1\u0129\1\u012a\1\u012b\1\uffff\1\u011f\1\u011e\1"+
-            "\u0127\6\uffff\1\u0131\24\uffff\1\u0118\12\uffff\1\u0132\3\uffff"+
-            "\1\u0120\1\u0121\14\uffff\1\u010c\12\uffff\1\u0134\1\u0133\1"+
-            "\u010a\1\u0109\1\u0130\1\u012f\1\u0124\1\u0123\1\u0122\1\u012e"+
-            "\1\u012d\1\u012c\177\uffff\1\u0125\1\u0117\2\uffff\1\u0126\1"+
-            "\u010d\2\uffff\1\u010b\2\uffff\1\u011b\1\u011c\1\u011d\1\u0119"+
-            "\1\u011a\1\u0113\1\u0114\1\u0115\1\u0116\1\u0112\1\u0110\1\u0111"+
-            "\1\u010e\1\u010f",
-            "\1\u0160\1\u0161\1\u0162\1\u0163\1\uffff\1\u0157\1\u0156\1"+
-            "\u015f\6\uffff\1\u013d\24\uffff\1\u0150\12\uffff\1\u013a\3\uffff"+
-            "\1\u0158\1\u0159\14\uffff\1\u0138\12\uffff\1\u0137\1\u0136\1"+
-            "\u0165\1\u0164\1\u013c\1\u013b\1\u015c\1\u015b\1\u015a\1\u0140"+
-            "\1\u013f\1\u013e\177\uffff\1\u015d\1\u014f\1\u0139\1\u0141\1"+
-            "\u015e\1\u0145\1\u0143\1\uffff\1\u0135\2\uffff\1\u0153\1\u0154"+
-            "\1\u0155\1\u0151\1\u0152\1\u014b\1\u014c\1\u014d\1\u014e\1\u014a"+
-            "\1\u0148\1\u0149\1\u0146\1\u0147\4\uffff\1\u0144\1\u0142",
-            "\1\u0187\1\u0188\1\u0189\1\u018a\1\uffff\1\u017e\1\u017d\1"+
-            "\u0186\6\uffff\1\u0190\24\uffff\1\u0177\12\uffff\1\u016b\3\uffff"+
-            "\1\u017f\1\u0180\14\uffff\1\u0191\12\uffff\1\u018c\1\u018b\1"+
-            "\u016a\1\u0169\1\u018f\1\u018e\1\u0183\1\u0182\1\u0181\1\u0168"+
-            "\1\u0167\1\u0166\177\uffff\1\u0184\1\u0176\2\uffff\1\u0185\1"+
-            "\u016c\2\uffff\1\u018d\2\uffff\1\u017a\1\u017b\1\u017c\1\u0178"+
-            "\1\u0179\1\u0172\1\u0173\1\u0174\1\u0175\1\u0171\1\u016f\1\u0170"+
-            "\1\u016d\1\u016e",
+            "\1\u00ad\1\u00ae\1\u00af\1\u00b0\1\uffff\1\u00a7\1\u00a6\1"+
+            "\u00ac\6\uffff\1\u0090\24\uffff\1\u00a0\12\uffff\1\u0092\3\uffff"+
+            "\1\u00a8\1\u00a9\14\uffff\1\u0091\12\uffff\1\u008a\1\u0089\1"+
+            "\u0094\1\u0093\1\u008f\1\u008e\1\u0088\1\u0087\1\u0086\1\u008d"+
+            "\1\u008c\1\u008b\177\uffff\1\u00aa\1\u009f\2\uffff\1\u00ab\1"+
+            "\u0095\2\uffff\1\u0085\2\uffff\1\u00a3\1\u00a4\1\u00a5\1\u00a1"+
+            "\1\u00a2\1\u009b\1\u009c\1\u009d\1\u009e\1\u009a\1\u0098\1\u0099"+
+            "\1\u0096\1\u0097",
+            "\1\u00d9\1\u00da\1\u00db\1\u00dc\1\uffff\1\u00d3\1\u00d2\1"+
+            "\u00d8\6\uffff\1\u00c0\24\uffff\1\u00cc\12\uffff\1\u00bd\3\uffff"+
+            "\1\u00d4\1\u00d5\14\uffff\1\u00b1\12\uffff\1\u00b3\1\u00b2\1"+
+            "\u00b8\1\u00b7\1\u00bf\1\u00be\1\u00bc\1\u00bb\1\u00ba\1\u00b6"+
+            "\1\u00b5\1\u00b4\177\uffff\1\u00d6\1\u00cb\2\uffff\1\u00d7\1"+
+            "\u00c1\2\uffff\1\u00b9\2\uffff\1\u00cf\1\u00d0\1\u00d1\1\u00cd"+
+            "\1\u00ce\1\u00c7\1\u00c8\1\u00c9\1\u00ca\1\u00c6\1\u00c4\1\u00c5"+
+            "\1\u00c2\1\u00c3",
+            "\1\u00f9\1\u00fa\1\u00fb\1\u00fc\1\uffff\1\u00f0\1\u00ef\1"+
+            "\u00f8\6\uffff\1\u0105\24\uffff\1\u00e9\12\uffff\1\u00ff\3\uffff"+
+            "\1\u00f1\1\u00f2\14\uffff\1\u00dd\12\uffff\1\u0108\1\u0107\1"+
+            "\u00fe\1\u00fd\1\u0104\1\u0103\1\u00f5\1\u00f4\1\u00f3\1\u0102"+
+            "\1\u0101\1\u0100\177\uffff\1\u00f6\1\u00e8\2\uffff\1\u00f7\1"+
+            "\u00de\2\uffff\1\u0106\2\uffff\1\u00ec\1\u00ed\1\u00ee\1\u00ea"+
+            "\1\u00eb\1\u00e4\1\u00e5\1\u00e6\1\u00e7\1\u00e3\1\u00e1\1\u00e2"+
+            "\1\u00df\1\u00e0",
+            "\1\u0124\1\u0125\1\u0126\1\u0127\1\uffff\1\u011b\1\u011a\1"+
+            "\u0123\6\uffff\1\u0133\24\uffff\1\u0114\12\uffff\1\u012b\3\uffff"+
+            "\1\u011c\1\u011d\14\uffff\1\u0128\12\uffff\1\u0130\1\u012f\1"+
+            "\u012a\1\u0129\1\u0132\1\u0131\1\u0120\1\u011f\1\u011e\1\u012e"+
+            "\1\u012d\1\u012c\177\uffff\1\u0121\1\u0113\2\uffff\1\u0122\1"+
+            "\u0109\2\uffff\1\u0134\2\uffff\1\u0117\1\u0118\1\u0119\1\u0115"+
+            "\1\u0116\1\u010f\1\u0110\1\u0111\1\u0112\1\u010e\1\u010c\1\u010d"+
+            "\1\u010a\1\u010b",
+            "\1\u0156\1\u0157\1\u0158\1\u0159\1\uffff\1\u0150\1\u014f\1"+
+            "\u0155\6\uffff\1\u0163\24\uffff\1\u0149\12\uffff\1\u015f\3\uffff"+
+            "\1\u0151\1\u0152\14\uffff\1\u0160\12\uffff\1\u0165\1\u0164\1"+
+            "\u015e\1\u015d\1\u0162\1\u0161\1\u0139\1\u0138\1\u0137\1\u015c"+
+            "\1\u015b\1\u015a\177\uffff\1\u0153\1\u0148\1\u0135\1\u013c\1"+
+            "\u0154\1\u013e\1\u013b\1\uffff\1\u0136\2\uffff\1\u014c\1\u014d"+
+            "\1\u014e\1\u014a\1\u014b\1\u0144\1\u0145\1\u0146\1\u0147\1\u0143"+
+            "\1\u0141\1\u0142\1\u013f\1\u0140\4\uffff\1\u013d\1\u013a",
+            "\1\u018e\1\u018f\1\u0190\1\u0191\1\uffff\1\u0188\1\u0187\1"+
+            "\u018d\6\uffff\1\u0171\24\uffff\1\u0181\12\uffff\1\u0175\3\uffff"+
+            "\1\u0189\1\u018a\14\uffff\1\u0169\12\uffff\1\u016b\1\u016a\1"+
+            "\u016e\1\u016d\1\u0170\1\u016f\1\u0168\1\u0167\1\u0166\1\u0174"+
+            "\1\u0173\1\u0172\177\uffff\1\u018b\1\u0180\2\uffff\1\u018c\1"+
+            "\u0176\2\uffff\1\u016c\2\uffff\1\u0184\1\u0185\1\u0186\1\u0182"+
+            "\1\u0183\1\u017c\1\u017d\1\u017e\1\u017f\1\u017b\1\u0179\1\u017a"+
+            "\1\u0177\1\u0178",
             "",
             "",
             "",
@@ -32351,32 +32444,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\uffff",
             "\1\uffff",
             "\1\uffff",
@@ -32387,84 +32454,6 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
-            "\1\uffff",
-            "\1\uffff",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\uffff",
-            "\1\uffff",
-            "\1\uffff",
             "",
             "",
             "",
@@ -32563,6 +32552,75 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "",
+            "\1\uffff",
+            "\1\uffff",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\uffff",
+            "\1\uffff",
+            "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "\1\uffff",
             "\1\uffff",
             "\1\uffff",
@@ -32602,9 +32660,44 @@ public class EsperEPL2GrammarParser extends Parser {
             "",
             "",
             "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "\1\uffff",
             "\1\uffff",
             "\1\uffff",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "",
             "",
             "",
@@ -32768,174 +32861,174 @@ public class EsperEPL2GrammarParser extends Parser {
             ""
     };
 
-    static final short[] DFA175_eot = DFA.unpackEncodedString(DFA175_eotS);
-    static final short[] DFA175_eof = DFA.unpackEncodedString(DFA175_eofS);
-    static final char[] DFA175_min = DFA.unpackEncodedStringToUnsignedChars(DFA175_minS);
-    static final char[] DFA175_max = DFA.unpackEncodedStringToUnsignedChars(DFA175_maxS);
-    static final short[] DFA175_accept = DFA.unpackEncodedString(DFA175_acceptS);
-    static final short[] DFA175_special = DFA.unpackEncodedString(DFA175_specialS);
-    static final short[][] DFA175_transition;
+    static final short[] DFA177_eot = DFA.unpackEncodedString(DFA177_eotS);
+    static final short[] DFA177_eof = DFA.unpackEncodedString(DFA177_eofS);
+    static final char[] DFA177_min = DFA.unpackEncodedStringToUnsignedChars(DFA177_minS);
+    static final char[] DFA177_max = DFA.unpackEncodedStringToUnsignedChars(DFA177_maxS);
+    static final short[] DFA177_accept = DFA.unpackEncodedString(DFA177_acceptS);
+    static final short[] DFA177_special = DFA.unpackEncodedString(DFA177_specialS);
+    static final short[][] DFA177_transition;
 
     static {
-        int numStates = DFA175_transitionS.length;
-        DFA175_transition = new short[numStates][];
+        int numStates = DFA177_transitionS.length;
+        DFA177_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA175_transition[i] = DFA.unpackEncodedString(DFA175_transitionS[i]);
+            DFA177_transition[i] = DFA.unpackEncodedString(DFA177_transitionS[i]);
         }
     }
 
-    class DFA175 extends DFA {
+    class DFA177 extends DFA {
 
-        public DFA175(BaseRecognizer recognizer) {
+        public DFA177(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 175;
-            this.eot = DFA175_eot;
-            this.eof = DFA175_eof;
-            this.min = DFA175_min;
-            this.max = DFA175_max;
-            this.accept = DFA175_accept;
-            this.special = DFA175_special;
-            this.transition = DFA175_transition;
+            this.decisionNumber = 177;
+            this.eot = DFA177_eot;
+            this.eof = DFA177_eof;
+            this.min = DFA177_min;
+            this.max = DFA177_max;
+            this.accept = DFA177_accept;
+            this.special = DFA177_special;
+            this.transition = DFA177_transition;
         }
         public String getDescription() {
-            return "1179:1: expressionWithTime : ( ( lastOperand )=> lastOperand | ( lastWeekdayOperand )=> lastWeekdayOperand | ( timePeriod )=> timePeriod | ( expressionQualifyable )=> expressionQualifyable | ( rangeOperand )=> rangeOperand | ( frequencyOperand )=> frequencyOperand | ( lastOperator )=> lastOperator | ( weekDayOperator )=> weekDayOperator | ( numericParameterList )=> numericParameterList | numberSetStar );";
+            return "1181:1: expressionWithTime : ( ( lastOperand )=> lastOperand | ( lastWeekdayOperand )=> lastWeekdayOperand | ( timePeriod )=> timePeriod | ( expressionQualifyable )=> expressionQualifyable | ( rangeOperand )=> rangeOperand | ( frequencyOperand )=> frequencyOperand | ( lastOperator )=> lastOperator | ( weekDayOperator )=> weekDayOperator | ( numericParameterList )=> numericParameterList | numberSetStar );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA175_0 = input.LA(1);
+                        int LA177_0 = input.LA(1);
 
                          
-                        int index175_0 = input.index();
+                        int index177_0 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA175_0==LAST) ) {s = 1;}
+                        if ( (LA177_0==LAST) ) {s = 1;}
 
-                        else if ( (LA175_0==LW) ) {s = 2;}
+                        else if ( (LA177_0==LW) ) {s = 2;}
 
-                        else if ( (LA175_0==NUM_INT) ) {s = 3;}
+                        else if ( (LA177_0==NUM_INT) ) {s = 3;}
 
-                        else if ( (LA175_0==NUM_LONG) ) {s = 4;}
+                        else if ( (LA177_0==NUM_LONG) ) {s = 4;}
 
-                        else if ( (LA175_0==NUM_FLOAT) ) {s = 5;}
+                        else if ( (LA177_0==NUM_FLOAT) ) {s = 5;}
 
-                        else if ( (LA175_0==NUM_DOUBLE) ) {s = 6;}
+                        else if ( (LA177_0==NUM_DOUBLE) ) {s = 6;}
 
-                        else if ( (LA175_0==IDENT) ) {s = 7;}
+                        else if ( (LA177_0==IDENT) ) {s = 7;}
 
-                        else if ( (LA175_0==QUESTION) ) {s = 8;}
+                        else if ( (LA177_0==QUESTION) ) {s = 8;}
 
-                        else if ( (LA175_0==CASE) && (synpred9_EsperEPL2Grammar())) {s = 9;}
+                        else if ( (LA177_0==CASE) && (synpred9_EsperEPL2Grammar())) {s = 9;}
 
-                        else if ( (LA175_0==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 10;}
+                        else if ( (LA177_0==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 10;}
 
-                        else if ( (LA175_0==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 11;}
+                        else if ( (LA177_0==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 11;}
 
-                        else if ( (LA175_0==STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {s = 12;}
+                        else if ( (LA177_0==STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {s = 12;}
 
-                        else if ( (LA175_0==QUOTED_STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {s = 13;}
+                        else if ( (LA177_0==QUOTED_STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {s = 13;}
 
-                        else if ( (LA175_0==BOOLEAN_TRUE) && (synpred9_EsperEPL2Grammar())) {s = 14;}
+                        else if ( (LA177_0==BOOLEAN_TRUE) && (synpred9_EsperEPL2Grammar())) {s = 14;}
 
-                        else if ( (LA175_0==BOOLEAN_FALSE) && (synpred9_EsperEPL2Grammar())) {s = 15;}
+                        else if ( (LA177_0==BOOLEAN_FALSE) && (synpred9_EsperEPL2Grammar())) {s = 15;}
 
-                        else if ( (LA175_0==VALUE_NULL) && (synpred9_EsperEPL2Grammar())) {s = 16;}
+                        else if ( (LA177_0==VALUE_NULL) && (synpred9_EsperEPL2Grammar())) {s = 16;}
 
-                        else if ( (LA175_0==LPAREN) && (synpred9_EsperEPL2Grammar())) {s = 17;}
+                        else if ( (LA177_0==LPAREN) && (synpred9_EsperEPL2Grammar())) {s = 17;}
 
-                        else if ( (LA175_0==TICKED_STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {s = 18;}
+                        else if ( (LA177_0==TICKED_STRING_LITERAL) && (synpred9_EsperEPL2Grammar())) {s = 18;}
 
-                        else if ( (LA175_0==AT) && (synpred9_EsperEPL2Grammar())) {s = 19;}
+                        else if ( (LA177_0==AT) && (synpred9_EsperEPL2Grammar())) {s = 19;}
 
-                        else if ( (LA175_0==COUNT) && (synpred9_EsperEPL2Grammar())) {s = 20;}
+                        else if ( (LA177_0==COUNT) && (synpred9_EsperEPL2Grammar())) {s = 20;}
 
-                        else if ( (LA175_0==ESCAPE) && (synpred9_EsperEPL2Grammar())) {s = 21;}
+                        else if ( (LA177_0==ESCAPE) && (synpred9_EsperEPL2Grammar())) {s = 21;}
 
-                        else if ( (LA175_0==EVERY_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 22;}
+                        else if ( (LA177_0==EVERY_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 22;}
 
-                        else if ( (LA175_0==SUM) && (synpred9_EsperEPL2Grammar())) {s = 23;}
+                        else if ( (LA177_0==SUM) && (synpred9_EsperEPL2Grammar())) {s = 23;}
 
-                        else if ( (LA175_0==AVG) && (synpred9_EsperEPL2Grammar())) {s = 24;}
+                        else if ( (LA177_0==AVG) && (synpred9_EsperEPL2Grammar())) {s = 24;}
 
-                        else if ( (LA175_0==MAX) && (synpred9_EsperEPL2Grammar())) {s = 25;}
+                        else if ( (LA177_0==MAX) && (synpred9_EsperEPL2Grammar())) {s = 25;}
 
-                        else if ( (LA175_0==MIN) && (synpred9_EsperEPL2Grammar())) {s = 26;}
+                        else if ( (LA177_0==MIN) && (synpred9_EsperEPL2Grammar())) {s = 26;}
 
-                        else if ( (LA175_0==COALESCE) && (synpred9_EsperEPL2Grammar())) {s = 27;}
+                        else if ( (LA177_0==COALESCE) && (synpred9_EsperEPL2Grammar())) {s = 27;}
 
-                        else if ( (LA175_0==MEDIAN) && (synpred9_EsperEPL2Grammar())) {s = 28;}
+                        else if ( (LA177_0==MEDIAN) && (synpred9_EsperEPL2Grammar())) {s = 28;}
 
-                        else if ( (LA175_0==STDDEV) && (synpred9_EsperEPL2Grammar())) {s = 29;}
+                        else if ( (LA177_0==STDDEV) && (synpred9_EsperEPL2Grammar())) {s = 29;}
 
-                        else if ( (LA175_0==AVEDEV) && (synpred9_EsperEPL2Grammar())) {s = 30;}
+                        else if ( (LA177_0==AVEDEV) && (synpred9_EsperEPL2Grammar())) {s = 30;}
 
-                        else if ( (LA175_0==EVENTS) && (synpred9_EsperEPL2Grammar())) {s = 31;}
+                        else if ( (LA177_0==EVENTS) && (synpred9_EsperEPL2Grammar())) {s = 31;}
 
-                        else if ( (LA175_0==FIRST) && (synpred9_EsperEPL2Grammar())) {s = 32;}
+                        else if ( (LA177_0==FIRST) && (synpred9_EsperEPL2Grammar())) {s = 32;}
 
-                        else if ( (LA175_0==UNIDIRECTIONAL) && (synpred9_EsperEPL2Grammar())) {s = 33;}
+                        else if ( (LA177_0==UNIDIRECTIONAL) && (synpred9_EsperEPL2Grammar())) {s = 33;}
 
-                        else if ( (LA175_0==RETAINUNION) && (synpred9_EsperEPL2Grammar())) {s = 34;}
+                        else if ( (LA177_0==RETAINUNION) && (synpred9_EsperEPL2Grammar())) {s = 34;}
 
-                        else if ( (LA175_0==RETAININTERSECTION) && (synpred9_EsperEPL2Grammar())) {s = 35;}
+                        else if ( (LA177_0==RETAININTERSECTION) && (synpred9_EsperEPL2Grammar())) {s = 35;}
 
-                        else if ( (LA175_0==UNTIL) && (synpred9_EsperEPL2Grammar())) {s = 36;}
+                        else if ( (LA177_0==UNTIL) && (synpred9_EsperEPL2Grammar())) {s = 36;}
 
-                        else if ( (LA175_0==PATTERN) && (synpred9_EsperEPL2Grammar())) {s = 37;}
+                        else if ( (LA177_0==PATTERN) && (synpred9_EsperEPL2Grammar())) {s = 37;}
 
-                        else if ( (LA175_0==SQL) && (synpred9_EsperEPL2Grammar())) {s = 38;}
+                        else if ( (LA177_0==SQL) && (synpred9_EsperEPL2Grammar())) {s = 38;}
 
-                        else if ( (LA175_0==METADATASQL) && (synpred9_EsperEPL2Grammar())) {s = 39;}
+                        else if ( (LA177_0==METADATASQL) && (synpred9_EsperEPL2Grammar())) {s = 39;}
 
-                        else if ( (LA175_0==PREVIOUS) && (synpred9_EsperEPL2Grammar())) {s = 40;}
+                        else if ( (LA177_0==PREVIOUS) && (synpred9_EsperEPL2Grammar())) {s = 40;}
 
-                        else if ( (LA175_0==PRIOR) && (synpred9_EsperEPL2Grammar())) {s = 41;}
+                        else if ( (LA177_0==PRIOR) && (synpred9_EsperEPL2Grammar())) {s = 41;}
 
-                        else if ( (LA175_0==WEEKDAY) && (synpred9_EsperEPL2Grammar())) {s = 42;}
+                        else if ( (LA177_0==WEEKDAY) && (synpred9_EsperEPL2Grammar())) {s = 42;}
 
-                        else if ( (LA175_0==INSTANCEOF) && (synpred9_EsperEPL2Grammar())) {s = 43;}
+                        else if ( (LA177_0==INSTANCEOF) && (synpred9_EsperEPL2Grammar())) {s = 43;}
 
-                        else if ( (LA175_0==CAST) && (synpred9_EsperEPL2Grammar())) {s = 44;}
+                        else if ( (LA177_0==CAST) && (synpred9_EsperEPL2Grammar())) {s = 44;}
 
-                        else if ( (LA175_0==SNAPSHOT) && (synpred9_EsperEPL2Grammar())) {s = 45;}
+                        else if ( (LA177_0==SNAPSHOT) && (synpred9_EsperEPL2Grammar())) {s = 45;}
 
-                        else if ( (LA175_0==VARIABLE) && (synpred9_EsperEPL2Grammar())) {s = 46;}
+                        else if ( (LA177_0==VARIABLE) && (synpred9_EsperEPL2Grammar())) {s = 46;}
 
-                        else if ( (LA175_0==WINDOW) && (synpred9_EsperEPL2Grammar())) {s = 47;}
+                        else if ( (LA177_0==WINDOW) && (synpred9_EsperEPL2Grammar())) {s = 47;}
 
-                        else if ( (LA175_0==LEFT) && (synpred9_EsperEPL2Grammar())) {s = 48;}
+                        else if ( (LA177_0==LEFT) && (synpred9_EsperEPL2Grammar())) {s = 48;}
 
-                        else if ( (LA175_0==RIGHT) && (synpred9_EsperEPL2Grammar())) {s = 49;}
+                        else if ( (LA177_0==RIGHT) && (synpred9_EsperEPL2Grammar())) {s = 49;}
 
-                        else if ( (LA175_0==OUTER) && (synpred9_EsperEPL2Grammar())) {s = 50;}
+                        else if ( (LA177_0==OUTER) && (synpred9_EsperEPL2Grammar())) {s = 50;}
 
-                        else if ( (LA175_0==FULL) && (synpred9_EsperEPL2Grammar())) {s = 51;}
+                        else if ( (LA177_0==FULL) && (synpred9_EsperEPL2Grammar())) {s = 51;}
 
-                        else if ( (LA175_0==JOIN) && (synpred9_EsperEPL2Grammar())) {s = 52;}
+                        else if ( (LA177_0==JOIN) && (synpred9_EsperEPL2Grammar())) {s = 52;}
 
-                        else if ( (LA175_0==EXISTS) && (synpred9_EsperEPL2Grammar())) {s = 53;}
+                        else if ( (LA177_0==EXISTS) && (synpred9_EsperEPL2Grammar())) {s = 53;}
 
-                        else if ( (LA175_0==CURRENT_TIMESTAMP) && (synpred9_EsperEPL2Grammar())) {s = 54;}
+                        else if ( (LA177_0==CURRENT_TIMESTAMP) && (synpred9_EsperEPL2Grammar())) {s = 54;}
 
-                        else if ( (LA175_0==LCURLY) && (synpred9_EsperEPL2Grammar())) {s = 55;}
+                        else if ( (LA177_0==LCURLY) && (synpred9_EsperEPL2Grammar())) {s = 55;}
 
-                        else if ( (LA175_0==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 56;}
+                        else if ( (LA177_0==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 56;}
 
-                        else if ( (LA175_0==STAR) ) {s = 57;}
+                        else if ( (LA177_0==STAR) ) {s = 57;}
 
-                        else if ( (LA175_0==LBRACK) && (synpred14_EsperEPL2Grammar())) {s = 58;}
+                        else if ( (LA177_0==LBRACK) && (synpred14_EsperEPL2Grammar())) {s = 58;}
 
                          
-                        input.seek(index175_0);
+                        input.seek(index177_0);
                         if ( s>=0 ) return s;
                         break;
                     case 1 : 
-                        int LA175_1 = input.LA(1);
+                        int LA177_1 = input.LA(1);
 
                          
-                        int index175_1 = input.index();
+                        int index177_1 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred6_EsperEPL2Grammar()) ) {s = 95;}
@@ -32943,14 +33036,14 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (synpred9_EsperEPL2Grammar()) ) {s = 56;}
 
                          
-                        input.seek(index175_1);
+                        input.seek(index177_1);
                         if ( s>=0 ) return s;
                         break;
                     case 2 : 
-                        int LA175_2 = input.LA(1);
+                        int LA177_2 = input.LA(1);
 
                          
-                        int index175_2 = input.index();
+                        int index177_2 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred7_EsperEPL2Grammar()) ) {s = 132;}
@@ -32958,920 +33051,920 @@ public class EsperEPL2GrammarParser extends Parser {
                         else if ( (synpred9_EsperEPL2Grammar()) ) {s = 56;}
 
                          
-                        input.seek(index175_2);
+                        input.seek(index177_2);
                         if ( s>=0 ) return s;
                         break;
                     case 3 : 
-                        int LA175_3 = input.LA(1);
+                        int LA177_3 = input.LA(1);
 
                          
-                        int index175_3 = input.index();
+                        int index177_3 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA175_3==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 133;}
+                        if ( (LA177_3==COLON) && (synpred10_EsperEPL2Grammar())) {s = 133;}
 
-                        else if ( (LA175_3==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 134;}
+                        else if ( (LA177_3==TIMEPERIOD_SECONDS) ) {s = 134;}
 
-                        else if ( (LA175_3==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 135;}
+                        else if ( (LA177_3==TIMEPERIOD_SECOND) ) {s = 135;}
 
-                        else if ( (LA175_3==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 136;}
+                        else if ( (LA177_3==TIMEPERIOD_SEC) ) {s = 136;}
 
-                        else if ( (LA175_3==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 137;}
+                        else if ( (LA177_3==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 137;}
 
-                        else if ( (LA175_3==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 138;}
+                        else if ( (LA177_3==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 138;}
 
-                        else if ( (LA175_3==STAR) && (synpred9_EsperEPL2Grammar())) {s = 139;}
+                        else if ( (LA177_3==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 139;}
 
-                        else if ( (LA175_3==DIV) && (synpred9_EsperEPL2Grammar())) {s = 140;}
+                        else if ( (LA177_3==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 140;}
 
-                        else if ( (LA175_3==MOD) && (synpred9_EsperEPL2Grammar())) {s = 141;}
+                        else if ( (LA177_3==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 141;}
 
-                        else if ( (LA175_3==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 142;}
+                        else if ( (LA177_3==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 142;}
 
-                        else if ( (LA175_3==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 143;}
+                        else if ( (LA177_3==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 143;}
 
-                        else if ( (LA175_3==LOR) && (synpred9_EsperEPL2Grammar())) {s = 144;}
+                        else if ( (LA177_3==MIN) && (synpred8_EsperEPL2Grammar())) {s = 144;}
 
-                        else if ( (LA175_3==LT) && (synpred9_EsperEPL2Grammar())) {s = 145;}
+                        else if ( (LA177_3==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 145;}
 
-                        else if ( (LA175_3==GT) && (synpred9_EsperEPL2Grammar())) {s = 146;}
+                        else if ( (LA177_3==LAST) && (synpred12_EsperEPL2Grammar())) {s = 146;}
 
-                        else if ( (LA175_3==LE) && (synpred9_EsperEPL2Grammar())) {s = 147;}
+                        else if ( (LA177_3==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 147;}
 
-                        else if ( (LA175_3==GE) && (synpred9_EsperEPL2Grammar())) {s = 148;}
+                        else if ( (LA177_3==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 148;}
 
-                        else if ( (LA175_3==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 149;}
+                        else if ( (LA177_3==STAR) && (synpred9_EsperEPL2Grammar())) {s = 149;}
 
-                        else if ( (LA175_3==IS) && (synpred9_EsperEPL2Grammar())) {s = 150;}
+                        else if ( (LA177_3==DIV) && (synpred9_EsperEPL2Grammar())) {s = 150;}
 
-                        else if ( (LA175_3==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 151;}
+                        else if ( (LA177_3==MOD) && (synpred9_EsperEPL2Grammar())) {s = 151;}
 
-                        else if ( (LA175_3==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 152;}
+                        else if ( (LA177_3==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 152;}
 
-                        else if ( (LA175_3==BAND) && (synpred9_EsperEPL2Grammar())) {s = 153;}
+                        else if ( (LA177_3==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 153;}
 
-                        else if ( (LA175_3==BOR) && (synpred9_EsperEPL2Grammar())) {s = 154;}
+                        else if ( (LA177_3==LOR) && (synpred9_EsperEPL2Grammar())) {s = 154;}
 
-                        else if ( (LA175_3==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 155;}
+                        else if ( (LA177_3==LT) && (synpred9_EsperEPL2Grammar())) {s = 155;}
 
-                        else if ( (LA175_3==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 156;}
+                        else if ( (LA177_3==GT) && (synpred9_EsperEPL2Grammar())) {s = 156;}
 
-                        else if ( (LA175_3==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 157;}
+                        else if ( (LA177_3==LE) && (synpred9_EsperEPL2Grammar())) {s = 157;}
 
-                        else if ( (LA175_3==ASC) && (synpred9_EsperEPL2Grammar())) {s = 158;}
+                        else if ( (LA177_3==GE) && (synpred9_EsperEPL2Grammar())) {s = 158;}
 
-                        else if ( (LA175_3==DESC) && (synpred9_EsperEPL2Grammar())) {s = 159;}
+                        else if ( (LA177_3==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 159;}
 
-                        else if ( (LA175_3==TIMEPERIOD_SECONDS) ) {s = 160;}
+                        else if ( (LA177_3==IS) && (synpred9_EsperEPL2Grammar())) {s = 160;}
 
-                        else if ( (LA175_3==TIMEPERIOD_SECOND) ) {s = 161;}
+                        else if ( (LA177_3==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 161;}
 
-                        else if ( (LA175_3==TIMEPERIOD_SEC) ) {s = 162;}
+                        else if ( (LA177_3==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 162;}
 
-                        else if ( (LA175_3==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 163;}
+                        else if ( (LA177_3==BAND) && (synpred9_EsperEPL2Grammar())) {s = 163;}
 
-                        else if ( (LA175_3==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 164;}
+                        else if ( (LA177_3==BOR) && (synpred9_EsperEPL2Grammar())) {s = 164;}
 
-                        else if ( (LA175_3==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 165;}
+                        else if ( (LA177_3==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 165;}
 
-                        else if ( (LA175_3==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 166;}
+                        else if ( (LA177_3==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 166;}
 
-                        else if ( (LA175_3==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 167;}
+                        else if ( (LA177_3==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 167;}
 
-                        else if ( (LA175_3==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 168;}
+                        else if ( (LA177_3==ASC) && (synpred9_EsperEPL2Grammar())) {s = 168;}
 
-                        else if ( (LA175_3==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 169;}
+                        else if ( (LA177_3==DESC) && (synpred9_EsperEPL2Grammar())) {s = 169;}
 
-                        else if ( (LA175_3==COLON) && (synpred10_EsperEPL2Grammar())) {s = 170;}
+                        else if ( (LA177_3==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 170;}
 
-                        else if ( (LA175_3==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 171;}
+                        else if ( (LA177_3==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 171;}
 
-                        else if ( (LA175_3==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 172;}
+                        else if ( (LA177_3==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 172;}
 
-                        else if ( (LA175_3==MIN) && (synpred8_EsperEPL2Grammar())) {s = 173;}
+                        else if ( (LA177_3==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 173;}
 
-                        else if ( (LA175_3==LAST) && (synpred12_EsperEPL2Grammar())) {s = 174;}
+                        else if ( (LA177_3==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 174;}
 
-                        else if ( (LA175_3==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 175;}
+                        else if ( (LA177_3==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 175;}
 
-                        else if ( (LA175_3==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 176;}
+                        else if ( (LA177_3==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 176;}
 
                          
-                        input.seek(index175_3);
+                        input.seek(index177_3);
                         if ( s>=0 ) return s;
                         break;
                     case 4 : 
-                        int LA175_4 = input.LA(1);
+                        int LA177_4 = input.LA(1);
 
                          
-                        int index175_4 = input.index();
+                        int index177_4 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA175_4==STAR) && (synpred9_EsperEPL2Grammar())) {s = 177;}
+                        if ( (LA177_4==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 177;}
 
-                        else if ( (LA175_4==DIV) && (synpred9_EsperEPL2Grammar())) {s = 178;}
+                        else if ( (LA177_4==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 178;}
 
-                        else if ( (LA175_4==MOD) && (synpred9_EsperEPL2Grammar())) {s = 179;}
+                        else if ( (LA177_4==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 179;}
 
-                        else if ( (LA175_4==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 180;}
+                        else if ( (LA177_4==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 180;}
 
-                        else if ( (LA175_4==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 181;}
+                        else if ( (LA177_4==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 181;}
 
-                        else if ( (LA175_4==LOR) && (synpred9_EsperEPL2Grammar())) {s = 182;}
+                        else if ( (LA177_4==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 182;}
 
-                        else if ( (LA175_4==LT) && (synpred9_EsperEPL2Grammar())) {s = 183;}
+                        else if ( (LA177_4==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 183;}
 
-                        else if ( (LA175_4==GT) && (synpred9_EsperEPL2Grammar())) {s = 184;}
+                        else if ( (LA177_4==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 184;}
 
-                        else if ( (LA175_4==LE) && (synpred9_EsperEPL2Grammar())) {s = 185;}
+                        else if ( (LA177_4==COLON) && (synpred10_EsperEPL2Grammar())) {s = 185;}
 
-                        else if ( (LA175_4==GE) && (synpred9_EsperEPL2Grammar())) {s = 186;}
+                        else if ( (LA177_4==TIMEPERIOD_SECONDS) ) {s = 186;}
 
-                        else if ( (LA175_4==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 187;}
+                        else if ( (LA177_4==TIMEPERIOD_SECOND) ) {s = 187;}
 
-                        else if ( (LA175_4==IS) && (synpred9_EsperEPL2Grammar())) {s = 188;}
+                        else if ( (LA177_4==TIMEPERIOD_SEC) ) {s = 188;}
 
-                        else if ( (LA175_4==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 189;}
+                        else if ( (LA177_4==LAST) && (synpred12_EsperEPL2Grammar())) {s = 189;}
 
-                        else if ( (LA175_4==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 190;}
+                        else if ( (LA177_4==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 190;}
 
-                        else if ( (LA175_4==BAND) && (synpred9_EsperEPL2Grammar())) {s = 191;}
+                        else if ( (LA177_4==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 191;}
 
-                        else if ( (LA175_4==BOR) && (synpred9_EsperEPL2Grammar())) {s = 192;}
+                        else if ( (LA177_4==MIN) && (synpred8_EsperEPL2Grammar())) {s = 192;}
 
-                        else if ( (LA175_4==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 193;}
+                        else if ( (LA177_4==STAR) && (synpred9_EsperEPL2Grammar())) {s = 193;}
 
-                        else if ( (LA175_4==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 194;}
+                        else if ( (LA177_4==DIV) && (synpred9_EsperEPL2Grammar())) {s = 194;}
 
-                        else if ( (LA175_4==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 195;}
+                        else if ( (LA177_4==MOD) && (synpred9_EsperEPL2Grammar())) {s = 195;}
 
-                        else if ( (LA175_4==ASC) && (synpred9_EsperEPL2Grammar())) {s = 196;}
+                        else if ( (LA177_4==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 196;}
 
-                        else if ( (LA175_4==DESC) && (synpred9_EsperEPL2Grammar())) {s = 197;}
+                        else if ( (LA177_4==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 197;}
 
-                        else if ( (LA175_4==TIMEPERIOD_SECONDS) ) {s = 198;}
+                        else if ( (LA177_4==LOR) && (synpred9_EsperEPL2Grammar())) {s = 198;}
 
-                        else if ( (LA175_4==TIMEPERIOD_SECOND) ) {s = 199;}
+                        else if ( (LA177_4==LT) && (synpred9_EsperEPL2Grammar())) {s = 199;}
 
-                        else if ( (LA175_4==TIMEPERIOD_SEC) ) {s = 200;}
+                        else if ( (LA177_4==GT) && (synpred9_EsperEPL2Grammar())) {s = 200;}
 
-                        else if ( (LA175_4==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 201;}
+                        else if ( (LA177_4==LE) && (synpred9_EsperEPL2Grammar())) {s = 201;}
 
-                        else if ( (LA175_4==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 202;}
+                        else if ( (LA177_4==GE) && (synpred9_EsperEPL2Grammar())) {s = 202;}
 
-                        else if ( (LA175_4==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 203;}
+                        else if ( (LA177_4==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 203;}
 
-                        else if ( (LA175_4==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 204;}
+                        else if ( (LA177_4==IS) && (synpred9_EsperEPL2Grammar())) {s = 204;}
 
-                        else if ( (LA175_4==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 205;}
+                        else if ( (LA177_4==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 205;}
 
-                        else if ( (LA175_4==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 206;}
+                        else if ( (LA177_4==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 206;}
 
-                        else if ( (LA175_4==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 207;}
+                        else if ( (LA177_4==BAND) && (synpred9_EsperEPL2Grammar())) {s = 207;}
 
-                        else if ( (LA175_4==LAST) && (synpred12_EsperEPL2Grammar())) {s = 208;}
+                        else if ( (LA177_4==BOR) && (synpred9_EsperEPL2Grammar())) {s = 208;}
 
-                        else if ( (LA175_4==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 209;}
+                        else if ( (LA177_4==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 209;}
 
-                        else if ( (LA175_4==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 210;}
+                        else if ( (LA177_4==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 210;}
 
-                        else if ( (LA175_4==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 211;}
+                        else if ( (LA177_4==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 211;}
 
-                        else if ( (LA175_4==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 212;}
+                        else if ( (LA177_4==ASC) && (synpred9_EsperEPL2Grammar())) {s = 212;}
 
-                        else if ( (LA175_4==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 213;}
+                        else if ( (LA177_4==DESC) && (synpred9_EsperEPL2Grammar())) {s = 213;}
 
-                        else if ( (LA175_4==COLON) && (synpred10_EsperEPL2Grammar())) {s = 214;}
+                        else if ( (LA177_4==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 214;}
 
-                        else if ( (LA175_4==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 215;}
+                        else if ( (LA177_4==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 215;}
 
-                        else if ( (LA175_4==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 216;}
+                        else if ( (LA177_4==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 216;}
 
-                        else if ( (LA175_4==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 217;}
+                        else if ( (LA177_4==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 217;}
 
-                        else if ( (LA175_4==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 218;}
+                        else if ( (LA177_4==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 218;}
 
-                        else if ( (LA175_4==MIN) && (synpred8_EsperEPL2Grammar())) {s = 219;}
+                        else if ( (LA177_4==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 219;}
 
-                        else if ( (LA175_4==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 220;}
+                        else if ( (LA177_4==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 220;}
 
                          
-                        input.seek(index175_4);
+                        input.seek(index177_4);
                         if ( s>=0 ) return s;
                         break;
                     case 5 : 
-                        int LA175_5 = input.LA(1);
+                        int LA177_5 = input.LA(1);
 
                          
-                        int index175_5 = input.index();
+                        int index177_5 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA175_5==LAST) && (synpred12_EsperEPL2Grammar())) {s = 221;}
+                        if ( (LA177_5==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 221;}
 
-                        else if ( (LA175_5==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 222;}
+                        else if ( (LA177_5==STAR) && (synpred9_EsperEPL2Grammar())) {s = 222;}
 
-                        else if ( (LA175_5==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 223;}
+                        else if ( (LA177_5==DIV) && (synpred9_EsperEPL2Grammar())) {s = 223;}
 
-                        else if ( (LA175_5==STAR) && (synpred9_EsperEPL2Grammar())) {s = 224;}
+                        else if ( (LA177_5==MOD) && (synpred9_EsperEPL2Grammar())) {s = 224;}
 
-                        else if ( (LA175_5==DIV) && (synpred9_EsperEPL2Grammar())) {s = 225;}
+                        else if ( (LA177_5==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 225;}
 
-                        else if ( (LA175_5==MOD) && (synpred9_EsperEPL2Grammar())) {s = 226;}
+                        else if ( (LA177_5==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 226;}
 
-                        else if ( (LA175_5==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 227;}
+                        else if ( (LA177_5==LOR) && (synpred9_EsperEPL2Grammar())) {s = 227;}
 
-                        else if ( (LA175_5==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 228;}
+                        else if ( (LA177_5==LT) && (synpred9_EsperEPL2Grammar())) {s = 228;}
 
-                        else if ( (LA175_5==LOR) && (synpred9_EsperEPL2Grammar())) {s = 229;}
+                        else if ( (LA177_5==GT) && (synpred9_EsperEPL2Grammar())) {s = 229;}
 
-                        else if ( (LA175_5==LT) && (synpred9_EsperEPL2Grammar())) {s = 230;}
+                        else if ( (LA177_5==LE) && (synpred9_EsperEPL2Grammar())) {s = 230;}
 
-                        else if ( (LA175_5==GT) && (synpred9_EsperEPL2Grammar())) {s = 231;}
+                        else if ( (LA177_5==GE) && (synpred9_EsperEPL2Grammar())) {s = 231;}
 
-                        else if ( (LA175_5==LE) && (synpred9_EsperEPL2Grammar())) {s = 232;}
+                        else if ( (LA177_5==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 232;}
 
-                        else if ( (LA175_5==GE) && (synpred9_EsperEPL2Grammar())) {s = 233;}
+                        else if ( (LA177_5==IS) && (synpred9_EsperEPL2Grammar())) {s = 233;}
 
-                        else if ( (LA175_5==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 234;}
+                        else if ( (LA177_5==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 234;}
 
-                        else if ( (LA175_5==IS) && (synpred9_EsperEPL2Grammar())) {s = 235;}
+                        else if ( (LA177_5==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 235;}
 
-                        else if ( (LA175_5==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 236;}
+                        else if ( (LA177_5==BAND) && (synpred9_EsperEPL2Grammar())) {s = 236;}
 
-                        else if ( (LA175_5==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 237;}
+                        else if ( (LA177_5==BOR) && (synpred9_EsperEPL2Grammar())) {s = 237;}
 
-                        else if ( (LA175_5==BAND) && (synpred9_EsperEPL2Grammar())) {s = 238;}
+                        else if ( (LA177_5==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 238;}
 
-                        else if ( (LA175_5==BOR) && (synpred9_EsperEPL2Grammar())) {s = 239;}
+                        else if ( (LA177_5==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 239;}
 
-                        else if ( (LA175_5==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 240;}
+                        else if ( (LA177_5==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 240;}
 
-                        else if ( (LA175_5==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 241;}
+                        else if ( (LA177_5==ASC) && (synpred9_EsperEPL2Grammar())) {s = 241;}
 
-                        else if ( (LA175_5==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 242;}
+                        else if ( (LA177_5==DESC) && (synpred9_EsperEPL2Grammar())) {s = 242;}
 
-                        else if ( (LA175_5==ASC) && (synpred9_EsperEPL2Grammar())) {s = 243;}
+                        else if ( (LA177_5==TIMEPERIOD_SECONDS) ) {s = 243;}
 
-                        else if ( (LA175_5==DESC) && (synpred9_EsperEPL2Grammar())) {s = 244;}
+                        else if ( (LA177_5==TIMEPERIOD_SECOND) ) {s = 244;}
 
-                        else if ( (LA175_5==TIMEPERIOD_SECONDS) ) {s = 245;}
+                        else if ( (LA177_5==TIMEPERIOD_SEC) ) {s = 245;}
 
-                        else if ( (LA175_5==TIMEPERIOD_SECOND) ) {s = 246;}
+                        else if ( (LA177_5==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 246;}
 
-                        else if ( (LA175_5==TIMEPERIOD_SEC) ) {s = 247;}
+                        else if ( (LA177_5==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 247;}
 
-                        else if ( (LA175_5==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 248;}
+                        else if ( (LA177_5==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 248;}
 
-                        else if ( (LA175_5==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 249;}
+                        else if ( (LA177_5==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 249;}
 
-                        else if ( (LA175_5==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 250;}
+                        else if ( (LA177_5==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 250;}
 
-                        else if ( (LA175_5==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 251;}
+                        else if ( (LA177_5==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 251;}
 
-                        else if ( (LA175_5==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 252;}
+                        else if ( (LA177_5==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 252;}
 
-                        else if ( (LA175_5==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 253;}
+                        else if ( (LA177_5==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 253;}
 
-                        else if ( (LA175_5==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 254;}
+                        else if ( (LA177_5==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 254;}
 
-                        else if ( (LA175_5==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 255;}
+                        else if ( (LA177_5==LAST) && (synpred12_EsperEPL2Grammar())) {s = 255;}
 
-                        else if ( (LA175_5==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 256;}
+                        else if ( (LA177_5==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 256;}
 
-                        else if ( (LA175_5==MIN) && (synpred8_EsperEPL2Grammar())) {s = 257;}
+                        else if ( (LA177_5==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 257;}
 
-                        else if ( (LA175_5==COLON) && (synpred10_EsperEPL2Grammar())) {s = 258;}
+                        else if ( (LA177_5==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 258;}
 
-                        else if ( (LA175_5==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 259;}
+                        else if ( (LA177_5==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 259;}
 
-                        else if ( (LA175_5==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 260;}
+                        else if ( (LA177_5==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 260;}
 
-                        else if ( (LA175_5==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 261;}
+                        else if ( (LA177_5==MIN) && (synpred8_EsperEPL2Grammar())) {s = 261;}
 
-                        else if ( (LA175_5==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 262;}
+                        else if ( (LA177_5==COLON) && (synpred10_EsperEPL2Grammar())) {s = 262;}
 
-                        else if ( (LA175_5==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 263;}
+                        else if ( (LA177_5==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 263;}
 
-                        else if ( (LA175_5==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 264;}
+                        else if ( (LA177_5==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 264;}
 
                          
-                        input.seek(index175_5);
+                        input.seek(index177_5);
                         if ( s>=0 ) return s;
                         break;
                     case 6 : 
-                        int LA175_6 = input.LA(1);
+                        int LA177_6 = input.LA(1);
 
                          
-                        int index175_6 = input.index();
+                        int index177_6 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA175_6==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 265;}
+                        if ( (LA177_6==STAR) && (synpred9_EsperEPL2Grammar())) {s = 265;}
 
-                        else if ( (LA175_6==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 266;}
+                        else if ( (LA177_6==DIV) && (synpred9_EsperEPL2Grammar())) {s = 266;}
 
-                        else if ( (LA175_6==COLON) && (synpred10_EsperEPL2Grammar())) {s = 267;}
+                        else if ( (LA177_6==MOD) && (synpred9_EsperEPL2Grammar())) {s = 267;}
 
-                        else if ( (LA175_6==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 268;}
+                        else if ( (LA177_6==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 268;}
 
-                        else if ( (LA175_6==STAR) && (synpred9_EsperEPL2Grammar())) {s = 269;}
+                        else if ( (LA177_6==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 269;}
 
-                        else if ( (LA175_6==DIV) && (synpred9_EsperEPL2Grammar())) {s = 270;}
+                        else if ( (LA177_6==LOR) && (synpred9_EsperEPL2Grammar())) {s = 270;}
 
-                        else if ( (LA175_6==MOD) && (synpred9_EsperEPL2Grammar())) {s = 271;}
+                        else if ( (LA177_6==LT) && (synpred9_EsperEPL2Grammar())) {s = 271;}
 
-                        else if ( (LA175_6==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 272;}
+                        else if ( (LA177_6==GT) && (synpred9_EsperEPL2Grammar())) {s = 272;}
 
-                        else if ( (LA175_6==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 273;}
+                        else if ( (LA177_6==LE) && (synpred9_EsperEPL2Grammar())) {s = 273;}
 
-                        else if ( (LA175_6==LOR) && (synpred9_EsperEPL2Grammar())) {s = 274;}
+                        else if ( (LA177_6==GE) && (synpred9_EsperEPL2Grammar())) {s = 274;}
 
-                        else if ( (LA175_6==LT) && (synpred9_EsperEPL2Grammar())) {s = 275;}
+                        else if ( (LA177_6==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 275;}
 
-                        else if ( (LA175_6==GT) && (synpred9_EsperEPL2Grammar())) {s = 276;}
+                        else if ( (LA177_6==IS) && (synpred9_EsperEPL2Grammar())) {s = 276;}
 
-                        else if ( (LA175_6==LE) && (synpred9_EsperEPL2Grammar())) {s = 277;}
+                        else if ( (LA177_6==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 277;}
 
-                        else if ( (LA175_6==GE) && (synpred9_EsperEPL2Grammar())) {s = 278;}
+                        else if ( (LA177_6==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 278;}
 
-                        else if ( (LA175_6==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 279;}
+                        else if ( (LA177_6==BAND) && (synpred9_EsperEPL2Grammar())) {s = 279;}
 
-                        else if ( (LA175_6==IS) && (synpred9_EsperEPL2Grammar())) {s = 280;}
+                        else if ( (LA177_6==BOR) && (synpred9_EsperEPL2Grammar())) {s = 280;}
 
-                        else if ( (LA175_6==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 281;}
+                        else if ( (LA177_6==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 281;}
 
-                        else if ( (LA175_6==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 282;}
+                        else if ( (LA177_6==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 282;}
 
-                        else if ( (LA175_6==BAND) && (synpred9_EsperEPL2Grammar())) {s = 283;}
+                        else if ( (LA177_6==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 283;}
 
-                        else if ( (LA175_6==BOR) && (synpred9_EsperEPL2Grammar())) {s = 284;}
+                        else if ( (LA177_6==ASC) && (synpred9_EsperEPL2Grammar())) {s = 284;}
 
-                        else if ( (LA175_6==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 285;}
+                        else if ( (LA177_6==DESC) && (synpred9_EsperEPL2Grammar())) {s = 285;}
 
-                        else if ( (LA175_6==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 286;}
+                        else if ( (LA177_6==TIMEPERIOD_SECONDS) ) {s = 286;}
 
-                        else if ( (LA175_6==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 287;}
+                        else if ( (LA177_6==TIMEPERIOD_SECOND) ) {s = 287;}
 
-                        else if ( (LA175_6==ASC) && (synpred9_EsperEPL2Grammar())) {s = 288;}
+                        else if ( (LA177_6==TIMEPERIOD_SEC) ) {s = 288;}
 
-                        else if ( (LA175_6==DESC) && (synpred9_EsperEPL2Grammar())) {s = 289;}
+                        else if ( (LA177_6==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 289;}
 
-                        else if ( (LA175_6==TIMEPERIOD_SECONDS) ) {s = 290;}
+                        else if ( (LA177_6==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 290;}
 
-                        else if ( (LA175_6==TIMEPERIOD_SECOND) ) {s = 291;}
+                        else if ( (LA177_6==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 291;}
 
-                        else if ( (LA175_6==TIMEPERIOD_SEC) ) {s = 292;}
+                        else if ( (LA177_6==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 292;}
 
-                        else if ( (LA175_6==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 293;}
+                        else if ( (LA177_6==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 293;}
 
-                        else if ( (LA175_6==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 294;}
+                        else if ( (LA177_6==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 294;}
 
-                        else if ( (LA175_6==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 295;}
+                        else if ( (LA177_6==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 295;}
 
-                        else if ( (LA175_6==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 296;}
+                        else if ( (LA177_6==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 296;}
 
-                        else if ( (LA175_6==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 297;}
+                        else if ( (LA177_6==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 297;}
 
-                        else if ( (LA175_6==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 298;}
+                        else if ( (LA177_6==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 298;}
 
-                        else if ( (LA175_6==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 299;}
+                        else if ( (LA177_6==LAST) && (synpred12_EsperEPL2Grammar())) {s = 299;}
 
-                        else if ( (LA175_6==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 300;}
+                        else if ( (LA177_6==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 300;}
 
-                        else if ( (LA175_6==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 301;}
+                        else if ( (LA177_6==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 301;}
 
-                        else if ( (LA175_6==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 302;}
+                        else if ( (LA177_6==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 302;}
 
-                        else if ( (LA175_6==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 303;}
+                        else if ( (LA177_6==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 303;}
 
-                        else if ( (LA175_6==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 304;}
+                        else if ( (LA177_6==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 304;}
 
-                        else if ( (LA175_6==MIN) && (synpred8_EsperEPL2Grammar())) {s = 305;}
+                        else if ( (LA177_6==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 305;}
 
-                        else if ( (LA175_6==LAST) && (synpred12_EsperEPL2Grammar())) {s = 306;}
+                        else if ( (LA177_6==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 306;}
 
-                        else if ( (LA175_6==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 307;}
+                        else if ( (LA177_6==MIN) && (synpred8_EsperEPL2Grammar())) {s = 307;}
 
-                        else if ( (LA175_6==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 308;}
+                        else if ( (LA177_6==COLON) && (synpred10_EsperEPL2Grammar())) {s = 308;}
 
                          
-                        input.seek(index175_6);
+                        input.seek(index177_6);
                         if ( s>=0 ) return s;
                         break;
                     case 7 : 
-                        int LA175_7 = input.LA(1);
+                        int LA177_7 = input.LA(1);
 
                          
-                        int index175_7 = input.index();
+                        int index177_7 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA175_7==COLON) && (synpred10_EsperEPL2Grammar())) {s = 309;}
+                        if ( (LA177_7==DOT) && (synpred9_EsperEPL2Grammar())) {s = 309;}
 
-                        else if ( (LA175_7==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 310;}
+                        else if ( (LA177_7==COLON) && (synpred10_EsperEPL2Grammar())) {s = 310;}
 
-                        else if ( (LA175_7==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 311;}
+                        else if ( (LA177_7==TIMEPERIOD_SECONDS) ) {s = 311;}
 
-                        else if ( (LA175_7==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 312;}
+                        else if ( (LA177_7==TIMEPERIOD_SECOND) ) {s = 312;}
 
-                        else if ( (LA175_7==DOT) && (synpred9_EsperEPL2Grammar())) {s = 313;}
+                        else if ( (LA177_7==TIMEPERIOD_SEC) ) {s = 313;}
 
-                        else if ( (LA175_7==LAST) && (synpred12_EsperEPL2Grammar())) {s = 314;}
+                        else if ( (LA177_7==ESCAPECHAR) && (synpred9_EsperEPL2Grammar())) {s = 314;}
 
-                        else if ( (LA175_7==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 315;}
+                        else if ( (LA177_7==LBRACK) && (synpred9_EsperEPL2Grammar())) {s = 315;}
 
-                        else if ( (LA175_7==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 316;}
+                        else if ( (LA177_7==LPAREN) && (synpred9_EsperEPL2Grammar())) {s = 316;}
 
-                        else if ( (LA175_7==MIN) && (synpred8_EsperEPL2Grammar())) {s = 317;}
+                        else if ( (LA177_7==QUESTION) && (synpred9_EsperEPL2Grammar())) {s = 317;}
 
-                        else if ( (LA175_7==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 318;}
+                        else if ( (LA177_7==STAR) && (synpred9_EsperEPL2Grammar())) {s = 318;}
 
-                        else if ( (LA175_7==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 319;}
+                        else if ( (LA177_7==DIV) && (synpred9_EsperEPL2Grammar())) {s = 319;}
 
-                        else if ( (LA175_7==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 320;}
+                        else if ( (LA177_7==MOD) && (synpred9_EsperEPL2Grammar())) {s = 320;}
 
-                        else if ( (LA175_7==LPAREN) && (synpred9_EsperEPL2Grammar())) {s = 321;}
+                        else if ( (LA177_7==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 321;}
 
-                        else if ( (LA175_7==ESCAPECHAR) && (synpred9_EsperEPL2Grammar())) {s = 322;}
+                        else if ( (LA177_7==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 322;}
 
-                        else if ( (LA175_7==LBRACK) && (synpred9_EsperEPL2Grammar())) {s = 323;}
+                        else if ( (LA177_7==LOR) && (synpred9_EsperEPL2Grammar())) {s = 323;}
 
-                        else if ( (LA175_7==QUESTION) && (synpred9_EsperEPL2Grammar())) {s = 324;}
+                        else if ( (LA177_7==LT) && (synpred9_EsperEPL2Grammar())) {s = 324;}
 
-                        else if ( (LA175_7==STAR) && (synpred9_EsperEPL2Grammar())) {s = 325;}
+                        else if ( (LA177_7==GT) && (synpred9_EsperEPL2Grammar())) {s = 325;}
 
-                        else if ( (LA175_7==DIV) && (synpred9_EsperEPL2Grammar())) {s = 326;}
+                        else if ( (LA177_7==LE) && (synpred9_EsperEPL2Grammar())) {s = 326;}
 
-                        else if ( (LA175_7==MOD) && (synpred9_EsperEPL2Grammar())) {s = 327;}
+                        else if ( (LA177_7==GE) && (synpred9_EsperEPL2Grammar())) {s = 327;}
 
-                        else if ( (LA175_7==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 328;}
+                        else if ( (LA177_7==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 328;}
 
-                        else if ( (LA175_7==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 329;}
+                        else if ( (LA177_7==IS) && (synpred9_EsperEPL2Grammar())) {s = 329;}
 
-                        else if ( (LA175_7==LOR) && (synpred9_EsperEPL2Grammar())) {s = 330;}
+                        else if ( (LA177_7==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 330;}
 
-                        else if ( (LA175_7==LT) && (synpred9_EsperEPL2Grammar())) {s = 331;}
+                        else if ( (LA177_7==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 331;}
 
-                        else if ( (LA175_7==GT) && (synpred9_EsperEPL2Grammar())) {s = 332;}
+                        else if ( (LA177_7==BAND) && (synpred9_EsperEPL2Grammar())) {s = 332;}
 
-                        else if ( (LA175_7==LE) && (synpred9_EsperEPL2Grammar())) {s = 333;}
+                        else if ( (LA177_7==BOR) && (synpred9_EsperEPL2Grammar())) {s = 333;}
 
-                        else if ( (LA175_7==GE) && (synpred9_EsperEPL2Grammar())) {s = 334;}
+                        else if ( (LA177_7==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 334;}
 
-                        else if ( (LA175_7==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 335;}
+                        else if ( (LA177_7==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 335;}
 
-                        else if ( (LA175_7==IS) && (synpred9_EsperEPL2Grammar())) {s = 336;}
+                        else if ( (LA177_7==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 336;}
 
-                        else if ( (LA175_7==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 337;}
+                        else if ( (LA177_7==ASC) && (synpred9_EsperEPL2Grammar())) {s = 337;}
 
-                        else if ( (LA175_7==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 338;}
+                        else if ( (LA177_7==DESC) && (synpred9_EsperEPL2Grammar())) {s = 338;}
 
-                        else if ( (LA175_7==BAND) && (synpred9_EsperEPL2Grammar())) {s = 339;}
+                        else if ( (LA177_7==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 339;}
 
-                        else if ( (LA175_7==BOR) && (synpred9_EsperEPL2Grammar())) {s = 340;}
+                        else if ( (LA177_7==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 340;}
 
-                        else if ( (LA175_7==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 341;}
+                        else if ( (LA177_7==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 341;}
 
-                        else if ( (LA175_7==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 342;}
+                        else if ( (LA177_7==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 342;}
 
-                        else if ( (LA175_7==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 343;}
+                        else if ( (LA177_7==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 343;}
 
-                        else if ( (LA175_7==ASC) && (synpred9_EsperEPL2Grammar())) {s = 344;}
+                        else if ( (LA177_7==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 344;}
 
-                        else if ( (LA175_7==DESC) && (synpred9_EsperEPL2Grammar())) {s = 345;}
+                        else if ( (LA177_7==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 345;}
 
-                        else if ( (LA175_7==TIMEPERIOD_SECONDS) ) {s = 346;}
+                        else if ( (LA177_7==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 346;}
 
-                        else if ( (LA175_7==TIMEPERIOD_SECOND) ) {s = 347;}
+                        else if ( (LA177_7==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 347;}
 
-                        else if ( (LA175_7==TIMEPERIOD_SEC) ) {s = 348;}
+                        else if ( (LA177_7==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 348;}
 
-                        else if ( (LA175_7==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 349;}
+                        else if ( (LA177_7==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 349;}
 
-                        else if ( (LA175_7==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 350;}
+                        else if ( (LA177_7==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 350;}
 
-                        else if ( (LA175_7==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 351;}
+                        else if ( (LA177_7==LAST) && (synpred12_EsperEPL2Grammar())) {s = 351;}
 
-                        else if ( (LA175_7==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 352;}
+                        else if ( (LA177_7==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 352;}
 
-                        else if ( (LA175_7==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 353;}
+                        else if ( (LA177_7==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 353;}
 
-                        else if ( (LA175_7==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 354;}
+                        else if ( (LA177_7==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 354;}
 
-                        else if ( (LA175_7==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 355;}
+                        else if ( (LA177_7==MIN) && (synpred8_EsperEPL2Grammar())) {s = 355;}
 
-                        else if ( (LA175_7==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 356;}
+                        else if ( (LA177_7==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 356;}
 
-                        else if ( (LA175_7==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 357;}
+                        else if ( (LA177_7==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 357;}
 
                          
-                        input.seek(index175_7);
+                        input.seek(index177_7);
                         if ( s>=0 ) return s;
                         break;
                     case 8 : 
-                        int LA175_8 = input.LA(1);
+                        int LA177_8 = input.LA(1);
 
                          
-                        int index175_8 = input.index();
+                        int index177_8 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA175_8==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 358;}
+                        if ( (LA177_8==TIMEPERIOD_SECONDS) ) {s = 358;}
 
-                        else if ( (LA175_8==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 359;}
+                        else if ( (LA177_8==TIMEPERIOD_SECOND) ) {s = 359;}
 
-                        else if ( (LA175_8==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 360;}
+                        else if ( (LA177_8==TIMEPERIOD_SEC) ) {s = 360;}
 
-                        else if ( (LA175_8==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 361;}
+                        else if ( (LA177_8==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 361;}
 
-                        else if ( (LA175_8==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 362;}
+                        else if ( (LA177_8==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 362;}
 
-                        else if ( (LA175_8==LAST) && (synpred12_EsperEPL2Grammar())) {s = 363;}
+                        else if ( (LA177_8==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 363;}
 
-                        else if ( (LA175_8==STAR) && (synpred9_EsperEPL2Grammar())) {s = 364;}
+                        else if ( (LA177_8==COLON) && (synpred10_EsperEPL2Grammar())) {s = 364;}
 
-                        else if ( (LA175_8==DIV) && (synpred9_EsperEPL2Grammar())) {s = 365;}
+                        else if ( (LA177_8==TIMEPERIOD_HOURS) && (synpred8_EsperEPL2Grammar())) {s = 365;}
 
-                        else if ( (LA175_8==MOD) && (synpred9_EsperEPL2Grammar())) {s = 366;}
+                        else if ( (LA177_8==TIMEPERIOD_HOUR) && (synpred8_EsperEPL2Grammar())) {s = 366;}
 
-                        else if ( (LA175_8==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 367;}
+                        else if ( (LA177_8==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 367;}
 
-                        else if ( (LA175_8==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 368;}
+                        else if ( (LA177_8==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 368;}
 
-                        else if ( (LA175_8==LOR) && (synpred9_EsperEPL2Grammar())) {s = 369;}
+                        else if ( (LA177_8==MIN) && (synpred8_EsperEPL2Grammar())) {s = 369;}
 
-                        else if ( (LA175_8==LT) && (synpred9_EsperEPL2Grammar())) {s = 370;}
+                        else if ( (LA177_8==TIMEPERIOD_MILLISECONDS) && (synpred8_EsperEPL2Grammar())) {s = 370;}
 
-                        else if ( (LA175_8==GT) && (synpred9_EsperEPL2Grammar())) {s = 371;}
+                        else if ( (LA177_8==TIMEPERIOD_MILLISECOND) && (synpred8_EsperEPL2Grammar())) {s = 371;}
 
-                        else if ( (LA175_8==LE) && (synpred9_EsperEPL2Grammar())) {s = 372;}
+                        else if ( (LA177_8==TIMEPERIOD_MILLISEC) && (synpred8_EsperEPL2Grammar())) {s = 372;}
 
-                        else if ( (LA175_8==GE) && (synpred9_EsperEPL2Grammar())) {s = 373;}
+                        else if ( (LA177_8==LAST) && (synpred12_EsperEPL2Grammar())) {s = 373;}
 
-                        else if ( (LA175_8==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 374;}
+                        else if ( (LA177_8==STAR) && (synpred9_EsperEPL2Grammar())) {s = 374;}
 
-                        else if ( (LA175_8==IS) && (synpred9_EsperEPL2Grammar())) {s = 375;}
+                        else if ( (LA177_8==DIV) && (synpred9_EsperEPL2Grammar())) {s = 375;}
 
-                        else if ( (LA175_8==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 376;}
+                        else if ( (LA177_8==MOD) && (synpred9_EsperEPL2Grammar())) {s = 376;}
 
-                        else if ( (LA175_8==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 377;}
+                        else if ( (LA177_8==PLUS) && (synpred9_EsperEPL2Grammar())) {s = 377;}
 
-                        else if ( (LA175_8==BAND) && (synpred9_EsperEPL2Grammar())) {s = 378;}
+                        else if ( (LA177_8==MINUS) && (synpred9_EsperEPL2Grammar())) {s = 378;}
 
-                        else if ( (LA175_8==BOR) && (synpred9_EsperEPL2Grammar())) {s = 379;}
+                        else if ( (LA177_8==LOR) && (synpred9_EsperEPL2Grammar())) {s = 379;}
 
-                        else if ( (LA175_8==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 380;}
+                        else if ( (LA177_8==LT) && (synpred9_EsperEPL2Grammar())) {s = 380;}
 
-                        else if ( (LA175_8==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 381;}
+                        else if ( (LA177_8==GT) && (synpred9_EsperEPL2Grammar())) {s = 381;}
 
-                        else if ( (LA175_8==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 382;}
+                        else if ( (LA177_8==LE) && (synpred9_EsperEPL2Grammar())) {s = 382;}
 
-                        else if ( (LA175_8==ASC) && (synpred9_EsperEPL2Grammar())) {s = 383;}
+                        else if ( (LA177_8==GE) && (synpred9_EsperEPL2Grammar())) {s = 383;}
 
-                        else if ( (LA175_8==DESC) && (synpred9_EsperEPL2Grammar())) {s = 384;}
+                        else if ( (LA177_8==EQUALS) && (synpred9_EsperEPL2Grammar())) {s = 384;}
 
-                        else if ( (LA175_8==TIMEPERIOD_SECONDS) ) {s = 385;}
+                        else if ( (LA177_8==IS) && (synpred9_EsperEPL2Grammar())) {s = 385;}
 
-                        else if ( (LA175_8==TIMEPERIOD_SECOND) ) {s = 386;}
+                        else if ( (LA177_8==SQL_NE) && (synpred9_EsperEPL2Grammar())) {s = 386;}
 
-                        else if ( (LA175_8==TIMEPERIOD_SEC) ) {s = 387;}
+                        else if ( (LA177_8==NOT_EQUAL) && (synpred9_EsperEPL2Grammar())) {s = 387;}
 
-                        else if ( (LA175_8==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 388;}
+                        else if ( (LA177_8==BAND) && (synpred9_EsperEPL2Grammar())) {s = 388;}
 
-                        else if ( (LA175_8==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 389;}
+                        else if ( (LA177_8==BOR) && (synpred9_EsperEPL2Grammar())) {s = 389;}
 
-                        else if ( (LA175_8==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 390;}
+                        else if ( (LA177_8==BXOR) && (synpred9_EsperEPL2Grammar())) {s = 390;}
 
-                        else if ( (LA175_8==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 391;}
+                        else if ( (LA177_8==AND_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 391;}
 
-                        else if ( (LA175_8==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 392;}
+                        else if ( (LA177_8==OR_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 392;}
 
-                        else if ( (LA175_8==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 393;}
+                        else if ( (LA177_8==ASC) && (synpred9_EsperEPL2Grammar())) {s = 393;}
 
-                        else if ( (LA175_8==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 394;}
+                        else if ( (LA177_8==DESC) && (synpred9_EsperEPL2Grammar())) {s = 394;}
 
-                        else if ( (LA175_8==TIMEPERIOD_DAYS) && (synpred8_EsperEPL2Grammar())) {s = 395;}
+                        else if ( (LA177_8==COMMA) && (synpred9_EsperEPL2Grammar())) {s = 395;}
 
-                        else if ( (LA175_8==TIMEPERIOD_DAY) && (synpred8_EsperEPL2Grammar())) {s = 396;}
+                        else if ( (LA177_8==RPAREN) && (synpred9_EsperEPL2Grammar())) {s = 396;}
 
-                        else if ( (LA175_8==COLON) && (synpred10_EsperEPL2Grammar())) {s = 397;}
+                        else if ( (LA177_8==NOT_EXPR) && (synpred9_EsperEPL2Grammar())) {s = 397;}
 
-                        else if ( (LA175_8==TIMEPERIOD_MINUTES) && (synpred8_EsperEPL2Grammar())) {s = 398;}
+                        else if ( (LA177_8==IN_SET) && (synpred9_EsperEPL2Grammar())) {s = 398;}
 
-                        else if ( (LA175_8==TIMEPERIOD_MINUTE) && (synpred8_EsperEPL2Grammar())) {s = 399;}
+                        else if ( (LA177_8==BETWEEN) && (synpred9_EsperEPL2Grammar())) {s = 399;}
 
-                        else if ( (LA175_8==MIN) && (synpred8_EsperEPL2Grammar())) {s = 400;}
+                        else if ( (LA177_8==LIKE) && (synpred9_EsperEPL2Grammar())) {s = 400;}
 
-                        else if ( (LA175_8==WEEKDAY) && (synpred13_EsperEPL2Grammar())) {s = 401;}
+                        else if ( (LA177_8==REGEXP) && (synpred9_EsperEPL2Grammar())) {s = 401;}
 
                          
-                        input.seek(index175_8);
+                        input.seek(index177_8);
                         if ( s>=0 ) return s;
                         break;
                     case 9 : 
-                        int LA175_57 = input.LA(1);
+                        int LA177_57 = input.LA(1);
 
                          
-                        int index175_57 = input.index();
+                        int index177_57 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (LA175_57==DIV) && (synpred11_EsperEPL2Grammar())) {s = 402;}
+                        if ( (LA177_57==DIV) && (synpred11_EsperEPL2Grammar())) {s = 402;}
 
-                        else if ( (LA175_57==COMMA||LA175_57==RPAREN) ) {s = 403;}
+                        else if ( (LA177_57==COMMA||LA177_57==RPAREN) ) {s = 403;}
 
                          
-                        input.seek(index175_57);
+                        input.seek(index177_57);
                         if ( s>=0 ) return s;
                         break;
                     case 10 : 
-                        int LA175_160 = input.LA(1);
+                        int LA177_134 = input.LA(1);
 
                          
-                        int index175_160 = input.index();
+                        int index177_134 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_160);
+                        input.seek(index177_134);
                         if ( s>=0 ) return s;
                         break;
                     case 11 : 
-                        int LA175_161 = input.LA(1);
+                        int LA177_135 = input.LA(1);
 
                          
-                        int index175_161 = input.index();
+                        int index177_135 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_161);
+                        input.seek(index177_135);
                         if ( s>=0 ) return s;
                         break;
                     case 12 : 
-                        int LA175_162 = input.LA(1);
+                        int LA177_136 = input.LA(1);
 
                          
-                        int index175_162 = input.index();
+                        int index177_136 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_162);
+                        input.seek(index177_136);
                         if ( s>=0 ) return s;
                         break;
                     case 13 : 
-                        int LA175_198 = input.LA(1);
+                        int LA177_186 = input.LA(1);
 
                          
-                        int index175_198 = input.index();
+                        int index177_186 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_198);
+                        input.seek(index177_186);
                         if ( s>=0 ) return s;
                         break;
                     case 14 : 
-                        int LA175_199 = input.LA(1);
+                        int LA177_187 = input.LA(1);
 
                          
-                        int index175_199 = input.index();
+                        int index177_187 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_199);
+                        input.seek(index177_187);
                         if ( s>=0 ) return s;
                         break;
                     case 15 : 
-                        int LA175_200 = input.LA(1);
+                        int LA177_188 = input.LA(1);
 
                          
-                        int index175_200 = input.index();
+                        int index177_188 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_200);
+                        input.seek(index177_188);
                         if ( s>=0 ) return s;
                         break;
                     case 16 : 
-                        int LA175_245 = input.LA(1);
+                        int LA177_243 = input.LA(1);
 
                          
-                        int index175_245 = input.index();
+                        int index177_243 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_245);
+                        input.seek(index177_243);
                         if ( s>=0 ) return s;
                         break;
                     case 17 : 
-                        int LA175_246 = input.LA(1);
+                        int LA177_244 = input.LA(1);
 
                          
-                        int index175_246 = input.index();
+                        int index177_244 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_246);
+                        input.seek(index177_244);
                         if ( s>=0 ) return s;
                         break;
                     case 18 : 
-                        int LA175_247 = input.LA(1);
+                        int LA177_245 = input.LA(1);
 
                          
-                        int index175_247 = input.index();
+                        int index177_245 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_247);
+                        input.seek(index177_245);
                         if ( s>=0 ) return s;
                         break;
                     case 19 : 
-                        int LA175_290 = input.LA(1);
+                        int LA177_286 = input.LA(1);
 
                          
-                        int index175_290 = input.index();
+                        int index177_286 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_290);
+                        input.seek(index177_286);
                         if ( s>=0 ) return s;
                         break;
                     case 20 : 
-                        int LA175_291 = input.LA(1);
+                        int LA177_287 = input.LA(1);
 
                          
-                        int index175_291 = input.index();
+                        int index177_287 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_291);
+                        input.seek(index177_287);
                         if ( s>=0 ) return s;
                         break;
                     case 21 : 
-                        int LA175_292 = input.LA(1);
+                        int LA177_288 = input.LA(1);
 
                          
-                        int index175_292 = input.index();
+                        int index177_288 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_292);
+                        input.seek(index177_288);
                         if ( s>=0 ) return s;
                         break;
                     case 22 : 
-                        int LA175_346 = input.LA(1);
+                        int LA177_311 = input.LA(1);
 
                          
-                        int index175_346 = input.index();
+                        int index177_311 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_346);
+                        input.seek(index177_311);
                         if ( s>=0 ) return s;
                         break;
                     case 23 : 
-                        int LA175_347 = input.LA(1);
+                        int LA177_312 = input.LA(1);
 
                          
-                        int index175_347 = input.index();
+                        int index177_312 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_347);
+                        input.seek(index177_312);
                         if ( s>=0 ) return s;
                         break;
                     case 24 : 
-                        int LA175_348 = input.LA(1);
+                        int LA177_313 = input.LA(1);
 
                          
-                        int index175_348 = input.index();
+                        int index177_313 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_348);
+                        input.seek(index177_313);
                         if ( s>=0 ) return s;
                         break;
                     case 25 : 
-                        int LA175_385 = input.LA(1);
+                        int LA177_358 = input.LA(1);
 
                          
-                        int index175_385 = input.index();
+                        int index177_358 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_385);
+                        input.seek(index177_358);
                         if ( s>=0 ) return s;
                         break;
                     case 26 : 
-                        int LA175_386 = input.LA(1);
+                        int LA177_359 = input.LA(1);
 
                          
-                        int index175_386 = input.index();
+                        int index177_359 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_386);
+                        input.seek(index177_359);
                         if ( s>=0 ) return s;
                         break;
                     case 27 : 
-                        int LA175_387 = input.LA(1);
+                        int LA177_360 = input.LA(1);
 
                          
-                        int index175_387 = input.index();
+                        int index177_360 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 400;}
+                        if ( (synpred8_EsperEPL2Grammar()) ) {s = 372;}
 
-                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 394;}
+                        else if ( (synpred9_EsperEPL2Grammar()) ) {s = 401;}
 
                          
-                        input.seek(index175_387);
+                        input.seek(index177_360);
                         if ( s>=0 ) return s;
                         break;
             }
             if (state.backtracking>0) {state.failed=true; return -1;}
             NoViableAltException nvae =
-                new NoViableAltException(getDescription(), 175, _s, input);
+                new NoViableAltException(getDescription(), 177, _s, input);
             error(nvae);
             throw nvae;
         }
     }
-    static final String DFA189_eotS =
+    static final String DFA191_eotS =
         "\u0187\uffff";
-    static final String DFA189_eofS =
+    static final String DFA191_eofS =
         "\1\47\4\uffff\1\1\34\uffff\2\1\1\uffff\2\1\u0160\uffff";
-    static final String DFA189_minS =
+    static final String DFA191_minS =
         "\1\5\4\uffff\1\6\34\uffff\2\6\1\uffff\2\6\u0160\uffff";
-    static final String DFA189_maxS =
+    static final String DFA191_maxS =
         "\1\u00fb\4\uffff\1\u00fa\34\uffff\2\u00fa\1\uffff\1\u00fa\1\u00fb"+
         "\u0160\uffff";
-    static final String DFA189_acceptS =
+    static final String DFA191_acceptS =
         "\1\uffff\1\1\45\uffff\1\2\u015f\uffff";
-    static final String DFA189_specialS =
+    static final String DFA191_specialS =
         "\u0187\uffff}>";
-    static final String[] DFA189_transitionS = {
+    static final String[] DFA191_transitionS = {
             "\1\1\4\47\1\5\3\47\1\1\2\47\11\1\3\uffff\5\47\1\1\1\47\1\46"+
             "\1\42\1\43\1\45\1\uffff\1\47\1\uffff\2\47\4\uffff\1\47\3\1\2"+
             "\uffff\3\47\3\uffff\10\1\1\uffff\4\1\2\uffff\1\1\1\uffff\3\1"+
@@ -34280,37 +34373,37 @@ public class EsperEPL2GrammarParser extends Parser {
             ""
     };
 
-    static final short[] DFA189_eot = DFA.unpackEncodedString(DFA189_eotS);
-    static final short[] DFA189_eof = DFA.unpackEncodedString(DFA189_eofS);
-    static final char[] DFA189_min = DFA.unpackEncodedStringToUnsignedChars(DFA189_minS);
-    static final char[] DFA189_max = DFA.unpackEncodedStringToUnsignedChars(DFA189_maxS);
-    static final short[] DFA189_accept = DFA.unpackEncodedString(DFA189_acceptS);
-    static final short[] DFA189_special = DFA.unpackEncodedString(DFA189_specialS);
-    static final short[][] DFA189_transition;
+    static final short[] DFA191_eot = DFA.unpackEncodedString(DFA191_eotS);
+    static final short[] DFA191_eof = DFA.unpackEncodedString(DFA191_eofS);
+    static final char[] DFA191_min = DFA.unpackEncodedStringToUnsignedChars(DFA191_minS);
+    static final char[] DFA191_max = DFA.unpackEncodedStringToUnsignedChars(DFA191_maxS);
+    static final short[] DFA191_accept = DFA.unpackEncodedString(DFA191_acceptS);
+    static final short[] DFA191_special = DFA.unpackEncodedString(DFA191_specialS);
+    static final short[][] DFA191_transition;
 
     static {
-        int numStates = DFA189_transitionS.length;
-        DFA189_transition = new short[numStates][];
+        int numStates = DFA191_transitionS.length;
+        DFA191_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA189_transition[i] = DFA.unpackEncodedString(DFA189_transitionS[i]);
+            DFA191_transition[i] = DFA.unpackEncodedString(DFA191_transitionS[i]);
         }
     }
 
-    class DFA189 extends DFA {
+    class DFA191 extends DFA {
 
-        public DFA189(BaseRecognizer recognizer) {
+        public DFA191(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 189;
-            this.eot = DFA189_eot;
-            this.eof = DFA189_eof;
-            this.min = DFA189_min;
-            this.max = DFA189_max;
-            this.accept = DFA189_accept;
-            this.special = DFA189_special;
-            this.transition = DFA189_transition;
+            this.decisionNumber = 191;
+            this.eot = DFA191_eot;
+            this.eof = DFA191_eof;
+            this.min = DFA191_min;
+            this.max = DFA191_max;
+            this.accept = DFA191_accept;
+            this.special = DFA191_special;
+            this.transition = DFA191_transition;
         }
         public String getDescription() {
-            return "1276:24: (ipi2= keywordAllowedIdent )?";
+            return "1278:24: (ipi2= keywordAllowedIdent )?";
         }
     }
  
@@ -34816,274 +34909,275 @@ public class EsperEPL2GrammarParser extends Parser {
     public static final BitSet FOLLOW_qualifyExpression_in_matchUntilExpression6217 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
     public static final BitSet FOLLOW_UNTIL_in_matchUntilExpression6222 = new BitSet(new long[]{0x0000000000006000L,0x0000000000000000L,0x0000000000000000L,0x0800000488000000L});
     public static final BitSet FOLLOW_qualifyExpression_in_matchUntilExpression6224 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EVERY_EXPR_in_qualifyExpression6288 = new BitSet(new long[]{0x0000000000006000L,0x0000000000000000L,0x0000000000000000L,0x0800000488000000L});
-    public static final BitSet FOLLOW_NOT_EXPR_in_qualifyExpression6294 = new BitSet(new long[]{0x0000000000006000L,0x0000000000000000L,0x0000000000000000L,0x0800000488000000L});
-    public static final BitSet FOLLOW_guardPostFix_in_qualifyExpression6300 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_atomicExpression_in_guardPostFix6343 = new BitSet(new long[]{0x0000000000008002L});
-    public static final BitSet FOLLOW_LPAREN_in_guardPostFix6349 = new BitSet(new long[]{0x0000000000006000L,0x0000000000000000L,0x0000000000000000L,0x0800000488000000L});
-    public static final BitSet FOLLOW_patternExpression_in_guardPostFix6351 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_guardPostFix6353 = new BitSet(new long[]{0x0000000000008002L});
-    public static final BitSet FOLLOW_WHERE_in_guardPostFix6359 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
-    public static final BitSet FOLLOW_guardExpression_in_guardPostFix6361 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_observerExpression_in_atomicExpression6403 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_patternFilterExpression_in_atomicExpression6407 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_observerExpression6422 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_COLON_in_observerExpression6424 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L,0x0000000000000000L,0x0000000008000000L});
-    public static final BitSet FOLLOW_IDENT_in_observerExpression6429 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_AT_in_observerExpression6435 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_observerExpression6438 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600678A000000L});
-    public static final BitSet FOLLOW_expressionWithTimeList_in_observerExpression6440 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_observerExpression6443 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_guardExpression6492 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_COLON_in_guardExpression6494 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
-    public static final BitSet FOLLOW_IDENT_in_guardExpression6497 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_guardExpression6499 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600678A000000L});
-    public static final BitSet FOLLOW_expressionWithTimeList_in_guardExpression6503 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_guardExpression6507 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACK_in_matchUntilRange6521 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000042000000L});
-    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6530 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001840000000L});
-    public static final BitSet FOLLOW_DOT_in_matchUntilRange6538 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_DOT_in_matchUntilRange6540 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000800000000L});
-    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6544 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_COLON_in_matchUntilRange6568 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000000000000L});
-    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6572 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_NUM_DOUBLE_in_matchUntilRange6594 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000842000000L});
-    public static final BitSet FOLLOW_DOT_in_matchUntilRange6626 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000800000000L});
-    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6630 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_NUM_DOUBLE_in_matchUntilRange6690 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_DOT_in_matchUntilRange6727 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_DOT_in_matchUntilRange6729 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000000000000L});
-    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6733 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_DOT_in_matchUntilRange6742 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002000000L});
-    public static final BitSet FOLLOW_NUM_DOUBLE_in_matchUntilRange6746 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_RBRACK_in_matchUntilRange6757 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_eventFilterExpression6942 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
-    public static final BitSet FOLLOW_EQUALS_in_eventFilterExpression6944 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000008000000L});
-    public static final BitSet FOLLOW_classIdentifier_in_eventFilterExpression6953 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000480000000L});
-    public static final BitSet FOLLOW_LPAREN_in_eventFilterExpression6964 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600638A000000L});
-    public static final BitSet FOLLOW_expressionList_in_eventFilterExpression6966 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_eventFilterExpression6969 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
-    public static final BitSet FOLLOW_propertyExpression_in_eventFilterExpression6981 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_propertyExpressionAtomic_in_propertyExpression7026 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
-    public static final BitSet FOLLOW_propertyExpressionAtomic_in_propertyExpression7029 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
-    public static final BitSet FOLLOW_LBRACK_in_propertyExpressionAtomic7059 = new BitSet(new long[]{0xE01C00F407FE4420L,0x000000000001D3DFL,0x0000000000000000L,0x0800000008000000L});
-    public static final BitSet FOLLOW_SELECT_in_propertyExpressionAtomic7062 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600628A000000L});
-    public static final BitSet FOLLOW_propertySelectionList_in_propertyExpressionAtomic7064 = new BitSet(new long[]{0x0000000200000000L});
-    public static final BitSet FOLLOW_FROM_in_propertyExpressionAtomic7066 = new BitSet(new long[]{0xE01C00F403FE4420L,0x000000000001D3DFL,0x0000000000000000L,0x0800000008000000L});
-    public static final BitSet FOLLOW_eventProperty_in_propertyExpressionAtomic7070 = new BitSet(new long[]{0x0000000000018000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_AS_in_propertyExpressionAtomic7073 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
-    public static final BitSet FOLLOW_IDENT_in_propertyExpressionAtomic7075 = new BitSet(new long[]{0x0000000000008000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_WHERE_in_propertyExpressionAtomic7080 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600628A000000L});
-    public static final BitSet FOLLOW_expression_in_propertyExpressionAtomic7082 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_RBRACK_in_propertyExpressionAtomic7086 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_propertySelectionListElement_in_propertySelectionList7136 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_COMMA_in_propertySelectionList7139 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600628A000000L});
-    public static final BitSet FOLLOW_propertySelectionListElement_in_propertySelectionList7142 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_STAR_in_propertySelectionListElement7168 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_propertyStreamSelector_in_propertySelectionListElement7184 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expression_in_propertySelectionListElement7189 = new BitSet(new long[]{0x0000000000010002L});
-    public static final BitSet FOLLOW_AS_in_propertySelectionListElement7192 = new BitSet(new long[]{0xE01C00F403FE4420L,0x000000000001D3DFL,0x0000000000000000L,0x0800000008000000L});
-    public static final BitSet FOLLOW_keywordAllowedIdent_in_propertySelectionListElement7196 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_propertyStreamSelector7240 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_DOT_in_propertyStreamSelector7242 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_STAR_in_propertyStreamSelector7244 = new BitSet(new long[]{0x0000000000010002L});
-    public static final BitSet FOLLOW_AS_in_propertyStreamSelector7247 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
-    public static final BitSet FOLLOW_IDENT_in_propertyStreamSelector7251 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_patternFilterExpression7298 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
-    public static final BitSet FOLLOW_EQUALS_in_patternFilterExpression7300 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000008000000L});
-    public static final BitSet FOLLOW_classIdentifier_in_patternFilterExpression7309 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000480000000L});
-    public static final BitSet FOLLOW_LPAREN_in_patternFilterExpression7320 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600638A000000L});
-    public static final BitSet FOLLOW_expressionList_in_patternFilterExpression7322 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_patternFilterExpression7325 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
-    public static final BitSet FOLLOW_propertyExpression_in_patternFilterExpression7337 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_escapableIdent_in_classIdentifier7387 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_DOT_in_classIdentifier7406 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000008000000L});
-    public static final BitSet FOLLOW_escapableIdent_in_classIdentifier7410 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_escapableIdent_in_classIdentifierNonGreedy7455 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_DOT_in_classIdentifierNonGreedy7490 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000008000000L});
-    public static final BitSet FOLLOW_escapableIdent_in_classIdentifierNonGreedy7494 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_expression_in_expressionList7536 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_COMMA_in_expressionList7539 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600628A000000L});
-    public static final BitSet FOLLOW_expression_in_expressionList7542 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList7570 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_COMMA_in_expressionWithTimeList7573 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600668A000000L});
-    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList7576 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_lastOperand_in_expressionWithTime7602 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastWeekdayOperand_in_expressionWithTime7613 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timePeriod_in_expressionWithTime7624 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expressionQualifyable_in_expressionWithTime7635 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_expressionWithTime7646 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_expressionWithTime7658 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperator_in_expressionWithTime7669 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_weekDayOperator_in_expressionWithTime7681 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numericParameterList_in_expressionWithTime7693 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberSetStar_in_expressionWithTime7698 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expression_in_expressionQualifyable7709 = new BitSet(new long[]{0x0300000000000002L,0x0000000003800000L});
-    public static final BitSet FOLLOW_ASC_in_expressionQualifyable7714 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DESC_in_expressionQualifyable7718 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable7722 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable7726 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable7730 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STAR_in_numberSetStar7787 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LW_in_lastWeekdayOperand7807 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LAST_in_lastOperand7820 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STAR_in_frequencyOperand7832 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_DIV_in_frequencyOperand7834 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_number_in_frequencyOperand7837 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_frequencyOperand7841 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_substitution_in_frequencyOperand7843 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_rangeOperand7892 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_IDENT_in_rangeOperand7896 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_substitution_in_rangeOperand7898 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_COLON_in_rangeOperand7901 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_number_in_rangeOperand7904 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_rangeOperand7908 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_substitution_in_rangeOperand7910 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_lastOperator8024 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_lastOperator8028 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_substitution_in_lastOperator8030 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_LAST_in_lastOperator8033 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_weekDayOperator8081 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_IDENT_in_weekDayOperator8085 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_substitution_in_weekDayOperator8087 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_WEEKDAY_in_weekDayOperator8090 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACK_in_numericParameterList8137 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x328600020A000000L});
-    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList8139 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000810000000L});
-    public static final BitSet FOLLOW_COMMA_in_numericParameterList8142 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x328600020A000000L});
-    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList8144 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000810000000L});
-    public static final BitSet FOLLOW_RBRACK_in_numericParameterList8148 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_numericListParameter8170 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_numericListParameter8176 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberconstant_in_numericListParameter8181 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty8197 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_DOT_in_eventProperty8200 = new BitSet(new long[]{0xE01C00F403FE4420L,0x000000000001D3DFL,0x0000000000000000L,0x0800000008000000L});
-    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty8202 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_eventPropertyIdent_in_eventPropertyAtomic8228 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0200000480000000L});
-    public static final BitSet FOLLOW_LBRACK_in_eventPropertyAtomic8237 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000000000000L});
-    public static final BitSet FOLLOW_NUM_INT_in_eventPropertyAtomic8241 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_RBRACK_in_eventPropertyAtomic8243 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0200000000000000L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic8248 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_eventPropertyAtomic8262 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000006000000000L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_eventPropertyAtomic8267 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic8273 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_eventPropertyAtomic8276 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0200000000000000L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic8281 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic8295 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent8418 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0400000000000000L});
-    public static final BitSet FOLLOW_ESCAPECHAR_in_eventPropertyIdent8430 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_DOT_in_eventPropertyIdent8432 = new BitSet(new long[]{0xE01C00F403FE4422L,0x000000000001D3DFL,0x0000000000000000L,0x0C00000008000000L});
-    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent8436 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0400000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_keywordAllowedIdent8475 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent8484 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AT_in_keywordAllowedIdent8491 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COUNT_in_keywordAllowedIdent8498 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ESCAPE_in_keywordAllowedIdent8505 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EVERY_EXPR_in_keywordAllowedIdent8516 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SUM_in_keywordAllowedIdent8523 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AVG_in_keywordAllowedIdent8530 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MAX_in_keywordAllowedIdent8537 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MIN_in_keywordAllowedIdent8544 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COALESCE_in_keywordAllowedIdent8551 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MEDIAN_in_keywordAllowedIdent8558 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STDDEV_in_keywordAllowedIdent8565 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AVEDEV_in_keywordAllowedIdent8572 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EVENTS_in_keywordAllowedIdent8579 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FIRST_in_keywordAllowedIdent8586 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LAST_in_keywordAllowedIdent8593 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent8600 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RETAINUNION_in_keywordAllowedIdent8607 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent8614 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UNTIL_in_keywordAllowedIdent8621 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PATTERN_in_keywordAllowedIdent8628 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SQL_in_keywordAllowedIdent8635 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_METADATASQL_in_keywordAllowedIdent8642 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PREVIOUS_in_keywordAllowedIdent8649 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PRIOR_in_keywordAllowedIdent8656 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WEEKDAY_in_keywordAllowedIdent8663 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LW_in_keywordAllowedIdent8670 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INSTANCEOF_in_keywordAllowedIdent8677 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CAST_in_keywordAllowedIdent8684 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SNAPSHOT_in_keywordAllowedIdent8691 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VARIABLE_in_keywordAllowedIdent8698 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WINDOW_in_keywordAllowedIdent8707 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_in_keywordAllowedIdent8714 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RIGHT_in_keywordAllowedIdent8721 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OUTER_in_keywordAllowedIdent8728 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FULL_in_keywordAllowedIdent8735 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_JOIN_in_keywordAllowedIdent8742 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_escapableIdent8763 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent8772 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod8795 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod8797 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod8800 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod8803 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8806 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod8812 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod8814 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod8817 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8820 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod8826 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod8828 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8831 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod8837 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8839 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8845 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_dayPart8883 = new BitSet(new long[]{0x0000000000000000L,0x0000000000060000L});
-    public static final BitSet FOLLOW_IDENT_in_dayPart8887 = new BitSet(new long[]{0x0000000000000000L,0x0000000000060000L});
-    public static final BitSet FOLLOW_substitution_in_dayPart8889 = new BitSet(new long[]{0x0000000000000000L,0x0000000000060000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_DAYS_in_dayPart8893 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_DAY_in_dayPart8897 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_hourPart8946 = new BitSet(new long[]{0x0000000000000000L,0x0000000000180000L});
-    public static final BitSet FOLLOW_IDENT_in_hourPart8950 = new BitSet(new long[]{0x0000000000000000L,0x0000000000180000L});
-    public static final BitSet FOLLOW_substitution_in_hourPart8952 = new BitSet(new long[]{0x0000000000000000L,0x0000000000180000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_HOURS_in_hourPart8956 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_HOUR_in_hourPart8960 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_minutePart9009 = new BitSet(new long[]{0x0000000000100000L,0x0000000000600000L});
-    public static final BitSet FOLLOW_IDENT_in_minutePart9013 = new BitSet(new long[]{0x0000000000100000L,0x0000000000600000L});
-    public static final BitSet FOLLOW_substitution_in_minutePart9015 = new BitSet(new long[]{0x0000000000100000L,0x0000000000600000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MINUTES_in_minutePart9019 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MINUTE_in_minutePart9023 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MIN_in_minutePart9027 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_secondPart9077 = new BitSet(new long[]{0x0000000000000000L,0x0000000003800000L});
-    public static final BitSet FOLLOW_IDENT_in_secondPart9081 = new BitSet(new long[]{0x0000000000000000L,0x0000000003800000L});
-    public static final BitSet FOLLOW_substitution_in_secondPart9083 = new BitSet(new long[]{0x0000000000000000L,0x0000000003800000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_secondPart9087 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_secondPart9091 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_secondPart9095 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_millisecondPart9145 = new BitSet(new long[]{0x0000000000000000L,0x000000001C000000L});
-    public static final BitSet FOLLOW_IDENT_in_millisecondPart9149 = new BitSet(new long[]{0x0000000000000000L,0x000000001C000000L});
-    public static final BitSet FOLLOW_substitution_in_millisecondPart9151 = new BitSet(new long[]{0x0000000000000000L,0x000000001C000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart9155 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart9159 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart9163 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_INT_in_number9218 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_LONG_in_number9235 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_FLOAT_in_number9252 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_DOUBLE_in_number9269 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUESTION_in_substitution9290 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberconstant_in_constant9309 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_stringconstant_in_constant9316 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOLEAN_TRUE_in_constant9329 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOLEAN_FALSE_in_constant9349 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_NULL_in_constant9369 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_numberconstant9391 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x3086000002000000L});
-    public static final BitSet FOLLOW_PLUS_in_numberconstant9397 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x3086000002000000L});
-    public static final BitSet FOLLOW_number_in_numberconstant9401 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_stringconstant9430 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant9446 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EVERY_EXPR_in_qualifyExpression6289 = new BitSet(new long[]{0x0000000000006000L,0x0000000000000000L,0x0000000000000000L,0x0800000488000000L});
+    public static final BitSet FOLLOW_NOT_EXPR_in_qualifyExpression6295 = new BitSet(new long[]{0x0000000000006000L,0x0000000000000000L,0x0000000000000000L,0x0800000488000000L});
+    public static final BitSet FOLLOW_matchUntilRange_in_qualifyExpression6301 = new BitSet(new long[]{0x0000000000006000L,0x0000000000000000L,0x0000000000000000L,0x0800000488000000L});
+    public static final BitSet FOLLOW_guardPostFix_in_qualifyExpression6310 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_atomicExpression_in_guardPostFix6391 = new BitSet(new long[]{0x0000000000008002L});
+    public static final BitSet FOLLOW_LPAREN_in_guardPostFix6397 = new BitSet(new long[]{0x0000000000006000L,0x0000000000000000L,0x0000000000000000L,0x0800000488000000L});
+    public static final BitSet FOLLOW_patternExpression_in_guardPostFix6399 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_guardPostFix6401 = new BitSet(new long[]{0x0000000000008002L});
+    public static final BitSet FOLLOW_WHERE_in_guardPostFix6407 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_guardExpression_in_guardPostFix6409 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_observerExpression_in_atomicExpression6451 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_patternFilterExpression_in_atomicExpression6455 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_observerExpression6470 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
+    public static final BitSet FOLLOW_COLON_in_observerExpression6472 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L,0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_IDENT_in_observerExpression6477 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_AT_in_observerExpression6483 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_observerExpression6486 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600678A000000L});
+    public static final BitSet FOLLOW_expressionWithTimeList_in_observerExpression6488 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_observerExpression6491 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_guardExpression6540 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
+    public static final BitSet FOLLOW_COLON_in_guardExpression6542 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_IDENT_in_guardExpression6545 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_guardExpression6547 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600678A000000L});
+    public static final BitSet FOLLOW_expressionWithTimeList_in_guardExpression6551 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_guardExpression6555 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACK_in_matchUntilRange6569 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000042000000L});
+    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6578 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001840000000L});
+    public static final BitSet FOLLOW_DOT_in_matchUntilRange6586 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_DOT_in_matchUntilRange6588 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000800000000L});
+    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6592 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_COLON_in_matchUntilRange6616 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000000000000L});
+    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6620 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_NUM_DOUBLE_in_matchUntilRange6642 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000842000000L});
+    public static final BitSet FOLLOW_DOT_in_matchUntilRange6674 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000800000000L});
+    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6678 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_NUM_DOUBLE_in_matchUntilRange6738 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_DOT_in_matchUntilRange6775 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_DOT_in_matchUntilRange6777 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000000000000L});
+    public static final BitSet FOLLOW_NUM_INT_in_matchUntilRange6781 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_DOT_in_matchUntilRange6790 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002000000L});
+    public static final BitSet FOLLOW_NUM_DOUBLE_in_matchUntilRange6794 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_RBRACK_in_matchUntilRange6805 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_eventFilterExpression6990 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
+    public static final BitSet FOLLOW_EQUALS_in_eventFilterExpression6992 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000008000000L});
+    public static final BitSet FOLLOW_classIdentifier_in_eventFilterExpression7001 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000480000000L});
+    public static final BitSet FOLLOW_LPAREN_in_eventFilterExpression7012 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600638A000000L});
+    public static final BitSet FOLLOW_expressionList_in_eventFilterExpression7014 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_eventFilterExpression7017 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
+    public static final BitSet FOLLOW_propertyExpression_in_eventFilterExpression7029 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_propertyExpressionAtomic_in_propertyExpression7074 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
+    public static final BitSet FOLLOW_propertyExpressionAtomic_in_propertyExpression7077 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
+    public static final BitSet FOLLOW_LBRACK_in_propertyExpressionAtomic7107 = new BitSet(new long[]{0xE01C00F407FE4420L,0x000000000001D3DFL,0x0000000000000000L,0x0800000008000000L});
+    public static final BitSet FOLLOW_SELECT_in_propertyExpressionAtomic7110 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600628A000000L});
+    public static final BitSet FOLLOW_propertySelectionList_in_propertyExpressionAtomic7112 = new BitSet(new long[]{0x0000000200000000L});
+    public static final BitSet FOLLOW_FROM_in_propertyExpressionAtomic7114 = new BitSet(new long[]{0xE01C00F403FE4420L,0x000000000001D3DFL,0x0000000000000000L,0x0800000008000000L});
+    public static final BitSet FOLLOW_eventProperty_in_propertyExpressionAtomic7118 = new BitSet(new long[]{0x0000000000018000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_AS_in_propertyExpressionAtomic7121 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_IDENT_in_propertyExpressionAtomic7123 = new BitSet(new long[]{0x0000000000008000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_WHERE_in_propertyExpressionAtomic7128 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600628A000000L});
+    public static final BitSet FOLLOW_expression_in_propertyExpressionAtomic7130 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_RBRACK_in_propertyExpressionAtomic7134 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_propertySelectionListElement_in_propertySelectionList7184 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_COMMA_in_propertySelectionList7187 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600628A000000L});
+    public static final BitSet FOLLOW_propertySelectionListElement_in_propertySelectionList7190 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_STAR_in_propertySelectionListElement7216 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_propertyStreamSelector_in_propertySelectionListElement7232 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expression_in_propertySelectionListElement7237 = new BitSet(new long[]{0x0000000000010002L});
+    public static final BitSet FOLLOW_AS_in_propertySelectionListElement7240 = new BitSet(new long[]{0xE01C00F403FE4420L,0x000000000001D3DFL,0x0000000000000000L,0x0800000008000000L});
+    public static final BitSet FOLLOW_keywordAllowedIdent_in_propertySelectionListElement7244 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_propertyStreamSelector7288 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_DOT_in_propertyStreamSelector7290 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_STAR_in_propertyStreamSelector7292 = new BitSet(new long[]{0x0000000000010002L});
+    public static final BitSet FOLLOW_AS_in_propertyStreamSelector7295 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_IDENT_in_propertyStreamSelector7299 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_patternFilterExpression7346 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
+    public static final BitSet FOLLOW_EQUALS_in_patternFilterExpression7348 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000008000000L});
+    public static final BitSet FOLLOW_classIdentifier_in_patternFilterExpression7357 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000480000000L});
+    public static final BitSet FOLLOW_LPAREN_in_patternFilterExpression7368 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600638A000000L});
+    public static final BitSet FOLLOW_expressionList_in_patternFilterExpression7370 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_patternFilterExpression7373 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
+    public static final BitSet FOLLOW_propertyExpression_in_patternFilterExpression7385 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_escapableIdent_in_classIdentifier7435 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_DOT_in_classIdentifier7454 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000008000000L});
+    public static final BitSet FOLLOW_escapableIdent_in_classIdentifier7458 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_escapableIdent_in_classIdentifierNonGreedy7503 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_DOT_in_classIdentifierNonGreedy7538 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000008000000L});
+    public static final BitSet FOLLOW_escapableIdent_in_classIdentifierNonGreedy7542 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_expression_in_expressionList7584 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_COMMA_in_expressionList7587 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600628A000000L});
+    public static final BitSet FOLLOW_expression_in_expressionList7590 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList7618 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_COMMA_in_expressionWithTimeList7621 = new BitSet(new long[]{0xFC1C00F40BFE6420L,0x00000000E001D7FFL,0x0000000000000000L,0x3AA600668A000000L});
+    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList7624 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_lastOperand_in_expressionWithTime7650 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastWeekdayOperand_in_expressionWithTime7661 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timePeriod_in_expressionWithTime7672 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionQualifyable_in_expressionWithTime7683 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_expressionWithTime7694 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_expressionWithTime7706 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperator_in_expressionWithTime7717 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekDayOperator_in_expressionWithTime7729 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numericParameterList_in_expressionWithTime7741 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberSetStar_in_expressionWithTime7746 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expression_in_expressionQualifyable7757 = new BitSet(new long[]{0x0300000000000002L,0x0000000003800000L});
+    public static final BitSet FOLLOW_ASC_in_expressionQualifyable7762 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DESC_in_expressionQualifyable7766 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable7770 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable7774 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable7778 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STAR_in_numberSetStar7835 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LW_in_lastWeekdayOperand7855 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LAST_in_lastOperand7868 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STAR_in_frequencyOperand7880 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0008000000000000L});
+    public static final BitSet FOLLOW_DIV_in_frequencyOperand7882 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_number_in_frequencyOperand7885 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_frequencyOperand7889 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_substitution_in_frequencyOperand7891 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_rangeOperand7940 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
+    public static final BitSet FOLLOW_IDENT_in_rangeOperand7944 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
+    public static final BitSet FOLLOW_substitution_in_rangeOperand7946 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
+    public static final BitSet FOLLOW_COLON_in_rangeOperand7949 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_number_in_rangeOperand7952 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_rangeOperand7956 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_substitution_in_rangeOperand7958 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_lastOperator8072 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_lastOperator8076 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_substitution_in_lastOperator8078 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_LAST_in_lastOperator8081 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_weekDayOperator8129 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_IDENT_in_weekDayOperator8133 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_substitution_in_weekDayOperator8135 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000040L});
+    public static final BitSet FOLLOW_WEEKDAY_in_weekDayOperator8138 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACK_in_numericParameterList8185 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x328600020A000000L});
+    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList8187 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000810000000L});
+    public static final BitSet FOLLOW_COMMA_in_numericParameterList8190 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x328600020A000000L});
+    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList8192 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000810000000L});
+    public static final BitSet FOLLOW_RBRACK_in_numericParameterList8196 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_numericListParameter8218 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_numericListParameter8224 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberconstant_in_numericListParameter8229 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty8245 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_DOT_in_eventProperty8248 = new BitSet(new long[]{0xE01C00F403FE4420L,0x000000000001D3DFL,0x0000000000000000L,0x0800000008000000L});
+    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty8250 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_eventPropertyIdent_in_eventPropertyAtomic8276 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0200000480000000L});
+    public static final BitSet FOLLOW_LBRACK_in_eventPropertyAtomic8285 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0080000000000000L});
+    public static final BitSet FOLLOW_NUM_INT_in_eventPropertyAtomic8289 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_RBRACK_in_eventPropertyAtomic8291 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0200000000000000L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic8296 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LPAREN_in_eventPropertyAtomic8310 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000006000000000L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_eventPropertyAtomic8315 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic8321 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_eventPropertyAtomic8324 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0200000000000000L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic8329 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic8343 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent8466 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0400000000000000L});
+    public static final BitSet FOLLOW_ESCAPECHAR_in_eventPropertyIdent8478 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_DOT_in_eventPropertyIdent8480 = new BitSet(new long[]{0xE01C00F403FE4422L,0x000000000001D3DFL,0x0000000000000000L,0x0C00000008000000L});
+    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent8484 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0400000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_keywordAllowedIdent8523 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent8532 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AT_in_keywordAllowedIdent8539 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COUNT_in_keywordAllowedIdent8546 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ESCAPE_in_keywordAllowedIdent8553 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EVERY_EXPR_in_keywordAllowedIdent8564 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SUM_in_keywordAllowedIdent8571 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AVG_in_keywordAllowedIdent8578 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MAX_in_keywordAllowedIdent8585 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MIN_in_keywordAllowedIdent8592 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COALESCE_in_keywordAllowedIdent8599 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MEDIAN_in_keywordAllowedIdent8606 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STDDEV_in_keywordAllowedIdent8613 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AVEDEV_in_keywordAllowedIdent8620 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EVENTS_in_keywordAllowedIdent8627 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FIRST_in_keywordAllowedIdent8634 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LAST_in_keywordAllowedIdent8641 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent8648 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RETAINUNION_in_keywordAllowedIdent8655 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent8662 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UNTIL_in_keywordAllowedIdent8669 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PATTERN_in_keywordAllowedIdent8676 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SQL_in_keywordAllowedIdent8683 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_METADATASQL_in_keywordAllowedIdent8690 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PREVIOUS_in_keywordAllowedIdent8697 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PRIOR_in_keywordAllowedIdent8704 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WEEKDAY_in_keywordAllowedIdent8711 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LW_in_keywordAllowedIdent8718 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INSTANCEOF_in_keywordAllowedIdent8725 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CAST_in_keywordAllowedIdent8732 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SNAPSHOT_in_keywordAllowedIdent8739 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VARIABLE_in_keywordAllowedIdent8746 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WINDOW_in_keywordAllowedIdent8755 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_in_keywordAllowedIdent8762 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RIGHT_in_keywordAllowedIdent8769 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OUTER_in_keywordAllowedIdent8776 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FULL_in_keywordAllowedIdent8783 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_JOIN_in_keywordAllowedIdent8790 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_escapableIdent8811 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent8820 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod8843 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod8845 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod8848 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod8851 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8854 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod8860 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod8862 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod8865 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8868 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod8874 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod8876 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8879 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod8885 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x328600000A000000L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8887 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod8893 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_dayPart8931 = new BitSet(new long[]{0x0000000000000000L,0x0000000000060000L});
+    public static final BitSet FOLLOW_IDENT_in_dayPart8935 = new BitSet(new long[]{0x0000000000000000L,0x0000000000060000L});
+    public static final BitSet FOLLOW_substitution_in_dayPart8937 = new BitSet(new long[]{0x0000000000000000L,0x0000000000060000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_DAYS_in_dayPart8941 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_DAY_in_dayPart8945 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_hourPart8994 = new BitSet(new long[]{0x0000000000000000L,0x0000000000180000L});
+    public static final BitSet FOLLOW_IDENT_in_hourPart8998 = new BitSet(new long[]{0x0000000000000000L,0x0000000000180000L});
+    public static final BitSet FOLLOW_substitution_in_hourPart9000 = new BitSet(new long[]{0x0000000000000000L,0x0000000000180000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_HOURS_in_hourPart9004 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_HOUR_in_hourPart9008 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_minutePart9057 = new BitSet(new long[]{0x0000000000100000L,0x0000000000600000L});
+    public static final BitSet FOLLOW_IDENT_in_minutePart9061 = new BitSet(new long[]{0x0000000000100000L,0x0000000000600000L});
+    public static final BitSet FOLLOW_substitution_in_minutePart9063 = new BitSet(new long[]{0x0000000000100000L,0x0000000000600000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MINUTES_in_minutePart9067 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MINUTE_in_minutePart9071 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MIN_in_minutePart9075 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_secondPart9125 = new BitSet(new long[]{0x0000000000000000L,0x0000000003800000L});
+    public static final BitSet FOLLOW_IDENT_in_secondPart9129 = new BitSet(new long[]{0x0000000000000000L,0x0000000003800000L});
+    public static final BitSet FOLLOW_substitution_in_secondPart9131 = new BitSet(new long[]{0x0000000000000000L,0x0000000003800000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_secondPart9135 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_secondPart9139 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_secondPart9143 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_millisecondPart9193 = new BitSet(new long[]{0x0000000000000000L,0x000000001C000000L});
+    public static final BitSet FOLLOW_IDENT_in_millisecondPart9197 = new BitSet(new long[]{0x0000000000000000L,0x000000001C000000L});
+    public static final BitSet FOLLOW_substitution_in_millisecondPart9199 = new BitSet(new long[]{0x0000000000000000L,0x000000001C000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart9203 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart9207 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart9211 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_INT_in_number9266 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_LONG_in_number9283 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_FLOAT_in_number9300 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_DOUBLE_in_number9317 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUESTION_in_substitution9338 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberconstant_in_constant9357 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_stringconstant_in_constant9364 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOLEAN_TRUE_in_constant9377 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOLEAN_FALSE_in_constant9397 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_NULL_in_constant9417 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_numberconstant9439 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x3086000002000000L});
+    public static final BitSet FOLLOW_PLUS_in_numberconstant9445 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x3086000002000000L});
+    public static final BitSet FOLLOW_number_in_numberconstant9449 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_stringconstant9478 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant9494 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_streamSelector_in_synpred1_EsperEPL2Grammar2813 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_timePeriod_in_synpred2_EsperEPL2Grammar3501 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_builtinFunc_in_synpred3_EsperEPL2Grammar5232 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_eventProperty_in_synpred4_EsperEPL2Grammar5907 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_propertyStreamSelector_in_synpred5_EsperEPL2Grammar7179 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperand_in_synpred6_EsperEPL2Grammar7597 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastWeekdayOperand_in_synpred7_EsperEPL2Grammar7608 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timePeriod_in_synpred8_EsperEPL2Grammar7619 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expressionQualifyable_in_synpred9_EsperEPL2Grammar7630 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_synpred10_EsperEPL2Grammar7641 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_synpred11_EsperEPL2Grammar7653 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperator_in_synpred12_EsperEPL2Grammar7664 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_weekDayOperator_in_synpred13_EsperEPL2Grammar7675 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numericParameterList_in_synpred14_EsperEPL2Grammar7688 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_propertyStreamSelector_in_synpred5_EsperEPL2Grammar7227 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperand_in_synpred6_EsperEPL2Grammar7645 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastWeekdayOperand_in_synpred7_EsperEPL2Grammar7656 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timePeriod_in_synpred8_EsperEPL2Grammar7667 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionQualifyable_in_synpred9_EsperEPL2Grammar7678 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_synpred10_EsperEPL2Grammar7689 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_synpred11_EsperEPL2Grammar7701 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperator_in_synpred12_EsperEPL2Grammar7712 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekDayOperator_in_synpred13_EsperEPL2Grammar7723 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numericParameterList_in_synpred14_EsperEPL2Grammar7736 = new BitSet(new long[]{0x0000000000000002L});
 
 }

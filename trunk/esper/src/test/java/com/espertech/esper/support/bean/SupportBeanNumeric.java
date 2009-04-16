@@ -10,6 +10,7 @@ public class SupportBeanNumeric implements Serializable
     private Integer intTwo;
     private BigInteger bigint;
     private BigDecimal bigdec;
+    private BigDecimal bigdecTwo;
     private double doubleOne;
     private double doubleTwo;
 
@@ -93,5 +94,15 @@ public class SupportBeanNumeric implements Serializable
     public void setDoubleTwo(double doubleTwo)
     {
         this.doubleTwo = doubleTwo;
+    }
+
+    public BigDecimal getBigdecTwo()
+    {
+        return bigdecTwo;
+    }
+
+    public void setBigdecTwo(BigDecimal bigdecTwo)
+    {
+        this.bigdecTwo = bigdecTwo;
     }
 }

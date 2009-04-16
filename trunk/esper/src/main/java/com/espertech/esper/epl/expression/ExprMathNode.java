@@ -17,6 +17,8 @@ import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.util.JavaClassHelper;
 
+import java.math.BigDecimal;
+
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
  */
@@ -75,7 +77,10 @@ public class ExprMathNode extends ExprNode
 
         if ((mathArithTypeEnum == MathArithTypeEnum.DIVIDE) && (!isIntegerDivision))
         {
-            resultType = Double.class;
+            if (resultType != BigDecimal.class)
+            {
+                resultType = Double.class;
+            }            
         }
 
         arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType, childTypeOne, childTypeTwo, isIntegerDivision, isDivisionByZeroReturnsNull);

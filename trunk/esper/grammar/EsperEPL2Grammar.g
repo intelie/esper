@@ -1042,10 +1042,12 @@ matchUntilExpression
 	;
 
 qualifyExpression
-	:	(e=EVERY_EXPR | n=NOT_EXPR)?
+	:	((e=EVERY_EXPR | n=NOT_EXPR) (r=matchUntilRange)? )?
 		guardPostFix
-		-> {e != null}? ^(EVERY_EXPR guardPostFix)
-		-> {n != null}? ^(PATTERN_NOT_EXPR guardPostFix)
+		-> {e != null && r == null}? ^(EVERY_EXPR guardPostFix)
+		-> {n != null && r == null}? ^(PATTERN_NOT_EXPR guardPostFix)
+		-> {e != null && r != null}? ^(EVERY_EXPR ^(MATCH_UNTIL_EXPR matchUntilRange guardPostFix) )
+		-> {n != null && r != null}? ^(PATTERN_NOT_EXPR ^(MATCH_UNTIL_EXPR matchUntilRange guardPostFix) )
 		-> guardPostFix
 	;
 	

@@ -185,6 +185,18 @@ public class TestBigNumberSupport extends TestCase
         EventBean event = listener.assertOneGetNewAndReset();
         ArrayAssertionUtil.assertProps(event, "v1,v2,v3,v4,v5".split(","),
                 new Object[] {new BigDecimal(3), new BigDecimal(4), new BigDecimal(5d), BigInteger.valueOf(6), new BigDecimal(6d)});
+
+        // test aggregation-sum, multiplication and division all together; test for ESPER-340
+        stmt.destroy();
+        stmt = epService.getEPAdministrator().createEPL(
+                "select (sum(bigdecTwo * bigdec)/sum(bigdec)) as avgRate from SupportBeanNumeric");
+        stmt.addListener(listener);
+        listener.reset();
+        assertEquals(BigDecimal.class, stmt.getEventType().getPropertyType("avgRate"));
+        sendBigNumEvent(0, 5);
+        Object avgRate = listener.assertOneGetNewAndReset().get("avgRate");
+        assertTrue(avgRate instanceof BigDecimal);
+        assertEquals(new BigDecimal(5d), avgRate);
     }
 
     public void testAggregation()
@@ -301,7 +313,9 @@ public class TestBigNumberSupport extends TestCase
 
     private void sendBigNumEvent(int bigInt, double bigDec)
     {
-        epService.getEPRuntime().sendEvent(new SupportBeanNumeric(BigInteger.valueOf(bigInt), new BigDecimal(bigDec)));
+        SupportBeanNumeric bean = new SupportBeanNumeric(BigInteger.valueOf(bigInt), new BigDecimal(bigDec));
+        bean.setBigdecTwo(new BigDecimal(bigDec));
+        epService.getEPRuntime().sendEvent(bean);
     }
 
     private void sendSupportBean(int intPrimitive, double doublePrimitive)

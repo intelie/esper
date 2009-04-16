@@ -516,7 +516,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             return existingType;
         }
 
-        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(eventTypeName);
+        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(eventTypeName, configurationEventTypeXMLDOM.getSchemaResource() == null);
         EventType type;
         if (configurationEventTypeXMLDOM.getSchemaResource() == null)
         {
@@ -558,7 +558,13 @@ public class EventAdapterServiceImpl implements EventAdapterService
             propertyTypes = propertiesSuperset;
         }
 
-        EventTypeMetadata metadata = EventTypeMetadata.createWrapper(eventTypeName, isNamedWindow, isInsertInto);
+        boolean isPropertyAgnostic = false;
+        if (underlyingEventType instanceof EventTypeSPI)
+        {
+            isPropertyAgnostic = ((EventTypeSPI) underlyingEventType).getMetadata().isPropertyAgnostic();
+        }
+
+        EventTypeMetadata metadata = EventTypeMetadata.createWrapper(eventTypeName, isNamedWindow, isInsertInto, isPropertyAgnostic);
         WrapperEventType newEventType = new WrapperEventType(metadata, eventTypeName, underlyingEventType, propertyTypes, this);
 
 	    EventType existingType = nameToTypeMap.get(eventTypeName);

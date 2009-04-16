@@ -164,7 +164,7 @@ public class EngineEnvContext implements Context
 
     public Hashtable<?, ?> getEnvironment() throws NamingException
     {
-        throw new UnsupportedOperationException();
+        return new Hashtable(context);
     }
 
     public void close() throws NamingException

@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 EsperEPL2Ast.g 2009-02-11 11:19:07
+// $ANTLR 3.1.1 EsperEPL2Ast.g 2009-04-15 18:49:13
 
   package com.espertech.esper.epl.generated;
   import java.util.Stack;
