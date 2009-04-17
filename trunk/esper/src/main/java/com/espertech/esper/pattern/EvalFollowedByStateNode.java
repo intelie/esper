@@ -121,6 +121,12 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
 
         fromNode.quit();
         nodes.remove(fromNode);
+        
+        if (nodes.isEmpty())
+        {
+            this.getParentEvaluator().evaluateFalse(this);
+            quit();
+        }
     }
 
     public final void quit()

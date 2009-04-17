@@ -166,6 +166,28 @@ public class TestNotOperator extends TestCase implements SupportBeanConstants
         statement.stop();
     }
 
+    public void testNotFollowedBy()
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventType("A", SupportBean.class);
+        config.addEventType("B", SupportMarketDataBean.class);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String stmtText = "select * from pattern [ every( A(intPrimitive>0) -> (B and not A(intPrimitive=0) ) ) ]";
+        EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        // A(a=1) A(a=2) A(a=0) A(a=3) ...
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 1));
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E5", "M1", 1d));
+        assertTrue(listener.isInvoked());
+    }
+
     private void sendTimer(long timeInMSec, EPServiceProvider epService)
     {
         CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);

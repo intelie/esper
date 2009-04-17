@@ -6,6 +6,7 @@ import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanConstants;
+import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
@@ -49,6 +50,15 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(9.999)");
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(2.001)");
+        testCase.add("B1", "b", events.getEvent("B1"));
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(4.001)");
+        testCase.add("B1", "b", events.getEvent("B1"));
+        testCase.add("B2", "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " where timer:within(2.001)");
@@ -305,6 +315,31 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
 
         sendTimer(3000, epService);
         assertFalse(testListener.isInvoked());
+    }
+
+    public void testPatternNotFollowedBy()
+    {
+        // test for ESPER-350
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventType("A", SupportBean.class);
+        config.addEventType("B", SupportMarketDataBean.class);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        sendTimer(0, epService);
+
+        String stmtText = "select * from pattern [ every(A -> (B where timer:within(5 sec))) ]";
+        EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        sendTimer(6000, epService);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 1));
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E5", "M1", 1d));
+        assertTrue(listener.isInvoked());
     }
 
     private void runAssertion(EPServiceProvider epService, SupportUpdateListener testListener)

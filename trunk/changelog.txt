@@ -1,6 +1,17 @@
 Esper Changelog
 ===================
 
+Changes in version 3.1.0
+------------------------
+
+Major API changes
+  - The behavior of "timer:within" when used within an "every" in a pattern has changed: The sub-expression qualified by "timer-within" upon expiry 
+    of the timer now evaluates to permanently false, while previously it simple stopped. This allows the "every" operator to restart such sub-expression.
+    For example, the expression:
+      every(A -> (B where timer:within(5 sec)))
+    ... When no B event arrives after an A event, the "every" restarts the subexpression looking for the next A followed by B within 5 sec.
+  
+
 Changes in version 3.0.0
 ------------------------
 
