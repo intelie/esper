@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.lang.annotation.Annotation;
 
 public class TestResultSetProcessorFactory extends TestCase
 {
@@ -186,6 +187,7 @@ public class TestResultSetProcessorFactory extends TestCase
                 null,
                 false,
                 null,
-                new HashSet<String>());
+                new HashSet<String>(),
+                new Annotation[0]);
     }
 }

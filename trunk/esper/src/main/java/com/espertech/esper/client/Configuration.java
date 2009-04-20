@@ -17,6 +17,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 
+import com.espertech.esper.client.annotation.Name;
+
 /**
  * An instance of <tt>Configuration</tt> allows the application
  * to specify properties to be used when
@@ -838,6 +840,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     	imports.add("java.math.*");
     	imports.add("java.text.*");
     	imports.add("java.util.*");
+        imports.add("com.espertech.esper.client.annotation.*"); // TODO
     }
 
     /**

@@ -13,6 +13,7 @@ import com.espertech.esper.util.MetaDefItem;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 import java.io.Serializable;
 
 /**
@@ -36,6 +37,7 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
     private boolean existsSubstitutionParameters;
     private boolean hasVariables;
+    private List<AnnotationDesc> annotations = new ArrayList<AnnotationDesc>();
     private static final long serialVersionUID = 5390766716794133693L;
 
     /**
@@ -314,5 +316,10 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     public void setRowLimitSpec(RowLimitSpec rowLimitSpec)
     {
         this.rowLimitSpec = rowLimitSpec;
+    }
+
+    public List<AnnotationDesc> getAnnotations()
+    {
+        return annotations;
     }
 }

@@ -399,6 +399,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case OBJECT_PARAM_ORDERED_EXPR:
                 leaveObjectParamOrderedExpression(node);
                 break;
+            case ANNOTATION:
+                leaveAnnotation(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -824,6 +827,12 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         ExprOrderedExpr exprNode = new ExprOrderedExpr(isDescending);
         astExprNodeMap.put(node, exprNode);
+    }
+
+    private void leaveAnnotation(Tree node)
+    {
+        log.debug(".leaveAnnotation");
+        statementSpec.getAnnotations().add(ASTAnnotationHelper.walk(node));
     }
 
     private void leaveArray(Tree node)

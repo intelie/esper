@@ -218,6 +218,9 @@ tokens
 	CREATE_WINDOW_COL_TYPE_LIST;
 	CREATE_WINDOW_COL_TYPE;
 	NUMBERSETSTAR;
+	ANNOTATION;
+	ANNOTATION_ARRAY;
+	ANNOTATION_VALUE;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -469,14 +472,16 @@ tokens
 }
 
 startPatternExpressionRule
-	:	patternExpression
+	:	annotations?	
+		patternExpression
 		EOF!
 	;
 	
 startEPLExpressionRule 
-	:	eplExpression
+	:	annotations?	
+		eplExpression
 		EOF
-		-> ^(EPL_EXPR eplExpression) 
+		-> ^(EPL_EXPR annotations eplExpression) 
 	;
 
 startEventPropertyRule 
@@ -484,6 +489,38 @@ startEventPropertyRule
 		EOF!
 	;
 
+//----------------------------------------------------------------------------
+// Annotations
+//----------------------------------------------------------------------------
+annotations
+    :   annotation+
+    ;
+
+annotation
+    :   '@' classIdentifier ( '(' ( elementValuePairs | elementValue )? ')' )?
+	-> ^(ANNOTATION classIdentifier elementValuePairs? elementValue?)
+    ;
+    
+elementValuePairs
+    :   elementValuePair (COMMA! elementValuePair)*
+    ;
+
+elementValuePair
+    :   i=IDENT '=' elementValue
+	-> ^(ANNOTATION_VALUE $i elementValue)
+    ;
+    
+elementValue
+    :   annotation
+    |   (elementValueArrayInitializer) -> elementValueArrayInitializer
+    |	constant
+    ;
+    
+elementValueArrayInitializer
+    :   '{' (elementValue (',' elementValue)*)? (',')? '}'
+	-> ^(ANNOTATION_ARRAY elementValue*)
+    ;
+    
 //----------------------------------------------------------------------------
 // EPL expression
 //----------------------------------------------------------------------------

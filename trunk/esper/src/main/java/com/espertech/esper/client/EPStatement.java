@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Statement interface that provides methods to start, stop and destroy a statement as well as
  * get statement information such as statement name, expression text and current state.
@@ -143,4 +145,6 @@ public interface EPStatement extends EPListenable, EPIterable
      * @param listener to add
      */
     public void addListenerWithReplay(UpdateListener listener);
+
+    public Annotation[] getAnnotations();    
 }

@@ -10,11 +10,15 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.epl.core.EngineImportException;
+import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.named.NamedWindowService;
+import com.espertech.esper.epl.parse.ASTWalkException;
 import com.espertech.esper.epl.spec.*;
+import com.espertech.esper.epl.annotation.EPLAnnotationInvocationHandler;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.NativeEventType;
 import com.espertech.esper.event.map.MapEventType;
@@ -30,6 +34,10 @@ import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -228,7 +236,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern,
                     services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout,
                     statementContext.getEpStatementHandle(), statementContext.getVariableService(), statementContext.getStatementResultService(),
-                    services.getTimeSource(), new StatementMetadata(statementType), userObject);
+                    services.getTimeSource(), new StatementMetadata(statementType), userObject, compiledSpec.getAnnotations());
 
             boolean isInsertInto = statementSpec.getInsertIntoDesc() != null;
             statementContext.getStatementResultService().setContext(statement, epServiceProvider,
@@ -908,6 +916,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             subselect.setStatementSpecCompiled(compiled);
         }
 
+        Annotation[] annotations = compileAnnotations(spec.getAnnotations(), statementContext.getMethodResolutionService());
+
         return new StatementSpecCompiled(
                 spec.getOnTriggerDesc(),
                 spec.getCreateWindowDesc(),
@@ -925,8 +935,40 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 visitor.getSubselects(),
                 spec.isHasVariables(),
                 spec.getRowLimitSpec(),
-                eventTypeReferences
+                eventTypeReferences,
+                annotations
                 );
+    }
+
+    private static Annotation[] compileAnnotations(List<AnnotationDesc> desc, MethodResolutionService methodResolutionService)
+    {
+        Annotation[] annotations = new Annotation[desc.size()];
+        for (int i = 0; i < desc.size(); i++)
+        {
+            annotations[i] = createProxy(desc.get(i), methodResolutionService);
+        }
+        return annotations;
+    }
+
+    private static Annotation createProxy(AnnotationDesc desc, MethodResolutionService methodResolutionService)
+    {
+        final Class annotationClass;
+        try
+        {
+            annotationClass = methodResolutionService.resolveClass(desc.getName());
+        }
+        catch (EngineImportException e)
+        {
+            // TODO
+            throw new ASTWalkException(e.getMessage());
+        }
+
+        final String toStringResult = desc.getName();
+        final Object value = desc.getValue();
+        final Map<String, Object> properties = desc.getProperties();
+        InvocationHandler handler = new EPLAnnotationInvocationHandler(annotationClass, properties, toStringResult, value);
+        Annotation annotation = (Annotation) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] {annotationClass}, handler);
+        return annotation;
     }
 
     // The create window command:

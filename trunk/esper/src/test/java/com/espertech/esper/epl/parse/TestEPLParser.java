@@ -640,6 +640,40 @@ public class TestEPLParser extends TestCase
         assertIsValid("select * from A where exp > ANY (select a from B)");
         assertIsValid("select * from A where 1 <= ANY (select a from B)");
         assertIsValid("select * from A where {1,2,3} > ALL (1,2,3)");
+
+        // annotations
+        assertIsValid("@SOMEANNOTATION select * from B");
+        assertIsValid("@SomeOther(a=1, b=true, c='a', d=\"alal\") select * from B");
+        assertIsValid("@SomeOther(@inner2(a=3)) select * from B");
+        assertIsValid("@SomeOther(@inner1) select * from B");
+        assertIsValid("@SomeOther(tags=@inner1(a=4), moretags=@inner2(a=3)) select * from B");
+        assertIsValid("@SomeOther(innerdata={1, 2, 3}) select * from B");
+        assertIsValid("@SomeOther(innerdata={1, 2, 3}) select * from B");
+        String text = "@EPL(\n" +
+                "  name=\"MyStmtName\", \n" +
+                "  description=\"Selects all fields\", \n" +
+                "  onUpdate=\"some test\", \n" +
+                "  onUpdateRemove=\"some text\", \n" +
+                "  tags=@Tags" +
+                ")\n" +
+                "select * from MyField";
+        assertIsValid(text);
+        text = "@EPL(name=\"MyStmtName\"," +
+                "  tags=@Tags(" +
+                "    {@Tag(name=\"vehicleId\", type='int', value=100), " +
+                "     @Tag(name=\"vehicleId\", type='int', value=100)" +
+                "    } " +
+                "  )" +
+                ")\n" +
+                "select * from MyField";
+        assertIsValid(text);
+
+        // TODO
+        // much simpler
+        assertIsValid("@Name('MyStatementName')\n" +
+                      "@Description('This statement does ABC')\n" +
+                      "@Tag(name='abc', value='cde')\n" +
+                      "select a from B");
     }
 
     public void testBitWiseCases() throws Exception

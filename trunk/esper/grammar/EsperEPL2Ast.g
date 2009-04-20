@@ -52,10 +52,27 @@ options
 }
 
 //----------------------------------------------------------------------------
+// Annotations
+//----------------------------------------------------------------------------
+annotation
+	:	^(a=ANNOTATION CLASS_IDENT elementValuePair* elementValue?) { leaveNode($a); }		
+	;
+
+elementValuePair
+	:	^(a=ANNOTATION_VALUE IDENT elementValue)
+    	;
+    
+elementValue
+    	:   	annotation
+	|	 ^(ANNOTATION_ARRAY elementValue*)
+    	|	constant[false]
+    	;    
+
+//----------------------------------------------------------------------------
 // EPL expression
 //----------------------------------------------------------------------------
 startEPLExpressionRule
-	:	^(EPL_EXPR eplExpressionRule) { end(); }		
+	:	^(EPL_EXPR annotation* eplExpressionRule) { end(); }		
 	;
 
 eplExpressionRule

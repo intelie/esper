@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
+import java.lang.annotation.Annotation;
 
 /**
  * Specification object representing a complete EPL statement including all EPL constructs.
@@ -38,6 +39,7 @@ public class StatementSpecCompiled
     private final boolean hasVariables;
     private final RowLimitSpec rowLimitSpec;
     private final Set<String> eventTypeReferences;
+    private final Annotation[] annotations;
 
     /**
      * Ctor.
@@ -75,7 +77,8 @@ public class StatementSpecCompiled
                                  List<ExprSubselectNode> subSelectExpressions,
                                  boolean hasVariables,
                                  RowLimitSpec rowLimitSpec,
-                                 Set<String> eventTypeReferences)
+                                 Set<String> eventTypeReferences,
+                                 Annotation[] annotations)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -94,6 +97,7 @@ public class StatementSpecCompiled
         this.hasVariables = hasVariables;
         this.rowLimitSpec = rowLimitSpec;
         this.eventTypeReferences = eventTypeReferences;
+        this.annotations = annotations;
     }
 
     /**
@@ -118,6 +122,7 @@ public class StatementSpecCompiled
         hasVariables = false;
         rowLimitSpec = null;
         eventTypeReferences = new HashSet<String>();
+        annotations = new Annotation[0];
     }
 
     /**
@@ -287,5 +292,10 @@ public class StatementSpecCompiled
     public Set<String> getEventTypeReferences()
     {
         return eventTypeReferences;
+    }
+
+    public Annotation[] getAnnotations()
+    {
+        return annotations;
     }
 }

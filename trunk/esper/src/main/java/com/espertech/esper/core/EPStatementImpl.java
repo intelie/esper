@@ -20,6 +20,7 @@ import com.espertech.esper.view.Viewable;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.lang.annotation.Annotation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +49,7 @@ public class EPStatementImpl implements EPStatementSPI
     private StatementResultService statementResultService;
     private StatementMetadata statementMetadata;
     private Object userObject;
+    private Annotation[] annotations;
 
     /**
      * Ctor.
@@ -83,7 +85,8 @@ public class EPStatementImpl implements EPStatementSPI
                               StatementResultService statementResultService,
                               TimeSourceService timeSourceService,
                               StatementMetadata statementMetadata,
-                              Object userObject)
+                              Object userObject,
+                              Annotation[] annotations)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
@@ -113,6 +116,7 @@ public class EPStatementImpl implements EPStatementSPI
         this.statementResultService = statementResultService;
         this.statementMetadata = statementMetadata;
         this.userObject = userObject;
+        this.annotations = annotations;
         statementResultService.setUpdateListeners(statementListenerSet);
     }
 
@@ -467,5 +471,10 @@ public class EPStatementImpl implements EPStatementSPI
     public Object getUserObject()
     {
         return userObject;
+    }
+
+    public Annotation[] getAnnotations()
+    {
+        return annotations;
     }
 }
