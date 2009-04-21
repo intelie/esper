@@ -22,7 +22,7 @@ public interface PluginLoader
      * <p>
      * Invoked before the engine instance is fully initialized. Thereby this is not the place to
      * look up an engine instance from {@link com.espertech.esper.client.EPServiceProviderManager}
-     * and use it. Use the {@link #postInitialize) method instead.
+     * and use it. Use the {@link #postInitialize} method instead.
      * @param name is the loader name
      * @param properties is a set of properties from the configuration
      * @param epService is the SPI of the engine itself for sending events to

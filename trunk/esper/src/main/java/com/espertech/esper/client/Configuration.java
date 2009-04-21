@@ -840,7 +840,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     	imports.add("java.math.*");
     	imports.add("java.text.*");
     	imports.add("java.util.*");
-        imports.add("com.espertech.esper.client.annotation.*"); // TODO
+        imports.add("com.espertech.esper.client.annotation.*");
     }
 
     /**

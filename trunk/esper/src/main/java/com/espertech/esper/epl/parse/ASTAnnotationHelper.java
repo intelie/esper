@@ -8,8 +8,17 @@ import org.antlr.runtime.tree.Tree;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Walker to annotation stuctures.
+ */
 public class ASTAnnotationHelper
 {
+    /**
+     * Walk an annotation root name or child node (nested annotations).
+     * @param node annotation walk node
+     * @return annotation descriptor
+     * @throws ASTWalkException if the walk failed
+     */
     public static AnnotationDesc walk(Tree node) throws ASTWalkException
     {
         String name = node.getChild(0).getText();

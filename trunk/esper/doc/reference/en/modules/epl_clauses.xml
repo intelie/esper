@@ -364,6 +364,137 @@ select `insert` from `Order`]]></programlisting>
 
 		</sect2>
 
+		<sect2 id="epl-syntax-annotation">
+			<title>Annotation</title>
+			<indexterm><primary>annotation</primary></indexterm>
+
+			<para>
+				An annotation is an addition made to information in a statement. Esper provides certain built-in annotations for defining statement name, adding a statement description or for tagging statements such as for managing statements or directing statement output. 
+				Other then the built-in annotations, applications can provide their own annotation classes that the EPL compiler can populate.
+			</para>
+			
+			<para>
+				An annotation is part of the statement text and precedes the EPL select or pattern statement. Annotations are therefore part of the EPL grammar. The syntax for annotations follows the host language (Java, .NET) annotation syntax:
+			</para>
+			<synopsis>@<emphasis>annotation_name</emphasis> [(<emphasis>annotation_parameters</emphasis>)]</synopsis>
+			
+			<para>
+				An annotation consists of the annotation name and optional annotation parameters. The <emphasis>annotation_name</emphasis> is the simple class name or fully-qualified class name of the annotation class. The optional <emphasis>annotation_parameters</emphasis> 
+				are a list of key-value pairs following the syntax:
+			</para>
+			<synopsis>@<emphasis>annotation_name</emphasis> (<emphasis>attribute_name</emphasis> = <emphasis>attribute_value</emphasis>, [name=value, ...])</synopsis>
+			
+			<para>
+				The <emphasis>attribute_name</emphasis> is an identifier that must match the attributes defined by the annotation class. An <emphasis>attribute_value</emphasis> is a constant of any of the primitive types or string, an array or another (nested) annotation. Null values and enumeration values are not allowed as attribute values.			
+			</para>
+			
+			<para>
+				Use the <literal>getAnnotations</literal> method of <literal>EPStatement</literal> to obtain annotations provided via statement text.
+			</para>
+
+			<sect3 id="epl-syntax-annotation-builtin">
+				<title>Built-In Annotations</title>
+				<indexterm><primary>annotation</primary><secondary>builtin</secondary></indexterm>
+				
+				<para>
+					The list of built-in EPL annotations is:
+				</para>
+
+				<table frame="topbot">
+					<title>Built-In EPL Annotations</title>
+					<tgroup cols="3">
+						<colspec colwidth="0.50*"/>
+						<colspec colwidth="1*"/>
+						<colspec colwidth="0.75*"/>
+						<thead>
+							<row>
+								<entry>Name</entry>
+								<entry>Purpose and Attributes</entry>
+								<entry>Example</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>Name</entry>
+								<entry>
+									<para>Provides a statement name. Attributes are:</para>
+									<para>value : Statement name.</para>
+								</entry>
+								<entry><programlisting><![CDATA[@Name("MyStatementName")]]></programlisting></entry>
+							</row>
+							<row>
+								<entry>Description</entry>
+								<entry>
+									<para>Provides a statement textual description. Attributes are:</para>
+									<para>value : Statement description.</para>
+								</entry>
+								<entry><programlisting><![CDATA[@Description("A statement description 
+is placed here.")]]></programlisting></entry>
+							</row>
+							<row>
+								<entry>Tag</entry>
+								<entry>
+									<para>For tagging a statement with additional information. Attributes are:</para>
+									<para>name : Tag name.</para>
+									<para>value : Tag value.</para>
+								</entry>
+								<entry><programlisting><![CDATA[@Tag(name="MyTagName", 
+ value="MyTagValue")]]></programlisting></entry>
+							</row>
+						</tbody>
+					</tgroup>				
+				</table>
+
+				<para>
+					The following example statement text specifies each of the built-in annotations in combination:
+				</para>
+				<programlisting><![CDATA[@Name("RevenuePerCustomer")
+@Description("Outputs revenue per customer considering all events encountered so far.")
+@Tag(name="grouping", value="customer")
+
+select customerId, sum(revenue) from CustomerRevenueEvent]]></programlisting>
+
+				<para>
+					If providing a statement name through the API, the statement name provided through the API overrides the annotation-provided statement name.
+				</para>
+			</sect3>
+
+			<sect3 id="epl-syntax-annotation-application">
+				<title>Application-Provided Annotations</title>
+				<indexterm><primary>annotation</primary><secondary>application-provided</secondary></indexterm>
+				
+				<para>
+					Your application may provide its own annotation classes. The engine detects and populates annotation instances for application annotation classes.
+				</para>
+
+				<para>
+					To enable the engine to recognize application annotation classes, your annotation name must include the package name (i.e. be fully-qualified) or your engine configuration must import the annotation class or package via the configuration API.  
+				</para>
+
+				<para>
+					For example, assume that your application defines an annotation in its application code as follows:
+				</para>
+				<programlisting><![CDATA[public @interface ProcessMonitor {
+  String processName();
+  boolean isLongRunning default false;
+  int[] subProcessIds;
+}]]></programlisting>
+
+				<para>
+					Shown next is an EPL statement text that utilizes the annotation class defined earlier:
+				</para>
+				<programlisting><![CDATA[@ProcessMonitor(processName='CreditApproval',
+  isLongRunning=true, subProcessIds = {1, 2, 3} )
+  
+select count(*) from ProcessEvent(processId in (1, 2, 3).win:time(30)]]></programlisting>
+
+				<para>
+					Above example assumes the <literal>ProcessMonitor</literal> annotation class is imported via configuration XML or API. Here is an example API call to import annotations provided by a package <literal>com.mycompany.myannotations</literal>:
+				</para>
+				<programlisting><![CDATA[epService.getEPAdministrator().getConfiguration().addImport("com.mycompany.myannotations.*");]]></programlisting>
+			</sect3>
+
+		</sect2>
     </sect1>
 
     <sect1 id="epl-select-list">

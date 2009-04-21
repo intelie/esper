@@ -668,7 +668,6 @@ public class TestEPLParser extends TestCase
                 "select * from MyField";
         assertIsValid(text);
 
-        // TODO
         // much simpler
         assertIsValid("@Name('MyStatementName')\n" +
                       "@Description('This statement does ABC')\n" +

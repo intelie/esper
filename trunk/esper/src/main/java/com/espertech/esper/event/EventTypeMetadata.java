@@ -23,6 +23,7 @@ public class EventTypeMetadata
      * @param typeClass type of the type
      * @param applicationConfigured true if configured by the application
      * @param applicationType type of application class or null if not an application type
+     * @param isPropertyAgnostic true for types that accept any property name as a valid property (unchecked type)
      */
     protected EventTypeMetadata(String primaryName, Set<String> secondaryNames, TypeClass typeClass, boolean applicationConfigured, ApplicationType applicationType, boolean isPropertyAgnostic)
     {
@@ -85,6 +86,7 @@ public class EventTypeMetadata
     /**
      * Factory for a XML type.
      * @param name type name
+     * @param isPropertyAgnostic true for types that accept any property name as a valid property (unchecked type)
      * @return instance
      */
     public static EventTypeMetadata createXMLType(String name, boolean isPropertyAgnostic)
@@ -107,6 +109,7 @@ public class EventTypeMetadata
      * @param eventTypeName insert-into of create-window name
      * @param namedWindow true for named window
      * @param insertInto true for insert-into
+     * @param isPropertyAgnostic true for types that accept any property name as a valid property (unchecked type)
      * @return instance
      */
     public static EventTypeMetadata createWrapper(String eventTypeName, boolean namedWindow, boolean insertInto, boolean isPropertyAgnostic)
@@ -213,6 +216,10 @@ public class EventTypeMetadata
         return publicName;
     }
 
+    /**
+     * Returns true for types that accept any property name as a valid property (unchecked type).
+     * @return indicator whether type is unchecked (agnostic to property)
+     */
     public boolean isPropertyAgnostic()
     {
         return isPropertyAgnostic;

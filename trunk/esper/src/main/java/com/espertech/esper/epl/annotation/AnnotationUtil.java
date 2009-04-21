@@ -14,8 +14,18 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
 
+/**
+ * Utility to handle EPL statement annotations.
+ */
 public class AnnotationUtil
 {
+    /**
+     * Compiles annotations to an annotation array.
+     * @param desc a list of descriptors
+     * @param methodResolutionService for resolving the annotation class
+     * @return annotations or empty array if none
+     * @throws AnnotationException if annotations could not be created
+     */
     public static Annotation[] compileAnnotations(List<AnnotationDesc> desc, MethodResolutionService methodResolutionService)
             throws AnnotationException
     {
@@ -56,7 +66,7 @@ public class AnnotationUtil
 
         // get attribute values
         List<String> providedValues = new ArrayList<String>();
-        for (Pair<String, Object> annotationValuePair : desc.getProperties())
+        for (Pair<String, Object> annotationValuePair : desc.getAttributes())
         {
             providedValues.add(annotationValuePair.getFirst());
         }
@@ -68,7 +78,7 @@ public class AnnotationUtil
             // find value pair for this attribute
             String attributeName = annotationAttribute.getName();
             Pair<String, Object> pairFound = null;
-            for (Pair<String, Object> annotationValuePair : desc.getProperties())
+            for (Pair<String, Object> annotationValuePair : desc.getAttributes())
             {
                 if (annotationValuePair.getFirst().equals(attributeName))
                 {
@@ -85,23 +95,27 @@ public class AnnotationUtil
 
         if (requiredAttributes.size() > 0)
         {
-            throw new AnnotationException("Annotation '" + annotationClass.getSimpleName() + "' requires a value for attribute '" + requiredAttributes.iterator().next() + "'");            
+            List<String> required = new ArrayList<String>(requiredAttributes);
+            Collections.sort(required);
+            throw new AnnotationException("Annotation '" + annotationClass.getSimpleName() + "' requires a value for attribute '" + required.iterator().next() + "'");
         }
 
         if (providedValues.size() > 0)
         {
-            if (allAttributes.contains(providedValues.get(0)))
+            List<String> provided = new ArrayList<String>(providedValues);
+            Collections.sort(provided);
+            if (allAttributes.contains(provided.get(0)))
             {
-                throw new AnnotationException("Annotation '" + annotationClass.getSimpleName() + "' has duplicate attribute '" + providedValues.get(0) + "'");
+                throw new AnnotationException("Annotation '" + annotationClass.getSimpleName() + "' has duplicate attribute values for attribute '" + provided.get(0) + "'");
             }
             else
             {
-                throw new AnnotationException("Annotation '" + annotationClass.getSimpleName() + "' does not have an attribute '" + providedValues.get(0) + "'");
+                throw new AnnotationException("Annotation '" + annotationClass.getSimpleName() + "' does not have an attribute '" + provided.get(0) + "'");
             }
         }
 
         // return handler
-        final String toStringResult = desc.getName();
+        final String toStringResult = "@" + desc.getName();
         InvocationHandler handler = new EPLAnnotationInvocationHandler(annotationClass, properties, toStringResult);
         return (Annotation) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] {annotationClass}, handler);
     }

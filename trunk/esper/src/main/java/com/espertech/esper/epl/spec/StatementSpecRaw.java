@@ -318,11 +318,19 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
         this.rowLimitSpec = rowLimitSpec;
     }
 
+    /**
+     * Returns a list of annotation descriptors.
+     * @return annotation descriptors
+     */
     public List<AnnotationDesc> getAnnotations()
     {
         return annotations;
     }
 
+    /**
+     * Sets a list of annotation descriptors.
+     * @param annotations annotation descriptors
+     */
     public void setAnnotations(List<AnnotationDesc> annotations)
     {
         this.annotations = annotations;

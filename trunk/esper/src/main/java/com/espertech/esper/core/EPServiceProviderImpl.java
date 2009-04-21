@@ -67,6 +67,9 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         doInitialize();
     }
 
+    /**
+     * Invoked after an initialize operation.
+     */
     public void postInitialize()
     {
         try
@@ -252,6 +255,9 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         postInitialize();
     }
 
+    /**
+     * Performs the initialization.
+     */
     protected void doInitialize()
     {
         // This setting applies to all engines in a given VM

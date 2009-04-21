@@ -69,6 +69,7 @@ public class EPStatementImpl implements EPStatementSPI
      * @param timeSourceService time source provider
      * @param statementMetadata statement metadata
      * @param userObject the application define user object associated to each statement, if supplied
+     * @param annotations annotations associated to statement
      */
     public EPStatementImpl(String statementId,
                               String statementName,

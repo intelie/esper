@@ -26,7 +26,7 @@ public class TestStatementAnnotation extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
     }
-    
+
     public void testInvalid() throws Exception
     {
         epService.getEPAdministrator().getConfiguration().addImport("com.espertech.esper.regression.client.*");
@@ -53,7 +53,7 @@ public class TestStatementAnnotation extends TestCase
                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'stringArray' but received a Integer-typed value [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={1},value={}) select * from Bean]");
 
         tryInvalid("@MyAnnotationValue(value='a', value='a') select * from Bean", false,
-                   "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute 'value' [@MyAnnotationValue(value='a', value='a') select * from Bean]");
+                   "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute values for attribute 'value' [@MyAnnotationValue(value='a', value='a') select * from Bean]");
         tryInvalid("@ABC select * from Bean", false,
                    "Failed to process statement annotations: Failed to resolve @-annotation class: Could not load class by name 'ABC', please check imports [@ABC select * from Bean]");
 
@@ -115,6 +115,7 @@ public class TestStatementAnnotation extends TestCase
 
         assertEquals(Description.class, annotations[0].annotationType());
         assertEquals("MyTestStmt description", ((Description)annotations[0]).value());
+        assertEquals("@Description", annotations[0].toString());
 
         assertEquals(Name.class, annotations[1].annotationType());
         assertEquals("MyTestStmt", ((Name)annotations[1]).value());

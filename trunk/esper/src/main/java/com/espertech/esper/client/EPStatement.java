@@ -146,5 +146,12 @@ public interface EPStatement extends EPListenable, EPIterable
      */
     public void addListenerWithReplay(UpdateListener listener);
 
-    public Annotation[] getAnnotations();    
+    /**
+     * Returns EPL or pattern statement annotations provided in the statement text, if any.
+     * <p>
+     * See the annotation {@link com.espertech.esper.client.annotation} package for
+     * available annotations.
+     * @return annotations or a zero-length array if no annotaions have been specified.
+     */
+    public Annotation[] getAnnotations();
 }

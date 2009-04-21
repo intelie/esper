@@ -4,26 +4,42 @@ import com.espertech.esper.collection.Pair;
 
 import java.util.List;
 
+/**
+ * Describes an annotation.
+ */
 public class AnnotationDesc
 {
     private String name;
 
     // Map of Identifier and value={constant, array of value (Object[]), AnnotationDesc} (exclusive with value)
-    private List<Pair<String, Object>> properties;
+    private List<Pair<String, Object>> attributes;
 
-    public AnnotationDesc(String name, List<Pair<String, Object>> properties)
+    /**
+     * Ctor.
+     * @param name name of annotation
+     * @param attributes are the attribute values
+     */
+    public AnnotationDesc(String name, List<Pair<String, Object>> attributes)
     {
         this.name = name;
-        this.properties = properties;
+        this.attributes = attributes;
     }
 
+    /**
+     * Returns annotation interface class name.
+     * @return name of class, can be fully qualified
+     */
     public String getName()
     {
         return name;
     }
 
-    public List<Pair<String, Object>> getProperties()
+    /**
+     * Returns annotation attributes.
+     * @return the attribute values
+     */
+    public List<Pair<String, Object>> getAttributes()
     {
-        return properties;
+        return attributes;
     }
 }

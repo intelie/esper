@@ -60,6 +60,7 @@ public class StatementSpecCompiled
      * @param hasVariables indicator whether the statement uses variables
      * @param rowLimitSpec row limit specification, or null if none supplied
      * @param eventTypeReferences event type names statically determined
+     * @param annotations statement annotations
      */
     public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
@@ -294,6 +295,10 @@ public class StatementSpecCompiled
         return eventTypeReferences;
     }
 
+    /**
+     * Returns annotations or empty array if none.
+     * @return annotations
+     */
     public Annotation[] getAnnotations()
     {
         return annotations;

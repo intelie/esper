@@ -6,17 +6,26 @@ import java.lang.reflect.Proxy;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
+/**
+ * Invocation handler for EPL and application-specified annotations.
+ */
 public class EPLAnnotationInvocationHandler implements InvocationHandler
 {
     private final Class annotationClass;
     private final String toStringResult;
-    private final Map<String, Object> properties;
+    private final Map<String, Object> attributes;
     private volatile Integer hashCode;
 
-    public EPLAnnotationInvocationHandler(Class annotationClass, Map<String, Object> properties, String toStringResult)
+    /**
+     * Ctor.
+     * @param annotationClass annotation class
+     * @param attributes attribute values
+     * @param toStringResult returned as a result of toString
+     */
+    public EPLAnnotationInvocationHandler(Class annotationClass, Map<String, Object> attributes, String toStringResult)
     {
         this.annotationClass = annotationClass;
-        this.properties = properties;
+        this.attributes = attributes;
         this.toStringResult = toStringResult;
     }
 
@@ -41,9 +50,9 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
         {
             return annotationClass;
         }
-        if (properties.containsKey(method.getName()))
+        if (attributes.containsKey(method.getName()))
         {
-            return properties.get(method.getName());
+            return attributes.get(method.getName());
         }
         return null;
     }
@@ -82,15 +91,15 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
             return false;
         }
 
-        for (Map.Entry<String, Object> entry : properties.entrySet())
+        for (Map.Entry<String, Object> entry : attributes.entrySet())
         {
-            if (!that.properties.containsKey(entry.getKey()))
+            if (!that.attributes.containsKey(entry.getKey()))
             {
                 return false;
             }
 
             Object thisValue = entry.getValue();
-            Object thatValue = that.properties.get(entry.getKey());
+            Object thatValue = that.attributes.get(entry.getKey());
             if (thisValue != null ? !thisValue.equals(thatValue) : thatValue != null)
             {
                 return false;
@@ -108,7 +117,7 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
         }
 
         int result = annotationClass.hashCode();
-        for (String key : properties.keySet())
+        for (String key : attributes.keySet())
         {
             result = 31 * result + key.hashCode();
         }

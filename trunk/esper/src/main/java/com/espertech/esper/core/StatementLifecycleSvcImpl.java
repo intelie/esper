@@ -136,9 +136,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 if ((desc.getName().equals(Name.class.getSimpleName())) || (desc.getName().equals(Name.class.getName())))
                 {
-                    if (desc.getProperties().get(0) != null)
+                    if (desc.getAttributes().get(0) != null)
                     {
-                        optStatementName = desc.getProperties().get(0).getSecond().toString();
+                        optStatementName = desc.getAttributes().get(0).getSecond().toString();
                     }
                 }
             }
