@@ -1,23 +1,20 @@
 package com.espertech.esper.epl.spec;
 
-import java.util.Map;
+import com.espertech.esper.collection.Pair;
+
+import java.util.List;
 
 public class AnnotationDesc
 {
     private String name;
 
-    // Value={constant, array of value, AnnotationDesc}  (exclusive with Map)
-    private Object value;
-
     // Map of Identifier and value={constant, array of value (Object[]), AnnotationDesc} (exclusive with value)
-    private Map<String, Object> properties;
+    private List<Pair<String, Object>> properties;
 
-
-    public AnnotationDesc(String name, Object value, Map<String, Object> properties)
+    public AnnotationDesc(String name, List<Pair<String, Object>> properties)
     {
         this.name = name;
         this.properties = properties;
-        this.value = value;
     }
 
     public String getName()
@@ -25,13 +22,8 @@ public class AnnotationDesc
         return name;
     }
 
-    public Map<String, Object> getProperties()
+    public List<Pair<String, Object>> getProperties()
     {
         return properties;
-    }
-
-    public Object getValue()
-    {
-        return value;
     }
 }

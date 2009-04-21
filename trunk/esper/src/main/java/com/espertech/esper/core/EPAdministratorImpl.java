@@ -375,6 +375,7 @@ public class EPAdministratorImpl implements EPAdministrator
         statementSpec.getStreamSpecs().add(patternStreamSpec);
         statementSpec.getSelectClauseSpec().getSelectExprList().clear();
         statementSpec.getSelectClauseSpec().getSelectExprList().add(new SelectClauseElementWildcard());
+        statementSpec.setAnnotations(walker.getStatementSpec().getAnnotations());
 
         return statementSpec;
     }

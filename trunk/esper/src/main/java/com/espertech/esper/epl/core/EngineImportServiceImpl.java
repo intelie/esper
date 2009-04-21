@@ -139,7 +139,7 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         catch (ClassNotFoundException e)
         {
-            throw new EngineImportException("Could not load class by name '" + className + "' ", e);
+            throw new EngineImportException("Could not load class by name '" + className + "', please check imports", e);
         }
 
         try
@@ -162,7 +162,7 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         catch (ClassNotFoundException e)
         {
-            throw new EngineImportException("Could not load class by name '" + className + "' ", e);
+            throw new EngineImportException("Could not load class by name '" + className + "', please check imports", e);
         }
 
         Method methods[] = clazz.getMethods();
@@ -202,7 +202,7 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         catch (ClassNotFoundException e)
         {
-            throw new EngineImportException("Could not load class by name '" + className + "' ", e);
+            throw new EngineImportException("Could not load class by name '" + className + "', please check imports", e);
         }
 
         return clazz;

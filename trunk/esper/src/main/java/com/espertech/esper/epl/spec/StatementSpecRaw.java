@@ -322,4 +322,9 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     {
         return annotations;
     }
+
+    public void setAnnotations(List<AnnotationDesc> annotations)
+    {
+        this.annotations = annotations;
+    }
 }

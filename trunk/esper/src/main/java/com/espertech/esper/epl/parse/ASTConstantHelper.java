@@ -51,7 +51,7 @@ public class ASTConstantHelper
             case EsperEPL2GrammarParser.STRING_TYPE:   return StringValue.parseString(node.getText());
             case EsperEPL2GrammarParser.NULL_TYPE:     return null;
             default:
-                throw new IllegalArgumentException("Unexpected constant of non-primitve type " + node.getType() + " encountered");
+                throw new IllegalArgumentException("Unexpected constant of non-primitive type " + node.getType() + " encountered");
         }
     }
 

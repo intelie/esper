@@ -9,16 +9,15 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.annotation.Name;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.core.EngineImportException;
-import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.annotation.AnnotationException;
+import com.espertech.esper.epl.annotation.AnnotationUtil;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.named.NamedWindowService;
-import com.espertech.esper.epl.parse.ASTWalkException;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.epl.annotation.EPLAnnotationInvocationHandler;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.NativeEventType;
 import com.espertech.esper.event.map.MapEventType;
@@ -35,9 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -131,8 +127,24 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      */
     protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject)
     {
-        // Determine a statement name, i.e. use the id or use/generate one for the name passed in
         String statementName = statementId;
+
+        // find name annotation
+        if ((statementSpec.getAnnotations() != null) && (!statementSpec.getAnnotations().isEmpty()))
+        {
+            for (AnnotationDesc desc : statementSpec.getAnnotations())
+            {
+                if ((desc.getName().equals(Name.class.getSimpleName())) || (desc.getName().equals(Name.class.getName())))
+                {
+                    if (desc.getProperties().get(0) != null)
+                    {
+                        optStatementName = desc.getProperties().get(0).getSecond().toString();
+                    }
+                }
+            }
+        }
+
+        // Determine a statement name, i.e. use the id or use/generate one for the name passed in
         if (optStatementName != null)
         {
             statementName = getUniqueStatementName(optStatementName, statementId);
@@ -916,7 +928,21 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             subselect.setStatementSpecCompiled(compiled);
         }
 
-        Annotation[] annotations = compileAnnotations(spec.getAnnotations(), statementContext.getMethodResolutionService());
+        Annotation[] annotations;
+        try
+        {
+            annotations = AnnotationUtil.compileAnnotations(spec.getAnnotations(), statementContext.getMethodResolutionService());
+        }
+        catch (AnnotationException e)
+        {
+            throw new EPStatementException("Failed to process statement annotations: " + e.getMessage(), eplStatement);        
+        }
+        catch (RuntimeException ex)
+        {
+            String message = "Unexpected exception compiling annotations in statement, please consult the log file and report the exception";
+            log.error(message, ex);
+            throw new EPStatementException(message, eplStatement);
+        }
 
         return new StatementSpecCompiled(
                 spec.getOnTriggerDesc(),
@@ -938,37 +964,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 eventTypeReferences,
                 annotations
                 );
-    }
-
-    private static Annotation[] compileAnnotations(List<AnnotationDesc> desc, MethodResolutionService methodResolutionService)
-    {
-        Annotation[] annotations = new Annotation[desc.size()];
-        for (int i = 0; i < desc.size(); i++)
-        {
-            annotations[i] = createProxy(desc.get(i), methodResolutionService);
-        }
-        return annotations;
-    }
-
-    private static Annotation createProxy(AnnotationDesc desc, MethodResolutionService methodResolutionService)
-    {
-        final Class annotationClass;
-        try
-        {
-            annotationClass = methodResolutionService.resolveClass(desc.getName());
-        }
-        catch (EngineImportException e)
-        {
-            // TODO
-            throw new ASTWalkException(e.getMessage());
-        }
-
-        final String toStringResult = desc.getName();
-        final Object value = desc.getValue();
-        final Map<String, Object> properties = desc.getProperties();
-        InvocationHandler handler = new EPLAnnotationInvocationHandler(annotationClass, properties, toStringResult, value);
-        Annotation annotation = (Annotation) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] {annotationClass}, handler);
-        return annotation;
     }
 
     // The create window command:

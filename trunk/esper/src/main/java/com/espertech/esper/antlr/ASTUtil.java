@@ -139,7 +139,11 @@ public class ASTUtil
             printer.print(node.getType());
             printer.print("]");
 
-            if (node.getText().contains("\\"))
+            if (node.getText() == null)
+            {
+                printer.print(" (null value in text)");
+            }
+            else if (node.getText().contains("\\"))
             {
                 int count = 0;
                 for (int i = 0; i < node.getText().length(); i++)

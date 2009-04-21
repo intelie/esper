@@ -55,6 +55,10 @@ public class SimpleTypeCasterFactory
         {
             return new ByteCaster();
         }
+        else if ((targetType == Character.class) && (fromType == String.class))
+        {
+            return new CharacterCaster();
+        }
         else if (targetType == BigInteger.class)
         {
             return new BigIntCaster();
@@ -166,6 +170,27 @@ public class SimpleTypeCasterFactory
         public boolean isNumericCast()
         {
             return true;
+        }
+    }
+
+    /**
+     * Cast implementation for char values.
+     */
+    private static class CharacterCaster implements SimpleTypeCaster
+    {
+        public Object cast(Object object)
+        {
+            String value = object.toString();
+            if ((value == null) || (value.length() == 0))
+            {
+                return null;
+            }
+            return value.charAt(0);
+        }
+
+        public boolean isNumericCast()
+        {
+            return false;
         }
     }
 

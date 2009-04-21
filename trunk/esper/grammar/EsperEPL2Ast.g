@@ -54,8 +54,8 @@ options
 //----------------------------------------------------------------------------
 // Annotations
 //----------------------------------------------------------------------------
-annotation
-	:	^(a=ANNOTATION CLASS_IDENT elementValuePair* elementValue?) { leaveNode($a); }		
+annotation[boolean isLeaveNode]
+	:	^(a=ANNOTATION CLASS_IDENT elementValuePair* elementValue?) { if ($isLeaveNode) leaveNode($a); }
 	;
 
 elementValuePair
@@ -63,7 +63,7 @@ elementValuePair
     	;
     
 elementValue
-    	:   	annotation
+    	:   	annotation[false]
 	|	 ^(ANNOTATION_ARRAY elementValue*)
     	|	constant[false]
     	;    
@@ -72,7 +72,7 @@ elementValue
 // EPL expression
 //----------------------------------------------------------------------------
 startEPLExpressionRule
-	:	^(EPL_EXPR annotation* eplExpressionRule) { end(); }		
+	:	^(EPL_EXPR annotation[true]* eplExpressionRule) { end(); }		
 	;
 
 eplExpressionRule
@@ -449,7 +449,7 @@ libFunc
 // pattern expression
 //----------------------------------------------------------------------------
 startPatternExpressionRule
-	:	exprChoice { endPattern(); end(); }
+	:	annotation[true]* exprChoice { endPattern(); end(); }
 	;
 
 exprChoice

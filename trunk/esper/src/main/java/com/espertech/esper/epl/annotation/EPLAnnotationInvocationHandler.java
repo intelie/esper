@@ -11,15 +11,13 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
     private final Class annotationClass;
     private final String toStringResult;
     private final Map<String, Object> properties;
-    private final Object value;
     private volatile Integer hashCode;
 
-    public EPLAnnotationInvocationHandler(Class annotationClass, Map<String, Object> properties, String toStringResult, Object value)
+    public EPLAnnotationInvocationHandler(Class annotationClass, Map<String, Object> properties, String toStringResult)
     {
         this.annotationClass = annotationClass;
         this.properties = properties;
         this.toStringResult = toStringResult;
-        this.value = value;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
@@ -46,10 +44,6 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
         if (properties.containsKey(method.getName()))
         {
             return properties.get(method.getName());
-        }
-        if (method.getName().equals("value"))
-        {
-            return value;
         }
         return null;
     }
@@ -88,11 +82,6 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
             return false;
         }
 
-        if (value != null ? !value.equals(that.value) : that.value != null)
-        {
-            return false;
-        }
-
         for (Map.Entry<String, Object> entry : properties.entrySet())
         {
             if (!that.properties.containsKey(entry.getKey()))
@@ -101,7 +90,7 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
             }
 
             Object thisValue = entry.getValue();
-            Object thatValue = that.properties.containsKey(entry.getKey());
+            Object thatValue = that.properties.get(entry.getKey());
             if (thisValue != null ? !thisValue.equals(thatValue) : thatValue != null)
             {
                 return false;
@@ -119,7 +108,6 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
         }
 
         int result = annotationClass.hashCode();
-        result = 31 * result + (value != null ? value.hashCode() : 0);
         for (String key : properties.keySet())
         {
             result = 31 * result + key.hashCode();
