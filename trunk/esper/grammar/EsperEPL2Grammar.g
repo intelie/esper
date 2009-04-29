@@ -481,7 +481,7 @@ startEPLExpressionRule
 	:	annotations?	
 		eplExpression
 		EOF
-		-> ^(EPL_EXPR annotations eplExpression) 
+		-> ^(EPL_EXPR annotations? eplExpression) 
 	;
 
 startEventPropertyRule 

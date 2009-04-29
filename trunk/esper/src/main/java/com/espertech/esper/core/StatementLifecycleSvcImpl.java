@@ -656,7 +656,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      */
     public EPStatementSPI getStatementById(String id)
     {
-        return this.stmtIdToDescMap.get(id).getEpStatement();
+        EPStatementDesc statementDesc = this.stmtIdToDescMap.get(id);
+        if (statementDesc == null)
+        {
+            log.warn("Could not locate statement descriptor for statement id '" + id + "'");
+            return null;
+        }
+        return statementDesc.getEpStatement();
     }
 
     public synchronized String[] getStatementNames()
