@@ -15,6 +15,7 @@ import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportUndefinedException;
+import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.epl.spec.*;
@@ -832,7 +833,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveAnnotation(Tree node)
     {
         log.debug(".leaveAnnotation");
-        statementSpec.getAnnotations().add(ASTAnnotationHelper.walk(node));
+        statementSpec.getAnnotations().add(ASTAnnotationHelper.walk(node, this.engineImportService));
     }
 
     private void leaveArray(Tree node)

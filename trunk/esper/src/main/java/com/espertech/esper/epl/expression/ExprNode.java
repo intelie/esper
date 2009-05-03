@@ -13,6 +13,7 @@ import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.MetaDefItem;
+import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -310,48 +311,11 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     private ExprConstantNode resolveIdentAsEnumConst(String constant, MethodResolutionService methodResolutionService)
             throws ExprValidationException
     {
-        int lastDotIndex = constant.lastIndexOf('.');
-        if (lastDotIndex == -1)
+        Object enumValue = JavaClassHelper.resolveIdentAsEnumConst(constant, methodResolutionService, null);
+        if (enumValue != null)
         {
-            return null;
+            return new ExprConstantNode(methodResolutionService);
         }
-        String className = constant.substring(0, lastDotIndex);
-        String constName = constant.substring(lastDotIndex + 1);
-
-        Class clazz;
-        try
-        {
-            clazz = methodResolutionService.resolveClass(className);
-        }
-        catch (EngineImportException e)
-        {
-            return null;
-        }
-
-        Field field;
-        try
-        {
-            field = clazz.getField(constName);
-        }
-        catch (NoSuchFieldException e)
-        {
-            return null;
-        }
-
-        int modifiers = field.getModifiers();
-        if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers))
-        {
-            try
-            {
-                Object value = field.get(null);
-                return new ExprConstantNode(value);
-            }
-            catch (IllegalAccessException e)
-            {
-                throw new ExprValidationException("Exception accessing field '" + field.getName() + "': " + e.getMessage(), e);
-            }
-        }
-
         return null;
     }
 

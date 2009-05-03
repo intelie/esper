@@ -98,6 +98,11 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
+    public void addImport(Class importClass)
+    {
+        addImport(importClass.getName());
+    }
+
     public boolean isEventTypeExists(String eventTypeName) {
         return eventAdapterService.getExistsTypeByName(eventTypeName) != null;
     }

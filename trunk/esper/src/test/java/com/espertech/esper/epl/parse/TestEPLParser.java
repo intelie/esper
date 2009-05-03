@@ -646,6 +646,7 @@ public class TestEPLParser extends TestCase
         assertIsValid("@SomeOther(a=1, b=true, c='a', d=\"alal\") select * from B");
         assertIsValid("@SomeOther(@inner2(a=3)) select * from B");
         assertIsValid("@SomeOther(@inner1) select * from B");
+        assertIsValid("@SomeOther(a=com.myenum.VAL1,b=a.VAL2) select * from B");
         assertIsValid("@SomeOther(tags=@inner1(a=4), moretags=@inner2(a=3)) select * from B");
         assertIsValid("@SomeOther(innerdata={1, 2, 3}) select * from B");
         assertIsValid("@SomeOther(innerdata={1, 2, 3}) select * from B");

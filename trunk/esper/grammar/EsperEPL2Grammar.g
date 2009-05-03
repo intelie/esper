@@ -472,16 +472,16 @@ tokens
 }
 
 startPatternExpressionRule
-	:	annotations?	
+	:	annotationNoEnum*
 		patternExpression
 		EOF!
 	;
 	
 startEPLExpressionRule 
-	:	annotations?	
+	:	annotationEnum*	
 		eplExpression
 		EOF
-		-> ^(EPL_EXPR annotations? eplExpression) 
+		-> ^(EPL_EXPR annotationEnum* eplExpression) 
 	;
 
 startEventPropertyRule 
@@ -492,33 +492,51 @@ startEventPropertyRule
 //----------------------------------------------------------------------------
 // Annotations
 //----------------------------------------------------------------------------
-annotations
-    :   annotation+
-    ;
-
-annotation
-    :   '@' classIdentifier ( '(' ( elementValuePairs | elementValue )? ')' )?
-	-> ^(ANNOTATION classIdentifier elementValuePairs? elementValue?)
+annotationNoEnum
+    :   '@' classIdentifier ( '(' ( elementValuePairsNoEnum | elementValueNoEnum )? ')' )?
+	-> ^(ANNOTATION classIdentifier elementValuePairsNoEnum? elementValueNoEnum?)
     ;
     
-elementValuePairs
-    :   elementValuePair (COMMA! elementValuePair)*
-    ;
-
-elementValuePair
-    :   i=IDENT '=' elementValue
-	-> ^(ANNOTATION_VALUE $i elementValue)
+annotationEnum
+    :   '@' classIdentifier ( '(' ( elementValuePairsEnum | elementValueEnum )? ')' )?
+	-> ^(ANNOTATION classIdentifier elementValuePairsEnum? elementValueEnum?)
     ;
     
-elementValue
-    :   annotation
-    |   (elementValueArrayInitializer) -> elementValueArrayInitializer
+elementValuePairsEnum
+    :   elementValuePairEnum (COMMA! elementValuePairEnum)*
+    ;
+
+elementValuePairsNoEnum
+    :   i=IDENT '=' elementValueNoEnum
+	-> ^(ANNOTATION_VALUE $i elementValueNoEnum)
+    ;
+    
+elementValuePairEnum
+    :   i=IDENT '=' elementValueEnum
+	-> ^(ANNOTATION_VALUE $i elementValueEnum)
+    ;
+
+elementValueNoEnum
+    :   annotationEnum
+    |   (elementValueArrayNoEnum) -> elementValueArrayNoEnum
     |	constant
     ;
     
-elementValueArrayInitializer
-    :   '{' (elementValue (',' elementValue)*)? (',')? '}'
-	-> ^(ANNOTATION_ARRAY elementValue*)
+elementValueEnum
+    :   annotationEnum
+    |   (elementValueArrayEnum) -> elementValueArrayEnum
+    |	constant
+    |	classIdentifier	
+    ;
+
+elementValueArrayNoEnum
+    :   '{' (elementValueNoEnum (',' elementValueNoEnum)*)? (',')? '}'
+	-> ^(ANNOTATION_ARRAY elementValueNoEnum*)
+    ;
+
+elementValueArrayEnum
+    :   '{' (elementValueEnum (',' elementValueEnum)*)? (',')? '}'
+	-> ^(ANNOTATION_ARRAY elementValueEnum*)
     ;
     
 //----------------------------------------------------------------------------

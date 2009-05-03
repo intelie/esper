@@ -5,6 +5,7 @@ import com.espertech.esper.client.annotation.Description;
 import com.espertech.esper.client.annotation.Name;
 import com.espertech.esper.client.annotation.Tag;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportEnum;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
@@ -69,6 +70,8 @@ public class TestStatementAnnotation extends TestCase
                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a String-typed value for attribute 'value' but received a Integer-typed value [@MyAnnotationValue(5) select * from Bean]");
         tryInvalid("@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean", false,
                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'value' but received a String-typed value [@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean]");
+        tryInvalid("@MyAnnotationValueEnum(a.b.CC) select * from Bean", false,
+                   "Annotation enumeration value 'a.b.CC' not recognized as an enumeration class, please check imports or type used [@MyAnnotationValueEnum(a.b.CC) select * from Bean]");
     }
 
     private void tryInvalid(String stmtText, boolean isSyntax, String message)
@@ -135,27 +138,34 @@ public class TestStatementAnnotation extends TestCase
     @MyAnnotationValuePair(stringVal="a", intVal=-1, longVal=2, booleanVal=true, charVal='x', byteVal=10, shortVal=20, doubleVal=2.5)
     @MyAnnotationValueDefaulted
     @MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, stringArray={"X"})
+    @MyAnnotationValueEnum(supportEnum = SupportEnum.ENUM_VALUE_3)
     public void testClientAppAnnotationSimple()
     {
         epService.getEPAdministrator().getConfiguration().addImport("com.espertech.esper.regression.client.*");
+        epService.getEPAdministrator().getConfiguration().addImport(SupportEnum.class);
 
         String stmtText =
                 "@MyAnnotationSimple " +
                 "@MyAnnotationValue('abc') " +
-                "@MyAnnotationValuePair(stringVal='a', intVal=-1, longVal=2, booleanVal=true, charVal='x', byteVal=10, shortVal=20, doubleVal=2.5) " +
                 "@MyAnnotationValueDefaulted " +
+                "@MyAnnotationValueEnum(supportEnum = SupportEnum.ENUM_VALUE_3) " +
+                "@MyAnnotationValuePair(stringVal='a', intVal=-1, longVal=2, booleanVal=true, charVal='x', byteVal=10, shortVal=20, doubleVal=2.5) " +
                 "select * from Bean";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
 
         Annotation[] annotations = stmt.getAnnotations();
         annotations = sortAlpha(annotations);
-        assertEquals(4, annotations.length);
+        assertEquals(5, annotations.length);
 
         assertEquals(MyAnnotationSimple.class, annotations[0].annotationType());
         assertEquals("abc", ((MyAnnotationValue)annotations[1]).value());
         assertEquals("XYZ", ((MyAnnotationValueDefaulted)annotations[2]).value());
 
-        MyAnnotationValuePair pair = (MyAnnotationValuePair) annotations[3];
+        MyAnnotationValueEnum enumval = (MyAnnotationValueEnum) annotations[3];
+        assertEquals(SupportEnum.ENUM_VALUE_2, enumval.supportEnumDef());
+        assertEquals(SupportEnum.ENUM_VALUE_3, enumval.supportEnum());
+
+        MyAnnotationValuePair pair = (MyAnnotationValuePair) annotations[4];
         assertEquals("a", pair.stringVal());
         assertEquals(-1, pair.intVal());
         assertEquals(2l, pair.longVal());

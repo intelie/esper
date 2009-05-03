@@ -385,7 +385,7 @@ select `insert` from `Order`]]></programlisting>
 			<synopsis>@<emphasis>annotation_name</emphasis> (<emphasis>attribute_name</emphasis> = <emphasis>attribute_value</emphasis>, [name=value, ...])</synopsis>
 			
 			<para>
-				The <emphasis>attribute_name</emphasis> is an identifier that must match the attributes defined by the annotation class. An <emphasis>attribute_value</emphasis> is a constant of any of the primitive types or string, an array or another (nested) annotation. Null values and enumeration values are not allowed as attribute values.			
+				The <emphasis>attribute_name</emphasis> is an identifier that must match the attributes defined by the annotation class. An <emphasis>attribute_value</emphasis> is a constant of any of the primitive types or string, an array, an enumeration value or another (nested) annotation. Null values are not allowed as annotation attribute values. Enumeration values are supported in EPL statements and not support in statements created via the <literal>createPattern</literal> method.
 			</para>
 			
 			<para>

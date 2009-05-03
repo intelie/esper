@@ -10,6 +10,11 @@ package com.espertech.esper.util;
 
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.type.*;
+import com.espertech.esper.epl.expression.ExprConstantNode;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.EngineImportException;
+import com.espertech.esper.epl.core.EngineImportService;
 
 import java.util.*;
 import java.math.BigInteger;
@@ -1332,5 +1337,59 @@ public class JavaClassHelper
             return Object.class;
         }
         return (Class) typeParam;
+    }
+
+    public static Object resolveIdentAsEnumConst(String constant, MethodResolutionService methodResolutionService, EngineImportService engineImportService)
+            throws ExprValidationException
+        {
+        int lastDotIndex = constant.lastIndexOf('.');
+        if (lastDotIndex == -1)
+        {
+            return null;
+        }
+        String className = constant.substring(0, lastDotIndex);
+        String constName = constant.substring(lastDotIndex + 1);
+
+        Class clazz;
+        try
+        {
+            if (engineImportService != null)
+            {
+                clazz = engineImportService.resolveClass(className);
+            }
+            else
+            {
+                clazz = methodResolutionService.resolveClass(className);
+            }
+        }
+        catch (EngineImportException e)
+        {
+            return null;
+        }
+
+        Field field;
+        try
+        {
+            field = clazz.getField(constName);
+        }
+        catch (NoSuchFieldException e)
+        {
+            return null;
+        }
+
+        int modifiers = field.getModifiers();
+        if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers))
+        {
+            try
+            {
+                return field.get(null);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new ExprValidationException("Exception accessing field '" + field.getName() + "': " + e.getMessage(), e);
+            }
+        }
+
+        return null;
     }
 }

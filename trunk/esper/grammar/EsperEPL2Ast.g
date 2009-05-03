@@ -66,6 +66,7 @@ elementValue
     	:   	annotation[false]
 	|	 ^(ANNOTATION_ARRAY elementValue*)
     	|	constant[false]
+    	|	CLASS_IDENT
     	;    
 
 //----------------------------------------------------------------------------

@@ -58,6 +58,15 @@ public interface ConfigurationOperations
     public void addImport(String importName) throws ConfigurationException;
 
     /**
+     * Adds a class to the list of automatically-imported classes.
+     * <p>
+     * Use #addImport(String) to import a package.
+     * @param importClass is a class to import
+     * @throws ConfigurationException if incorrect package or class names are encountered
+     */
+    public void addImport(Class importClass) throws ConfigurationException;
+
+    /**
      * Checks if an eventTypeName has already been registered for that name.
      * @since 2.1
      * @param eventTypeName the name

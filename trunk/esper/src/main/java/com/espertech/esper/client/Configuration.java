@@ -338,6 +338,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     	imports.add(autoImport);
     }
 
+    public void addImport(Class autoImport)
+    {
+        addImport(autoImport.getName());
+    }
+
     /**
      * Adds a cache configuration for a class providing methods for use in the from-clause.
      * @param className is the class name (simple or fully-qualified) providing methods
