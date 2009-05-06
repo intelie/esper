@@ -10,6 +10,7 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.epl.spec.FilterSpecRaw;
+import com.espertech.esper.epl.spec.DistinctEvalSpec;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -22,7 +23,23 @@ public final class EvalFilterNode extends EvalNode
     private static final long serialVersionUID = 0L;
     private final FilterSpecRaw rawFilterSpec;
     private final String eventAsName;
+    private final DistinctEvalSpec distinctSpec;
     private transient FilterSpecCompiled filterSpec;
+
+    /**
+     * Constructor.
+     * @param filterSpecification specifies the filter properties
+     * @param eventAsName is the name to use for adding matching events to the MatchedEventMap
+     * table used when indicating truth value of true.
+     */
+    public EvalFilterNode(FilterSpecRaw filterSpecification,
+                                String eventAsName,
+                                DistinctEvalSpec distinctSpec)
+    {
+        this.rawFilterSpec = filterSpecification;
+        this.eventAsName = eventAsName;
+        this.distinctSpec = distinctSpec;
+    }
 
     public final EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
@@ -40,19 +57,6 @@ public final class EvalFilterNode extends EvalNode
         }
 
         return context.getPatternStateFactory().makeFilterStateNode(parentNode, this, beginState, stateNodeId);
-    }
-
-    /**
-     * Constructor.
-     * @param filterSpecification specifies the filter properties
-     * @param eventAsName is the name to use for adding matching events to the MatchedEventMap
-     * table used when indicating truth value of true.
-     */
-    public EvalFilterNode(FilterSpecRaw filterSpecification,
-                                String eventAsName)
-    {
-        this.rawFilterSpec = filterSpecification;
-        this.eventAsName = eventAsName;
     }
 
     /**
@@ -82,6 +86,11 @@ public final class EvalFilterNode extends EvalNode
         this.filterSpec = filterSpec;
     }
 
+    public DistinctEvalSpec getDistinctSpec()
+    {
+        return distinctSpec;
+    }
+
     /**
      * Returns the tag for any matching events to this filter, or null since tags are optional.
      * @return tag string for event
@@ -98,6 +107,7 @@ public final class EvalFilterNode extends EvalNode
         buffer.append("EvalFilterNode rawFilterSpec=" + this.rawFilterSpec);
         buffer.append(" filterSpec=" + this.filterSpec);
         buffer.append(" eventAsName=" + this.eventAsName);
+        buffer.append(" distinctSpec=" + this.distinctSpec);
         return buffer.toString();
     }
 

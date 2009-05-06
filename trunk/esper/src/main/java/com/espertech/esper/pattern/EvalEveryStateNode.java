@@ -54,6 +54,7 @@ final class EvalEveryStateSpawnEvaluator implements Evaluator
  */
 public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
 {
+    private final EvalEveryNode everyNode;
     private final List<EvalStateNode> spawnedNodes;
     private final MatchedEventMap beginState;
     private final PatternContext context;
@@ -80,6 +81,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         this.spawnedNodes = new LinkedList<EvalStateNode>();
         this.beginState = beginState.shallowCopy();
         this.context = context;
+        this.everyNode = everyNode;
 
         EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, context, null);
         spawnedNodes.add(child);
@@ -161,27 +163,35 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         // See explanation in EvalFilterStateNode for the type check
         if (fromNode instanceof EvalFilterStateNode)
         {
+            if (everyNode.isResume())
+            {
+                fromNode.quit();
+                spawnedNodes.remove(fromNode);
+            }
             // We do not need to newState new listeners here, since the filter state node below this node did not quit
         }
         else
         {
-            // Spawn all nodes below this EVERY node
-            // During the start of a child we need to use the temporary evaluator to catch any event created during a start
-            // Such events can be raised when the "not" operator is used.
-            EvalNode child = getFactoryNode().getChildNodes().get(0);
-            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
-            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
-            spawned.start();
+            if (!everyNode.isResume())
+            {
+                // Spawn all nodes below this EVERY node
+                // During the start of a child we need to use the temporary evaluator to catch any event created during a start
+                // Such events can be raised when the "not" operator is used.
+                EvalNode child = getFactoryNode().getChildNodes().get(0);
+                EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+                EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
+                spawned.start();
 
-            // If the whole spawned expression already turned true, quit it again
-            if (spawnEvaluator.isEvaluatedTrue())
-            {
-                spawned.quit();
-            }
-            else
-            {
-                spawnedNodes.add(spawned);
-                spawned.setParentEvaluator(this);
+                // If the whole spawned expression already turned true, quit it again
+                if (spawnEvaluator.isEvaluatedTrue())
+                {
+                    spawned.quit();
+                }
+                else
+                {
+                    spawnedNodes.add(spawned);
+                    spawned.setParentEvaluator(this);
+                }
             }
         }
 

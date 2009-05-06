@@ -972,6 +972,43 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 );
     }
 
+    public static SelectClauseSpecCompiled compileSelectNoSubselect(SelectClauseSpecRaw spec) throws ExprValidationException
+    {
+        // Look for expressions with sub-selects in select expression list and filter expression
+        // Recursively compile the statement within the statement.
+        ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+        List<SelectClauseElementCompiled> selectElements = new ArrayList<SelectClauseElementCompiled>();
+        SelectClauseSpecCompiled selectClauseCompiled = new SelectClauseSpecCompiled(selectElements);
+        for (SelectClauseElementRaw raw : spec.getSelectExprList())
+        {
+            if (raw instanceof SelectClauseExprRawSpec)
+            {
+                SelectClauseExprRawSpec rawExpr = (SelectClauseExprRawSpec) raw;
+                rawExpr.getSelectExpression().accept(visitor);
+                selectElements.add(new SelectClauseExprCompiledSpec(rawExpr.getSelectExpression(), rawExpr.getOptionalAsName()));
+            }
+            else if (raw instanceof SelectClauseStreamRawSpec)
+            {
+                SelectClauseStreamRawSpec rawExpr = (SelectClauseStreamRawSpec) raw;
+                selectElements.add(new SelectClauseStreamCompiledSpec(rawExpr.getStreamName(), rawExpr.getOptionalAsName()));
+            }
+            else if (raw instanceof SelectClauseElementWildcard)
+            {
+                SelectClauseElementWildcard wildcard = (SelectClauseElementWildcard) raw;
+                selectElements.add(wildcard);
+            }
+            else
+            {
+                throw new IllegalStateException("Unexpected select clause element class : " + raw.getClass().getName());
+            }
+        }
+        if (!visitor.getSubselects().isEmpty())
+        {
+            throw new ExprValidationException("Subselects are not allowed in this context");
+        }
+        return selectClauseCompiled;
+    }
+
     // The create window command:
     //      create window windowName[.window_view_list] as [select properties from] type
     //

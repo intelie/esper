@@ -200,6 +200,11 @@ public class TestEPLParser extends TestCase
         assertIsInvalid("on MyEvent select * from MyNamedWindow.win:time(30)");
         assertIsInvalid("on MyEvent select * from MyNamedWindow where");
         assertIsInvalid("on MyEvent insert into select * from MyNamedWindow");
+        assertIsInvalid("on MyEvent select a,c,b where a=y select 1,2,2,2 where 2=4");
+        assertIsInvalid("on MyEvent insert into A select a,c,b where a=y select 1,2,2,2 where 2=4");
+        assertIsInvalid("on MyEvent insert into A select a,c,b where a=y insert into D where 2=4");
+        assertIsInvalid("on MyEvent insert into A select a,c,b where a=y insert into D where 2=4 output xyz");
+        assertIsInvalid("on MyEvent insert into A select a,c,b where a=y insert into D where 2=4 output");
 
         // on-set statement
         assertIsInvalid("on MyEvent set");
@@ -586,6 +591,12 @@ public class TestEPLParser extends TestCase
         assertIsValid("on MyEvent insert into YooStream select a, b, c from MyNamedWindow");
         assertIsValid("on MyEvent insert into YooStream (p, q) select a, b, c from MyNamedWindow");
         assertIsValid("on MyEvent select a, b, c from MyNamedWindow where a=b group by c having d>e order by f");
+        assertIsValid("on MyEvent insert into A select * where 1=2 insert into B select * where 2=4");
+        assertIsValid("on MyEvent insert into A select * where 1=2 insert into B select * where 2=4 insert into C select *");
+        assertIsValid("on MyEvent insert into A select a,c,b insert into G select 1,2,2,2 where 2=4 insert into C select * where a=x");
+        assertIsValid("on MyEvent insert into A select a,c,b where a=y group by p having q>r order by x,y insert into G select 1,2,2,2 where 2=4 insert into C select * where a=x");
+        assertIsValid("on MyEvent insert into A select a,c,b where a=y insert into D select * where 2=4 output first");
+        assertIsValid("on MyEvent insert into A select a,c,b where a=y insert into D select * where 2=4 output all");
 
         // on-set statement
         assertIsValid("on MyEvent set var=1");

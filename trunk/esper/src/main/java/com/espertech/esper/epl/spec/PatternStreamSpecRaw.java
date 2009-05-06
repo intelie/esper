@@ -280,6 +280,17 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(resolvedEventType, eventName, exprNodes, filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(),  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null);
         filterNode.setFilterSpec(spec);
+
+        // validate any distinct criteria
+        if (filterNode.getDistinctSpec() != null)
+        {
+            List<ExprNode> validated = new ArrayList<ExprNode>();
+            for (ExprNode node : filterNode.getDistinctSpec().getAtoms())
+            {
+                validated.add(node.getValidatedSubtree(streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService()));
+            }
+            filterNode.getDistinctSpec().setAtoms(validated);
+        }
     }
 
     private List<ExprNode> validateExpressions(List<ExprNode> objectParameters, StreamTypeService streamTypeService,

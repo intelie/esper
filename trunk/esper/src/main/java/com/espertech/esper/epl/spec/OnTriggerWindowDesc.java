@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.spec;
 
 /**
- * Specification for the on-delete statement.
+ * Specification for the on-select and on-delete (no split-stream) statement.
  */
 public class OnTriggerWindowDesc extends OnTriggerDesc
 {

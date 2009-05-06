@@ -25,9 +25,9 @@ public class StatementSpecCompiled
     private final OnTriggerDesc onTriggerDesc;
     private final CreateWindowDesc createWindowDesc;
     private final CreateVariableDesc createVariableDesc;
-    private final InsertIntoDesc insertIntoDesc;
+    private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum;
-    private final SelectClauseSpecCompiled selectClauseSpec;
+    private SelectClauseSpecCompiled selectClauseSpec;
     private final List<StreamSpecCompiled> streamSpecs;
     private final List<OuterJoinDesc> outerJoinDescList;
     private ExprNode filterExprRootNode;
@@ -302,5 +302,15 @@ public class StatementSpecCompiled
     public Annotation[] getAnnotations()
     {
         return annotations;
+    }
+
+    public void setInsertIntoDesc(InsertIntoDesc insertIntoDesc)
+    {
+        this.insertIntoDesc = insertIntoDesc;
+    }
+
+    public void setSelectClauseSpec(SelectClauseSpecCompiled selectClauseSpec)
+    {
+        this.selectClauseSpec = selectClauseSpec;
     }
 }

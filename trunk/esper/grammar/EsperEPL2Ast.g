@@ -82,7 +82,7 @@ eplExpressionRule
 
 onExpr 
 	:	^(i=ON_EXPR (eventFilterExpr | patternInclusionExpression) IDENT? 
-		(onDeleteExpr | onSelectExpr | onSetExpr)
+		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ onSelectInsertOutput?)? | onSetExpr)
 		{ leaveNode($i); } )
 	;
 	
@@ -91,9 +91,17 @@ onDeleteExpr
 	;	
 
 onSelectExpr
-	:	^(ON_SELECT_EXPR (insertIntoExpr)? selectionList onExprFrom (whereClause)? (groupByClause)? (havingClause)? (orderByClause)?)
+	:	^(ON_SELECT_EXPR insertIntoExpr? selectionList onExprFrom? whereClause? groupByClause? havingClause? orderByClause?)
+	;	
+
+onSelectInsertExpr
+	:	{pushStmtContext();} ^(ON_SELECT_INSERT_EXPR insertIntoExpr selectionList whereClause?)
 	;	
 	
+onSelectInsertOutput
+	:	^(ON_SELECT_INSERT_OUTPUT (ALL|FIRST))	
+	;
+
 onSetExpr
 	:	^(ON_SET_EXPR onSetAssignment (onSetAssignment)*)
 	;
@@ -457,6 +465,7 @@ exprChoice
 	: 	atomicExpr
 	|	patternOp
 	| 	^( a=EVERY_EXPR exprChoice { leaveNode($a); } )
+	| 	^( a=RESUME_EXPR exprChoice { leaveNode($a); } )
 	| 	^( n=PATTERN_NOT_EXPR exprChoice { leaveNode($n); } )
 	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT valueExprWithTime* { leaveNode($g); } )
 	|	^( m=MATCH_UNTIL_EXPR matchUntilRange? exprChoice exprChoice? { leaveNode($m); } )
@@ -474,7 +483,15 @@ atomicExpr
 	;
 
 patternFilterExpr
-	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT propertyExpression? (valueExpr)* { leaveNode($f); } )
+	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT propertyExpression? distinctExpression? (valueExpr)* { leaveNode($f); } )
+	;
+
+distinctExpression
+	:	^( d=EVENT_FILTER_DISTINCT_EXPR number? distinctExpressionAtom+ { leaveNode($d); } )
+	;
+
+distinctExpressionAtom
+	:	^( a=EVENT_FILTER_DISTINCT_EXPR_ATOM valueExpr { leaveNode($a); } )
 	;
 
 matchUntilRange

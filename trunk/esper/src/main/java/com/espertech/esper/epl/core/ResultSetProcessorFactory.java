@@ -52,11 +52,12 @@ public class ResultSetProcessorFactory
     /**
      * Returns the result set process for the given select expression, group-by clause and
      * having clause given a set of types describing each stream in the from-clause.
-     * @param typeService - for information about the streams in the from clause
-     * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
      * @param statementSpecCompiled - the statement specification
      * @param stmtContext - engine and statement level services
+     * @param typeService - for information about the streams in the from clause
+     * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
      * @param isUnidirectionalStream - true if unidirectional join for any of the streams
+     * @param allowAggregation
      * @return result set processor instance
      * @throws ExprValidationException when any of the expressions is invalid
      */
@@ -64,7 +65,7 @@ public class ResultSetProcessorFactory
                                                   StatementContext stmtContext,
                                                   StreamTypeService typeService,
                                                   ViewResourceDelegate viewResourceDelegate,
-                                                  boolean[] isUnidirectionalStream)
+                                                  boolean[] isUnidirectionalStream, boolean allowAggregation)
             throws ExprValidationException
     {
         SelectClauseSpecCompiled selectClauseSpec = statementSpecCompiled.getSelectClauseSpec();
@@ -245,6 +246,10 @@ public class ResultSetProcessorFactory
         {
             ExprAggregateNode.getAggregatesBottomUp(element.getSelectExpression(), selectAggregateExprNodes);
         }
+        if (!allowAggregation && !selectAggregateExprNodes.isEmpty())
+        {
+            throw new ExprValidationException("Aggregation functions are not allowed in this context");
+        }
 
         // Determine if we have a having clause with aggregation
         List<ExprAggregateNode> havingAggregateExprNodes = new LinkedList<ExprAggregateNode>();
@@ -254,6 +259,10 @@ public class ResultSetProcessorFactory
             ExprAggregateNode.getAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
             propertiesAggregatedHaving = getAggregatedProperties(havingAggregateExprNodes);
         }
+        if (!allowAggregation && !havingAggregateExprNodes.isEmpty())
+        {
+            throw new ExprValidationException("Aggregation functions are not allowed in this context");
+        }
 
         // Determine if we have a order-by clause with aggregation
         List<ExprAggregateNode> orderByAggregateExprNodes = new LinkedList<ExprAggregateNode>();
@@ -262,6 +271,10 @@ public class ResultSetProcessorFactory
             for (ExprNode orderByNode : orderByNodes)
             {
                 ExprAggregateNode.getAggregatesBottomUp(orderByNode, orderByAggregateExprNodes);
+            }
+            if (!allowAggregation && !orderByAggregateExprNodes.isEmpty())
+            {
+                throw new ExprValidationException("Aggregation functions are not allowed in this context");
             }
         }
 

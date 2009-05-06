@@ -13,8 +13,14 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.filter.FilterValueSet;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.epl.expression.ExprNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * This class contains the state of a single filter expression in the evaluation state tree.
@@ -27,6 +33,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     private boolean isStarted;
     private EPStatementHandleCallback handle;
+    private Set<MultiKeyUntyped> distinct;
 
     /**
      * Constructor.
@@ -50,6 +57,11 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         this.evalFilterNode = evalFilterNode;
         this.beginState = beginState;
         this.context = context;
+
+        if (evalFilterNode.getDistinctSpec() != null)
+        {
+            distinct = new HashSet<MultiKeyUntyped>();
+        }
     }
 
     public final void start()
@@ -78,6 +90,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
         isStarted = false;
         stopFiltering();
+        distinct = null;
     }
 
     private void evaluateTrue(MatchedEventMap event, boolean isQuitted)
@@ -132,10 +145,31 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         // and the all node would newState a new listener. The remove operation and the add operation
         // therefore don't take place if the EvalEveryStateNode node sits on top of a EvalFilterStateNode node.
         boolean isQuitted = false;
-        if (!(this.getParentEvaluator() instanceof EvalEveryStateNode))
+        if (!(this.getParentEvaluator() instanceof EvalEveryStateNode) &&
+            !(this.getParentEvaluator() instanceof EvalMatchUntilStateNode))
         {
             stopFiltering();
             isQuitted = true;
+        }
+
+        // check distinct criteria
+        if (distinct != null)
+        {
+            EventBean[] events = new EventBean[1];
+            events[0] = event;
+            Object[] keys = new Object[evalFilterNode.getDistinctSpec().getAtoms().size()];
+            int index = 0;
+            for (ExprNode criteriaExpr : evalFilterNode.getDistinctSpec().getAtoms())
+            {
+                Object criteria = criteriaExpr.evaluate(events, false);
+                keys[index++] = criteria;
+            }
+            MultiKeyUntyped key = new MultiKeyUntyped(keys);
+            if (distinct.contains(key))
+            {
+                return;
+            }            
+            distinct.add(key);
         }
 
         this.evaluateTrue(passUp, isQuitted);

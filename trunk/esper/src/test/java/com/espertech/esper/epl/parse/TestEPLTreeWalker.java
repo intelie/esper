@@ -193,6 +193,44 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals(1, raw.getOrderByList().size());
     }
 
+    public void testWalkOnSelectMultiInsert() throws Exception
+    {
+        String expression = "on Bean as pat " +
+                " insert into MyStream select * where 1>2" +
+                " insert into BStream(a, b) select * where 1=2" +
+                " insert into CStream select a,b";
+        EPLTreeWalker walker = parseAndWalkEPL(expression);
+        StatementSpecRaw raw = walker.getStatementSpec();
+
+        FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
+        assertEquals("pat", streamSpec.getOptionalStreamName());
+
+        OnTriggerSplitStreamDesc triggerDesc = (OnTriggerSplitStreamDesc) raw.getOnTriggerDesc();
+        assertEquals(OnTriggerType.ON_SELECT, triggerDesc.getOnTriggerType());
+        assertEquals(2, triggerDesc.getSplitStreams().size());
+
+        assertEquals("MyStream", raw.getInsertIntoDesc().getEventTypeName());
+        assertTrue(raw.getSelectClauseSpec().isUsingWildcard());
+        assertEquals(1, raw.getSelectClauseSpec().getSelectExprList().size());
+        assertNotNull((ExprRelationalOpNode) raw.getFilterRootNode());
+
+        OnTriggerSplitStream splitStream = triggerDesc.getSplitStreams().get(0);
+        assertEquals("BStream", splitStream.getInsertInto().getEventTypeName());
+        assertEquals(2, splitStream.getInsertInto().getColumnNames().size());
+        assertEquals("a", splitStream.getInsertInto().getColumnNames().get(0));
+        assertEquals("b", splitStream.getInsertInto().getColumnNames().get(1));
+        assertTrue(splitStream.getSelectClause().isUsingWildcard());
+        assertEquals(1, splitStream.getSelectClause().getSelectExprList().size());
+        assertNotNull((ExprEqualsNode) splitStream.getWhereClause());
+
+        splitStream = triggerDesc.getSplitStreams().get(1);
+        assertEquals("CStream", splitStream.getInsertInto().getEventTypeName());
+        assertEquals(0, splitStream.getInsertInto().getColumnNames().size());
+        assertFalse(splitStream.getSelectClause().isUsingWildcard());
+        assertEquals(2, splitStream.getSelectClause().getSelectExprList().size());
+        assertNull(splitStream.getWhereClause());
+    }
+
     public void testWalkOnDelete() throws Exception
     {
         // try a filter

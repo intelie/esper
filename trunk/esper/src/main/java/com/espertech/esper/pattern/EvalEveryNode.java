@@ -17,6 +17,13 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
  */
 public final class EvalEveryNode extends EvalNode
 {
+    private final boolean isResume;
+
+    public EvalEveryNode(boolean resume)
+    {
+        isResume = resume;
+    }
+
     public final EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
                                         PatternContext context, Object stateNodeId)
@@ -38,6 +45,11 @@ public final class EvalEveryNode extends EvalNode
     public final String toString()
     {
         return "EvalEveryNode children=" + this.getChildNodes().size();
+    }
+
+    public boolean isResume()
+    {
+        return isResume;
     }
 
     private static final Log log = LogFactory.getLog(EvalEveryNode.class);

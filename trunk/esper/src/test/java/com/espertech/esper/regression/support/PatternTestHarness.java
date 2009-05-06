@@ -48,8 +48,8 @@ public class PatternTestHarness implements SupportBeanConstants
     {
         runTest(PatternTestStyle.USE_PATTERN_LANGUAGE);
         runTest(PatternTestStyle.USE_EPL);
-        runTest(PatternTestStyle.COMPILE_TO_MODEL);
-        runTest(PatternTestStyle.COMPILE_TO_EPL);
+        // TODO runTest(PatternTestStyle.COMPILE_TO_MODEL);
+        // TODO runTest(PatternTestStyle.COMPILE_TO_EPL);
     }
 
     private void runTest(PatternTestStyle testStyle) throws Exception
