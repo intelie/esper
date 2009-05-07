@@ -23,9 +23,11 @@ public class RouteResultViewHandlerAll implements RouteResultViewHandler
         this.whereClauses = whereClauses;
     }
 
-    public void handle(EventBean event)
+    public boolean handle(EventBean event)
     {
         eventsPerStream[0] = event;
+        boolean isHandled = false;
+
         for (int i = 0; i < whereClauses.length; i++)
         {
             Boolean pass = true;
@@ -43,9 +45,12 @@ public class RouteResultViewHandlerAll implements RouteResultViewHandler
                 UniformPair<EventBean[]> result = processors[i].processViewResult(eventsPerStream, null, false);
                 if ((result != null) && (result.getFirst() != null) && (result.getFirst().length > 0))
                 {
+                    isHandled = true;
                     internalEventRouter.route(result.getFirst()[0], epStatementHandle);
                 }
             }
         }
+
+        return isHandled;
     }
 }

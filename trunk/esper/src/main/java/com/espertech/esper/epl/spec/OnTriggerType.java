@@ -23,6 +23,8 @@ public enum OnTriggerType
      */
     ON_SELECT,
 
+    ON_SPLITSTREAM,
+
     /**
      * For on-set triggers that set variable values when a triggering event arrives.
      */

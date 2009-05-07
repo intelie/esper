@@ -258,6 +258,7 @@ public class EPStatementObjectModel implements Serializable
             return writer.toString();
         }
 
+        boolean displayWhereClause = true;
         if (onExpr != null)
         {
             writer.write("on ");
@@ -279,10 +280,25 @@ public class EPStatementObjectModel implements Serializable
                 writer.write(" from ");
                 ((OnSelectClause)onExpr).toEPL(writer);
             }
-            else
+            else if (onExpr instanceof OnSetClause)
             {
                 OnSetClause onSet = (OnSetClause) onExpr;
                 onSet.toEPL(writer);
+            }
+            else
+            {
+                OnInsertSplitStreamClause split = (OnInsertSplitStreamClause) onExpr;
+                writer.write(" ");
+                insertInto.toEPL(writer);
+                selectClause.toEPL(writer);
+                if (whereClause != null)
+                {
+                    writer.write(" where ");
+                    whereClause.toEPL(writer);
+                }
+                writer.write(" ");
+                split.toEPL(writer);
+                displayWhereClause = false;
             }
         }
         else
@@ -304,7 +320,7 @@ public class EPStatementObjectModel implements Serializable
             fromClause.toEPL(writer);
         }
 
-        if (whereClause != null)
+        if ((whereClause != null) && (displayWhereClause))
         {
             writer.write(" where ");
             whereClause.toEPL(writer);

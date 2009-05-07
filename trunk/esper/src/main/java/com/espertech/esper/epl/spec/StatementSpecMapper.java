@@ -60,7 +60,8 @@ public class StatementSpecMapper
         mapCreateWindow(sodaStatement.getCreateWindow(), raw, mapContext);
         mapCreateVariable(sodaStatement.getCreateVariable(), raw, mapContext);
         mapOnTrigger(sodaStatement.getOnExpr(), raw, mapContext);
-        mapInsertInto(sodaStatement.getInsertInto(), raw);
+        InsertIntoDesc desc = mapInsertInto(sodaStatement.getInsertInto());
+        raw.setInsertIntoDesc(desc);
         mapSelect(sodaStatement.getSelectClause(), raw, mapContext);
         mapFrom(sodaStatement.getFromClause(), raw, mapContext);
         mapWhere(sodaStatement.getWhereClause(), raw, mapContext);
@@ -85,8 +86,10 @@ public class StatementSpecMapper
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model, unmapContext);
         unmapCreateVariable(statementSpec.getCreateVariableDesc(), model, unmapContext);
         unmapOnClause(statementSpec.getOnTriggerDesc(), model, unmapContext);
-        unmapInsertInto(statementSpec.getInsertIntoDesc(), model);
-        unmapSelect(statementSpec.getSelectClauseSpec(), statementSpec.getSelectStreamSelectorEnum(), model, unmapContext);
+        InsertIntoClause insertIntoClause = unmapInsertInto(statementSpec.getInsertIntoDesc());
+        model.setInsertInto(insertIntoClause);
+        SelectClause selectClause = unmapSelect(statementSpec.getSelectClauseSpec(), statementSpec.getSelectStreamSelectorEnum(), unmapContext);
+        model.setSelectClause(selectClause);
         unmapFrom(statementSpec.getStreamSpecs(), statementSpec.getOuterJoinDescList(), model, unmapContext);
         unmapWhere(statementSpec.getFilterRootNode(), model, unmapContext);
         unmapGroupBy(statementSpec.getGroupByExpressions(), model, unmapContext);
@@ -122,6 +125,23 @@ public class StatementSpecMapper
             {
                 Expression expr = unmapExpressionDeep(assignment.getExpression(), unmapContext);
                 clause.addAssignment(assignment.getVariableName(), expr);
+            }
+            model.setOnExpr(clause);
+        }
+        if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SPLITSTREAM)
+        {
+            OnTriggerSplitStreamDesc trigger = (OnTriggerSplitStreamDesc) onTriggerDesc;
+            OnInsertSplitStreamClause clause = OnInsertSplitStreamClause.create();
+            for (OnTriggerSplitStream stream : trigger.getSplitStreams())
+            {
+                Expression whereClause = null;
+                if (stream.getWhereClause() != null)
+                {
+                    whereClause = unmapExpressionDeep(stream.getWhereClause(), unmapContext);
+                }
+                InsertIntoClause insertIntoClause = unmapInsertInto(stream.getInsertInto());
+                SelectClause selectClause = unmapSelect(stream.getSelectClause(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, unmapContext);                
+                clause.addItem(OnInsertSplitStreamItem.create(insertIntoClause, selectClause, whereClause));
             }
             model.setOnExpr(clause);
         }
@@ -362,6 +382,27 @@ public class StatementSpecMapper
             OnTriggerSetDesc desc = new OnTriggerSetDesc(assignments);
             raw.setOnTriggerDesc(desc);
         }
+        else if (onExpr instanceof OnInsertSplitStreamClause)
+        {
+            OnInsertSplitStreamClause splitClause = (OnInsertSplitStreamClause) onExpr;
+            mapContext.setHasVariables(true);
+            List<OnTriggerSplitStream> streams = new ArrayList<OnTriggerSplitStream>();
+            for (OnInsertSplitStreamItem item : splitClause.getItems())
+            {
+                ExprNode whereClause = null;
+                if (item.getWhereClause() != null)
+                {
+                    whereClause = mapExpressionDeep(item.getWhereClause(), mapContext);
+                }
+
+                InsertIntoDesc insertDesc = mapInsertInto(item.getInsertInto());
+                SelectClauseSpecRaw selectDesc = mapSelectRaw(item.getSelectClause(), mapContext);
+
+                streams.add(new OnTriggerSplitStream(insertDesc, selectDesc, whereClause));
+            }
+            OnTriggerSplitStreamDesc desc = new OnTriggerSplitStreamDesc(OnTriggerType.ON_SPLITSTREAM, splitClause.isFirst(), streams);
+            raw.setOnTriggerDesc(desc);
+        }
         else
         {
             throw new IllegalArgumentException("Cannot map on-clause expression type : " + onExpr);
@@ -541,13 +582,7 @@ public class StatementSpecMapper
         return new StreamSpecOptions(stream.isUnidirectional(), stream.isRetainUnion(), stream.isRetainIntersection());
     }
 
-    private static void unmapSelect(SelectClauseSpecRaw selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
-    {
-        SelectClause clause = unmapSelectInternal(selectClauseSpec, selectStreamSelectorEnum, unmapContext);
-        model.setSelectClause(clause);
-    }
-
-    private static SelectClause unmapSelectInternal(SelectClauseSpecRaw selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, StatementSpecUnMapContext unmapContext)
+    private static SelectClause unmapSelect(SelectClauseSpecRaw selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, StatementSpecUnMapContext unmapContext)
     {
         SelectClause clause = SelectClause.create();
         clause.setStreamSelector(SelectClauseStreamSelectorEnum.mapFromSODA(selectStreamSelectorEnum));
@@ -576,20 +611,19 @@ public class StatementSpecMapper
         return clause;
     }
 
-    private static void unmapInsertInto(InsertIntoDesc insertIntoDesc, EPStatementObjectModel model)
+    private static InsertIntoClause unmapInsertInto(InsertIntoDesc insertIntoDesc)
     {
         StreamSelector s = StreamSelector.ISTREAM_ONLY;
         if (insertIntoDesc == null)
         {
-            return;
+            return null;
         }
         if (!insertIntoDesc.isIStream())
         {
             s = StreamSelector.RSTREAM_ONLY;
         }
-        model.setInsertInto(
-                InsertIntoClause.create(insertIntoDesc.getEventTypeName(),
-                        insertIntoDesc.getColumnNames().toArray(new String[insertIntoDesc.getColumnNames().size()]), s));
+        return InsertIntoClause.create(insertIntoDesc.getEventTypeName(),
+                        insertIntoDesc.getColumnNames().toArray(new String[insertIntoDesc.getColumnNames().size()]), s);
     }
 
     private static void mapCreateWindow(CreateWindowClause createWindow, StatementSpecRaw raw, StatementSpecMapContext mapContext)
@@ -623,11 +657,11 @@ public class StatementSpecMapper
         raw.setCreateVariableDesc(new CreateVariableDesc(createVariable.getVariableType(), createVariable.getVariableName(), assignment));
     }
 
-    private static void mapInsertInto(InsertIntoClause insertInto, StatementSpecRaw raw)
+    private static InsertIntoDesc mapInsertInto(InsertIntoClause insertInto)
     {
         if (insertInto == null)
         {
-            return;
+            return null;
         }
 
         boolean isIStream = insertInto.isIStream();
@@ -638,8 +672,7 @@ public class StatementSpecMapper
         {
             desc.add(name);
         }
-
-        raw.setInsertIntoDesc(desc);
+        return desc;
     }
 
     private static void mapSelect(SelectClause selectClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
@@ -1666,7 +1699,7 @@ public class StatementSpecMapper
                 SelectClause selectClause = null;
                 if (atom.getOptionalSelectClause() != null)
                 {
-                    selectClause = unmapSelectInternal(atom.getOptionalSelectClause(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, unmapContext);
+                    selectClause = unmapSelect(atom.getOptionalSelectClause(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, unmapContext);
                 }
 
                 Expression filterExpression = null;

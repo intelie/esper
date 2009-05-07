@@ -626,7 +626,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     statementSpec = statementSpecStack.get(0);
                 }
                 boolean isFirst = isSelectInsertFirst(node);
-                statementSpec.setOnTriggerDesc(new OnTriggerSplitStreamDesc(OnTriggerType.ON_SELECT, isFirst, splitStreams));
+                statementSpec.setOnTriggerDesc(new OnTriggerSplitStreamDesc(OnTriggerType.ON_SPLITSTREAM, isFirst, splitStreams));
                 statementSpecStack.clear();
             }
             else

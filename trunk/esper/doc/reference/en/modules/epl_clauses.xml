@@ -3442,7 +3442,7 @@ from ServiceOrderEvent as order]]></programlisting>
 			<programlisting><![CDATA[select * from AllOrdersNamedWindow]]></programlisting>
 			
 			<para>
-				The statement as above simply receives the unfiltered insert and remove stream of the named window and reports that stream to its listeners. An iterator on such statement returns all events in the named window, if any.
+				The statement as above simply receives the unfiltered insert and remove stream of the named window and reports that stream to its listeners. The <literal>iterator</literal> method returns returns all events in the named window, if any.
 			</para>
 
 			<para>
@@ -3748,6 +3748,96 @@ insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting
 
 	</sect1>
 	
+	<sect1 id="split_overview" revision="1">
+		<title>Splitting and Duplicating Streams</title>
+		
+		<para>
+			EPL offers a convenient syntax to splitting and duplicating events into multiple streams, and for receiving unmatched events among a set of filter criteria.
+		</para>
+
+		<para>
+			You may define a triggering event or pattern in the <literal>on</literal>-part of the statement followed by multiple <literal>insert into</literal>, <literal>select</literal> and <literal>where</literal> clauses.
+		</para>
+
+		<para>
+			The synopsis is:
+		</para>
+
+<synopsis>on <emphasis>event_type</emphasis>[(<emphasis>filter_criteria</emphasis>)] [as <emphasis>stream_name</emphasis>]
+insert into <emphasis>insert_into_def</emphasis> select <emphasis>select_list</emphasis> [where <emphasis>condition</emphasis>]
+[insert into <emphasis>insert_into_def</emphasis> select <emphasis>select_list</emphasis> [where <emphasis>condition</emphasis>]]
+[insert into...]
+[output first | all]</synopsis>
+
+		<para>
+			The <emphasis>event_type</emphasis> is the name of the type of events that trigger the split stream. It is optionally
+followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword
+can be used to assign a stream name. Patterns can also be specified in the <literal>on</literal> clause.
+		</para>
+
+		<para>
+			Following the <literal>on</literal>-clause is one or more <emphasis>insert into</emphasis> clauses as described in <xref linkend="epl-insert-into"/> and <emphasis>select</emphasis> clauses as described in <xref linkend="epl-select-list"/>. 
+		</para>
+		
+		<para>
+			Each <literal>select</literal> clause may be followed by a <literal>where</literal> clause containing a condition. If the condition is true for the event, the engine transforms the event according to the <literal>select</literal> clause and inserts it into the corresponding stream.
+		</para>
+
+		<para>
+			At the end of the statement can be an optional <literal>output</literal> clause. By default the engine inserts into the first stream for which the <literal>where</literal> clause condition matches if one was specified, starting from the top. If you specify the <literal>output all</literal> keywords, then the engine inserts into each stream (not only the first stream) for which the <literal>where</literal> clause condition matches or that do not have a <literal>where</literal> clause.
+		</para>
+
+		<para>
+			If, for a given event, none of the <literal>where</literal> clause conditions match, the statement listener receives the unmatched event. The statement listener only receives unmatched events and does not receive any transformed or inserted events. The <literal>iterator</literal> method to the statement returns no events.
+		</para>
+
+		<para>
+			In the below sample statement, the engine inserts each <literal>OrderEvent</literal> into the <literal>LargeOrders</literal> stream if the order quantity is 100 or larger, or into the <literal>SmallOrders</literal> stream if the order quantity is smaller then 100:
+		</para>
+		<programlisting><![CDATA[on OrderEvent 
+  insert into LargeOrders select * where orderQty >= 100
+  insert into SmallOrders select *]]></programlisting>
+
+		<para>
+			The next example statement adds a new stream for medium-sized orders. The new stream receives orders that have an order quantity between 20 and 100:
+		</para>
+		<programlisting><![CDATA[on OrderEvent 
+  insert into LargeOrders select orderId, customer where orderQty >= 100
+  insert into MediumOrders select orderId, customer where orderQty between 20 and 100
+  insert into SmallOrders select orderId, customer where orderQty > 0]]></programlisting>
+
+		<para>
+			As you may have noticed in the above statement, orders that have an order quantity of zero don't match any of the conditions. The engine does not insert such order events into any stream and the listener to the statement receives these unmatched events.
+		</para>
+
+		<para>
+			By default the engine inserts into the first <literal>insert into</literal> stream without a <literal>where</literal> clause or for which the <literal>where</literal> clause condition matches. To change the default behavior and insert into all matching streams instead (including those without a <literal>where</literal> clause), the <literal>output all</literal> keywords may be added to the statement.
+		</para>
+
+		<para>
+			The sample statement below shows the use of the <literal>output all</literal> keywords. The statement populates both the <literal>LargeOrders</literal> stream with large orders as well as the <literal>VIPCustomerOrders</literal> stream with orders for certain customers based on customer id:
+		</para>
+		<programlisting><![CDATA[on OrderEvent 
+  insert into LargeOrders select * where orderQty >= 100
+  insert into VIPCustomerOrders select * where customerId in (1001, 1002)
+  output all]]></programlisting>
+  
+	  <para>
+		  Since the <literal>output all</literal> keywords are present, the above statement inserts each order event into either both streams or only one stream or none of the streams, depending on order quantity and customer id of the order event. The statement delivers order events not inserted into any of the streams to the listeners and/or subscriber to the statement.
+	  </para>
+
+	  <para>
+		  The following limitations apply to split-stream statements:
+	  </para>	
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Sub-selects, aggregation functions and the <literal>prev</literal> and <literal>prior</literal> operators are not available in conditions and the <literal>select</literal>-clause.
+				</para>
+			</listitem>
+		</orderedlist>
+	</sect1>
+
 	<sect1 id="variables_overview" revision="1">
 		<title>Variables</title>
 		

@@ -23,10 +23,11 @@ public class RouteResultViewHandlerFirst implements RouteResultViewHandler
         this.whereClauses = whereClauses;
     }
 
-    public void handle(EventBean event)
+    public boolean handle(EventBean event)
     {
         int index = -1;
         eventsPerStream[0] = event;
+
         for (int i = 0; i < whereClauses.length; i++)
         {
             if (whereClauses[i] == null)
@@ -43,15 +44,15 @@ public class RouteResultViewHandlerFirst implements RouteResultViewHandler
             }
         }
 
-        if (index == -1)
+        if (index != -1)
         {
-            index = whereClauses.length - 1;
+            UniformPair<EventBean[]> result = processors[index].processViewResult(eventsPerStream, null, false);
+            if ((result != null) && (result.getFirst() != null) && (result.getFirst().length > 0))
+            {
+                internalEventRouter.route(result.getFirst()[0], epStatementHandle);
+            }
         }
-
-        UniformPair<EventBean[]> result = processors[index].processViewResult(eventsPerStream, null, false);
-        if ((result != null) && (result.getFirst() != null) && (result.getFirst().length > 0))
-        {
-            internalEventRouter.route(result.getFirst()[0], epStatementHandle);
-        }
+        
+        return index != -1;
     }
 }

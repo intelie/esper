@@ -1,6 +1,7 @@
 package com.espertech.esper.regression.epl;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -26,13 +27,6 @@ public class TestSplitStream extends TestCase
         }
     }
 
-    // test support match first/each (listener+subscriber receives all/none), test listener/subscriber on statement itself
-    // test statement object model
-    // test use alias in select clause
-    // test support subquery
-    // test support variables
-    // write docs
-
     public void testInvalid()
     {
         tryInvalid("on SupportBean select * where intPrimitive=1 insert into BStream select * where 1=2",
@@ -43,6 +37,9 @@ public class TestSplitStream extends TestCase
 
         tryInvalid("on SupportBean insert into AStream select * where intPrimitive=1 insert into BStream select avg(intPrimitive) where 1=2",
                    "Error starting statement: Aggregation functions are not allowed in this context [on SupportBean insert into AStream select * where intPrimitive=1 insert into BStream select avg(intPrimitive) where 1=2]");
+
+        tryInvalid("on SupportBean insert into DStream select * where intPrimitive=1 insert into BStream select * where intPrimitive > (select max(intPrimitive) from SupportBean)",
+                   "Error validating expression: Subqueries are not allowed in the where-clause in this context [on SupportBean insert into DStream select * where intPrimitive=1 insert into BStream select * where intPrimitive > (select max(intPrimitive) from SupportBean)]");
     }
 
     private void tryInvalid(String stmtText, String message)
@@ -62,13 +59,15 @@ public class TestSplitStream extends TestCase
     {
         // test wildcard
         String stmtOrigText = "on SupportBean insert into AStream select *";
-        epService.getEPAdministrator().createEPL(stmtOrigText);
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtOrigText);
+        stmt.addListener(listener);
 
         EPStatement stmtOne = epService.getEPAdministrator().createEPL("select * from AStream");
         stmtOne.addListener(listeners[0]);
 
         sendSupportBean("E1", 1);
         assertReceivedSingle(0, "E1");
+        assertFalse(listener.isInvoked());
 
         // test select
         stmtOrigText = "on SupportBean insert into BStream select 3*intPrimitive as value";
@@ -87,36 +86,40 @@ public class TestSplitStream extends TestCase
 
     public void test2SplitNoDefaultOutputFirst()
     {
-        String stmtOrigText = "on SupportBean insert into AStream select * where intPrimitive=1 insert into BStream select * where intPrimitive=2 or intPrimitive=1";
+        String stmtOrigText = "on SupportBean " +
+                    "insert into AStream select *  where (intPrimitive = 1) " +
+                    "insert into BStream select *  where ((intPrimitive = 1)) or ((intPrimitive = 2))";
         EPStatement stmtOrig = epService.getEPAdministrator().createEPL(stmtOrigText);
-        stmtOrig.addListener(listener);
+        runAssertion(stmtOrig);
 
-        EPStatement stmtOne = epService.getEPAdministrator().createEPL("select * from AStream");
-        stmtOne.addListener(listeners[0]);
-        EPStatement stmtTwo = epService.getEPAdministrator().createEPL("select * from BStream");
-        stmtTwo.addListener(listeners[1]);
+        // statement object model
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setFromClause(FromClause.create(FilterStream.create("SupportBean")));
+        model.setInsertInto(InsertIntoClause.create("AStream"));
+        model.setSelectClause(SelectClause.createWildcard());
+        model.setWhereClause(Expressions.eq("intPrimitive", 1));
+        OnInsertSplitStreamClause clause = OnClause.createOnInsertSplitStream();
+        model.setOnExpr(clause);
+        OnInsertSplitStreamItem item = OnInsertSplitStreamItem.create(
+                InsertIntoClause.create("BStream"),
+                SelectClause.createWildcard(),
+                Expressions.or(Expressions.eq("intPrimitive", 1), Expressions.eq("intPrimitive", 2)));
+        clause.addItem(item);
+        assertEquals(stmtOrigText, model.toEPL());
+        stmtOrig = epService.getEPAdministrator().create(model);
+        runAssertion(stmtOrig);
 
-        assertNotSame(stmtOne.getEventType(), stmtTwo.getEventType());
-        assertSame(stmtOne.getEventType().getUnderlyingType(), stmtTwo.getEventType().getUnderlyingType());
-
-        sendSupportBean("E1", 1);
-        assertReceivedSingle(0, "E1");
-
-        sendSupportBean("E2", 2);
-        assertReceivedSingle(1, "E2");
-
-        sendSupportBean("E3", 1);
-        assertReceivedSingle(0, "E3");
-
-        sendSupportBean("E4", -999);
-        assertReceivedSingle(1, "E4");
+        EPStatementObjectModel newModel = epService.getEPAdministrator().compileEPL(stmtOrigText);
+        stmtOrig = epService.getEPAdministrator().create(newModel);
+        assertEquals(stmtOrigText, newModel.toEPL());
+        runAssertion(stmtOrig);
     }
 
     public void test2SplitNoDefaultOutputAll()
     {
         String stmtOrigText = "on SupportBean " +
-                              "insert into AStream select * where intPrimitive=1 " +
-                              "insert into BStream select * where intPrimitive=1 or intPrimitive=2 " +
+                              "insert into AStream select string where intPrimitive=1 " +
+                              "insert into BStream select string where intPrimitive=1 or intPrimitive=2 " +
                               "output all";
         EPStatement stmtOrig = epService.getEPAdministrator().createEPL(stmtOrigText);
         stmtOrig.addListener(listener);
@@ -131,46 +134,54 @@ public class TestSplitStream extends TestCase
 
         sendSupportBean("E1", 1);
         assertReceivedEach(new String[] {"E1", "E1"});
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E2", 2);
         assertReceivedEach(new String[] {null, "E2"});
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E3", 1);
         assertReceivedEach(new String[] {"E3", "E3"});
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E4", -999);
         assertReceivedEach(new String[] {null, null});
+        assertEquals("E4", listener.assertOneGetNewAndReset().get("string"));
 
         stmtOrig.destroy();
         stmtOrigText = "on SupportBean " +
-                              "insert into AStream select string || '_1' where intPrimitive in (1, 2) " +
-                              "insert into BStream select string || '_2' where intPrimitive in (2, 3) " +
-                              "insert into CStream select string || '_3' " +
+                              "insert into AStream select string || '_1' as string where intPrimitive in (1, 2) " +
+                              "insert into BStream select string || '_2' as string where intPrimitive in (2, 3) " +
+                              "insert into CStream select string || '_3' as string " +
                               "output all";
         stmtOrig = epService.getEPAdministrator().createEPL(stmtOrigText);
         stmtOrig.addListener(listener);
 
         EPStatement stmtThree = epService.getEPAdministrator().createEPL("select * from CStream");
-        stmtTwo.addListener(listeners[2]);
+        stmtThree.addListener(listeners[2]);
 
         sendSupportBean("E1", 2);
         assertReceivedEach(new String[] {"E1_1", "E1_2", "E1_3"});
+        assertFalse(listener.isInvoked());
 
-        sendSupportBean("E2", 2);
-        assertReceivedEach(new String[] {null, "E2"});
+        sendSupportBean("E2", 1);
+        assertReceivedEach(new String[] {"E2_1", null, "E2_3"});
+        assertFalse(listener.isInvoked());
 
-        sendSupportBean("E3", 1);
-        assertReceivedEach(new String[] {"E3", "E3"});
+        sendSupportBean("E3", 3);
+        assertReceivedEach(new String[] {null, "E3_2", "E3_3"});
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E4", -999);
-        assertReceivedEach(new String[] {null, null});
+        assertReceivedEach(new String[] {null, null, "E4_3"});
+        assertFalse(listener.isInvoked());
     }
 
     public void test3And4SplitDefaultOutputFirst()
     {
-        String stmtOrigText = "on SupportBean " +
-                              "insert into AStream select string||'_1' as string where intPrimitive=1 " +
-                              "insert into BStream select string||'_2' as string where intPrimitive=2 " +
+        String stmtOrigText = "on SupportBean as mystream " +
+                              "insert into AStream select mystream.string||'_1' as string where intPrimitive=1 " +
+                              "insert into BStream select mystream.string||'_2' as string where intPrimitive=2 " +
                               "insert into CStream select string||'_3' as string";
         EPStatement stmtOrig = epService.getEPAdministrator().createEPL(stmtOrigText);
         stmtOrig.addListener(listener);
@@ -187,15 +198,19 @@ public class TestSplitStream extends TestCase
 
         sendSupportBean("E1", 1);
         assertReceivedSingle(0, "E1_1");
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E2", 2);
         assertReceivedSingle(1, "E2_2");
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E3", 1);
         assertReceivedSingle(0, "E3_1");
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E4", -999);
         assertReceivedSingle(2, "E4_3");
+        assertFalse(listener.isInvoked());
 
         stmtOrigText = "on SupportBean " +
                               "insert into AStream select string||'_1' as string where intPrimitive=10 " +
@@ -211,15 +226,19 @@ public class TestSplitStream extends TestCase
 
         sendSupportBean("E5", -999);
         assertReceivedSingle(2, "E5_3");
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E6", 9999);
         assertReceivedSingle(3, "E6_4");
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E7", 20);
         assertReceivedSingle(1, "E7_2");
+        assertFalse(listener.isInvoked());
 
         sendSupportBean("E8", 10);
         assertReceivedSingle(0, "E8_1");
+        assertFalse(listener.isInvoked());
     }
 
     private void assertReceivedEach(String[] stringValue)
@@ -250,6 +269,14 @@ public class TestSplitStream extends TestCase
         assertEquals(stringValue, listeners[index].assertOneGetNewAndReset().get("string"));
     }
 
+    private void assertReceivedNone()
+    {
+        for (int i = 0; i < listeners.length; i++)
+        {
+            assertFalse(listeners[i].isInvoked());
+        }
+    }
+
     private SupportBean sendSupportBean(String string, int intPrimitive)
     {
         SupportBean bean = new SupportBean();
@@ -257,5 +284,38 @@ public class TestSplitStream extends TestCase
         bean.setIntPrimitive(intPrimitive);
         epService.getEPRuntime().sendEvent(bean);
         return bean;
+    }
+
+    private void runAssertion(EPStatement stmtOrig)
+    {
+        stmtOrig.addListener(listener);
+
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL("select * from AStream");
+        stmtOne.addListener(listeners[0]);
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL("select * from BStream");
+        stmtTwo.addListener(listeners[1]);
+
+        assertNotSame(stmtOne.getEventType(), stmtTwo.getEventType());
+        assertSame(stmtOne.getEventType().getUnderlyingType(), stmtTwo.getEventType().getUnderlyingType());
+
+        sendSupportBean("E1", 1);
+        assertReceivedSingle(0, "E1");
+        assertFalse(listener.isInvoked());
+
+        sendSupportBean("E2", 2);
+        assertReceivedSingle(1, "E2");
+        assertFalse(listener.isInvoked());
+
+        sendSupportBean("E3", 1);
+        assertReceivedSingle(0, "E3");
+        assertFalse(listener.isInvoked());
+
+        sendSupportBean("E4", -999);
+        assertReceivedNone();
+        assertEquals("E4", listener.assertOneGetNewAndReset().get("string"));
+
+        stmtOrig.destroy();
+        stmtOne.destroy();
+        stmtTwo.destroy();
     }
 }

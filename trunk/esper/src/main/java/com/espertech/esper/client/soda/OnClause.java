@@ -10,6 +10,7 @@ package com.espertech.esper.client.soda;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * A clause to delete from a named window based on a triggering event arriving and correlated to the named window events to be deleted.
@@ -27,6 +28,11 @@ public abstract class OnClause implements Serializable
     public static OnDeleteClause createOnDelete(String windowName, String asName)
     {
         return OnDeleteClause.create(windowName, asName);
+    }
+
+    public static OnInsertSplitStreamClause createOnInsertSplitStream()
+    {
+        return OnInsertSplitStreamClause.create();
     }
 
     /**

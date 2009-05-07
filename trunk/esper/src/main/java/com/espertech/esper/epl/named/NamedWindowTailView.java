@@ -53,7 +53,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     {
         this.eventType = eventType;
         this.namedWindowService = namedWindowService;
-        consumers = new HashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
+        consumers = new LinkedHashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
         this.namedWindowRootView = namedWindowRootView;
         this.createWindowStmtHandle = createWindowStmtHandle;
         this.statementResultService = statementResultService;
@@ -118,7 +118,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
 
             // avoid concurrent modification as a thread may currently iterate over consumers as its dispatching
             // without the engine lock
-            Map<EPStatementHandle, List<NamedWindowConsumerView>> newConsumers = new HashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
+            Map<EPStatementHandle, List<NamedWindowConsumerView>> newConsumers = new LinkedHashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
             newConsumers.putAll(consumers);
             newConsumers.put(statementHandle, viewsPerStatements);
             consumers = newConsumers;
@@ -150,7 +150,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         }
         if (handleRemoved != null)
         {
-            Map<EPStatementHandle, List<NamedWindowConsumerView>> newConsumers = new HashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
+            Map<EPStatementHandle, List<NamedWindowConsumerView>> newConsumers = new LinkedHashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
             newConsumers.putAll(consumers);
             newConsumers.remove(handleRemoved);
             consumers = newConsumers;

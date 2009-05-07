@@ -44,7 +44,12 @@ public class RouteResultView extends ViewSupport
 
         for (EventBean bean : newData)
         {
-            handler.handle(bean);
+            boolean isHandled = handler.handle(bean);
+
+            if (!isHandled)
+            {
+                updateChildren(new EventBean[] {bean}, null);
+            }
         }
     }
 

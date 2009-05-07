@@ -4,5 +4,5 @@ import com.espertech.esper.client.EventBean;
 
 public interface RouteResultViewHandler
 {
-    public void handle(EventBean event);
+    public boolean handle(EventBean event);
 }
