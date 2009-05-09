@@ -10,6 +10,10 @@ public class SupportSensorEvent implements Serializable
     private double measurement;
     private double confidence;
 
+    private SupportSensorEvent()
+    {        
+    }
+
     public SupportSensorEvent(int id, String type, String device, double measurement, double confidence)
     {
         this.id = id;
@@ -42,5 +46,31 @@ public class SupportSensorEvent implements Serializable
     public double getConfidence()
     {
         return confidence;
+    }
+
+
+    public void setConfidence(double confidence)
+    {
+        this.confidence = confidence;
+    }
+
+    public void setDevice(String device)
+    {
+        this.device = device;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
+    }
+
+    public void setMeasurement(double measurement)
+    {
+        this.measurement = measurement;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
     }
 }

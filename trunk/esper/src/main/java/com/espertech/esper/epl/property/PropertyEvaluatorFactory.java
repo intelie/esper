@@ -173,7 +173,7 @@ public class PropertyEvaluatorFactory
             String[] whereStreamNames = streamNames.toArray(new String[streamNames.size()]);
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(whereTypes, whereStreamNames, engineURI);
 
-            SelectExprProcessor selectExpr = SelectExprProcessorFactory.getProcessor(cumulativeSelectClause, false, null, streamTypeService, eventAdapterService, null, null, null);
+            SelectExprProcessor selectExpr = SelectExprProcessorFactory.getProcessor(cumulativeSelectClause, false, null, streamTypeService, eventAdapterService, null, null, null, methodResolutionService);
             return new PropertyEvaluatorSelect(selectExpr, accumulative);
         }
     }

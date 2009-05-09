@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.espertech.esper.epl.core.EngineNoSuchMethodException;
+
 /**
  * Used for retrieving static and instance method objects. It
  * provides two points of added functionality over the standard
@@ -130,10 +132,10 @@ public class MethodResolver
 	 * @param paramTypes - the parameter types for the method
      * @param allowInstance - true to allow instance methods as well, false to allow only static method
 	 * @return - the Method object for this method
-	 * @throws NoSuchMethodException if the method could not be found
+	 * @throws EngineNoSuchMethodException if the method could not be found
 	 */
 	public static Method resolveMethod(Class declaringClass, String methodName, Class[] paramTypes, boolean allowInstance)
-	throws NoSuchMethodException
+	throws EngineNoSuchMethodException
 	{
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
@@ -147,7 +149,8 @@ public class MethodResolver
 		int bestConversionCount = -1;
 
 		// Examine each method, checking if the signature is compatible
-		for(Method method : methods)
+        Method conversionFailedMethod = null;
+        for(Method method : methods)
 		{
 			// Check the modifiers: we only want public and static, if required
 			if(!isPublicAndStatic(method, allowInstance))
@@ -167,7 +170,8 @@ public class MethodResolver
 			// Parameters don't match
 			if(conversionCount == -1)
 			{
-				continue;
+                conversionFailedMethod = method;
+                continue;
 			}
 
 			// Parameters match exactly
@@ -212,7 +216,7 @@ public class MethodResolver
 					appendString = ", ";
 				}
 			}
-			throw new NoSuchMethodException("Unknown method " + declaringClass.getSimpleName() + '.' + methodName + '(' + params + ')');
+			throw new EngineNoSuchMethodException("Unknown method " + declaringClass.getSimpleName() + '.' + methodName + '(' + params + ')', conversionFailedMethod);
 		}
 	}
 

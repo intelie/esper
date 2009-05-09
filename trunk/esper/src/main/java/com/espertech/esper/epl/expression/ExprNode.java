@@ -314,7 +314,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         Object enumValue = JavaClassHelper.resolveIdentAsEnumConst(constant, methodResolutionService, null);
         if (enumValue != null)
         {
-            return new ExprConstantNode(methodResolutionService);
+            return new ExprConstantNode(enumValue);
         }
         return null;
     }

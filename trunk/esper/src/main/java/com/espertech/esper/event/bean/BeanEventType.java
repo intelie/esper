@@ -46,6 +46,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
     private final Map<String, EventPropertyGetter> propertyGetterCache;
     private EventPropertyDescriptor[] propertyDescriptors;
     private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
+    private String factoryMethodName;
 
     /**
      * Constructor takes a java bean class as an argument.
@@ -65,6 +66,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         this.optionalLegacyDef = optionalLegacyDef;
         if (optionalLegacyDef != null)
         {
+            this.factoryMethodName = optionalLegacyDef.getFactoryMethod();
             this.propertyResolutionStyle = optionalLegacyDef.getPropertyResolutionStyle();
         }
         else
@@ -84,7 +86,12 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
     public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
     {
         return propertyDescriptorMap.get(propertyName);
-    }    
+    }
+
+    public String getFactoryMethodName()
+    {
+        return factoryMethodName;
+    }
 
     public final Class getPropertyType(String propertyName)
     {

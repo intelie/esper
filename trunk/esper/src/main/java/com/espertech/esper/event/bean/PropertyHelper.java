@@ -9,7 +9,8 @@
 package com.espertech.esper.event.bean;
 
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.event.*;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventPropertyType;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
@@ -80,6 +81,25 @@ public class PropertyHelper
         return getPropertiesForClasses(propertyOrigClasses);
     }
 
+    /**
+     * Introspects the given class and returns event property descriptors for each writable property found
+     * in the class itself, it's superclasses and all interfaces this class and the superclasses implements.
+     * @param clazz is the Class to introspect
+     * @return list of properties
+     */
+    public static List<InternalWritablePropDescriptor> getWritableProperties(Class clazz)
+    {
+        // Determine all interfaces implemented and the interface's parent interfaces if any
+        Set<Class> propertyOrigClasses = new HashSet<Class>();
+        getImplementedInterfaceParents(clazz, propertyOrigClasses);
+
+        // Add class itself
+        propertyOrigClasses.add(clazz);
+
+        // Get the set of property names for all classes
+        return getWritablePropertiesForClasses(propertyOrigClasses);
+    }
+
     private static void getImplementedInterfaceParents(Class clazz, Set<Class> classesResult)
     {
         Class[] interfaces = clazz.getInterfaces();
@@ -94,6 +114,20 @@ public class PropertyHelper
             classesResult.add(interfaces[i]);
             getImplementedInterfaceParents(interfaces[i], classesResult);
         }
+    }
+
+    private static List<InternalWritablePropDescriptor> getWritablePropertiesForClasses(Set<Class> propertyClasses)
+    {
+    	List<InternalWritablePropDescriptor> result = new LinkedList<InternalWritablePropDescriptor>();
+
+        for (Class clazz : propertyClasses)
+        {
+        	addIntrospectPropertiesWritable(clazz, result);
+        }
+
+        removeDuplicatePropertiesWritable(result);
+
+        return result;
     }
 
     private static List<InternalEventPropDescriptor> getPropertiesForClasses(Set<Class> propertyClasses)
@@ -167,6 +201,33 @@ public class PropertyHelper
     }
 
     /**
+     * Removed duplicate properties using the property name to find unique properties among write-able properties.
+     * @param properties is a list of property descriptors
+     */
+    protected static void removeDuplicatePropertiesWritable(List<InternalWritablePropDescriptor> properties)
+    {
+        LinkedHashMap<String, InternalWritablePropDescriptor> set = new LinkedHashMap<String, InternalWritablePropDescriptor>();
+        List<InternalWritablePropDescriptor> toRemove = new LinkedList<InternalWritablePropDescriptor>();
+
+        // add duplicates to separate list
+        for (InternalWritablePropDescriptor desc : properties)
+        {
+            if (set.containsKey(desc.getPropertyName()))
+            {
+                toRemove.add(desc);
+                continue;
+            }
+            set.put(desc.getPropertyName(), desc);
+        }
+
+        // remove duplicates
+        for (InternalWritablePropDescriptor desc : toRemove)
+        {
+            properties.remove(desc);
+        }
+    }
+
+    /**
      * Adds to the given list of property descriptors the properties of the given class
      * using the Introspector to introspect properties. This also finds array and indexed properties.
      * @param clazz to introspect
@@ -194,6 +255,24 @@ public class PropertyHelper
             }
 
             result.add(new InternalEventPropDescriptor(propertyName, readMethod, type));
+        }
+    }
+
+    protected static void addIntrospectPropertiesWritable(Class clazz, List<InternalWritablePropDescriptor> result)
+    {
+        PropertyDescriptor properties[] = introspect(clazz);
+        for (int i = 0; i < properties.length; i++)
+        {
+            PropertyDescriptor property = properties[i];
+        	String propertyName = property.getName();
+        	Method writeMethod = property.getWriteMethod();
+
+            if (writeMethod == null)
+            {
+                continue;
+            }
+
+            result.add(new InternalWritablePropDescriptor(propertyName, writeMethod));
         }
     }
 

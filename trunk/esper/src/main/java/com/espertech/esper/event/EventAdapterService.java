@@ -29,6 +29,8 @@ import java.util.Set;
  */
 public interface EventAdapterService
 {
+    public EventBeanManufacturer getManufacturer(EventType eventType);
+
     /**
      * Creates a thin adaper for an event object given an event type.
      * @param bean event object

@@ -11,6 +11,7 @@ public class SupportBeanComplexProps implements Serializable, SupportMarkerInter
 	private SupportBeanSpecialGetterNested nested;
 	private Map<String, String> mapProperty;
 	private int[] arrayProperty;
+    private Object[] objectArray;
     
     public static String[] PROPERTIES = 
             { "simpleProperty", "mapped", "indexed", "mapProperty", "arrayProperty", "nested"};
@@ -29,7 +30,11 @@ public class SupportBeanComplexProps implements Serializable, SupportMarkerInter
 
         return new SupportBeanComplexProps("simple", properties, new int[] {1, 2}, mapProp, arrayProp, "nestedValue", "nestedNestedValue");
 	}
-	
+
+    public SupportBeanComplexProps()
+    {
+    }
+
     public SupportBeanComplexProps(int[] indexedProps)
     {
         this.indexedProps = indexedProps;
@@ -83,6 +88,41 @@ public class SupportBeanComplexProps implements Serializable, SupportMarkerInter
     public void setIndexed(int index, int value)
     {
         indexedProps[index] = value;
+    }
+
+    public void setArrayProperty(int[] arrayProperty)
+    {
+        this.arrayProperty = arrayProperty;
+    }
+
+    public void setIndexedProps(int[] indexedProps)
+    {
+        this.indexedProps = indexedProps;
+    }
+
+    public void setMappedProps(Properties mappedProps)
+    {
+        this.mappedProps = mappedProps;
+    }
+
+    public void setMapProperty(Map<String, String> mapProperty)
+    {
+        this.mapProperty = mapProperty;
+    }
+
+    public void setNested(SupportBeanSpecialGetterNested nested)
+    {
+        this.nested = nested;
+    }
+
+    public Object[] getObjectArray()
+    {
+        return objectArray;
+    }
+
+    public void setObjectArray(Object[] objectArray)
+    {
+        this.objectArray = objectArray;
     }
 
     public static class SupportBeanSpecialGetterNested implements Serializable

@@ -22,6 +22,7 @@ public class ConfigurationEventTypeLegacy implements Serializable
     private List<LegacyMethodPropDesc> methodProperties;
     private List<LegacyFieldPropDesc> fieldProperties;
     private Configuration.PropertyResolutionStyle propertyResolutionStyle;
+    private String factoryMethod;
     private static final long serialVersionUID = 3385356145345570222L;
 
     /**
@@ -169,6 +170,16 @@ public class ConfigurationEventTypeLegacy implements Serializable
     public void setPropertyResolutionStyle(Configuration.PropertyResolutionStyle propertyResolutionStyle)
     {
         this.propertyResolutionStyle = propertyResolutionStyle;
+    }
+
+    public String getFactoryMethod()
+    {
+        return factoryMethod;
+    }
+
+    public void setFactoryMethod(String factoryMethod)
+    {
+        this.factoryMethod = factoryMethod;
     }
 
     /**

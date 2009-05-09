@@ -3772,7 +3772,7 @@ insert into <emphasis>insert_into_def</emphasis> select <emphasis>select_list</e
 		<para>
 			The <emphasis>event_type</emphasis> is the name of the type of events that trigger the split stream. It is optionally
 followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword
-can be used to assign a stream name. Patterns can also be specified in the <literal>on</literal> clause.
+can be used to assign a stream name. Patterns and named windows can also be specified in the <literal>on</literal> clause.
 		</para>
 
 		<para>

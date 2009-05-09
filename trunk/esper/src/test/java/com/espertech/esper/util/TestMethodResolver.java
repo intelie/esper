@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 
 import java.lang.reflect.Method;
 
+import com.espertech.esper.epl.core.EngineNoSuchMethodException;
+
 public class TestMethodResolver extends TestCase
 {		
 	public void testResolveMethodStaticOnly() throws Exception
@@ -66,7 +68,7 @@ public class TestMethodResolver extends TestCase
 			MethodResolver.resolveMethod(declClass, methodName, args, false);
 			fail();
 		}
-		catch(NoSuchMethodException e)
+		catch(EngineNoSuchMethodException e)
 		{
 			// Expected
 		}
@@ -79,7 +81,7 @@ public class TestMethodResolver extends TestCase
 			MethodResolver.resolveMethod(declClass, methodName, args, false);
 			fail();
 		}
-		catch(NoSuchMethodException e)
+		catch(EngineNoSuchMethodException e)
 		{
 			// Expected
 		}
@@ -91,7 +93,7 @@ public class TestMethodResolver extends TestCase
 			MethodResolver.resolveMethod(declClass, methodName, args, false);
 			fail();
 		}
-		catch(NoSuchMethodException e)
+		catch(EngineNoSuchMethodException e)
 		{
 			// Expected
 		}
@@ -103,7 +105,7 @@ public class TestMethodResolver extends TestCase
 			MethodResolver.resolveMethod(declClass, methodName, args, false);
 			fail();
 		}
-		catch(NoSuchMethodException e)
+		catch(EngineNoSuchMethodException e)
 		{
 			// Expected
 		}

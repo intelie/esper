@@ -6,6 +6,11 @@ public class SupportBeanString implements Serializable
 {
     private String string;
 
+    public static SupportBeanString getInstance()
+    {
+        return new SupportBeanString(null);
+    }
+
     public SupportBeanString(String string)
     {
         this.string = string;

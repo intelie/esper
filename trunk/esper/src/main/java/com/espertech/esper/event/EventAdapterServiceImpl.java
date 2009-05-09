@@ -11,10 +11,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPRuntimeEventSender;
-import com.espertech.esper.event.bean.BeanEventAdapter;
-import com.espertech.esper.event.bean.BeanEventBean;
-import com.espertech.esper.event.bean.BeanEventType;
-import com.espertech.esper.event.bean.BeanEventTypeFactory;
+import com.espertech.esper.event.bean.*;
 import com.espertech.esper.event.map.MapEventBean;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.xml.*;
@@ -32,6 +29,8 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.sf.cglib.reflect.FastClass;
 
 /**
  * Implementation for resolving event name to event type.
@@ -72,6 +71,29 @@ public class EventAdapterServiceImpl implements EventAdapterService
         typesPerJavaBean = new ConcurrentHashMap<Class, BeanEventType>();
         beanEventAdapter = new BeanEventAdapter(typesPerJavaBean, this);
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
+    }
+
+    public EventBeanManufacturer getManufacturer(EventType eventType)
+    {
+        if (!(eventType instanceof EventTypeSPI))
+        {
+            return null;
+        }
+        EventTypeSPI typeSPI = (EventTypeSPI) eventType;
+        if (!typeSPI.getMetadata().isApplicationConfigured())
+        {
+            return null;
+        }
+        EventTypeMetadata.ApplicationType eventAppType = typeSPI.getMetadata().getOptionalApplicationType();
+        if (!(eventType instanceof BeanEventType))
+        {
+            return null;
+        }
+
+        BeanEventType beanEventType = (BeanEventType) eventType;
+        FastClass fastClass = beanEventType.getFastClass();
+        List<InternalWritablePropDescriptor> writables = PropertyHelper.getWritableProperties(fastClass.getJavaClass());
+        return new EventBeanManufacturerBean(this, fastClass, writables, beanEventType);
     }
 
     public EventType[] getAllTypes()

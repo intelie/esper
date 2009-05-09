@@ -37,13 +37,15 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private EventType resultEventType;
     private EventType vaeInnerEventType;
     private final EventAdapterService eventAdapterService;
-    private final boolean isUsingWildcard;
+    private boolean isUsingWildcard;
     private boolean singleStreamWrapper;
     private boolean singleColumnCoercion;
     private SelectExprJoinWildcardProcessor joinWildcardProcessor;
     private boolean isRevisionEvent;
     private ValueAddEventProcessor vaeProcessor;
     private boolean isEmptyExpressionNodes;
+    private boolean isPopulateUnderlying;
+    private EventBeanManufacturer eventBeanManufacturer;
 
     /**
      * Ctor.
@@ -62,7 +64,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                                    StreamTypeService typeService,
                                    EventAdapterService eventAdapterService,
                                    ValueAddEventService revisionService,
-                                   SelectExprEventTypeRegistry selectExprEventTypeRegistry) throws ExprValidationException
+                                   SelectExprEventTypeRegistry selectExprEventTypeRegistry,
+                                   MethodResolutionService methodResolutionService) throws ExprValidationException
     {
         this.eventAdapterService = eventAdapterService;
         this.isUsingWildcard = isUsingWildcard;
@@ -110,7 +113,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         	}
         }
 
-        init(selectionList, insertIntoDesc, underlyingType, eventAdapterService, typeService, revisionService, selectExprEventTypeRegistry);
+        init(selectionList, insertIntoDesc, underlyingType, eventAdapterService, typeService, revisionService, selectExprEventTypeRegistry, methodResolutionService);
     }
 
     private void init(List<SelectClauseExprCompiledSpec> selectionList,
@@ -119,7 +122,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                       EventAdapterService eventAdapterService,
                       StreamTypeService typeService,
                       ValueAddEventService valueAddEventService,
-                      SelectExprEventTypeRegistry selectExprEventTypeRegistry)
+                      SelectExprEventTypeRegistry selectExprEventTypeRegistry,
+                      MethodResolutionService methodResolutionService)
         throws ExprValidationException
     {
         // Get expression nodes
@@ -272,7 +276,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             selPropertyTypes.put(columnNames[i], expressionReturnType);
         }
 
-        // If we have an name for this type, add it
+        // If we have a name for this type, add it
         if (insertIntoDesc != null)
         {
             try
@@ -288,7 +292,21 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     }
                     else
                     {
-                        resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeName(), eventType, selPropertyTypes, false, true);
+                        EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
+                        if (existingType != null)
+                        {
+                            eventBeanManufacturer = eventAdapterService.getManufacturer(existingType);
+                        }
+                        if ((existingType != null) && (eventBeanManufacturer != null))
+                        {
+                            eventBeanManufacturer.initialize(isUsingWildcard, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService);
+                            resultEventType = existingType;
+                            isPopulateUnderlying = true;
+                        }
+                        else
+                        {
+                            resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeName(), eventType, selPropertyTypes, false, true);
+                        }
                     }
                 }
                 else
@@ -321,7 +339,21 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         }
                         else
                         {
-                            resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), selPropertyTypes, null, false, false, true);
+                            EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
+                            if (existingType != null)
+                            {
+                                eventBeanManufacturer = eventAdapterService.getManufacturer(existingType);
+                            }
+                            if ((existingType != null) && (eventBeanManufacturer != null))
+                            {
+                                eventBeanManufacturer.initialize(isUsingWildcard, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService);
+                                resultEventType = existingType;
+                                isPopulateUnderlying = true;
+                            }
+                            else
+                            {
+                                resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), selPropertyTypes, null, false, false, true);
+                            }
                         }
                     }
                     if (vaeProcessor != null)
@@ -363,6 +395,11 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
 
     public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
     {
+        if (isPopulateUnderlying)
+        {
+            return eventBeanManufacturer.manufacture(eventsPerStream, isNewData);
+        }
+
         // Evaluate all expressions and build a map of name-value pairs
         Map<String, Object> props;
 
