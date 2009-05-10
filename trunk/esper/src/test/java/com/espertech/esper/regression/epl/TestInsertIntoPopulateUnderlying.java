@@ -23,11 +23,12 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
     // test wildcard combined with columns
     // test stream wildcard or any other special functions
     // test joins with wildcard
-    // test constructor injection
-    // test nested levels: should that be supported
+    // test copy-bean and copy bean+change value
 
     // test populate Map
 
+    // (1) disallow wildcard, copy code for Map support
+    // 
     // doc
 
     public void setUp()
@@ -54,7 +55,8 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanInterfaceProps", SupportBeanInterfaceProps.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanErrorTestingOne", SupportBeanErrorTestingOne.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanErrorTestingTwo", SupportBeanErrorTestingTwo.class);
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanReadOnly", SupportBeanReadOnly.class);        
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanReadOnly", SupportBeanReadOnly.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanArrayCollMap", SupportBeanArrayCollMap.class);                
         epService.getEPAdministrator().getConfiguration().addImport(SupportEnum.class);
 
         Map<String, Object> mymapDef = new HashMap<String, Object>();
@@ -71,6 +73,11 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         ConfigurationEventTypeXMLDOM xml = new ConfigurationEventTypeXMLDOM();
         xml.setRootElementName("abc");
         epService.getEPAdministrator().getConfiguration().addEventType("xmltype", xml);
+    }
+
+    public void testPopulateFromFragment()
+    {
+        // arrays and maps
     }
 
     public void testInvalid()
@@ -238,7 +245,7 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         SupportBeanInterfaceProps eventTwo = (SupportBeanInterfaceProps) listener.assertOneGetNewAndReset().getUnderlying();
         assertEquals(SupportBeanInterfaceProps.class, stmtOne.getEventType().getUnderlyingType());
 
-        // nested
+        // object values from Map same type
         stmtOne.destroy();
         stmtTextOne = "insert into SupportBeanComplexProps(nested) select nested from MyMap";
         stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);
@@ -249,6 +256,16 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         epService.getEPRuntime().sendEvent(mymapVals, "MyMap");
         SupportBeanComplexProps eventThree = (SupportBeanComplexProps) listener.assertOneGetNewAndReset().getUnderlying();
         assertEquals("111", eventThree.getNested().getNestedValue());
+
+        // object to Object
+        stmtOne.destroy();
+        stmtTextOne = "insert into SupportBeanArrayCollMap(anyObject) select nested from SupportBeanComplexProps";
+        stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
+        SupportBeanArrayCollMap eventFour = (SupportBeanArrayCollMap) listener.assertOneGetNewAndReset().getUnderlying();
+        assertEquals("nestedValue", ((SupportBeanComplexProps.SupportBeanSpecialGetterNested) eventFour.getAnyObject()).getNestedValue());
     }
 
     public void testFactoryMethod()

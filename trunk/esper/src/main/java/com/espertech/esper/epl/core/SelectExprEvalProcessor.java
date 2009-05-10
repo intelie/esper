@@ -299,7 +299,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         }
                         if ((existingType != null) && (eventBeanManufacturer != null))
                         {
-                            eventBeanManufacturer.initialize(isUsingWildcard, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService);
+                            eventBeanManufacturer.initialize(isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService);
                             resultEventType = existingType;
                             isPopulateUnderlying = true;
                         }
@@ -346,7 +346,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                             }
                             if ((existingType != null) && (eventBeanManufacturer != null))
                             {
-                                eventBeanManufacturer.initialize(isUsingWildcard, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService);
+                                eventBeanManufacturer.initialize(isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService);
                                 resultEventType = existingType;
                                 isPopulateUnderlying = true;
                             }
