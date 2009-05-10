@@ -19,6 +19,7 @@ import com.espertech.esper.plugin.*;
 import com.espertech.esper.util.URIUtil;
 import com.espertech.esper.util.UuidGenerator;
 import com.espertech.esper.core.thread.ThreadingService;
+import com.espertech.esper.epl.core.MethodResolutionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -73,7 +74,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
     }
 
-    public EventBeanManufacturer getManufacturer(EventType eventType)
+    public Set<WriteablePropertyDescriptor> getWriteableProperties(EventType eventType)
     {
         if (!(eventType instanceof EventTypeSPI))
         {
@@ -84,16 +85,54 @@ public class EventAdapterServiceImpl implements EventAdapterService
         {
             return null;
         }
-        EventTypeMetadata.ApplicationType eventAppType = typeSPI.getMetadata().getOptionalApplicationType();
-        if (!(eventType instanceof BeanEventType))
+        if (eventType instanceof BeanEventType)
+        {
+            BeanEventType beanEventType = (BeanEventType) eventType;
+            FastClass fastClass = beanEventType.getFastClass();
+            return PropertyHelper.getWritableProperties(fastClass.getJavaClass());
+        }
+        else if (eventType instanceof MapEventType)
+        {
+            Map<String, Object> mapdef = ((MapEventType) eventType).getTypes();
+            Set<WriteablePropertyDescriptor> writables = new HashSet<WriteablePropertyDescriptor>();
+            for (Map.Entry<String, Object> types : mapdef.entrySet())
+            {
+                if (types.getValue() instanceof Class)
+                {
+                    writables.add(new WriteablePropertyDescriptor(types.getKey(), (Class) types.getValue(), null));
+                }
+            }
+            return writables;
+        }
+        else
         {
             return null;
         }
+    }
 
-        BeanEventType beanEventType = (BeanEventType) eventType;
-        FastClass fastClass = beanEventType.getFastClass();
-        List<InternalWritablePropDescriptor> writables = PropertyHelper.getWritableProperties(fastClass.getJavaClass());
-        return new EventBeanManufacturerBean(this, fastClass, writables, beanEventType);
+    public EventBeanManufacturer getManufacturer(EventType eventType, WriteablePropertyDescriptor[] properties, MethodResolutionService methodResolutionService)
+            throws EventBeanManufactureException
+    {
+        if (!(eventType instanceof EventTypeSPI))
+        {
+            return null;
+        }
+        EventTypeSPI typeSPI = (EventTypeSPI) eventType;
+        if (!typeSPI.getMetadata().isApplicationConfigured())
+        {
+            return null;
+        }
+        if (eventType instanceof BeanEventType)
+        {
+            BeanEventType beanEventType = (BeanEventType) eventType;
+            return new EventBeanManufacturerBean(beanEventType, this, properties, methodResolutionService);
+        }
+        else if (eventType instanceof MapEventType)
+        {
+            MapEventType mapEventType = (MapEventType) eventType;
+            return new EventBeanManufacturerMap(mapEventType, this, properties);
+        }
+        return null;
     }
 
     public EventType[] getAllTypes()

@@ -45,7 +45,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private ValueAddEventProcessor vaeProcessor;
     private boolean isEmptyExpressionNodes;
     private boolean isPopulateUnderlying;
-    private EventBeanManufacturer eventBeanManufacturer;
+    private SelectExprInsertEventBean selectExprInsertEventBean;
 
     /**
      * Ctor.
@@ -295,11 +295,11 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
                         if (existingType != null)
                         {
-                            eventBeanManufacturer = eventAdapterService.getManufacturer(existingType);
+                            selectExprInsertEventBean = SelectExprInsertEventBean.getManufacturer(eventAdapterService, existingType);
                         }
-                        if ((existingType != null) && (eventBeanManufacturer != null))
+                        if ((existingType != null) && (selectExprInsertEventBean != null))
                         {
-                            eventBeanManufacturer.initialize(isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService);
+                            selectExprInsertEventBean.initialize(isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService, eventAdapterService);
                             resultEventType = existingType;
                             isPopulateUnderlying = true;
                         }
@@ -342,11 +342,11 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                             EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
                             if (existingType != null)
                             {
-                                eventBeanManufacturer = eventAdapterService.getManufacturer(existingType);
+                                selectExprInsertEventBean = SelectExprInsertEventBean.getManufacturer(eventAdapterService, existingType);
                             }
-                            if ((existingType != null) && (eventBeanManufacturer != null))
+                            if ((existingType != null) && (selectExprInsertEventBean != null))
                             {
-                                eventBeanManufacturer.initialize(isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService);
+                                selectExprInsertEventBean.initialize(isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService, eventAdapterService);
                                 resultEventType = existingType;
                                 isPopulateUnderlying = true;
                             }
@@ -397,7 +397,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     {
         if (isPopulateUnderlying)
         {
-            return eventBeanManufacturer.manufacture(eventsPerStream, isNewData);
+            return selectExprInsertEventBean.manufacture(eventsPerStream, isNewData);
         }
 
         // Evaluate all expressions and build a map of name-value pairs

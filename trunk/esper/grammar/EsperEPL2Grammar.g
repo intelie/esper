@@ -508,11 +508,15 @@ annotationEnum
 	-> ^(ANNOTATION classIdentifier elementValuePairsEnum? elementValueEnum?)
     ;
     
+elementValuePairsNoEnum
+    :   elementValuePairNoEnum (COMMA! elementValuePairNoEnum)*
+    ;
+
 elementValuePairsEnum
     :   elementValuePairEnum (COMMA! elementValuePairEnum)*
     ;
 
-elementValuePairsNoEnum
+elementValuePairNoEnum
     :   i=IDENT '=' elementValueNoEnum
 	-> ^(ANNOTATION_VALUE $i elementValueNoEnum)
     ;

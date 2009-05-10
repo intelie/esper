@@ -18,4 +18,9 @@ public class SupportTemperatureBean
     {
         return geom;
     }
+
+    public void setGeom(String geom)
+    {
+        this.geom = geom;
+    }
 }

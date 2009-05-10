@@ -11,6 +11,7 @@ package com.espertech.esper.event.bean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventPropertyType;
+import com.espertech.esper.event.WriteablePropertyDescriptor;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
@@ -87,7 +88,7 @@ public class PropertyHelper
      * @param clazz is the Class to introspect
      * @return list of properties
      */
-    public static List<InternalWritablePropDescriptor> getWritableProperties(Class clazz)
+    public static Set<WriteablePropertyDescriptor> getWritableProperties(Class clazz)
     {
         // Determine all interfaces implemented and the interface's parent interfaces if any
         Set<Class> propertyOrigClasses = new HashSet<Class>();
@@ -116,16 +117,14 @@ public class PropertyHelper
         }
     }
 
-    private static List<InternalWritablePropDescriptor> getWritablePropertiesForClasses(Set<Class> propertyClasses)
+    private static Set<WriteablePropertyDescriptor> getWritablePropertiesForClasses(Set<Class> propertyClasses)
     {
-    	List<InternalWritablePropDescriptor> result = new LinkedList<InternalWritablePropDescriptor>();
+    	Set<WriteablePropertyDescriptor> result = new HashSet<WriteablePropertyDescriptor>();
 
         for (Class clazz : propertyClasses)
         {
         	addIntrospectPropertiesWritable(clazz, result);
         }
-
-        removeDuplicatePropertiesWritable(result);
 
         return result;
     }
@@ -201,33 +200,6 @@ public class PropertyHelper
     }
 
     /**
-     * Removed duplicate properties using the property name to find unique properties among write-able properties.
-     * @param properties is a list of property descriptors
-     */
-    protected static void removeDuplicatePropertiesWritable(List<InternalWritablePropDescriptor> properties)
-    {
-        LinkedHashMap<String, InternalWritablePropDescriptor> set = new LinkedHashMap<String, InternalWritablePropDescriptor>();
-        List<InternalWritablePropDescriptor> toRemove = new LinkedList<InternalWritablePropDescriptor>();
-
-        // add duplicates to separate list
-        for (InternalWritablePropDescriptor desc : properties)
-        {
-            if (set.containsKey(desc.getPropertyName()))
-            {
-                toRemove.add(desc);
-                continue;
-            }
-            set.put(desc.getPropertyName(), desc);
-        }
-
-        // remove duplicates
-        for (InternalWritablePropDescriptor desc : toRemove)
-        {
-            properties.remove(desc);
-        }
-    }
-
-    /**
      * Adds to the given list of property descriptors the properties of the given class
      * using the Introspector to introspect properties. This also finds array and indexed properties.
      * @param clazz to introspect
@@ -258,7 +230,7 @@ public class PropertyHelper
         }
     }
 
-    protected static void addIntrospectPropertiesWritable(Class clazz, List<InternalWritablePropDescriptor> result)
+    protected static void addIntrospectPropertiesWritable(Class clazz, Set<WriteablePropertyDescriptor> result)
     {
         PropertyDescriptor properties[] = introspect(clazz);
         for (int i = 0; i < properties.length; i++)
@@ -272,7 +244,7 @@ public class PropertyHelper
                 continue;
             }
 
-            result.add(new InternalWritablePropDescriptor(propertyName, writeMethod));
+            result.add(new WriteablePropertyDescriptor(propertyName, writeMethod.getParameterTypes()[0], writeMethod));
         }
     }
 

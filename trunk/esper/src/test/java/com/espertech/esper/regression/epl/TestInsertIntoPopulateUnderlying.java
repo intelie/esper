@@ -25,10 +25,6 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
     // test joins with wildcard
     // test copy-bean and copy bean+change value
 
-    // test populate Map
-
-    // (1) disallow wildcard, copy code for Map support
-    // 
     // doc
 
     public void setUp()
@@ -75,42 +71,37 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("xmltype", xml);
     }
 
-    public void testPopulateFromFragment()
-    {
-        // arrays and maps
-    }
-
     public void testInvalid()
     {
         String text = "insert into SupportBean(intPrimitive) select 1L from SupportBean";
-        tryInvalid("Error starting statement: Invalid assignment of column 'intPrimitive' of type 'java.lang.Long' to write method 'setIntPrimitive' parameterized by 'int', column and parameter types mismatch [insert into SupportBean(intPrimitive) select 1L from SupportBean]", text);
+        tryInvalid("Error starting statement: Invalid assignment of column 'intPrimitive' of type 'java.lang.Long' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [insert into SupportBean(intPrimitive) select 1L from SupportBean]", text);
 
         text = "insert into SupportBean(intPrimitive) select null from SupportBean";
-        tryInvalid("Error starting statement: Invalid assignment of column 'intPrimitive' of null type to write method 'setIntPrimitive' parameterized by 'int', nullable type mismatch [insert into SupportBean(intPrimitive) select null from SupportBean]", text);
+        tryInvalid("Error starting statement: Invalid assignment of column 'intPrimitive' of null type to event property 'intPrimitive' typed as 'int', nullable type mismatch [insert into SupportBean(intPrimitive) select null from SupportBean]", text);
         
-        text = "insert into SupportTemperatureBean select 1,2,3 from SupportBean";
-        tryInvalid("Error starting statement: Failed to instantiate class 'com.espertech.esper.support.bean.SupportTemperatureBean', define a factory method if the class has no default constructor [insert into SupportTemperatureBean select 1,2,3 from SupportBean]", text);
+        text = "insert into SupportTemperatureBean select 'a' as geom from SupportBean";
+        tryInvalid("Error starting statement: Failed to instantiate class 'com.espertech.esper.support.bean.SupportTemperatureBean', define a factory method if the class has no default constructor [insert into SupportTemperatureBean select 'a' as geom from SupportBean]", text);
 
         text = "insert into SupportBean select 3 as dummyField from SupportBean";
-        tryInvalid("Error starting statement: Column 'dummyField' could not be assigned to any of the properties of class 'com.espertech.esper.support.bean.SupportBean' (missing column names or setter method?) [insert into SupportBean select 3 as dummyField from SupportBean]", text);
+        tryInvalid("Error starting statement: Column 'dummyField' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into SupportBean select 3 as dummyField from SupportBean]", text);
 
         text = "insert into SupportBean select 3 from SupportBean";
-        tryInvalid("Error starting statement: Column '3' could not be assigned to any of the properties of class 'com.espertech.esper.support.bean.SupportBean' (missing column names or setter method?) [insert into SupportBean select 3 from SupportBean]", text);
+        tryInvalid("Error starting statement: Column '3' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into SupportBean select 3 from SupportBean]", text);
 
         text = "insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap";
-        tryInvalid("Error starting statement: Invalid assignment of column 'isa' of type 'com.espertech.esper.support.bean.ISupportBImpl' to write method 'setIsa' parameterized by 'ISupportA', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap]", text);
+        tryInvalid("Error starting statement: Invalid assignment of column 'isa' of type 'com.espertech.esper.support.bean.ISupportBImpl' to event property 'isa' typed as 'com.espertech.esper.support.bean.ISupportA', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap]", text);
 
         text = "insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap";
-        tryInvalid("Error starting statement: Invalid assignment of column 'isg' of type 'com.espertech.esper.support.bean.ISupportBaseABImpl' to write method 'setIsg' parameterized by 'ISupportAImplSuperG', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap]", text);
+        tryInvalid("Error starting statement: Invalid assignment of column 'isg' of type 'com.espertech.esper.support.bean.ISupportBaseABImpl' to event property 'isg' typed as 'com.espertech.esper.support.bean.ISupportAImplSuperG', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap]", text);
 
         text = "insert into SupportBean(dummy) select 3 from SupportBean";
-        tryInvalid("Error starting statement: Column 'dummy' could not be assigned to any of the properties of class 'com.espertech.esper.support.bean.SupportBean' (missing column names or setter method?) [insert into SupportBean(dummy) select 3 from SupportBean]", text);
+        tryInvalid("Error starting statement: Column 'dummy' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into SupportBean(dummy) select 3 from SupportBean]", text);
 
         text = "insert into SupportBeanErrorTestingOne(value) select 'E1' from MyMap";
         tryInvalid("Error starting statement: Failed to instantiate class 'com.espertech.esper.support.bean.SupportBeanErrorTestingOne', define a factory method if the class has no default constructor: Default ctor manufactured test exception [insert into SupportBeanErrorTestingOne(value) select 'E1' from MyMap]", text);
 
         text = "insert into SupportBeanReadOnly(side) select 'E1' from MyMap";
-        tryInvalid("Error starting statement: Column 'side' could not be assigned to any of the properties of class 'com.espertech.esper.support.bean.SupportBeanReadOnly' (missing column names or setter method?) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]", text);
+        tryInvalid("Error starting statement: Column 'side' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]", text);
 
         epService.getEPAdministrator().createEPL("insert into ABCStream select *, 1+1 from SupportBean");
         text = "insert into ABCStream(string) select 'E1' from MyMap";
@@ -118,6 +109,9 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
 
         text = "insert into xmltype select 1 from SupportBean";
         tryInvalid("Error starting statement: Event type named 'xmltype' has already been declared with differing column name or type information: Type by name 'xmltype' is not a compatible type [insert into xmltype select 1 from SupportBean]", text);
+
+        text = "insert into MyMap(dummy) select 1 from SupportBean";
+        tryInvalid("Error starting statement: Column 'dummy' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into MyMap(dummy) select 1 from SupportBean]", text);
 
         // setter throws exception
         String stmtTextOne = "insert into SupportBeanErrorTestingTwo(value) select 'E1' from MyMap";
@@ -139,7 +133,7 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         assertEquals(0, listener.assertOneGetNewAndReset().get("intPrimitive"));
     }
 
-    public void testPopulateSimple()
+    public void testPopulateBeanSimple()
     {
         // test select column names
         String stmtTextOne = "insert into SupportBean select " +
@@ -186,7 +180,7 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
                 new Object[] {1, 2, 3l, null, true, 'x', (byte) 10, 8f, 9d, (short)5, SupportEnum.ENUM_VALUE_2});
     }
 
-    public void testWildcard()
+    public void testBeanWildcard()
     {
         Map<String, Object> mapDef = new HashMap<String, Object>();
         mapDef.put("intPrimitive", int.class);
@@ -211,7 +205,7 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
                 new Object[] {4, 100, "E1", true});
     }
 
-    public void testPopulateObjects()
+    public void testPopulateBeanObjects()
     {
         // arrays and maps
         String stmtTextOne = "insert into SupportBeanComplexProps(arrayProperty,objectArray,mapProperty) select " +
@@ -268,7 +262,31 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         assertEquals("nestedValue", ((SupportBeanComplexProps.SupportBeanSpecialGetterNested) eventFour.getAnyObject()).getNestedValue());
     }
 
-    public void testFactoryMethod()
+    public void testPopulateMap()
+    {
+        Map<String, Object> defMap = new HashMap<String, Object>();
+        defMap.put("intVal", int.class);
+        defMap.put("stringVal", String.class);
+        defMap.put("doubleVal", Double.class);
+        defMap.put("nullVal", null);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyMapType", defMap);
+        EPStatement stmtOrig = epService.getEPAdministrator().createEPL("select * from MyMapType");
+
+        String stmtTextOne = "insert into MyMapType select intPrimitive as intVal, string as stringVal, doubleBoxed as doubleVal from SupportBean";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);
+        stmtOne.addListener(listener);
+        assertSame(stmtOrig.getEventType(), stmtOne.getEventType());
+
+        SupportBean bean = new SupportBean();
+        bean.setIntPrimitive(1000);
+        bean.setString("E1");
+        bean.setDoubleBoxed(1001d);
+        epService.getEPRuntime().sendEvent(bean);
+        
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(),"intVal,stringVal,doubleVal".split(","),new Object[] {1000, "E1", 1001d});
+    }
+
+    public void testBeanFactoryMethod()
     {
         // test factory method on the same event class
         String stmtTextOne = "insert into SupportBeanString select 'abc' as string from MyMap";

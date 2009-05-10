@@ -379,6 +379,9 @@ public class TestEventPatternParser extends TestCase
         assertIsValid("[0:10] A until B");
         assertIsValid("[0 : 10] A until B");
         assertIsValid("[5] A");   // no until
+        
+        // annotation
+        assertIsValid("@SomeTag(value='val', val2='val') [5] A");
     }
 
     public void testParserNodeGeneration() throws Exception

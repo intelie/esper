@@ -16,6 +16,7 @@ import com.espertech.esper.event.xml.SchemaModel;
 import com.espertech.esper.event.bean.BeanEventTypeFactory;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.core.thread.ThreadingService;
+import com.espertech.esper.epl.core.MethodResolutionService;
 import org.w3c.dom.Node;
 
 import java.io.Serializable;
@@ -29,7 +30,9 @@ import java.util.Set;
  */
 public interface EventAdapterService
 {
-    public EventBeanManufacturer getManufacturer(EventType eventType);
+    public Set<WriteablePropertyDescriptor> getWriteableProperties(EventType eventType);
+    public EventBeanManufacturer getManufacturer(EventType eventType, WriteablePropertyDescriptor[] properties, MethodResolutionService methodResolutionService)
+        throws EventBeanManufactureException;
 
     /**
      * Creates a thin adaper for an event object given an event type.

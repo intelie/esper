@@ -206,7 +206,7 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals("pat", streamSpec.getOptionalStreamName());
 
         OnTriggerSplitStreamDesc triggerDesc = (OnTriggerSplitStreamDesc) raw.getOnTriggerDesc();
-        assertEquals(OnTriggerType.ON_SELECT, triggerDesc.getOnTriggerType());
+        assertEquals(OnTriggerType.ON_SPLITSTREAM, triggerDesc.getOnTriggerType());
         assertEquals(2, triggerDesc.getSplitStreams().size());
 
         assertEquals("MyStream", raw.getInsertIntoDesc().getEventTypeName());

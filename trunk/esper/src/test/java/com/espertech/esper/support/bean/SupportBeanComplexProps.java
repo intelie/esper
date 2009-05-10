@@ -14,7 +14,7 @@ public class SupportBeanComplexProps implements Serializable, SupportMarkerInter
     private Object[] objectArray;
     
     public static String[] PROPERTIES = 
-            { "simpleProperty", "mapped", "indexed", "mapProperty", "arrayProperty", "nested"};
+            { "simpleProperty", "mapped", "indexed", "mapProperty", "arrayProperty", "nested", "objectArray"};
 		
 	public static SupportBeanComplexProps makeDefaultBean()
 	{

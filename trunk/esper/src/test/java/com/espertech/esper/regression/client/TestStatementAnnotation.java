@@ -100,7 +100,7 @@ public class TestStatementAnnotation extends TestCase
         runAssertion(stmt);
         stmt.destroy();
 
-        stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") every Bean";
+        stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(name='UserId', value='value') every Bean";
         stmt = epService.getEPAdministrator().createPattern(stmtText);
         runAssertion(stmt);
         stmt.destroy();

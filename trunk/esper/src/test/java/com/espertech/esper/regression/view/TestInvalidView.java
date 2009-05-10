@@ -126,7 +126,7 @@ public class TestInvalidView extends TestCase
 
         // class in method invocation not found
         exceptionText = getStatementExceptionView("select unknownClass.method() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting statement: Could not load class by name 'unknownClass'  [select unknownClass.method() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting statement: Could not load class by name 'unknownClass', please check imports [select unknownClass.method() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
 
         // method not found
         exceptionText = getStatementExceptionView("select Math.unknownMethod() from " + EVENT_NUM + ".win:length(10)");

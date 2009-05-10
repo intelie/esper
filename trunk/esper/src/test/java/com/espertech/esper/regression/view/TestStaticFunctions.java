@@ -124,7 +124,7 @@ public class TestStaticFunctions extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting statement: Could not load class by name 'SupportStaticMethodLib'  [select SupportStaticMethodLib.minusOne(doublePrimitive) from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+            assertEquals("Error starting statement: Could not load class by name 'SupportStaticMethodLib', please check imports [select SupportStaticMethodLib.minusOne(doublePrimitive) from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
         }
 
         epService.getEPAdministrator().getConfiguration().addImport(SupportStaticMethodLib.class.getName());
