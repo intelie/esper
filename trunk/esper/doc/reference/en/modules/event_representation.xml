@@ -1419,6 +1419,30 @@ such event metadata and event data into one of the built-in event representation
 		</para>
 
 	</sect1>
+
+	<sect1 id="eventrep-insertinto">
+	   <title>Event Objects Populated by <literal>Insert Into</literal></title>
+	   
+		<indexterm><primary>event</primary><secondary>insert into</secondary></indexterm>
+
+        <para>
+			The <literal>insert into</literal> clause can populate a plain-old Java object event or a <literal>java.util.Map</literal> event directly from the <literal>select</literal> expression. Simply use the event type name as the stream name in the <literal>insert into</literal> clause as described in <xref linkend="epl-insert-into"/>.
+        </para>
+
+        <para>
+			For Java object events, your event class must provide setter-methods according to JavaBean conventions. The event class should also provide a default constructor taking no parameters. If your event class does not have 
+			a default constructor, your application may configure a factory method via <literal>ConfigurationEventTypeLegacy</literal>. 
+		</para>
+
+        <para>
+			The engine evaluates the <literal>select</literal> clause.
+			TODO: widening
+			TODO: not all columns need to be assigned
+			TODO: column name assign in select clause via "as" keyword or in the insert into column name list
+			TODO: example
+		    TODO: limitation is no nested fields, and no XML
+		</para>
+	</sect1>
 </chapter>
 
 
