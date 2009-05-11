@@ -8,13 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.spec.InsertIntoDesc;
-import com.espertech.esper.event.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.spec.InsertIntoDesc;
+import com.espertech.esper.event.EventAdapterException;
+import com.espertech.esper.event.EventAdapterService;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Processor for select-clause expressions that handles wildcards. Computes results based on matching events.
@@ -24,6 +26,8 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
     private final String[] streamNames;
     private final EventType resultEventType;
     private final EventAdapterService eventAdapterService;
+    private boolean isPopulateUnderlying;
+    private SelectExprInsertEventBean selectExprInsertEventBean;
 
     /**
      * Ctor.
@@ -34,7 +38,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
      * @param selectExprEventTypeRegistry - registry for event type to statements
      * @throws ExprValidationException if the expression validation failed 
      */
-    public SelectExprJoinWildcardProcessor(String[] streamNames, EventType[] streamTypes, EventAdapterService eventAdapterService, InsertIntoDesc insertIntoDesc, SelectExprEventTypeRegistry selectExprEventTypeRegistry) throws ExprValidationException
+    public SelectExprJoinWildcardProcessor(String[] streamNames, EventType[] streamTypes, EventAdapterService eventAdapterService, InsertIntoDesc insertIntoDesc, SelectExprEventTypeRegistry selectExprEventTypeRegistry, MethodResolutionService methodResolutionService) throws ExprValidationException
     {
         if ((streamNames.length < 2) || (streamTypes.length < 2) || (streamNames.length != streamTypes.length))
         {
@@ -54,14 +58,28 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
         // If we have an name for this type, add it
         if (insertIntoDesc != null)
         {
-        	try
+            EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
+            if (existingType != null)
             {
-                resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), eventTypeMap, null, false, false, true);
-                selectExprEventTypeRegistry.add(resultEventType);
+                selectExprInsertEventBean = SelectExprInsertEventBean.getInsertUnderlying(eventAdapterService, existingType);
             }
-            catch (EventAdapterException ex)
+            if ((existingType != null) && (selectExprInsertEventBean != null))
             {
-                throw new ExprValidationException(ex.getMessage());
+                selectExprInsertEventBean.initializeJoinWildcard(streamNames, streamTypes, methodResolutionService, eventAdapterService);
+                resultEventType = existingType;
+                isPopulateUnderlying = true;
+            }
+            else
+            {
+                try
+                {
+                    resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), eventTypeMap, null, false, false, true);
+                    selectExprEventTypeRegistry.add(resultEventType);
+                }
+                catch (EventAdapterException ex)
+                {
+                    throw new ExprValidationException(ex.getMessage());
+                }
             }
         }
         else
@@ -72,6 +90,11 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
 
     public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
     {
+        if (isPopulateUnderlying)
+        {
+            return selectExprInsertEventBean.manufacture(eventsPerStream, isNewData);
+        }
+
         Map<String, Object> tuple = new HashMap<String, Object>();
         for (int i = 0; i < streamNames.length; i++)
         {

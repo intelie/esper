@@ -19,7 +19,7 @@ public class TestSelectExprJoinWildcardProcessor extends TestCase
         SupportStreamTypeSvc3Stream supportTypes = new SupportStreamTypeSvc3Stream();
 
         processor = new SelectExprJoinWildcardProcessor(supportTypes.getStreamNames(), supportTypes.getEventTypes(),
-                SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry);
+                SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null);
     }
 
     public void testProcess()

@@ -102,12 +102,7 @@ public class EventBeanManufacturerBean implements EventBeanManufacturer
         Object[] params = new Object[1];
         for (int i = 0; i < writeMethods.length; i++)
         {
-            if (writeMethods[i] == null)
-            {
-                continue;
-            }
             params[0] = propertyValues[i];
-
             try
             {
                 writeMethods[i].invoke(out, params);

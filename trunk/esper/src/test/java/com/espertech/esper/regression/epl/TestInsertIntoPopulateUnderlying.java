@@ -53,10 +53,15 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanErrorTestingTwo", SupportBeanErrorTestingTwo.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanReadOnly", SupportBeanReadOnly.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanArrayCollMap", SupportBeanArrayCollMap.class);                
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_N", SupportBean_N.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_S0", SupportBean_S0.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanObject", SupportBeanObject.class);       
         epService.getEPAdministrator().getConfiguration().addImport(SupportEnum.class);
 
         Map<String, Object> mymapDef = new HashMap<String, Object>();
         mymapDef.put("anint", int.class);
+        mymapDef.put("intBoxed", Integer.class);
+        mymapDef.put("floatBoxed", Float.class);
         mymapDef.put("intArr", int[].class);
         mymapDef.put("mapProp", Map.class);
         mymapDef.put("isaImpl", ISupportAImpl.class);
@@ -69,6 +74,34 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         ConfigurationEventTypeXMLDOM xml = new ConfigurationEventTypeXMLDOM();
         xml.setRootElementName("abc");
         epService.getEPAdministrator().getConfiguration().addEventType("xmltype", xml);
+    }
+
+    public void testBeanJoin()
+    {
+        // test wildcard
+        String stmtTextOne = "insert into SupportBeanObject select * from SupportBean_N.std:lastevent() as one, SupportBean_S0.std:lastevent() as two";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);
+        stmtOne.addListener(listener);
+
+        SupportBean_N n1 = new SupportBean_N(1, 10, 100d, 1000d, true, true);
+        epService.getEPRuntime().sendEvent(n1);
+        SupportBean_S0 s01 = new SupportBean_S0(1);
+        epService.getEPRuntime().sendEvent(s01);
+        SupportBeanObject event = (SupportBeanObject) listener.assertOneGetNewAndReset().getUnderlying();
+        assertSame(n1, event.getOne());
+        assertSame(s01, event.getTwo());
+
+        // test select stream names
+        stmtOne.destroy();
+        stmtTextOne = "insert into SupportBeanObject select one, two from SupportBean_N.std:lastevent() as one, SupportBean_S0.std:lastevent() as two";
+        stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(n1);
+        epService.getEPRuntime().sendEvent(s01);
+        event = (SupportBeanObject) listener.assertOneGetNewAndReset().getUnderlying();
+        assertSame(n1, event.getOne());
+        assertSame(s01, event.getTwo());
     }
 
     public void testInvalid()
@@ -178,6 +211,19 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         ArrayAssertionUtil.assertProps(received,
                 "intPrimitive,intBoxed,longPrimitive,longBoxed,boolPrimitive,charPrimitive,bytePrimitive,floatPrimitive,doublePrimitive,shortPrimitive,enumValue".split(","),
                 new Object[] {1, 2, 3l, null, true, 'x', (byte) 10, 8f, 9d, (short)5, SupportEnum.ENUM_VALUE_2});
+
+        // test convert Integer boxed to Long boxed
+        stmtOne.destroy();
+        listener.reset();
+        stmtTextOne = "insert into SupportBean(longBoxed, doubleBoxed) select intBoxed, floatBoxed from MyMap";
+        stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);
+        stmtOne.addListener(listener);
+
+        Map<String, Object> vals = new HashMap<String, Object>();
+        vals.put("intBoxed", 4);
+        vals.put("floatBoxed", 0f);
+        epService.getEPRuntime().sendEvent(vals, "MyMap");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(),"longBoxed,doubleBoxed".split(","), new Object[] {4L, 0d});
     }
 
     public void testBeanWildcard()
@@ -185,8 +231,8 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         Map<String, Object> mapDef = new HashMap<String, Object>();
         mapDef.put("intPrimitive", int.class);
         mapDef.put("longBoxed", Long.class);
-        mapDef.put("stringVal", String.class);
-        mapDef.put("booleanPrimitive", Boolean.class);
+        mapDef.put("string", String.class);
+        mapDef.put("boolPrimitive", Boolean.class);
         epService.getEPAdministrator().getConfiguration().addEventType("MySupportMap", mapDef);
 
         String stmtTextOne = "insert into SupportBean select * from MySupportMap";
@@ -195,14 +241,14 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
 
         Map<String, Object> vals = new HashMap<String, Object>();
         vals.put("intPrimitive", 4);
-        vals.put("longBoxed", 100);
-        vals.put("stringVal", "E1");
-        vals.put("booleanPrimitive", true);
+        vals.put("longBoxed", 100L);
+        vals.put("string", "E1");
+        vals.put("boolPrimitive", true);
 
         epService.getEPRuntime().sendEvent(vals, "MySupportMap");
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(),
                 "intPrimitive,longBoxed,string,boolPrimitive".split(","),
-                new Object[] {4, 100, "E1", true});
+                new Object[] {4, 100L, "E1", true});
     }
 
     public void testPopulateBeanObjects()

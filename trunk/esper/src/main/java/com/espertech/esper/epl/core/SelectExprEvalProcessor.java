@@ -92,7 +92,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         // Build a subordinate wildcard processor for joins
         if(typeService.getStreamNames().length > 1 && isUsingWildcard)
         {
-        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, null, selectExprEventTypeRegistry);
+        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, null, selectExprEventTypeRegistry, methodResolutionService);
         }
 
         // Resolve underlying event type in the case of wildcard select
@@ -295,7 +295,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
                         if (existingType != null)
                         {
-                            selectExprInsertEventBean = SelectExprInsertEventBean.getManufacturer(eventAdapterService, existingType);
+                            selectExprInsertEventBean = SelectExprInsertEventBean.getInsertUnderlying(eventAdapterService, existingType);
                         }
                         if ((existingType != null) && (selectExprInsertEventBean != null))
                         {
@@ -342,7 +342,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                             EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
                             if (existingType != null)
                             {
-                                selectExprInsertEventBean = SelectExprInsertEventBean.getManufacturer(eventAdapterService, existingType);
+                                selectExprInsertEventBean = SelectExprInsertEventBean.getInsertUnderlying(eventAdapterService, existingType);
                             }
                             if ((existingType != null) && (selectExprInsertEventBean != null))
                             {
