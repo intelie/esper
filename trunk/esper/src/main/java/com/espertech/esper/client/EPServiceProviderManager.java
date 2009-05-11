@@ -8,20 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.core.EPServiceProviderImpl;
-
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.espertech.esper.core.EPServiceProviderImpl;
+import com.espertech.esper.core.EPServiceProviderSPI;
 
 /**
  * Factory for instances of {@link EPServiceProvider}.
  */
 public final class EPServiceProviderManager
 {
-    // A synchronized map and not a ConcurrentHashMap as the former can handle null keys (default svc provider)
-    private static Map<String, EPServiceProviderImpl> runtimes = Collections.synchronizedMap(new HashMap<String, EPServiceProviderImpl>());
+    private static Map<String, EPServiceProviderImpl> runtimes = new ConcurrentHashMap<String, EPServiceProviderImpl>();
 
     /**
      * Returns the default EPServiceProvider.
@@ -29,7 +28,7 @@ public final class EPServiceProviderManager
      */
     public static EPServiceProvider getDefaultProvider()
     {
-        return getProvider(null, new Configuration());
+        return getProvider(EPServiceProviderSPI.DEFAULT_ENGINE_URI, new Configuration());
     }
 
     /**
@@ -40,7 +39,7 @@ public final class EPServiceProviderManager
      */
     public static EPServiceProvider getDefaultProvider(Configuration configuration) throws ConfigurationException
     {
-        return getProvider(null, configuration);
+        return getProvider(EPServiceProviderSPI.DEFAULT_ENGINE_URI, configuration);
     }
 
     /**
@@ -55,20 +54,22 @@ public final class EPServiceProviderManager
 
     /**
      * Returns an EPServiceProvider for a given provider URI.
-     * @param providerURI - the provider URI
+     * @param providerURI - the provider URI. If null provided it assumes "default".
      * @param configuration is the configuration for the service
      * @return EPServiceProvider for the given provider URI.
      * @throws ConfigurationException to indicate a configuration problem
      */
     public static EPServiceProvider getProvider(String providerURI, Configuration configuration) throws ConfigurationException
     {
-        if (runtimes.containsKey(providerURI))
+    	String providerURINonNull = (providerURI==null)?EPServiceProviderSPI.DEFAULT_ENGINE_URI:providerURI;
+    	
+        if (runtimes.containsKey(providerURINonNull))
         {
-            EPServiceProviderImpl provider = runtimes.get(providerURI);
+            EPServiceProviderImpl provider = runtimes.get(providerURINonNull);
             if (provider.isDestroyed())
             {
-                provider = new EPServiceProviderImpl(configuration, providerURI);
-                runtimes.put(providerURI, provider);
+                provider = new EPServiceProviderImpl(configuration, providerURINonNull);
+                runtimes.put(providerURINonNull, provider);
             }
             else
             {
@@ -78,8 +79,8 @@ public final class EPServiceProviderManager
         }
 
         // New runtime
-        EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, providerURI);
-        runtimes.put(providerURI, runtime);
+        EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, providerURINonNull);
+        runtimes.put(providerURINonNull, runtime);
         runtime.postInitialize();
 
         return runtime;

@@ -32,6 +32,7 @@ public interface PluginLoader
     /**
      * Called after an engine instances has fully initialized and is already
      * registered with {@link com.espertech.esper.client.EPServiceProviderManager}.
+     * @since 3.1.0
      */
     public void postInitialize();
 

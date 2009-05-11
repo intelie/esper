@@ -115,9 +115,10 @@
             <tarfileset prefix="${name}-${version}/esperio/doc/reference" dir="esperio/doc/reference/build/en" includes="**"/>
             <tarfileset prefix="${name}-${version}/esperio/doc/api" dir="esperio/doc/javadoc/api" includes="**"/>            
         </tar>
-		<gzip zipfile="${tar-file}.gz" src="${tar-file}" />			
+		<gzip zipfile="${tar-file}.gz" src="${tar-file}" />
 		<checksum file="${tar-file}.gz" algorithm="MD5" fileext=".md5"/>
 		<checksum file="${tar-file}.gz" algorithm="SHA" fileext=".asc"/>		
+		<delete file="${tar-file}"/>
 	</target>
 	
 </project>

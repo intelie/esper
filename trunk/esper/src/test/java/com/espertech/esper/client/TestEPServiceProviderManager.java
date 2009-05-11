@@ -1,6 +1,8 @@
 package com.espertech.esper.client;
 
 import junit.framework.TestCase;
+
+import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.support.client.SupportConfigFactory;
 
 public class TestEPServiceProviderManager extends TestCase
@@ -28,8 +30,8 @@ public class TestEPServiceProviderManager extends TestCase
         assertEquals("A", runtimeA1.getURI());
         assertEquals("A", runtimeA2.getURI());
         assertEquals("B", runtimeB.getURI());
-        assertNull(runtimeDef1.getURI());
-        assertNull(runtimeDef2.getURI());
+        assertEquals(EPServiceProviderSPI.DEFAULT_ENGINE_URI, runtimeDef1.getURI());
+        assertEquals(EPServiceProviderSPI.DEFAULT_ENGINE_URI, runtimeDef2.getURI());
 
         runtimeDef1.destroy();
         runtimeA1.destroy();
@@ -54,5 +56,17 @@ public class TestEPServiceProviderManager extends TestCase
         {
             // Expected
         }
+    }
+    
+    public void testDefaultNaming()
+    {
+    	assertEquals("default", EPServiceProviderSPI.DEFAULT_ENGINE_URI__QUALIFIER);
+    	EPServiceProvider epNoArg = EPServiceProviderManager.getDefaultProvider();
+    	EPServiceProvider epDefault = EPServiceProviderManager.getProvider("default");
+    	EPServiceProvider epNull = EPServiceProviderManager.getProvider(null);
+    	
+    	assertTrue(epNoArg == epDefault);
+    	assertTrue(epNull == epDefault);
+    	assertEquals("default", epNull.getURI());
     }
 }

@@ -10,7 +10,11 @@ Major API changes
     For example, the expression:
       every(A -> (B where timer:within(5 sec)))
     ... When no B event arrives after an A event, the "every" restarts the subexpression looking for the next A followed by B within 5 sec.
-  
+  - com.espertech.esper.plugin.PluginLoader interface has a new method that must be implemented to allow plugins to initialize only after complete Esper engine initialization.
+  - the default engine URI is now "default" instead of null (EPServiceProviderManager.getDefaultProvider().getURI()), for consistency with the default engine qualifier for (optional) use in stream and property name qualification
+
+Minor changes  
+  - Fixed Issue ESPER-352 "default" named engine and unamed engine should be same
 
 Changes in version 3.0.0
 ------------------------

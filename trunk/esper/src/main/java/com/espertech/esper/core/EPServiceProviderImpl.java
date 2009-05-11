@@ -51,7 +51,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     /**
      * Constructor - initializes services.
      * @param configuration is the engine configuration
-     * @param engineURI is the engine URI or null if this is the default provider
+     * @param engineURI is the engine URI or "default" (or null which it assumes as "default") if this is the default provider
      * @throws ConfigurationException is thrown to indicate a configuraton error
      */
     public EPServiceProviderImpl(Configuration configuration, String engineURI) throws ConfigurationException
@@ -59,6 +59,10 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         if (configuration == null)
         {
             throw new NullPointerException("Unexpected null value received for configuration");
+        }
+        if (engineURI == null)
+        {
+        	throw new NullPointerException("Engine URI should not be null at this stage");
         }
         this.engineURI = engineURI;
         configSnapshot = takeSnapshot(configuration);

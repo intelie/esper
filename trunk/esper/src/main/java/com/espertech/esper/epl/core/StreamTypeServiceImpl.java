@@ -60,7 +60,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
         this.eventTypes = eventTypes;
         this.streamNames = streamNames;
 
-        if (engineURI == null)
+        if (engineURI == null || EPServiceProviderSPI.DEFAULT_ENGINE_URI.equals(engineURI))
         {
             engineURIQualifier = EPServiceProviderSPI.DEFAULT_ENGINE_URI__QUALIFIER;
         }
