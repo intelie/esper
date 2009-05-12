@@ -32,8 +32,11 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     // such that the internal dispatching must occur after both matches are processed
     private boolean canSelfJoin;
     private boolean hasVariables;
+    private final int priority;
+    private final boolean preemptive;
     private transient InsertIntoLatchFactory insertIntoLatchFactory;
     private transient StatementMetricHandle metricsHandle;
+    private boolean isSpecial;
 
     /**
      * Ctor.
@@ -43,13 +46,20 @@ public class EPStatementHandle implements MetaDefItem, Serializable
      * @param hasVariables indicator whether the statement uses variables
      * @param metricsHandle handle for metrics reporting
      */
-    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle)
+    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive)
     {
         this.statementId = statementId;
         this.statementLock = statementLock;
         this.hasVariables = hasVariables;
         this.metricsHandle = metricsHandle;
+        this.priority = priority;
+        this.preemptive = preemptive;
         hashCode = expressionText.hashCode() ^ statementLock.hashCode();
+
+        if (priority != 0 || preemptive)
+        {
+            isSpecial = true;
+        }
     }
 
     /**
@@ -62,6 +72,10 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     public void setCanSelfJoin(boolean canSelfJoin)
     {
         this.canSelfJoin = canSelfJoin;
+        if (canSelfJoin)
+        {
+            isSpecial = true;
+        }
     }
 
     /**
@@ -132,6 +146,16 @@ public class EPStatementHandle implements MetaDefItem, Serializable
         }
     }
 
+    public int getPriority()
+    {
+        return priority;
+    }
+
+    public boolean isPreemptive()
+    {
+        return preemptive;
+    }
+
     public boolean equals(Object otherObj)
     {
         if (!(otherObj instanceof EPStatementHandle))
@@ -168,5 +192,10 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     public StatementMetricHandle getMetricsHandle()
     {
         return metricsHandle;
+    }
+
+    public boolean isSpecial()
+    {
+        return isSpecial;
     }
 }

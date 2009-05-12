@@ -1426,8 +1426,42 @@ such event metadata and event data into one of the built-in event representation
 		<indexterm><primary>event</primary><secondary>insert into</secondary></indexterm>
 
         <para>
-			The <literal>insert into</literal> clause can populate a plain-old Java object event or a <literal>java.util.Map</literal> event directly from the <literal>select</literal> expression. Simply use the event type name as the stream name in the <literal>insert into</literal> clause as described in <xref linkend="epl-insert-into"/>.
+			The <literal>insert into</literal> clause can populate plain-old Java object events and <literal>java.util.Map</literal> events directly from the results of <literal>select</literal> clause expressions. Simply use the event type name as the stream name in the <literal>insert into</literal> clause as described in <xref linkend="epl-insert-into"/>.
         </para>
+
+        <para>
+			The column names specified in the <literal>select</literal> and <literal>insert into</literal> clause must match available writable properties in the event object to be populated (the target event type). The expression result types of any expressions in the <literal>select</literal> clause must also be compatible with the property types of the target event type.
+		</para>
+
+        <para>
+			Consider the following example statement:
+		</para>
+		<programlisting>insert into com.mycompany.NewEmployeeEvent 
+select fname as firstName, lname as lastName from HRSystemEvent</programlisting> 
+
+        <para>
+			The above example specifies the fully-qualified class name of <literal>NewEmployeeEvent</literal>. The engine instantianes <literal>NewEmployeeEvent</literal> for each result row and populates the <literal>firstName</literal> and <literal>lastName</literal> properties of each instance from the result of <literal>select</literal> clause expressions. The <literal>HRSystemEvent</literal> in the example is assumed to have <literal>lname</literal> and <literal>fname</literal> properties.
+		</para>
+		
+        <para>
+			Note how the example uses the <literal>as</literal>-keyword to assign column names that match the property names of the <literal>NewEmployeeEvent</literal> target event. If the property names of the source and target events are the same, the <literal>as</literal>-keyword is not required.
+		</para>
+
+        <para>
+			The next example is an alternate form and specifies property names within the <literal>insert into</literal> clause instead. The example also assumes that <literal>NewEmployeeEvent</literal> has been defined or imported via configuration since it does not specify the event class package name:
+		</para>
+		<programlisting>insert into NewEmployeeEvent(firstName, lastName) 
+select fname, lname from HRSystemEvent</programlisting> 
+
+        <para>
+			Finally, this example populates <literal>HRSystemEvent</literal> events. The example populates the value of a <literal>type</literal> property where the event has the value 'NEW' and populates a new event object with the value 'HIRED', copying the <literal>fname</literal> and <literal>lname</literal> property values to the new event object:
+		</para>
+		<programlisting>insert into HRSystemEvent 
+select fname, lname, 'HIRED' as type from HRSystemEvent(type='NEW')</programlisting> 
+
+        <para>
+          The matching of the <literal>select</literal> or <literal>insert into</literal>-clause column names to target event type's property names is case-sensitive. It is allowed to only populate a subset of all available columns in the target event type. Wildcard (<literal>*</literal>) is also allowed and copies all fields of the events or multiple events in a join.
+		</para>
 
         <para>
 			For Java object events, your event class must provide setter-methods according to JavaBean conventions. The event class should also provide a default constructor taking no parameters. If your event class does not have 
@@ -1435,15 +1469,23 @@ such event metadata and event data into one of the built-in event representation
 		</para>
 
         <para>
-			The engine evaluates the <literal>select</literal> clause.
-			TODO: widening
-			TODO: not all columns need to be assigned
-			TODO: column name assign in select clause via "as" keyword or in the insert into column name list
-			TODO: example
-		    TODO: limitation is no nested fields, and no XML
+			The engine follows Java standards in terms of widening, performing widening automatically in cases where widening type conversion is allowed without loss of precision, for both boxed and primitive types and including
+BigInteger and BigDecimal.
 		</para>
+
+        <para>
+		    Please note the following limitations: 
+		</para>
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Event types that utilize XML <literal>org.w3c.dom.Node</literal> underlying event objects cannot be target of an <literal>insert into</literal> clause.
+				</para>
+			</listitem>
+		</itemizedlist>
 	</sect1>
 </chapter>
+
 
 
 

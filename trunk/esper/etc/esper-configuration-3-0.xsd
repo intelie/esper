@@ -340,18 +340,21 @@
 	</xs:element>
 	<xs:element name="defaults">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="esper:threading" minOccurs="0"/>
-				<xs:element ref="esper:event-meta" minOccurs="0"/>
-				<xs:element ref="esper:view-resources" minOccurs="0"/>
-				<xs:element ref="esper:logging" minOccurs="0"/>
-				<xs:element ref="esper:variables" minOccurs="0"/>
-				<xs:element ref="esper:stream-selection" minOccurs="0"/>
-				<xs:element ref="esper:time-source" minOccurs="0"/>
-				<xs:element ref="esper:metrics-reporting" minOccurs="0"/>
-				<xs:element ref="esper:language" minOccurs="0"/>
-				<xs:element ref="esper:expression" minOccurs="0"/>
-			</xs:sequence>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="esper:threading" minOccurs="0"/>
+					<xs:element ref="esper:event-meta" minOccurs="0"/>
+					<xs:element ref="esper:view-resources" minOccurs="0"/>
+					<xs:element ref="esper:logging" minOccurs="0"/>
+					<xs:element ref="esper:variables" minOccurs="0"/>
+					<xs:element ref="esper:stream-selection" minOccurs="0"/>
+					<xs:element ref="esper:time-source" minOccurs="0"/>
+					<xs:element ref="esper:metrics-reporting" minOccurs="0"/>
+					<xs:element ref="esper:language" minOccurs="0"/>
+					<xs:element ref="esper:expression" minOccurs="0"/>
+					<xs:element ref="esper:execution" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="threading">
@@ -658,6 +661,11 @@
 			<xs:attribute name="division-by-zero-is-null" type="xs:boolean" use="optional"/>
 			<xs:attribute name="udf-cache" type="xs:boolean" use="optional"/>
 			<xs:attribute name="self-subselect-preeval" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="execution">
+		<xs:complexType>
+			<xs:attribute name="prioritized" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stmtgroup">

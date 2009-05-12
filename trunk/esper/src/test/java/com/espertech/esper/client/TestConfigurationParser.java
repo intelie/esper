@@ -65,6 +65,7 @@ public class TestConfigurationParser extends TestCase
         assertTrue(config.getEngineDefaults().getLogging().isEnableTimerDebug());
         assertEquals(15000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
         assertEquals(ConfigurationEngineDefaults.TimeSourceType.MILLI, config.getEngineDefaults().getTimeSource().getTimeSourceType());
+        assertFalse(config.getEngineDefaults().getExecution().isPrioritized());
 
         assertEquals(StreamSelector.ISTREAM_ONLY, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
         assertFalse(config.getEngineDefaults().getLanguage().isSortUsingCollator());
@@ -298,6 +299,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(StreamSelector.RSTREAM_ISTREAM_BOTH, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
 
         assertEquals(ConfigurationEngineDefaults.TimeSourceType.NANO, config.getEngineDefaults().getTimeSource().getTimeSourceType());
+        assertTrue(config.getEngineDefaults().getExecution().isPrioritized());
 
         ConfigurationMetricsReporting metrics = config.getEngineDefaults().getMetricsReporting();
         assertTrue(metrics.isEnableMetricsReporting());

@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.epl.spec.OnTriggerDesc;
 import com.espertech.esper.epl.spec.CreateWindowDesc;
+import com.espertech.esper.epl.spec.OnTriggerDesc;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
-import java.net.URI;
 
 /**
  * Interface for a factory class that makes statement context specific to a statement.
@@ -40,5 +40,6 @@ public interface StatementContextFactory
                                         Map<String, Object> optAdditionalContext,
                                         OnTriggerDesc optOnTriggerDesc,
                                         CreateWindowDesc optCreateWindowDesc,
-                                        boolean isFireAndForget);
+                                        boolean isFireAndForget,
+                                        Annotation[] annotations);
 }

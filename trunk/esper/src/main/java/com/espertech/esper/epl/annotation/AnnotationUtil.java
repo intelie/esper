@@ -1,11 +1,14 @@
 package com.espertech.esper.epl.annotation;
 
+import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.EngineImportException;
-import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.spec.AnnotationDesc;
 import com.espertech.esper.util.SimpleTypeCaster;
 import com.espertech.esper.util.SimpleTypeCasterFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -19,32 +22,54 @@ import java.util.*;
  */
 public class AnnotationUtil
 {
+    private static final Log log = LogFactory.getLog(AnnotationUtil.class);
+
+    public static Annotation[] compileAnnotations(List<AnnotationDesc> annotationSpec, EngineImportService engineImportService, String eplStatement)
+    {
+        Annotation[] annotations;
+        try
+        {
+            annotations = AnnotationUtil.compileAnnotations(annotationSpec, engineImportService);
+        }
+        catch (AnnotationException e)
+        {
+            throw new EPStatementException("Failed to process statement annotations: " + e.getMessage(), eplStatement);
+        }
+        catch (RuntimeException ex)
+        {
+            String message = "Unexpected exception compiling annotations in statement, please consult the log file and report the exception";
+            log.error(message, ex);
+            throw new EPStatementException(message, eplStatement);
+        }
+        return annotations;
+    }
+
     /**
      * Compiles annotations to an annotation array.
      * @param desc a list of descriptors
-     * @param methodResolutionService for resolving the annotation class
+     * @param engineImportService for resolving the annotation class
      * @return annotations or empty array if none
      * @throws AnnotationException if annotations could not be created
      */
-    public static Annotation[] compileAnnotations(List<AnnotationDesc> desc, MethodResolutionService methodResolutionService)
+    private static Annotation[] compileAnnotations(List<AnnotationDesc> desc, EngineImportService engineImportService)
             throws AnnotationException
     {
         Annotation[] annotations = new Annotation[desc.size()];
         for (int i = 0; i < desc.size(); i++)
         {
-            annotations[i] = createProxy(desc.get(i), methodResolutionService);
+            annotations[i] = createProxy(desc.get(i), engineImportService);
         }
         return annotations;
     }
 
-    private static Annotation createProxy(AnnotationDesc desc, MethodResolutionService methodResolutionService)
+    private static Annotation createProxy(AnnotationDesc desc, EngineImportService engineImportService)
             throws AnnotationException
     {
         // resolve class
         final Class annotationClass;
         try
         {
-            annotationClass = methodResolutionService.resolveClass(desc.getName());
+            annotationClass = engineImportService.resolveClass(desc.getName());
         }
         catch (EngineImportException e)
         {
@@ -87,7 +112,7 @@ public class AnnotationUtil
             }
 
             Object valueProvided = pairFound == null ? null : pairFound.getSecond();
-            Object value = getFinalValue(annotationClass, annotationAttribute, valueProvided, methodResolutionService);
+            Object value = getFinalValue(annotationClass, annotationAttribute, valueProvided, engineImportService);
             properties.put(attributeName, value);
             providedValues.remove(attributeName);
             requiredAttributes.remove(attributeName);
@@ -120,7 +145,7 @@ public class AnnotationUtil
         return (Annotation) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] {annotationClass}, handler);
     }
 
-    private static Object getFinalValue(Class annotationClass, AnnotationAttribute annotationAttribute, Object value, MethodResolutionService methodResolutionService) throws AnnotationException
+    private static Object getFinalValue(Class annotationClass, AnnotationAttribute annotationAttribute, Object value, EngineImportService engineImportService) throws AnnotationException
     {
         if (value == null)
         {
@@ -156,7 +181,7 @@ public class AnnotationUtil
                             annotationAttribute.getType().getSimpleName() + "-typed value for attribute '" + annotationAttribute.getName() + "' but received " +
                             "a " + value.getClass().getSimpleName() + "-typed value");
                 }
-                return createProxy((AnnotationDesc) value, methodResolutionService);
+                return createProxy((AnnotationDesc) value, engineImportService);
             }
         }
 

@@ -11,7 +11,6 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.annotation.Name;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.annotation.AnnotationException;
 import com.espertech.esper.epl.annotation.AnnotationUtil;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
@@ -171,11 +170,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
-        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc(), false);
+        Annotation[] annotations = AnnotationUtil.compileAnnotations(statementSpec.getAnnotations(), services.getEngineImportService(), expression);
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc(), false, annotations);
         StatementSpecCompiled compiledSpec;
         try
         {
-            compiledSpec = compile(statementSpec, expression, statementContext, false);
+            compiledSpec = compile(statementSpec, expression, statementContext, false, annotations);
         }
         catch (EPStatementException ex)
         {
@@ -773,7 +773,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @return compiled statement
      * @throws EPStatementException if the statement cannot be compiled
      */
-    protected static StatementSpecCompiled compile(StatementSpecRaw spec, String eplStatement, StatementContext statementContext, boolean isSubquery) throws EPStatementException
+    protected static StatementSpecCompiled compile(StatementSpecRaw spec, String eplStatement, StatementContext statementContext, boolean isSubquery, Annotation[] annotations) throws EPStatementException
     {
         List<StreamSpecCompiled> compiledStreams;
         Set<String> eventTypeReferences = new HashSet<String>();
@@ -930,24 +930,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         for (ExprSubselectNode subselect : visitor.getSubselects())
         {
             StatementSpecRaw raw = subselect.getStatementSpecRaw();
-            StatementSpecCompiled compiled = compile(raw, eplStatement, statementContext, true);
+            StatementSpecCompiled compiled = compile(raw, eplStatement, statementContext, true, new Annotation[0]);
             subselect.setStatementSpecCompiled(compiled);
-        }
-
-        Annotation[] annotations;
-        try
-        {
-            annotations = AnnotationUtil.compileAnnotations(spec.getAnnotations(), statementContext.getMethodResolutionService());
-        }
-        catch (AnnotationException e)
-        {
-            throw new EPStatementException("Failed to process statement annotations: " + e.getMessage(), eplStatement);        
-        }
-        catch (RuntimeException ex)
-        {
-            String message = "Unexpected exception compiling annotations in statement, please consult the log file and report the exception";
-            log.error(message, ex);
-            throw new EPStatementException(message, eplStatement);
         }
 
         return new StatementSpecCompiled(

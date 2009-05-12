@@ -65,6 +65,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         	throw new NullPointerException("Engine URI should not be null at this stage");
         }
         this.engineURI = engineURI;
+        verifyConfiguration(configuration);
         configSnapshot = takeSnapshot(configuration);
         serviceListeners = new CopyOnWriteArraySet<EPServiceStateListener>();
         statementListeners = new CopyOnWriteArraySet<EPStatementStateListener>();
@@ -112,7 +113,20 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
      */
     public void setConfiguration(Configuration configuration)
     {
+        verifyConfiguration(configuration);
         configSnapshot = takeSnapshot(configuration);
+    }
+
+    private void verifyConfiguration(Configuration configuration)
+    {
+        if (configuration.getEngineDefaults().getExecution().isPrioritized())
+        {
+            if (!configuration.getEngineDefaults().getViewResources().isShareViews())
+            {
+                log.info("Setting engine setting for share-views to false as execution is prioritized");
+            }
+            configuration.getEngineDefaults().getViewResources().setShareViews(false);
+        }
     }
 
     public String getURI()

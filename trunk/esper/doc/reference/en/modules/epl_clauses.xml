@@ -2137,6 +2137,14 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 			</para>
 		</sect2>
 		
+		<sect2 id="insert-into-populate">
+			<title>Populating an Underlying Event Object</title>
+
+			<para>
+				Your <literal>insert into</literal> clause may also directly instantiate and populate application underlying event objects or <literal>Map</literal> event objects. This is described in greater detail in <xref linkend="eventrep-insertinto"/>.
+			</para>
+		</sect2>
+
 	</sect1>
 
     <sect1 id="epl-join">

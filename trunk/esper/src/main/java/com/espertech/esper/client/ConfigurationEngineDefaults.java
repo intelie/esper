@@ -26,6 +26,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private TimeSource timeSource;
     private Language language;
     private Expression expression;
+    private Execution execution;
     private ConfigurationMetricsReporting metricsReporting;
     private static final long serialVersionUID = -528835191586154300L;
 
@@ -44,6 +45,7 @@ public class ConfigurationEngineDefaults implements Serializable
         metricsReporting = new ConfigurationMetricsReporting();
         language = new Language();
         expression = new Expression();
+        execution = new Execution();
     }
 
     /**
@@ -134,6 +136,11 @@ public class ConfigurationEngineDefaults implements Serializable
     public Expression getExpression()
     {
         return expression;
+    }
+
+    public Execution getExecution()
+    {
+        return execution;
     }
 
     /**
@@ -1044,6 +1051,33 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setSelfSubselectPreeval(boolean selfSubselectPreeval)
         {
             this.selfSubselectPreeval = selfSubselectPreeval;
+        }
+    }
+
+    /**
+     * Holds engine execution-related settings.
+     */
+    public static class Execution implements Serializable
+    {
+        private boolean prioritized;
+        private static final long serialVersionUID = 0L;
+
+        /**
+         * Ctor - sets up defaults.
+         */
+        protected Execution()
+        {
+            prioritized = false;
+        }
+
+        public boolean isPrioritized()
+        {
+            return prioritized;
+        }
+
+        public void setPrioritized(boolean prioritized)
+        {
+            this.prioritized = prioritized;
         }
     }
 

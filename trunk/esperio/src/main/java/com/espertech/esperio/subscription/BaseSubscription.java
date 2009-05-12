@@ -98,7 +98,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
 
         String name = "subscription:" + subscriptionName;
         StatementMetricHandle metricsHandle = spi.getMetricReportingService().getStatementHandle(name, name);
-        EPStatementHandle statementHandle = new EPStatementHandle(name, new ManagedLockImpl(name), name, false, metricsHandle);
+        EPStatementHandle statementHandle = new EPStatementHandle(name, new ManagedLockImpl(name), name, false, metricsHandle, 0, false);
         EPStatementHandleCallback registerHandle = new EPStatementHandleCallback(statementHandle, this);
         spi.getFilterService().add(fvs, registerHandle);
     }

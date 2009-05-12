@@ -882,6 +882,10 @@ class ConfigurationParser {
             {
                 handleExpression(configuration, subElement);
             }
+            if (subElement.getNodeName().equals("execution"))
+            {
+                handleExecution(configuration, subElement);
+            }
         }
     }
 
@@ -1209,6 +1213,16 @@ class ConfigurationParser {
         {
             boolean isSelfSubselectPreeval = Boolean.parseBoolean(selfSubselectPreeval);
             configuration.getEngineDefaults().getExpression().setSelfSubselectPreeval(isSelfSubselectPreeval);
+        }
+    }
+
+    private static void handleExecution(Configuration configuration, Element parentElement)
+    {
+        String prioritizedStr = getOptionalAttribute(parentElement, "prioritized");
+        if (prioritizedStr != null)
+        {
+            boolean isPrioritized = Boolean.parseBoolean(prioritizedStr);
+            configuration.getEngineDefaults().getExecution().setPrioritized(isPrioritized);
         }
     }
 

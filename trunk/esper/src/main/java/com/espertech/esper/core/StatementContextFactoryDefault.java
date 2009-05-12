@@ -9,6 +9,8 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.annotation.Priority;
+import com.espertech.esper.client.annotation.Preemptive;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
 import com.espertech.esper.epl.join.JoinSetComposerFactoryImpl;
@@ -25,6 +27,7 @@ import com.espertech.esper.view.ViewEnumHelper;
 import com.espertech.esper.view.ViewResolutionService;
 import com.espertech.esper.view.ViewResolutionServiceImpl;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
@@ -59,7 +62,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                                     Map<String, Object> optAdditionalContext,
                                     OnTriggerDesc optOnTriggerDesc,
                                     CreateWindowDesc optCreateWindowDesc,
-                                    boolean isFireAndForget)
+                                    boolean isFireAndForget,
+                                    Annotation[] annotations)
     {
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
@@ -98,8 +102,22 @@ public class StatementContextFactoryDefault implements StatementContextFactory
         {
             stmtMetric = engineServices.getMetricsReportingService().getStatementHandle(statementId, statementName);
         }
+
+        boolean preemptive = false;
+        int priority = 0;
+        for (Annotation annotation : annotations)
+        {
+            if (annotation instanceof Priority)
+            {
+                priority = ((Priority) annotation).value();
+            }
+            if (annotation instanceof Preemptive)
+            {
+                preemptive = true;
+            }
+        }
         
-        EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression, hasVariables, stmtMetric);
+        EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression, hasVariables, stmtMetric, priority, preemptive);
 
         MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineServices.getEngineImportService(), engineServices.getConfigSnapshot().getEngineDefaults().getExpression().isUdfCache());
 
