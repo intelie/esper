@@ -120,6 +120,17 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             }
         }
 
+        for (EvalEveryDistinctNode distinctNode : evalNodeAnalysisResult.getDistinctNodes())
+        {            
+            StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), taggedEventTypes, arrayEventTypes);
+            List<ExprNode> validated = validateExpressions(distinctNode.getExpressions(),
+                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService());
+            MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, context.getEventAdapterService());
+
+            distinctNode.setConvertor(convertor);
+            distinctNode.setExpressions(validated);
+        }
+        
         return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, arrayEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
     }
 
@@ -280,17 +291,6 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(resolvedEventType, eventName, exprNodes, filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(),  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null);
         filterNode.setFilterSpec(spec);
-
-        // validate any distinct criteria
-        if (filterNode.getDistinctSpec() != null)
-        {
-            List<ExprNode> validated = new ArrayList<ExprNode>();
-            for (ExprNode node : filterNode.getDistinctSpec().getAtoms())
-            {
-                validated.add(node.getValidatedSubtree(streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService()));
-            }
-            filterNode.getDistinctSpec().setAtoms(validated);
-        }
     }
 
     private List<ExprNode> validateExpressions(List<ExprNode> objectParameters, StreamTypeService streamTypeService,
@@ -333,5 +333,40 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         }
 
         return new StreamTypeServiceImpl(filterTypes, engineURI, true, false);
+    }
+
+    private Object analyzeMatchEvent(EvalNode relativeNode)
+    {
+        LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+        LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+
+        // Determine all the filter nodes used in the pattern
+        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(relativeNode);
+
+        // Determine tags that are arrays of events, all under the "match" clause
+        Set<String> matchUntilArrayTags = new HashSet<String>();
+        Set<String> plainTags = new HashSet<String>();
+        for (EvalMatchUntilNode matchUntilNode : evalNodeAnalysisResult.getRepeatNodes())
+        {
+            Set<String> arrayTags = null;
+            EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
+            for (EvalFilterNode filterNode : matchUntilAnalysisResult.getFilterNodes())
+            {
+                String optionalTag = filterNode.getEventAsName();
+                if (optionalTag != null)
+                {
+                    if (arrayTags == null)
+                    {
+                        arrayTags = new HashSet<String>();
+                    }
+                    arrayTags.add(optionalTag);
+                }
+            }
+            if (arrayTags != null)
+            {
+                matchUntilArrayTags.addAll(arrayTags);
+            }
+            matchUntilNode.setTagsArrayedSet(arrayTags);
+        }
     }
 }

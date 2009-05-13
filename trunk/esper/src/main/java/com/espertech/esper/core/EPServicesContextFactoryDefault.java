@@ -99,7 +99,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         StatementLockFactory statementLockFactory = new StatementLockFactoryImpl();
         StreamFactoryService streamFactoryService = StreamFactoryServiceProvider.newService(configSnapshot.getEngineDefaults().getViewResources().isShareViews());
         FilterService filterService = FilterServiceProvider.newService();
-        NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService);
+        NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService, engineSettingsService.getEngineSettings().getExecution().isPrioritized());
 
         ValueAddEventService valueAddEventService = new ValueAddEventServiceImpl();
         valueAddEventService.init(configSnapshot.getRevisionEventTypes(), configSnapshot.getVariantStreams(), eventAdapterService);

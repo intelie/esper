@@ -69,4 +69,21 @@ public class EvalNodeAnalysisResult
         }
         return filterNodes;
     }
+
+    /**
+     * Returns the every-distinct-nodes.
+     * @return distinct nodes
+     */
+    public List<EvalEveryDistinctNode> getDistinctNodes()
+    {
+        List<EvalEveryDistinctNode> filterNodes = new ArrayList<EvalEveryDistinctNode>();
+        for (EvalNode node : activeNodes)
+        {
+            if (node instanceof EvalEveryDistinctNode)
+            {
+                filterNodes.add((EvalEveryDistinctNode) node);
+            }
+        }
+        return filterNodes;
+    }
 }

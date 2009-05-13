@@ -31,6 +31,7 @@ public class NamedWindowProcessor
     private final EventType eventType;
     private final String eplExpression;
     private final String statementName;
+    private final boolean isPrioritized;
 
     /**
      * Ctor.
@@ -43,14 +44,15 @@ public class NamedWindowProcessor
      * @param eplExpression epl expression
      * @param statementName statement name
      */
-    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName)
+    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized)
     {
         this.eventType = eventType;
         this.eplExpression = eplExpression;
         this.statementName = statementName;
+        this.isPrioritized = isPrioritized;
 
         rootView = new NamedWindowRootView(revisionProcessor);
-        tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService, revisionProcessor);
+        tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService, revisionProcessor, isPrioritized);
         rootView.setDataWindowContents(tailView);   // for iteration used for delete without index
     }
 

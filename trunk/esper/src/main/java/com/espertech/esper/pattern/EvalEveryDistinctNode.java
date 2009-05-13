@@ -11,19 +11,28 @@ package com.espertech.esper.pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprNode;
+
+import java.util.List;
 
 /**
  * This class represents an 'every' operator in the evaluation tree representing an event expression.
  */
-public final class EvalEveryNode extends EvalNode
+public final class EvalEveryDistinctNode extends EvalNode
 {
-    public EvalEveryNode()
+    private List<ExprNode> expressions;
+    private MatchedEventConvertor convertor;
+
+    public EvalEveryDistinctNode(List<ExprNode> expressions, MatchedEventConvertor convertor)
     {
+        this.expressions = expressions;
+        this.convertor = convertor;
     }
 
     public final EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
-                                        PatternContext context, Object stateNodeId)
+                                        PatternContext context,
+                                        Object stateNodeId)
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
@@ -36,12 +45,32 @@ public final class EvalEveryNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return context.getPatternStateFactory().makeEveryStateNode(parentNode, this, beginState, context, stateNodeId);
+        return context.getPatternStateFactory().makeEveryDistinctStateNode(parentNode, this, beginState, context, stateNodeId, expressions, convertor);
     }
 
     public final String toString()
     {
         return "EvalEveryNode children=" + this.getChildNodes().size();
+    }
+
+    public List<ExprNode> getExpressions()
+    {
+        return expressions;
+    }
+
+    public MatchedEventConvertor getConvertor()
+    {
+        return convertor;
+    }
+
+    public void setConvertor(MatchedEventConvertor convertor)
+    {
+        this.convertor = convertor;
+    }
+
+    public void setExpressions(List<ExprNode> expressions)
+    {
+        this.expressions = expressions;
     }
 
     private static final Log log = LogFactory.getLog(EvalEveryNode.class);

@@ -8,6 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
+import com.espertech.esper.epl.expression.ExprNode;
+
+import java.util.List;
+
 /**
  * Default pattern state factory.
  */
@@ -33,6 +37,11 @@ public class PatternStateFactoryImpl implements PatternStateFactory
     public EvalStateNode makeEveryStateNode(Evaluator parentNode, EvalEveryNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId)
     {
         return new EvalEveryStateNode(parentNode, evalEveryNode, beginState, context);
+    }
+
+    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, List<ExprNode> expressions, MatchedEventConvertor matchedEventConvertor)
+    {
+        return new EvalEveryDistinctStateNode(parentNode, evalEveryNode, beginState, context, expressions, matchedEventConvertor);
     }
 
     public EvalStateNode makeNotNode(Evaluator parentNode, EvalNotNode evalNotNode, MatchedEventMap beginState, Object stateNodeId)

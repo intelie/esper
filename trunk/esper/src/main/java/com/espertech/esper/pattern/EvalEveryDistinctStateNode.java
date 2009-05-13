@@ -8,55 +8,28 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 
-import com.espertech.esper.util.ExecutionPathDebugLog;
-
-/**
- * This class contains the state of an 'every' operator in the evaluation state tree.
- * EVERY nodes work as a factory for new state subnodes. When a child node of an EVERY
- * node calls the evaluateTrue method on the EVERY node, the EVERY node will call newState on its child
- * node BEFORE it calls evaluateTrue on its parent node. It keeps a reference to the new child in
- * its list. (BEFORE because the root node could call quit on child nodes for stopping all
- * listeners).
- */
-final class EvalEveryStateSpawnEvaluator implements Evaluator
-{
-    private boolean isEvaluatedTrue;
-
-    public final boolean isEvaluatedTrue()
-    {
-        return isEvaluatedTrue;
-    }
-
-    public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
-    {
-        log.warn("Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator");
-        isEvaluatedTrue = true;
-    }
-
-    public final void evaluateFalse(EvalStateNode fromNode)
-    {
-        log.warn("Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator");
-        isEvaluatedTrue = true;
-    }
-
-    private static final Log log = LogFactory.getLog(EvalEveryStateSpawnEvaluator.class);
-}
 
 /**
  * Contains the state collected by an "every" operator. The state includes handles to any sub-listeners
  * started by the operator.
  */
-public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
+public final class EvalEveryDistinctStateNode extends EvalStateNode implements Evaluator
 {
     private final List<EvalStateNode> spawnedNodes;
+    private final Set<MultiKeyUntyped> activeKeys;  // TODO maintain keys
     private final MatchedEventMap beginState;
     private final PatternContext context;
+    private final List<ExprNode> expressions;
+    private final MatchedEventConvertor matchedEventConvertor;
 
     /**
      * Constructor.
@@ -65,10 +38,12 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
      * @param context contains handles to services required
      * @param everyNode is the factory node associated to the state
      */
-    public EvalEveryStateNode(Evaluator parentNode,
-                                 EvalEveryNode everyNode,
+    public EvalEveryDistinctStateNode(Evaluator parentNode,
+                                  EvalEveryDistinctNode everyNode,
                                   MatchedEventMap beginState,
-                                  PatternContext context)
+                                  PatternContext context,
+                                  List<ExprNode> expressions,
+                                  MatchedEventConvertor matchedEventConvertor)
     {
         super(everyNode, parentNode, null);
 
@@ -78,8 +53,11 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         }
 
         this.spawnedNodes = new LinkedList<EvalStateNode>();
+        this.activeKeys = new HashSet<MultiKeyUntyped>();
         this.beginState = beginState.shallowCopy();
         this.context = context;
+        this.expressions = expressions;
+        this.matchedEventConvertor = matchedEventConvertor;
 
         EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, context, null);
         spawnedNodes.add(child);
@@ -158,35 +136,40 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
             spawnedNodes.remove(fromNode);
         }
 
-        // See explanation in EvalFilterStateNode for the type check
-        if (fromNode instanceof EvalFilterStateNode)
+        MultiKeyUntyped key = getKeys(matchEvent);
+        if (!activeKeys.contains(key))
         {
-            // We do not need to newState new listeners here, since the filter state node below this node did not quit
-        }
-        else
-        {
-            // Spawn all nodes below this EVERY node
-            // During the start of a child we need to use the temporary evaluator to catch any event created during a start
-            // Such events can be raised when the "not" operator is used.
-            EvalNode child = getFactoryNode().getChildNodes().get(0);
-            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
-            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
-            spawned.start();
+            activeKeys.add(key);
 
-            // If the whole spawned expression already turned true, quit it again
-            if (spawnEvaluator.isEvaluatedTrue())
+            // See explanation in EvalFilterStateNode for the type check
+            if (fromNode instanceof EvalFilterStateNode)
             {
-                spawned.quit();
+                // We do not need to newState new listeners here, since the filter state node below this node did not quit
             }
             else
             {
-                spawnedNodes.add(spawned);
-                spawned.setParentEvaluator(this);
-            }
-        }
+                // Spawn all nodes below this EVERY node
+                // During the start of a child we need to use the temporary evaluator to catch any event created during a start
+                // Such events can be raised when the "not" operator is used.
+                EvalNode child = getFactoryNode().getChildNodes().get(0);
+                EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+                EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
+                spawned.start();
 
-        // All nodes indicate to their parents that their child node did not quit, therefore a false for isQuitted
-        this.getParentEvaluator().evaluateTrue(matchEvent, this, false);
+                // If the whole spawned expression already turned true, quit it again
+                if (spawnEvaluator.isEvaluatedTrue())
+                {
+                    spawned.quit();
+                }
+                else
+                {
+                    spawnedNodes.add(spawned);
+                    spawned.setParentEvaluator(this);
+                }
+            }
+
+            this.getParentEvaluator().evaluateTrue(matchEvent, this, false);
+        }
     }
 
     public final void quit()
@@ -221,6 +204,17 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
     public final String toString()
     {
         return "EvalEveryStateNode spawnedChildren=" + spawnedNodes.size();
+    }
+
+    private MultiKeyUntyped getKeys(MatchedEventMap currentState)
+    {
+        EventBean[] eventsPerStream = matchedEventConvertor.convert(currentState);
+        Object[] keys = new Object[expressions.size()];
+        for (int i = 0; i < keys.length; i++)
+        {
+            keys[i] = expressions.get(i).evaluate(eventsPerStream, true);
+        }
+        return new MultiKeyUntyped(keys);
     }
 
     private static final Log log = LogFactory.getLog(EvalEveryStateNode.class);

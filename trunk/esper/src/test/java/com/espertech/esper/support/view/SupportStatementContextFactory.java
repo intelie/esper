@@ -57,7 +57,7 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 new OutputConditionFactoryDefault(),
-                new NamedWindowServiceImpl(null, variableService),
+                new NamedWindowServiceImpl(null, variableService, false),
                 null,
                 new StatementResultServiceImpl(null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading())), // statement result svc
                 null, // resolution URIs

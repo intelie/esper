@@ -335,7 +335,8 @@ public class EPStatementStartMethod
         EventType windowType = filterStreamSpec.getFilterSpec().getFilterForEventType();
 
         ValueAddEventProcessor optionalRevisionProcessor = statementContext.getValueAddEventService().getValueAddProcessor(windowName);
-        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor, statementContext.getExpression(), statementContext.getStatementName());
+        boolean isPrioritized = services.getEngineSettingsService().getEngineSettings().getExecution().isPrioritized();
+        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor, statementContext.getExpression(), statementContext.getStatementName(), isPrioritized);
 
         // Create streams and views
         Viewable eventStreamParentViewable;

@@ -1522,13 +1522,13 @@ public class StatementSpecMapper
         }
         else if (eval instanceof PatternEveryExpr)
         {
-            return new EvalEveryNode(false); // TODO
+            return new EvalEveryNode();
         }
         else if (eval instanceof PatternFilterExpr)
         {
             PatternFilterExpr filterExpr = (PatternFilterExpr) eval;
             FilterSpecRaw filterSpec = mapFilter(filterExpr.getFilter(), mapContext);
-            return new EvalFilterNode(filterSpec, filterExpr.getTagName(), null); // TODO
+            return new EvalFilterNode(filterSpec, filterExpr.getTagName());
         }
         else if (eval instanceof PatternObserverExpr)
         {

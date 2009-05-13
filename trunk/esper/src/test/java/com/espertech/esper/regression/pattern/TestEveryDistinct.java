@@ -8,7 +8,7 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-public class TestDistinctQualifier extends TestCase implements SupportBeanConstants
+public class TestEveryDistinct extends TestCase implements SupportBeanConstants
 {
     // TODO: test simple
     //      every A distinct [2] (a)
@@ -32,7 +32,7 @@ public class TestDistinctQualifier extends TestCase implements SupportBeanConsta
         EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
         engine.initialize();
 
-        String expression = "select * from pattern [every a=SupportBean distinct(intPrimitive)]";
+        String expression = "select * from pattern [every-distinct(a.intPrimitive) a=SupportBean]";
 
         EPStatement statement = engine.getEPAdministrator().createEPL(expression);
         SupportUpdateListener listener = new SupportUpdateListener();
@@ -66,7 +66,34 @@ public class TestDistinctQualifier extends TestCase implements SupportBeanConsta
         EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
         engine.initialize();
 
-        String expression = "select * from pattern [[2] a=SupportBean distinct(intPrimitive)]";
+        String expression = "select * from pattern [[2] every-distinct(a.intPrimitive) a=SupportBean]";
+
+        EPStatement statement = engine.getEPAdministrator().createEPL(expression);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        engine.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        engine.getEPRuntime().sendEvent(new SupportBean("E2", 1));
+        assertFalse(listener.isInvoked());
+
+        engine.getEPRuntime().sendEvent(new SupportBean("E3", 2));
+        EventBean event = listener.assertOneGetNewAndReset();
+        assertEquals("E1", event.get("a[0].string"));
+        assertEquals("E3", event.get("a[1].string"));
+
+        engine.getEPRuntime().sendEvent(new SupportBean("E4", 3));
+        engine.getEPRuntime().sendEvent(new SupportBean("E5", 2));
+        assertFalse(listener.isInvoked());
+    }
+
+    public void testRepeat2() throws Exception
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventType("SupportBean", SupportBean.class);
+        EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
+        engine.initialize();
+
+        String expression = "select * from pattern [[2] every-distinct(a[0].intPrimitive) a=SupportBean]";
 
         EPStatement statement = engine.getEPAdministrator().createEPL(expression);
         SupportUpdateListener listener = new SupportUpdateListener();
@@ -125,48 +152,6 @@ public class TestDistinctQualifier extends TestCase implements SupportBeanConsta
 
         engine.getEPRuntime().sendEvent(new SupportBean("E2", 1));
         assertEquals("E2", listener.assertOneGetNewAndReset().get("a.string"));
-    }
-
-    public void testResume() throws Exception
-    {
-        Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventType("SupportBean", SupportBean.class);
-        EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
-        engine.initialize();
-
-        String expression = "select * from pattern [resume ((every a=SupportBean distinct (intPrimitive)) where timer:within(10 sec))]";
-
-        sendTimer(0, engine);
-        EPStatement statement = engine.getEPAdministrator().createEPL(expression);
-        SupportUpdateListener listener = new SupportUpdateListener();
-        statement.addListener(listener);
-
-        engine.getEPRuntime().sendEvent(new SupportBean("E1", 1));
-        assertEquals("E1", listener.assertOneGetNewAndReset().get("a.string"));
-
-        engine.getEPRuntime().sendEvent(new SupportBean("E2", 1));
-        assertFalse(listener.isInvoked());
-
-        engine.getEPRuntime().sendEvent(new SupportBean("E3", 2));
-        assertEquals("E3", listener.assertOneGetNewAndReset().get("a.string"));
-
-        sendTimer(10000, engine);
-        engine.getEPRuntime().sendEvent(new SupportBean("E4", 1));
-        assertEquals("E4", listener.assertOneGetNewAndReset().get("a.string"));
-
-        sendTimer(19900, engine);
-        engine.getEPRuntime().sendEvent(new SupportBean("E5", 1));
-        assertFalse(listener.isInvoked());
-        engine.getEPRuntime().sendEvent(new SupportBean("E6", 2));
-        assertEquals("E6", listener.assertOneGetNewAndReset().get("a.string"));
-        engine.getEPRuntime().sendEvent(new SupportBean("E7", 1));
-        assertFalse(listener.isInvoked());
-
-        sendTimer(20000, engine);
-        engine.getEPRuntime().sendEvent(new SupportBean("E8", 1));
-        assertEquals("E8", listener.assertOneGetNewAndReset().get("a.string"));
-        engine.getEPRuntime().sendEvent(new SupportBean("E9", 2));
-        assertEquals("E9", listener.assertOneGetNewAndReset().get("a.string"));
     }
 
     private void sendTimer(long timeInMSec, EPServiceProvider epService)

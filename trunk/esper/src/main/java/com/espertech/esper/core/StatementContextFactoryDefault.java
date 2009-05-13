@@ -9,8 +9,8 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.annotation.Drop;
 import com.espertech.esper.client.annotation.Priority;
-import com.espertech.esper.client.annotation.Preemptive;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
 import com.espertech.esper.epl.join.JoinSetComposerFactoryImpl;
@@ -105,16 +105,22 @@ public class StatementContextFactoryDefault implements StatementContextFactory
 
         boolean preemptive = false;
         int priority = 0;
+        boolean hasPrioritySetting = false;
         for (Annotation annotation : annotations)
         {
             if (annotation instanceof Priority)
             {
                 priority = ((Priority) annotation).value();
+                hasPrioritySetting = true;
             }
-            if (annotation instanceof Preemptive)
+            if (annotation instanceof Drop)
             {
                 preemptive = true;
             }
+        }
+        if (!hasPrioritySetting && preemptive)
+        {
+            priority = 1;
         }
         
         EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression, hasVariables, stmtMetric, priority, preemptive);

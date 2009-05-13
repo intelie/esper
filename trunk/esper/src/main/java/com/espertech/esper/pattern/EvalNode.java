@@ -119,7 +119,8 @@ public abstract class EvalNode implements MetaDefItem, Serializable
         if ((currentNode instanceof EvalFilterNode) ||
             (currentNode instanceof EvalGuardNode) ||
             (currentNode instanceof EvalObserverNode) ||
-            (currentNode instanceof EvalMatchUntilNode))
+            (currentNode instanceof EvalMatchUntilNode) ||
+            (currentNode instanceof EvalEveryDistinctNode))
         {
             evalNodeAnalysisResult.addNode(currentNode);
         }

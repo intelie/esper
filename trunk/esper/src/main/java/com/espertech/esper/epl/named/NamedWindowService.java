@@ -58,7 +58,7 @@ public interface NamedWindowService
      * @return processor for the named window
      * @throws ViewProcessingException if the named window already exists
      */
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName) throws ViewProcessingException;
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized) throws ViewProcessingException;
 
     /**
      * Returns the processing instance for a given named window.

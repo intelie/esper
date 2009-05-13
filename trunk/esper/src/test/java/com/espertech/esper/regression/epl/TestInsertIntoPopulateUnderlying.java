@@ -18,15 +18,6 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
     private SupportUpdateListener listener;
     private SupportSubscriber subscriber;
 
-    // TODO
-    // test wildcard
-    // test wildcard combined with columns
-    // test stream wildcard or any other special functions
-    // test joins with wildcard
-    // test copy-bean and copy bean+change value
-
-    // doc
-
     public void setUp()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();

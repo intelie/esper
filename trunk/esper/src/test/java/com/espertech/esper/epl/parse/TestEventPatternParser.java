@@ -382,6 +382,10 @@ public class TestEventPatternParser extends TestCase
         
         // annotation
         assertIsValid("@SomeTag(value='val', val2='val') [5] A");
+        
+        //every-distinct
+        assertIsValid("every-distinct(value, bcd) A");
+        assertIsValid("every-distinct(value, bcd) [5] A");
     }
 
     public void testParserNodeGeneration() throws Exception

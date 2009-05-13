@@ -54,7 +54,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
     private List<SelectClauseElementRaw> propertySelectRaw;
     private PropertyEvalSpec propertyEvalSpec;
-    private DistinctEvalSpec distinctEvalSpec;
 
     private final EngineImportService engineImportService;
     private final VariableService variableService;
@@ -176,12 +175,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case EVENT_FILTER_PROPERTY_EXPR_ATOM:
             	leavePropertySelectAtom(node);
             	break;
-            case EVENT_FILTER_DISTINCT_EXPR:
-            	leaveDistinctPattern(node);
-            	break;
-            case EVENT_FILTER_DISTINCT_EXPR_ATOM:
-            	leaveDistinctPatternAtom(node);
-            	break;
             case EVENT_PROP_EXPR:
                 leaveEventPropertyExpr(node);
                 break;
@@ -294,8 +287,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case EVERY_EXPR:
                 leaveEvery(node);
                 break;
-            case RESUME_EXPR:
-                leaveResume(node);
+            case EVERY_DISTINCT_EXPR:
+                leaveEveryDistinct(node);
                 break;
             case FOLLOWED_BY_EXPR:
                 leaveFollowedBy(node);
@@ -1137,72 +1130,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
         propertyEvalSpec.add(atom);
     }
 
-    private void leaveDistinctPattern(Tree node)
-    {
-    	log.debug(".leaveDistinctPatternAtom");
-        List<ExprNode> expressions = new ArrayList<ExprNode>();
-        for (int i = 0; i < node.getChildCount(); i++)
-        {
-            if (node.getChild(i).getType() == EVENT_FILTER_DISTINCT_EXPR_ATOM)
-            {
-                expressions.addAll(getExprNodes(node.getChild(i), 0));
-            }
-        }
-        distinctEvalSpec = new DistinctEvalSpec(expressions);
-    }
-
-    private void leaveDistinctPatternAtom(Tree node)
-    {
-    	log.debug(".leaveDistinctPatternAtom");
-
-        /*
-        // initialize if not set
-        if (propertyEvalSpec == null)
-        {
-            propertyEvalSpec = new PropertyEvalSpec();
-        }
-
-        // get select clause
-        SelectClauseSpecRaw optionalSelectClause = new SelectClauseSpecRaw();
-        if (propertySelectRaw != null)
-        {
-            optionalSelectClause.getSelectExprList().addAll(propertySelectRaw);
-            propertySelectRaw = null;
-        }
-
-        // get where-clause, if any
-        ExprNode optionalWhereClause = null;
-        for (int i = 0; i < node.getChildCount(); i++)
-        {
-            if (node.getChild(i).getType() == WHERE_EXPR)
-            {
-                optionalWhereClause = this.astExprNodeMap.remove(node.getChild(i).getChild(0));
-            }
-        }
-
-        String propertyName = null;
-        for (int i = 0; i < node.getChildCount(); i++)
-        {
-            if (node.getChild(i).getType() == EVENT_PROP_EXPR)
-            {
-                propertyName = ASTFilterSpecHelper.getPropertyName(node.getChild(i), 0);
-            }
-        }
-
-        String optionalAsName = null;
-        for (int i = 0; i < node.getChildCount(); i++)
-        {
-            if (node.getChild(i).getType() == IDENT)
-            {
-               optionalAsName = node.getChild(i).getText();
-            }
-        }
-
-        PropertyEvalAtom atom = new PropertyEvalAtom(propertyName, optionalAsName, optionalSelectClause, optionalWhereClause);
-        propertyEvalSpec.add(atom);
-        */
-    }
-
     private void leaveView(Tree node) throws ASTWalkException
     {
         log.debug(".leaveView");
@@ -1921,14 +1848,15 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveEvery(Tree node)
     {
         log.debug(".leaveEvery");
-        EvalEveryNode everyNode = new EvalEveryNode(false);
+        EvalEveryNode everyNode = new EvalEveryNode();
         astPatternNodeMap.put(node, everyNode);
     }
 
-    private void leaveResume(Tree node)
+    private void leaveEveryDistinct(Tree node)
     {
-        log.debug(".leaveResume");
-        EvalEveryNode everyNode = new EvalEveryNode(true);
+        log.debug(".leaveEveryDistinct");
+        List<ExprNode> exprNodes = getExprNodes(node.getChild(0), 0);
+        EvalEveryDistinctNode everyNode = new EvalEveryDistinctNode(exprNodes, null);
         astPatternNodeMap.put(node, everyNode);
     }
 
@@ -1987,17 +1915,12 @@ public class EPLTreeWalker extends EsperEPL2Ast
         {
             ++count;
         }
-        if ((node.getChildCount() > count) && (node.getChild(count).getType() == EVENT_FILTER_DISTINCT_EXPR))
-        {
-            ++count;
-        }
 
         List<ExprNode> exprNodes = getExprNodes(node, count);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
         propertyEvalSpec = null;
-        EvalFilterNode filterNode = new EvalFilterNode(rawFilterSpec, optionalPatternTagName, distinctEvalSpec); // TODO
-        distinctEvalSpec = null;
+        EvalFilterNode filterNode = new EvalFilterNode(rawFilterSpec, optionalPatternTagName);
         astPatternNodeMap.put(node, filterNode);
     }
 

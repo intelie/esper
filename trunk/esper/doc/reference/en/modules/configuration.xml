@@ -1772,6 +1772,42 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
 			</sect3>
 		</sect2>
 
+		<sect2 id="config-engine-execution" revision="1">
+			<title>Engine Settings related to Execution of Statements</title>
+			
+			<sect3 id="config-engine-execution-prioritized" revision="1">
+				<title>Prioritized Execution</title>
+				<para>
+					By default Esper ignores @Priority and @Drop annotations and executes unprioritized, that is the engine does not attempt to interpret assigned priorities and reorder executions based on priority. Use this setting if your application requires prioritized execution.
+				</para>
+		
+				<para>
+					By setting this configuration, the engine executes statements, when an event or schedule matches multiple statements, according to the assigned priority, starting from the highest priority value. See built-in EPL annotations in <xref linkend="epl-syntax-annotation-priority"/>.
+				</para>
+
+				<para>
+					By enabling this setting view sharing between statements as described in <xref linkend="config-engine-viewresources-sharing"/> is disabled.
+				</para>
+
+				<para>
+					 The XML configuration is as follows:
+				</para>
+	
+				<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <execution prioritized="true"/>
+  </defaults>
+</engine-settings>]]></programlisting>
+			
+				<para>
+				 The API to change the setting:
+				</para>
+	
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getExecution().setPrioritized(true);]]></programlisting>
+			</sect3>
+		</sect2>
+
 		<sect2 id="config-revisionevent" revision="1">
 			<title>Revision Event Type</title>
 			
@@ -1996,25 +2032,8 @@ config.addVariantStream("OutgoingEvent", variant);]]></programlisting>
 		<indexterm><primary>configuration</primary><secondary>runtime</secondary></indexterm>
 		<para>
 			Certain configuration changes are available to perform on an engine instance while in operation. Such configuration operations are available via the <literal>getConfiguration</literal> method on <literal>EPAdministrator</literal>,
-			which returns an <literal>ConfigurationOperations</literal> object.
+			which returns an <literal>ConfigurationOperations</literal> object. Please consult the JavaDoc documentation for more detail.
 		</para>
-
-		<para>
-			The  configuration operations available on a running engine instance are as follows:
-		</para>
-
-		<itemizedlist spacing="compact">
-			<listitem>
-				<para>
-					Remove an event type (TODO)
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Determine which event type is referred to by which statement (TODO)
-				</para>
-			</listitem>
-		</itemizedlist>				
 	</sect1>
 
 </chapter>

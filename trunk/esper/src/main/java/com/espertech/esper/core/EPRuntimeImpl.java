@@ -53,6 +53,8 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     private AtomicLong routedInternal;
     private AtomicLong routedExternal;
     private EventRenderer eventRenderer;
+    private ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal;
+    private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
     {
@@ -62,40 +64,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
     };
 
-    private ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal =
-            new ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>>()
-    {
-        protected synchronized Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> initialValue()
-        {
-            return new TreeMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(new Comparator<EPStatementHandle>()
-            {
-                // sorted descending order
-                public int compare(EPStatementHandle o1, EPStatementHandle o2)
-                {
-                    if (o1.getPriority() == o2.getPriority())
-                    {
-                        return 0;
-                    }
-                    return o1.getPriority() > o2.getPriority() ? -1 : 1;
-                }
-            });
-        }
-    };
-
     private ThreadLocal<ArrayBackedCollection<ScheduleHandle>> scheduleArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<ScheduleHandle>>()
     {
         protected synchronized ArrayBackedCollection<ScheduleHandle> initialValue()
         {
             return new ArrayBackedCollection<ScheduleHandle>(100);
-        }
-    };
-
-    private ThreadLocal<HashMap<EPStatementHandle, Object>> schedulePerStmtThreadLocal =
-            new ThreadLocal<HashMap<EPStatementHandle, Object>>()
-    {
-        protected synchronized HashMap<EPStatementHandle, Object> initialValue()
-        {
-            return new HashMap<EPStatementHandle, Object>(10000);
         }
     };
 
@@ -112,6 +85,59 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         isPrioritized = services.getEngineSettingsService().getEngineSettings().getExecution().isPrioritized();
         routedInternal = new AtomicLong();
         routedExternal = new AtomicLong();
+
+        matchesPerStmtThreadLocal =
+            new ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>>()
+            {
+                protected synchronized Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> initialValue()
+                {
+                    if (isPrioritized)
+                    {
+                        return new TreeMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(new Comparator<EPStatementHandle>()
+                        {
+                            // sorted descending order
+                            public int compare(EPStatementHandle o1, EPStatementHandle o2)
+                            {
+                                if (o1.getPriority() == o2.getPriority())
+                                {
+                                    return 0;
+                                }
+                                return o1.getPriority() > o2.getPriority() ? -1 : 1;
+                            }
+                        });
+                    }
+                    else
+                    {
+                        return new HashMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(10000);
+                    }
+                }
+            };
+
+        schedulePerStmtThreadLocal = new ThreadLocal<Map<EPStatementHandle, Object>>()
+            {
+                protected synchronized Map<EPStatementHandle, Object> initialValue()
+                {
+                    if (isPrioritized)
+                    {
+                        return new TreeMap<EPStatementHandle, Object>(new Comparator<EPStatementHandle>()
+                        {
+                            // sorted descending order
+                            public int compare(EPStatementHandle o1, EPStatementHandle o2)
+                            {
+                                if (o1.getPriority() == o2.getPriority())
+                                {
+                                    return 0;
+                                }
+                                return o1.getPriority() > o2.getPriority() ? -1 : 1;
+                            }
+                        });
+                    }
+                    else
+                    {
+                        return new HashMap<EPStatementHandle, Object>(10000);
+                    }
+                }
+            };
 
         services.getThreadingService().initThreading(services, this);
     }
@@ -481,7 +507,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         int entryCount = handles.size();
 
         // sort multiple matches for the event into statements
-        HashMap<EPStatementHandle, Object> stmtCallbacks = schedulePerStmtThreadLocal.get();
+        Map<EPStatementHandle, Object> stmtCallbacks = schedulePerStmtThreadLocal.get();
         stmtCallbacks.clear();
         for (int i = 0; i < entryCount; i++)    // need to use the size of the collection
         {
@@ -544,6 +570,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                     processStatementScheduleMultiple(handle, callbackObject, services);
                 }
             }
+
+            if ((isPrioritized) && (handle.isPreemptive()))
+            {
+                break;
+            }            
         }
     }
 
@@ -684,9 +715,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         ArrayBackedCollection<FilterHandle> matches = matchesArrayThreadLocal.get();
         services.getFilterService().evaluate(event, matches);
 
-        // TODO - remove me
-        Object[] m = matches.getArray();
-
         if (ThreadLogUtil.ENABLED_TRACE)
         {
             ThreadLogUtil.trace("Found matches for underlying ", matches.size(), event.getUnderlying());
@@ -712,7 +740,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
             // Self-joins require that the internal dispatch happens after all streams are evaluated.
             // Priority or preemptive settings also require special ordering.
-            if (handle.isSpecial() || isPrioritized)
+            if (handle.isCanSelfJoin() || isPrioritized)
             {
                 ArrayDequeJDK6Backport<FilterHandleCallback> callbacks = stmtCallbacks.get(handle);
                 if (callbacks == null)
@@ -784,10 +812,9 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                     processStatementFilterMultiple(handle, callbackList, event);
                 }
 
-                if (handle.isPreemptive())
+                if ((isPrioritized) && (handle.isPreemptive()))
                 {
-                    stmtCallbacks.clear();
-                    return;
+                    break;
                 }
             }
         }

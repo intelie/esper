@@ -22,7 +22,7 @@ tokens
 	AND_EXPR='and';
 	NOT_EXPR='not';
     	EVERY_EXPR='every';
-    	RESUME_EXPR='resume';
+    	EVERY_DISTINCT_EXPR='every-distinct';
 	WHERE='where';
 	AS='as';	
 	SUM='sum';
@@ -115,11 +115,10 @@ tokens
    	ARRAY_PARAM_LIST;
    	PATTERN_FILTER_EXPR;
    	PATTERN_NOT_EXPR;
+   	PATTERN_EVERY_DISTINCT_EXPR;
    	EVENT_FILTER_EXPR;
    	EVENT_FILTER_PROPERTY_EXPR;
    	EVENT_FILTER_PROPERTY_EXPR_ATOM;
-   	EVENT_FILTER_DISTINCT_EXPR;
-   	EVENT_FILTER_DISTINCT_EXPR_ATOM;
    	PROPERTY_SELECTION_ELEMENT_EXPR;
    	PROPERTY_SELECTION_STREAM;
    	PROPERTY_WILDCARD_SELECT;
@@ -361,7 +360,7 @@ tokens
 	parserTokenParaphases.put(AND_EXPR, "'and'");
 	parserTokenParaphases.put(NOT_EXPR, "'not'");
 	parserTokenParaphases.put(EVERY_EXPR, "'every'");
-	parserTokenParaphases.put(RESUME_EXPR, "'resume'");
+	parserTokenParaphases.put(EVERY_DISTINCT_EXPR, "'every-distinct'");
 	parserTokenParaphases.put(WHERE, "'where'");
 	parserTokenParaphases.put(AS, "'as'");	
 	parserTokenParaphases.put(SUM, "'sum'");
@@ -392,7 +391,6 @@ tokens
 	parserTokenParaphases.put(BY, "'by'");
 	parserTokenParaphases.put(GROUP, "'group'");
 	parserTokenParaphases.put(HAVING, "'having'");
-	parserTokenParaphases.put(DISTINCT, "'distinct'");
 	parserTokenParaphases.put(ALL, "'all'");
 	parserTokenParaphases.put(ANY, "'any'");
 	parserTokenParaphases.put(SOME, "'some'");
@@ -1121,17 +1119,26 @@ matchUntilExpression
 	;
 
 qualifyExpression
-	:	((e=EVERY_EXPR | s=RESUME_EXPR | n=NOT_EXPR) (r=matchUntilRange)? )?
+	:	((e=EVERY_EXPR | n=NOT_EXPR | d=EVERY_DISTINCT_EXPR distinctExpressionList) (r=matchUntilRange)? )?
 		guardPostFix
 		-> {e != null && r == null}? ^(EVERY_EXPR guardPostFix)
 		-> {n != null && r == null}? ^(PATTERN_NOT_EXPR guardPostFix)
-		-> {s != null && r == null}? ^(RESUME_EXPR guardPostFix)
+		-> {d != null && r == null}? ^(EVERY_DISTINCT_EXPR distinctExpressionList guardPostFix)
 		-> {e != null && r != null}? ^(EVERY_EXPR ^(MATCH_UNTIL_EXPR matchUntilRange guardPostFix) )
 		-> {n != null && r != null}? ^(PATTERN_NOT_EXPR ^(MATCH_UNTIL_EXPR matchUntilRange guardPostFix) )
-		-> {s != null && r != null}? ^(RESUME_EXPR ^(MATCH_UNTIL_EXPR matchUntilRange guardPostFix) )
+		-> {d != null && r != null}? ^(EVERY_DISTINCT_EXPR distinctExpressionList ^(MATCH_UNTIL_EXPR matchUntilRange guardPostFix) )
 		-> guardPostFix
 	;
 	
+distinctExpressionList
+	:	LPAREN distinctExpressionAtom (COMMA distinctExpressionAtom)* RPAREN
+		-> ^(PATTERN_EVERY_DISTINCT_EXPR distinctExpressionAtom+) 
+	;
+
+distinctExpressionAtom
+	:	expression
+   	;
+
 guardPostFix
 	:	(atomicExpression | l=LPAREN patternExpression RPAREN) (w=WHERE guardExpression)?
 		-> {$w != null}? ^(GUARD_EXPR atomicExpression? patternExpression? guardExpression) 
@@ -1229,19 +1236,8 @@ patternFilterExpression
     	classIdentifier
        	(LPAREN expressionList? RPAREN)?
        	propertyExpression?
-       	distinctExpression?
-       	-> ^(PATTERN_FILTER_EXPR $i? classIdentifier propertyExpression? distinctExpression? expressionList?)
+       	-> ^(PATTERN_FILTER_EXPR $i? classIdentifier propertyExpression? expressionList?)
     ;
-
-distinctExpression
-	:	DISTINCT (LBRACK number RBRACK)? LPAREN distinctExpressionAtom (COMMA distinctExpressionAtom)* RPAREN
-	->	^(EVENT_FILTER_DISTINCT_EXPR number? distinctExpressionAtom*)
-	;
-
-distinctExpressionAtom
-	:	expression
-	->	^(EVENT_FILTER_DISTINCT_EXPR_ATOM expression)
-   	;
     
 
 classIdentifier

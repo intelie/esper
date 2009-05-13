@@ -31,6 +31,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
     private final StatementLockFactory statementLockFactory;
     private final VariableService variableService;
     private final Set<NamedWindowLifecycleObserver> observers;
+    private final boolean isPrioritized;
 
     private ThreadLocal<List<NamedWindowConsumerDispatchUnit>> threadLocal = new ThreadLocal<List<NamedWindowConsumerDispatchUnit>>()
     {
@@ -53,13 +54,14 @@ public class NamedWindowServiceImpl implements NamedWindowService
      * @param statementLockFactory statement lock factory
      * @param variableService is for variable access
      */
-    public NamedWindowServiceImpl(StatementLockFactory statementLockFactory, VariableService variableService)
+    public NamedWindowServiceImpl(StatementLockFactory statementLockFactory, VariableService variableService, boolean isPrioritized)
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();
         this.windowStatementLocks = new HashMap<String, ManagedLock>();
         this.statementLockFactory = statementLockFactory;
         this.variableService = variableService;
-        this.observers = new HashSet<NamedWindowLifecycleObserver>();  
+        this.observers = new HashSet<NamedWindowLifecycleObserver>();
+        this.isPrioritized = isPrioritized;
     }
 
     public void destroy()
@@ -100,14 +102,14 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processor;
     }
 
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName) throws ViewProcessingException
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized) throws ViewProcessingException
     {
         if (processors.containsKey(name))
         {
             throw new ViewProcessingException("A named window by name '" + name + "' has already been created");
         }
 
-        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName);
+        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName, isPrioritized);
         processors.put(name, processor);
 
         if (!observers.isEmpty())
@@ -184,6 +186,11 @@ public class NamedWindowServiceImpl implements NamedWindowService
                 {
                     handle.getStatementLock().releaseLock(null);
                 }
+
+                if ((isPrioritized) && (handle.isPreemptive()))
+                {
+                    break;
+                }
             }
 
             dispatches.clear();
@@ -257,6 +264,11 @@ public class NamedWindowServiceImpl implements NamedWindowService
                     handle.getStatementLock().releaseLock(null);
                 }
 
+                if ((isPrioritized) && (handle.isPreemptive()))
+                {
+                    break;
+                }
+
                 continue;
             }
 
@@ -300,6 +312,11 @@ public class NamedWindowServiceImpl implements NamedWindowService
             finally
             {
                 handle.getStatementLock().releaseLock(null);
+            }
+
+            if ((isPrioritized) && (handle.isPreemptive()))
+            {
+                break;
             }
         }
 

@@ -8,12 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.epl.spec.FilterSpecRaw;
-import com.espertech.esper.epl.spec.DistinctEvalSpec;
+import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a filter of events in the evaluation tree representing any event expressions.
@@ -23,7 +22,6 @@ public final class EvalFilterNode extends EvalNode
     private static final long serialVersionUID = 0L;
     private final FilterSpecRaw rawFilterSpec;
     private final String eventAsName;
-    private final DistinctEvalSpec distinctSpec;
     private transient FilterSpecCompiled filterSpec;
 
     /**
@@ -33,12 +31,10 @@ public final class EvalFilterNode extends EvalNode
      * table used when indicating truth value of true.
      */
     public EvalFilterNode(FilterSpecRaw filterSpecification,
-                                String eventAsName,
-                                DistinctEvalSpec distinctSpec)
+                                String eventAsName)
     {
         this.rawFilterSpec = filterSpecification;
         this.eventAsName = eventAsName;
-        this.distinctSpec = distinctSpec;
     }
 
     public final EvalStateNode newState(Evaluator parentNode,
@@ -86,11 +82,6 @@ public final class EvalFilterNode extends EvalNode
         this.filterSpec = filterSpec;
     }
 
-    public DistinctEvalSpec getDistinctSpec()
-    {
-        return distinctSpec;
-    }
-
     /**
      * Returns the tag for any matching events to this filter, or null since tags are optional.
      * @return tag string for event
@@ -107,7 +98,6 @@ public final class EvalFilterNode extends EvalNode
         buffer.append("EvalFilterNode rawFilterSpec=" + this.rawFilterSpec);
         buffer.append(" filterSpec=" + this.filterSpec);
         buffer.append(" eventAsName=" + this.eventAsName);
-        buffer.append(" distinctSpec=" + this.distinctSpec);
         return buffer.toString();
     }
 

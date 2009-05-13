@@ -465,10 +465,15 @@ exprChoice
 	: 	atomicExpr
 	|	patternOp
 	| 	^( a=EVERY_EXPR exprChoice { leaveNode($a); } )
-	| 	^( a=RESUME_EXPR exprChoice { leaveNode($a); } )
+	| 	^( a=EVERY_DISTINCT_EXPR distinctExpressions exprChoice { leaveNode($a); } )
 	| 	^( n=PATTERN_NOT_EXPR exprChoice { leaveNode($n); } )
 	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT valueExprWithTime* { leaveNode($g); } )
 	|	^( m=MATCH_UNTIL_EXPR matchUntilRange? exprChoice exprChoice? { leaveNode($m); } )
+	;
+	
+	
+distinctExpressions
+	:	^( PATTERN_EVERY_DISTINCT_EXPR valueExpr+ )
 	;
 	
 patternOp
@@ -483,15 +488,7 @@ atomicExpr
 	;
 
 patternFilterExpr
-	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT propertyExpression? distinctExpression? (valueExpr)* { leaveNode($f); } )
-	;
-
-distinctExpression
-	:	^( d=EVENT_FILTER_DISTINCT_EXPR number? distinctExpressionAtom+ { leaveNode($d); } )
-	;
-
-distinctExpressionAtom
-	:	^( a=EVENT_FILTER_DISTINCT_EXPR_ATOM valueExpr { leaveNode($a); } )
+	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT propertyExpression? (valueExpr)* { leaveNode($f); } )
 	;
 
 matchUntilRange

@@ -392,6 +392,41 @@ select `insert` from `Order`]]></programlisting>
 				Use the <literal>getAnnotations</literal> method of <literal>EPStatement</literal> to obtain annotations provided via statement text.
 			</para>
 
+			<sect3 id="epl-syntax-annotation-application">
+				<title>Application-Provided Annotations</title>
+				<indexterm><primary>annotation</primary><secondary>application-provided</secondary></indexterm>
+				
+				<para>
+					Your application may provide its own annotation classes. The engine detects and populates annotation instances for application annotation classes.
+				</para>
+
+				<para>
+					To enable the engine to recognize application annotation classes, your annotation name must include the package name (i.e. be fully-qualified) or your engine configuration must import the annotation class or package via the configuration API.  
+				</para>
+
+				<para>
+					For example, assume that your application defines an annotation in its application code as follows:
+				</para>
+				<programlisting><![CDATA[public @interface ProcessMonitor {
+  String processName();
+  boolean isLongRunning default false;
+  int[] subProcessIds;
+}]]></programlisting>
+
+				<para>
+					Shown next is an EPL statement text that utilizes the annotation class defined earlier:
+				</para>
+				<programlisting><![CDATA[@ProcessMonitor(processName='CreditApproval',
+  isLongRunning=true, subProcessIds = {1, 2, 3} )
+  
+select count(*) from ProcessEvent(processId in (1, 2, 3).win:time(30)]]></programlisting>
+
+				<para>
+					Above example assumes the <literal>ProcessMonitor</literal> annotation class is imported via configuration XML or API. Here is an example API call to import annotations provided by a package <literal>com.mycompany.myannotations</literal>:
+				</para>
+				<programlisting><![CDATA[epService.getEPAdministrator().getConfiguration().addImport("com.mycompany.myannotations.*");]]></programlisting>
+			</sect3>
+
 			<sect3 id="epl-syntax-annotation-builtin">
 				<title>Built-In Annotations</title>
 				<indexterm><primary>annotation</primary><secondary>builtin</secondary></indexterm>
@@ -441,59 +476,109 @@ is placed here.")]]></programlisting></entry>
 								<entry><programlisting><![CDATA[@Tag(name="MyTagName", 
  value="MyTagValue")]]></programlisting></entry>
 							</row>
+							<row>
+								<entry>Priority</entry>
+								<entry>
+									<para>Applicable when an event (or schedule) matches filter criteria for multiple statements: Defines the order of statement processing (requires an engine-level setting).</para>
+									<para>Attributes are:</para>
+									<para>value : priority value.</para>
+								</entry>
+								<entry><programlisting><![CDATA[@Priority(10)]]></programlisting></entry>
+							</row>
+							<row>
+								<entry>Drop</entry>
+								<entry>
+									<para>Applicable when an event (or schedule) matches filter criteria for multiple statements, drops the event after processing the statement (requires an engine-level setting).</para>
+									<para>No attributes.</para>
+								</entry>
+								<entry><programlisting><![CDATA[@Drop]]></programlisting></entry>
+							</row>
 						</tbody>
 					</tgroup>				
 				</table>
 
 				<para>
-					The following example statement text specifies each of the built-in annotations in combination:
+					The following example statement text specifies some of the built-in annotations in combination:
 				</para>
 				<programlisting><![CDATA[@Name("RevenuePerCustomer")
 @Description("Outputs revenue per customer considering all events encountered so far.")
 @Tag(name="grouping", value="customer")
 
 select customerId, sum(revenue) from CustomerRevenueEvent]]></programlisting>
-
-				<para>
-					If providing a statement name through the API, the statement name provided through the API overrides the annotation-provided statement name.
-				</para>
 			</sect3>
 
-			<sect3 id="epl-syntax-annotation-application">
-				<title>Application-Provided Annotations</title>
-				<indexterm><primary>annotation</primary><secondary>application-provided</secondary></indexterm>
+			<sect3 id="epl-syntax-annotation-name">
+				<title>@Name</title>
+				<para>
+					Use the @Name EPL annotation to specify a statement name within the EPL statement itself, as an alternative to specifying the statement name via API.
+				</para>
+				<para>
+					If your application is also providing a statement name through the API, the statement name provided through the API overrides the annotation-provided statement name.
+				</para>	
+				<para>
+					Example:
+				</para>	
+				<programlisting><![CDATA[@Name("SecurityFilter1") select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
+			</sect3>
+
+			<sect3 id="epl-syntax-annotation-description">
+				<title>@Description</title>
+				<para>
+					Use the @Description EPL annotation to add a statement textual description.
+				</para>
+				<para>
+					Example:
+				</para>	
+				<programlisting><![CDATA[@Description('This statement filters localhost.') select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
+			</sect3>
+
+			<sect3 id="epl-syntax-annotation-tag">
+				<title>@Tag</title>
+				<para>
+					Use the @Tag EPL annotation to tag statements with name-value pairs, effectively adding a property to the statement. The attributes <literal>name</literal> and <literal>value</literal> are of type string.
+				</para>
+				<para>
+					Example:
+				</para>	
+				<programlisting><![CDATA[@Tag(name='ip_sensitive', value='Y') 
+@Tag(name='author', value='Jim')
+select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
+			</sect3>
+
+			<sect3 id="epl-syntax-annotation-priority">
+				<title>@Priority</title>
+				<para>
+					This annotation only takes effect if the engine-level setting for prioritized execution is set via configuration, as described in <xref linkend="config-engine-execution"/>.
+				</para>
+
+				<para>
+					Use the @Priority EPL annotation to tag statements with a priority value. The default priority value is zero (0) for all statements. When an event (or single timer execution) requires processing the event for multiple statements, processing begins with the highest priority statement and ends with the lowest-priority statement.
+				</para>
+				<para>
+					Example:
+				</para>	
+				<programlisting><![CDATA[@Priority(10) select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
+			</sect3>
+
+			<sect3 id="epl-syntax-annotation-drop">
+				<title>@Drop</title>
+				<para>
+					This annotation only takes effect if the engine-level setting for prioritized execution is set via configuration, as described in <xref linkend="config-engine-execution"/>.
+				</para>
+
+				<para>
+					Use the @Drop EPL annotation to tag statements that preempt all other same or lower-priority statements. When an event (or single timer execution) requires processing the event for multiple statements, processing begins with the highest priority statement and ends with the first statement marked with @Drop, which becomes the last statement to process that event.
+				</para>
+
+				<para>
+					Unless a different priority is specified, the statement with the @Drop EPL annotation executes at priority 1. Thereby @Drop alone is an effective means to remove events from a stream.
+				</para>
 				
 				<para>
-					Your application may provide its own annotation classes. The engine detects and populates annotation instances for application annotation classes.
-				</para>
-
-				<para>
-					To enable the engine to recognize application annotation classes, your annotation name must include the package name (i.e. be fully-qualified) or your engine configuration must import the annotation class or package via the configuration API.  
-				</para>
-
-				<para>
-					For example, assume that your application defines an annotation in its application code as follows:
-				</para>
-				<programlisting><![CDATA[public @interface ProcessMonitor {
-  String processName();
-  boolean isLongRunning default false;
-  int[] subProcessIds;
-}]]></programlisting>
-
-				<para>
-					Shown next is an EPL statement text that utilizes the annotation class defined earlier:
-				</para>
-				<programlisting><![CDATA[@ProcessMonitor(processName='CreditApproval',
-  isLongRunning=true, subProcessIds = {1, 2, 3} )
-  
-select count(*) from ProcessEvent(processId in (1, 2, 3).win:time(30)]]></programlisting>
-
-				<para>
-					Above example assumes the <literal>ProcessMonitor</literal> annotation class is imported via configuration XML or API. Here is an example API call to import annotations provided by a package <literal>com.mycompany.myannotations</literal>:
-				</para>
-				<programlisting><![CDATA[epService.getEPAdministrator().getConfiguration().addImport("com.mycompany.myannotations.*");]]></programlisting>
+					Example:
+				</para>	
+				<programlisting><![CDATA[@Drop select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
 			</sect3>
-
 		</sect2>
     </sect1>
 

@@ -8,18 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.NullIterator;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
+import com.espertech.esper.view.BatchingDataWindowView;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.BatchingDataWindowView;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,6 +38,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     private final EPStatementHandle createWindowStmtHandle;
     private final StatementResultService statementResultService;
     private final ValueAddEventProcessor revisionProcessor;
+    private final boolean isPrioritized;
     private volatile long numberOfEvents;
 
     /**
@@ -49,15 +50,16 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @param revisionProcessor handles update events
      */
-    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor)
+    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, boolean isPrioritized)
     {
         this.eventType = eventType;
         this.namedWindowService = namedWindowService;
-        consumers = new LinkedHashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
+        this.consumers = createConsumerMap();
         this.namedWindowRootView = namedWindowRootView;
         this.createWindowStmtHandle = createWindowStmtHandle;
         this.statementResultService = statementResultService;
         this.revisionProcessor = revisionProcessor;
+        this.isPrioritized = isPrioritized;
     }
 
     /**
@@ -118,7 +120,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
 
             // avoid concurrent modification as a thread may currently iterate over consumers as its dispatching
             // without the engine lock
-            Map<EPStatementHandle, List<NamedWindowConsumerView>> newConsumers = new LinkedHashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
+            Map<EPStatementHandle, List<NamedWindowConsumerView>> newConsumers = createConsumerMap();
             newConsumers.putAll(consumers);
             newConsumers.put(statementHandle, viewsPerStatements);
             consumers = newConsumers;
@@ -126,6 +128,29 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         viewsPerStatements.add(consumerView);
 
         return consumerView;
+    }
+
+    private Map<EPStatementHandle, List<NamedWindowConsumerView>> createConsumerMap()
+    {
+        if (!isPrioritized)
+        {
+            return new LinkedHashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
+        }
+        else
+        {
+            return new TreeMap<EPStatementHandle, List<NamedWindowConsumerView>>(new Comparator<EPStatementHandle>()
+            {
+                // sorted descending order
+                public int compare(EPStatementHandle o1, EPStatementHandle o2)
+                {
+                    if (o1.getPriority() == o2.getPriority())
+                    {
+                        return 0;
+                    }
+                    return o1.getPriority() > o2.getPriority() ? -1 : 1;
+                }
+            });
+        }
     }
 
     /**

@@ -36,7 +36,6 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     private final boolean preemptive;
     private transient InsertIntoLatchFactory insertIntoLatchFactory;
     private transient StatementMetricHandle metricsHandle;
-    private boolean isSpecial;
 
     /**
      * Ctor.
@@ -55,11 +54,6 @@ public class EPStatementHandle implements MetaDefItem, Serializable
         this.priority = priority;
         this.preemptive = preemptive;
         hashCode = expressionText.hashCode() ^ statementLock.hashCode();
-
-        if (priority != 0 || preemptive)
-        {
-            isSpecial = true;
-        }
     }
 
     /**
@@ -72,10 +66,6 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     public void setCanSelfJoin(boolean canSelfJoin)
     {
         this.canSelfJoin = canSelfJoin;
-        if (canSelfJoin)
-        {
-            isSpecial = true;
-        }
     }
 
     /**
@@ -192,10 +182,5 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     public StatementMetricHandle getMetricsHandle()
     {
         return metricsHandle;
-    }
-
-    public boolean isSpecial()
-    {
-        return isSpecial;
     }
 }
