@@ -185,7 +185,7 @@ public class ExprIdentNode extends ExprNode
      * @throws ExprValidationException if no such property exists
      */
     protected static Pair<PropertyResolutionDescriptor, String> getTypeFromStream(StreamTypeService streamTypeService, String unresolvedPropertyName, String streamOrPropertyName)
-        throws ExprValidationException
+        throws ExprValidationPropertyException
     {
         PropertyResolutionDescriptor propertyInfo = null;
 
@@ -201,16 +201,16 @@ public class ExprIdentNode extends ExprNode
                 String suggestion = getSuggestion(ex);
                 if (suggestion != null)
                 {
-                    throw new ExprValidationException(ex.getMessage() + suggestion);
+                    throw new ExprValidationPropertyException(ex.getMessage() + suggestion);
                 }
                 else
                 {
-                    throw new ExprValidationException(ex.getMessage());                    
+                    throw new ExprValidationPropertyException(ex.getMessage());
                 }
             }
             catch (PropertyAccessException ex)
             {
-                throw new ExprValidationException(ex.getMessage());
+                throw new ExprValidationPropertyException(ex.getMessage());
             }
 
             // resolves without a stream name, return descriptor and null stream name
@@ -248,15 +248,15 @@ public class ExprIdentNode extends ExprNode
         String suggestionTwo = getSuggestion(typeExceptionTwo);
         if (suggestionOne != null)
         {
-            throw new ExprValidationException(typeExceptionOne.getMessage() + suggestionOne);
+            throw new ExprValidationPropertyException(typeExceptionOne.getMessage() + suggestionOne);
         }
         if (suggestionTwo != null)
         {
-            throw new ExprValidationException(typeExceptionTwo.getMessage() + suggestionTwo);
+            throw new ExprValidationPropertyException(typeExceptionTwo.getMessage() + suggestionTwo);
         }
 
         // fail to resolve
-        throw new ExprValidationException("Failed to resolve property '" + propertyNameCandidate + "' to a stream or nested property in a stream");
+        throw new ExprValidationPropertyException("Failed to resolve property '" + propertyNameCandidate + "' to a stream or nested property in a stream");
     }
 
     private static String getSuggestion(StreamTypesException ex)

@@ -24,8 +24,7 @@ import java.util.*;
  */
 public final class EvalEveryDistinctStateNode extends EvalStateNode implements Evaluator
 {
-    private final List<EvalStateNode> spawnedNodes;
-    private final Set<MultiKeyUntyped> activeKeys;  // TODO maintain keys
+    private final Map<EvalStateNode, Set<MultiKeyUntyped>> spawnedNodes;
     private final MatchedEventMap beginState;
     private final PatternContext context;
     private final List<ExprNode> expressions;
@@ -52,15 +51,14 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
             log.debug(".constructor");
         }
 
-        this.spawnedNodes = new LinkedList<EvalStateNode>();
-        this.activeKeys = new HashSet<MultiKeyUntyped>();
+        this.spawnedNodes = new LinkedHashMap<EvalStateNode, Set<MultiKeyUntyped>>();
         this.beginState = beginState.shallowCopy();
         this.context = context;
         this.expressions = expressions;
         this.matchedEventConvertor = matchedEventConvertor;
 
         EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, context, null);
-        spawnedNodes.add(child);
+        spawnedNodes.put(child, new HashSet<MultiKeyUntyped>());
     }
 
     public final void start()
@@ -79,7 +77,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         // Events created during the start would likely come from the "not" operator.
         // Quit the new child again if
         EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
-        EvalStateNode child = spawnedNodes.get(0);
+        EvalStateNode child = spawnedNodes.keySet().iterator().next();
         child.setParentEvaluator(spawnEvaluator);
         child.start();
 
@@ -119,7 +117,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         }
         else
         {
-            spawnedNodes.add(spawned);
+            spawnedNodes.put(spawned, new HashSet<MultiKeyUntyped>());
             spawned.setParentEvaluator(this);
         }
     }
@@ -131,43 +129,61 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
             log.debug(".evaluateTrue fromNode=" + fromNode  + "  isQuitted=" + isQuitted);
         }
 
+        // determine if this evaluation has been seen before from the same node
+        MultiKeyUntyped matchEventKey = getKeys(matchEvent);
+        boolean haveSeenThis = false;
+        Set<MultiKeyUntyped> keysFromNode = spawnedNodes.get(fromNode);
+        if (keysFromNode != null)
+        {
+            if (keysFromNode.contains(matchEventKey))
+            {
+                haveSeenThis = true;
+            }
+            else
+            {
+                keysFromNode.add(matchEventKey);
+            }
+        }        
+
         if (isQuitted)
         {
             spawnedNodes.remove(fromNode);
         }
 
-        MultiKeyUntyped key = getKeys(matchEvent);
-        if (!activeKeys.contains(key))
+        // See explanation in EvalFilterStateNode for the type check
+        if (fromNode instanceof EvalFilterStateNode)
         {
-            activeKeys.add(key);
+            // We do not need to newState new listeners here, since the filter state node below this node did not quit
+        }
+        else
+        {
+            // Spawn all nodes below this EVERY node
+            // During the start of a child we need to use the temporary evaluator to catch any event created during a start
+            // Such events can be raised when the "not" operator is used.
+            EvalNode child = getFactoryNode().getChildNodes().get(0);
+            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
+            spawned.start();
 
-            // See explanation in EvalFilterStateNode for the type check
-            if (fromNode instanceof EvalFilterStateNode)
+            // If the whole spawned expression already turned true, quit it again
+            if (spawnEvaluator.isEvaluatedTrue())
             {
-                // We do not need to newState new listeners here, since the filter state node below this node did not quit
+                spawned.quit();
             }
             else
             {
-                // Spawn all nodes below this EVERY node
-                // During the start of a child we need to use the temporary evaluator to catch any event created during a start
-                // Such events can be raised when the "not" operator is used.
-                EvalNode child = getFactoryNode().getChildNodes().get(0);
-                EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
-                EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
-                spawned.start();
-
-                // If the whole spawned expression already turned true, quit it again
-                if (spawnEvaluator.isEvaluatedTrue())
+                Set<MultiKeyUntyped> keyset = new HashSet<MultiKeyUntyped>();
+                if (keysFromNode != null)
                 {
-                    spawned.quit();
+                    keyset.addAll(keysFromNode);
                 }
-                else
-                {
-                    spawnedNodes.add(spawned);
-                    spawned.setParentEvaluator(this);
-                }
+                spawnedNodes.put(spawned, keyset);
+                spawned.setParentEvaluator(this);
             }
+        }
 
+        if (!haveSeenThis)
+        {
             this.getParentEvaluator().evaluateTrue(matchEvent, this, false);
         }
     }
@@ -180,7 +196,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         }
 
         // Stop all child nodes
-        for (EvalStateNode child : spawnedNodes)
+        for (EvalStateNode child : spawnedNodes.keySet())
         {
             child.quit();
         }
@@ -193,7 +209,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
 
     public final Object childrenAccept(EvalStateNodeVisitor visitor, Object data)
     {
-        for (EvalStateNode spawnedNode : spawnedNodes)
+        for (EvalStateNode spawnedNode : spawnedNodes.keySet())
         {
             spawnedNode.accept(visitor, data);
         }
