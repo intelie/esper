@@ -69,7 +69,7 @@
 		<orderedlist spacing="compact">
 			<listitem>
 				<para>
-					Operators that control pattern subexpression repetition: <literal>every</literal>, <literal>[num]</literal> and <literal>until</literal>
+					Operators that control pattern subexpression repetition: <literal>every</literal>, <literal>every-distinct</literal>, <literal>[num]</literal> and <literal>until</literal>
 				</para>
 			</listitem>
 			<listitem>
@@ -261,7 +261,7 @@ else {
 					<row>
 						<entry>1</entry>
 						<entry>unary</entry>
-						<entry><literal>every, not</literal></entry>
+						<entry><literal>every, not, every-distinct</literal></entry>
 						<entry><programlisting><![CDATA[every MyEvent
 timer:interval(5 min) and not MyEvent]]></programlisting></entry>
 					</row>
@@ -853,6 +853,81 @@ every timer:interval(1 sec) -> (b=B where timer:within(1 sec))]]></programlistin
 				</para>
 			</sect3>
 			
+        </sect2>
+
+        <sect2 id="pattern-logical-everydistinct" >
+           <title>Every-Distinct</title>
+    
+			<indexterm><primary><literal>every-distinct</literal> pattern operator</primary></indexterm>
+			<indexterm><primary>pattern operator</primary><secondary>every-distinct</secondary></indexterm>
+
+            <para>				
+				Similar to the <literal>every</literal> operator in most aspects, the <literal>every-distinct</literal> operator indicates that the pattern subexpression should restart when the subexpression qualified by the <literal>every-distinct</literal> keyword evaluates to true or false. In addition, the <literal>every-distinct</literal> eliminates duplicate results received from an active subexpression according to its distinct-value expressions.
+            </para>
+
+            <para>
+				The synopsis for the <literal>every-distinct</literal> pattern operator is:
+            </para>
+		   <synopsis>every-distinct(<emphasis>distinct_value_expr </emphasis>[, <emphasis>distinct_value_exp</emphasis>[...]])</synopsis>
+
+            <para>
+				Within parenthesis are one or more <emphasis>distinct_value_expr</emphasis> expressions that return the values by which to remove duplicates.
+            </para>
+
+            <para>
+				When specifying properties in the distinct-value expression list, you must ensure that the event types providing properties are tagged. Only properties of event types within filter expressions that are sub-expressions to the <literal>every-distinct</literal> may be specified.
+            </para>
+
+            <para>
+				For example, this pattern keeps firing for every A event with a distinct value for its <literal>aprop</literal> property:
+            </para>
+			<programlisting><![CDATA[every-distinct(a.aprop) a=A]]></programlisting>
+			
+            <para>
+				Note that the pattern above assigns the <literal>a</literal> tag to the A event and uses <literal>a.prop</literal> to identify the <literal>prop</literal> property as a value of the <literal>a</literal> event  A.
+            </para>
+
+            <para>
+				A pattern that returns the first Sample event for each sensor, assuming sensor is a field that returns a unique id identifying the sensor that originated the Sample event, is:
+            </para>
+			<programlisting><![CDATA[every-distinct(s.sensor) s=Sample]]></programlisting>
+
+            <para>
+				The next pattern looks for pairs of A and B events and returns only the first pair for each combination of <literal>aprop</literal> of an A event and <literal>bprop</literal> of a B event:
+            </para>
+			<programlisting><![CDATA[every-distinct(a.aprop, b.bprop) (a=A and b=B)]]></programlisting>
+            
+            <para>
+				The following pattern looks for A events followed by B events for which the value of the <literal>aprop</literal> of an A event is the same value of the <literal>bprop</literal> of a B event but only for each distinct value of <literal>aprop</literal> of an A event:
+            </para>
+			<programlisting><![CDATA[every-distinct(a.aprop) a=A -> b=B(bprop = a.aprop)]]></programlisting>
+  			
+            <para>
+				When specifying properties as part of distinct-value expressions, properties must be available from tagged event types in sub-expressions to the <literal>every-distinct</literal>.
+            </para>
+
+            <para>
+				The following patterns are not valid:
+            </para>
+
+			<programlisting><![CDATA[// Invalid: event type in filter not tagged
+every-distinct(aprop) A
+			
+// Invalid: property not from a sub-expression of every-distinct
+a=A -> every-distinct(a.aprop) b=B]]></programlisting>
+
+            <para>
+				When an active subexpression to <literal>every-distinct</literal> becomes permanently false, the distinct-values seen from the active subexpression are removed.
+            </para>
+
+            <para>
+				For example, the below pattern detects each A event distinct by the value of <literal>aprop</literal>.
+            </para>
+			<programlisting><![CDATA[every-distinct(a.aprop) (a=A  and not B)]]></programlisting>
+
+            <para>
+				In the pattern above, when a B event arrives, the subexpression becomes permanently false and is restarted anew, detecting each A event distinct by the value of <literal>aprop</literal> without considering prior values.
+            </para>
         </sect2>
 
         <sect2 id="pattern-repeat" >

@@ -20,7 +20,7 @@ public class TestEveryDistinct extends TestCase implements SupportBeanConstants
         EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
         engine.initialize();
 
-        String expression = "select * from pattern [every-distinct(a.intPrimitive) a=SupportBean]";
+        String expression = "select * from pattern [every-distinct(intPrimitive) a=SupportBean]";
 
         EPStatement statement = engine.getEPAdministrator().createEPL(expression);
         SupportUpdateListener listener = new SupportUpdateListener();
