@@ -1,0 +1,64 @@
+/**************************************************************************************
+ * Copyright (C) 2008 EsperTech, Inc. All rights reserved.                            *
+ * http://esper.codehaus.org                                                          *
+ * http://www.espertech.com                                                           *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the GPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
+package com.espertech.esper.example.marketdatafeed;
+
+import com.espertech.esper.client.EPServiceProvider;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.Random;
+
+public class MarketDataSendRunnable implements Runnable
+{
+    private static final Log log = LogFactory.getLog(MarketDataSendRunnable.class);
+    private final EPServiceProvider engine;
+
+    private volatile FeedEnum rateDropOffFeed;
+    private volatile boolean isShutdown;
+    private Random random = new Random();
+
+    public MarketDataSendRunnable(EPServiceProvider engine)
+    {
+        this.engine = engine;
+    }
+
+    public void run()
+    {
+        log.info(".call Thread " + Thread.currentThread() + " starting");
+
+        try
+        {
+            while(!isShutdown)
+            {
+                int nextFeed = Math.abs(random.nextInt() % 2);
+                FeedEnum feed = FeedEnum.values()[nextFeed];
+                if (rateDropOffFeed != feed)
+                {
+                    engine.getEPRuntime().sendEvent(new MarketDataEvent("SYM", feed));
+                }
+            }
+        }
+        catch (RuntimeException ex)
+        {
+            log.error("Error in send loop", ex);
+        }
+
+        log.info(".call Thread " + Thread.currentThread() + " done");
+    }
+
+    public void setRateDropOffFeed(FeedEnum feedToDrop)
+    {
+        rateDropOffFeed = feedToDrop;
+    }
+
+    public void setShutdown()
+    {
+        isShutdown = true;
+    }
+}
