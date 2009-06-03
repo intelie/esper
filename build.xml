@@ -1,0 +1,124 @@
+<project name="esper" default="info" basedir=".">
+
+	<!-- Name of project and version, used to create filenames -->
+	<property name="Name" value="Esper"/>
+	<property name="name" value="esper"/>
+	<property name="nameio" value="esperio"/>
+	<property name="version" value="3.1.0"/>
+	<property name="patchlevel" value=""/>
+	<property name="fullversion" value="${version}${patchlevel}"/>
+	<property name="fullname" value="${name}-${fullversion}"/>
+	<property name="fullnameio" value="${nameio}-${fullversion}"/>
+
+	<property name="dist.dir" value=".."/>
+	<property name="lib.dir" value="lib"/>
+	<property name="src.dir" value="src/main/java"/>
+	<property name="generated.src" value="target/generated-sources/antlr"/>
+	<property name="doc.dir" value="doc"/>
+	<property name="doc.api.dir" value="${doc.dir}/api"/>
+	<property name="dist.api.dir" value="doc/javadoc/api"/>
+
+	<property name="dist_includes" value="
+	    esper-license.txt, esperio-license.txt, changelog.txt, index.html,
+	    esper-${version}.jar, esperio-${version}.jar,
+	    esper/doc/site/**,
+	    esper/lib/**, esper/etc/*.*, esper/doc/grammar/**,
+	    esperio/lib/**, esperio/etc/*.*,
+	    examples/**"/>
+	<property name="dist_includes_exceptions" value="examples/terminalsvc/**/target/*.jar"/>
+    <!-- examples has specific excludes -->
+    <!-- doc is handled separately for folder remapping (remove of build/en) -->
+    <property name="dist_excludes" value="
+        **/target/**, **/intellij/**, **/_classes/**,
+        examples/benchmark/lib/*.jar,
+        examples/terminalsvc-jse/lib/*.jar,
+        **/antlr-3.1.1.jar,
+        **/junit-4.4.jar, **/junit.license,
+        **/mysql-connector-java-*.jar,**/OTFeed*.jar"/>
+
+	<target name="info" description="The master build is done my Maven">
+		<echo message="Please use Maven 2 to build Esper and related components. Maven build instructions are available on the website." />
+	</target>
+
+	<target name="grammar_html" description="Generate HTML page from ANTLR grammar">
+		<echo message="ANTLR3 tool does not (yet) support grammar HTML generation" />
+		<!--       
+			<java classname="org.antlr.Tool">
+			 <arg value="-html"/>
+			 <arg value="-o"/>
+			 <arg value="esper/doc/grammar"/>
+			 <arg value="-lib"/>
+			 <arg value="esper/target/generated-sources/antlr/com/espertech/esper/epl/generated"/>
+			 <arg value="esper/grammar/EsperEPL2Grammar.g"/>
+			 <arg value="esper/grammar/EsperEPL2Ast.g"/>
+			 <classpath>
+			   <pathelement location="esper/lib/antlr-3.1.1.jar"/>
+			   <pathelement location="../../../../software/antlr-3.1.1/lib/stringtemplate-3.1b1.jar"/>
+			   <pathelement location="../../../../software/antlr-3.1.1/lib/antlr-2.7.7.jar"/>
+			 </classpath>
+		       </java>
+		-->
+    	</target>		
+
+	<target name="touch_all" description="Update timestamp all artifacts">
+		<touch>
+			<fileset dir=".">
+				<include name="**/*.java"/>
+			</fileset>
+		</touch>
+	</target>
+
+	<target name="source_zip" description="Zip up source distribution">
+		<echo message="Building a zip for distribution" />
+		<property name="zip-file" value=""/>
+		<zip zipfile="${dist.dir}/${fullname}-src.zip">
+            		<zipfileset dir="esper/src/main/java" includes="**"/>
+        	</zip>
+		<zip zipfile="${dist.dir}/${fullnameio}-src.zip">
+            		<zipfileset dir="esperio/src/main/java" includes="**"/>
+        	</zip>
+        </target>
+
+	<target name="backup_zip" description="Zip up dev artifacts">
+		<echo message="Building a zip of the development artifacts" />
+		<zip zipfile="${dist.dir}/${fullname}-dev-artifacts.zip" basedir="." excludes="**/target/**, **/lib/**, **/doc/javadoc/**, **/doc/build/**, **/doc/reference/support/**,**/doc/reference/build/**, **/*.jar, **/*.ear, **/*.war" />
+	</target>
+	
+	<target name="dist_zip" description="Zip up distribution" depends="touch_all">
+		<echo message="Building a zip for distribution" />
+		<property name="zip-file" value="${dist.dir}/${fullname}.zip"/>
+		<zip zipfile="${zip-file}">
+			<zipfileset prefix="${name}-${version}" dir="." includes="${dist_includes}" excludes="${dist_excludes}"/>
+			<zipfileset prefix="${name}-${version}" dir="." includes="${dist_includes_exceptions}"/>
+            <zipfileset prefix="${name}-${version}/esper/doc/reference" dir="esper/doc/reference/build/en" includes="**"/>
+            <zipfileset prefix="${name}-${version}/esper/doc/api" dir="esper/doc/javadoc/api" includes="**"/>
+            <zipfileset prefix="${name}-${version}/esperio/doc/reference" dir="esperio/doc/reference/build/en" includes="**"/>
+            <zipfileset prefix="${name}-${version}/esperio/doc/api" dir="esperio/doc/javadoc/api" includes="**"/>
+        </zip>
+		<checksum file="${zip-file}" algorithm="MD5" fileext=".md5"/>
+		<checksum file="${zip-file}" algorithm="SHA" fileext=".asc"/>		
+	</target>
+
+	<target name="dist_tar" description="Tar up distribution" depends="touch_all">
+		<property name="tar-file" value="${dist.dir}/${fullname}.tar"/>
+		<echo message="Building a tar for distribution" />
+		<fixcrlf srcdir="examples"
+		       eol="lf"
+		       eof="remove"
+		       includes="**/*.sh"/>
+		<tar longfile="gnu" tarfile="${tar-file}">
+			<tarfileset prefix="${name}-${version}" dir="." includes="${dist_includes}" excludes="${dist_excludes}"/>
+			<tarfileset prefix="${name}-${version}" dir="." includes="${dist_includes_exceptions}"/>
+			<tarfileset prefix="${name}-${version}" dir="." mode="555" includes="examples/**/*.sh" excludes="examples/**/target/**/*.sh"/>
+            <tarfileset prefix="${name}-${version}/esper/doc/reference" dir="esper/doc/reference/build/en" includes="**"/>
+            <tarfileset prefix="${name}-${version}/esper/doc/api" dir="esper/doc/javadoc/api" includes="**"/>
+            <tarfileset prefix="${name}-${version}/esperio/doc/reference" dir="esperio/doc/reference/build/en" includes="**"/>
+            <tarfileset prefix="${name}-${version}/esperio/doc/api" dir="esperio/doc/javadoc/api" includes="**"/>            
+        </tar>
+		<gzip zipfile="${tar-file}.gz" src="${tar-file}" />
+		<checksum file="${tar-file}.gz" algorithm="MD5" fileext=".md5"/>
+		<checksum file="${tar-file}.gz" algorithm="SHA" fileext=".asc"/>		
+		<delete file="${tar-file}"/>
+	</target>
+	
+</project>

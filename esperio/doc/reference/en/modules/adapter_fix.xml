@@ -1,0 +1,67 @@
+<chapter id="adapter_fix">
+    <title>The FIX Protocol Adapter</title>
+    
+    <para>
+        EsperIO's FIX protocol adapter is for use with incoming and outgoing events that follow the financial standard FIX protocol. For more information on FIX please refer to the <ulink url="http://www.fixprotocol.org/"><citetitle>FIX Protocol Organization</citetitle></ulink>.
+    </para>
+    
+    <para>
+        EsperIO provides: 
+    </para>
+    
+    <itemizedlist>
+		<listitem>
+			<para>
+				A FIX protocol parser for parsing incoming FIX message text.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				A FIX protocol marshaller for creating FIX message text from an event.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				For use with the EsperIO Spring JMS adapter, marshallers for receiving JMS text messages (<literal>javax.jms.TextMessage</literal>) that contain FIX protocol text and for sending FIX protocol text via JMS .
+			</para>
+		</listitem>
+    </itemizedlist>
+    
+    <sect1 id="adapter_fix_parser">
+		<title>FIX Protocol Parser</title>
+		
+		<para>
+			The EsperIO FIX Protocol parser is provided by <literal>com.espertech.esperio.message.fix.FixMsgParser</literal>. Use the <literal>parse</literal> method to parse and validate a FIX message text.
+			The method returns a Map of tag-value pairs that your application can send as an event to Esper.
+		</para>
+		
+		<para>
+			At a minimum the parser requires the <literal>8, 9, 35, 10</literal> tags to be present and the checksum value (tag 10) to be valid.
+		</para>
+
+		<para>
+			Your application must configure the event type for use with the generated Map. Please consult the Esper documentation on Map event representations to configure the properties of the FIX event type.
+		</para>
+    </sect1>
+
+    <sect1 id="adapter_fix_marshaller">
+		<title>FIX Protocol Marshaller</title>
+		
+		<para>
+			The EsperIO FIX Protocol marshaller is provided by <literal>com.espertech.esperio.message.fix.FixMsgMarshaller</literal>. This utility class marshalls an event via the <literal>marshalFix</literal> method to a FIX message text with checksum.
+		</para>
+		
+		<para>
+			The <literal>EventBean</literal> event is expected to contain properties that match the FIX protocol tag names.
+		</para>
+    </sect1>
+
+    <sect1 id="adapter_fix_jms">
+		<title>For use with Spring JMS</title>
+		
+		<para>
+			EsperIO provides code for use with the EsperIO Spring JMS adapters and JMS <literal>javax.jms.TextMessage</literal> messages. The <literal>com.espertech.esperio.jms.JMSFixProtocolTextMessageUnmarshaller</literal> and <literal>JMSFixProtocolTextMessageMarshaller</literal> can be configured as part of the Spring configuration to provide FIX protocol and JMS text message connectivity.
+		</para>		
+    </sect1>
+    
+</chapter>
