@@ -15,7 +15,7 @@
 			<meta http-equiv="Expires" content="-1"/>
 		</head>
 		<links/>
-		<menu name="Esper 3.1.0">
+		<menu name="Esper 3.2.0">
 			<item name="About Esper and NEsper" href="/index.html" collapse="false">
 				<item name="News" href="/about/news/news.html"/>
 				<item name="About Esper for Java" href="/about/esper/esper.html"/>

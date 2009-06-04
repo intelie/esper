@@ -1,7 +1,7 @@
 Esper Changelog
 ===================
 
-Changes in version 3.1.0
+Changes in version 3.2.0
 ------------------------
 
 Major API changes
