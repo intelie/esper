@@ -181,6 +181,7 @@ public class ResultSetProcessorFactory
         }
 
         // Validate group-by expressions, if any (could be empty list for no group-by)
+        Class[] groupByTypes = new Class[groupByNodes.size()];
         for (int i = 0; i < groupByNodes.size(); i++)
         {
             // Ensure there is no subselects
@@ -191,8 +192,11 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within group-by");
             }
 
-            groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService()));
+            ExprNode validatedGroupBy = groupByNodes.get(i).getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService());
+            groupByNodes.set(i, validatedGroupBy);
+            groupByTypes[i] = validatedGroupBy.getType();
         }
+        stmtContext.getMethodResolutionService().setGroupKeyTypes(groupByTypes);
 
         // Validate having clause, if present
         if (optionalHavingNode != null)
