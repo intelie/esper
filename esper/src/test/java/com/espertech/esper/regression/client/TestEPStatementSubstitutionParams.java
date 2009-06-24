@@ -43,6 +43,12 @@ public class TestEPStatementSubstitutionParams extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean("e1", 10));
         assertFalse(listenerTwo.isInvoked());
         assertTrue(listenerOne.getAndClearIsInvoked());
+
+        statement.destroy();
+        prepared = epService.getEPAdministrator().prepareEPL("create window MyWindow.win:time(?) as " + SupportBean.class.getName());
+        prepared.setObject(1, 300);
+        statement = epService.getEPAdministrator().create(prepared);
+        assertEquals("create window MyWindow.win:time(300) as select  from com.espertech.esper.support.bean.SupportBean", statement.getText());
     }
 
     public void testSubselect()

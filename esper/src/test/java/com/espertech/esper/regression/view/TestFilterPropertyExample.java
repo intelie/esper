@@ -251,6 +251,68 @@ public class TestFilterPropertyExample extends TestCase
         for (int i = 0; i < rows.length; i++)
         {
             // System.out.println(renderer.render("event#" + i, rows[i]));
+            renderer.render("event#" + i, rows[i]);
+        }
+    }
+
+    public void testSolutionPattern()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("ResponseEvent", ResponseEvent.class);
+
+        String[] fields = "category,subEventType,avgTime".split(",");
+        String stmtText = "select category, subEventType, avg(responseTimeMillis) as avgTime from ResponseEvent[select category, * from subEvents].win:time(1 min) group by category, subEventType order by category, subEventType";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new ResponseEvent("svcOne", new SubEvent[] {new SubEvent(1000, "typeA"), new SubEvent(800, "typeB")}));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"svcOne", "typeA", 1000.0}, {"svcOne", "typeB", 800.0}});
+
+        epService.getEPRuntime().sendEvent(new ResponseEvent("svcOne", new SubEvent[] {new SubEvent(400, "typeB"), new SubEvent(500, "typeA")}));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"svcOne", "typeA", 750.0}, {"svcOne", "typeB", 600.0}});
+    }
+
+    public class ResponseEvent
+    {
+        private String category;
+        private SubEvent[] subEvents;
+
+        public ResponseEvent(String category, SubEvent[] subEvents)
+        {
+            this.category = category;
+            this.subEvents = subEvents;
+        }
+
+        public String getCategory()
+        {
+            return category;
+        }
+
+        public SubEvent[] getSubEvents()
+        {
+            return subEvents;
+        }
+    }
+
+    public class SubEvent
+    {
+        private long responseTimeMillis;
+        private String subEventType;
+
+        public SubEvent(long responseTimeMillis, String subEventType)
+        {
+            this.responseTimeMillis = responseTimeMillis;
+            this.subEventType = subEventType;
+        }
+
+        public long getResponseTimeMillis()
+        {
+            return responseTimeMillis;
+        }
+
+        public String getSubEventType()
+        {
+            return subEventType;
         }
     }
 }

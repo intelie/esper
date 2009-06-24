@@ -1807,8 +1807,10 @@ EPStatement stmtOnSelect = epService.getEPAdministrator().create(model);]]></pro
         </para>
 
         <para>
-			Substitution parameters can be inserted into any EPL  construct that takes an expression. They are therefore valid in any clauses such as the select-clause, from-clause filters, where-clause, group-by-clause, having-clause or order-by-clause. 
-			Substitution parameters cannot be used as parameters to views, pattern observers and guards. They also cannot be used where a numeric constant is required rather then an expression.
+			Substitution parameters can be inserted into any EPL  construct that takes an expression. 
+			They are therefore valid in any clauses such as the select-clause, from-clause filters, where-clause, group-by-clause, 
+			having-clause or order-by-clause, including view parameters and pattern observers and guards.
+			Substitution parameters cannot be used where a numeric constant is required rather then an expression.
         </para>
 
         <para>
