@@ -106,6 +106,7 @@ tokens
 	VALUE_NULL='null';
 	ROW_LIMIT_EXPR='limit';
 	OFFSET='offset';
+	UPDATE='update';
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -212,6 +213,7 @@ tokens
 	ON_SELECT_INSERT_OUTPUT;
 	ON_EXPR_FROM;
 	ON_SET_EXPR;
+	ON_SET_EXPR_ITEM;
 	CREATE_VARIABLE_EXPR;
 	METHOD_JOIN_EXPR;
 	MATCH_UNTIL_EXPR;
@@ -225,6 +227,7 @@ tokens
 	ANNOTATION;
 	ANNOTATION_ARRAY;
 	ANNOTATION_VALUE;
+	UPDATE_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -555,6 +558,7 @@ eplExpression
 	|	createWindowExpr
 	|	createVariableExpr
 	|	onExpr
+	|	updateExpr
 	;
 	
 selectExpr
@@ -571,8 +575,15 @@ selectExpr
 	
 onExpr 
 	:	ON (eventFilterExpression | patternInclusionExpression) (AS i=IDENT | i=IDENT)? 
-		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ outputClauseInsert?)? | onSetExpr)
+		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ outputClauseInsert?)? | onSetExpr )
 		-> ^(ON_EXPR eventFilterExpression? patternInclusionExpression? $i? onDeleteExpr? onSelectExpr? onSelectInsertExpr* outputClauseInsert? onSetExpr?)
+	;
+	
+updateExpr
+	:	UPDATE i=IDENT
+		SET onSetAssignment (COMMA onSetAssignment)*
+		(WHERE whereClause)?		
+		-> ^(UPDATE_EXPR $i onSetAssignment+ whereClause?)
 	;
 	
 onSelectExpr	
@@ -619,7 +630,8 @@ onSetExpr
 	;
 	
 onSetAssignment
-	:	IDENT EQUALS! expression
+	:	i=IDENT EQUALS expression
+		-> ^(ON_SET_EXPR_ITEM $i expression)
 	;
 		
 onExprFrom

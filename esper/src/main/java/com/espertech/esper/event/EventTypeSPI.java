@@ -8,7 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Service provider interface for internal use for event types.
@@ -20,4 +22,14 @@ public interface EventTypeSPI extends EventType
      * @return type metadata
      */
     public EventTypeMetadata getMetadata();
+
+    public EventPropertyWriter getWriter(String propertyName);
+
+    public EventPropertyDescriptor[] getWriteableProperties();
+
+    public EventPropertyDescriptor getWritableProperty(String propertyName);
+
+    public boolean isCopyable();
+
+    public EventBean copy(EventBean event);
 }

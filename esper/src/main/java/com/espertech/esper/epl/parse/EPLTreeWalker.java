@@ -374,6 +374,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case ON_EXPR:
                 leaveOnExpr(node);
                 break;
+            case UPDATE_EXPR:
+                leaveUpdateExpr(node);
+                break;
             case TIME_PERIOD:
                 leaveTimePeriod(node);
                 break;
@@ -544,6 +547,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         // determine on-delete or on-select
         boolean isOnDelete = false;
         Tree typeChildNode = null;
+
         for (int i = 0; i < node.getChildCount(); i++)
         {
         	Tree childNode = node.getChild(i);
@@ -552,17 +556,14 @@ public class EPLTreeWalker extends EsperEPL2Ast
             {
                 typeChildNode = childNode;
                 isOnDelete = true;
-                break;
             }
             if (childNode.getType() == ON_SELECT_EXPR)
             {
                 typeChildNode = childNode;
-                break;
             }
             if (childNode.getType() == ON_SET_EXPR)
             {
                 typeChildNode = childNode;
-                break;
             }
         }
         if (typeChildNode == null)
@@ -635,37 +636,62 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 
+    private void leaveUpdateExpr(Tree node)
+    {
+        log.debug(".leaveUpdateExpr");
+
+        String streamName = node.getChild(0).getText();
+        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(new FilterSpecRaw(streamName, Collections.EMPTY_LIST, null), new ArrayList<ViewSpec>(), streamName, new StreamSpecOptions());
+        statementSpec.getStreamSpecs().add(streamSpec);
+
+        List<OnTriggerSetAssignment> assignments = getOnTriggerSetAssignments(node, astExprNodeMap);
+
+        ExprNode whereClause = null;
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            if (node.getChild(i).getType() == WHERE_EXPR)
+            {
+                ExprNode exprNode = astExprNodeMap.get(node.getChild(i).getChild(0));
+                if (exprNode == null)
+                {
+                    throw new IllegalStateException("Expression node for AST node not found for type " + node.getChild(i).getType() + " and text " + node.getChild(i).getText());
+                }
+                whereClause = exprNode;
+                astExprNodeMap.remove(node.getChild(i));
+            }
+        }
+
+        statementSpec.setOnTriggerDesc(new OnTriggerInsertIntoUpdDesc(assignments, whereClause));
+    }
+
     /**
      * Returns the list of set-variable assignments under the given node.
-     * @param childNode node to inspect
+     * @param node node to inspect
      * @param astExprNodeMap map of AST to expression
      * @return list of assignments
      */
-    protected static List<OnTriggerSetAssignment> getOnTriggerSetAssignments(Tree childNode, Map<Tree, ExprNode> astExprNodeMap)
+    protected static List<OnTriggerSetAssignment> getOnTriggerSetAssignments(Tree node, Map<Tree, ExprNode> astExprNodeMap)
     {
         List<OnTriggerSetAssignment> assignments = new ArrayList<OnTriggerSetAssignment>();
 
-        int count = 0;
-        Tree child = childNode.getChild(count);
-        do
+        for (int i = 0; i < node.getChildCount(); i++)
         {
-            // get variable name
-            if (child.getType() != IDENT)
+            if (node.getChild(i).getType() != ON_SET_EXPR_ITEM)
+            {
+                continue;
+            }
+
+            Tree child = node.getChild(i);
+            if (child.getChild(0).getType() != IDENT)
             {
                 throw new IllegalStateException("Expected identifier but received type '" + child.getType() + "'");
             }
-            String variableName = child.getText();
 
-            // get expression
-            child = childNode.getChild(++count);
-            ExprNode childEvalNode = astExprNodeMap.get(child);
-            astExprNodeMap.remove(child);
-
+            String variableName = child.getChild(0).getText();
+            ExprNode childEvalNode = astExprNodeMap.get(child.getChild(1));
+            astExprNodeMap.remove(child.getChild(1));
             assignments.add(new OnTriggerSetAssignment(variableName, childEvalNode));
-            child = childNode.getChild(++count);
         }
-        while (count < childNode.getChildCount());
-
         return assignments;
     }
 

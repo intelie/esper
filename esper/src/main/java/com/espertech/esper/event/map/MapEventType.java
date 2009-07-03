@@ -9,11 +9,9 @@
 package com.espertech.esper.event.map;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.*;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.property.*;
 import com.espertech.esper.util.GraphUtil;
@@ -45,6 +43,8 @@ public class MapEventType implements EventTypeSPI
 
     // Nestable definition of Map contents is here
     private Map<String, Object> nestableTypes;  // Deep definition of the map-type, containing nested maps and objects
+    private Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> propertWriters;
+    private EventPropertyDescriptor[] writablePropertyDescriptors;
 
     private int hashCode;
 
@@ -1378,6 +1378,83 @@ public class MapEventType implements EventTypeSPI
         }
 
         return isDeepEqualsProperties(otherType.getName(), other.nestableTypes, this.nestableTypes);
+    }
+
+    public EventPropertyWriter getWriter(String propertyName)
+    {
+        if (writablePropertyDescriptors == null)
+        {
+            initializeWriters();
+        }
+        Pair<EventPropertyDescriptor, EventPropertyWriter> pair = propertWriters.get(propertyName);
+        if (pair == null)
+        {
+            return null;
+        }
+        return pair.getSecond();
+    }
+
+    public EventPropertyDescriptor getWritableProperty(String propertyName)
+    {
+        if (writablePropertyDescriptors == null)
+        {
+            initializeWriters();
+        }
+        Pair<EventPropertyDescriptor, EventPropertyWriter> pair = propertWriters.get(propertyName);
+        if (pair == null)
+        {
+            return null;
+        }
+        return pair.getFirst();
+    }
+
+    public EventPropertyDescriptor[] getWriteableProperties()
+    {
+        if (writablePropertyDescriptors == null)
+        {
+            initializeWriters();
+        }
+        return writablePropertyDescriptors;
+    }
+
+    private void initializeWriters()
+    {
+        List<EventPropertyDescriptor> writeableProps = new ArrayList<EventPropertyDescriptor>();
+        Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> propertWritersMap = new HashMap<String, Pair<EventPropertyDescriptor, EventPropertyWriter>>();
+        for (EventPropertyDescriptor prop : propertyDescriptors)
+        {
+            if (prop.isFragment() || prop.isIndexed() || prop.isMapped())
+            {
+                continue;
+            }
+            writeableProps.add(prop);
+            final String propertyName = prop.getPropertyName();
+            EventPropertyWriter eventPropertyWriter = new EventPropertyWriter()
+            {
+                public void write(Object value, EventBean target)
+                {
+                    MappedEventBean map = (MappedEventBean) target;
+                    map.getProperties().put(propertyName, value);
+                }
+            };
+
+            propertWritersMap.put(propertyName, new Pair<EventPropertyDescriptor, EventPropertyWriter>(prop, eventPropertyWriter));
+        }
+
+        propertWriters = propertWritersMap;
+        writablePropertyDescriptors = writeableProps.toArray(new EventPropertyDescriptor[writeableProps.size()]);
+    }
+
+    public boolean isCopyable()
+    {
+        return true;
+    }
+
+    public EventBean copy(EventBean event)
+    {
+        MappedEventBean mapped = (MappedEventBean) event;
+        Map<String, Object> props = mapped.getProperties();
+        return eventAdapterService.adaptorForTypedMap(new HashMap<String, Object>(props), this);
     }
 
     /**

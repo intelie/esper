@@ -73,7 +73,7 @@ public class ResourceLoader
             url = classLoader.getResource(stripped);
         }
         if (url == null) {
-            ResourceLoader.class.getResource(resource);
+            url = ResourceLoader.class.getResource(resource);
         }
         if (url == null) {
             url = ResourceLoader.class.getClassLoader().getResource(stripped);

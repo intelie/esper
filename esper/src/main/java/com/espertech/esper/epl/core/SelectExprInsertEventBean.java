@@ -9,10 +9,8 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventBeanManufactureException;
 import com.espertech.esper.event.EventBeanManufacturer;
 import com.espertech.esper.event.WriteablePropertyDescriptor;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.SimpleNumberCoercer;
-import com.espertech.esper.util.SimpleNumberCoercerFactory;
 import com.espertech.esper.util.TypeWidener;
+import com.espertech.esper.util.TypeWidenerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -87,7 +85,7 @@ public class SelectExprInsertEventBean
                     continue;
                 }
 
-                widener = checkAssignment(streamNames[i], streamTypes[i].getUnderlyingType(), desc);
+                widener = TypeWidenerFactory.getCheckPropertyAssignType(streamNames[i], streamTypes[i].getUnderlyingType(), desc.getType(), desc.getPropertyName());
                 selectedWritable = desc;
                 break;
             }
@@ -168,12 +166,12 @@ public class SelectExprInsertEventBean
                 Object columnType = expressionReturnTypes[i];
                 if (columnType == null)
                 {
-                    checkAssignment(columnNames[i], null, desc);
+                    TypeWidenerFactory.getCheckPropertyAssignType(columnNames[i], null, desc.getType(), desc.getPropertyName());
                 }
                 else if (columnType instanceof EventType)
                 {
                     EventType columnEventType = (EventType) columnType;
-                    widener = checkAssignment(columnNames[i], columnEventType.getUnderlyingType(), desc);
+                    widener = TypeWidenerFactory.getCheckPropertyAssignType(columnNames[i], columnEventType.getUnderlyingType(), desc.getType(), desc.getPropertyName());
                     int streamNum = 0;
                     for (int j = 0; j < typeService.getEventTypes().length; j++)
                     {
@@ -207,7 +205,7 @@ public class SelectExprInsertEventBean
                 }
                 else
                 {
-                    widener = checkAssignment(columnNames[i], (Class) columnType, desc);                    
+                    widener = TypeWidenerFactory.getCheckPropertyAssignType(columnNames[i], (Class) columnType, desc.getType(), desc.getPropertyName());
                 }
 
                 selectedWritable = desc;
@@ -249,7 +247,7 @@ public class SelectExprInsertEventBean
                         continue;
                     }
 
-                    widener = checkAssignment(eventPropDescriptor.getPropertyName(), eventPropDescriptor.getPropertyType(), writableDesc);
+                    widener = TypeWidenerFactory.getCheckPropertyAssignType(eventPropDescriptor.getPropertyName(), eventPropDescriptor.getPropertyType(), writableDesc.getType(), writableDesc.getPropertyName());
                     selectedWritable = writableDesc;
 
                     final String propertyName = eventPropDescriptor.getPropertyName();
@@ -296,56 +294,6 @@ public class SelectExprInsertEventBean
         }
     }
 
-    private TypeWidener checkAssignment(String columnName, Class columnType, WriteablePropertyDescriptor desc)
-            throws ExprValidationException
-    {
-        Class columnClassBoxed = JavaClassHelper.getBoxedType(columnType);
-        Class targetClass = desc.getType();
-        Class targetClassBoxed = JavaClassHelper.getBoxedType(desc.getType());
-
-        if (columnType == null)
-        {
-            if (targetClass.isPrimitive())
-            {
-                String message = "Invalid assignment of column '" + columnName +
-                        "' of null type to event property '" + desc.getPropertyName() +
-                        "' typed as '" + desc.getType().getName() +
-                        "', nullable type mismatch";
-                throw new ExprValidationException(message);
-            }
-        }
-        else if (columnClassBoxed != targetClassBoxed)
-        {
-            if (columnClassBoxed == String.class && targetClassBoxed == Character.class)
-            {
-                return new StringToCharCoercer();
-            }
-            else if (!JavaClassHelper.isAssignmentCompatible(columnClassBoxed, targetClassBoxed))
-            {
-                String message = "Invalid assignment of column '" + columnName +
-                        "' of type '" + columnType.getName() +
-                        "' to event property '" + desc.getPropertyName() +
-                        "' typed as '" + desc.getType().getName() +
-                        "', column and parameter types mismatch";
-                throw new ExprValidationException(message);
-            }
-
-            if (!columnType.isPrimitive() && JavaClassHelper.isNumeric(targetClass))
-            {
-                final SimpleNumberCoercer coercer = SimpleNumberCoercerFactory.getCoercer(columnClassBoxed, targetClassBoxed);
-                return new TypeWidener()
-                {
-                    public Object widen(Object input)
-                    {
-                       return coercer.coerceBoxed((Number) input);
-                    }
-                };
-            }
-        }
-
-        return null;
-    }
-
     /**
      * Manufacture an event for events-per-stream.
      * @param eventsPerStream result events
@@ -369,16 +317,4 @@ public class SelectExprInsertEventBean
         return eventManufacturer.make(values);
     }
 
-    private static class StringToCharCoercer implements TypeWidener
-    {
-        public Object widen(Object input)
-        {
-            String result = input.toString();
-            if ((result != null) && (result.length() > 0))
-            {
-                return result.charAt(0);
-            }
-            return null;
-        }
-    }
 }

@@ -155,7 +155,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         propertyGetterCache.put(propertyExpression, getter);
         return getter;
     }
-
+    
     protected FragmentEventType doResolveFragmentType(String property)
     {
         return null;  // Since we have no type information, the fragments are not allowed unless explicitly configured via XPath getter

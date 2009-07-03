@@ -9,10 +9,7 @@
 package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.BaseConfigurableEventType;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.event.ExplicitPropertyDescriptor;
+import com.espertech.esper.event.*;
 import com.espertech.esper.util.ClassInstantiationException;
 import com.espertech.esper.util.JavaClassHelper;
 import org.w3c.dom.Node;
@@ -191,6 +188,31 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
         BaseXMLEventType other = (BaseXMLEventType) otherObj;
         return (configurationEventTypeXMLDOM.equals(other.configurationEventTypeXMLDOM));
     }
+
+    public EventPropertyWriter getWriter(String propertyName)
+    {
+        return null;
+    }
+
+    public EventPropertyDescriptor[] getWriteableProperties()
+    {
+        return new EventPropertyDescriptor[0];
+    }
+
+    public boolean isCopyable()
+    {
+        return false;
+    }
+
+    public EventBean copy(EventBean event)
+    {
+        return null;
+    }
+
+    public EventPropertyDescriptor getWritableProperty(String propertyName)
+    {
+        return null;
+    }    
 
     public int hashCode()
     {

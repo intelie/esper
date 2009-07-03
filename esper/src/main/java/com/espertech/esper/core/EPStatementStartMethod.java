@@ -98,6 +98,10 @@ public class EPStatementStartMethod
 
         if (statementSpec.getOnTriggerDesc() != null)
         {
+            if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_INSERT_INTO_UPD)
+            {
+                return startOnTriggerInsertIntoUpd();
+            }
             return startOnTrigger();
         }
         else if (statementSpec.getCreateWindowDesc() != null)
@@ -123,6 +127,7 @@ public class EPStatementStartMethod
         Viewable eventStreamParentViewable;
         final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
         String triggereventTypeName = null;
+
         if (streamSpec instanceof FilterStreamSpecCompiled)
         {
             FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
@@ -174,27 +179,8 @@ public class EPStatementStartMethod
             throw new ExprValidationException("Unknown stream specification type: " + streamSpec);
         }
 
-        // create stop method using statement stream specs
-        EPStatementStopMethod stopMethod = new EPStatementStopMethod()
-        {
-            public void stop()
-            {
-                statementContext.getStatementStopService().fireStatementStopped();
-
-                if (streamSpec instanceof FilterStreamSpecCompiled)
-                {
-                    FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
-                    services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), false, false);
-                }
-                for (StopCallback stopCallback : stopCallbacks)
-                {
-                    stopCallback.stop();
-                }
-            }
-        };
-
         View onExprView;
-        EventType streamEventType = eventStreamParentViewable.getEventType();
+        final EventType streamEventType = eventStreamParentViewable.getEventType();
 
         ResultSetProcessor resultSetProcessor;
         // For on-delete and on-select triggers
@@ -306,6 +292,25 @@ public class EPStatementStartMethod
             eventStreamParentViewable.addView(onExprView);
         }
 
+        // create stop method using statement stream specs
+        EPStatementStopMethod stopMethod = new EPStatementStopMethod()
+        {
+            public void stop()
+            {
+                statementContext.getStatementStopService().fireStatementStopped();
+
+                if (streamSpec instanceof FilterStreamSpecCompiled)
+                {
+                    FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
+                    services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), false, false);
+                }
+                for (StopCallback stopCallback : stopCallbacks)
+                {
+                    stopCallback.stop();
+                }
+            }
+        };
+
         // For on-delete, create an output processor that passes on as a wildcard the underlying event
         if ((statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_DELETE) ||
             (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SET))
@@ -325,6 +330,74 @@ public class EPStatementStartMethod
 
         log.debug(".start Statement start completed");
 
+        return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
+    }
+
+    private Pair<Viewable, EPStatementStopMethod> startOnTriggerInsertIntoUpd()
+        throws ExprValidationException, ViewProcessingException
+    {
+        final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
+
+        // Create streams
+        final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
+        final OnTriggerInsertIntoUpdDesc desc = (OnTriggerInsertIntoUpdDesc) statementSpec.getOnTriggerDesc();
+        String triggereventTypeName = null;
+
+        if (streamSpec instanceof FilterStreamSpecCompiled)
+        {
+            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
+            triggereventTypeName = filterStreamSpec.getFilterSpec().getFilterForEventTypeName();
+        }
+        else if (streamSpec instanceof PatternStreamSpecCompiled)
+        {
+            // TODO
+        }
+        else if (streamSpec instanceof NamedWindowConsumerStreamSpec)
+        {
+            NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+            triggereventTypeName = namedSpec.getWindowName();
+        }
+        else
+        {
+            throw new ExprValidationException("Unknown stream specification streamEventType: " + streamSpec);
+        }
+
+        final EventType streamEventType = services.getEventAdapterService().getExistsTypeByName(triggereventTypeName);
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, services.getEngineURI());
+
+        for (OnTriggerSetAssignment assignment : desc.getAssignments())
+        {
+            ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+            assignment.setExpression(validated);
+        }
+        if (desc.getOptionalWhereClause() != null)
+        {
+            ExprNode validated = desc.getOptionalWhereClause().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+            desc.setOptionalWhereClause(validated);
+        }
+
+        services.getInternalEventRouter().addPreprocessing(streamEventType, desc, statementSpec.getAnnotations());
+        stopCallbacks.add(new StopCallback()
+        {
+            public void stop()
+            {
+                services.getInternalEventRouter().removePreprocessing(streamEventType, desc);
+            }
+        });
+
+        View onExprView = new InternalRoutePreprocessView(streamEventType);        
+        EPStatementStopMethod stopMethod = new EPStatementStopMethod()
+        {
+            public void stop()
+            {
+                statementContext.getStatementStopService().fireStatementStopped();
+
+                for (StopCallback stopCallback : stopCallbacks)
+                {
+                    stopCallback.stop();
+                }
+            }
+        };
         return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
     }
 

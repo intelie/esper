@@ -3,9 +3,12 @@ package com.espertech.esper.support.core;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.spec.OnTriggerInsertIntoUpdDesc;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.lang.annotation.Annotation;
 
 public class SupportInternalEventRouter implements InternalEventRouter
 {
@@ -24,5 +27,13 @@ public class SupportInternalEventRouter implements InternalEventRouter
     public void reset()
     {
         routed.clear();
+    }
+
+    public void addPreprocessing(EventType eventType, OnTriggerInsertIntoUpdDesc desc, Annotation[] annotations)
+    {
+    }
+
+    public void removePreprocessing(EventType eventType, OnTriggerInsertIntoUpdDesc desc)
+    {
     }
 }

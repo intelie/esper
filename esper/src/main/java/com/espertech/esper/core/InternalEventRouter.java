@@ -9,12 +9,22 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.spec.OnTriggerInsertIntoUpdDesc;
+import com.espertech.esper.epl.expression.ExprValidationException;
+
+import java.lang.annotation.Annotation;
 
 /**
  * Interface for a service that routes events within the engine for further processing.
  */
 public interface InternalEventRouter
 {
+    public void addPreprocessing(EventType eventType, OnTriggerInsertIntoUpdDesc desc, Annotation[] annotations)
+            throws ExprValidationException;
+
+    public void removePreprocessing(EventType eventType, OnTriggerInsertIntoUpdDesc desc);
+    
     /**
      * Route the event such that the event is processed as required.
      * @param event to route

@@ -77,25 +77,29 @@ startEPLExpressionRule
 	;
 
 eplExpressionRule
-	:	(selectExpr | createWindowExpr | createVariableExpr | onExpr)		 
+	:	(selectExpr | createWindowExpr | createVariableExpr | onExpr | updateExpr)		 
 	;
 
 onExpr 
 	:	^(i=ON_EXPR (eventFilterExpr | patternInclusionExpression) IDENT? 
-		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ onSelectInsertOutput?)? | onSetExpr)
+		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ onSelectInsertOutput?)? | onSetExpr) INSERT?
 		{ leaveNode($i); } )
 	;
 	
+updateExpr
+	:	^(u=UPDATE_EXPR IDENT onSetAssignment+ whereClause[false]? { leaveNode($u); })
+	;
+	
 onDeleteExpr
-	:	^(ON_DELETE_EXPR onExprFrom (whereClause)? )
+	:	^(ON_DELETE_EXPR onExprFrom (whereClause[true])? )
 	;	
 
 onSelectExpr
-	:	^(ON_SELECT_EXPR insertIntoExpr? selectionList onExprFrom? whereClause? groupByClause? havingClause? orderByClause?)
+	:	^(ON_SELECT_EXPR insertIntoExpr? selectionList onExprFrom? whereClause[true]? groupByClause? havingClause? orderByClause?)
 	;	
 
 onSelectInsertExpr
-	:	{pushStmtContext();} ^(ON_SELECT_INSERT_EXPR insertIntoExpr selectionList whereClause?)
+	:	{pushStmtContext();} ^(ON_SELECT_INSERT_EXPR insertIntoExpr selectionList whereClause[true]?)
 	;	
 	
 onSelectInsertOutput
@@ -103,11 +107,11 @@ onSelectInsertOutput
 	;
 
 onSetExpr
-	:	^(ON_SET_EXPR onSetAssignment (onSetAssignment)*)
+	:	^(ON_SET_EXPR onSetAssignment (onSetAssignment)* whereClause[false]?)
 	;
 	
 onSetAssignment
-	:	IDENT valueExpr
+	:	^(ON_SET_EXPR_ITEM IDENT valueExpr)
 	;
 
 onExprFrom
@@ -157,7 +161,7 @@ selectExpr
 	:	(insertIntoExpr)?
 		selectClause 
 		fromClause
-		(whereClause)?
+		(whereClause[true])?
 		(groupByClause)?
 		(havingClause)?
 		(outputLimitExpr)?
@@ -244,8 +248,8 @@ viewExpr
 	:	^(n=VIEW_EXPR IDENT IDENT (valueExprWithTime)* { leaveNode($n); } )
 	;
 	
-whereClause
-	:	^(n=WHERE_EXPR valueExpr { leaveNode($n); } )
+whereClause[boolean isLeaveNode]
+	:	^(n=WHERE_EXPR valueExpr { if ($isLeaveNode) leaveNode($n); } )
 	;
 
 groupByClause
@@ -384,7 +388,7 @@ subSelectInQueryExpr
 	;
 	
 subQueryExpr 
-	:	selectionListElement subSelectFilterExpr (whereClause)?
+	:	selectionListElement subSelectFilterExpr (whereClause[true])?
 	;
 	
 subSelectFilterExpr

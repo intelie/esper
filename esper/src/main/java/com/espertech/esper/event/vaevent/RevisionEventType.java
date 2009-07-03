@@ -8,15 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.client.EventPropertyDescriptor;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.client.*;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventPropertyWriter;
 import com.espertech.esper.event.property.*;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -247,5 +245,30 @@ public class RevisionEventType implements EventTypeSPI
     public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
     {
         return propertyDescriptorMap.get(propertyName);
+    }
+
+    public EventPropertyWriter getWriter(String propertyName)
+    {
+        return null;
+    }
+
+    public EventPropertyDescriptor[] getWriteableProperties()
+    {
+        return new EventPropertyDescriptor[0];
+    }
+
+    public boolean isCopyable()
+    {
+        return false;
+    }
+
+    public EventBean copy(EventBean event)
+    {
+        return null;
+    }
+
+    public EventPropertyDescriptor getWritableProperty(String propertyName)
+    {
+        return null;
     }
 }

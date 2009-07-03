@@ -198,4 +198,29 @@ public class AxiomXMLEventType implements EventTypeSPI
     {
         return propertyDescriptorsMap.get(propertyName);
     }
+
+    public EventPropertyWriter getWriter(String propertyName)
+    {
+        return null;
+    }
+
+    public EventPropertyDescriptor[] getWriteableProperties()
+    {
+        return new EventPropertyDescriptor[0];
+    }
+
+    public boolean isCopyable()
+    {
+        return false;
+    }
+
+    public EventBean copy(EventBean event)
+    {
+        return null;
+    }
+
+    public EventPropertyDescriptor getWritableProperty(String propertyName)
+    {
+        return null;
+    }
 }

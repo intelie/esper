@@ -31,5 +31,10 @@ public enum OnTriggerType
     /**
      * For on-set triggers that set variable values when a triggering event arrives.
      */
-    ON_SET
+    ON_SET,
+
+    /**
+     * For on-insert into update triggers that set property values when an event is inserted into a stream.
+     */
+    ON_INSERT_INTO_UPD
 }
