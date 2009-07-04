@@ -953,7 +953,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.isHasVariables(),
                 spec.getRowLimitSpec(),
                 eventTypeReferences,
-                annotations
+                annotations,
+                spec.getUpdateDesc()
                 );
     }
 

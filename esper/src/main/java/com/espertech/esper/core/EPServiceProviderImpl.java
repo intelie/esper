@@ -355,8 +355,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         // New runtime
         EPRuntimeImpl runtime = new EPRuntimeImpl(services);
 
+        InternalEventRouterImpl internalEventRouterImpl = new InternalEventRouterImpl(runtime);
+        runtime.setInternalEventRouterImpl(internalEventRouterImpl);
+        services.setInternalEventRouter(internalEventRouterImpl);
+
         // Configure services to use the new runtime
-        services.setInternalEventRouter(new InternalEventRouterImpl(runtime));
         services.getTimerService().setCallback(runtime);
 
         // Statement lifycycle init

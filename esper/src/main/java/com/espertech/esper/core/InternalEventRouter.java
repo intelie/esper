@@ -10,7 +10,7 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.spec.OnTriggerInsertIntoUpdDesc;
+import com.espertech.esper.epl.spec.UpdateDesc;
 import com.espertech.esper.epl.expression.ExprValidationException;
 
 import java.lang.annotation.Annotation;
@@ -20,10 +20,10 @@ import java.lang.annotation.Annotation;
  */
 public interface InternalEventRouter
 {
-    public void addPreprocessing(EventType eventType, OnTriggerInsertIntoUpdDesc desc, Annotation[] annotations)
+    public void addPreprocessing(EventType eventType, UpdateDesc desc, Annotation[] annotations)
             throws ExprValidationException;
 
-    public void removePreprocessing(EventType eventType, OnTriggerInsertIntoUpdDesc desc);
+    public void removePreprocessing(EventType eventType, UpdateDesc desc);
     
     /**
      * Route the event such that the event is processed as required.

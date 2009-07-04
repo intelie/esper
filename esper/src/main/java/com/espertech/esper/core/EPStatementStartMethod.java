@@ -96,12 +96,12 @@ public class EPStatementStartMethod
     {
         statementContext.getVariableService().setLocalVersion();    // get current version of variables
 
+        if (statementSpec.getUpdateSpec() != null)
+        {
+            return startUpdate();
+        }
         if (statementSpec.getOnTriggerDesc() != null)
         {
-            if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_INSERT_INTO_UPD)
-            {
-                return startOnTriggerInsertIntoUpd();
-            }
             return startOnTrigger();
         }
         else if (statementSpec.getCreateWindowDesc() != null)
@@ -333,14 +333,14 @@ public class EPStatementStartMethod
         return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
     }
 
-    private Pair<Viewable, EPStatementStopMethod> startOnTriggerInsertIntoUpd()
+    private Pair<Viewable, EPStatementStopMethod> startUpdate()
         throws ExprValidationException, ViewProcessingException
     {
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
 
         // Create streams
         final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
-        final OnTriggerInsertIntoUpdDesc desc = (OnTriggerInsertIntoUpdDesc) statementSpec.getOnTriggerDesc();
+        final UpdateDesc desc = statementSpec.getUpdateSpec();
         String triggereventTypeName = null;
 
         if (streamSpec instanceof FilterStreamSpecCompiled)

@@ -22,6 +22,7 @@ import java.io.Serializable;
 public class StatementSpecRaw implements MetaDefItem, Serializable
 {
     private OnTriggerDesc onTriggerDesc;
+    private UpdateDesc updateDesc;
     private CreateWindowDesc createWindowDesc;
     private CreateVariableDesc createVariableDesc;
     private InsertIntoDesc insertIntoDesc;
@@ -334,5 +335,15 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     public void setAnnotations(List<AnnotationDesc> annotations)
     {
         this.annotations = annotations;
+    }
+
+    public void setUpdateDesc(UpdateDesc updateDesc)
+    {
+        this.updateDesc = updateDesc;
+    }
+
+    public UpdateDesc getUpdateDesc()
+    {
+        return updateDesc;
     }
 }

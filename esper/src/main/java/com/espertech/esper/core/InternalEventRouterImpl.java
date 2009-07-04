@@ -5,7 +5,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.annotation.Priority;
 import com.espertech.esper.client.annotation.Drop;
-import com.espertech.esper.epl.spec.OnTriggerInsertIntoUpdDesc;
+import com.espertech.esper.epl.spec.UpdateDesc;
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
@@ -14,6 +14,7 @@ import com.espertech.esper.util.TypeWidenerFactory;
 import com.espertech.esper.util.TypeWidener;
 import com.espertech.esper.event.EventPropertyWriter;
 import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,13 +29,23 @@ public class InternalEventRouterImpl implements InternalEventRouter
     private final EPRuntimeImpl runtime;
     private boolean hasPreprocessing = false;
     private final ConcurrentHashMap<EventType, NullableObject<InternalEventRouterPreprocessor>> preprocessors;
-    private final Map<OnTriggerInsertIntoUpdDesc, IRDescEntry> descriptors;
+    private final Map<UpdateDesc, IRDescEntry> descriptors;
 
     public InternalEventRouterImpl(EPRuntimeImpl runtime)
     {
         this.runtime = runtime;
         this.preprocessors = new ConcurrentHashMap<EventType, NullableObject<InternalEventRouterPreprocessor>>();
-        this.descriptors = new HashMap<OnTriggerInsertIntoUpdDesc, IRDescEntry>();
+        this.descriptors = new HashMap<UpdateDesc, IRDescEntry>();
+    }
+
+    public boolean isHasPreprocessing()
+    {
+        return hasPreprocessing;
+    }
+
+    public EventBean preprocess(EventBean eventBean)
+    {
+        return getPreprocessedEvent(eventBean);
     }
 
     public void route(EventBean event, EPStatementHandle statementHandle)
@@ -45,47 +56,14 @@ public class InternalEventRouterImpl implements InternalEventRouter
             return;
         }
 
-        NullableObject<InternalEventRouterPreprocessor> processor = preprocessors.get(event.getEventType());
-        if (processor == null)
+        EventBean preprocessed = getPreprocessedEvent(event);
+        if (preprocessed != null)
         {
-            synchronized (this)
-            {
-                processor = initialize(event.getEventType());
-                preprocessors.put(event.getEventType(), processor);
-
-                if (processor.getObject() == null)
-                {
-                    runtime.route(event, statementHandle);
-                }
-                else
-                {
-                    EventBean processed = processor.getObject().process(event);
-                    if (processed == null)
-                    {
-                        return;
-                    }
-                    runtime.route(processed, statementHandle);
-                }
-            }
-            return;
-        }
-
-        if (processor.getObject() == null)
-        {
-            runtime.route(event, statementHandle);
-        }
-        else
-        {
-            EventBean processed = processor.getObject().process(event);
-            if (processed == null)
-            {
-                return;
-            }
-            runtime.route(processed, statementHandle);
+            runtime.route(preprocessed, statementHandle);
         }
     }
 
-    public void addPreprocessing(EventType eventType, OnTriggerInsertIntoUpdDesc desc, Annotation[] annotations)
+    public void addPreprocessing(EventType eventType, UpdateDesc desc, Annotation[] annotations)
             throws ExprValidationException
     {
         if (log.isInfoEnabled())
@@ -122,7 +100,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
         hasPreprocessing = true;
     }
 
-    public void removePreprocessing(EventType eventType, OnTriggerInsertIntoUpdDesc desc)
+    public void removePreprocessing(EventType eventType, UpdateDesc desc)
     {
         if (log.isInfoEnabled())
         {
@@ -137,6 +115,28 @@ public class InternalEventRouterImpl implements InternalEventRouter
         {
             hasPreprocessing = false;
             preprocessors.clear();
+        }
+    }
+
+    private EventBean getPreprocessedEvent(EventBean event)
+    {
+        NullableObject<InternalEventRouterPreprocessor> processor = preprocessors.get(event.getEventType());
+        if (processor == null)
+        {
+            synchronized (this)
+            {
+                processor = initialize(event.getEventType());
+                preprocessors.put(event.getEventType(), processor);
+            }
+        }
+
+        if (processor.getObject() == null)
+        {
+            return event;
+        }
+        else
+        {
+            return processor.getObject().process(event);
         }
     }
 
@@ -165,7 +165,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
         List<InternalEventRouterEntry> desc = new ArrayList<InternalEventRouterEntry>();
 
         // determine which ones to process for this types, and what priority and drop
-        for (Map.Entry<OnTriggerInsertIntoUpdDesc, IRDescEntry> entry : descriptors.entrySet())
+        for (Map.Entry<UpdateDesc, IRDescEntry> entry : descriptors.entrySet())
         {
             boolean applicable = entry.getValue().getEventType() == eventType;
             if (!applicable)

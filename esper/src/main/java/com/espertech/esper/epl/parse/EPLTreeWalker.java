@@ -661,7 +661,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        statementSpec.setOnTriggerDesc(new OnTriggerInsertIntoUpdDesc(assignments, whereClause));
+        statementSpec.setUpdateDesc(new UpdateDesc(assignments, whereClause));
     }
 
     /**

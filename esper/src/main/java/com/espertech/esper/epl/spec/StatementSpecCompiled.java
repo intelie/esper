@@ -40,6 +40,7 @@ public class StatementSpecCompiled
     private final RowLimitSpec rowLimitSpec;
     private final Set<String> eventTypeReferences;
     private final Annotation[] annotations;
+    private final UpdateDesc updateSpec;
 
     /**
      * Ctor.
@@ -79,7 +80,8 @@ public class StatementSpecCompiled
                                  boolean hasVariables,
                                  RowLimitSpec rowLimitSpec,
                                  Set<String> eventTypeReferences,
-                                 Annotation[] annotations)
+                                 Annotation[] annotations,
+                                 UpdateDesc updateSpec)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -99,6 +101,7 @@ public class StatementSpecCompiled
         this.rowLimitSpec = rowLimitSpec;
         this.eventTypeReferences = eventTypeReferences;
         this.annotations = annotations;
+        this.updateSpec = updateSpec;
     }
 
     /**
@@ -124,6 +127,7 @@ public class StatementSpecCompiled
         rowLimitSpec = null;
         eventTypeReferences = new HashSet<String>();
         annotations = new Annotation[0];
+        updateSpec = null;
     }
 
     /**
@@ -320,5 +324,10 @@ public class StatementSpecCompiled
     public void setSelectClauseSpec(SelectClauseSpecCompiled selectClauseSpec)
     {
         this.selectClauseSpec = selectClauseSpec;
+    }
+
+    public UpdateDesc getUpdateSpec()
+    {
+        return updateSpec;
     }
 }

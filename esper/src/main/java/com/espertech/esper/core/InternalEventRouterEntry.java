@@ -1,20 +1,8 @@
 package com.espertech.esper.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.annotation.Priority;
-import com.espertech.esper.client.annotation.Drop;
-import com.espertech.esper.util.NullableObject;
 import com.espertech.esper.util.TypeWidener;
-import com.espertech.esper.epl.spec.OnTriggerInsertIntoUpdDesc;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventPropertyWriter;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.*;
-import java.lang.annotation.Annotation;
 
 public class InternalEventRouterEntry 
 {

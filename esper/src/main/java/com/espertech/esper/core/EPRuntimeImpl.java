@@ -55,6 +55,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     private EventRenderer eventRenderer;
     private ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal;
     private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
+    private InternalEventRouterImpl internalEventRouterImpl;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
     {
@@ -140,6 +141,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             };
 
         services.getThreadingService().initThreading(services, this);
+    }
+
+    public void setInternalEventRouterImpl(InternalEventRouterImpl internalEventRouterImpl)
+    {
+        this.internalEventRouterImpl = internalEventRouterImpl;
     }
 
     public long getRoutedInternal()
@@ -343,6 +349,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
     public void processWrappedEvent(EventBean eventBean)
     {
+        if (internalEventRouterImpl.isHasPreprocessing())
+        {
+            eventBean = internalEventRouterImpl.preprocess(eventBean);
+        }
+
         // Acquire main processing lock which locks out statement management
         services.getEventProcessingRWLock().acquireReadLock();
         try

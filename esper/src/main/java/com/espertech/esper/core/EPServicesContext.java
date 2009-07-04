@@ -67,7 +67,7 @@ public final class EPServicesContext
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
-    private InternalEventRouter internalEventRouter;
+    private InternalEventRouterImpl internalEventRouter;
 
     /**
      * Constructor - sets up new set of services.
@@ -168,7 +168,7 @@ public final class EPServicesContext
      * Returns router for internal event processing.
      * @return router for internal event processing
      */
-    public InternalEventRouter getInternalEventRouter()
+    public InternalEventRouterImpl getInternalEventRouter()
     {
         return internalEventRouter;
     }
@@ -177,7 +177,7 @@ public final class EPServicesContext
      * Set the router for internal event processing.
      * @param internalEventRouter router to use
      */
-    public void setInternalEventRouter(InternalEventRouter internalEventRouter)
+    public void setInternalEventRouter(InternalEventRouterImpl internalEventRouter)
     {
         this.internalEventRouter = internalEventRouter;
     }

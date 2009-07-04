@@ -1,6 +1,6 @@
 package com.espertech.esper.support.bean;
 
-public class SupportBeanErrorTestingOne
+public class SupportBeanErrorTestingOne     // don't make serializable
 {
     public SupportBeanErrorTestingOne()
     {

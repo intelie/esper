@@ -2,6 +2,7 @@ package com.espertech.esper.regression.epl;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBeanReadOnly;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -16,6 +17,14 @@ public class TestUpdate extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
+    // TODO: java class cannot be copied (serializable), copy exception
+    // TODO: invalid aggregation,subquery,prev
+    // TODO: SODA
+    // TODO: subquery support
+    // TODO: copy via default ctor and factory method
+    // TODO: solidify error handling
+    // TODO: review overlap with bean manufacturer
+    // TODO: test sender and update-on-send and listener route
 
     public void setUp()
     {
@@ -34,9 +43,11 @@ public class TestUpdate extends TestCase
         type.put("p2", long.class);
         epService.getEPAdministrator().getConfiguration().addEventType("MyMapType", type);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanReadOnly", SupportBeanReadOnly.class);
 
         epService.getEPAdministrator().createEPL("insert into SupportBeanStream select * from SupportBean");
         epService.getEPAdministrator().createEPL("insert into SupportBeanStreamTwo select * from pattern[a=SupportBean -> b=SupportBean]");
+        epService.getEPAdministrator().createEPL("insert into SupportBeanStreamRO select * from SupportBeanReadOnly");
 
         tryInvalid("update SupportBeanStream set intPrimitive=longPrimitive",
                    "Error starting statement: Invalid assignment of column 'longPrimitive' of type 'long' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [update SupportBeanStream set intPrimitive=longPrimitive]");
@@ -46,9 +57,9 @@ public class TestUpdate extends TestCase
                    "Error starting statement: Invalid assignment of column 'null' of null type to event property 'intPrimitive' typed as 'int', nullable type mismatch [update SupportBeanStream set intPrimitive=null]");
         tryInvalid("update SupportBeanStreamTwo set a.intPrimitive=10",
                    "Incorrect syntax near '.' expecting an equals '=' but found a dot '.' at line 1 column 33 [update SupportBeanStreamTwo set a.intPrimitive=10]");
+        tryInvalid("update SupportBeanStreamRO set side='a'",
+                   "Error starting statement: Property 'side' is not available for write access [update SupportBeanStreamRO set side='a']");
         /*
-        tryInvalid("update SupportBeanStream set intPrimitive=null",
-                   "");
         tryInvalid("update SupportBeanStream set intPrimitive=null",
                    "");
         tryInvalid("update SupportBeanStream set intPrimitive=null",

@@ -9,26 +9,27 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.io.Serializable;
 
 /**
- * Specification for the on-insert into update statement.
+ * Specification for the update statement.
  */
-public class OnTriggerInsertIntoUpdDesc extends OnTriggerDesc
+public class UpdateDesc implements MetaDefItem, Serializable
 {
     private final List<OnTriggerSetAssignment> assignments;
     private ExprNode optionalWhereClause;
 
-    public OnTriggerInsertIntoUpdDesc(List<OnTriggerSetAssignment> assignments, ExprNode optionalWhereClause) {
-        super(OnTriggerType.ON_INSERT_INTO_UPD);
+    public UpdateDesc(List<OnTriggerSetAssignment> assignments, ExprNode optionalWhereClause) {
         this.assignments = assignments;
         this.optionalWhereClause = optionalWhereClause;
     }
 
     /**
-     * Returns a list of all variables assignment by the on-set
+     * Returns a list of all assignment
      * @return list of assignments
      */
     public List<OnTriggerSetAssignment> getAssignments()

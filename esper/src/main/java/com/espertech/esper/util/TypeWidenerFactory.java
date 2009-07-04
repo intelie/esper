@@ -35,7 +35,7 @@ public class TypeWidenerFactory
                 String message = "Invalid assignment of column '" + columnName +
                         "' of type '" + columnType.getName() +
                         "' to event property '" + writeablePropertyName +
-                        "' typed as '" + writeablePropertyType +
+                        "' typed as '" + writeablePropertyType.getName() +
                         "', column and parameter types mismatch";
                 throw new ExprValidationException(message);
             }
