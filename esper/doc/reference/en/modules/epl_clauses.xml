@@ -5,7 +5,15 @@
         <title>EPL Introduction</title>
 
         <para>
-			The Event Processing Language (EPL) is a SQL-like language with <literal>SELECT</literal>, <literal>FROM</literal>, <literal>WHERE</literal>, <literal>GROUP BY</literal>, <literal>HAVING</literal> and <literal>ORDER BY</literal> clauses. Streams replace tables as the source of data with events replacing rows as the basic unit of data. Since events are composed of data, the SQL concepts of correlation through joins, filtering and aggregation through grouping can be effectively leveraged. The <literal>INSERT INTO</literal> clause is recast as a means of forwarding events to other streams for further downstream processing. External data accessible through JDBC may be queried and joined with the stream data. Additional clauses such as the <literal>PATTERN</literal> and <literal>OUTPUT</literal> clauses are also available to provide the missing SQL language constructs specific to event processing.
+			The Event Processing Language (EPL) is a SQL-like language with <literal>SELECT</literal>, <literal>FROM</literal>, <literal>WHERE</literal>, <literal>GROUP BY</literal>, <literal>HAVING</literal> and <literal>ORDER BY</literal> clauses. Streams replace tables as the source of data with events replacing rows as the basic unit of data. Since events are composed of data, the SQL concepts of correlation through joins, filtering and aggregation through grouping can be effectively leveraged.
+        </para>
+
+        <para>
+			The <literal>INSERT INTO</literal> clause is recast as a means of forwarding events to other streams for further downstream processing. External data accessible through JDBC may be queried and joined with the stream data. Additional clauses such as the <literal>PATTERN</literal> and <literal>OUTPUT</literal> clauses are also available to provide the missing SQL language constructs specific to event processing.
+        </para>
+
+        <para>
+			The purpose of the <literal>UPDATE</literal> clause is to update event properties. Update takes place before an event applies to any selecting statements or pattern statements.
         </para>
 
         <para>
@@ -4483,6 +4491,133 @@ from MediaOrder[books.book] as book unidirectional,
 where productId = bookId]]></programlisting>
 
 		</sect2>
+	</sect1>
+	
+	<sect1 id="epl-update">
+	   <title>Updating Event Properties: the Update Clause</title>
+	   
+		<para>
+			The <literal>update</literal> statement declarative modification of event properties of events entering a stream. Update is a pre-processing step to each new event, modifying an event before the event applies to any statements.
+		</para>
 
+		<para>
+			The synopsis of <literal>update</literal> is as follows:
+		</para>
+
+		<synopsis>update <emphasis>event_type</emphasis>
+  set <emphasis>property_name</emphasis> = <emphasis>set_expression</emphasis> [, <emphasis>property_name</emphasis> = <emphasis>set_expression</emphasis>]
+  [where <emphasis>where_expression</emphasis>]
+</synopsis>
+
+		<para>
+			The <emphasis>event_type</emphasis> is the name of the type of events that the <literal>update</literal> applies to.
+			Following the <literal>set</literal> keyword is a comma-separated list of property names and expressions that provide the event properties to change and values to set.
+		</para>
+
+		<para>
+			The optional <literal>where</literal> clause and expression can be used to filter out events to which to apply updates.
+		</para>
+		
+		<para>
+			As an example, the below statement assumes an <literal>AlertEvent</literal> event type that has properties named <literal>severity</literal> and <literal>reason</literal>:
+		</para>
+		
+		<programlisting><![CDATA[update AlertEvent 
+  set severity = 'High'
+  where severity = 'Medium' and reason like '%withdrawal limit%']]></programlisting>
+
+		<para>
+			The statement above changes the value of the <literal>severity</literal> property to "High" for <literal>AlertEvent</literal> events that have a medium severity and contain a specific reason text.
+		</para>
+
+		<para>
+			Update statements apply the changes to event properties before other statements receive the event(s) for processing, e.g. "<literal>select * from AlertEvent</literal>" receives the updated <literal>AlertEvent</literal>. This is true regardless of the order in which your application creates statements.
+		</para>
+
+		<para>
+			The <literal>update</literal> clause can be used on streams populated via <literal>insert into</literal>, as this example utilizing a pattern demonstrates:
+		</para>		
+		<programlisting><![CDATA[insert into DoubleWithdrawalStream 
+select a.id, b.id, a.account, 0 as minimum 
+from pattern [a=Withdrawal -> b=Withdrawal(id = a.id)]
+
+update DoubleWithdrawalStream set minimum = 1000 where account in (10002, 10003)]]></programlisting>
+
+		<para>
+			When using <literal>update</literal> with named windows, any changes to event properties apply before an event enters the named window.
+		</para>
+
+		<para>
+			Consider the next example (shown here with statement names in @Name EPL annotation):
+		</para>		
+		<programlisting><![CDATA[@Name('CreateWindow) create window MyWindow.win:time(30 sec) as AlertEvent
+
+@Name('UpdateStream) update MyWindow set severity = 'Low' where reason = '%out of paper%'
+
+@Name('InsertWindow) insert into MyWindow select * from AlertEvent
+
+@Name('SelectWindow) select * from MyWindow]]></programlisting>
+
+		<para>
+			The <literal>UpdateWindow</literal> statement specifies an <literal>update</literal> clause that applies to all events entering the named window. Note that <literal>update</literal> does not apply to events already in the named window at the time an application creates the <literal>UpdateWindow</literal> statement, it only applies to new events entering the named window (after an application created the <literal>update</literal> statement).
+		</para>
+
+		<para>
+			Therefore, in the above example listeners to the <literal>SelectWindow</literal> statement as well as the <literal>CreateWindow</literal> statement receive the updated event, 
+			while listeners to the <literal>InsertWindow</literal> statement receive the original event (and not the updated event).
+		</para>
+
+		<para>
+			Listeners to an <literal>update</literal> statement receive no events, and iterating an <literal>update</literal> statement also returns no events.
+		</para>
+		
+		<para>
+			When using <literal>update</literal>, please note these limitations:
+		</para>
+		
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Expressions may not use aggregation functions.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The <literal>prev</literal> and <literal>prior</literal> functions may not be used.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					For underlying event representations that are Java objects, a event object class must implement the <literal>java.io.Serializable</literal> interface as discussed below.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					When using an XML underlying event type, event properties in the XML document representation are not available for update.
+				</para>
+			</listitem>
+		</orderedlist>
+		
+		<sect2 id="epl-update-object" revision="1">
+			<title>Immutability and Updates</title>
+	
+			<para>
+				When updating event objects the engine maintains consistency across statements. The engine ensures that an update to an event does not impact the results of statements that look for or retain the original un-updated event. 
+				As a result the engine may need to copy an event object to maintain consistency.
+			</para>
+
+			<para>
+				In the case your application utilizes Java objects as the underlying event representation and an <literal>update</literal> statement updates properties on an object, then in order to maintain consistency across statements 
+				it is necessary for the engine to copy the object before changing properties (and thus not change the original object). 
+			</para>.
+
+			<para>
+				For Java application objects, the copy operation is implemented by serialization. Your event object must therefore implement the <literal>java.io.Serializable</literal> interface to become eligible for update.
+			</para>
+			
+			<para>
+				Esper also provides a feature name revision event type. The revision event type is useful when there are two or more event types: full events that carry all the information, and delta events that provide only a partial update to the full events, and the full events and delta events are associated with each other via primary key(s).
+			</para>
+		</sect2>
 	</sect1>
 </chapter>

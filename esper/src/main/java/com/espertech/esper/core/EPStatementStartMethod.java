@@ -348,10 +348,6 @@ public class EPStatementStartMethod
             FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
             triggereventTypeName = filterStreamSpec.getFilterSpec().getFilterForEventTypeName();
         }
-        else if (streamSpec instanceof PatternStreamSpecCompiled)
-        {
-            // TODO
-        }
         else if (streamSpec instanceof NamedWindowConsumerStreamSpec)
         {
             NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
@@ -369,11 +365,13 @@ public class EPStatementStartMethod
         {
             ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
             assignment.setExpression(validated);
+            validateNoAggregations(validated, "Aggregation functions may not be used within an update-clause");
         }
         if (desc.getOptionalWhereClause() != null)
         {
             ExprNode validated = desc.getOptionalWhereClause().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
             desc.setOptionalWhereClause(validated);
+            validateNoAggregations(validated, "Aggregation functions may not be used within an update-clause");
         }
 
         services.getInternalEventRouter().addPreprocessing(streamEventType, desc, statementSpec.getAnnotations());

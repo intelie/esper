@@ -68,7 +68,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
     {
         if (log.isInfoEnabled())
         {
-            log.info("Adding route preprocessing for type '" + eventType.getName());
+            log.info("Adding route preprocessing for type '" + eventType.getName() + "'");
         }
 
         if (!(eventType instanceof EventTypeSPI))

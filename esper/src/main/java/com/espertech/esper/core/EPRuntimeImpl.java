@@ -279,6 +279,14 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
         // Process event
         EventBean event = services.getEventAdapterService().adapterForMap(map, eventTypeName);
+        if (internalEventRouterImpl.isHasPreprocessing())
+        {
+            event = internalEventRouterImpl.preprocess(event);
+            if (event == null)
+            {
+                return;
+            }
+        }
         ThreadWorkQueue.add(event);
     }
 
@@ -301,6 +309,17 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     public void route(Object event)
     {
         routedExternal.incrementAndGet();
+
+        if (internalEventRouterImpl.isHasPreprocessing())
+        {
+            EventBean eventBean = services.getEventAdapterService().adapterForBean(event);
+            event = internalEventRouterImpl.preprocess(eventBean);
+            if (event == null)
+            {
+                return;
+            }
+        }
+                
         ThreadWorkQueue.add(event);
     }
 
@@ -352,6 +371,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         if (internalEventRouterImpl.isHasPreprocessing())
         {
             eventBean = internalEventRouterImpl.preprocess(eventBean);
+            if (eventBean == null)
+            {
+                return;
+            }
         }
 
         // Acquire main processing lock which locks out statement management

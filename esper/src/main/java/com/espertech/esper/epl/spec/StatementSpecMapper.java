@@ -28,6 +28,7 @@ import com.espertech.esper.type.RelationalOpEnum;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * Helper for mapping internal representations of a statement to the SODA object model for statements.
@@ -57,6 +58,7 @@ public class StatementSpecMapper
     private static StatementSpecRaw map(EPStatementObjectModel sodaStatement, StatementSpecMapContext mapContext)
     {
         StatementSpecRaw raw = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+        mapUpdateClause(sodaStatement.getUpdateClause(), raw, mapContext);
         mapCreateWindow(sodaStatement.getCreateWindow(), raw, mapContext);
         mapCreateVariable(sodaStatement.getCreateVariable(), raw, mapContext);
         mapOnTrigger(sodaStatement.getOnExpr(), raw, mapContext);
@@ -85,6 +87,7 @@ public class StatementSpecMapper
         EPStatementObjectModel model = new EPStatementObjectModel();
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model, unmapContext);
         unmapCreateVariable(statementSpec.getCreateVariableDesc(), model, unmapContext);
+        unmapUpdateClause(statementSpec.getStreamSpecs().get(0), statementSpec.getUpdateDesc(), model, unmapContext);
         unmapOnClause(statementSpec.getOnTriggerDesc(), model, unmapContext);
         InsertIntoClause insertIntoClause = unmapInsertInto(statementSpec.getInsertIntoDesc());
         model.setInsertInto(insertIntoClause);
@@ -145,6 +148,24 @@ public class StatementSpecMapper
             }
             model.setOnExpr(clause);
         }
+    }
+
+    private static void unmapUpdateClause(StreamSpecRaw desc, UpdateDesc updateDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    {
+        String type = ((FilterStreamSpecRaw) desc).getRawFilterSpec().getEventTypeName();
+        UpdateClause clause = new UpdateClause(type);
+        for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())
+        {
+            Expression expr = unmapExpressionDeep(assignment.getExpression(), unmapContext);
+            clause.addAssignment(assignment.getVariableName(), expr);
+        }
+        model.setUpdateClause(clause);
+
+        if (updateDesc.getOptionalWhereClause() != null)
+        {
+            Expression expr = unmapExpressionDeep(updateDesc.getOptionalWhereClause(), unmapContext);
+            model.getUpdateClause().setOptionalWhereClause(expr);
+        }        
     }
 
     private static void unmapCreateWindow(CreateWindowDesc createWindowDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -639,6 +660,29 @@ public class StatementSpecMapper
             insertFromWhereExpr = mapExpressionDeep(createWindow.getInsertWhereClause(), mapContext);
         }
         raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews(), mapContext), new StreamSpecOptions(), createWindow.isInsert(), insertFromWhereExpr));
+    }
+
+    private static void mapUpdateClause(UpdateClause updateClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    {
+        if (updateClause == null)
+        {
+            return;
+        }
+        List<OnTriggerSetAssignment> assignments = new ArrayList<OnTriggerSetAssignment>();
+        for (Pair<String, Expression> pair : updateClause.getAssignments())
+        {
+            ExprNode expr = mapExpressionDeep(pair.getSecond(), mapContext);
+            assignments.add(new OnTriggerSetAssignment(pair.getFirst(), expr));
+        }
+        ExprNode whereClause = null;
+        if (updateClause.getOptionalWhereClause() != null)
+        {
+            whereClause = mapExpressionDeep(updateClause.getOptionalWhereClause(), mapContext);
+        }
+        UpdateDesc desc = new UpdateDesc(assignments, whereClause);
+        raw.setUpdateDesc(desc);
+        FilterSpecRaw filterSpecRaw = new FilterSpecRaw(updateClause.getEventType(), Collections.EMPTY_LIST, null);
+        raw.getStreamSpecs().add(new FilterStreamSpecRaw(filterSpecRaw, Collections.EMPTY_LIST, null, new StreamSpecOptions()));
     }
 
     private static void mapCreateVariable(CreateVariableClause createVariable, StatementSpecRaw raw, StatementSpecMapContext mapContext)

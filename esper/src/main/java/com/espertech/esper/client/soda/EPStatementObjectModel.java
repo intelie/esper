@@ -45,6 +45,7 @@ public class EPStatementObjectModel implements Serializable
 {
     private static final long serialVersionUID = 0L;
 
+    private UpdateClause updateClause;
     private CreateVariableClause createVariable;
     private CreateWindowClause createWindow;
     private OnClause onExpr;
@@ -259,7 +260,11 @@ public class EPStatementObjectModel implements Serializable
         }
 
         boolean displayWhereClause = true;
-        if (onExpr != null)
+        if (updateClause != null)
+        {
+            updateClause.toEPL(writer);
+        }
+        else if (onExpr != null)
         {
             writer.write("on ");
             fromClause.getStreams().get(0).toEPL(writer);
@@ -428,5 +433,15 @@ public class EPStatementObjectModel implements Serializable
     public void setRowLimitClause(RowLimitClause rowLimitClause)
     {
         this.rowLimitClause = rowLimitClause;
+    }
+
+    public UpdateClause getUpdateClause()
+    {
+        return updateClause;
+    }
+
+    public void setUpdateClause(UpdateClause updateClause)
+    {
+        this.updateClause = updateClause;
     }
 }
