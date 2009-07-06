@@ -928,6 +928,17 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             spec.getFilterRootNode().accept(visitor);
         }
+        if (spec.getUpdateDesc() != null)
+        {
+            if (spec.getUpdateDesc().getOptionalWhereClause() != null)
+            {
+                spec.getUpdateDesc().getOptionalWhereClause().accept(visitor);
+            }
+            for (OnTriggerSetAssignment assignment : spec.getUpdateDesc().getAssignments())
+            {
+                assignment.getExpression().accept(visitor);
+            }
+        }
         for (ExprSubselectNode subselect : visitor.getSubselects())
         {
             StatementSpecRaw raw = subselect.getStatementSpecRaw();

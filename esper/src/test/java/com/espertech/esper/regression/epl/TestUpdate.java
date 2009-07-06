@@ -27,9 +27,9 @@ public class TestUpdate extends TestCase
     private SupportUpdateListener listener;
 
     // TODO: test new EventTypeSPI methods
-    // TODO: retest with EHA
-    // TODO: generate docs, release
     // TODO: subquery support
+    // TODO: more EHA tests
+    // TODO: type not found test
 
     public void setUp()
     {
@@ -498,6 +498,24 @@ public class TestUpdate extends TestCase
 
         epService.getEPRuntime().sendEvent(new SupportBeanCopyMethod("1", "2"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "valOne,valTwo".split(","), new Object[] {"x", "y"});
+    }
+
+    public void testSubquery()
+    {
+        Map<String, Object> type = new HashMap<String, Object>();
+        type.put("s0", String.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyMapTypeSelect", type);
+
+        type = new HashMap<String, Object>();
+        type.put("w0", String.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyMapTypeWhere", type);
+
+        epService.getEPAdministrator().createEPL("insert into ABCStream select * from SupportBean");
+        epService.getEPAdministrator().createEPL("update ABCStream set string = (select s0 from MyMapTypeSelect.std:lastevent()) where intPrimitive in (select w0 from MyMapTypeWhere.win:keepall())");
+        epService.getEPAdministrator().createEPL("select * from ABCStream").addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
+        assertFalse(listener.isInvoked());
     }
 
     private Map<String, Object> makeMap(String prop1, Object val1, String prop2, Object val2, String prop3, Object val3)

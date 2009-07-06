@@ -338,10 +338,12 @@ public class EPStatementStartMethod
     {
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
 
-        // Create streams
+        // First we create streams for subselects, if there are any
+        SubSelectStreamCollection subSelectStreamDesc = createSubSelectStreams(false);
+
         final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
         final UpdateDesc desc = statementSpec.getUpdateSpec();
-        String triggereventTypeName = null;
+        String triggereventTypeName;
 
         if (streamSpec instanceof FilterStreamSpecCompiled)
         {
@@ -373,6 +375,9 @@ public class EPStatementStartMethod
             desc.setOptionalWhereClause(validated);
             validateNoAggregations(validated, "Aggregation functions may not be used within an update-clause");
         }
+
+        // Materialize sub-select views
+        startSubSelect(subSelectStreamDesc, new String[]{triggereventTypeName}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks);
 
         services.getInternalEventRouter().addPreprocessing(streamEventType, desc, statementSpec.getAnnotations());
         stopCallbacks.add(new StopCallback()

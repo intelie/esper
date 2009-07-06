@@ -4550,21 +4550,21 @@ update DoubleWithdrawalStream set minimum = 1000 where account in (10002, 10003)
 		<para>
 			Consider the next example (shown here with statement names in @Name EPL annotation):
 		</para>		
-		<programlisting><![CDATA[@Name('CreateWindow) create window MyWindow.win:time(30 sec) as AlertEvent
+		<programlisting><![CDATA[@Name("CreateWindow") create window MyWindow.win:time(30 sec) as AlertEvent
 
-@Name('UpdateStream) update MyWindow set severity = 'Low' where reason = '%out of paper%'
+@Name("UpdateStream") update MyWindow set severity = 'Low' where reason = '%out of paper%'
 
-@Name('InsertWindow) insert into MyWindow select * from AlertEvent
+@Name("InsertWindow") insert into MyWindow select * from AlertEvent
 
-@Name('SelectWindow) select * from MyWindow]]></programlisting>
+@Name("SelectWindow") select * from MyWindow]]></programlisting>
 
 		<para>
-			The <literal>UpdateWindow</literal> statement specifies an <literal>update</literal> clause that applies to all events entering the named window. Note that <literal>update</literal> does not apply to events already in the named window at the time an application creates the <literal>UpdateWindow</literal> statement, it only applies to new events entering the named window (after an application created the <literal>update</literal> statement).
+			The <literal>UpdateStream</literal> statement specifies an <literal>update</literal> clause that applies to all events entering the named window. Note that <literal>update</literal> does not apply to events already in the named window at the time an application creates the <literal>UpdateStream</literal> statement, it only applies to new events entering the named window (after an application created the <literal>update</literal> statement).
 		</para>
 
 		<para>
 			Therefore, in the above example listeners to the <literal>SelectWindow</literal> statement as well as the <literal>CreateWindow</literal> statement receive the updated event, 
-			while listeners to the <literal>InsertWindow</literal> statement receive the original event (and not the updated event).
+			while listeners to the <literal>InsertWindow</literal> statement receive the original <literal>AlertEvent</literal> event (and not the updated event).
 		</para>
 
 		<para>
