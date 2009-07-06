@@ -338,6 +338,25 @@ config.addEventType("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyD
 
 			</sect3>
 
+			<sect3 id="config-java-factory-copy-method" revision="1">
+				<title>Factory and Copy Method</title>
+				
+				<para>
+					The <literal>insert into</literal> clause and directly instantiate and populate your event object. By default the engine invokes the default constructor to instantiate an event object. To change this behavior, you may configure
+					a factory method. The factory method is a method name or a class name plus a method name (in the format class.method) that returns an instance of the class.
+				</para>
+								
+				<para>
+					The <literal>update</literal> clause can change event properties on an event object. For the purpose of maintaining consistency, the engine may have to copy your event object via serialization (implement the <literal>java.io.Serializable</literal> interface). If instead you do not want any copy operations to occur, or your application needs to control the copy operation, you may configure a copy method. The copy method is the name of a method on the event object that copies the event object.
+				</para>
+				<para>
+					The sample below shows this option in XML configuration, however the setting can also be changed via API:
+				</para>
+				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass"
+  factory-method="com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent" copy-method="myCopyMethod"> 
+</event-type>]]></programlisting>
+			</sect3>
+
 		</sect2>
 			
 		<sect2 id="config-java-util-map" revision="1">

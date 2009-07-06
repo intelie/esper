@@ -1,8 +1,8 @@
 package com.espertech.esper.core;
 
-import com.espertech.esper.util.TypeWidener;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.event.EventPropertyWriter;
+import com.espertech.esper.event.EventBeanWriter;
+import com.espertech.esper.util.TypeWidener;
 
 public class InternalEventRouterEntry 
 {
@@ -10,16 +10,16 @@ public class InternalEventRouterEntry
     private final boolean isDrop;
     private final ExprNode optionalWhereClause;
     private final ExprNode[] assignments;
-    private final EventPropertyWriter[] writers;
+    private final EventBeanWriter writer;
     private final TypeWidener[] wideners;
 
-    public InternalEventRouterEntry(int priority, boolean drop, ExprNode optionalWhereClause, ExprNode[] assignments, EventPropertyWriter[] writers, TypeWidener[] wideners)
+    public InternalEventRouterEntry(int priority, boolean drop, ExprNode optionalWhereClause, ExprNode[] assignments, EventBeanWriter writer, TypeWidener[] wideners)
     {
         this.priority = priority;
         this.isDrop = drop;
         this.optionalWhereClause = optionalWhereClause;
         this.assignments = assignments;
-        this.writers = writers;
+        this.writer = writer;
         this.wideners = wideners;
     }
 
@@ -43,9 +43,9 @@ public class InternalEventRouterEntry
         return assignments;
     }
 
-    public EventPropertyWriter[] getWriters()
+    public EventBeanWriter getWriter()
     {
-        return writers;
+        return writer;
     }
 
     public TypeWidener[] getWideners()

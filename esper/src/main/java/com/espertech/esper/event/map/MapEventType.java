@@ -43,7 +43,7 @@ public class MapEventType implements EventTypeSPI
 
     // Nestable definition of Map contents is here
     private Map<String, Object> nestableTypes;  // Deep definition of the map-type, containing nested maps and objects
-    private Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> propertWriters;
+    private Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> propertyWriters;
     private EventPropertyDescriptor[] writablePropertyDescriptors;
 
     private int hashCode;
@@ -1386,7 +1386,7 @@ public class MapEventType implements EventTypeSPI
         {
             initializeWriters();
         }
-        Pair<EventPropertyDescriptor, EventPropertyWriter> pair = propertWriters.get(propertyName);
+        Pair<EventPropertyDescriptor, EventPropertyWriter> pair = propertyWriters.get(propertyName);
         if (pair == null)
         {
             return null;
@@ -1400,7 +1400,7 @@ public class MapEventType implements EventTypeSPI
         {
             initializeWriters();
         }
-        Pair<EventPropertyDescriptor, EventPropertyWriter> pair = propertWriters.get(propertyName);
+        Pair<EventPropertyDescriptor, EventPropertyWriter> pair = propertyWriters.get(propertyName);
         if (pair == null)
         {
             return null;
@@ -1441,20 +1441,29 @@ public class MapEventType implements EventTypeSPI
             propertWritersMap.put(propertyName, new Pair<EventPropertyDescriptor, EventPropertyWriter>(prop, eventPropertyWriter));
         }
 
-        propertWriters = propertWritersMap;
+        propertyWriters = propertWritersMap;
         writablePropertyDescriptors = writeableProps.toArray(new EventPropertyDescriptor[writeableProps.size()]);
     }
 
-    public boolean isCopyable()
+    public EventBeanWriter getWriter(String[] properties)
     {
-        return true;
+        if (writablePropertyDescriptors == null)
+        {
+            initializeWriters();
+        }
+        for (int i = 0; i < properties.length; i++)
+        {
+            if (!propertyWriters.containsKey(properties[i]))
+            {
+                return null;
+            }
+        }
+        return new MapEventBeanWriter(properties);
     }
 
-    public EventBean copy(EventBean event)
+    public EventBeanCopyMethod getCopyMethod(String[] properties)
     {
-        MappedEventBean mapped = (MappedEventBean) event;
-        Map<String, Object> props = mapped.getProperties();
-        return eventAdapterService.adaptorForTypedMap(new HashMap<String, Object>(props), this);
+        return new MapEventBeanCopyMethod(this, eventAdapterService);
     }
 
     /**

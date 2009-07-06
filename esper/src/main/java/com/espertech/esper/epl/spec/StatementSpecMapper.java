@@ -152,6 +152,10 @@ public class StatementSpecMapper
 
     private static void unmapUpdateClause(StreamSpecRaw desc, UpdateDesc updateDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
+        if (updateDesc == null)
+        {
+            return;
+        }
         String type = ((FilterStreamSpecRaw) desc).getRawFilterSpec().getEventTypeName();
         UpdateClause clause = new UpdateClause(type);
         for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())

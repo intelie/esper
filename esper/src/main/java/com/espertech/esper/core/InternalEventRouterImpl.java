@@ -12,9 +12,7 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.util.NullableObject;
 import com.espertech.esper.util.TypeWidenerFactory;
 import com.espertech.esper.util.TypeWidener;
-import com.espertech.esper.event.EventPropertyWriter;
-import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -78,6 +76,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
         EventTypeSPI eventTypeSPI = (EventTypeSPI) eventType;
 
         TypeWidener[] wideners = new TypeWidener[desc.getAssignments().size()];
+        List<String> properties = new ArrayList<String>();
         for (int i = 0; i < desc.getAssignments().size(); i++)
         {
             OnTriggerSetAssignment assignment = desc.getAssignments().get(i);
@@ -90,6 +89,14 @@ public class InternalEventRouterImpl implements InternalEventRouter
 
             wideners[i] = TypeWidenerFactory.getCheckPropertyAssignType(assignment.getExpression().toExpressionString(), assignment.getExpression().getType(),
                     writableProperty.getPropertyType(), assignment.getVariableName());
+            properties.add(assignment.getVariableName());
+        }
+
+        // check copy-able
+        EventBeanCopyMethod copyMethod = eventTypeSPI.getCopyMethod(properties.toArray(new String[properties.size()]));
+        if (copyMethod == null)
+        {
+            throw new ExprValidationException("The update-clause requires the underlying event representation to support copy (via Serializable by default)");
         }
 
         descriptors.put(desc, new IRDescEntry(eventType, annotations, wideners));
@@ -162,9 +169,11 @@ public class InternalEventRouterImpl implements InternalEventRouter
 
     private NullableObject<InternalEventRouterPreprocessor> initialize(EventType eventType)
     {
+        EventTypeSPI eventTypeSPI = (EventTypeSPI) eventType;
         List<InternalEventRouterEntry> desc = new ArrayList<InternalEventRouterEntry>();
 
         // determine which ones to process for this types, and what priority and drop
+        Set<String> eventPropertiesWritten = new HashSet<String>();
         for (Map.Entry<UpdateDesc, IRDescEntry> entry : descriptors.entrySet())
         {
             boolean applicable = entry.getValue().getEventType() == eventType;
@@ -203,19 +212,25 @@ public class InternalEventRouterImpl implements InternalEventRouter
                 }
             }
 
-            EventTypeSPI eventTypeSPI = (EventTypeSPI) eventType;
-            EventPropertyWriter writers[] = new EventPropertyWriter[entry.getKey().getAssignments().size()];
-            ExprNode[] expressions = new ExprNode[writers.length];
-            for (int i = 0; i < writers.length; i++)
+            List<String> properties = new ArrayList<String>();
+            ExprNode[] expressions = new ExprNode[entry.getKey().getAssignments().size()];
+            for (int i = 0; i < entry.getKey().getAssignments().size(); i++)
             {
                 OnTriggerSetAssignment assignment = entry.getKey().getAssignments().get(i);
                 expressions[i] = assignment.getExpression();
-                writers[i] = eventTypeSPI.getWriter(assignment.getVariableName());
+                properties.add(assignment.getVariableName());
+                eventPropertiesWritten.add(assignment.getVariableName());
             }
-            desc.add(new InternalEventRouterEntry(priority, isDrop, entry.getKey().getOptionalWhereClause(), expressions, writers, entry.getValue().getWideners()));
+            EventBeanWriter writer = eventTypeSPI.getWriter(properties.toArray(new String[properties.size()]));
+            desc.add(new InternalEventRouterEntry(priority, isDrop, entry.getKey().getOptionalWhereClause(), expressions, writer, entry.getValue().getWideners()));
         }
 
-        return new NullableObject<InternalEventRouterPreprocessor>(new InternalEventRouterPreprocessor(desc));
+        EventBeanCopyMethod copyMethod = eventTypeSPI.getCopyMethod(eventPropertiesWritten.toArray(new String[eventPropertiesWritten.size()]));
+        if (copyMethod == null)
+        {
+            return new NullableObject<InternalEventRouterPreprocessor>(null);
+        }
+        return new NullableObject<InternalEventRouterPreprocessor>(new InternalEventRouterPreprocessor(copyMethod, desc));
     }
 
     private class IRDescEntry

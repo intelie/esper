@@ -130,6 +130,7 @@
 			<xs:attribute name="code-generation" type="esper:codeGenerationEnum" use="optional"/>
 			<xs:attribute name="property-resolution-style" type="esper:propertyResolutionStyleEnum" use="optional"/>
 			<xs:attribute name="factory-method" type="xs:string" use="optional"/>
+			<xs:attribute name="copy-method" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="method-property">

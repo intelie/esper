@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 EsperEPL2Ast.g 2009-07-02 17:09:13
+// $ANTLR 3.1.1 EsperEPL2Ast.g 2009-07-05 07:44:04
 
   package com.espertech.esper.epl.generated;
   import java.util.Stack;
@@ -1022,19 +1022,19 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "updateExpr"
-    // EsperEPL2Ast.g:89:1: updateExpr : ^(u= UPDATE_EXPR IDENT ( onSetAssignment )+ ( whereClause[false] )? ) ;
+    // EsperEPL2Ast.g:89:1: updateExpr : ^(u= UPDATE_EXPR CLASS_IDENT ( onSetAssignment )+ ( whereClause[false] )? ) ;
     public final void updateExpr() throws RecognitionException {
         CommonTree u=null;
 
         try {
-            // EsperEPL2Ast.g:90:2: ( ^(u= UPDATE_EXPR IDENT ( onSetAssignment )+ ( whereClause[false] )? ) )
-            // EsperEPL2Ast.g:90:4: ^(u= UPDATE_EXPR IDENT ( onSetAssignment )+ ( whereClause[false] )? )
+            // EsperEPL2Ast.g:90:2: ( ^(u= UPDATE_EXPR CLASS_IDENT ( onSetAssignment )+ ( whereClause[false] )? ) )
+            // EsperEPL2Ast.g:90:4: ^(u= UPDATE_EXPR CLASS_IDENT ( onSetAssignment )+ ( whereClause[false] )? )
             {
             u=(CommonTree)match(input,UPDATE_EXPR,FOLLOW_UPDATE_EXPR_in_updateExpr319); 
 
             match(input, Token.DOWN, null); 
-            match(input,IDENT,FOLLOW_IDENT_in_updateExpr321); 
-            // EsperEPL2Ast.g:90:26: ( onSetAssignment )+
+            match(input,CLASS_IDENT,FOLLOW_CLASS_IDENT_in_updateExpr321); 
+            // EsperEPL2Ast.g:90:32: ( onSetAssignment )+
             int cnt14=0;
             loop14:
             do {
@@ -1048,7 +1048,7 @@ public class EsperEPL2Ast extends TreeParser {
 
                 switch (alt14) {
             	case 1 :
-            	    // EsperEPL2Ast.g:90:26: onSetAssignment
+            	    // EsperEPL2Ast.g:90:32: onSetAssignment
             	    {
             	    pushFollow(FOLLOW_onSetAssignment_in_updateExpr323);
             	    onSetAssignment();
@@ -1068,7 +1068,7 @@ public class EsperEPL2Ast extends TreeParser {
                 cnt14++;
             } while (true);
 
-            // EsperEPL2Ast.g:90:43: ( whereClause[false] )?
+            // EsperEPL2Ast.g:90:49: ( whereClause[false] )?
             int alt15=2;
             int LA15_0 = input.LA(1);
 
@@ -1077,7 +1077,7 @@ public class EsperEPL2Ast extends TreeParser {
             }
             switch (alt15) {
                 case 1 :
-                    // EsperEPL2Ast.g:90:43: whereClause[false]
+                    // EsperEPL2Ast.g:90:49: whereClause[false]
                     {
                     pushFollow(FOLLOW_whereClause_in_updateExpr326);
                     whereClause(false);
@@ -11524,7 +11524,7 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_onSetExpr_in_onExpr294 = new BitSet(new long[]{0x0040000000000008L});
     public static final BitSet FOLLOW_INSERT_in_onExpr297 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_UPDATE_EXPR_in_updateExpr319 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_updateExpr321 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_updateExpr321 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000002000L});
     public static final BitSet FOLLOW_onSetAssignment_in_updateExpr323 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000002L,0x0000000000002000L});
     public static final BitSet FOLLOW_whereClause_in_updateExpr326 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_DELETE_EXPR_in_onDeleteExpr344 = new BitSet(new long[]{0x0000000000000004L});

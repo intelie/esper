@@ -113,7 +113,42 @@ public class WrapperEventType implements EventTypeSPI
             return cachedGetter;
         }
 
-		if(underlyingEventType.isProperty(property))
+		if (underlyingMapType.isProperty(property))
+		{
+            final EventPropertyGetter mapGetter = underlyingMapType.getGetter(property);
+            EventPropertyGetter getter = new EventPropertyGetter()
+            {
+                public Object get(EventBean event)
+                {
+                    if(!(event instanceof DecoratingEventBean))
+                    {
+                        throw new PropertyAccessException("Mismatched property getter to EventBean type");
+                    }
+                    DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
+                    Map map = wrapperEvent.getDecoratingProperties();
+                    return mapGetter.get(eventAdapterService.adaptorForTypedMap(map, underlyingMapType));
+                }
+
+                public boolean isExistsProperty(EventBean eventBean)
+                {
+                    return true; // Property exists as the property is not dynamic (unchecked)
+                }
+
+                public Object getFragment(EventBean event)
+                {
+                    if(!(event instanceof DecoratingEventBean))
+                    {
+                        throw new PropertyAccessException("Mismatched property getter to EventBean type");
+                    }
+                    DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
+                    Map map = wrapperEvent.getDecoratingProperties();
+                    return mapGetter.getFragment(eventAdapterService.adaptorForTypedMap(map, underlyingMapType));
+                }
+            };
+            propertyGetterCache.put(property, getter);
+            return getter;
+        }
+        else if(underlyingEventType.isProperty(property))
 		{
             EventPropertyGetter getter = new EventPropertyGetter()
             {
@@ -154,41 +189,6 @@ public class WrapperEventType implements EventTypeSPI
 
                     EventPropertyGetter underlyingGetter = underlyingEventType.getGetter(property);
                     return underlyingGetter.getFragment(wrappedEvent);
-                }
-            };
-            propertyGetterCache.put(property, getter);
-            return getter;
-        }
-		else if (underlyingMapType.isProperty(property))
-		{
-            final EventPropertyGetter mapGetter = underlyingMapType.getGetter(property);
-            EventPropertyGetter getter = new EventPropertyGetter()
-            {
-                public Object get(EventBean event)
-                {
-                    if(!(event instanceof DecoratingEventBean))
-                    {
-                        throw new PropertyAccessException("Mismatched property getter to EventBean type");
-                    }
-                    DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
-                    Map map = wrapperEvent.getDecoratingProperties();
-                    return mapGetter.get(eventAdapterService.adaptorForTypedMap(map, underlyingMapType));
-                }
-
-                public boolean isExistsProperty(EventBean eventBean)
-                {
-                    return true; // Property exists as the property is not dynamic (unchecked)
-                }
-
-                public Object getFragment(EventBean event)
-                {
-                    if(!(event instanceof DecoratingEventBean))
-                    {
-                        throw new PropertyAccessException("Mismatched property getter to EventBean type");
-                    }
-                    DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
-                    Map map = wrapperEvent.getDecoratingProperties();
-                    return mapGetter.getFragment(eventAdapterService.adaptorForTypedMap(map, underlyingMapType));
                 }
             };
             propertyGetterCache.put(property, getter);
@@ -410,29 +410,115 @@ public class WrapperEventType implements EventTypeSPI
         writableProperties = writables.toArray(new EventPropertyDescriptor[writables.size()]);
     }
 
-    public boolean isCopyable()
+    public EventBeanCopyMethod getCopyMethod(String[] properties)
     {
-        if (!(underlyingEventType instanceof EventTypeSPI))
+        if (writableProperties == null)
         {
-            return false;
+            initializeWriters();
         }
-        return (underlyingMapType.isCopyable() && ((EventTypeSPI) underlyingEventType).isCopyable());
-    }
 
-    public EventBean copy(EventBean event)
-    {
-        if (!(underlyingEventType instanceof EventTypeSPI))
+        boolean isOnlyMap = true;
+        for (int i = 0; i < properties.length; i++)
+        {
+            if (underlyingMapType.getWritableProperty(properties[i]) == null)
+            {
+                isOnlyMap = false;
+            }
+        }
+
+        boolean isOnlyUnderlying = true;
+        if (!isOnlyMap)
+        {
+            if (!(underlyingEventType instanceof EventTypeSPI))
+            {
+                return null;
+            }
+            EventTypeSPI spi = (EventTypeSPI) underlyingEventType;
+            for (int i = 0; i < properties.length; i++)
+            {
+                if (spi.getWritableProperty(properties[i]) == null)
+                {
+                    isOnlyUnderlying = false;
+                }
+            }
+        }
+
+        if (isOnlyMap)
+        {
+            return new WrapperEventBeanMapCopyMethod(this, eventAdapterService);
+        }
+
+        EventBeanCopyMethod undCopyMethod = ((EventTypeSPI) underlyingEventType).getCopyMethod(properties);
+        if (undCopyMethod == null)
         {
             return null;
         }
-
-        DecoratingEventBean decorated = (DecoratingEventBean) event;
-        EventBean decoratedUnderlying = decorated.getUnderlyingEvent();
-        EventBean copiedUnderlying = ((EventTypeSPI) underlyingEventType).copy(decoratedUnderlying);
-        Map<String, Object> copiedMap = new HashMap<String, Object>(decorated.getDecoratingProperties());
-        return eventAdapterService.adaptorForTypedWrapper(copiedUnderlying, copiedMap, this);
+        if (isOnlyUnderlying)
+        {
+            return new WrapperEventBeanUndCopyMethod(this, eventAdapterService, undCopyMethod);
+        }
+        else
+        {
+            return new WrapperEventBeanCopyMethod(this, eventAdapterService, undCopyMethod);
+        }
     }
-    
+
+    public EventBeanWriter getWriter(String[] properties)
+    {
+        if (writableProperties == null)
+        {
+            initializeWriters();
+        }
+
+        boolean isOnlyMap = true;
+        for (int i = 0; i < properties.length; i++)
+        {
+            if (!writers.containsKey(properties[i]))
+            {
+                return null;
+            }
+            if (underlyingMapType.getWritableProperty(properties[i]) == null)
+            {
+                isOnlyMap = false;
+            }
+        }
+
+        boolean isOnlyUnderlying = true;
+        if (!isOnlyMap)
+        {
+            EventTypeSPI spi = (EventTypeSPI) underlyingEventType;
+            for (int i = 0; i < properties.length; i++)
+            {
+                if (spi.getWritableProperty(properties[i]) == null)
+                {
+                    isOnlyUnderlying = false; 
+                }
+            }
+        }
+
+        if (isOnlyMap)
+        {
+            return new WrapperEventBeanMapWriter(properties);
+        }
+        if (isOnlyUnderlying)
+        {
+            EventTypeSPI spi = (EventTypeSPI) underlyingEventType;
+            EventBeanWriter undWriter = spi.getWriter(properties);
+            if (undWriter == null)
+            {
+                return undWriter;
+            }
+            return new WrapperEventBeanUndWriter(undWriter);
+        }
+
+        EventPropertyWriter writerArr[] = new EventPropertyWriter[properties.length];
+        for (int i = 0; i < properties.length; i++)
+        {
+            writerArr[i] = writers.get(properties[i]).getSecond();
+        }
+        return new WrapperEventBeanPropertyWriter(writerArr);
+    }
+
     private void checkForRepeatedPropertyNames(EventType eventType, Map<String, Object> properties)
 	{
 		for(String property : eventType.getPropertyNames())

@@ -10,7 +10,6 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventBean;
 
 /**
  * Service provider interface for internal use for event types.
@@ -29,7 +28,7 @@ public interface EventTypeSPI extends EventType
 
     public EventPropertyDescriptor getWritableProperty(String propertyName);
 
-    public boolean isCopyable();
+    public EventBeanCopyMethod getCopyMethod(String[] properties);
 
-    public EventBean copy(EventBean event);
+    public EventBeanWriter getWriter(String[] properties);
 }

@@ -4497,7 +4497,7 @@ where productId = bookId]]></programlisting>
 	   <title>Updating Event Properties: the Update Clause</title>
 	   
 		<para>
-			The <literal>update</literal> statement declarative modification of event properties of events entering a stream. Update is a pre-processing step to each new event, modifying an event before the event applies to any statements.
+			The <literal>update</literal> statement allows declarative modification of event properties of events entering a stream. Update is a pre-processing step to each new event, modifying an event before the event applies to any statements.
 		</para>
 
 		<para>
@@ -4596,6 +4596,11 @@ update DoubleWithdrawalStream set minimum = 1000 where account in (10002, 10003)
 					When using an XML underlying event type, event properties in the XML document representation are not available for update.
 				</para>
 			</listitem>
+			<listitem>
+				<para>
+					Nested, indexed and mapped properties are not supported for update. Revision event types and variant streams may also not be updated.
+				</para>
+			</listitem>
 		</orderedlist>
 		
 		<sect2 id="epl-update-object" revision="1">
@@ -4609,14 +4614,14 @@ update DoubleWithdrawalStream set minimum = 1000 where account in (10002, 10003)
 			<para>
 				In the case your application utilizes Java objects as the underlying event representation and an <literal>update</literal> statement updates properties on an object, then in order to maintain consistency across statements 
 				it is necessary for the engine to copy the object before changing properties (and thus not change the original object). 
-			</para>.
+			</para>
 
 			<para>
-				For Java application objects, the copy operation is implemented by serialization. Your event object must therefore implement the <literal>java.io.Serializable</literal> interface to become eligible for update.
+				For Java application objects, the copy operation is implemented by serialization. Your event object must therefore implement the <literal>java.io.Serializable</literal> interface to become eligible for update. As an alternative to serialization, you may instead configure a copy method as part of the event type configuration via <literal>ConfigurationEventTypeLegacy</literal>.
 			</para>
 			
 			<para>
-				Esper also provides a feature name revision event type. The revision event type is useful when there are two or more event types: full events that carry all the information, and delta events that provide only a partial update to the full events, and the full events and delta events are associated with each other via primary key(s).
+				Esper also provides a feature related in purpose to update: the revision event type. A revision event type is useful when there are two or more event types: full events that carry all the information, and delta events that provide only a partial update to the full events, and the full events and delta events are associated with each other via primary key(s).
 			</para>
 		</sect2>
 	</sect1>

@@ -2,7 +2,7 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventBeanCopyMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,12 +40,14 @@ public class InternalEventRouterPreprocessor
         }
     };
 
+    private final EventBeanCopyMethod copyMethod;
     private final List<InternalEventRouterEntry> entries;
 
-    public InternalEventRouterPreprocessor(List<InternalEventRouterEntry> entries)
+    public InternalEventRouterPreprocessor(EventBeanCopyMethod copyMethod, List<InternalEventRouterEntry> entries)
     {
-        Collections.sort(entries, comparator);
+        this.copyMethod = copyMethod;
         this.entries = entries;
+        Collections.sort(entries, comparator);
     }
 
     public EventBean process(EventBean event)
@@ -73,10 +75,11 @@ public class InternalEventRouterPreprocessor
 
             if (!haveCloned)
             {
-                event = ((EventTypeSPI) event.getEventType()).copy(event);
+                event = copyMethod.copy(event);
                 if (event == null)
                 {
                     log.warn("Event of type " + event.getEventType().getName() + " could not be copied");
+                    return null;
                 }
                 haveCloned = true;
                 eventsPerStream[0] = event;
@@ -105,9 +108,6 @@ public class InternalEventRouterPreprocessor
         }
 
         // apply
-        for (int i = 0; i < entry.getWriters().length; i++)
-        {
-            entry.getWriters()[i].write(values[i], event);
-        }
+        entry.getWriter().write(values, event);
     }
 }

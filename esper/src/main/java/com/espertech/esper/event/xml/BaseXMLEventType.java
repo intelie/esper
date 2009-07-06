@@ -199,17 +199,17 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
         return new EventPropertyDescriptor[0];
     }
 
-    public boolean isCopyable()
-    {
-        return false;
-    }
-
-    public EventBean copy(EventBean event)
+    public EventBeanCopyMethod getCopyMethod(String[] properties)
     {
         return null;
     }
 
     public EventPropertyDescriptor getWritableProperty(String propertyName)
+    {
+        return null;
+    }
+
+    public EventBeanWriter getWriter(String[] properties)
     {
         return null;
     }    

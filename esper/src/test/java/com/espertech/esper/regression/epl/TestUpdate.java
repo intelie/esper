@@ -6,12 +6,18 @@ import com.espertech.esper.client.soda.Expressions;
 import com.espertech.esper.client.soda.UpdateClause;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanReadOnly;
+import com.espertech.esper.support.bean.SupportBeanErrorTestingOne;
+import com.espertech.esper.support.bean.SupportBeanCopyMethod;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,10 +26,20 @@ public class TestUpdate extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
+    // TODO: test new EventTypeSPI methods
+    // TODO: retest with EHA
+    // TODO: generate docs, release
+    // TODO: subquery support
+
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("SupportBean", SupportBean.class);
+
+        ConfigurationEventTypeLegacy legacy = new ConfigurationEventTypeLegacy();
+        legacy.setCopyMethod("myCopyMethod");
+        config.addEventType("SupportBeanCopyMethod", SupportBeanCopyMethod.class.getName(), legacy);
+
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
@@ -38,6 +54,11 @@ public class TestUpdate extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("MyMapType", type);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanReadOnly", SupportBeanReadOnly.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanErrorTestingOne", SupportBeanErrorTestingOne.class);
+
+        ConfigurationEventTypeXMLDOM configXML = new ConfigurationEventTypeXMLDOM();
+        configXML.setRootElementName("MyXMLEvent");
+        epService.getEPAdministrator().getConfiguration().addEventType("MyXmlEvent", configXML);
 
         epService.getEPAdministrator().createEPL("insert into SupportBeanStream select * from SupportBean");
         epService.getEPAdministrator().createEPL("insert into SupportBeanStreamTwo select * from pattern[a=SupportBean -> b=SupportBean]");
@@ -59,6 +80,10 @@ public class TestUpdate extends TestCase
                    "Error starting statement: Aggregation functions may not be used within an update-clause [update SupportBean set longPrimitive=longPrimitive where sum(intPrimitive) = 1]");
         tryInvalid("update SupportBean set longPrimitive=prev(1, longPrimitive)",
                    "Error starting statement: Previous function cannot be used in this context [update SupportBean set longPrimitive=prev(1, longPrimitive)]");
+        tryInvalid("update MyXmlEvent set abc=1",
+                   "Error starting statement: Property 'abc' is not available for write access [update MyXmlEvent set abc=1]");
+        tryInvalid("update SupportBeanErrorTestingOne set value='1'",
+                   "Error starting statement: The update-clause requires the underlying event representation to support copy (via Serializable by default) [update SupportBeanErrorTestingOne set value='1']");
     }
 
     public void testInsertIntoWBeanWhere() throws Exception
@@ -423,6 +448,58 @@ public class TestUpdate extends TestCase
         assertEquals(text, model.toEPL());
     }
 
+    public void testXMLEvent() throws Exception
+    {
+        String xml = "<simpleEvent><prop1>SAMPLE_V1</prop1></simpleEvent>";
+
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        Document simpleDoc = builderFactory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+
+        ConfigurationEventTypeXMLDOM config = new ConfigurationEventTypeXMLDOM();
+        config.setRootElementName("simpleEvent");
+        epService.getEPAdministrator().getConfiguration().addEventType("MyXMLEvent", config);
+
+        epService.getEPAdministrator().createEPL("insert into ABCStream select 1 as valOne, 2 as valTwo, * from MyXMLEvent");
+        epService.getEPAdministrator().createEPL("update ABCStream set valOne = 987, valTwo=123 where prop1='SAMPLE_V1'");
+        epService.getEPAdministrator().createEPL("select * from ABCStream").addListener(listener);
+
+        epService.getEPRuntime().sendEvent(simpleDoc);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "valOne,valTwo,prop1".split(","), new Object[] {987, 123, "SAMPLE_V1"});
+    }
+
+    public void testWrappedObject() throws Exception
+    {
+        epService.getEPAdministrator().createEPL("insert into ABCStream select 1 as valOne, 2 as valTwo, * from SupportBean");
+        EPStatement stmtUpd = epService.getEPAdministrator().createEPL("update ABCStream set valOne = 987, valTwo=123");
+        epService.getEPAdministrator().createEPL("select * from ABCStream").addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "valOne,valTwo,string".split(","), new Object[] {987, 123, "E1"});
+
+        stmtUpd.destroy();
+        stmtUpd = epService.getEPAdministrator().createEPL("update ABCStream set string = 'A'");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 0));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "valOne,valTwo,string".split(","), new Object[] {1, 2, "A"});
+
+        stmtUpd.destroy();
+        stmtUpd = epService.getEPAdministrator().createEPL("update ABCStream set string = 'B', valOne = 555");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 0));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "valOne,valTwo,string".split(","), new Object[] {555, 2, "B"});
+    }
+
+    public void testCopyMethod()
+    {
+        epService.getEPAdministrator().createEPL("insert into ABCStream select * from SupportBeanCopyMethod");
+        epService.getEPAdministrator().createEPL("update ABCStream set valOne = 'x', valTwo='y'");
+        epService.getEPAdministrator().createEPL("select * from ABCStream").addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanCopyMethod("1", "2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "valOne,valTwo".split(","), new Object[] {"x", "y"});
+    }
+
     private Map<String, Object> makeMap(String prop1, Object val1, String prop2, Object val2, String prop3, Object val3)
     {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -453,7 +530,7 @@ public class TestUpdate extends TestCase
         }
     }
 
-    public static interface BaseInterface
+    public static interface BaseInterface extends Serializable
     {
         public String getI();
         public void setI(String i);

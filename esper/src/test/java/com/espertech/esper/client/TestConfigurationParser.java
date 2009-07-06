@@ -157,6 +157,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals("mymethodprop", legacy.getMethodProperties().get(0).getName());
         assertEquals(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE, legacy.getPropertyResolutionStyle());
         assertEquals("com.mycompany.myapp.MySampleEventFactory.createMyLegacyTypeEvent", legacy.getFactoryMethod());
+        assertEquals("myCopyMethod", legacy.getCopyMethod());
 
         // assert database reference - data source config
         assertEquals(3, config.getDatabaseReferences().size());

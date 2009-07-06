@@ -9,9 +9,7 @@
 package com.espertech.esper.event.vaevent;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.event.EventPropertyWriter;
+import com.espertech.esper.event.*;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.*;
@@ -188,14 +186,13 @@ public class VariantEventType implements EventTypeSPI
         return new EventPropertyDescriptor[0];
     }
 
-    public boolean isCopyable()
-    {
-        return false;
-    }
-
-    public EventBean copy(EventBean event)
+    public EventBeanCopyMethod getCopyMethod(String[] properties)
     {
         return null;
     }
 
+    public EventBeanWriter getWriter(String[] properties)
+    {
+        return null;
+    }
 }

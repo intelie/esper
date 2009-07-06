@@ -9,23 +9,21 @@
 package com.espertech.esper.event.bean;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.*;
 import com.espertech.esper.event.property.GenericPropertyDesc;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.event.property.SimpleProperty;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.SerializableObjectCopier;
-import com.espertech.esper.collection.Pair;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.lang.reflect.Method;
 
 /**
  * Implementation of the EventType interface for handling JavaBean-type classes.
@@ -52,9 +50,10 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
     private final Map<String, EventPropertyGetter> propertyGetterCache;
     private EventPropertyDescriptor[] propertyDescriptors;
     private EventPropertyDescriptor[] writeablePropertyDescriptors;
-    private Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> writerMap;
+    private Map<String, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> writerMap;
     private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private String factoryMethodName;
+    private String copyMethodName;
 
     /**
      * Constructor takes a java bean class as an argument.
@@ -75,6 +74,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         if (optionalLegacyDef != null)
         {
             this.factoryMethodName = optionalLegacyDef.getFactoryMethod();
+            this.copyMethodName = optionalLegacyDef.getCopyMethod();
             this.propertyResolutionStyle = optionalLegacyDef.getPropertyResolutionStyle();
         }
         else
@@ -731,7 +731,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         {
             initializeWriters();
         }
-        Pair<EventPropertyDescriptor, EventPropertyWriter> pair = writerMap.get(propertyName);
+        Pair<EventPropertyDescriptor, BeanEventPropertyWriter> pair = writerMap.get(propertyName);
         if (pair == null)
         {
             return null;
@@ -745,7 +745,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         {
             initializeWriters();
         }
-        Pair<EventPropertyDescriptor, EventPropertyWriter> pair = writerMap.get(propertyName);
+        Pair<EventPropertyDescriptor, BeanEventPropertyWriter> pair = writerMap.get(propertyName);
         if (pair == null)
         {
             return null;
@@ -763,42 +763,57 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         return writeablePropertyDescriptors;
     }
 
-    public boolean isCopyable()
+    public EventBeanCopyMethod getCopyMethod(String[] properties)
     {
-        return JavaClassHelper.isImplementsInterface(clazz, Serializable.class);
-    }
-
-    public EventBean copy(EventBean event)
-    {
-        if (!isCopyable())
+        if (JavaClassHelper.isImplementsInterface(clazz, Serializable.class))
+        {
+            return new BeanEventBeanSerializableCopyMethod(this, eventAdapterService);
+        }
+        if (copyMethodName == null)
         {
             return null;
         }
-        Object underlying = event.getUnderlying();
-        Object copied;
+        Method method = null;
         try
         {
-            copied = SerializableObjectCopier.copy(underlying);
+            method = clazz.getMethod(copyMethodName);
         }
-        catch (IOException e)
+        catch (NoSuchMethodException e)
         {
-            log.error("IOException copying event object for update: " + e.getMessage(), e);
-            return null;
+            log.error("Configured copy-method for class '" + clazz.getName() + " not found by name '" + copyMethodName + "': " + e.getMessage());
         }
-        catch (ClassNotFoundException e)
+        if (method == null)
         {
-            log.error("Exception copying event object for update: " + e.getMessage(), e);
-            return null;
+            log.error("Configured copy-method for class '" + clazz.getName() + " not found by name '" + copyMethodName + "'");
+        }
+        return new BeanEventBeanConfiguredCopyMethod(this, eventAdapterService, fastClass.getMethod(method));
+    }
+
+    public EventBeanWriter getWriter(String[] properties)
+    {
+        if (writeablePropertyDescriptors == null)
+        {
+            initializeWriters();
         }
 
-        return eventAdapterService.adapterForTypedBean(copied, this);
+        BeanEventPropertyWriter[] writers = new BeanEventPropertyWriter[properties.length];
+        for (int i = 0; i < properties.length; i++)
+        {
+            Pair<EventPropertyDescriptor, BeanEventPropertyWriter> pair = writerMap.get(properties[i]);
+            if (pair == null)
+            {
+                return null;
+            }
+            writers[i] = pair.getSecond();
+        }
+        return new BeanEventBeanWriter(writers);
     }
 
     private void initializeWriters()
     {
         Set<WriteablePropertyDescriptor> writables = PropertyHelper.getWritableProperties(fastClass.getJavaClass());
         EventPropertyDescriptor[] desc = new EventPropertyDescriptor[writables.size()];
-        Map<String, Pair<EventPropertyDescriptor, EventPropertyWriter>> writers = new HashMap<String, Pair<EventPropertyDescriptor, EventPropertyWriter>>();
+        Map<String, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> writers = new HashMap<String, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>>();
 
         int count = 0;
         for (final WriteablePropertyDescriptor writable : writables)
@@ -807,23 +822,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
             desc[count++] = propertyDesc;
 
             final FastMethod fastMethod = fastClass.getMethod(writable.getWriteMethod());
-            EventPropertyWriter writer = new EventPropertyWriter() {
-                public void write(Object value, EventBean target)
-                {
-                    try
-                    {
-                        fastMethod.invoke(target.getUnderlying(), new Object[] {value});
-                    }
-                    catch (InvocationTargetException e)
-                    {
-                        String message = "Unexpected exception encountered invoking setter-method '" + fastMethod.getJavaMethod() + "' on class '" +
-                                fastClass.getJavaClass().getName() + "' : " + e.getTargetException().getMessage();
-                        log.error(message, e);
-                    }
-                }
-            };
-
-            writers.put(writable.getPropertyName(), new Pair<EventPropertyDescriptor, EventPropertyWriter>(propertyDesc, writer));
+            writers.put(writable.getPropertyName(), new Pair<EventPropertyDescriptor, BeanEventPropertyWriter>(propertyDesc, new BeanEventPropertyWriter(clazz, fastMethod)));
         }
 
         writerMap = writers;

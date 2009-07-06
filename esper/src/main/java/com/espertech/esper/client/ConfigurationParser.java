@@ -364,6 +364,7 @@ class ConfigurationParser {
         String codeGeneration = xmldomElement.getAttributes().getNamedItem("code-generation").getTextContent();
         String propertyResolution = xmldomElement.getAttributes().getNamedItem("property-resolution-style").getTextContent();
         String factoryMethod = getOptionalAttribute(xmldomElement, "factory-method");
+        String copyMethod = getOptionalAttribute(xmldomElement, "copy-method");
 
         ConfigurationEventTypeLegacy legacyDesc = new ConfigurationEventTypeLegacy();
         if (accessorStyle != null)
@@ -381,6 +382,10 @@ class ConfigurationParser {
         if (factoryMethod != null)
         {
             legacyDesc.setFactoryMethod(factoryMethod);
+        }
+        if (copyMethod != null)
+        {
+            legacyDesc.setCopyMethod(copyMethod);
         }
         configuration.addEventType(name, className, legacyDesc);
 
