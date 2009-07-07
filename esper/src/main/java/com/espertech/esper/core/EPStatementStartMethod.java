@@ -360,8 +360,21 @@ public class EPStatementStartMethod
             throw new ExprValidationException("Unknown stream specification streamEventType: " + streamSpec);
         }
 
+        // determine a stream name
+        String streamName = triggereventTypeName;
+        if (desc.getOptionalStreamName() != null)
+        {
+            streamName = desc.getOptionalStreamName();
+        }
+
         final EventType streamEventType = services.getEventAdapterService().getExistsTypeByName(triggereventTypeName);
-        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, services.getEngineURI());
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamName}, services.getEngineURI());
+
+        // determine subscriber result types
+        statementContext.getStatementResultService().setSelectClause(new Class[] {streamEventType.getUnderlyingType()}, new String[] {"*"});
+
+        // Materialize sub-select views
+        startSubSelect(subSelectStreamDesc, new String[]{streamName}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks);
 
         for (OnTriggerSetAssignment assignment : desc.getAssignments())
         {
@@ -376,10 +389,8 @@ public class EPStatementStartMethod
             validateNoAggregations(validated, "Aggregation functions may not be used within an update-clause");
         }
 
-        // Materialize sub-select views
-        startSubSelect(subSelectStreamDesc, new String[]{triggereventTypeName}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks);
-
-        services.getInternalEventRouter().addPreprocessing(streamEventType, desc, statementSpec.getAnnotations());
+        InternalRoutePreprocessView onExprView = new InternalRoutePreprocessView(streamEventType, statementContext.getStatementResultService());
+        services.getInternalEventRouter().addPreprocessing(streamEventType, desc, statementSpec.getAnnotations(), onExprView);
         stopCallbacks.add(new StopCallback()
         {
             public void stop()
@@ -388,7 +399,6 @@ public class EPStatementStartMethod
             }
         });
 
-        View onExprView = new InternalRoutePreprocessView(streamEventType);        
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
         {
             public void stop()

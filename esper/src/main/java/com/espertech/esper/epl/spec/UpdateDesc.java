@@ -20,10 +20,12 @@ import java.io.Serializable;
  */
 public class UpdateDesc implements MetaDefItem, Serializable
 {
+    private final String optionalStreamName;
     private final List<OnTriggerSetAssignment> assignments;
     private ExprNode optionalWhereClause;
 
-    public UpdateDesc(List<OnTriggerSetAssignment> assignments, ExprNode optionalWhereClause) {
+    public UpdateDesc(String optionalStreamName, List<OnTriggerSetAssignment> assignments, ExprNode optionalWhereClause) {
+        this.optionalStreamName = optionalStreamName;
         this.assignments = assignments;
         this.optionalWhereClause = optionalWhereClause;
     }
@@ -35,6 +37,10 @@ public class UpdateDesc implements MetaDefItem, Serializable
     public List<OnTriggerSetAssignment> getAssignments()
     {
         return assignments;
+    }
+
+    public String getOptionalStreamName() {
+        return optionalStreamName;
     }
 
     public ExprNode getOptionalWhereClause() {

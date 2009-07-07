@@ -57,8 +57,11 @@ public class FilterExprAnalyzer
         ExprIdentNode identNodeLeft = (ExprIdentNode) equalsNode.getChildNodes().get(0);
         ExprIdentNode identNodeRight = (ExprIdentNode) equalsNode.getChildNodes().get(1);
 
-        queryGraph.add(identNodeLeft.getStreamId(), identNodeLeft.getResolvedPropertyName(),
-                identNodeRight.getStreamId(), identNodeRight.getResolvedPropertyName());
+        if (identNodeLeft.getStreamId() != identNodeRight.getStreamId())
+        {
+            queryGraph.add(identNodeLeft.getStreamId(), identNodeLeft.getResolvedPropertyName(),
+                    identNodeRight.getStreamId(), identNodeRight.getResolvedPropertyName());            
+        }
     }
 
     /**

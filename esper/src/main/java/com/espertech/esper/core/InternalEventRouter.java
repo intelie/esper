@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
  */
 public interface InternalEventRouter
 {
-    public void addPreprocessing(EventType eventType, UpdateDesc desc, Annotation[] annotations)
+    public void addPreprocessing(EventType eventType, UpdateDesc desc, Annotation[] annotations, InternalRoutePreprocessView outputView)
             throws ExprValidationException;
 
     public void removePreprocessing(EventType eventType, UpdateDesc desc);

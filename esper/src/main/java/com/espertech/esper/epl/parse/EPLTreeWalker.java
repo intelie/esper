@@ -640,9 +640,15 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveUpdateExpr");
 
-        String streamName = node.getChild(0).getText();
-        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(new FilterSpecRaw(streamName, Collections.EMPTY_LIST, null), new ArrayList<ViewSpec>(), streamName, new StreamSpecOptions());
+        String eventTypeName = node.getChild(0).getText();
+        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(new FilterSpecRaw(eventTypeName, Collections.EMPTY_LIST, null), new ArrayList<ViewSpec>(), eventTypeName, new StreamSpecOptions());
         statementSpec.getStreamSpecs().add(streamSpec);
+
+        String optionalStreamName = null;
+        if ((node.getChildCount() > 1) && (node.getChild(1).getType() == IDENT))
+        {
+            optionalStreamName = node.getChild(1).getText();
+        }
 
         List<OnTriggerSetAssignment> assignments = getOnTriggerSetAssignments(node, astExprNodeMap);
 
@@ -661,7 +667,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        statementSpec.setUpdateDesc(new UpdateDesc(assignments, whereClause));
+        statementSpec.setUpdateDesc(new UpdateDesc(optionalStreamName, assignments, whereClause));
     }
 
     /**

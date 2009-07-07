@@ -4,20 +4,21 @@ import com.espertech.esper.collection.Pair;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class UpdateClause implements Serializable
 {
     private static final long serialVersionUID = 0L;
 
     private String eventType;
+    private String optionalAsClauseStreamName;
     private List<Pair<String, Expression>> assignments;
     private Expression optionalWhereClause;
 
     public static UpdateClause create(String eventType, String propertyName, Expression expression)
     {
-        UpdateClause clause = new UpdateClause(eventType);
+        UpdateClause clause = new UpdateClause(eventType, null);
         clause.addAssignment(propertyName, expression);
         return clause;
     }
@@ -25,9 +26,10 @@ public class UpdateClause implements Serializable
     /**
      * Ctor.
      */
-    public UpdateClause(String eventType)
+    public UpdateClause(String eventType, String optionalAsClauseStreamName)
     {
         this.eventType = eventType;
+        this.optionalAsClauseStreamName = optionalAsClauseStreamName;
         assignments = new ArrayList<Pair<String, Expression>>();
     }
 
@@ -81,6 +83,14 @@ public class UpdateClause implements Serializable
         this.optionalWhereClause = optionalWhereClause;
     }
 
+    public String getOptionalAsClauseStreamName() {
+        return optionalAsClauseStreamName;
+    }
+
+    public void setOptionalAsClauseStreamName(String optionalAsClauseStreamName) {
+        this.optionalAsClauseStreamName = optionalAsClauseStreamName;
+    }
+
     /**
      * Renders the clause in EPL.
      * @param writer to output to
@@ -89,6 +99,10 @@ public class UpdateClause implements Serializable
     {
         writer.write("update ");
         writer.write(eventType);
+        if (this.optionalAsClauseStreamName != null) {
+            writer.write(" as ");
+            writer.write(optionalAsClauseStreamName);
+        }
         writer.write(" set ");
         String delimiter = "";
         for (Pair<String, Expression> pair : assignments)

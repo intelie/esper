@@ -52,9 +52,15 @@ public class InternalEventRouterPreprocessor
 
     public EventBean process(EventBean event)
     {
+        if (entries.isEmpty())
+        {
+            return event;
+        }
+
         boolean haveCloned = false;
         EventBean[] eventsPerStream = new EventBean[1];
         eventsPerStream[0] = event;
+        InternalEventRouterEntry lastEntry = null;
 
         for (InternalEventRouterEntry entry : entries)
         {
@@ -73,6 +79,14 @@ public class InternalEventRouterPreprocessor
                 return null;
             }
 
+            // before applying the changes, indicate to last-entries output view
+            if (lastEntry != null)
+            {
+                lastEntry.getOutputView().indicate(event, true, copyMethod);
+                lastEntry = null;
+            }
+
+            // copy event for the first update that applies
             if (!haveCloned)
             {
                 event = copyMethod.copy(event);
@@ -86,8 +100,14 @@ public class InternalEventRouterPreprocessor
             }
             
             apply(event, eventsPerStream, entry);
+            lastEntry = entry;
         }
         
+        if (lastEntry != null)
+        {
+            lastEntry.getOutputView().indicate(event, false, copyMethod);
+        }
+
         return event;
     }
 

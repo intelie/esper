@@ -11,6 +11,7 @@ import com.espertech.esper.support.bean.SupportBeanCopyMethod;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.SupportSubscriber;
 import junit.framework.TestCase;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -26,15 +27,11 @@ public class TestUpdate extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    // TODO: test new EventTypeSPI methods
-    // TODO: subquery support
-    // TODO: more EHA tests
-    // TODO: type not found test
-
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("SupportBean", SupportBean.class);
+        config.getEngineDefaults().getExecution().setPrioritized(true);
 
         ConfigurationEventTypeLegacy legacy = new ConfigurationEventTypeLegacy();
         legacy.setCopyMethod("myCopyMethod");
@@ -51,6 +48,7 @@ public class TestUpdate extends TestCase
         type.put("p0", long.class);
         type.put("p1", long.class);
         type.put("p2", long.class);
+        type.put("p3", String.class);
         epService.getEPAdministrator().getConfiguration().addEventType("MyMapType", type);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanReadOnly", SupportBeanReadOnly.class);
@@ -84,6 +82,10 @@ public class TestUpdate extends TestCase
                    "Error starting statement: Property 'abc' is not available for write access [update MyXmlEvent set abc=1]");
         tryInvalid("update SupportBeanErrorTestingOne set value='1'",
                    "Error starting statement: The update-clause requires the underlying event representation to support copy (via Serializable by default) [update SupportBeanErrorTestingOne set value='1']");
+        tryInvalid("update SupportBean set longPrimitive=(select p0 from MyMapType.std:lastevent() where string=p3)",
+                   "Error starting statement: Property named 'string' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update SupportBean set longPrimitive=(select p0 from MyMapType.std:lastevent() where string=p3)]");
+        tryInvalid("update XYZ.GYH set a=1",
+                   "Failed to resolve event type: Event type or class named 'XYZ.GYH' was not found [update XYZ.GYH set a=1]");
     }
 
     public void testInsertIntoWBeanWhere() throws Exception
@@ -107,8 +109,8 @@ public class TestUpdate extends TestCase
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"O_E2", 10});
+        ArrayAssertionUtil.assertProps(listenerUpdate.assertOneGetNewAndReset(), fields, new Object[] {"O_E2", 10});
         ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E2", 1});
-        assertFalse(listenerUpdate.isInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportBean("E3", 2));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 2});
@@ -118,15 +120,15 @@ public class TestUpdate extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean("E4", 1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"O_E4", 10});
         ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E4", 1});
-        assertFalse(listenerUpdate.isInvoked());
+        ArrayAssertionUtil.assertProps(listenerUpdate.assertOneGetNewAndReset(), fields, new Object[] {"O_E4", 10});
 
-        EPStatement stmtUpdTwo = epService.getEPAdministrator().createEPL("update MyStream set intPrimitive=intPrimitive + 1000 where intPrimitive=2");
+        EPStatement stmtUpdTwo = epService.getEPAdministrator().createEPL("update MyStream as xyz set intPrimitive=xyz.intPrimitive + 1000 where intPrimitive=2");
         stmtUpdTwo.addListener(listenerUpdate);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E5", 2));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E5", 1002});
         ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E5", 2});
-        assertFalse(listenerUpdate.isInvoked());
+        ArrayAssertionUtil.assertProps(listenerUpdate.assertOneGetNewAndReset(), fields, new Object[] {"E5", 1002});
 
         stmtUpdOne.destroy();
 
@@ -138,14 +140,29 @@ public class TestUpdate extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean("E7", 2));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E7", 1002});
         ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E7", 2});
-        assertFalse(listenerUpdate.isInvoked());
+        ArrayAssertionUtil.assertProps(listenerUpdate.assertOneGetNewAndReset(), fields, new Object[] {"E7", 1002});
         assertFalse(stmtUpdTwo.iterator().hasNext());
+
+        stmtUpdTwo.removeAllListeners();
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E8", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E8", 1002});
+        ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E8", 2});
+        assertFalse(listenerUpdate.isInvoked());
+
+        SupportSubscriber subscriber = new SupportSubscriber();
+        stmtUpdTwo.setSubscriber(subscriber);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E9", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E9", 1002});
+        ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E9", 2});
+        ArrayAssertionUtil.assertProps(subscriber.assertOneGetNewAndReset(), fields, new Object[] {"E9", 1002});
 
         stmtUpdTwo.destroy();
 
-        epService.getEPRuntime().sendEvent(new SupportBean("E8", 2));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E8", 2});
-        ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E8", 2});
+        epService.getEPRuntime().sendEvent(new SupportBean("E10", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E10", 2});
+        ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E10", 2});
         assertFalse(listenerUpdate.isInvoked());
     }
 
@@ -430,8 +447,9 @@ public class TestUpdate extends TestCase
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setUpdateClause(UpdateClause.create("MyMapType", "p1", Expressions.constant("newvalue")));
+        model.getUpdateClause().setOptionalAsClauseStreamName("mytype");
         model.getUpdateClause().setOptionalWhereClause(Expressions.eq("p0", "E1"));
-        assertEquals("update MyMapType set p1 = \"newvalue\" where (p0 = \"E1\")", model.toEPL());
+        assertEquals("update MyMapType as mytype set p1 = \"newvalue\" where (p0 = \"E1\")", model.toEPL());
         
         // test map
         EPStatement stmtSelect = epService.getEPAdministrator().createEPL("select * from MyMapType");
@@ -443,7 +461,7 @@ public class TestUpdate extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", "newvalue"});
 
         // test unmap
-        String text = "update MyMapType set p1 = \"newvalue\" where (p0 = \"E1\")";
+        String text = "update MyMapType as mytype set p1 = \"newvalue\" where (p0 = \"E1\")";
         model = epService.getEPAdministrator().compileEPL(text);
         assertEquals(text, model.toEPL());
     }
@@ -504,18 +522,116 @@ public class TestUpdate extends TestCase
     {
         Map<String, Object> type = new HashMap<String, Object>();
         type.put("s0", String.class);
+        type.put("s1", int.class);
         epService.getEPAdministrator().getConfiguration().addEventType("MyMapTypeSelect", type);
 
         type = new HashMap<String, Object>();
-        type.put("w0", String.class);
+        type.put("w0", int.class);
         epService.getEPAdministrator().getConfiguration().addEventType("MyMapTypeWhere", type);
 
+        String[] fields = "string,intPrimitive".split(",");
         epService.getEPAdministrator().createEPL("insert into ABCStream select * from SupportBean");
-        epService.getEPAdministrator().createEPL("update ABCStream set string = (select s0 from MyMapTypeSelect.std:lastevent()) where intPrimitive in (select w0 from MyMapTypeWhere.win:keepall())");
+        EPStatement stmtUpd = epService.getEPAdministrator().createEPL("update ABCStream set string = (select s0 from MyMapTypeSelect.std:lastevent()) where intPrimitive in (select w0 from MyMapTypeWhere.win:keepall())");
         epService.getEPAdministrator().createEPL("select * from ABCStream").addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
-        assertFalse(listener.isInvoked());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 0});
+
+        epService.getEPRuntime().sendEvent(makeMap("w0", 1), "MyMapTypeWhere");
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, 1});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 2});
+
+        epService.getEPRuntime().sendEvent(makeMap("s0", "newvalue"), "MyMapTypeSelect");
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"newvalue", 1});        
+
+        epService.getEPRuntime().sendEvent(makeMap("s0", "othervalue"), "MyMapTypeSelect");
+        epService.getEPRuntime().sendEvent(new SupportBean("E5", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"othervalue", 1});
+
+        // test correlated subquery
+        stmtUpd.destroy();
+        stmtUpd = epService.getEPAdministrator().createEPL("update ABCStream set intPrimitive = (select s1 from MyMapTypeSelect.win:keepall() where s0 = ABCStream.string)");
+
+        // note that this will log an error (int primitive set to null), which is good, and leave the value unchanged
+        epService.getEPRuntime().sendEvent(new SupportBean("E6", 8));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E6", 8});
+
+        epService.getEPRuntime().sendEvent(makeMap("s0", "E7", "s1", 91), "MyMapTypeSelect");
+        epService.getEPRuntime().sendEvent(new SupportBean("E7", 0));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E7", 91});
+
+        // test correlated with as-clause
+        stmtUpd.destroy();
+        epService.getEPAdministrator().createEPL("update ABCStream as mystream set intPrimitive = (select s1 from MyMapTypeSelect.win:keepall() where s0 = mystream.string)");
+
+        // note that this will log an error (int primitive set to null), which is good, and leave the value unchanged
+        epService.getEPRuntime().sendEvent(new SupportBean("E8", 111));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E8", 111});
+
+        epService.getEPRuntime().sendEvent(makeMap("s0", "E9", "s1", -1), "MyMapTypeSelect");
+        epService.getEPRuntime().sendEvent(new SupportBean("E9", 0));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E9", -1});
+    }
+
+    public void testUnprioritizedOrder()
+    {
+        Map<String, Object> type = new HashMap<String, Object>();
+        type.put("s0", String.class);
+        type.put("s1", int.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyMapType", type);
+
+        String[] fields = "s0,s1".split(",");
+        epService.getEPAdministrator().createEPL("insert into ABCStream select * from MyMapType");
+        epService.getEPAdministrator().createEPL("@Name('A') update ABCStream set s0='A'");
+        epService.getEPAdministrator().createEPL("@Name('B') update ABCStream set s0='B'");
+        epService.getEPAdministrator().createEPL("@Name('C') update ABCStream set s0='C'");
+        epService.getEPAdministrator().createEPL("@Name('D') update ABCStream set s0='D'");
+        epService.getEPAdministrator().createEPL("select * from ABCStream").addListener(listener);
+
+        epService.getEPRuntime().sendEvent(makeMap("s0", "", "s1", 1), "MyMapType");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"D", 1});
+    }
+
+    public void testListenerDeliveryMultipleUpdate()
+    {
+        SupportUpdateListener listenerInsert = new SupportUpdateListener();
+        SupportUpdateListener listeners[] = new SupportUpdateListener[4];
+        for (int i = 0; i < listeners.length; i++)
+        {
+            listeners[i] = new SupportUpdateListener();
+        }
+        
+        String[] fields = "string,intPrimitive,value1".split(",");
+        epService.getEPAdministrator().createEPL("insert into ABCStream select *, 'orig' as value1 from SupportBean").addListener(listenerInsert);
+        epService.getEPAdministrator().createEPL("@Name('A') update ABCStream set string='A', value1='a' where intPrimitive in (1,2)").addListener(listeners[0]);
+        epService.getEPAdministrator().createEPL("@Name('B') update ABCStream set string='B', value1='b' where intPrimitive in (1,3)").addListener(listeners[1]);
+        epService.getEPAdministrator().createEPL("@Name('C') update ABCStream set string='C', value1='c' where intPrimitive in (2,3)").addListener(listeners[2]);
+        epService.getEPAdministrator().createEPL("select * from ABCStream").addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1, "orig"});
+        ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, new Object[] {"A", 1, "a"});
+        ArrayAssertionUtil.assertProps(listeners[1].assertOneGetNewAndReset(), fields, new Object[] {"B", 1, "b"});
+        assertFalse(listeners[2].isInvoked());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"B", 1, "b"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2, "orig"});
+        ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, new Object[] {"A", 2, "a"});
+        assertFalse(listeners[1].isInvoked());
+        ArrayAssertionUtil.assertProps(listeners[2].assertOneGetNewAndReset(), fields, new Object[] {"C", 2, "c"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"C", 2, "c"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 3));
+        ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E3", 3, "orig"});
+        assertFalse(listeners[0].isInvoked());
+        ArrayAssertionUtil.assertProps(listeners[1].assertOneGetNewAndReset(), fields, new Object[] {"B", 3, "b"});
+        ArrayAssertionUtil.assertProps(listeners[2].assertOneGetNewAndReset(), fields, new Object[] {"C", 3, "c"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"C", 3, "c"});
     }
 
     private Map<String, Object> makeMap(String prop1, Object val1, String prop2, Object val2, String prop3, Object val3)
@@ -532,6 +648,13 @@ public class TestUpdate extends TestCase
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(prop1, val1);
         map.put(prop2, val2);
+        return map;
+    }
+
+    private Map<String, Object> makeMap(String prop1, Object val1)
+    {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put(prop1, val1);
         return map;
     }
 

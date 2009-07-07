@@ -87,7 +87,7 @@ onExpr
 	;
 	
 updateExpr
-	:	^(u=UPDATE_EXPR CLASS_IDENT onSetAssignment+ whereClause[false]? { leaveNode($u); })
+	:	^(u=UPDATE_EXPR CLASS_IDENT IDENT? onSetAssignment+ whereClause[false]? { leaveNode($u); })
 	;
 	
 onDeleteExpr

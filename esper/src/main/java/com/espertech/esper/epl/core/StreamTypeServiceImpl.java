@@ -119,7 +119,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
         PropertyResolutionDescriptor desc = findByPropertyName(propertyName);
         if ((requireStreamNames) && (desc.getStreamNum() != 0))
         {
-            throw new PropertyNotFoundException("Property named '" + propertyName + "' must be prefixed by a stream name, use the as-clause to name the stream", null);
+            throw new PropertyNotFoundException("Property named '" + propertyName + "' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\"", null);
         }
         return desc;
     }

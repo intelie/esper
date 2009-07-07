@@ -27,8 +27,8 @@ import com.espertech.esper.type.RelationalOpEnum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Helper for mapping internal representations of a statement to the SODA object model for statements.
@@ -157,7 +157,7 @@ public class StatementSpecMapper
             return;
         }
         String type = ((FilterStreamSpecRaw) desc).getRawFilterSpec().getEventTypeName();
-        UpdateClause clause = new UpdateClause(type);
+        UpdateClause clause = new UpdateClause(type, updateDesc.getOptionalStreamName());
         for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())
         {
             Expression expr = unmapExpressionDeep(assignment.getExpression(), unmapContext);
@@ -683,7 +683,7 @@ public class StatementSpecMapper
         {
             whereClause = mapExpressionDeep(updateClause.getOptionalWhereClause(), mapContext);
         }
-        UpdateDesc desc = new UpdateDesc(assignments, whereClause);
+        UpdateDesc desc = new UpdateDesc(updateClause.getOptionalAsClauseStreamName(), assignments, whereClause);
         raw.setUpdateDesc(desc);
         FilterSpecRaw filterSpecRaw = new FilterSpecRaw(updateClause.getEventType(), Collections.EMPTY_LIST, null);
         raw.getStreamSpecs().add(new FilterStreamSpecRaw(filterSpecRaw, Collections.EMPTY_LIST, null, new StreamSpecOptions()));

@@ -12,8 +12,9 @@ public class InternalEventRouterEntry
     private final ExprNode[] assignments;
     private final EventBeanWriter writer;
     private final TypeWidener[] wideners;
+    private final InternalRoutePreprocessView outputView;
 
-    public InternalEventRouterEntry(int priority, boolean drop, ExprNode optionalWhereClause, ExprNode[] assignments, EventBeanWriter writer, TypeWidener[] wideners)
+    public InternalEventRouterEntry(int priority, boolean drop, ExprNode optionalWhereClause, ExprNode[] assignments, EventBeanWriter writer, TypeWidener[] wideners, InternalRoutePreprocessView outputView)
     {
         this.priority = priority;
         this.isDrop = drop;
@@ -21,6 +22,7 @@ public class InternalEventRouterEntry
         this.assignments = assignments;
         this.writer = writer;
         this.wideners = wideners;
+        this.outputView = outputView;
     }
 
     public int getPriority()
@@ -51,5 +53,9 @@ public class InternalEventRouterEntry
     public TypeWidener[] getWideners()
     {
         return wideners;
+    }
+
+    public InternalRoutePreprocessView getOutputView() {
+        return outputView;
     }
 }

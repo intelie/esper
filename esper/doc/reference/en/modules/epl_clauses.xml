@@ -4504,13 +4504,14 @@ where productId = bookId]]></programlisting>
 			The synopsis of <literal>update</literal> is as follows:
 		</para>
 
-		<synopsis>update <emphasis>event_type</emphasis>
-  set <emphasis>property_name</emphasis> = <emphasis>set_expression</emphasis> [, <emphasis>property_name</emphasis> = <emphasis>set_expression</emphasis>]
+		<synopsis>update <emphasis>event_type</emphasis> [as <emphasis>stream_name</emphasis>]
+  set <emphasis>property_name</emphasis> = <emphasis>set_expression</emphasis> [, <emphasis>property_name</emphasis> = <emphasis>set_expression</emphasis>] [,...]
   [where <emphasis>where_expression</emphasis>]
 </synopsis>
 
 		<para>
 			The <emphasis>event_type</emphasis> is the name of the type of events that the <literal>update</literal> applies to.
+			The optional <literal>as</literal> keyword can be used to assign a name to the event type for use with subqueries, for example.
 			Following the <literal>set</literal> keyword is a comma-separated list of property names and expressions that provide the event properties to change and values to set.
 		</para>
 
@@ -4518,6 +4519,10 @@ where productId = bookId]]></programlisting>
 			The optional <literal>where</literal> clause and expression can be used to filter out events to which to apply updates.
 		</para>
 		
+		<para>
+			Listeners to an <literal>update</literal> statement receive the updated event. Note that if there are multiple update statements that each apply to the same event then the engine will ensure that the output events delivered to listeners or subscribers are consistent with the then-current updated properties of the event. Iterating over an update statement returns no events.
+		</para>
+
 		<para>
 			As an example, the below statement assumes an <literal>AlertEvent</literal> event type that has properties named <literal>severity</literal> and <literal>reason</literal>:
 		</para>
@@ -4535,10 +4540,14 @@ where productId = bookId]]></programlisting>
 		</para>
 
 		<para>
+			When multiple update statements apply to the same event, the engine executes updates in the order in which update statements are created. We recommend the <literal>@Priority</literal> EPL annotation to define a deterministic order of processing updates, especially in the case where update statements get created and destroyed dynamically or multiple update statements update the same fields. The update statement with the highest <literal>@Priority</literal> value applies last.
+		</para>
+
+		<para>
 			The <literal>update</literal> clause can be used on streams populated via <literal>insert into</literal>, as this example utilizing a pattern demonstrates:
 		</para>		
 		<programlisting><![CDATA[insert into DoubleWithdrawalStream 
-select a.id, b.id, a.account, 0 as minimum 
+select a.id, b.id, a.account as account, 0 as minimum 
 from pattern [a=Withdrawal -> b=Withdrawal(id = a.id)]
 
 update DoubleWithdrawalStream set minimum = 1000 where account in (10002, 10003)]]></programlisting>
@@ -4568,8 +4577,15 @@ update DoubleWithdrawalStream set minimum = 1000 where account in (10002, 10003)
 		</para>
 
 		<para>
-			Listeners to an <literal>update</literal> statement receive no events, and iterating an <literal>update</literal> statement also returns no events.
-		</para>
+			Subqueries can also be used in all expressions including the optional <literal>where</literal> clause.
+		</para>		
+
+		<para>
+			This example demonstrates a correlated subquery in an assignment expression and also demonstrates the optional <literal>as</literal> keyword. It assigns the <literal>phone</literal> property of an <literal>AlertEvent</literal> event a new value based on the lookup within all unique <literal>PhoneEvent</literal> events (according to an <literal>empid</literal> property) correlating the <literal>AlertEvent</literal> property <literal>reporter</literal> with the <literal>empid</literal> property of <literal>PhoneEvent</literal>:
+		</para>		
+		<programlisting><![CDATA[update AlertEvent as ae
+  set phone = 
+    (select phone from PhoneEvent.std:unique(empid) where empid = ae.reporter)]]></programlisting>
 		
 		<para>
 			When using <literal>update</literal>, please note these limitations:

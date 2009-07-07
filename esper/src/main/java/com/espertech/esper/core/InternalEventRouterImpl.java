@@ -33,7 +33,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
     {
         this.runtime = runtime;
         this.preprocessors = new ConcurrentHashMap<EventType, NullableObject<InternalEventRouterPreprocessor>>();
-        this.descriptors = new HashMap<UpdateDesc, IRDescEntry>();
+        this.descriptors = new LinkedHashMap<UpdateDesc, IRDescEntry>();
     }
 
     public boolean isHasPreprocessing()
@@ -61,7 +61,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
         }
     }
 
-    public void addPreprocessing(EventType eventType, UpdateDesc desc, Annotation[] annotations)
+    public void addPreprocessing(EventType eventType, UpdateDesc desc, Annotation[] annotations, InternalRoutePreprocessView outputView)
             throws ExprValidationException
     {
         if (log.isInfoEnabled())
@@ -99,7 +99,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
             throw new ExprValidationException("The update-clause requires the underlying event representation to support copy (via Serializable by default)");
         }
 
-        descriptors.put(desc, new IRDescEntry(eventType, annotations, wideners));
+        descriptors.put(desc, new IRDescEntry(eventType, annotations, wideners, outputView));
 
         // remove all preprocessors for this type as well as any known child types, forcing re-init on next use
         removePreprocessors(eventType);
@@ -222,7 +222,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
                 eventPropertiesWritten.add(assignment.getVariableName());
             }
             EventBeanWriter writer = eventTypeSPI.getWriter(properties.toArray(new String[properties.size()]));
-            desc.add(new InternalEventRouterEntry(priority, isDrop, entry.getKey().getOptionalWhereClause(), expressions, writer, entry.getValue().getWideners()));
+            desc.add(new InternalEventRouterEntry(priority, isDrop, entry.getKey().getOptionalWhereClause(), expressions, writer, entry.getValue().getWideners(), entry.getValue().getOutputView()));
         }
 
         EventBeanCopyMethod copyMethod = eventTypeSPI.getCopyMethod(eventPropertiesWritten.toArray(new String[eventPropertiesWritten.size()]));
@@ -238,12 +238,14 @@ public class InternalEventRouterImpl implements InternalEventRouter
         private EventType eventType;
         private Annotation[] annotations;
         private TypeWidener[] wideners;
+        private InternalRoutePreprocessView outputView;
 
-        public IRDescEntry(EventType eventType, Annotation[] annotations, TypeWidener[] wideners)
+        public IRDescEntry(EventType eventType, Annotation[] annotations, TypeWidener[] wideners, InternalRoutePreprocessView outputView)
         {
             this.eventType = eventType;
             this.annotations = annotations;
             this.wideners = wideners;
+            this.outputView = outputView;
         }
 
         public EventType getEventType()
@@ -259,6 +261,10 @@ public class InternalEventRouterImpl implements InternalEventRouter
         public TypeWidener[] getWideners()
         {
             return wideners;
+        }
+
+        public InternalRoutePreprocessView getOutputView() {
+            return outputView;
         }
     }
 }
