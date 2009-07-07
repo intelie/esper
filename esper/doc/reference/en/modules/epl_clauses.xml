@@ -4520,7 +4520,7 @@ where productId = bookId]]></programlisting>
 		</para>
 		
 		<para>
-			Listeners to an <literal>update</literal> statement receive the updated event. Note that if there are multiple update statements that each apply to the same event then the engine will ensure that the output events delivered to listeners or subscribers are consistent with the then-current updated properties of the event. Iterating over an update statement returns no events.
+			Listeners to an <literal>update</literal> statement receive the updated event in the insert stream (new data) and the event prior to the update in the remove stream (old data). Note that if there are multiple update statements that all apply to the same event then the engine will ensure that the output events delivered to listeners or subscribers are consistent with the then-current updated properties of the event (if necessary making event copies, as described below, in the case that listeners are attached to update statements). Iterating over an update statement returns no events.
 		</para>
 
 		<para>

@@ -41,29 +41,33 @@ public class InternalEventRouterPreprocessor
     };
 
     private final EventBeanCopyMethod copyMethod;
-    private final List<InternalEventRouterEntry> entries;
+    private final InternalEventRouterEntry[] entries;
+    private final boolean empty;
 
     public InternalEventRouterPreprocessor(EventBeanCopyMethod copyMethod, List<InternalEventRouterEntry> entries)
     {
         this.copyMethod = copyMethod;
-        this.entries = entries;
         Collections.sort(entries, comparator);
+        this.entries = entries.toArray(new InternalEventRouterEntry[entries.size()]);
+        empty = this.entries.length == 0;
     }
 
     public EventBean process(EventBean event)
     {
-        if (entries.isEmpty())
+        if (empty)
         {
             return event;
         }
 
+        EventBean oldEvent = event;
         boolean haveCloned = false;
         EventBean[] eventsPerStream = new EventBean[1];
         eventsPerStream[0] = event;
         InternalEventRouterEntry lastEntry = null;
 
-        for (InternalEventRouterEntry entry : entries)
+        for (int i = 0; i < entries.length; i++)
         {
+            InternalEventRouterEntry entry = entries[i];
             ExprNode whereClause = entry.getOptionalWhereClause();
             if (whereClause != null)
             {
@@ -82,8 +86,20 @@ public class InternalEventRouterPreprocessor
             // before applying the changes, indicate to last-entries output view
             if (lastEntry != null)
             {
-                lastEntry.getOutputView().indicate(event, true, copyMethod);
-                lastEntry = null;
+                InternalRoutePreprocessView view = lastEntry.getOutputView();
+                if (view.isIndicate())
+                {
+                    EventBean copied = copyMethod.copy(event);
+                    view.indicate(copied, oldEvent);
+                    oldEvent = copied;
+                }
+                else
+                {
+                    if (entries[i].getOutputView().isIndicate())
+                    {
+                        oldEvent = copyMethod.copy(event);
+                    }
+                }
             }
 
             // copy event for the first update that applies
@@ -105,7 +121,11 @@ public class InternalEventRouterPreprocessor
         
         if (lastEntry != null)
         {
-            lastEntry.getOutputView().indicate(event, false, copyMethod);
+            InternalRoutePreprocessView view = lastEntry.getOutputView();
+            if (view.isIndicate())
+            {
+                view.indicate(event, oldEvent);
+            }
         }
 
         return event;

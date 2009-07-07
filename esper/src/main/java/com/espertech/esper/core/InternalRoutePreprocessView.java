@@ -45,31 +45,24 @@ public class InternalRoutePreprocessView extends ViewSupport
         return noiter;
     }
 
-    public void indicate(EventBean event, boolean isRequiresCopy, EventBeanCopyMethod copyMethod) {
-
-        boolean produceOutputEvents = (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic());
-
-        if (!produceOutputEvents)
-        {
-            return;
-        }
-
-        EventBean copiedEvent = event;
-        if (isRequiresCopy)
-        {
-            copiedEvent = copyMethod.copy(event);
-        }
-
+    public boolean isIndicate()
+    {
+        return (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic());
+    }
+    
+    public void indicate(EventBean newEvent, EventBean oldEvent)
+    {
         try
         {
             if (statementResultService.isMakeNatural())
             {
-                NaturalEventBean natural = new NaturalEventBean(eventType, new Object[] {event.getUnderlying()}, copiedEvent);
-                this.updateChildren(new NaturalEventBean[]{natural}, null);                
+                NaturalEventBean natural = new NaturalEventBean(eventType, new Object[] {newEvent.getUnderlying()}, newEvent);
+                NaturalEventBean naturalOld = new NaturalEventBean(eventType, new Object[] {oldEvent.getUnderlying()}, oldEvent);
+                this.updateChildren(new NaturalEventBean[]{natural}, new NaturalEventBean[]{naturalOld});
             }
             else
             {
-                this.updateChildren(new EventBean[]{copiedEvent}, null);
+                this.updateChildren(new EventBean[]{newEvent}, new EventBean[]{oldEvent});
             }
         }
         catch (RuntimeException ex)
