@@ -19,6 +19,7 @@ import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.bean.BeanEventTypeFactory;
 import com.espertech.esper.event.map.MapEventBean;
 import com.espertech.esper.event.map.MapEventType;
+import com.espertech.esper.event.MappedEventBean;
 import com.espertech.esper.event.xml.*;
 import com.espertech.esper.plugin.*;
 import com.espertech.esper.util.URIUtil;

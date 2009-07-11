@@ -3,13 +3,13 @@ package com.espertech.esper.event;
 import java.util.Map;
 
 /**
- * Mapped beans implement this interface.
+ * For events that are maps of properties.
  */
 public interface MappedEventBean
 {
     /**
-     * Returns properties.
-     * @return props
+     * Returns property map.
+     * @return properties
      */
     public Map<String, Object> getProperties();
 }

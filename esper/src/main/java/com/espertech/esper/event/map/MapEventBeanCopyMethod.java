@@ -2,6 +2,7 @@ package com.espertech.esper.event.map;
 
 import com.espertech.esper.event.EventBeanCopyMethod;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.MappedEventBean;
 import com.espertech.esper.client.EventBean;
 
 import java.util.Map;

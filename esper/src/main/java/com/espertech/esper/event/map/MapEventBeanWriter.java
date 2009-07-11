@@ -1,6 +1,7 @@
 package com.espertech.esper.event.map;
 
 import com.espertech.esper.event.EventBeanWriter;
+import com.espertech.esper.event.MappedEventBean;
 import com.espertech.esper.client.EventBean;
 
 import java.util.Map;
