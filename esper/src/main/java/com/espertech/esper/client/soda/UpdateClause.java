@@ -97,7 +97,7 @@ public class UpdateClause implements Serializable
      */
     public void toEPL(StringWriter writer)
     {
-        writer.write("update ");
+        writer.write("update istream ");
         writer.write(eventType);
         if (this.optionalAsClauseStreamName != null) {
             writer.write(" as ");

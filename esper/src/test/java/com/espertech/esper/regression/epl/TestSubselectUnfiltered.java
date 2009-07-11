@@ -188,7 +188,7 @@ public class TestSubselectUnfiltered extends TestCase {
                    "Error starting statement: Subselect filter expression must return a boolean value [select (select id from S1.std:lastevent() where 'a') from S0]");
 
         tryInvalid("select (select id from S1.std:lastevent() where id = p00) from S0",
-                   "Error starting statement: Property named 'p00' must be prefixed by a stream name, use the as-clause to name the stream [select (select id from S1.std:lastevent() where id = p00) from S0]");
+                   "Error starting statement: Property named 'p00' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [select (select id from S1.std:lastevent() where id = p00) from S0]");
 
         tryInvalid("select id in (select * from S1.win:length(1000)) as value from S0",
                    "Error starting statement: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select id in (select * from S1.win:length(1000)) as value from S0]");

@@ -68,7 +68,7 @@ public class TestMTUpdate extends TestCase
 
         for (int i = 0; i < 50; i++)
         {
-            EPStatement stmtUpd = engine.getEPAdministrator().createEPL("update " + SupportBean.class.getName() + " set string='a'");
+            EPStatement stmtUpd = engine.getEPAdministrator().createEPL("update istream " + SupportBean.class.getName() + " set string='a'");
             Thread.sleep(10);
             stmtUpd.destroy();
         }

@@ -87,7 +87,7 @@ public class StatementSpecMapper
         EPStatementObjectModel model = new EPStatementObjectModel();
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model, unmapContext);
         unmapCreateVariable(statementSpec.getCreateVariableDesc(), model, unmapContext);
-        unmapUpdateClause(statementSpec.getStreamSpecs().get(0), statementSpec.getUpdateDesc(), model, unmapContext);
+        unmapUpdateClause(statementSpec.getStreamSpecs(), statementSpec.getUpdateDesc(), model, unmapContext);
         unmapOnClause(statementSpec.getOnTriggerDesc(), model, unmapContext);
         InsertIntoClause insertIntoClause = unmapInsertInto(statementSpec.getInsertIntoDesc());
         model.setInsertInto(insertIntoClause);
@@ -150,13 +150,13 @@ public class StatementSpecMapper
         }
     }
 
-    private static void unmapUpdateClause(StreamSpecRaw desc, UpdateDesc updateDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    private static void unmapUpdateClause(List<StreamSpecRaw> desc, UpdateDesc updateDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
         if (updateDesc == null)
         {
             return;
         }
-        String type = ((FilterStreamSpecRaw) desc).getRawFilterSpec().getEventTypeName();
+        String type = ((FilterStreamSpecRaw) desc.get(0)).getRawFilterSpec().getEventTypeName();
         UpdateClause clause = new UpdateClause(type, updateDesc.getOptionalStreamName());
         for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())
         {

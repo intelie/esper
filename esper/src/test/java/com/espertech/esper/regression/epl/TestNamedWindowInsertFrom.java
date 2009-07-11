@@ -208,6 +208,8 @@ public class TestNamedWindowInsertFrom extends TestCase
         epService.getEPAdministrator().createEPL("insert into MyWindowTwo select * from VarStream");
         epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
         epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+        EventBean[] events = ArrayAssertionUtil.iteratorToArray(stmt.iterator());
+        System.out.println(events[0].get("id?"));
         ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), "id?".split(","), new Object[][] {{"A1"}, {"B1"}});
     }
 

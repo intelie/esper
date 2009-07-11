@@ -113,7 +113,7 @@ public class WrapperEventType implements EventTypeSPI
             return cachedGetter;
         }
 
-		if (underlyingMapType.isProperty(property))
+		if (underlyingMapType.isProperty(property) && (property.indexOf('?') == -1))
 		{
             final EventPropertyGetter mapGetter = underlyingMapType.getGetter(property);
             EventPropertyGetter getter = new EventPropertyGetter()

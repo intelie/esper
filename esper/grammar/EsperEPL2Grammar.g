@@ -580,7 +580,7 @@ onExpr
 	;
 	
 updateExpr
-	:	UPDATE classIdentifier (AS i=IDENT | i=IDENT)?
+	:	UPDATE ISTREAM classIdentifier (AS i=IDENT | i=IDENT)?
 		SET onSetAssignment (COMMA onSetAssignment)* 
 		(WHERE whereClause)?		
 		-> ^(UPDATE_EXPR classIdentifier $i? onSetAssignment+ whereClause?)
