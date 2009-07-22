@@ -18,8 +18,12 @@ import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
+import com.espertech.esper.filter.FilterServiceProvider;
+import com.espertech.esper.filter.FilterServiceSPI;
 import com.espertech.esper.plugin.PluginLoader;
 import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.schedule.SchedulingServiceImpl;
+import com.espertech.esper.schedule.SchedulingServiceSPI;
 import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
@@ -70,6 +74,14 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         serviceListeners = new CopyOnWriteArraySet<EPServiceStateListener>();
         statementListeners = new CopyOnWriteArraySet<EPStatementStateListener>();
         doInitialize();
+    }
+
+    public EPRuntimeIsolated getIsolatedRuntime() {
+        FilterServiceSPI filterService = FilterServiceProvider.newService();
+        SchedulingServiceSPI scheduleService = new SchedulingServiceImpl(engine.getServices().getTimeSource());
+
+        EPIsolationUnitServices services = new EPIsolationUnitServices(filterService, scheduleService);
+        return new EPIsolationUnitImpl(services, engine.getServices());
     }
 
     /**
@@ -355,9 +367,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         // New runtime
         EPRuntimeImpl runtime = new EPRuntimeImpl(services);
 
-        InternalEventRouterImpl internalEventRouterImpl = new InternalEventRouterImpl(runtime);
-        runtime.setInternalEventRouterImpl(internalEventRouterImpl);
-        services.setInternalEventRouter(internalEventRouterImpl);
+        runtime.setInternalEventRouterImpl(services.getInternalEventRouter());
+        services.setInternalEventEngineRouteDest(runtime);
 
         // Configure services to use the new runtime
         services.getTimerService().setCallback(runtime);

@@ -17,6 +17,7 @@ import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementResultService;
+import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
 
@@ -87,9 +88,9 @@ public class NamedWindowProcessor
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @return on trigger handling view
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext)
     {
-        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, resultSetProcessor, statementHandle, statementResultService);
+        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext);
     }
 
     /**

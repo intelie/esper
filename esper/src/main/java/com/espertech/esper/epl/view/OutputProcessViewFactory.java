@@ -52,7 +52,7 @@ public class OutputProcessViewFactory
                 isRouteRStream = !statementSpec.getInsertIntoDesc().isIStream();
             }
 
-            outputStrategy = new OutputStrategyPostProcess(isRouted, isRouteRStream, statementSpec.getSelectStreamSelectorEnum(), internalEventRouter, statementContext.getEpStatementHandle());
+            outputStrategy = new OutputStrategyPostProcess(isRouted, isRouteRStream, statementSpec.getSelectStreamSelectorEnum(), internalEventRouter, statementContext.getEpStatementHandle(), statementContext);
         }
         else
         {

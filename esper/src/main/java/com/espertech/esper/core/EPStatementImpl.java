@@ -47,6 +47,7 @@ public class EPStatementImpl implements EPStatementSPI
     private StatementMetadata statementMetadata;
     private Object userObject;
     private Annotation[] annotations;
+    private StatementContext statementContext;
 
     /**
      * Ctor.
@@ -84,13 +85,15 @@ public class EPStatementImpl implements EPStatementSPI
                               TimeSourceService timeSourceService,
                               StatementMetadata statementMetadata,
                               Object userObject,
-                              Annotation[] annotations)
+                              Annotation[] annotations,
+                              StatementContext statementContext)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
         this.statementName = statementName;
         this.expressionText = expressionText;
         this.statementLifecycleSvc = statementLifecycleSvc;
+        this.statementContext = statementContext;
         statementListenerSet = new EPStatementListenerSet();
         if (isBlockingDispatch)
         {
@@ -473,5 +476,10 @@ public class EPStatementImpl implements EPStatementSPI
     public Annotation[] getAnnotations()
     {
         return annotations;
+    }
+
+    public StatementContext getStatementContext()
+    {
+        return statementContext;
     }
 }

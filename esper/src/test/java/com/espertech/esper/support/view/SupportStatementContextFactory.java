@@ -62,6 +62,7 @@ public class SupportStatementContextFactory
                 new StatementResultServiceImpl(null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading())), // statement result svc
                 null, // resolution URIs
                 new ValueAddEventServiceImpl(), // revison svc
-                config);
+                config,
+                null);
     }
 }

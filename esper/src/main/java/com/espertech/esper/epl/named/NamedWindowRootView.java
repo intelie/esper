@@ -32,6 +32,7 @@ import com.espertech.esper.view.Viewable;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementResultService;
+import com.espertech.esper.core.StatementContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -134,7 +135,7 @@ public class NamedWindowRootView extends ViewSupport
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @return base view for on-trigger expression
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext)
     {
         // Determine strategy for deletion and index table to use (if any)
         Pair<LookupStrategy,PropertyIndexedEventTable> strategy = getStrategyPair(onTriggerDesc, joinExpr, filterEventType);
@@ -151,7 +152,7 @@ public class NamedWindowRootView extends ViewSupport
         }
         else
         {
-            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, resultSetProcessor, statementHandle, statementResultService);
+            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext);
         }
     }
 

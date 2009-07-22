@@ -134,7 +134,7 @@ public class EPStatementStartMethod
             triggereventTypeName = filterStreamSpec.getFilterSpec().getFilterForEventTypeName();
 
             // Since only for non-joins we get the existing stream's lock and try to reuse it's views
-            Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
+            Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
                     services.getFilterService(), statementContext.getEpStatementHandle(), false, false);
             eventStreamParentViewable = streamLockPair.getFirst();
 
@@ -225,7 +225,7 @@ public class EPStatementStartMethod
                     statementSpec, statementContext, typeService, null, new boolean[0], true);
 
             InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
-            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService());
+            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext);
             eventStreamParentViewable.addView(onExprView);
         }
         else if (statementSpec.getOnTriggerDesc() instanceof OnTriggerSetDesc)
@@ -288,7 +288,7 @@ public class EPStatementStartMethod
                 index++;
             }
 
-            onExprView = new RouteResultView(desc.isFirst(), streamEventType, statementContext.getEpStatementHandle(), services.getInternalEventRouter(), processors, whereClauses);
+            onExprView = new RouteResultView(desc.isFirst(), streamEventType, statementContext.getEpStatementHandle(), services.getInternalEventRouter(), processors, whereClauses, statementContext);
             eventStreamParentViewable.addView(onExprView);
         }
 
@@ -431,7 +431,7 @@ public class EPStatementStartMethod
 
         // Create view factories and parent view based on a filter specification
         // Since only for non-joins we get the existing stream's lock and try to reuse it's views
-        Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
+        Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
                 services.getFilterService(), statementContext.getEpStatementHandle(), false, false);
         eventStreamParentViewable = streamLockPair.getFirst();
 
@@ -637,7 +637,7 @@ public class EPStatementStartMethod
                 eventTypeNamees[i] = filterStreamSpec.getFilterSpec().getFilterForEventTypeName();
 
                 // Since only for non-joins we get the existing stream's lock and try to reuse it's views
-                Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
+                Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
                         services.getFilterService(), statementContext.getEpStatementHandle(), isJoin, false);
                 eventStreamParentViewable[i] = streamLockPair.getFirst();
 
@@ -1335,7 +1335,7 @@ public class EPStatementStartMethod
                 subselectStreamNumber++;
 
                 // Register filter, create view factories
-                Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
+                Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
                         services.getFilterService(), statementContext.getEpStatementHandle(), isJoin, true);
                 Viewable viewable = streamLockPair.getFirst();
                 ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), filterStreamSpec.getOptions(), statementContext);

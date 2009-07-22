@@ -86,7 +86,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * @param epStatementHandle is the statement resource lock
      * @return newly createdStatement event stream, not reusing existing instances
      */
-    public Pair<EventStream, ManagedLock> createStream(final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect)
+    public Pair<EventStream, ManagedLock> createStream(final String statementId, final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect)
     {
         if (log.isDebugEnabled())
         {
@@ -130,6 +130,11 @@ public class StreamFactorySvcImpl implements StreamFactoryService
         {
             filterCallback = new FilterHandleCallback()
             {
+                public String getStatementId()
+                {
+                    return statementId;
+                }
+
                 public void matchFound(EventBean event)
                 {
                     EventBean[] result = filterSpec.getOptionalPropertyEvaluator().getProperty(event);
@@ -150,6 +155,11 @@ public class StreamFactorySvcImpl implements StreamFactoryService
         {
             filterCallback = new FilterHandleCallback()
             {
+                public String getStatementId()
+                {
+                    return statementId;
+                }
+
                 public void matchFound(EventBean event)
                 {
                     eventStream.insert(event);

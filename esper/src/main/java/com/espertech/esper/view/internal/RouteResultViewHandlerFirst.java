@@ -3,6 +3,7 @@ package com.espertech.esper.view.internal;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.EPStatementHandle;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
@@ -17,6 +18,7 @@ public class RouteResultViewHandlerFirst implements RouteResultViewHandler
     private final ResultSetProcessor[] processors;
     private final ExprNode[] whereClauses;
     private final EventBean[] eventsPerStream = new EventBean[1];
+    private final StatementContext statementContext;
 
     /**
      * Ctor.
@@ -25,12 +27,13 @@ public class RouteResultViewHandlerFirst implements RouteResultViewHandler
      * @param processors select clauses
      * @param whereClauses where clauses
      */
-    public RouteResultViewHandlerFirst(EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, ResultSetProcessor[] processors, ExprNode[] whereClauses)
+    public RouteResultViewHandlerFirst(EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, ResultSetProcessor[] processors, ExprNode[] whereClauses, StatementContext statementContext)
     {
         this.internalEventRouter = internalEventRouter;
         this.epStatementHandle = epStatementHandle;
         this.processors = processors;
         this.whereClauses = whereClauses;
+        this.statementContext = statementContext;
     }
 
     public boolean handle(EventBean event)
@@ -59,7 +62,7 @@ public class RouteResultViewHandlerFirst implements RouteResultViewHandler
             UniformPair<EventBean[]> result = processors[index].processViewResult(eventsPerStream, null, false);
             if ((result != null) && (result.getFirst() != null) && (result.getFirst().length > 0))
             {
-                internalEventRouter.route(result.getFirst()[0], epStatementHandle);
+                internalEventRouter.route(result.getFirst()[0], epStatementHandle, statementContext.getInternalEventEngineRouteDest());
             }
         }
         

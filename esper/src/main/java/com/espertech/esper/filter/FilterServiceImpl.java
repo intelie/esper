@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
  * Implementation of the filter service interface.
  * Does not allow the same filter callback to be added more then once.
  */
-public final class FilterServiceImpl implements FilterService
+public final class FilterServiceImpl implements FilterServiceSPI
 {
     private static final Log log = LogFactory.getLog(FilterServiceImpl.class);
     private final EventTypeIndexBuilder indexBuilder;
@@ -68,5 +68,15 @@ public final class FilterServiceImpl implements FilterService
 
     public void resetStats() {
         numEventsEvaluated.set(0);
+    }
+
+    public FilterSet take(String statementId)
+    {
+        return indexBuilder.take(statementId);
+    }
+
+    public void apply(FilterSet filterSet)
+    {
+        indexBuilder.apply(filterSet);
     }
 }

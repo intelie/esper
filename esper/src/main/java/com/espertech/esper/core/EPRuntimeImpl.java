@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Implements runtime interface. Also accepts timer callbacks for synchronizing time events with regular events
  * sent in.
  */
-public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerCallback
+public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerCallback, InternalEventRouteDest
 {
     private EPServicesContext services;
     private boolean isLatchStatementInsertStream;

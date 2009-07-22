@@ -5,6 +5,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.NullIterator;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.view.ViewSupport;
@@ -29,7 +30,7 @@ public class RouteResultView extends ViewSupport
      * @param processors processors for select clauses
      * @param whereClauses where expressions
      */
-    public RouteResultView(boolean isFirst, EventType eventType, EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, ResultSetProcessor[] processors, ExprNode[] whereClauses)
+    public RouteResultView(boolean isFirst, EventType eventType, EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, ResultSetProcessor[] processors, ExprNode[] whereClauses, StatementContext statementContext)
     {
         if (whereClauses.length != processors.length)
         {
@@ -39,11 +40,11 @@ public class RouteResultView extends ViewSupport
         this.eventType = eventType;
         if (isFirst)
         {
-            handler = new RouteResultViewHandlerFirst(epStatementHandle, internalEventRouter, processors, whereClauses);
+            handler = new RouteResultViewHandlerFirst(epStatementHandle, internalEventRouter, processors, whereClauses, statementContext);
         }
         else
         {
-            handler = new RouteResultViewHandlerAll(epStatementHandle, internalEventRouter, processors, whereClauses);
+            handler = new RouteResultViewHandlerAll(epStatementHandle, internalEventRouter, processors, whereClauses, statementContext);
         }
     }
 

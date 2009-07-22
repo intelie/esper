@@ -137,7 +137,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 new StatementResultServiceImpl(engineServices.getStatementLifecycleSvc(), engineServices.getMetricsReportingService(), engineServices.getThreadingService()),
                 engineServices.getEngineSettingsService().getPlugInEventTypeResolutionURIs(),
                 engineServices.getValueAddEventService(),
-                engineServices.getConfigSnapshot());
+                engineServices.getConfigSnapshot(),
+                engineServices.getInternalEventEngineRouteDest());
     }
 
     /**

@@ -33,11 +33,13 @@ import com.espertech.esper.event.vaevent.ValueAddEventServiceImpl;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.filter.FilterServiceProvider;
+import com.espertech.esper.filter.FilterServiceSPI;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.plugin.PlugInEventRepresentationContext;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.SchedulingServiceProvider;
+import com.espertech.esper.schedule.SchedulingServiceSPI;
 import com.espertech.esper.timer.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ManagedReadWriteLock;
@@ -65,7 +67,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         ManagedReadWriteLock eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock", false);
 
         TimeSourceService timeSourceService = makeTimeSource(configSnapshot);
-        SchedulingService schedulingService = SchedulingServiceProvider.newService(timeSourceService);
+        SchedulingServiceSPI schedulingService = SchedulingServiceProvider.newService(timeSourceService);
         EngineImportService engineImportService = makeEngineImportService(configSnapshot);
         EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults(), configSnapshot.getPlugInEventTypeResolutionURIs());
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
@@ -95,7 +97,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         StatementLockFactory statementLockFactory = new StatementLockFactoryImpl();
         StreamFactoryService streamFactoryService = StreamFactoryServiceProvider.newService(configSnapshot.getEngineDefaults().getViewResources().isShareViews());
-        FilterService filterService = FilterServiceProvider.newService();
+        FilterServiceSPI filterService = FilterServiceProvider.newService();
         NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService, engineSettingsService.getEngineSettings().getExecution().isPrioritized());
 
         ValueAddEventService valueAddEventService = new ValueAddEventServiceImpl();
@@ -106,13 +108,15 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         ThreadingService threadingService = new ThreadingServiceImpl(configSnapshot.getEngineDefaults().getThreading());
 
+        InternalEventRouterImpl internalEventRouterImpl = new InternalEventRouterImpl();
+
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
                 namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
-                configSnapshot, threadingService);
+                configSnapshot, threadingService, internalEventRouterImpl);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

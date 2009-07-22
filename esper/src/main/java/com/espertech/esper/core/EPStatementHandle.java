@@ -70,6 +70,10 @@ public class EPStatementHandle implements MetaDefItem, Serializable
         this.canSelfJoin = canSelfJoin;
     }
 
+    public String getStatementId() {
+        return statementId;
+    }
+
     /**
      * Sets the factory for latches in insert-into guaranteed order of delivery.
      * @param insertIntoLatchFactory latch factory for the statement if it performs insert-into (route) of events

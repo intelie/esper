@@ -1354,7 +1354,11 @@ ThreadPoolExecutor threadpool = spi.getThreadingService().getInboundThreadPool()
 		<indexterm><primary>external time</primary></indexterm>
 		
         <para>
-			There are two modes for an engine to keep track of time: The internal timer based on JVM system time (the default), and externally-controlled time giving your application full control over the concept of time within an engine. 
+			There are two modes for an engine to keep track of time: The internal timer based on JVM system time (the default), and externally-controlled time giving your application full control over the concept of time within an engine or isolated runtime.
+        </para>
+
+        <para>
+			An isolated runtime is an execution environment separate from the engine runtime, allowing full control over the concept of time for a group of statements, as further described in <xref linkend="api-isolatedruntime"/>.
         </para>
 
         <para>
@@ -1466,6 +1470,70 @@ epRuntime().sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
 			And therefore, if your external timer events send long values that represents nanoseconds (1E-9 sec), then your time window interval must be 1000000-times larger, i.e. "win:time(1000000)" becomes a 1-second time window.
         </para>
 
+    </sect1>
+
+    <sect1 id="api-isolatedruntime">
+        <title>Runtime Isolation</title>
+
+        <para>
+			An isolated runtime is a separate execution environment that may hold one or more statements. Statements are moved into an isolated runtime to isolate the statement from engine runtime event and timer-based processing. Statements are returned to the engine runtime when statements should continue to receive incoming events and take part in time-based processing of the engine runtime.
+        </para>
+
+        <para>
+			As discussed before, a single Java Virtual Machine may hold multiple Esper engine instances unique by engine URI, each with its own independent configuration. Within an Esper engine instance the default execution environment for statements is the <literal>EPRuntime</literal> engine runtime, which coordinates all statement's reaction to incoming events and to time passing (via internal or external timer).
+        </para>
+
+        <para>
+			Subordinate to an Esper engine instance your application can additionally allocate multiple isolated execution environments (isolated runtimes), uniquely identified by a name and represented by the <literal>EPRuntimeIsolated</literal> interface. In the isolated runtime, time passes only 
+			when explicitly sending timer events to the <literal>EPRuntimeIsolated</literal> instance. Only events explicitly sent to the isolated runtime are visible to statements within.
+        </para>
+
+        <para>
+			Isolated runtimes allow an application to:
+        </para>
+        
+		<orderedlist>
+			<listitem>
+				<para>
+                    Suspend statements without loosing statement state that may have accumulated for a started statement.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+				  Control the concept of time separately for a set of statements.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                   Initialize statement state by replaying events.
+                </para>
+			</listitem>
+		</orderedlist>
+
+        <para>
+			While a statement resides in an isolated runtime it receives only those events explicitly sent to the isolated runtime, and performs time-based processing based on the timer events provided to that isolated runtime.
+        </para>
+
+        <para>
+			Use the <literal>getIsolatedRuntime</literal> method on <literal>EPServiceProvider</literal> passing a name to obtain an isolated runtime:
+        </para>
+		<programlisting><![CDATA[EPRuntimeIsolated unit = epServiceManager.getIsolatedRuntime("name");]]></programlisting>
+
+        <para>
+			Set the start time for your isolated runtime via the <literal>CurrentTimeEvent</literal> timer event:
+        </para>
+		<programlisting><![CDATA[unit.sendEvent(new CurrentTimeEvent(startInMillis));]]></programlisting>
+
+        <para>
+			Use the <literal>takeStatement</literal> method on <literal>EPRuntimeIsolated</literal> to move a statement out of the engine runtime into the isolated runtime:
+        </para>
+		<programlisting><![CDATA[EPStatement stmt = epAdmin.createEPL("select * from TemperatureEvent");
+unit.takeStatement(stmt);]]></programlisting>
+
+		<para>
+			To return a statement back to the engine runtime, use the <literal>returnStatement</literal> method on <literal>EPRuntimeIsolated</literal>:
+		</para>
+		<programlisting><![CDATA[unit.returnStatement(stmt);]]></programlisting>
     </sect1>
 
     <sect1 id="api-soda">

@@ -56,4 +56,6 @@ public interface EPStatementSPI extends EPStatement
      * @return statement metadata
      */
     public StatementMetadata getStatementMetadata();
+
+    public StatementContext getStatementContext();
 }

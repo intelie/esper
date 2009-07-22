@@ -37,7 +37,7 @@ public final class StatementContext
     private final String statementId;
     private final String statementName;
     private final String expression;
-    private final SchedulingService schedulingService;
+    private SchedulingService schedulingService;
     private final ScheduleBucket scheduleBucket;
     private final EventAdapterService eventAdapterService;
     private final EPStatementHandle epStatementHandle;
@@ -47,7 +47,8 @@ public final class StatementContext
     private final StatementStopService statementStopService;
     private final MethodResolutionService methodResolutionService;
     private final PatternContextFactory patternContextFactory;
-    private final FilterService filterService;
+    private FilterService filterService;
+    private InternalEventRouteDest internalEventEngineRouteDest;
     private final JoinSetComposerFactory joinSetComposerFactory;
     private final OutputConditionFactory outputConditionFactory;
     private final NamedWindowService namedWindowService;
@@ -108,7 +109,8 @@ public final class StatementContext
                               StatementResultService statementResultService,
                               URI[] plugInTypeResolutionURIs,
                               ValueAddEventService valueAddEventService,
-                              ConfigurationInformation configSnapshot)
+                              ConfigurationInformation configSnapshot,
+                              InternalEventRouteDest internalEventEngineRouteDest)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -135,6 +137,7 @@ public final class StatementContext
         this.valueAddEventService = valueAddEventService;
         this.dynamicReferenceEventTypes = new HashSet<String>();
         this.configSnapshot = configSnapshot;
+        this.internalEventEngineRouteDest = internalEventEngineRouteDest;
     }
 
     /**
@@ -369,6 +372,26 @@ public final class StatementContext
     public ConfigurationInformation getConfigSnapshot()
     {
         return configSnapshot;
+    }
+
+    public void setSchedulingService(SchedulingService schedulingService)
+    {
+        this.schedulingService = schedulingService;
+    }
+
+    public void setFilterService(FilterService filterService)
+    {
+        this.filterService = filterService;
+    }
+
+    public InternalEventRouteDest getInternalEventEngineRouteDest()
+    {
+        return internalEventEngineRouteDest;
+    }
+
+    public void setInternalEventEngineRouteDest(InternalEventRouteDest internalEventEngineRouteDest)
+    {
+        this.internalEventEngineRouteDest = internalEventEngineRouteDest;
     }
 
     public String toString()

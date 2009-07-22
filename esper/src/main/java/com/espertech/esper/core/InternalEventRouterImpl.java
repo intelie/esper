@@ -1,18 +1,20 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyDescriptor;
-import com.espertech.esper.client.annotation.Priority;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.annotation.Drop;
-import com.espertech.esper.epl.spec.UpdateDesc;
-import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
+import com.espertech.esper.client.annotation.Priority;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
+import com.espertech.esper.epl.spec.UpdateDesc;
+import com.espertech.esper.event.EventBeanCopyMethod;
+import com.espertech.esper.event.EventBeanWriter;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.util.NullableObject;
-import com.espertech.esper.util.TypeWidenerFactory;
 import com.espertech.esper.util.TypeWidener;
-import com.espertech.esper.event.*;
+import com.espertech.esper.util.TypeWidenerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,14 +26,12 @@ public class InternalEventRouterImpl implements InternalEventRouter
 {
     private static final Log log = LogFactory.getLog(InternalEventRouterImpl.class);
 
-    private final EPRuntimeImpl runtime;
     private boolean hasPreprocessing = false;
     private final ConcurrentHashMap<EventType, NullableObject<InternalEventRouterPreprocessor>> preprocessors;
     private final Map<UpdateDesc, IRDescEntry> descriptors;
 
-    public InternalEventRouterImpl(EPRuntimeImpl runtime)
+    public InternalEventRouterImpl()
     {
-        this.runtime = runtime;
         this.preprocessors = new ConcurrentHashMap<EventType, NullableObject<InternalEventRouterPreprocessor>>();
         this.descriptors = new LinkedHashMap<UpdateDesc, IRDescEntry>();
     }
@@ -46,18 +46,18 @@ public class InternalEventRouterImpl implements InternalEventRouter
         return getPreprocessedEvent(eventBean);
     }
 
-    public void route(EventBean event, EPStatementHandle statementHandle)
+    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest)
     {
         if (!hasPreprocessing)
         {
-            runtime.route(event, statementHandle);
+            routeDest.route(event, statementHandle);
             return;
         }
 
         EventBean preprocessed = getPreprocessedEvent(event);
         if (preprocessed != null)
         {
-            runtime.route(preprocessed, statementHandle);
+            routeDest.route(preprocessed, statementHandle);
         }
     }
 

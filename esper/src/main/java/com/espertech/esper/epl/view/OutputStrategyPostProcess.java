@@ -8,12 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.NaturalEventBean;
 
 /**
@@ -26,6 +27,7 @@ public class OutputStrategyPostProcess implements OutputStrategy
     private final SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private final InternalEventRouter internalEventRouter;
     private final EPStatementHandle epStatementHandle;
+    private final StatementContext statementContext;
 
     /**
      * Ctor.
@@ -35,13 +37,14 @@ public class OutputStrategyPostProcess implements OutputStrategy
      * @param internalEventRouter for performing the route operation
      * @param epStatementHandle for use in routing to determine which statement routed
      */
-    public OutputStrategyPostProcess(boolean route, boolean routeRStream, SelectClauseStreamSelectorEnum selectStreamDirEnum, InternalEventRouter internalEventRouter, EPStatementHandle epStatementHandle)
+    public OutputStrategyPostProcess(boolean route, boolean routeRStream, SelectClauseStreamSelectorEnum selectStreamDirEnum, InternalEventRouter internalEventRouter, EPStatementHandle epStatementHandle, StatementContext statementContext)
     {
         isRoute = route;
         isRouteRStream = routeRStream;
         this.selectStreamDirEnum = selectStreamDirEnum;
         this.internalEventRouter = internalEventRouter;
         this.epStatementHandle = epStatementHandle;
+        this.statementContext = statementContext;
     }
 
     public void output(boolean forceUpdate, UniformPair<EventBean[]> result, UpdateDispatchView finalView)
@@ -90,9 +93,9 @@ public class OutputStrategyPostProcess implements OutputStrategy
         for (EventBean routed : events) {
             if (routed instanceof NaturalEventBean) {
                 NaturalEventBean natural = (NaturalEventBean) routed;
-                internalEventRouter.route(natural.getOptionalSynthetic(), epStatementHandle);
+                internalEventRouter.route(natural.getOptionalSynthetic(), epStatementHandle, statementContext.getInternalEventEngineRouteDest());
             } else {
-                internalEventRouter.route(routed, epStatementHandle);
+                internalEventRouter.route(routed, epStatementHandle, statementContext.getInternalEventEngineRouteDest());
             }
         }
     }

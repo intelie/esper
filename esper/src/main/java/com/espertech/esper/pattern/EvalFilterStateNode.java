@@ -52,6 +52,11 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         this.context = context;
     }
 
+    public String getStatementId()
+    {
+        return context.getStatementId();
+    }
+
     public final void start()
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))

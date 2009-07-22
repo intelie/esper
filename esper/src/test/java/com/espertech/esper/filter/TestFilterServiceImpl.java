@@ -175,6 +175,11 @@ public class TestFilterServiceImpl extends TestCase
         // callback that removes another matching filter spec callback
         FilterHandleCallback callbackOne = new FilterHandleCallback()
         {
+            public String getStatementId()
+            {
+                return "";
+            }
+
             public void matchFound(EventBean event)
             {
                 log.debug(".matchFound Removing callbackTwo");

@@ -35,7 +35,7 @@ public interface StreamFactoryService
      * @param isSubSelect true for subselects
      * @return event stream representing active filter
      */
-    public Pair<EventStream, ManagedLock> createStream(FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
+    public Pair<EventStream, ManagedLock> createStream(final String statementId, FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
                                     boolean isJoin, boolean isSubSelect);
 
     /**

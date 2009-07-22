@@ -22,8 +22,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
-import com.espertech.esper.filter.FilterService;
-import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.filter.FilterServiceSPI;
+import com.espertech.esper.schedule.SchedulingServiceSPI;
 import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.util.ManagedReadWriteLock;
@@ -38,9 +38,9 @@ public final class EPServicesContext
 {
     private String engineURI;
     private String engineInstanceId;
-    private FilterService filterService;
+    private FilterServiceSPI filterService;
     private TimerService timerService;
-    private SchedulingService schedulingService;
+    private SchedulingServiceSPI schedulingService;
     private DispatchService dispatchService;
     private ViewService viewService;
     private StreamFactoryService streamFactoryService;
@@ -64,6 +64,7 @@ public final class EPServicesContext
     private StatementEventTypeRef statementEventTypeRef;
     private ConfigurationInformation configSnapshot;
     private ThreadingService threadingService;
+    private InternalEventRouteDest internalEventEngineRouteDest;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -100,7 +101,7 @@ public final class EPServicesContext
      */
     public EPServicesContext(String engineURI,
                              String engineInstanceId,
-                             SchedulingService schedulingService,
+                             SchedulingServiceSPI schedulingService,
                              EventAdapterService eventAdapterService,
                              EngineImportService engineImportService,
                              EngineSettingsService engineSettingsService,
@@ -114,7 +115,7 @@ public final class EPServicesContext
                              PluggableObjectCollection plugInPatternObjects,
                              OutputConditionFactory outputConditionFactory,
                              TimerService timerService,
-                             FilterService filterService,
+                             FilterServiceSPI filterService,
                              StreamFactoryService streamFactoryService,
                              NamedWindowService namedWindowService,
                              VariableService variableService,
@@ -123,7 +124,8 @@ public final class EPServicesContext
                              MetricReportingService metricsReportingService,
                              StatementEventTypeRef statementEventTypeRef,
                              ConfigurationInformation configSnapshot,
-                             ThreadingService threadingServiceImpl)
+                             ThreadingService threadingServiceImpl,
+                             InternalEventRouterImpl internalEventRouter)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -153,6 +155,7 @@ public final class EPServicesContext
         this.statementEventTypeRef = statementEventTypeRef;
         this.configSnapshot = configSnapshot;
         this.threadingService = threadingServiceImpl;
+        this.internalEventRouter = internalEventRouter;
     }
 
     /**
@@ -162,6 +165,16 @@ public final class EPServicesContext
     public void setStatementLifecycleSvc(StatementLifecycleSvc statementLifecycleSvc)
     {
         this.statementLifecycleSvc = statementLifecycleSvc;
+    }
+
+    public InternalEventRouteDest getInternalEventEngineRouteDest()
+    {
+        return internalEventEngineRouteDest;
+    }
+
+    public void setInternalEventEngineRouteDest(InternalEventRouteDest internalEventEngineRouteDest)
+    {
+        this.internalEventEngineRouteDest = internalEventEngineRouteDest;
     }
 
     /**
@@ -174,19 +187,10 @@ public final class EPServicesContext
     }
 
     /**
-     * Set the router for internal event processing.
-     * @param internalEventRouter router to use
-     */
-    public void setInternalEventRouter(InternalEventRouterImpl internalEventRouter)
-    {
-        this.internalEventRouter = internalEventRouter;
-    }
-
-    /**
      * Returns filter evaluation service implementation.
      * @return filter evaluation service
      */
-    public final FilterService getFilterService()
+    public final FilterServiceSPI getFilterService()
     {
         return filterService;
     }
@@ -204,7 +208,7 @@ public final class EPServicesContext
      * Returns scheduling service implementation.
      * @return scheduling service
      */
-    public final SchedulingService getSchedulingService()
+    public final SchedulingServiceSPI getSchedulingService()
     {
         return schedulingService;
     }

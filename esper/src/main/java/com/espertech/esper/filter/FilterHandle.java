@@ -14,5 +14,6 @@ package com.espertech.esper.filter;
  */
 public interface FilterHandle
 {
+    public String getStatementId();
 }
 

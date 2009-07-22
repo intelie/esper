@@ -14,6 +14,7 @@ import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementResultService;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
@@ -36,6 +37,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
     private final ResultSetProcessor resultSetProcessor;
     private final EPStatementHandle statementHandle;
     private final StatementResultService statementResultService;
+    private final StatementContext statementContext;
     private EventBean[] lastResult;
     private Set<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
 
@@ -55,13 +57,15 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
                                    InternalEventRouter internalEventRouter,
                                    ResultSetProcessor resultSetProcessor,
                                    EPStatementHandle statementHandle,
-                                   StatementResultService statementResultService)
+                                   StatementResultService statementResultService,
+                                   StatementContext statementContext)
     {
         super(statementStopService, lookupStrategy, rootView);
         this.internalEventRouter = internalEventRouter;
         this.resultSetProcessor = resultSetProcessor;
         this.statementHandle = statementHandle;
         this.statementResultService = statementResultService;
+        this.statementContext = statementContext;
     }
 
     public void handleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
@@ -98,7 +102,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
             {
                 for (int i = 0; i < newData.length; i++)
                 {
-                    internalEventRouter.route(newData[i], statementHandle);
+                    internalEventRouter.route(newData[i], statementHandle, statementContext.getInternalEventEngineRouteDest());
                 }
             }
         }

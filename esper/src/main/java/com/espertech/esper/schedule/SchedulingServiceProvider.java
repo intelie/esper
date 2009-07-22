@@ -20,7 +20,7 @@ public final class SchedulingServiceProvider
      * @param timeSourceService time source provider
      * @return implementation
      */
-    public static SchedulingService newService(TimeSourceService timeSourceService)
+    public static SchedulingServiceSPI newService(TimeSourceService timeSourceService)
     {
         return new SchedulingServiceImpl(timeSourceService);
     }

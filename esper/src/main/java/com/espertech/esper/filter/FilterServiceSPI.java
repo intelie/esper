@@ -8,17 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-/**
- * Static factory for implementations of the {@link FilterService} interface.
- */
-public final class FilterServiceProvider
+import com.espertech.esper.client.EventBean;
+
+import java.util.Collection;
+
+public interface FilterServiceSPI extends FilterService
 {
-    /**
-     * Creates an implementation of the FilterEvaluationService interface.
-     * @return implementation
-     */
-    public static FilterServiceSPI newService()
-    {
-        return new FilterServiceImpl();
-    }
+    public FilterSet take(String statementId);
+    public void apply(FilterSet filterSet);
 }

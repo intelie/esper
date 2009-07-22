@@ -30,5 +30,10 @@ public class SupportScheduleCallback implements ScheduleHandle, ScheduleHandleCa
         SupportScheduleCallback.orderAllCallbacks = orderAllCallbacks;
     }
 
+    public String getStatementId()
+    {
+        return null;
+    }
+
     private static final Log log = LogFactory.getLog(SupportScheduleCallback.class);
 }

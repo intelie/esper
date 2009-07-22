@@ -3,6 +3,7 @@ package com.espertech.esper.support.core;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalRoutePreprocessView;
+import com.espertech.esper.core.InternalEventRouteDest;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.spec.UpdateDesc;
@@ -35,6 +36,10 @@ public class SupportInternalEventRouter implements InternalEventRouter
     }
 
     public void removePreprocessing(EventType eventType, UpdateDesc desc)
+    {
+    }
+
+    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest)
     {
     }
 }

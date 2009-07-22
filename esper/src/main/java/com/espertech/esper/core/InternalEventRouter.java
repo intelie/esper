@@ -30,5 +30,5 @@ public interface InternalEventRouter
      * @param event to route
      * @param statementHandle provides statement resources
      */
-    public void route(EventBean event, EPStatementHandle statementHandle);
+    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest);
 }

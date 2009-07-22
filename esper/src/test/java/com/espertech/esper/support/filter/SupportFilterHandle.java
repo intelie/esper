@@ -45,4 +45,9 @@ public class SupportFilterHandle implements FilterHandleCallback
         countInvoked = 0;
         return count;
     }
+
+    public String getStatementId()
+    {
+        return "";
+    }
 }
