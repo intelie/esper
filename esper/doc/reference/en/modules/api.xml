@@ -1505,7 +1505,7 @@ epRuntime().sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
 			</listitem>
 			<listitem>
 				<para>
-                   Initialize statement state by replaying events.
+                   Initialize statement state by replaying events, without impacting already running statements.
                 </para>
 			</listitem>
 		</orderedlist>
@@ -1517,23 +1517,40 @@ epRuntime().sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
         <para>
 			Use the <literal>getIsolatedRuntime</literal> method on <literal>EPServiceProvider</literal> passing a name to obtain an isolated runtime:
         </para>
-		<programlisting><![CDATA[EPRuntimeIsolated unit = epServiceManager.getIsolatedRuntime("name");]]></programlisting>
+		<programlisting><![CDATA[EPRuntimeIsolated isolatedRuntime = epServiceManager.getIsolatedRuntime("name");]]></programlisting>
 
         <para>
 			Set the start time for your isolated runtime via the <literal>CurrentTimeEvent</literal> timer event:
         </para>
-		<programlisting><![CDATA[unit.sendEvent(new CurrentTimeEvent(startInMillis));]]></programlisting>
+		<programlisting><![CDATA[isolatedRuntime.sendEvent(new CurrentTimeEvent(startInMillis));]]></programlisting>
 
         <para>
 			Use the <literal>takeStatement</literal> method on <literal>EPRuntimeIsolated</literal> to move a statement out of the engine runtime into the isolated runtime:
         </para>
 		<programlisting><![CDATA[EPStatement stmt = epAdmin.createEPL("select * from TemperatureEvent");
-unit.takeStatement(stmt);]]></programlisting>
+isolatedRuntime.takeStatement(stmt);]]></programlisting>
 
 		<para>
 			To return a statement back to the engine runtime, use the <literal>returnStatement</literal> method on <literal>EPRuntimeIsolated</literal>:
 		</para>
-		<programlisting><![CDATA[unit.returnStatement(stmt);]]></programlisting>
+		<programlisting><![CDATA[isolatedRuntime.returnStatement(stmt);]]></programlisting>
+
+		<!--
+		<para>
+			TODO - option to 
+		</para>
+		<sect2 id="api-isolatedruntime-suspend">
+			<title>Suspending Statements</title>
+			
+			<para>
+				By letting an <literal>EPIsolatedRuntime</literal> isolated runtime take a statement, the statement's processing effectively becomes suspended. Time does not pass for the statement and it will not process events, unless your application explicitly moves time forward or send events into the isolated runtime
+			</para>
+			
+			<para>
+				
+			</para>
+		</sect2>
+		-->
     </sect1>
 
     <sect1 id="api-soda">

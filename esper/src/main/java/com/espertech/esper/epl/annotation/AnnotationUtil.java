@@ -147,8 +147,7 @@ public class AnnotationUtil
         }
 
         // return handler
-        final String toStringResult = "@" + desc.getName();
-        InvocationHandler handler = new EPLAnnotationInvocationHandler(annotationClass, properties, toStringResult);
+        InvocationHandler handler = new EPLAnnotationInvocationHandler(annotationClass, properties);
         return (Annotation) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] {annotationClass}, handler);
     }
 

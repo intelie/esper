@@ -39,6 +39,7 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     private boolean existsSubstitutionParameters;
     private boolean hasVariables;
     private List<AnnotationDesc> annotations = new ArrayList<AnnotationDesc>();
+    private String expressionNoAnnotations;
     private static final long serialVersionUID = 5390766716794133693L;
 
     /**
@@ -345,5 +346,15 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     public UpdateDesc getUpdateDesc()
     {
         return updateDesc;
+    }
+
+    public void setExpressionNoAnnotations(String expressionNoAnnotations)
+    {
+        this.expressionNoAnnotations = expressionNoAnnotations;
+    }
+
+    public String getExpressionNoAnnotations()
+    {
+        return expressionNoAnnotations;
     }
 }

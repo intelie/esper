@@ -12,7 +12,7 @@ import java.util.Map;
 public class EPLAnnotationInvocationHandler implements InvocationHandler
 {
     private final Class annotationClass;
-    private final String toStringResult;
+    private String toStringResult;
     private final Map<String, Object> attributes;
     private volatile Integer hashCode;
 
@@ -20,13 +20,11 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
      * Ctor.
      * @param annotationClass annotation class
      * @param attributes attribute values
-     * @param toStringResult returned as a result of toString
      */
-    public EPLAnnotationInvocationHandler(Class annotationClass, Map<String, Object> attributes, String toStringResult)
+    public EPLAnnotationInvocationHandler(Class annotationClass, Map<String, Object> attributes)
     {
         this.annotationClass = annotationClass;
         this.attributes = attributes;
-        this.toStringResult = toStringResult;
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
@@ -44,6 +42,53 @@ public class EPLAnnotationInvocationHandler implements InvocationHandler
         }
         if (method.getName().equals("toString"))
         {
+            if (toStringResult == null)
+            {
+                StringBuilder buf = new StringBuilder();
+                buf.append("@");
+                buf.append(annotationClass.getSimpleName());
+                if (!attributes.isEmpty())
+                {
+                    String delimiter = "";
+                    buf.append("(");
+
+                    if ((attributes.size() == 1) && (attributes.containsKey("value")))
+                    {
+                        if (attributes.get("value") instanceof String)
+                        {
+                            buf.append("\"");
+                            buf.append(attributes.get("value"));
+                            buf.append("\"");
+                        }
+                        else
+                        {
+                            buf.append(attributes.get("value"));
+                        }
+                    }
+                    else
+                    {
+                        for (Map.Entry<String, Object> attribute : attributes.entrySet())
+                        {
+                            buf.append(delimiter);
+                            buf.append(attribute.getKey());
+                            buf.append("=");
+                            if (attribute.getValue() instanceof String)
+                            {
+                                buf.append("\"");
+                                buf.append(attribute.getValue());
+                                buf.append("\"");
+                            }
+                            else
+                            {
+                                buf.append(attribute.getValue());
+                            }
+                            delimiter = ", ";
+                        }
+                    }
+                    buf.append(")");
+                }
+                toStringResult = buf.toString();
+            }
             return toStringResult;
         }
         if (method.getName().equals("annotationType"))

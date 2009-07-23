@@ -8,26 +8,30 @@
  **************************************************************************************/
 package com.espertech.esper.epl.parse;
 
-import java.io.StringReader;
-import java.io.IOException;
-
-import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EPStatementSyntaxException;
-import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
-import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.antlr.ASTUtil;
-
+import com.espertech.esper.antlr.NoCaseSensitiveStream;
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
+import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
+import com.espertech.esper.epl.generated.EsperEPL2Ast;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.antlr.runtime.tree.Tree;
-import org.antlr.runtime.*;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * Helper class for parsing an expression and walking a parse tree.
  */
 public class ParseHelper
 {
+    public static String newline = System.getProperty("line.separator");
+
     /**
      * Walk parse tree starting at the rule the walkRuleSelector supplies.
      * @param ast - ast to walk
@@ -79,7 +83,7 @@ public class ParseHelper
      * @return AST - syntax tree
      * @throws EPException when the AST could not be parsed
      */
-    public static Tree parse(String expression, ParseRuleSelector parseRuleSelector) throws EPException
+    public static ParseResult parse(String expression, ParseRuleSelector parseRuleSelector) throws EPException
     {
         if (log.isDebugEnabled())
         {
@@ -133,7 +137,57 @@ public class ParseHelper
             ASTUtil.dumpAST(tree);
         }
 
-        return tree;
+        return new ParseResult(tree, getNoAnnotation(expression, tree, tokens));
+    }
+
+    private static String getNoAnnotation(String expression, Tree tree, CommonTokenStream tokens)
+    {
+        Token lastAnnotationToken = null;
+        for (int i = 0; i < tree.getChildCount(); i++)
+        {
+            if (tree.getChild(i).getType() == EsperEPL2Ast.ANNOTATION)
+            {
+                lastAnnotationToken = tokens.get(tree.getChild(i).getTokenStopIndex());
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        if (lastAnnotationToken == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            int line = lastAnnotationToken.getLine();
+            int charpos = lastAnnotationToken.getCharPositionInLine();
+            int fromChar = charpos + lastAnnotationToken.getText().length();
+            if (line == 1)
+            {
+                return expression.substring(fromChar).trim();
+            }
+
+            String[] lines = expression.split("\r|\n|\r\n");
+            StringBuilder buf = new StringBuilder();
+            buf.append(lines[line-1].substring(fromChar));
+            for (int i = line; i < lines.length; i++)
+            {
+                buf.append(lines[i]);
+                if (i < lines.length - 1)
+                {
+                    buf.append(newline);
+                }
+            }
+            return buf.toString().trim();
+        }
+        catch (RuntimeException ex)
+        {
+            log.error("Error determining non-annotated expression sting: " + ex.getMessage(), ex);
+        }
+        return null;
     }
 
     private static Log log = LogFactory.getLog(ParseHelper.class);

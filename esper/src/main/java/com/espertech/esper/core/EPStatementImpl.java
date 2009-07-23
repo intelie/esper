@@ -12,7 +12,6 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.collection.SafeIteratorImpl;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.dispatch.DispatchService;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
@@ -33,17 +32,15 @@ public class EPStatementImpl implements EPStatementSPI
     private final String statementId;
     private final String statementName;
     private final String expressionText;
+    private final String expressionNoAnnotations;
     private boolean isPattern;
     private UpdateDispatchViewBase dispatchChildView;
     private StatementLifecycleSvc statementLifecycleSvc;
-    private VariableService variableService;
 
     private long timeLastStateChange;
     private Viewable parentView;
     private EPStatementState currentState;
     private EventType eventType;
-    private EPStatementHandle epStatementHandle;
-    private StatementResultService statementResultService;
     private StatementMetadata statementMetadata;
     private Object userObject;
     private Annotation[] annotations;
@@ -61,9 +58,6 @@ public class EPStatementImpl implements EPStatementSPI
      * @param isSpinBlockingDispatch true to use spin locks blocking to deliver results, as locks are usually uncontended
      * @param msecBlockingTimeout is the max number of milliseconds of block time
      * @param timeLastStateChange the timestamp the statement was created and started
-     * @param epStatementHandle the handle and statement lock associated with the statement
-     * @param variableService provides access to variable values
-     * @param statementResultService handles statement result generation
      * @param timeSourceService time source provider
      * @param statementMetadata statement metadata
      * @param userObject the application define user object associated to each statement, if supplied
@@ -72,6 +66,7 @@ public class EPStatementImpl implements EPStatementSPI
     public EPStatementImpl(String statementId,
                               String statementName,
                               String expressionText,
+                              String expressionNoAnnotations,
                               boolean isPattern,
                               DispatchService dispatchService,
                               StatementLifecycleSvc statementLifecycleSvc,
@@ -79,9 +74,6 @@ public class EPStatementImpl implements EPStatementSPI
                               boolean isBlockingDispatch,
                               boolean isSpinBlockingDispatch,
                               long msecBlockingTimeout,
-                              EPStatementHandle epStatementHandle,
-                              VariableService variableService,
-                              StatementResultService statementResultService,
                               TimeSourceService timeSourceService,
                               StatementMetadata statementMetadata,
                               Object userObject,
@@ -92,6 +84,7 @@ public class EPStatementImpl implements EPStatementSPI
         this.statementId = statementId;
         this.statementName = statementName;
         this.expressionText = expressionText;
+        this.expressionNoAnnotations = expressionNoAnnotations;
         this.statementLifecycleSvc = statementLifecycleSvc;
         this.statementContext = statementContext;
         statementListenerSet = new EPStatementListenerSet();
@@ -99,26 +92,23 @@ public class EPStatementImpl implements EPStatementSPI
         {
             if (isSpinBlockingDispatch)
             {
-                this.dispatchChildView = new UpdateDispatchViewBlockingSpin(statementResultService, dispatchService, msecBlockingTimeout, timeSourceService);
+                this.dispatchChildView = new UpdateDispatchViewBlockingSpin(statementContext.getStatementResultService(), dispatchService, msecBlockingTimeout, timeSourceService);
             }
             else
             {
-                this.dispatchChildView = new UpdateDispatchViewBlockingWait(statementResultService, dispatchService, msecBlockingTimeout);
+                this.dispatchChildView = new UpdateDispatchViewBlockingWait(statementContext.getStatementResultService(), dispatchService, msecBlockingTimeout);
             }
         }
         else
         {
-            this.dispatchChildView = new UpdateDispatchViewNonBlocking(statementResultService, dispatchService);
+            this.dispatchChildView = new UpdateDispatchViewNonBlocking(statementContext.getStatementResultService(), dispatchService);
         }
         this.currentState = EPStatementState.STOPPED;
         this.timeLastStateChange = timeLastStateChange;
-        this.epStatementHandle = epStatementHandle;
-        this.variableService = variableService;
-        this.statementResultService = statementResultService;
         this.statementMetadata = statementMetadata;
         this.userObject = userObject;
         this.annotations = annotations;
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
     }
 
     public String getStatementId()
@@ -144,7 +134,7 @@ public class EPStatementImpl implements EPStatementSPI
         statementLifecycleSvc.stop(statementId);
 
         // On stop, we give the dispatch view a chance to dispatch final results, if any
-        statementResultService.dispatchOnStop();
+        statementContext.getStatementResultService().dispatchOnStop();
 
         dispatchChildView.clear();
     }
@@ -204,14 +194,14 @@ public class EPStatementImpl implements EPStatementSPI
     public Iterator<EventBean> iterator()
     {
         // Return null if not started
-        variableService.setLocalVersion();
+        statementContext.getVariableService().setLocalVersion();
         if (parentView == null)
         {
             return null;
         }
         if (isPattern)
         {
-            return new SingleEventIterator(statementResultService.getLastIterableEvent());
+            return new SingleEventIterator(statementContext.getStatementResultService().getLastIterableEvent());
         }
         else
         {
@@ -228,24 +218,24 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         // Set variable version and acquire the lock first
-        epStatementHandle.getStatementLock().acquireLock(null);
+        statementContext.getEpStatementHandle().getStatementLock().acquireLock(null);
         try
         {
-            variableService.setLocalVersion();
+            statementContext.getVariableService().setLocalVersion();
 
             // Provide iterator - that iterator MUST be closed else the lock is not released
             if (isPattern)
             {
-                return new SafeIteratorImpl<EventBean>(epStatementHandle.getStatementLock(), dispatchChildView.iterator());
+                return new SafeIteratorImpl<EventBean>(statementContext.getEpStatementHandle().getStatementLock(), dispatchChildView.iterator());
             }
             else
             {
-                return new SafeIteratorImpl<EventBean>(epStatementHandle.getStatementLock(), parentView.iterator());
+                return new SafeIteratorImpl<EventBean>(statementContext.getEpStatementHandle().getStatementLock(), parentView.iterator());
             }
         }
         catch (RuntimeException ex)
         {
-            epStatementHandle.getStatementLock().releaseLock(null);
+            statementContext.getEpStatementHandle().getStatementLock().releaseLock(null);
             throw ex;
         }
     }
@@ -267,7 +257,7 @@ public class EPStatementImpl implements EPStatementSPI
     public void setListeners(EPStatementListenerSet listenerSet)
     {
         statementListenerSet.setListeners(listenerSet);
-        statementResultService.setUpdateListeners(listenerSet);
+        statementContext.getStatementResultService().setUpdateListeners(listenerSet);
     }
 
     /**
@@ -282,7 +272,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.addListener(listener);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_ADD, listener));
     }
@@ -299,12 +289,12 @@ public class EPStatementImpl implements EPStatementSPI
             throw new IllegalStateException("Statement is in destroyed state");
         }
 
-        epStatementHandle.getStatementLock().acquireLock(null);
+        statementContext.getEpStatementHandle().getStatementLock().acquireLock(null);
         try
         {
             // Add listener - listener not receiving events from this statement, as the statement is locked
             statementListenerSet.addListener(listener);
-            statementResultService.setUpdateListeners(statementListenerSet);
+            statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
             statementLifecycleSvc.dispatchStatementLifecycleEvent(
                     new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_ADD, listener));
 
@@ -360,7 +350,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
         finally
         {
-            epStatementHandle.getStatementLock().releaseLock(null);
+            statementContext.getEpStatementHandle().getStatementLock().releaseLock(null);
         }
     }
 
@@ -376,7 +366,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.removeListener(listener);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_REMOVE, listener));
     }
@@ -387,7 +377,7 @@ public class EPStatementImpl implements EPStatementSPI
     public void removeAllListeners()
     {
         statementListenerSet.removeAllListeners();
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_REMOVE_ALL));
     }
@@ -400,7 +390,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.addListener(listener);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_ADD, listener));
     }
@@ -413,7 +403,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.removeListener(listener);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_REMOVE, listener));
     }
@@ -451,7 +441,7 @@ public class EPStatementImpl implements EPStatementSPI
     public void setSubscriber(Object subscriber)
     {
         statementListenerSet.setSubscriber(subscriber);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
     }
 
     public Object getSubscriber()
@@ -481,5 +471,10 @@ public class EPStatementImpl implements EPStatementSPI
     public StatementContext getStatementContext()
     {
         return statementContext;
+    }
+
+    public String getExpressionNoAnnotations()
+    {
+        return expressionNoAnnotations;
     }
 }

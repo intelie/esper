@@ -7,6 +7,7 @@ import com.espertech.esper.client.annotation.Tag;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportEnum;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.core.EPStatementSPI;
 import junit.framework.TestCase;
 
 import java.lang.annotation.Annotation;
@@ -118,15 +119,17 @@ public class TestStatementAnnotation extends TestCase
 
         assertEquals(Description.class, annotations[0].annotationType());
         assertEquals("MyTestStmt description", ((Description)annotations[0]).value());
-        assertEquals("@Description", annotations[0].toString());
+        assertEquals("@Description(\"MyTestStmt description\")", annotations[0].toString());
 
         assertEquals(Name.class, annotations[1].annotationType());
         assertEquals("MyTestStmt", ((Name)annotations[1]).value());
         assertEquals("MyTestStmt", stmt.getName());
+        assertEquals("@Name(\"MyTestStmt\")", annotations[1].toString());
 
         assertEquals(Tag.class, annotations[2].annotationType());
         assertEquals("UserId", ((Tag)annotations[2]).name());
         assertEquals("value", ((Tag)annotations[2]).value());
+        assertEquals("@Tag(value=\"value\", name=\"UserId\")", annotations[2].toString());
 
         assertFalse(annotations[2].equals(annotations[1]));
         assertTrue(annotations[1].equals(annotations[1]));
@@ -152,6 +155,8 @@ public class TestStatementAnnotation extends TestCase
                 "@MyAnnotationValuePair(stringVal='a', intVal=-1, longVal=2, booleanVal=true, charVal='x', byteVal=10, shortVal=20, doubleVal=2.5) " +
                 "select * from Bean";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        EPStatementSPI spi = (EPStatementSPI) stmt;
+        assertEquals("select * from Bean", spi.getExpressionNoAnnotations());
 
         Annotation[] annotations = stmt.getAnnotations();
         annotations = sortAlpha(annotations);
@@ -183,8 +188,8 @@ public class TestStatementAnnotation extends TestCase
 
         // test array
         stmtText =
-                "@MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, stringArray={\"X\"}) " +
-                "select * from Bean";
+                "@MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, \nstringArray={\"X\"})\n" +
+                "/* Test */ select * \nfrom Bean";
         stmt = epService.getEPAdministrator().createEPL(stmtText);
 
         annotations = stmt.getAnnotations();
@@ -197,6 +202,34 @@ public class TestStatementAnnotation extends TestCase
         assertTrue(Arrays.deepEquals(toObjectArray(array.doubleArray()), new Object[] {}));
         assertTrue(Arrays.deepEquals(toObjectArray(array.stringArray()), new Object[] {"X"}));
         assertTrue(Arrays.deepEquals(toObjectArray(array.stringArrayDef()), new Object[] {"XYZ"}));
+    }
+
+    public void testSPI()
+    {
+        epService.getEPAdministrator().getConfiguration().addImport("com.espertech.esper.regression.client.*");
+
+        String[][] testdata = new String[][] {
+                {"@MyAnnotationSimple /* test */ select * from Bean",
+                 "/* test */ select * from Bean"},
+                {"/* test */ select * from Bean",
+                 null},
+                {"@MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, stringArray={\"X\"})    select * from Bean",
+                 "select * from Bean"},
+                {"@MyAnnotationSimple\nselect * from Bean",
+                 "select * from Bean"},
+                {"@MyAnnotationSimple\n@MyAnnotationSimple\nselect * from Bean",
+                 "select * from Bean"},
+                {"@MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, \nstringArray={\"X\"})\n" +
+                "/* Test */ select * \nfrom Bean",
+                "/* Test */ select * \r\nfrom Bean"},
+        };
+
+        for (int i = 0; i < testdata.length; i++)
+        {
+            EPStatement stmt = epService.getEPAdministrator().createEPL(testdata[i][0]);
+            EPStatementSPI spi = (EPStatementSPI) stmt;
+            assertEquals("Error on " + testdata[i][0], testdata[i][1], spi.getExpressionNoAnnotations());
+        }
     }
 
     @MyAnnotationNested(

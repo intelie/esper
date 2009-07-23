@@ -23,6 +23,8 @@ public interface EPStatementSPI extends EPStatement
      */
     public String getStatementId();
 
+    public String getExpressionNoAnnotations();
+
     /**
      * Returns the current set of listeners for read-only operations.
      * @return listener set
