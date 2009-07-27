@@ -6,6 +6,7 @@ import com.espertech.esper.client.EventBean;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 public class SupportMTUpdateListener implements UpdateListener
 {
@@ -91,6 +92,11 @@ public class SupportMTUpdateListener implements UpdateListener
     public List<EventBean[]> getNewDataList()
     {
         return newDataList;
+    }
+
+    public synchronized List<EventBean[]> getNewDataListCopy()
+    {
+        return new ArrayList<EventBean[]>(newDataList);
     }
 
     public List<EventBean[]> getOldDataList()

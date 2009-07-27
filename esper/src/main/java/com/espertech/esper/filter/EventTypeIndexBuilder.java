@@ -11,10 +11,7 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -150,7 +147,7 @@ public class EventTypeIndexBuilder
         }
     }
 
-    public final FilterSet take(String statementId)
+    public final FilterSet take(Set<String> statementIds)
     {
         List<FilterSetEntry> list = new ArrayList<FilterSetEntry>();
         callbacksLock.lock();
@@ -159,7 +156,7 @@ public class EventTypeIndexBuilder
             for (Map.Entry<FilterHandle, Pair<FilterValueSet, IndexTreePath>> entry : callbacks.entrySet())
             {
                 Pair<FilterValueSet, IndexTreePath> pair = entry.getValue();
-                if (entry.getKey().getStatementId().equals(statementId))
+                if (statementIds.contains(entry.getKey().getStatementId()))
                 {
                     list.add(new FilterSetEntry(entry.getKey(), pair.getFirst()));
 

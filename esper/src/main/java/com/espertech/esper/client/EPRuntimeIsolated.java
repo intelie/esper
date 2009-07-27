@@ -8,11 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.client.util.EventRenderer;
-
 import java.util.Map;
-import java.util.Set;
-import java.net.URI;
 
 public interface EPRuntimeIsolated
 {
@@ -62,4 +58,8 @@ public interface EPRuntimeIsolated
     public void takeStatement(EPStatement stmt);
 
     public void returnStatement(EPStatement stmt);
+
+    public void takeStatement(EPStatement[] statements);
+
+    public void returnStatement(EPStatement[] stmt);
 }

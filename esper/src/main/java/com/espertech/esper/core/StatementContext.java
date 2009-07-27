@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
+import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.join.JoinSetComposerFactory;
 import com.espertech.esper.epl.named.NamedWindowService;
@@ -18,11 +19,11 @@ import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.pattern.PatternContextFactory;
 import com.espertech.esper.pattern.PatternObjectResolutionService;
+import com.espertech.esper.schedule.ScheduleAdjustmentService;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewResolutionService;
-import com.espertech.esper.client.ConfigurationInformation;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -58,6 +59,7 @@ public final class StatementContext
     private final ValueAddEventService valueAddEventService;
     private final HashSet<String> dynamicReferenceEventTypes;
     private final ConfigurationInformation configSnapshot;
+    private final ScheduleAdjustmentService scheduleAdjustmentService;
 
     /**
      * Constructor.
@@ -138,6 +140,7 @@ public final class StatementContext
         this.dynamicReferenceEventTypes = new HashSet<String>();
         this.configSnapshot = configSnapshot;
         this.internalEventEngineRouteDest = internalEventEngineRouteDest;
+        this.scheduleAdjustmentService = new ScheduleAdjustmentService();
     }
 
     /**
@@ -392,6 +395,11 @@ public final class StatementContext
     public void setInternalEventEngineRouteDest(InternalEventRouteDest internalEventEngineRouteDest)
     {
         this.internalEventEngineRouteDest = internalEventEngineRouteDest;
+    }
+
+    public ScheduleAdjustmentService getScheduleAdjustmentService()
+    {
+        return scheduleAdjustmentService;
     }
 
     public String toString()

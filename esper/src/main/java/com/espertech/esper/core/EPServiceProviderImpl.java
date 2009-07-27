@@ -76,7 +76,12 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         doInitialize();
     }
 
-    public EPRuntimeIsolated getIsolatedRuntime() {
+    public EPRuntimeIsolated getEPRuntimeIsolated() {
+        if (engine.getServices().getConfigSnapshot().getEngineDefaults().getViewResources().isShareViews())
+        {
+            throw new EPException("Isolated runtime requires view sharing disabled, set engine defaults under view resources and share views to false");
+        }
+
         FilterServiceSPI filterService = FilterServiceProvider.newService();
         SchedulingServiceSPI scheduleService = new SchedulingServiceImpl(engine.getServices().getTimeSource());
 

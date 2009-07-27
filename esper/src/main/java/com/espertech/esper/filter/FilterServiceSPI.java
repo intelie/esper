@@ -11,9 +11,10 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 
 import java.util.Collection;
+import java.util.Set;
 
 public interface FilterServiceSPI extends FilterService
 {
-    public FilterSet take(String statementId);
+    public FilterSet take(Set<String> statementId);
     public void apply(FilterSet filterSet);
 }

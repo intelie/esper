@@ -19,6 +19,7 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
+import com.espertech.esper.schedule.ScheduleAdjustmentCallback;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.DataWindowView;
@@ -40,7 +41,7 @@ import java.util.Iterator;
  * as the system-time-based timeWindow moves on. However child views receive updates containing new data
  * as soon as the new data arrives.
  */
-public final class TimeWindowView extends ViewSupport implements CloneableView, DataWindowView
+public final class TimeWindowView extends ViewSupport implements CloneableView, DataWindowView, ScheduleAdjustmentCallback
 {
     private final TimeWindowViewFactory timeWindowViewFactory;
     private final long millisecondsBeforeExpiry;
@@ -48,6 +49,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
     private final ViewUpdatedCollection viewUpdatedCollection;
     private final StatementContext statementContext;
     private final ScheduleSlot scheduleSlot;
+    private final EPStatementHandleCallback handle;
 
     /**
      * Constructor.
@@ -67,6 +69,21 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
         this.viewUpdatedCollection = viewUpdatedCollection;
         this.scheduleSlot = statementContext.getScheduleBucket().allocateSlot();
         this.timeWindow = new TimeWindow(isRemoveStreamHandling);
+
+        ScheduleHandleCallback callback = new ScheduleHandleCallback() {
+            public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
+            {
+                TimeWindowView.this.expire();
+            }
+        };
+        this.handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
+
+        statementContext.getScheduleAdjustmentService().addCallback(this);
+    }
+
+    public void adjust(long delta)
+    {
+        timeWindow.adjust(delta);
     }
 
     public View cloneView(StatementContext statementContext)
@@ -205,13 +222,6 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
 
     private void scheduleCallback(long msecAfterCurrentTime)
     {
-        ScheduleHandleCallback callback = new ScheduleHandleCallback() {
-            public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
-            {
-                TimeWindowView.this.expire();
-            }
-        };
-        EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
         statementContext.getSchedulingService().add(msecAfterCurrentTime, handle, scheduleSlot);
     }
 

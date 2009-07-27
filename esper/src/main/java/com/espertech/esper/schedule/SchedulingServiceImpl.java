@@ -156,7 +156,7 @@ public final class SchedulingServiceImpl implements SchedulingServiceSPI
         }
     }
 
-    public ScheduleSet take(String statementId)
+    public ScheduleSet take(Set<String> statementIds)
     {
         List<ScheduleSetEntry> list = new ArrayList<ScheduleSetEntry>();
         long currentTime = getTime();
@@ -164,7 +164,7 @@ public final class SchedulingServiceImpl implements SchedulingServiceSPI
         {
             for (Map.Entry<ScheduleSlot, ScheduleHandle> entry : schedule.getValue().entrySet())
             {
-                if (entry.getValue().getStatementId().equals(statementId))
+                if (statementIds.contains(entry.getValue().getStatementId()))
                 {
                     long relative = schedule.getKey() - currentTime;
                     list.add(new ScheduleSetEntry(relative, entry.getKey(), entry.getValue()));

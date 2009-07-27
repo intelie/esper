@@ -11,6 +11,7 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
@@ -70,9 +71,9 @@ public final class FilterServiceImpl implements FilterServiceSPI
         numEventsEvaluated.set(0);
     }
 
-    public FilterSet take(String statementId)
+    public FilterSet take(Set<String> statementIds)
     {
-        return indexBuilder.take(statementId);
+        return indexBuilder.take(statementIds);
     }
 
     public void apply(FilterSet filterSet)

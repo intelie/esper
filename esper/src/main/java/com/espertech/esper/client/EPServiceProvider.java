@@ -15,7 +15,7 @@ import javax.naming.Context;
  */
 public interface EPServiceProvider
 {
-    public EPRuntimeIsolated getIsolatedRuntime();
+    public EPRuntimeIsolated getEPRuntimeIsolated();
 
     /**
      * Returns a class instance of EPRuntime.

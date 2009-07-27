@@ -10,6 +10,7 @@ package com.espertech.esper.collection;
 
 import java.util.*;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.schedule.ScheduleAdjustmentCallback;
 
 /**
  * Container for events per time slot. The time is provided as long milliseconds by client classes.
@@ -40,6 +41,18 @@ public final class TimeWindow implements Iterable
         if (isSupportRemoveStream)
         {
             reverseIndex = new HashMap<EventBean, ArrayDequeJDK6Backport<EventBean>>();
+        }
+    }
+
+    public void adjust(long delta)
+    {
+        for (Pair<Long, ArrayDequeJDK6Backport<EventBean>> data : window)
+        {
+            data.setFirst(data.getFirst() + delta);
+        }
+        if (oldestTimestamp != null)
+        {
+            oldestTimestamp += delta;
         }
     }
 

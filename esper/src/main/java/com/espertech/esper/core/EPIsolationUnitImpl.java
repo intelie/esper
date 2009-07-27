@@ -20,10 +20,7 @@ import com.espertech.esper.util.ThreadLogUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRouteDest
 {
@@ -710,31 +707,100 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
 
     public void takeStatement(EPStatement stmt) {
 
-        EPStatementSPI stmtSpi = (EPStatementSPI) stmt;
-
-        FilterSet filters = unisolatedServices.getFilterService().take(stmtSpi.getStatementId());
-        ScheduleSet schedules = unisolatedServices.getSchedulingService().take(stmtSpi.getStatementId());
-
-        services.getFilterService().apply(filters);
-        services.getSchedulingService().apply(schedules);
-
-        stmtSpi.getStatementContext().setFilterService(services.getFilterService());
-        stmtSpi.getStatementContext().setSchedulingService(services.getSchedulingService());
-        stmtSpi.getStatementContext().setInternalEventEngineRouteDest(this);
+        takeStatement(new EPStatement[] {stmt});
     }
 
-    public void returnStatement(EPStatement stmt) {
+    public void takeStatement(EPStatement stmt[]) {
 
-        EPStatementSPI stmtSpi = (EPStatementSPI) stmt;
-        FilterSet filters = services.getFilterService().take(stmtSpi.getStatementId());
-        ScheduleSet schedules = services.getSchedulingService().take(stmtSpi.getStatementId());
+        unisolatedServices.getEventProcessingRWLock().acquireWriteLock();
 
-        unisolatedServices.getFilterService().apply(filters);
-        unisolatedServices.getSchedulingService().apply(schedules);
+        try
+        {
+            long fromTime = unisolatedServices.getSchedulingService().getTime();
+            long toTime = services.getSchedulingService().getTime();
+            long delta = toTime - fromTime;
 
-        stmtSpi.getStatementContext().setFilterService(unisolatedServices.getFilterService());
-        stmtSpi.getStatementContext().setSchedulingService(unisolatedServices.getSchedulingService());
-        stmtSpi.getStatementContext().setInternalEventEngineRouteDest(unisolatedServices.getInternalEventEngineRouteDest());
+            Set<String> statementIds = new HashSet<String>();
+            for (int i = 0; i < stmt.length; i++)
+            {
+                EPStatementSPI stmtSpi = (EPStatementSPI) stmt[i];
+                statementIds.add(stmtSpi.getStatementId());
+            }
+
+            FilterSet filters = unisolatedServices.getFilterService().take(statementIds);
+            ScheduleSet schedules = unisolatedServices.getSchedulingService().take(statementIds);
+
+            services.getFilterService().apply(filters);
+            services.getSchedulingService().apply(schedules);
+
+            for (int i = 0; i < stmt.length; i++)
+            {
+                EPStatementSPI stmtSpi = (EPStatementSPI) stmt[i];
+                stmtSpi.getStatementContext().setFilterService(services.getFilterService());
+                stmtSpi.getStatementContext().setSchedulingService(services.getSchedulingService());
+                stmtSpi.getStatementContext().setInternalEventEngineRouteDest(this);
+                stmtSpi.getStatementContext().getScheduleAdjustmentService().adjust(delta);
+            }
+        }
+        catch (RuntimeException ex)
+        {
+            String message = "Unexpected exception taking statements: " + ex.getMessage();
+            log.error(message, ex);
+            throw new EPException(message, ex);
+        }
+        finally
+        {
+            unisolatedServices.getEventProcessingRWLock().releaseWriteLock();
+        }
+    }
+
+    public void returnStatement(EPStatement stmt)
+    {
+        returnStatement(new EPStatement[] {stmt});
+    }
+
+    public void returnStatement(EPStatement[] stmt) {
+
+        unisolatedServices.getEventProcessingRWLock().acquireWriteLock();
+
+        try
+        {
+            long fromTime = services.getSchedulingService().getTime();
+            long toTime = unisolatedServices.getSchedulingService().getTime();
+            long delta = toTime - fromTime;
+
+            Set<String> statementIds = new HashSet<String>();
+            for (int i = 0; i < stmt.length; i++)
+            {
+                EPStatementSPI stmtSpi = (EPStatementSPI) stmt[i];
+                statementIds.add(stmtSpi.getStatementId());
+            }
+
+            FilterSet filters = services.getFilterService().take(statementIds);
+            ScheduleSet schedules = services.getSchedulingService().take(statementIds);
+
+            unisolatedServices.getFilterService().apply(filters);
+            unisolatedServices.getSchedulingService().apply(schedules);
+
+            for (int i = 0; i < stmt.length; i++)
+            {
+                EPStatementSPI stmtSpi = (EPStatementSPI) stmt[i];
+                stmtSpi.getStatementContext().setFilterService(unisolatedServices.getFilterService());
+                stmtSpi.getStatementContext().setSchedulingService(unisolatedServices.getSchedulingService());
+                stmtSpi.getStatementContext().setInternalEventEngineRouteDest(unisolatedServices.getInternalEventEngineRouteDest());
+                stmtSpi.getStatementContext().getScheduleAdjustmentService().adjust(delta);
+            }
+        }
+        catch (RuntimeException ex)
+        {
+            String message = "Unexpected exception taking statements: " + ex.getMessage();
+            log.error(message, ex);
+            throw new EPException(message, ex);
+        }
+        finally
+        {
+            unisolatedServices.getEventProcessingRWLock().releaseWriteLock();
+        }
     }
 
     // Internal route of events via insert-into, holds a statement lock
