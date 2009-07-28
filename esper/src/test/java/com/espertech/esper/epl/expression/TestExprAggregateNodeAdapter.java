@@ -12,7 +12,7 @@ public abstract class TestExprAggregateNodeAdapter extends TestCase
         SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[] {10, 20});
         validatedNodeToTest.setAggregationResultFuture(future, 1);
 
-        assertEquals(20, validatedNodeToTest.evaluate(null, false));
+        assertEquals(20, validatedNodeToTest.evaluate(null, false, null));
     }
 }
 

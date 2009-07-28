@@ -4,6 +4,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.epl.core.SelectExprProcessor;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * Property evaluator that considers a select-clauses and relies
@@ -25,9 +26,9 @@ public class PropertyEvaluatorSelect implements PropertyEvaluator
         this.accumulative = accumulative;
     }
 
-    public EventBean[] getProperty(EventBean event)
+    public EventBean[] getProperty(EventBean event, ExprEvaluatorContext exprEvaluatorContext)
     {
-        ArrayDequeJDK6Backport<EventBean[]> rows = accumulative.getAccumulative(event);
+        ArrayDequeJDK6Backport<EventBean[]> rows = accumulative.getAccumulative(event, exprEvaluatorContext);
         if ((rows == null) || (rows.isEmpty()))
         {
             return null;

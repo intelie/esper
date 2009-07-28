@@ -18,6 +18,7 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprValidationPropertyException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.property.PropertyEvaluatorFactory;
 import com.espertech.esper.epl.property.PropertyEvaluator;
@@ -130,7 +131,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             try
             {
                 validated = validateExpressions(distinctNode.getExpressions(),
-                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService());
+                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
             }
             catch (ExprValidationPropertyException ex)
             {
@@ -155,7 +156,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
             StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), taggedEventTypes, arrayEventTypes);
             List<ExprNode> validated = validateExpressions(guardNode.getPatternGuardSpec().getObjectParameters(),
-                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService());
+                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
 
             MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, context.getEventAdapterService());
 
@@ -181,7 +182,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
             StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), taggedEventTypes, arrayEventTypes);
             List<ExprNode> validated = validateExpressions(observerNode.getPatternObserverSpec().getObjectParameters(),
-                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService());
+                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
 
             MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, context.getEventAdapterService());
 
@@ -302,7 +303,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, context.getEngineURI(), true, false);
         List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
 
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(resolvedEventType, eventName, exprNodes, filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(),  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null);
+        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(resolvedEventType, eventName, exprNodes, filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(),  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null, context);
         filterNode.setFilterSpec(spec);
     }
 
@@ -310,7 +311,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                          MethodResolutionService methodResolutionService,
                          ViewResourceDelegate viewResourceDelegate,
                          TimeProvider timeProvider,
-                         VariableService variableService)
+                         VariableService variableService,
+                         ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
         if (objectParameters == null)
@@ -320,7 +322,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         List<ExprNode> validated = new ArrayList<ExprNode>();
         for (ExprNode node : objectParameters)
         {
-            validated.add(node.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService));
+            validated.add(node.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext));
         }
         return validated;
     }

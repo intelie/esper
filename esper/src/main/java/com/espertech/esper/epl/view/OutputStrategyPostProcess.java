@@ -15,6 +15,7 @@ import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.event.NaturalEventBean;
 
 /**
@@ -57,12 +58,12 @@ public class OutputStrategyPostProcess implements OutputStrategy
         {
             if ((newEvents != null) && (!isRouteRStream))
             {
-                route(newEvents);
+                route(newEvents, statementContext);
             }
 
             if ((oldEvents != null) && (isRouteRStream))
             {
-                route(oldEvents);
+                route(oldEvents, statementContext);
             }
         }
 
@@ -88,14 +89,14 @@ public class OutputStrategyPostProcess implements OutputStrategy
         }
     }
 
-    private void route(EventBean[] events)
+    private void route(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
     {
         for (EventBean routed : events) {
             if (routed instanceof NaturalEventBean) {
                 NaturalEventBean natural = (NaturalEventBean) routed;
-                internalEventRouter.route(natural.getOptionalSynthetic(), epStatementHandle, statementContext.getInternalEventEngineRouteDest());
+                internalEventRouter.route(natural.getOptionalSynthetic(), epStatementHandle, statementContext.getInternalEventEngineRouteDest(), exprEvaluatorContext);
             } else {
-                internalEventRouter.route(routed, epStatementHandle, statementContext.getInternalEventEngineRouteDest());
+                internalEventRouter.route(routed, epStatementHandle, statementContext.getInternalEventEngineRouteDest(), exprEvaluatorContext);
             }
         }
     }

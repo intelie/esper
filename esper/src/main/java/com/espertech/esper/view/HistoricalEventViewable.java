@@ -11,6 +11,7 @@ package com.espertech.esper.view;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.db.DataCache;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.StopCallback;
 
@@ -54,5 +55,5 @@ public interface HistoricalEventViewable extends Viewable, ValidatedView, StopCa
      * @param indexingStrategy the strategy to use for converting poll results into a indexed table for fast lookup
      * @return array of lists with one list for each event-per-stream row
      */
-    public EventTable[] poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy);
+    public EventTable[] poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy, ExprEvaluatorContext exprEvaluatorContext);
 }

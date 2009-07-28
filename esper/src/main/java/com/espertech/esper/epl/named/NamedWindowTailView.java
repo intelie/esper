@@ -16,6 +16,7 @@ import com.espertech.esper.collection.NullIterator;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.view.BatchingDataWindowView;
 import com.espertech.esper.view.StatementStopService;
@@ -40,6 +41,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     private final ValueAddEventProcessor revisionProcessor;
     private final boolean isPrioritized;
     private volatile long numberOfEvents;
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
@@ -51,7 +53,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      * @param revisionProcessor handles update events
      * @param isPrioritized if the engine is running with prioritized execution
      */
-    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, boolean isPrioritized)
+    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, boolean isPrioritized, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.eventType = eventType;
         this.namedWindowService = namedWindowService;
@@ -61,6 +63,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         this.statementResultService = statementResultService;
         this.revisionProcessor = revisionProcessor;
         this.isPrioritized = isPrioritized;
+        this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
     /**
@@ -111,7 +114,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     public NamedWindowConsumerView addConsumer(List<ExprNode> filterList, EPStatementHandle statementHandle, StatementStopService statementStopService)
     {
         // Construct consumer view, allow a callback to this view to remove the consumer
-        NamedWindowConsumerView consumerView = new NamedWindowConsumerView(filterList, eventType, statementStopService, this);
+        NamedWindowConsumerView consumerView = new NamedWindowConsumerView(filterList, eventType, statementStopService, this, exprEvaluatorContext);
 
         // Keep a list of consumer views per statement to accomodate joins and subqueries
         List<NamedWindowConsumerView> viewsPerStatements = consumers.get(statementHandle);

@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.spec.StatementSpecCompiled;
-import com.espertech.esper.epl.spec.StatementSpecRaw;
-import com.espertech.esper.epl.lookup.TableLookupStrategy;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.lookup.TableLookupStrategy;
+import com.espertech.esper.epl.spec.StatementSpecCompiled;
+import com.espertech.esper.epl.spec.StatementSpecRaw;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,7 +52,7 @@ public abstract class ExprSubselectNode extends ExprNode
      * @param matchingEvents is filtered results from the table of stored lookup events
      * @return evaluation result
      */
-    public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents);
+    public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * Ctor.
@@ -99,10 +99,10 @@ public abstract class ExprSubselectNode extends ExprNode
         this.selectClause = selectClause;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         Set<EventBean> matchingEvents = strategy.lookup(eventsPerStream);
-        return evaluate(eventsPerStream, isNewData, matchingEvents);
+        return evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
     }
 
     /**

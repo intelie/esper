@@ -21,7 +21,7 @@ public class TestQueryPlanExecStrategy extends TestCase
     {
         EventBean lookupEvent = SupportEventBeanFactory.createObject(new SupportBean());
 
-        strategy.lookup(new EventBean[] {lookupEvent}, null);
+        strategy.lookup(new EventBean[] {lookupEvent}, null, null);
 
         assertSame(lookupEvent, supportQueryExecNode.getLastPrefillPath()[4]);
     }

@@ -21,6 +21,7 @@ import com.espertech.esper.filter.FilterValueSet;
 import com.espertech.esper.view.EventStream;
 import com.espertech.esper.view.ZeroDepthStream;
 import com.espertech.esper.util.ManagedLock;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -86,7 +87,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * @param epStatementHandle is the statement resource lock
      * @return newly createdStatement event stream, not reusing existing instances
      */
-    public Pair<EventStream, ManagedLock> createStream(final String statementId, final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect)
+    public Pair<EventStream, ManagedLock> createStream(final String statementId, final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect, final ExprEvaluatorContext exprEvaluatorContext)
     {
         if (log.isDebugEnabled())
         {
@@ -137,7 +138,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
 
                 public void matchFound(EventBean event)
                 {
-                    EventBean[] result = filterSpec.getOptionalPropertyEvaluator().getProperty(event);
+                    EventBean[] result = filterSpec.getOptionalPropertyEvaluator().getProperty(event, exprEvaluatorContext);
                     if (result == null)
                     {
                         return;

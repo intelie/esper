@@ -1,13 +1,12 @@
 package com.espertech.esper.epl.agg;
 
-import com.espertech.esper.support.epl.SupportAggregator;
-import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.agg.AggregationServiceGroupByImpl;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.support.epl.SupportAggregator;
+import com.espertech.esper.support.epl.SupportExprNode;
 import junit.framework.TestCase;
 
 public class TestAggregationServiceGroupByImpl extends TestCase
@@ -36,9 +35,9 @@ public class TestAggregationServiceGroupByImpl extends TestCase
     public void testGetValue()
     {
         // apply 3 rows to group key 1, all aggregators evaluated their sub-expressions(constants 5 and 2)
-        service.applyEnter(new EventBean[1], groupOneKey);
-        service.applyEnter(new EventBean[1], groupOneKey);
-        service.applyEnter(new EventBean[1], groupTwoKey);
+        service.applyEnter(new EventBean[1], groupOneKey, null);
+        service.applyEnter(new EventBean[1], groupOneKey, null);
+        service.applyEnter(new EventBean[1], groupTwoKey, null);
 
         service.setCurrentRow(groupOneKey);
         assertEquals(10, service.getValue(0));
@@ -47,10 +46,10 @@ public class TestAggregationServiceGroupByImpl extends TestCase
         assertEquals(5, service.getValue(0));
         assertEquals(2, service.getValue(1));
 
-        service.applyLeave(new EventBean[1], groupTwoKey);
-        service.applyLeave(new EventBean[1], groupTwoKey);
-        service.applyLeave(new EventBean[1], groupTwoKey);
-        service.applyLeave(new EventBean[1], groupOneKey);
+        service.applyLeave(new EventBean[1], groupTwoKey, null);
+        service.applyLeave(new EventBean[1], groupTwoKey, null);
+        service.applyLeave(new EventBean[1], groupTwoKey, null);
+        service.applyLeave(new EventBean[1], groupOneKey, null);
 
         service.setCurrentRow(groupOneKey);
         assertEquals(10 - 5, service.getValue(0));

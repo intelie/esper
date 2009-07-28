@@ -8,10 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.collection.*;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.*;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +33,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
     private final OrderByProcessor orderByProcessor;
     private final ExprNode optionalHavingExpr;
     private final Set<MultiKey<EventBean>> emptyRowSet = new HashSet<MultiKey<EventBean>>();
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
@@ -43,12 +45,14 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
     public ResultSetProcessorSimple(SelectExprProcessor selectExprProcessor,
                                     OrderByProcessor orderByProcessor,
                                     ExprNode optionalHavingNode,
-                                    boolean isSelectRStream)
+                                    boolean isSelectRStream,
+                                    ExprEvaluatorContext exprEvaluatorContext)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
         this.optionalHavingExpr = optionalHavingNode;
         this.isSelectRStream = isSelectRStream;
+        this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
     public EventType getResultEventType()
@@ -65,17 +69,17 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             if (isSelectRStream)
             {
-                selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, false, isSynthesize);
+                selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, false, isSynthesize, exprEvaluatorContext);
             }
-            selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, true, isSynthesize);
+            selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, true, isSynthesize, exprEvaluatorContext);
         }
         else
         {
             if (isSelectRStream)
             {
-                selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, false, isSynthesize);
+                selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, false, isSynthesize, exprEvaluatorContext);
             }
-            selectNewEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, true, isSynthesize);
+            selectNewEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, true, isSynthesize, exprEvaluatorContext);
         }
 
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
@@ -89,17 +93,17 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             if (isSelectRStream)
             {
-                selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, false, isSynthesize);
+                selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, false, isSynthesize, exprEvaluatorContext);
             }
-            selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, true, isSynthesize);
+            selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, true, isSynthesize, exprEvaluatorContext);
         }
         else
         {
             if (isSelectRStream)
             {
-                selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingExpr, false, isSynthesize);
+                selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingExpr, false, isSynthesize, exprEvaluatorContext);
             }
-            selectNewEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingExpr, true, isSynthesize);
+            selectNewEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingExpr, true, isSynthesize, exprEvaluatorContext);
         }
 
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
@@ -116,11 +120,11 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         EventBean[] selectNewEvents;
         if (optionalHavingExpr == null)
         {
-            selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, null, newData, true, true);
+            selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, null, newData, true, true, exprEvaluatorContext);
         }
         else
         {
-            selectNewEvents = getSelectEventsHaving(selectExprProcessor, null, newData, optionalHavingExpr, true, true);
+            selectNewEvents = getSelectEventsHaving(selectExprProcessor, null, newData, optionalHavingExpr, true, true, exprEvaluatorContext);
         }
 
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
@@ -136,7 +140,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isNewData, boolean isSynthesize)
+    protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (events == null)
         {
@@ -173,7 +177,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
 
         if(orderByProcessor != null)
         {
-            return orderByProcessor.sort(result, eventGenerators, isNewData);
+            return orderByProcessor.sort(result, eventGenerators, isNewData, exprEvaluatorContext);
         }
         else
         {
@@ -191,7 +195,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize)
+    protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((events == null) || (events.isEmpty()))
         {
@@ -220,7 +224,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
 
         if(orderByProcessor != null)
         {
-            return orderByProcessor.sort(result, eventGenerators, isNewData);
+            return orderByProcessor.sort(result, eventGenerators, isNewData, exprEvaluatorContext);
         }
         else
         {
@@ -241,7 +245,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize)
+    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (events == null)
         {
@@ -260,7 +264,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             eventsPerStream[0] = event;
 
-            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
+            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
@@ -277,7 +281,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             if(orderByProcessor != null)
             {
-                return orderByProcessor.sort(result.toArray(new EventBean[result.size()]), eventGenerators.toArray(new EventBean[eventGenerators.size()][]), isNewData);
+                return orderByProcessor.sort(result.toArray(new EventBean[result.size()]), eventGenerators.toArray(new EventBean[eventGenerators.size()][]), isNewData, exprEvaluatorContext);
             }
             else
             {
@@ -303,7 +307,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize)
+    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((events == null) || (events.isEmpty()))
         {
@@ -321,7 +325,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             EventBean[] eventsPerStream = key.getArray();
 
-            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
+            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
@@ -339,7 +343,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             if(orderByProcessor != null)
             {
-                return orderByProcessor.sort(result.toArray(new EventBean[result.size()]), eventGenerators.toArray(new EventBean[eventGenerators.size()][]), isNewData);
+                return orderByProcessor.sort(result.toArray(new EventBean[result.size()]), eventGenerators.toArray(new EventBean[eventGenerators.size()][]), isNewData, exprEvaluatorContext);
             }
             else
             {
@@ -363,7 +367,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             for (EventBean aParent : parent)
             {
                 eventsPerStream[0] = aParent;
-                MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true);
+                MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true, exprEvaluatorContext);
                 UniformPair<EventBean[]> pair = processViewResultIterator(eventsPerStream);
                 EventBean[] result = pair.getFirst();
                 if (result.length != 0)
@@ -376,7 +380,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             // sort
             EventBean[] outgoingEvents = events.toArray(new EventBean[events.size()]);
             MultiKeyUntyped[] orderKeysArr = orderKeys.toArray(new MultiKeyUntyped[orderKeys.size()]);
-            EventBean[] orderedEvents = orderByProcessor.sort(outgoingEvents, orderKeysArr);
+            EventBean[] orderedEvents = orderByProcessor.sort(outgoingEvents, orderKeysArr, exprEvaluatorContext);
 
             return new ArrayEventIterator(orderedEvents);
         }
@@ -465,7 +469,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize)
+    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (events == null)
         {
@@ -479,7 +483,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             eventsPerStream[0] = event;
 
-            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
+            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
@@ -510,7 +514,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
-    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize)
+    protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
     {
         LinkedList<EventBean> result = new LinkedList<EventBean>();
 
@@ -518,7 +522,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             EventBean[] eventsPerStream = key.getArray();
 
-            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
+            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
@@ -549,7 +553,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param result is the result event list to populate
      * @param optSortKeys is the result sort key list to populate, for sorting
      */
-    protected static void getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys)
+    protected static void getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (events == null)
         {
@@ -564,7 +568,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             result.add(exprProcessor.process(eventsPerStream, isNewData, isSynthesize));
             if (orderByProcessor != null)
             {
-                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData));
+                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
             }
         }
     }
@@ -580,7 +584,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param result is the result event list to populate
      * @param optSortKeys is the result sort key list to populate, for sorting
      */
-    protected static void getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys)
+    protected static void getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
     {
         int length = (events != null) ? events.size() : 0;
         if (length == 0)
@@ -594,7 +598,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             result.add(exprProcessor.process(eventsPerStream, isNewData, isSynthesize));
             if(orderByProcessor != null)
             {
-                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData));
+                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
             }
         }
     }
@@ -613,7 +617,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param result is the result event list to populate
      * @param optSortKeys is the result sort key list to populate, for sorting
      */
-    protected static void getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys)
+    protected static void getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (events == null)
         {
@@ -625,7 +629,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             eventsPerStream[0] = event;
 
-            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
+            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
@@ -634,7 +638,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             result.add(exprProcessor.process(eventsPerStream, isNewData, isSynthesize));
             if (orderByProcessor != null)
             {
-                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData));
+                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
             }
         }
     }
@@ -653,7 +657,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param result is the result event list to populate
      * @param optSortKeys is the result sort key list to populate, for sorting
      */
-    protected static void getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys)
+    protected static void getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (events == null)
         {
@@ -663,7 +667,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         {
             EventBean[] eventsPerStream = key.getArray();
 
-            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
+            Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
@@ -673,7 +677,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             result.add(resultEvent);
             if(orderByProcessor != null)
             {
-                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData));
+                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
             }
         }
     }

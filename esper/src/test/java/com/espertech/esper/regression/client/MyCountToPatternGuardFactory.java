@@ -41,7 +41,7 @@ public class MyCountToPatternGuardFactory extends GuardFactorySupport
 
     public Guard makeGuard(PatternContext context, MatchedEventMap beginState, Quitable quitable, Object stateNodeId, Object guardState)
     {
-        Object parameter = PatternExpressionUtil.evaluate("Count-to guard", beginState, numCountToExpr, convertor);
+        Object parameter = PatternExpressionUtil.evaluate("Count-to guard", beginState, numCountToExpr, convertor, null);
         if (parameter == null)
         {
             throw new EPException("Count-to guard parameter evaluated to a null value");

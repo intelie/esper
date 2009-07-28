@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -22,17 +23,19 @@ public class ResultSetAggregateAllIterator implements Iterator<EventBean>
     private final ResultSetProcessorAggregateAll resultSetProcessor;
     private EventBean nextResult;
     private final EventBean[] eventsPerStream;
+    private ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
      * @param sourceIterator is the parent iterator
      * @param resultSetProcessor for getting outgoing rows
      */
-    public ResultSetAggregateAllIterator(Iterator<EventBean> sourceIterator, ResultSetProcessorAggregateAll resultSetProcessor)
+    public ResultSetAggregateAllIterator(Iterator<EventBean> sourceIterator, ResultSetProcessorAggregateAll resultSetProcessor, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.sourceIterator = sourceIterator;
         this.resultSetProcessor = resultSetProcessor;
         eventsPerStream = new EventBean[1];
+        this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
     public boolean hasNext()
@@ -77,7 +80,7 @@ public class ResultSetAggregateAllIterator implements Iterator<EventBean>
             Boolean pass = true;
             if (resultSetProcessor.getOptionalHavingNode() != null)
             {
-                pass = (Boolean) resultSetProcessor.getOptionalHavingNode().evaluate(eventsPerStream, true);
+                pass = (Boolean) resultSetProcessor.getOptionalHavingNode().evaluate(eventsPerStream, true, exprEvaluatorContext);
             }
             if (!pass)
             {

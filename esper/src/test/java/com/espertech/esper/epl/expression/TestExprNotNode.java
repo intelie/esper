@@ -24,7 +24,7 @@ public class TestExprNotNode extends TestCase
         // fails with zero expressions
         try
         {
-            notNode.validate(null, null, null, null, null);
+            notNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -37,7 +37,7 @@ public class TestExprNotNode extends TestCase
         notNode.addChildNode(new SupportExprNode(Boolean.class));
         try
         {
-            notNode.validate(null, null, null, null, null);
+            notNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -50,7 +50,7 @@ public class TestExprNotNode extends TestCase
         notNode.addChildNode(new SupportExprNode(String.class));
         try
         {
-            notNode.validate(null, null, null, null, null);
+            notNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -61,17 +61,17 @@ public class TestExprNotNode extends TestCase
         // validates
         notNode = new ExprNotNode();
         notNode.addChildNode(new SupportExprNode(Boolean.class));
-        notNode.validate(null, null, null, null, null);
+        notNode.validate(null, null, null, null, null, null);
     }
 
     public void testEvaluate()
     {
         notNode.addChildNode(new SupportBoolExprNode(true));
-        assertFalse( (Boolean) notNode.evaluate(null, false));
+        assertFalse( (Boolean) notNode.evaluate(null, false, null));
 
         notNode = new ExprNotNode();
         notNode.addChildNode(new SupportBoolExprNode(false));
-        assertTrue( (Boolean) notNode.evaluate(null, false));
+        assertTrue( (Boolean) notNode.evaluate(null, false, null));
     }
 
     public void testToExpressionString() throws Exception

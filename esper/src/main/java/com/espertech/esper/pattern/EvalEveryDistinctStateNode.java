@@ -230,7 +230,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         Object[] keys = new Object[expressions.size()];
         for (int i = 0; i < keys.length; i++)
         {
-            keys[i] = expressions.get(i).evaluate(eventsPerStream, true);
+            keys[i] = expressions.get(i).evaluate(eventsPerStream, true, context);
         }
         return new MultiKeyUntyped(keys);
     }

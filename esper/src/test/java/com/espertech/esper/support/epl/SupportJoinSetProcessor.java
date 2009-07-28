@@ -1,6 +1,7 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.join.JoinSetProcessor;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 
@@ -11,7 +12,7 @@ public class SupportJoinSetProcessor implements JoinSetProcessor
     private Set<MultiKey<EventBean>> lastNewEvents;
     private Set<MultiKey<EventBean>> lastOldEvents;
 
-    public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         lastNewEvents = newEvents;
         lastOldEvents = oldEvents;

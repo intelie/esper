@@ -137,7 +137,7 @@ public class ExprStaticMethodNode extends ExprNode
 		}
 	}
 
-	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
 	{
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();
@@ -177,7 +177,7 @@ public class ExprStaticMethodNode extends ExprNode
 		return staticMethod.getReturnType();
 	}
 
-	public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+	public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
 	{
         if ((isConstantParameters) && (isCachedResult))
         {
@@ -189,7 +189,7 @@ public class ExprStaticMethodNode extends ExprNode
 		int count = 0;
 		for(ExprNode childNode : childNodes)
 		{
-			args[count++] = childNode.evaluate(eventsPerStream, isNewData);
+			args[count++] = childNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 		}
 
 		// The method is static so the object it is invoked on

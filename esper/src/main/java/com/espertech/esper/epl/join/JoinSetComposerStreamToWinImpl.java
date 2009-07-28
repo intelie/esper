@@ -8,15 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join;
 
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.client.EventBean;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.Arrays;
-import java.lang.reflect.Array;
 
 /**
  * Implements the function to determine a join result for a unidirectional stream-to-window joins,
@@ -90,7 +90,7 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
         }
     }
 
-    public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+    public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
     {
         newResults.clear();
 
@@ -122,7 +122,7 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
         // join new data
         if (newDataPerStream[streamNumber] != null)
         {
-            queryStrategy.lookup(newDataPerStream[streamNumber], newResults);
+            queryStrategy.lookup(newDataPerStream[streamNumber], newResults, exprEvaluatorContext);
         }
 
         // on self-joins there can be repositories which are temporary for join execution

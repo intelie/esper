@@ -42,7 +42,7 @@ public class TestJoinSetComposerImpl extends TestCase
         EventTable[][] indexesPerStream = new EventTable[2][1];
         indexesPerStream[0][0] = indexLeft;
         indexesPerStream[1][0] = indexRight;
-        joinSetComposerImpl = new JoinSetComposerImpl(indexesPerStream, queryStrategies, false);
+        joinSetComposerImpl = new JoinSetComposerImpl(indexesPerStream, queryStrategies, false, null);
     }
 
     public void testJoin()
@@ -51,7 +51,7 @@ public class TestJoinSetComposerImpl extends TestCase
         UniformPair<Set<MultiKey<EventBean>>> result = joinSetComposerImpl.join(
                 new EventBean[][] {newEventOne, newEventTwo},                 // new left and right
                 new EventBean[][] {new EventBean[] {indexedEventOne[0]}, new EventBean[] {indexedEventTwo[1]}} // old left and right
-                );
+                ,null);
 
         assertEquals(3, result.getFirst().size());      // check old events joined
         String eventStringText = toString(result.getSecond());

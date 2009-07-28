@@ -11,6 +11,7 @@ package com.espertech.esper.epl.join;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 
 import java.util.Iterator;
@@ -26,6 +27,7 @@ public class JoinSetComposerImpl implements JoinSetComposer
     private final EventTable[][] repositories;
     private final QueryStrategy[] queryStrategies;
     private final boolean isPureSelfJoin;
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     // Set semantic eliminates duplicates in result set, use Linked set to preserve order
     private Set<MultiKey<EventBean>> oldResults = new LinkedHashSet<MultiKey<EventBean>>();
@@ -37,11 +39,13 @@ public class JoinSetComposerImpl implements JoinSetComposer
      * @param queryStrategies - for each stream a strategy to execute the join
      * @param isPureSelfJoin - for self-join only
      */
-    public JoinSetComposerImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, boolean isPureSelfJoin)
+    public JoinSetComposerImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, boolean isPureSelfJoin,
+                               ExprEvaluatorContext exprEvaluatorContext)
     {
         this.repositories = repositories;
         this.queryStrategies = queryStrategies;
         this.isPureSelfJoin = isPureSelfJoin;
+        this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
     public void init(EventBean[][] eventsPerStream)
@@ -72,7 +76,7 @@ public class JoinSetComposerImpl implements JoinSetComposer
         }
     }
 
-    public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+    public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
     {
         oldResults.clear();
         newResults.clear();
@@ -82,7 +86,7 @@ public class JoinSetComposerImpl implements JoinSetComposer
         {
             if (oldDataPerStream[i] != null)
             {
-                queryStrategies[i].lookup(oldDataPerStream[i], oldResults);
+                queryStrategies[i].lookup(oldDataPerStream[i], oldResults, exprEvaluatorContext);
             }
         }
 
@@ -116,7 +120,7 @@ public class JoinSetComposerImpl implements JoinSetComposer
         {
             if (newDataPerStream[i] != null)
             {
-                queryStrategies[i].lookup(newDataPerStream[i], newResults);
+                queryStrategies[i].lookup(newDataPerStream[i], newResults, exprEvaluatorContext);
             }
         }
 
@@ -170,7 +174,7 @@ public class JoinSetComposerImpl implements JoinSetComposer
             for (;streamEvents.hasNext();)
             {
                 lookupEvents[0] = streamEvents.next();
-                queryStrategies[stream].lookup(lookupEvents, result);
+                queryStrategies[stream].lookup(lookupEvents, result, exprEvaluatorContext);
             }
         }
 

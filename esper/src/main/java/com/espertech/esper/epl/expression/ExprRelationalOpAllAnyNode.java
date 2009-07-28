@@ -61,7 +61,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
         return relationalOpEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Must have 2 child nodes
         if (this.getChildNodes().size() < 1)
@@ -134,14 +134,14 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (this.getChildNodes().size() == 1)
         {
             return false;
         }
 
-        Object valueLeft = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+        Object valueLeft = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         int len = this.getChildNodes().size() - 1;
 
         if (hasCollectionOrArray)
@@ -150,7 +150,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
             boolean hasRows = false;
             for (int i = 1; i <= len; i++)
             {
-                Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (valueRight == null)
                 {
@@ -318,7 +318,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
             boolean hasRows = false;
             for (int i = 1; i <= len; i++)
             {
-                Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 hasRows = true;
 
                 if (valueRight != null)

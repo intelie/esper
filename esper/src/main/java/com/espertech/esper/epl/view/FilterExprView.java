@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.view;
 
 import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.ViewSupport;
@@ -21,14 +22,16 @@ import java.util.Iterator;
 public class FilterExprView extends ViewSupport
 {
     private ExprEvaluator exprEvaluator;
+    private ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
      * @param exprEvaluator - Filter expression evaluation impl
      */
-    public FilterExprView(ExprEvaluator exprEvaluator)
+    public FilterExprView(ExprEvaluator exprEvaluator, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.exprEvaluator = exprEvaluator;
+        this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
     public EventType getEventType()
@@ -38,13 +41,13 @@ public class FilterExprView extends ViewSupport
 
     public Iterator<EventBean> iterator()
     {
-        return new FilterExprViewIterator(parent.iterator(), exprEvaluator);
+        return new FilterExprViewIterator(parent.iterator(), exprEvaluator, exprEvaluatorContext);
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        EventBean[] filteredNewData = filterEvents(exprEvaluator, newData, true);
-        EventBean[] filteredOldData = filterEvents(exprEvaluator, oldData, false);
+        EventBean[] filteredNewData = filterEvents(exprEvaluator, newData, true, exprEvaluatorContext);
+        EventBean[] filteredOldData = filterEvents(exprEvaluator, oldData, false, exprEvaluatorContext);
 
         if ((filteredNewData != null) || (filteredOldData != null))
         {
@@ -59,7 +62,7 @@ public class FilterExprView extends ViewSupport
      * @param isNewData - true to indicate filter new data (istream) and not old data (rstream)
      * @return filtered events, or null if no events got through the filter
      */
-    protected static EventBean[] filterEvents(ExprEvaluator exprEvaluator, EventBean[] events, boolean isNewData)
+    protected static EventBean[] filterEvents(ExprEvaluator exprEvaluator, EventBean[] events, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (events == null)
         {
@@ -73,7 +76,7 @@ public class FilterExprView extends ViewSupport
         for (int i = 0; i < events.length; i++)
         {
             evalEventArr[0] = events[i];
-            Boolean pass = (Boolean) exprEvaluator.evaluate(evalEventArr, isNewData);
+            Boolean pass = (Boolean) exprEvaluator.evaluate(evalEventArr, isNewData, exprEvaluatorContext);
             if ((pass != null) && (pass))
             {
                 passResult[i] = true;

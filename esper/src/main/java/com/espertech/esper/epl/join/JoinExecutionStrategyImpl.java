@@ -11,6 +11,7 @@ package com.espertech.esper.epl.join;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Set;
 
@@ -23,6 +24,7 @@ public class JoinExecutionStrategyImpl implements JoinExecutionStrategy
     private final JoinSetComposer composer;
     private final JoinSetProcessor filter;
     private final JoinSetProcessor indicator;
+    private final ExprEvaluatorContext staticExprEvaluatorContext;
 
     /**
      * Ctor.
@@ -30,29 +32,31 @@ public class JoinExecutionStrategyImpl implements JoinExecutionStrategy
      * @param filter - for filtering among tuples
      * @param indicator - for presenting the info to a view
      */
-    public JoinExecutionStrategyImpl(JoinSetComposer composer, JoinSetProcessor filter, JoinSetProcessor indicator)
+    public JoinExecutionStrategyImpl(JoinSetComposer composer, JoinSetProcessor filter, JoinSetProcessor indicator,
+                                     ExprEvaluatorContext staticExprEvaluatorContext)
     {
         this.composer = composer;
         this.filter = filter;
         this.indicator = indicator;
+        this.staticExprEvaluatorContext = staticExprEvaluatorContext;
     }
 
-    public void join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+    public void join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
     {
-        UniformPair<Set<MultiKey<EventBean>>> joinSet = composer.join(newDataPerStream, oldDataPerStream);
+        UniformPair<Set<MultiKey<EventBean>>> joinSet = composer.join(newDataPerStream, oldDataPerStream, exprEvaluatorContext);
 
-        filter.process(joinSet.getFirst(), joinSet.getSecond());
+        filter.process(joinSet.getFirst(), joinSet.getSecond(), exprEvaluatorContext);
 
         if ( (!joinSet.getFirst().isEmpty()) || (!joinSet.getSecond().isEmpty()) )
         {
-            indicator.process(joinSet.getFirst(), joinSet.getSecond());
+            indicator.process(joinSet.getFirst(), joinSet.getSecond(), exprEvaluatorContext);
         }
     }
 
     public Set<MultiKey<EventBean>> staticJoin()
     {
         Set<MultiKey<EventBean>> joinSet = composer.staticJoin();
-        filter.process(joinSet, null);
+        filter.process(joinSet, null, staticExprEvaluatorContext);
         return joinSet;
     }
 }

@@ -4,6 +4,7 @@ import com.espertech.esper.filter.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.Collection;
@@ -39,7 +40,7 @@ public class SupportFilterParamIndex extends FilterParamIndexPropBase
         return null;
     }
 
-    public void matchEvent(EventBean event, Collection<FilterHandle> matches)
+    public void matchEvent(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
     }
 }

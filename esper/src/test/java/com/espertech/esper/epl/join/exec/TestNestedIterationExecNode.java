@@ -46,7 +46,7 @@ public class TestNestedIterationExecNode extends TestCase
         EventBean[] prefill = new EventBean[4];
         prefill[2] = streamEvents[2][0];
 
-        exec.process(streamEvents[2][0], prefill, result);
+        exec.process(streamEvents[2][0], prefill, result, null);
 
         assertEquals(8, result.size());
 

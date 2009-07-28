@@ -12,6 +12,7 @@ import com.espertech.esper.epl.join.rep.RepositoryImpl;
 import com.espertech.esper.epl.join.rep.Node;
 import com.espertech.esper.epl.join.assemble.BaseAssemblyNode;
 import com.espertech.esper.epl.join.assemble.ResultAssembler;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
 
@@ -77,7 +78,7 @@ public class LookupInstructionExecNode extends ExecNode
         }
     }
 
-    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result)
+    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
     {
         RepositoryImpl repository = new RepositoryImpl(rootStream, lookupEvent, numStreams);
         boolean processOptional = true;
@@ -85,7 +86,7 @@ public class LookupInstructionExecNode extends ExecNode
         for (int i = 0; i < requireResultsInstruction; i++)
         {
             LookupInstructionExec currentInstruction = lookupInstructions[i];
-            boolean hasResults = currentInstruction.process(repository);
+            boolean hasResults = currentInstruction.process(repository,exprEvaluatorContext);
 
             // no results, check what to do
             if (!hasResults)
@@ -109,7 +110,7 @@ public class LookupInstructionExecNode extends ExecNode
             for (int i = requireResultsInstruction; i < lookupInstructions.length; i++)
             {
                 LookupInstructionExec currentInstruction = lookupInstructions[i];
-                currentInstruction.process(repository);
+                currentInstruction.process(repository, exprEvaluatorContext);
             }
         }
 

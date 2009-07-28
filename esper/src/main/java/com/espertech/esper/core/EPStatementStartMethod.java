@@ -135,7 +135,7 @@ public class EPStatementStartMethod
 
             // Since only for non-joins we get the existing stream's lock and try to reuse it's views
             Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                    statementContext.getFilterService(), statementContext.getEpStatementHandle(), false, false);
+                    statementContext.getFilterService(), statementContext.getEpStatementHandle(), false, false, statementContext);
             eventStreamParentViewable = streamLockPair.getFirst();
 
             // Use the re-used stream's lock for all this statement's locking needs
@@ -235,11 +235,11 @@ public class EPStatementStartMethod
 
             for (OnTriggerSetAssignment assignment : desc.getAssignments())
             {
-                ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+                ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                 assignment.setExpression(validated);
             }
 
-            onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService());
+            onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService(), statementContext);
             eventStreamParentViewable.addView(onExprView);
         }
         else 
@@ -378,13 +378,13 @@ public class EPStatementStartMethod
 
         for (OnTriggerSetAssignment assignment : desc.getAssignments())
         {
-            ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+            ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
             assignment.setExpression(validated);
             validateNoAggregations(validated, "Aggregation functions may not be used within an update-clause");
         }
         if (desc.getOptionalWhereClause() != null)
         {
-            ExprNode validated = desc.getOptionalWhereClause().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+            ExprNode validated = desc.getOptionalWhereClause().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
             desc.setOptionalWhereClause(validated);
             validateNoAggregations(validated, "Aggregation functions may not be used within an update-clause");
         }
@@ -423,7 +423,7 @@ public class EPStatementStartMethod
 
         ValueAddEventProcessor optionalRevisionProcessor = statementContext.getValueAddEventService().getValueAddProcessor(windowName);
         boolean isPrioritized = services.getEngineSettingsService().getEngineSettings().getExecution().isPrioritized();
-        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor, statementContext.getExpression(), statementContext.getStatementName(), isPrioritized);
+        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor, statementContext.getExpression(), statementContext.getStatementName(), isPrioritized, statementContext);
 
         // Create streams and views
         Viewable eventStreamParentViewable;
@@ -432,7 +432,7 @@ public class EPStatementStartMethod
         // Create view factories and parent view based on a filter specification
         // Since only for non-joins we get the existing stream's lock and try to reuse it's views
         Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                statementContext.getFilterService(), statementContext.getEpStatementHandle(), false, false);
+                statementContext.getFilterService(), statementContext.getEpStatementHandle(), false, false, statementContext);
         eventStreamParentViewable = streamLockPair.getFirst();
 
         // Use the re-used stream's lock for all this statement's locking needs
@@ -504,7 +504,7 @@ public class EPStatementStartMethod
                 {
                     EventBean candidate = it.next();
                     eventsPerStream[0] = candidate;
-                    Boolean result = (Boolean) filter.evaluate(eventsPerStream, true);
+                    Boolean result = (Boolean) filter.evaluate(eventsPerStream, true, statementContext);
                     if ((result == null) || (!result))
                     {
                         continue;
@@ -555,8 +555,8 @@ public class EPStatementStartMethod
         {
             // Evaluate assignment expression
             StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new String[0], services.getEngineURI());
-            ExprNode validated = createDesc.getAssignment().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
-            value = validated.evaluate(null, true);
+            ExprNode validated = createDesc.getAssignment().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+            value = validated.evaluate(null, true, statementContext);
         }
 
         // Create variable
@@ -638,7 +638,7 @@ public class EPStatementStartMethod
 
                 // Since only for non-joins we get the existing stream's lock and try to reuse it's views
                 Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, false);
+                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, false, statementContext);
                 eventStreamParentViewable[i] = streamLockPair.getFirst();
 
                 // Use the re-used stream's lock for all this statement's locking needs
@@ -699,7 +699,7 @@ public class EPStatementStartMethod
                 }
 
                 MethodStreamSpec methodStreamSpec = (MethodStreamSpec) streamSpec;
-                HistoricalEventViewable historicalEventViewable = MethodPollingViewableFactory.createPollMethodView(i, methodStreamSpec, services.getEventAdapterService(), statementContext.getEpStatementHandle(), statementContext.getMethodResolutionService(), services.getEngineImportService(), statementContext.getSchedulingService(), statementContext.getScheduleBucket());
+                HistoricalEventViewable historicalEventViewable = MethodPollingViewableFactory.createPollMethodView(i, methodStreamSpec, services.getEventAdapterService(), statementContext.getEpStatementHandle(), statementContext.getMethodResolutionService(), services.getEngineImportService(), statementContext.getSchedulingService(), statementContext.getScheduleBucket(), statementContext);
                 unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.getEventType(), new LinkedList<ViewFactory>());
                 eventStreamParentViewable[i] = historicalEventViewable;
                 stopCallbacks.add(historicalEventViewable);
@@ -796,7 +796,7 @@ public class EPStatementStartMethod
                 validatedView.validate(typeService,
                         statementContext.getMethodResolutionService(),
                         statementContext.getSchedulingService(),
-                        statementContext.getVariableService());
+                        statementContext.getVariableService(), statementContext);
             }
             if (viewable instanceof HistoricalEventViewable)
             {
@@ -1040,7 +1040,7 @@ public class EPStatementStartMethod
             throws ExprValidationException
     {
         // Handle joins
-        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, joinAnalysisResult);
+        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, joinAnalysisResult, statementContext);
 
         stopCallbacks.add(new StopCallback(){
             public void stop()
@@ -1054,7 +1054,7 @@ public class EPStatementStartMethod
                 statementContext, services.getInternalEventRouter());
 
         // Create strategy for join execution
-        JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
+        JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView, statementContext);
 
         // The view needs a reference to the join execution to pull iterator values
         indicatorView.setJoinExecutionStrategy(execution);
@@ -1131,7 +1131,7 @@ public class EPStatementStartMethod
                     }
                 }
 
-                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService());
+                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                 statementSpec.setFilterExprRootNode(optionalFilterNode);
 
                 // Make sure there is no aggregation in the where clause
@@ -1158,7 +1158,7 @@ public class EPStatementStartMethod
             {
                 EventType outputLimitType = OutputConditionExpression.getBuiltInEventType(statementContext.getEventAdapterService());
                 StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[] {outputLimitType}, new String[]{null}, statementContext.getEngineURI());
-                outputLimitWhenNode = outputLimitWhenNode.getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService());
+                outputLimitWhenNode = outputLimitWhenNode.getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                 statementSpec.getOutputLimitSpec().setWhenExpressionNode(outputLimitWhenNode);
 
                 if (JavaClassHelper.getBoxedType(outputLimitWhenNode.getType()) != Boolean.class)
@@ -1171,7 +1171,7 @@ public class EPStatementStartMethod
                 {
                     for (OnTriggerSetAssignment assign : statementSpec.getOutputLimitSpec().getThenExpressions())
                     {
-                        ExprNode node = assign.getExpression().getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService());
+                        ExprNode node = assign.getExpression().getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                         assign.setExpression(node);
                         validateNoAggregations(node, "An aggregate function may not appear in a OUTPUT LIMIT clause");
                     }
@@ -1241,7 +1241,7 @@ public class EPStatementStartMethod
         equalsNode.addChildNode(rightNode);
         try
         {
-            equalsNode = equalsNode.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService());
+            equalsNode = equalsNode.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
         }
         catch (ExprValidationException ex)
         {
@@ -1298,7 +1298,7 @@ public class EPStatementStartMethod
         // Add filter view that evaluates the filter expression
         if (statementSpec.getFilterRootNode() != null)
         {
-            FilterExprView filterView = new FilterExprView(statementSpec.getFilterRootNode());
+            FilterExprView filterView = new FilterExprView(statementSpec.getFilterRootNode(), statementContext);
             finalView.addView(filterView);
             finalView = filterView;
         }
@@ -1336,7 +1336,7 @@ public class EPStatementStartMethod
 
                 // Register filter, create view factories
                 Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, true);
+                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, true, statementContext);
                 Viewable viewable = streamLockPair.getFirst();
                 ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), filterStreamSpec.getOptions(), statementContext);
                 subselect.setRawEventType(viewFactoryChain.getEventType());
@@ -1415,7 +1415,7 @@ public class EPStatementStartMethod
                     // validate
                     SelectClauseExprCompiledSpec compiled = (SelectClauseExprCompiledSpec) element;
                     ExprNode selectExpression = compiled.getSelectExpression();
-                    selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService());
+                    selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                     subselect.setSelectClause(selectExpression);
                     subselect.setSelectAsName(compiled.getAssignedName());
 
@@ -1426,7 +1426,7 @@ public class EPStatementStartMethod
                     {
                         List<ExprAggregateNode> havingAgg = Collections.emptyList();
                         List<ExprAggregateNode> orderByAgg = Collections.emptyList();
-                        aggregationService = AggregationServiceFactory.getService(aggExprNodes, havingAgg, orderByAgg, false, null);
+                        aggregationService = AggregationServiceFactory.getService(aggExprNodes, havingAgg, orderByAgg, false, null, statementContext);
 
                         // Other stream properties, if there is aggregation, cannot be under aggregation.
                         for (ExprAggregateNode aggNode : aggExprNodes)
@@ -1469,7 +1469,7 @@ public class EPStatementStartMethod
             ExprNode filterExpr = statementSpec.getFilterRootNode();
             if (filterExpr != null)
             {
-                filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService());
+                filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                 if (JavaClassHelper.getBoxedType(filterExpr.getType()) != Boolean.class)
                 {
                     throw new ExprValidationException("Subselect filter expression must return a boolean value");
@@ -1499,7 +1499,7 @@ public class EPStatementStartMethod
             // Note that "var1 + max(var2)" is not allowed as some properties are not under aggregation (which event to use?).
             if (aggregationService != null)
             {
-                SubselectAggregatorView aggregatorView = new SubselectAggregatorView(aggregationService, filterExpr);
+                SubselectAggregatorView aggregatorView = new SubselectAggregatorView(aggregationService, filterExpr, statementContext);
                 subselectView.addView(aggregatorView);
                 subselectView = aggregatorView;
 
@@ -1664,7 +1664,7 @@ public class EPStatementStartMethod
         namesAndTypes.put(filterStreamName, new Pair<EventType, String>(filteredType, filteredTypeName));
         StreamTypeService typeService = new StreamTypeServiceImpl(namesAndTypes, services.getEngineURI(), false, false);
 
-        return deleteJoinExpr.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+        return deleteJoinExpr.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
     }
 
     private List<Pair<Integer, String>> getExpressionProperties(ExprNode exprNode, boolean visitAggregateNodes)

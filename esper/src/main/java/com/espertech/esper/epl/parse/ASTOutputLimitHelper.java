@@ -12,6 +12,7 @@ import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
@@ -35,10 +36,10 @@ public class ASTOutputLimitHelper
      * @param astExprNodeMap is the map of current AST tree nodes to their respective expression root node
      * @param engineURI the engine uri
      * @param timeProvider provides time
-     * @param variableService provides variable resolution 
+     * @param variableService provides variable resolution
      * @return output limit spec
      */
-    public static OutputLimitSpec buildOutputLimitSpec(Tree node, Map<Tree, ExprNode> astExprNodeMap, VariableService variableService, String engineURI, TimeProvider timeProvider)
+    public static OutputLimitSpec buildOutputLimitSpec(Tree node, Map<Tree, ExprNode> astExprNodeMap, VariableService variableService, String engineURI, TimeProvider timeProvider, ExprEvaluatorContext exprEvaluatorContext)
     {
         int count = 0;
         Tree child = node.getChild(count);
@@ -108,7 +109,7 @@ public class ASTOutputLimitHelper
                 ExprNode expression = astExprNodeMap.remove(child);
 
                 try {
-                    timePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(new StreamTypeServiceImpl(engineURI), null, null, timeProvider, variableService);
+                    timePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(new StreamTypeServiceImpl(engineURI), null, null, timeProvider, variableService, exprEvaluatorContext);
                 }
                 catch (ExprValidationException ex)
                 {

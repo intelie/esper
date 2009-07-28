@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -88,14 +89,14 @@ public final class FilterHandleSetNode implements EventEvaluator
      * @param eventBean is the event wrapper supplying the event property values
      * @param matches is the list of callbacks to add to for any matches found
      */
-    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         nodeRWLock.readLock().lock();
 
         // Ask each of the indizes to match against the attribute values
         for (FilterParamIndexBase index : indizes)
         {
-            index.matchEvent(eventBean, matches);
+            index.matchEvent(eventBean, matches, exprEvaluatorContext);
         }
 
         // Add each filter callback stored in this node to the matching list

@@ -81,7 +81,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"}, context.getEngineURI());
 
             List<ExprNode> validatedNodes = FilterSpecCompiler.validateDisallowSubquery(rawFilterSpec.getFilterExpressions(),
-                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService());
+                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context);
 
             eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryName());
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.getOptions());
@@ -109,7 +109,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(), rawFilterSpec.getOptionalPropertyEvalSpec(),
                 null, null,  // no tags
-                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), this.getOptionalStreamName());
+                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), this.getOptionalStreamName(), context);
 
         return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
     }

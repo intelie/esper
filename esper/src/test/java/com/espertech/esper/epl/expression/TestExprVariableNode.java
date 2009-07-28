@@ -21,7 +21,7 @@ public class TestExprVariableNode extends TestCase
     public void testEvaluate() throws Exception
     {
         SupportExprNodeFactory.validate3Stream(varNode);
-        assertEquals("my_variable_value", varNode.evaluate(null, true));
+        assertEquals("my_variable_value", varNode.evaluate(null, true, null));
     }
 
     public void testValidate() throws Exception

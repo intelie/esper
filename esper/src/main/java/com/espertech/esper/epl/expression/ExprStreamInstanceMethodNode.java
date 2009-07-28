@@ -137,7 +137,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode
 		}
 	}
 
-	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
 	{
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();
@@ -190,7 +190,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode
 		return instanceMethod.getReturnType();
 	}
 
-	public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+	public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
 	{
         // get underlying event
         EventBean event = eventsPerStream[streamNum];
@@ -206,7 +206,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode
 		int count = 0;
 		for(ExprNode childNode : childNodes)
 		{
-			args[count++] = childNode.evaluate(eventsPerStream, isNewData);
+			args[count++] = childNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 		}
 
 		try

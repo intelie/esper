@@ -71,7 +71,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
             ViewFactorySupport.assertReturnsNonConstant(NAME, validated[i], i);
         }
 
-        Object sortSize = ViewFactorySupport.evaluateAssertNoProperties(NAME, validated[0], 0);
+        Object sortSize = ViewFactorySupport.evaluateAssertNoProperties(NAME, validated[0], 0, statementContext);
         if ((sortSize == null) || (!(sortSize instanceof Number)))
         {
             throw new ViewParameterException(message);
@@ -144,7 +144,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
             useCollatorSort = statementContext.getConfigSnapshot().getEngineDefaults().getLanguage().isSortUsingCollator();
         }
 
-        return new SortWindowView(this, sortCriteriaExpressions, isDescendingValues, sortWindowSize, sortedRandomAccess, useCollatorSort);
+        return new SortWindowView(this, sortCriteriaExpressions, isDescendingValues, sortWindowSize, sortedRandomAccess, useCollatorSort, statementContext);
     }
 
     public EventType getEventType()

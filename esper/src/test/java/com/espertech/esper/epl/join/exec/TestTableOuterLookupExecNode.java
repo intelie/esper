@@ -28,7 +28,7 @@ public class TestTableOuterLookupExecNode extends TestCase
         EventBean[] prefill = new EventBean[] {lookupEvents[0], null};
 
         // Test lookup on empty index, expect 1 row
-        exec.process(lookupEvents[0], prefill, result);
+        exec.process(lookupEvents[0], prefill, result, null);
         assertEquals(1, result.size());
         EventBean[] events = result.iterator().next();
         assertNull(events[1]);
@@ -38,7 +38,7 @@ public class TestTableOuterLookupExecNode extends TestCase
         // Test lookup on filled index, expect row2
         EventBean[] indexEvents = SupportEventBeanFactory.makeEvents(new String[] {"a1", "a2"});
         index.add(indexEvents);
-        exec.process(lookupEvents[0], prefill, result);
+        exec.process(lookupEvents[0], prefill, result, null);
         assertEquals(2, result.size());
 
         Iterator<EventBean[]> it = result.iterator();

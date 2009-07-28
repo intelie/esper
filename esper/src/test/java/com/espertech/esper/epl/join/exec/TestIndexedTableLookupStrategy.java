@@ -28,7 +28,7 @@ public class TestIndexedTableLookupStrategy extends TestCase
 
     public void testLookup()
     {
-        Set<EventBean> events = lookupStrategy.lookup(SupportEventBeanFactory.createObject(new SupportBean("a", 1)), null);
+        Set<EventBean> events = lookupStrategy.lookup(SupportEventBeanFactory.createObject(new SupportBean("a", 1)), null, null);
 
         assertEquals(1, events.size());
     }

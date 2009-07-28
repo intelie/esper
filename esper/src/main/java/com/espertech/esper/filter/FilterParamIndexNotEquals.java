@@ -11,6 +11,7 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -74,7 +75,7 @@ public final class FilterParamIndexNotEquals extends FilterParamIndexPropBase
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object attributeValue = this.getGetter().get(eventBean);
 
@@ -93,7 +94,7 @@ public final class FilterParamIndexNotEquals extends FilterParamIndexPropBase
                 if (attributeValue != null)
                 {
                     EventEvaluator evaluator = constantsMap.get(null);
-                    evaluator.matchEvent(eventBean, matches);
+                    evaluator.matchEvent(eventBean, matches, exprEvaluatorContext);
                 }
             }
             else
@@ -103,7 +104,7 @@ public final class FilterParamIndexNotEquals extends FilterParamIndexPropBase
                     if (!key.equals(attributeValue))
                     {
                         EventEvaluator evaluator = constantsMap.get(key);
-                        evaluator.matchEvent(eventBean, matches);
+                        evaluator.matchEvent(eventBean, matches, exprEvaluatorContext);
                     }
                 }
                 else

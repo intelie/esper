@@ -15,6 +15,7 @@ import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.view.HistoricalEventViewable;
 
 import java.util.Set;
@@ -55,7 +56,7 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
         lookupEventsPerStream = new EventBean[1][numStreams];
     }
 
-    public Set<EventBean> lookup(EventBean event, Cursor cursor)
+    public Set<EventBean> lookup(EventBean event, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
     {
         int currStream = cursor.getStream();
 
@@ -64,7 +65,7 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
         recursiveFill(lookupEventsPerStream[0], cursor.getNode());
 
         // poll
-        EventTable[] indexPerLookupRow = viewable.poll(lookupEventsPerStream, indexingStrategy);
+        EventTable[] indexPerLookupRow = viewable.poll(lookupEventsPerStream, indexingStrategy, exprEvaluatorContext);
 
         Set<EventBean> result = null;
         for (EventTable index : indexPerLookupRow)
@@ -81,7 +82,7 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
                     EventBean candidate = subsetIter.next();
 
                     lookupEventsPerStream[0][streamNum] = candidate;
-                    Boolean pass = (Boolean) outerJoinExprNode.evaluate(lookupEventsPerStream[0], true);
+                    Boolean pass = (Boolean) outerJoinExprNode.evaluate(lookupEventsPerStream[0], true, exprEvaluatorContext);
                     if ((pass != null) && (pass))
                     {
                         if (result == null)

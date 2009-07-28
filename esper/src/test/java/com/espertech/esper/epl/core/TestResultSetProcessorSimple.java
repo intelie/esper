@@ -25,16 +25,16 @@ public class TestResultSetProcessorSimple extends TestCase
     {
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
 
-        selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null);
+        selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null, null);
         orderByProcessor = null;
 
-		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true);
-		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true);
+		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, null);
+		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, null);
     }
 
     public void testUpdateAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, true, false));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, true, false, null));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -65,7 +65,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void testProcessAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), true, false));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), true, false, null));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);

@@ -11,6 +11,7 @@ package com.espertech.esper.view.ext;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -47,6 +48,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
     private final boolean[] isDescendingValues;
     private final int sortWindowSize;
     private final IStreamSortedRandomAccess optionalSortedRandomAccess;
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
     private int eventCount;
@@ -66,13 +68,15 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
                           boolean[] descendingValues,
                           int sortWindowSize,
                           IStreamSortedRandomAccess optionalSortedRandomAccess,
-                          boolean isSortUsingCollator)
+                          boolean isSortUsingCollator,
+                          ExprEvaluatorContext exprEvaluatorContext)
     {
         this.sortWindowViewFactory = sortWindowViewFactory;
         this.sortCriteriaExpressions = sortCriteriaExpressions;
         this.isDescendingValues = descendingValues;
         this.sortWindowSize = sortWindowSize;
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
+        this.exprEvaluatorContext = exprEvaluatorContext;
 
         // determine string-type sorting
         boolean hasStringTypes = false;
@@ -278,7 +282,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
     	int count = 0;
     	for(ExprNode expr : sortCriteriaExpressions)
     	{
-            result[count++] = expr.evaluate(eventsPerStream, true);
+            result[count++] = expr.evaluate(eventsPerStream, true, exprEvaluatorContext);
     	}
     	return new MultiKeyUntyped(result);
     }

@@ -26,7 +26,7 @@ public class ExprCountNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
+    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Empty child node list signals count(*), does not ignore nulls
         if (this.getChildNodes().isEmpty())

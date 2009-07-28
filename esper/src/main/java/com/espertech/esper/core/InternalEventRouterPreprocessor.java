@@ -2,6 +2,7 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.event.EventBeanCopyMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,7 +53,7 @@ public class InternalEventRouterPreprocessor
         empty = this.entries.length == 0;
     }
 
-    public EventBean process(EventBean event)
+    public EventBean process(EventBean event, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (empty)
         {
@@ -71,7 +72,7 @@ public class InternalEventRouterPreprocessor
             ExprNode whereClause = entry.getOptionalWhereClause();
             if (whereClause != null)
             {
-                Boolean result = (Boolean) whereClause.evaluate(eventsPerStream, true);
+                Boolean result = (Boolean) whereClause.evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if ((result == null) || (!result))
                 {
                     continue;
@@ -115,7 +116,7 @@ public class InternalEventRouterPreprocessor
                 eventsPerStream[0] = event;
             }
             
-            apply(event, eventsPerStream, entry);
+            apply(event, eventsPerStream, entry, exprEvaluatorContext);
             lastEntry = entry;
         }
         
@@ -131,13 +132,13 @@ public class InternalEventRouterPreprocessor
         return event;
     }
 
-    private void apply(EventBean event, EventBean[] eventsPerStream, InternalEventRouterEntry entry)
+    private void apply(EventBean event, EventBean[] eventsPerStream, InternalEventRouterEntry entry, ExprEvaluatorContext exprEvaluatorContext)
     {
         // evaluate
         Object[] values = new Object[entry.getAssignments().length];
         for (int i = 0; i < entry.getAssignments().length; i++)
         {
-            Object value = entry.getAssignments()[i].evaluate(eventsPerStream, true);
+            Object value = entry.getAssignments()[i].evaluate(eventsPerStream, true, exprEvaluatorContext);
 
             if ((value != null) && (entry.getWideners()[i] != null))
             {

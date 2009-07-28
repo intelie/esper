@@ -64,7 +64,7 @@ public abstract class ExprAggregateNode extends ExprNode
      * @return aggregation function use
      * @throws ExprValidationException when expression validation failed
      */
-    protected abstract AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+    protected abstract AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext)
         throws ExprValidationException;
 
     /**
@@ -81,9 +81,9 @@ public abstract class ExprAggregateNode extends ExprNode
         return false;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        this.aggregationMethod = validateAggregationChild(streamTypeService, methodResolutionService);
+        this.aggregationMethod = validateAggregationChild(streamTypeService, methodResolutionService, exprEvaluatorContext);
 
         Class childType = null;
         if (this.getChildNodes().size() > 0)
@@ -130,7 +130,7 @@ public abstract class ExprAggregateNode extends ExprNode
         this.column = column;
     }
 
-	public final Object evaluate(EventBean[] events, boolean isNewData)
+	public final Object evaluate(EventBean[] events, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
 	{
 		return aggregationResultFuture.getValue(column);
 	}

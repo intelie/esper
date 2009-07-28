@@ -17,11 +17,11 @@ public class TestExprMinMaxRowNode extends TestCase
     {
         minMaxNode.addChildNode(new SupportExprNode(Double.class));
         minMaxNode.addChildNode(new SupportExprNode(Integer.class));
-        minMaxNode.validate(null, null, null, null, null);
+        minMaxNode.validate(null, null, null, null, null, null);
         assertEquals(Double.class, minMaxNode.getType());
 
         minMaxNode.addChildNode(new SupportExprNode(Double.class));
-        minMaxNode.validate(null, null, null, null, null);
+        minMaxNode.validate(null, null, null, null, null, null);
         assertEquals(Double.class, minMaxNode.getType());
     }
 
@@ -39,7 +39,7 @@ public class TestExprMinMaxRowNode extends TestCase
         // Must have 2 or more subnodes
         try
         {
-            minMaxNode.validate(null, null, null, null, null);
+            minMaxNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -52,7 +52,7 @@ public class TestExprMinMaxRowNode extends TestCase
         minMaxNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            minMaxNode.validate(null, null, null, null, null);
+            minMaxNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -65,32 +65,32 @@ public class TestExprMinMaxRowNode extends TestCase
     {
         minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
         setupNode(minMaxNode, 10, 1.5, null);
-        assertEquals(10d, minMaxNode.evaluate(null, false));
+        assertEquals(10d, minMaxNode.evaluate(null, false, null));
 
         minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
         setupNode(minMaxNode, 1, 1.5, null);
-        assertEquals(1.5d, minMaxNode.evaluate(null, false));
+        assertEquals(1.5d, minMaxNode.evaluate(null, false, null));
 
         minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
         setupNode(minMaxNode, 1, 1.5, null);
-        assertEquals(1d, minMaxNode.evaluate(null, false));
+        assertEquals(1d, minMaxNode.evaluate(null, false, null));
 
         minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
         setupNode(minMaxNode, 1, 1.5, 2.0f);
-        assertEquals(2.0d, minMaxNode.evaluate(null, false));
+        assertEquals(2.0d, minMaxNode.evaluate(null, false, null));
 
         minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
         setupNode(minMaxNode, 6, 3.5, 2.0f);
-        assertEquals(2.0d, minMaxNode.evaluate(null, false));
+        assertEquals(2.0d, minMaxNode.evaluate(null, false, null));
 
         minMaxNode = makeNode(null, Integer.class, 5, Integer.class, 6, Integer.class);
-        assertNull(minMaxNode.evaluate(null, false));
+        assertNull(minMaxNode.evaluate(null, false, null));
         minMaxNode = makeNode(7, Integer.class, null, Integer.class, 6, Integer.class);
-        assertNull(minMaxNode.evaluate(null, false));
+        assertNull(minMaxNode.evaluate(null, false, null));
         minMaxNode = makeNode(3, Integer.class, 5, Integer.class, null, Integer.class);
-        assertNull(minMaxNode.evaluate(null, false));
+        assertNull(minMaxNode.evaluate(null, false, null));
         minMaxNode = makeNode(null, Integer.class, null, Integer.class, null, Integer.class);
-        assertNull(minMaxNode.evaluate(null, false));
+        assertNull(minMaxNode.evaluate(null, false, null));
     }
 
     public void testEqualsNode() throws Exception
@@ -108,7 +108,7 @@ public class TestExprMinMaxRowNode extends TestCase
         {
             nodeMin.addChildNode(new SupportExprNode(new Float(floatValue)));
         }
-        nodeMin.validate(null, null, null, null, null);
+        nodeMin.validate(null, null, null, null, null, null);
     }
 
     private ExprMinMaxRowNode makeNode(Object valueOne, Class typeOne,
@@ -119,7 +119,7 @@ public class TestExprMinMaxRowNode extends TestCase
         maxNode.addChildNode(new SupportExprNode(valueOne, typeOne));
         maxNode.addChildNode(new SupportExprNode(valueTwo, typeTwo));
         maxNode.addChildNode(new SupportExprNode(valueThree, typeThree));
-        maxNode.validate(null, null, null, null, null);
+        maxNode.validate(null, null, null, null, null, null);
         return maxNode;
     }
 

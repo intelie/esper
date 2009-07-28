@@ -48,10 +48,10 @@ public class TestExprRegexpNode extends TestCase
 
     public void testEvaluate() throws Exception
     {
-        assertFalse((Boolean) regexpNodeNormal.evaluate(makeEvent("bcd"), false));
-        assertTrue((Boolean) regexpNodeNormal.evaluate(makeEvent("ab"), false));
-        assertTrue((Boolean) regexpNodeNot.evaluate(makeEvent("bcd"), false));
-        assertFalse((Boolean) regexpNodeNot.evaluate(makeEvent("ab"), false));
+        assertFalse((Boolean) regexpNodeNormal.evaluate(makeEvent("bcd"), false, null));
+        assertTrue((Boolean) regexpNodeNormal.evaluate(makeEvent("ab"), false, null));
+        assertTrue((Boolean) regexpNodeNot.evaluate(makeEvent("bcd"), false, null));
+        assertFalse((Boolean) regexpNodeNot.evaluate(makeEvent("ab"), false, null));
     }
 
     public void testEquals()  throws Exception
@@ -78,7 +78,7 @@ public class TestExprRegexpNode extends TestCase
     private void tryInvalidValidate(ExprRegexpNode exprLikeRegexpNode) throws Exception
     {
         try {
-            exprLikeRegexpNode.validate(null, null, null, null, null);
+            exprLikeRegexpNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

@@ -80,7 +80,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
             for (int i = 0; i < newData.length; i++)
             {
                 eventsPerStream[0] = newData[i];
-                double point = ((Number) fieldExpression.evaluate(eventsPerStream, true)).doubleValue();
+                double point = ((Number) fieldExpression.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 baseStatisticsBean.addPoint(point, 0);
             }
         }
@@ -91,7 +91,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
             for (int i = 0; i < oldData.length; i++)
             {
                 eventsPerStream[0] = oldData[i];
-                double point = ((Number) fieldExpression.evaluate(eventsPerStream, true)).doubleValue();
+                double point = ((Number) fieldExpression.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 baseStatisticsBean.removePoint(point, 0);
             }
         }

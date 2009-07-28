@@ -11,6 +11,7 @@ package com.espertech.esper.epl.join;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public interface JoinSetComposer
      * @param oldDataPerStream - for each stream the event array (can be null).
      * @return join tuples
      */
-    public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream);
+    public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * For use in iteration over join statements, this must build a join tuple result set from

@@ -11,6 +11,7 @@ package com.espertech.esper.epl.variable;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.spec.OnTriggerSetDesc;
 import com.espertech.esper.event.EventAdapterService;
@@ -41,6 +42,7 @@ public class OnSetVariableView extends ViewSupport
     private final VariableReadWritePackage variableReadWritePackage;
     private final EventBean[] eventsPerStream = new EventBean[1];
     private final StatementResultService statementResultService;
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
@@ -50,13 +52,14 @@ public class OnSetVariableView extends ViewSupport
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @throws ExprValidationException if the assignment expressions are invalid
      */
-    public OnSetVariableView(OnTriggerSetDesc desc, EventAdapterService eventAdapterService, VariableService variableService, StatementResultService statementResultService)
+    public OnSetVariableView(OnTriggerSetDesc desc, EventAdapterService eventAdapterService, VariableService variableService, StatementResultService statementResultService, ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
         this.desc = desc;
         this.eventAdapterService = eventAdapterService;
         this.variableService = variableService;
         this.statementResultService = statementResultService;
+        this.exprEvaluatorContext = exprEvaluatorContext;
 
         variableReadWritePackage = new VariableReadWritePackage(desc.getAssignments(), variableService);
         eventType = eventAdapterService.createAnonymousMapType(variableReadWritePackage.getVariableTypes());
@@ -85,7 +88,7 @@ public class OnSetVariableView extends ViewSupport
         }
 
         eventsPerStream[0] = newData[newData.length - 1];
-        variableReadWritePackage.writeVariables(variableService, eventsPerStream, values);
+        variableReadWritePackage.writeVariables(variableService, eventsPerStream, values, exprEvaluatorContext);
         
         if (values != null)
         {

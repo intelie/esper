@@ -12,8 +12,13 @@ import junit.framework.TestCase;
 public class TestIsolationUnit extends TestCase
 {
     // TODO
-    // Fix current date expression
     // Test EHA
+    //
+    // Test create statement in isolation unit
+    //  (3) ==> Change EPServiceProvider to EPServiceProdiderIsolated
+    //  (1) Annotation - hint but part of statement text
+    //  (2) new createEPL method
+    //  (4) add createEPL method to EPRuntimeIsolation
     //
     // Test isolation unit mgmt + destroy
     //   epServiceManager.getIsolationUnit(name);
@@ -21,12 +26,7 @@ public class TestIsolationUnit extends TestCase
     //   epStatement.getIsolationUnit();
     //   
     // Test subquery, aggregation state, view state
-    // Test create statement in isolation unit
-    //  (1) Annotation - hint but part of statement text
-    //  (2) new createEPL method
-    //  (3) Change EPServiceProdider to EPServiceProdiderIsolated
-    //  (4) add createEPL method to EPRuntimeIsolation 
-    // update doc: document schedule adjustment, view sharing must be disabled, note on listener delivery/threading, expensive op., Update statements apply to a stream even if the statement is not isolated.
+    // update doc: document schedule adjustment, view sharing must be disabled, note on listener delivery/threading, expensive op., Update statements apply to a stream even if the statement is not isolated, iterator threading
 
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
@@ -383,6 +383,34 @@ public class TestIsolationUnit extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {100000L});        
 
         epService.getEPAdministrator().destroyAllStatements();
+
+        stmt = epService.getEPAdministrator().createEPL("select string as ct from SupportBean(current_timestamp() >= 10000)");
+        stmt.addListener(listener);
+        
+        unit.sendEvent(new SupportBean());
+        assertFalse(listener.isInvoked());
+
+        sendTimerUnisolated(10000);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
+        
+        unit.takeStatement(stmt);
+
+        unit.sendEvent(new SupportBean("E2", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
+
+        stmt.destroy();
+        stmt = epService.getEPAdministrator().createEPL("select string as ct from SupportBean(current_timestamp() >= 120000)");
+        stmt.addListener(listener);
+        unit.takeStatement(new EPStatement[] {stmt});
+
+        unit.sendEvent(new SupportBean("E3", 1));
+        assertFalse(listener.isInvoked());
+        
+        sendTimerIso(120000, unit);
+
+        unit.sendEvent(new SupportBean("E4", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4"});
     }
 
     public void testUpdate()

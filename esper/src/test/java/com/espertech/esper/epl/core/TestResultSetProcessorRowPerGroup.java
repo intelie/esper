@@ -25,14 +25,14 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
     {
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
         SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"),
-        		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null);
+        		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null, null);
         supportAggregationService = new SupportAggregationService();
 
         List<ExprNode> groupKeyNodes = new LinkedList<ExprNode>();
         groupKeyNodes.add(SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0"));
         groupKeyNodes.add(SupportExprNodeFactory.makeIdentNode("intBoxed", "s0"));
 
-        processor = new ResultSetProcessorRowPerGroup(selectProcessor, null, supportAggregationService, groupKeyNodes, null, true, false);
+        processor = new ResultSetProcessorRowPerGroup(selectProcessor, null, supportAggregationService, groupKeyNodes, null, true, false, null);
     }
 
     public void testProcess()

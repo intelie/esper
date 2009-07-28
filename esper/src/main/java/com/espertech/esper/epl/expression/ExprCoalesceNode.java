@@ -25,7 +25,7 @@ public class ExprCoalesceNode extends ExprNode
     private Class resultType;
     private boolean[] isNumericCoercion;
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {
@@ -80,7 +80,7 @@ public class ExprCoalesceNode extends ExprNode
         return resultType;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object value = null;
 
@@ -88,7 +88,7 @@ public class ExprCoalesceNode extends ExprNode
         int count = 0;
         for (ExprNode childNode : this.getChildNodes())
         {
-            value = childNode.evaluate(eventsPerStream, isNewData);
+            value = childNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
             if (value != null)
             {

@@ -11,6 +11,7 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -87,7 +88,7 @@ public class EventTypeIndex implements EventEvaluator
         return result;
     }
 
-    public void matchEvent(EventBean event, Collection<FilterHandle> matches)
+    public void matchEvent(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
@@ -97,7 +98,7 @@ public class EventTypeIndex implements EventEvaluator
         EventType eventType = event.getEventType();
 
         // Attempt to match exact type
-        matchType(eventType, event, matches);
+        matchType(eventType, event, matches, exprEvaluatorContext);
 
         // No supertype means we are done
         if (eventType.getSuperTypes() == null)
@@ -108,7 +109,7 @@ public class EventTypeIndex implements EventEvaluator
         for (Iterator<EventType> it = eventType.getDeepSuperTypes(); it.hasNext();)
         {
             EventType superType = it.next();
-            matchType(superType, event, matches);
+            matchType(superType, event, matches, exprEvaluatorContext);
         }
     }
 
@@ -121,7 +122,7 @@ public class EventTypeIndex implements EventEvaluator
         return eventTypes.size();
     }
 
-    private void matchType(EventType eventType, EventBean eventBean, Collection<FilterHandle> matches)
+    private void matchType(EventType eventType, EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         eventTypesRWLock.readLock().lock();
         FilterHandleSetNode rootNode = null;
@@ -146,7 +147,7 @@ public class EventTypeIndex implements EventEvaluator
             return;
         }
 
-        rootNode.matchEvent(eventBean, matches);
+        rootNode.matchEvent(eventBean, matches, exprEvaluatorContext);
     }
 
     private static final Log log = LogFactory.getLog(EventTypeIndex.class);

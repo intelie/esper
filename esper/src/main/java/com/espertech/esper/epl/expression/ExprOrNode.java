@@ -8,21 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.JavaClassHelper;
 
 /**
  * Represents an OR expression in a filter expression tree.
  */
 public class ExprOrNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean
         for (ExprNode child : this.getChildNodes())
@@ -50,12 +49,12 @@ public class ExprOrNode extends ExprNode
         return false;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         // At least one child must evaluate to true
         for (ExprNode child : this.getChildNodes())
         {
-            Boolean evaluated = (Boolean) child.evaluate(eventsPerStream, isNewData);
+            Boolean evaluated = (Boolean) child.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (evaluated == null)
             {
                 return null;

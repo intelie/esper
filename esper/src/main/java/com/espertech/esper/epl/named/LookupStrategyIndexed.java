@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.named;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.lookup.TableLookupStrategy;
 import com.espertech.esper.client.EventBean;
 
@@ -37,7 +38,7 @@ public class LookupStrategyIndexed implements LookupStrategy
         this.tableLookupStrategy = tableLookupStrategy;
     }
 
-    public EventBean[] lookup(EventBean[] newData)
+    public EventBean[] lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext)
     {
         Set<EventBean> removeEvents = null;
 
@@ -63,7 +64,7 @@ public class LookupStrategyIndexed implements LookupStrategy
                 {
                     eventsPerStream[1] = aNewData;    // Stream 1 events are the originating events (on-delete events)
 
-                    Boolean result = (Boolean) joinExpr.evaluate(eventsPerStream, true);
+                    Boolean result = (Boolean) joinExpr.evaluate(eventsPerStream, true, exprEvaluatorContext);
                     if (result != null)
                     {
                         if (result)

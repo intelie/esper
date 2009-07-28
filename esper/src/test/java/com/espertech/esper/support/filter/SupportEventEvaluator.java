@@ -3,6 +3,7 @@ package com.espertech.esper.support.filter;
 import com.espertech.esper.filter.EventEvaluator;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.List;
 import java.util.Collection;
@@ -13,7 +14,7 @@ public class SupportEventEvaluator implements EventEvaluator
     private EventBean lastEvent;
     private Collection<FilterHandle> lastMatches;
 
-    public void matchEvent(EventBean event, Collection<FilterHandle> matches)
+    public void matchEvent(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         countInvoked++;
         lastEvent = event;

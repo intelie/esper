@@ -163,7 +163,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
                 // get timestamp of event
                 EventBean newEvent = newData[i];
                 eventsPerStream[0] = newEvent;
-                Long timestamp = (Long) timestampExpression.evaluate(eventsPerStream, true);
+                Long timestamp = (Long) timestampExpression.evaluate(eventsPerStream, true, statementContext);
 
                 // if the event timestamp indicates its older then the tail of the window, release it
                 if (timestamp < windowTailTime)

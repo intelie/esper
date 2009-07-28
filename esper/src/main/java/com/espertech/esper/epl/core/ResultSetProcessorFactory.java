@@ -102,7 +102,7 @@ public class ResultSetProcessorFactory
             if (element instanceof SelectClauseExprCompiledSpec)
             {
                 SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
-                ExprNode validatedExpression = expr.getSelectExpression().getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService());
+                ExprNode validatedExpression = expr.getSelectExpression().getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(),stmtContext);
 
                 // determine an element name if none assigned
                 String asName = expr.getAssignedName();
@@ -192,7 +192,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within group-by");
             }
 
-            ExprNode validatedGroupBy = groupByNodes.get(i).getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService());
+            ExprNode validatedGroupBy = groupByNodes.get(i).getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(),stmtContext);
             groupByNodes.set(i, validatedGroupBy);
             groupByTypes[i] = validatedGroupBy.getType();
         }
@@ -209,7 +209,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within having-clause");
             }
 
-            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService());
+            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(), stmtContext);
         }
 
         // Validate order-by expressions, if any (could be empty list for no order-by)
@@ -226,7 +226,7 @@ public class ResultSetProcessorFactory
             }
 
             Boolean isDescending = orderByList.get(i).isDescending();
-        	OrderByItem validatedOrderBy = new OrderByItem(orderByNode.getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService()), isDescending);
+        	OrderByItem validatedOrderBy = new OrderByItem(orderByNode.getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(), stmtContext), isDescending);
         	orderByList.set(i, validatedOrderBy);
         }
 
@@ -284,7 +284,7 @@ public class ResultSetProcessorFactory
 
         // Construct the appropriate aggregation service
         boolean hasGroupBy = !groupByNodes.isEmpty();
-        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, stmtContext.getMethodResolutionService());
+        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, stmtContext.getMethodResolutionService(), stmtContext);
 
         boolean useCollatorSort = false;
         if (stmtContext.getConfigSnapshot() != null)
@@ -298,7 +298,7 @@ public class ResultSetProcessorFactory
 
         // Construct the processor for evaluating the select clause
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(stmtContext.getDynamicReferenceEventTypes());
-        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, typeService, stmtContext.getEventAdapterService(), stmtContext.getStatementResultService(), stmtContext.getValueAddEventService(), selectExprEventTypeRegistry, stmtContext.getMethodResolutionService());
+        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, typeService, stmtContext.getEventAdapterService(), stmtContext.getStatementResultService(), stmtContext.getValueAddEventService(), selectExprEventTypeRegistry, stmtContext.getMethodResolutionService(), stmtContext);
 
         // Get a list of event properties being aggregated in the select clause, if any
         Set<Pair<Integer, String>> propertiesGroupBy = getGroupByProperties(groupByNodes);
@@ -347,7 +347,7 @@ public class ResultSetProcessorFactory
             // directly generating one row, and no need to update aggregate state since there is no aggregate function.
             // There might be some order-by expressions.
             log.debug(".getProcessor Using ResultSetProcessorSimple");
-            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream);
+            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream, stmtContext);
         }
 
         // (2)
@@ -355,7 +355,7 @@ public class ResultSetProcessorFactory
         if ((namedSelectionList.isEmpty()) && (propertiesAggregatedHaving.isEmpty()) && (havingAggregateExprNodes.isEmpty()))
         {
             log.debug(".getProcessor Using ResultSetProcessorSimple");
-            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream);
+            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream, stmtContext);
         }
 
         boolean hasAggregation = (!selectAggregateExprNodes.isEmpty()) || (!propertiesAggregatedHaving.isEmpty());
@@ -367,14 +367,14 @@ public class ResultSetProcessorFactory
             if ((nonAggregatedProps.isEmpty()) && (!isUsingWildcard) && (!isUsingStreamSelect))
             {
                 log.debug(".getProcessor Using ResultSetProcessorRowForAll");
-                return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, orderByProcessor, optionalHavingNode, isSelectRStream, isUnidirectional);
+                return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, orderByProcessor, optionalHavingNode, isSelectRStream, isUnidirectional, stmtContext);
             }
 
             // (4)
             // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
             // or having clause and not all event properties are aggregated (some properties are not under aggregation functions).
             log.debug(".getProcessor Using ResultSetProcessorAggregateAll");
-            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, isSelectRStream, isUnidirectional);
+            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, isSelectRStream, isUnidirectional, stmtContext);
         }
 
         // Handle group-by cases
@@ -425,14 +425,14 @@ public class ResultSetProcessorFactory
         if (allInGroupBy && allInSelect)
         {
             log.debug(".getProcessor Using ResultSetProcessorRowPerGroup");
-            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream, isUnidirectional);
+            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream, isUnidirectional, stmtContext);
         }
 
         // (6)
         // There is a group-by clause, and one or more event properties in the select clause that are not under an aggregation
         // function are not listed in the group-by clause (output one row per event, not one row per group)
         log.debug(".getProcessor Using ResultSetProcessorAggregateGrouped");
-        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream, isUnidirectional);
+        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream, isUnidirectional, stmtContext);
     }
 
     private static void validateHaving(Set<Pair<Integer, String>> propertiesGroupedBy,

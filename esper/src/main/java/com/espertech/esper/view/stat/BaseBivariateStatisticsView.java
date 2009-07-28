@@ -74,8 +74,8 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
             for (int i = 0; i < newData.length; i++)
             {
                 eventsPerStream[0] = newData[i];
-                double X = ((Number) expressionX.evaluate(eventsPerStream, true)).doubleValue();
-                double Y = ((Number) expressionY.evaluate(eventsPerStream, true)).doubleValue();
+                double X = ((Number) expressionX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double Y = ((Number) expressionY.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 statisticsBean.addPoint(X, Y);
             }
         }
@@ -86,8 +86,8 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
             for (int i = 0; i < oldData.length; i++)
             {
                 eventsPerStream[0] = oldData[i];
-                double X = ((Number) expressionX.evaluate(eventsPerStream, true)).doubleValue();
-                double Y = ((Number) expressionY.evaluate(eventsPerStream, true)).doubleValue();
+                double X = ((Number) expressionX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double Y = ((Number) expressionY.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 statisticsBean.removePoint(X, Y);
             }
         }

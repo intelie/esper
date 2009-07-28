@@ -50,7 +50,7 @@ public class ExprMinMaxRowNode extends ExprNode
         return minMaxTypeEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {
@@ -119,9 +119,9 @@ public class ExprMinMaxRowNode extends ExprNode
         return false;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Number result = computer.execute(eventsPerStream, isNewData);
+        Number result = computer.execute(eventsPerStream, isNewData, exprEvaluatorContext);
         if (result == null)
         {
             return null;

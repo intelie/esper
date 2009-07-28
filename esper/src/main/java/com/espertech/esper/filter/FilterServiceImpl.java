@@ -9,6 +9,7 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Collection;
 import java.util.Set;
@@ -54,12 +55,12 @@ public final class FilterServiceImpl implements FilterServiceSPI
         indexBuilder.remove(filterCallback);
     }
 
-    public final void evaluate(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void evaluate(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         numEventsEvaluated.incrementAndGet();
 
         // Finds all matching filters and return their callbacks
-        eventTypeIndex.matchEvent(eventBean, matches);
+        eventTypeIndex.matchEvent(eventBean, matches, exprEvaluatorContext);
     }
 
     public final long getNumEventsEvaluated()

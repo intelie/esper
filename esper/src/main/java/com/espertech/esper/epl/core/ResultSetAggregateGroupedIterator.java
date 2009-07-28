@@ -9,8 +9,9 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.epl.agg.AggregationService;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -25,6 +26,7 @@ public class ResultSetAggregateGroupedIterator implements Iterator<EventBean>
     private final AggregationService aggregationService;
     private EventBean nextResult;
     private final EventBean[] eventsPerStream;
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
@@ -32,12 +34,13 @@ public class ResultSetAggregateGroupedIterator implements Iterator<EventBean>
      * @param resultSetProcessor for constructing result rows
      * @param aggregationService for pointing to the right aggregation row
      */
-    public ResultSetAggregateGroupedIterator(Iterator<EventBean> sourceIterator, ResultSetProcessorAggregateGrouped resultSetProcessor, AggregationService aggregationService)
+    public ResultSetAggregateGroupedIterator(Iterator<EventBean> sourceIterator, ResultSetProcessorAggregateGrouped resultSetProcessor, AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.sourceIterator = sourceIterator;
         this.resultSetProcessor = resultSetProcessor;
         this.aggregationService = aggregationService;
         eventsPerStream = new EventBean[1];
+        this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
     public boolean hasNext()
@@ -85,7 +88,7 @@ public class ResultSetAggregateGroupedIterator implements Iterator<EventBean>
             Boolean pass = true;
             if (resultSetProcessor.getOptionalHavingNode() != null)
             {
-                pass = (Boolean) resultSetProcessor.getOptionalHavingNode().evaluate(eventsPerStream, true);
+                pass = (Boolean) resultSetProcessor.getOptionalHavingNode().evaluate(eventsPerStream, true, exprEvaluatorContext);
             }
             if (!pass)
             {

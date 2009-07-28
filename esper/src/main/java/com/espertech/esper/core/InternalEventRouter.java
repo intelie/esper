@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.spec.UpdateDesc;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.lang.annotation.Annotation;
 
@@ -30,5 +31,5 @@ public interface InternalEventRouter
      * @param event to route
      * @param statementHandle provides statement resources
      */
-    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest);
+    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext);
 }

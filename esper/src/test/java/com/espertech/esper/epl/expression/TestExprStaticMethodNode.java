@@ -47,7 +47,7 @@ public class TestExprStaticMethodNode extends TestCase
 
         assertEquals(maxInt, root.getStaticMethod());
         Integer result = Math.max(3,5);
-        assertEquals(result, root.evaluate(null, false));
+        assertEquals(result, root.evaluate(null, false, null));
     }
 
     public void testIntegerInt() throws Exception
@@ -62,7 +62,7 @@ public class TestExprStaticMethodNode extends TestCase
 
         assertEquals(staticMethod, parent.getStaticMethod());
         int result = Math.max(3, 5);
-        assertEquals(result, parent.evaluate(null, false));
+        assertEquals(result, parent.evaluate(null, false, null));
     }
 
     public void testMaxIntShort() throws Exception
@@ -75,7 +75,7 @@ public class TestExprStaticMethodNode extends TestCase
         assertEquals(maxInt, root.getStaticMethod());
         short nine = 9;
         Integer result = Math.max(3,nine);
-        assertEquals(result, root.evaluate(null, false));
+        assertEquals(result, root.evaluate(null, false, null));
     }
 
     public void testMaxDoubleInt() throws Exception
@@ -87,7 +87,7 @@ public class TestExprStaticMethodNode extends TestCase
 
         assertEquals(maxDouble, root.getStaticMethod());
         Double result = Math.max(8d,5);
-        assertEquals(result, root.evaluate(null, false));
+        assertEquals(result, root.evaluate(null, false, null));
     }
 
     public void testMaxDoubleDouble() throws Exception
@@ -99,7 +99,7 @@ public class TestExprStaticMethodNode extends TestCase
 
         assertEquals(maxDouble, root.getStaticMethod());
         Double result = Math.max(8d,4d);
-        assertEquals(result, root.evaluate(null, false));
+        assertEquals(result, root.evaluate(null, false, null));
     }
 
     public void testPowDoubleDouble() throws Exception
@@ -112,7 +112,7 @@ public class TestExprStaticMethodNode extends TestCase
 
         assertEquals(pow, root.getStaticMethod());
         Double result = Math.pow(8d,4d);
-        assertEquals(result, root.evaluate(null, false));
+        assertEquals(result, root.evaluate(null, false, null));
     }
 
     public void testValueOfInt() throws Exception
@@ -124,12 +124,12 @@ public class TestExprStaticMethodNode extends TestCase
 
         assertEquals(valueOf, root.getStaticMethod());
         Integer result = Integer.valueOf("10");
-        assertEquals(result, root.evaluate(null, false));
+        assertEquals(result, root.evaluate(null, false, null));
     }
 
     private void validate(ExprNode node) throws Exception
     {
-        node.getValidatedSubtree(streamTypeService, methodResolutionService, null, null, null);
+        node.getValidatedSubtree(streamTypeService, methodResolutionService, null, null, null, null);
     }
 
     public void nonstaticMethod(){}

@@ -10,6 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
@@ -50,17 +51,18 @@ public class SelectExprProcessorFactory
                                                    StatementResultService statementResultService,
                                                    ValueAddEventService valueAddEventService,
                                                    SelectExprEventTypeRegistry selectExprEventTypeRegistry,
-                                                   MethodResolutionService methodResolutionService)
+                                                   MethodResolutionService methodResolutionService,
+                                                   ExprEvaluatorContext exprEvaluatorContext)
         throws ExprValidationException
     {
-        SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService);
+        SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
 
         // Handle binding as an optional service
         if (statementResultService != null)
         {
             BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());
             statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned());
-            return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor);
+            return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor, exprEvaluatorContext);
         }
 
         return synthetic;        
@@ -74,7 +76,8 @@ public class SelectExprProcessorFactory
                                                    EventAdapterService eventAdapterService,
                                                    ValueAddEventService valueAddEventService,
                                                    SelectExprEventTypeRegistry selectExprEventTypeRegistry,
-                                                   MethodResolutionService methodResolutionService)
+                                                   MethodResolutionService methodResolutionService,
+                                                   ExprEvaluatorContext exprEvaluatorContext)
         throws ExprValidationException
     {
         // Wildcard not allowed when insert into specifies column order
@@ -90,7 +93,7 @@ public class SelectExprProcessorFactory
             if (typeService.getStreamNames().length > 1)
             {
                 log.debug(".getProcessor Using SelectExprJoinWildcardProcessor");
-                return new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc, selectExprEventTypeRegistry, methodResolutionService);
+                return new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
             }
             // Single-table selects with no insert-into
             // don't need extra processing
@@ -111,12 +114,12 @@ public class SelectExprProcessorFactory
         if (streamWildcards.size() == 0)
         {
             // This one only deals with wildcards and expressions in the selection
-            return new SelectExprEvalProcessor(expressionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService);
+            return new SelectExprEvalProcessor(expressionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
         }
         else
         {
             // This one also deals with stream selectors (e.g. select *, p1, s0.* from S0 as s0)
-            return new SelectExprEvalProcessorStreams(expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, selectExprEventTypeRegistry);
+            return new SelectExprEvalProcessorStreams(expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, selectExprEventTypeRegistry, exprEvaluatorContext);
         }
     }
 

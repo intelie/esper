@@ -103,7 +103,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         for (EventBean event : unmatchedEvents)
         {
             List<FilterHandle> matches = new LinkedList<FilterHandle>();
-            topNode.matchEvent(event, matches);
+            topNode.matchEvent(event, matches, null);
             assertTrue(matches.size() == 0);
         }
 
@@ -111,7 +111,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         for (EventBean event : matchedEvents)
         {
             List<FilterHandle> matches = new LinkedList<FilterHandle>();
-            topNode.matchEvent(event, matches);
+            topNode.matchEvent(event, matches, null);
             assertTrue(matches.size() == 1);
         }
 
@@ -127,7 +127,7 @@ public class TestIndexTreeBuilderMultithreaded extends TestCase
         for (EventBean event : matchedEvents)
         {
             List<FilterHandle> matches = new LinkedList<FilterHandle>();
-            topNode.matchEvent(event, matches);
+            topNode.matchEvent(event, matches, null);
             assertTrue(matches.size() == 0);
         }
     }

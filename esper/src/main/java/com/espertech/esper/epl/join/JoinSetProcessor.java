@@ -10,6 +10,8 @@ package com.espertech.esper.epl.join;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+
 import java.util.Set;
 
 /**
@@ -22,5 +24,5 @@ public interface JoinSetProcessor
      * @param newEvents - set of event tuples representing new data
      * @param oldEvents - set of event tuples representing old data
      */
-    public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents);
+    public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, ExprEvaluatorContext exprEvaluatorContext);
 }

@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -47,10 +48,10 @@ public class NestedIterationExecNode extends ExecNode
         childNodes.add(childNode);
     }
 
-    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result)
+    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
     {
         nestingOrderLength = childNodes.size();
-        recursiveNestedJoin(lookupEvent, 0, prefillPath, result);
+        recursiveNestedJoin(lookupEvent, 0, prefillPath, result, exprEvaluatorContext);
     }
 
     /**
@@ -61,11 +62,11 @@ public class NestedIterationExecNode extends ExecNode
      * @param currentPath - prototype result row to use by child nodes for generating result rows
      * @param result - result tuple rows to be populated
      */
-    protected void recursiveNestedJoin(EventBean lookupEvent, int nestingOrderIndex, EventBean[] currentPath, List<EventBean[]> result)
+    protected void recursiveNestedJoin(EventBean lookupEvent, int nestingOrderIndex, EventBean[] currentPath, List<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
     {
         List<EventBean[]> nestedResult = new LinkedList<EventBean[]>();
         ExecNode nestedExecNode = childNodes.get(nestingOrderIndex);
-        nestedExecNode.process(lookupEvent, currentPath, nestedResult);
+        nestedExecNode.process(lookupEvent, currentPath, nestedResult, exprEvaluatorContext);
         boolean isLastStream = (nestingOrderIndex == nestingOrderLength - 1);
 
         // This is not the last nesting level so no result rows are added. Invoke next nesting level for
@@ -75,7 +76,7 @@ public class NestedIterationExecNode extends ExecNode
             for (EventBean[] row : nestedResult)
             {
                 EventBean lookup = row[nestedStreams[nestingOrderIndex]];
-                recursiveNestedJoin(lookup, nestingOrderIndex + 1, row, result);
+                recursiveNestedJoin(lookup, nestingOrderIndex + 1, row, result, exprEvaluatorContext);
             }
             return;
         }

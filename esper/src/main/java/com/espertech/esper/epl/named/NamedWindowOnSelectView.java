@@ -60,7 +60,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
                                    StatementResultService statementResultService,
                                    StatementContext statementContext)
     {
-        super(statementStopService, lookupStrategy, rootView);
+        super(statementStopService, lookupStrategy, rootView, statementContext);
         this.internalEventRouter = internalEventRouter;
         this.resultSetProcessor = resultSetProcessor;
         this.statementHandle = statementHandle;
@@ -102,7 +102,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
             {
                 for (int i = 0; i < newData.length; i++)
                 {
-                    internalEventRouter.route(newData[i], statementHandle, statementContext.getInternalEventEngineRouteDest());
+                    internalEventRouter.route(newData[i], statementHandle, statementContext.getInternalEventEngineRouteDest(), statementContext);
                 }
             }
         }

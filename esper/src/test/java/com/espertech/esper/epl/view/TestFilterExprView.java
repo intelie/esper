@@ -14,7 +14,7 @@ public class TestFilterExprView extends TestCase
 
     public void setUp()
     {
-        filterExprViewAdapter = new FilterExprView(new SupportExprEvaluator());
+        filterExprViewAdapter = new FilterExprView(new SupportExprEvaluator(), null);
         childView = new SupportMapView();
         filterExprViewAdapter.addView(childView);
     }

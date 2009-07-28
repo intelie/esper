@@ -11,6 +11,7 @@ package com.espertech.esper.epl.named;
 import com.espertech.esper.epl.spec.OnTriggerDesc;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
@@ -45,14 +46,14 @@ public class NamedWindowProcessor
      * @param statementName statement name
      * @param isPrioritized if the engine is running with prioritized execution
      */
-    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized)
+    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.eventType = eventType;
         this.eplExpression = eplExpression;
         this.statementName = statementName;
 
         rootView = new NamedWindowRootView(revisionProcessor);
-        tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService, revisionProcessor, isPrioritized);
+        tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService, revisionProcessor, isPrioritized, exprEvaluatorContext);
         rootView.setDataWindowContents(tailView);   // for iteration used for delete without index
     }
 

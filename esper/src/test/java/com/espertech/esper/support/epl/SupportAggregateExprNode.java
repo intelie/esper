@@ -5,6 +5,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.ExprAggregateNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 
 public class SupportAggregateExprNode extends ExprAggregateNode
@@ -41,7 +42,7 @@ public class SupportAggregateExprNode extends ExprAggregateNode
         this.type = type;
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
+    protected AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Keep a count for if and when this was validated
         validateCount++;

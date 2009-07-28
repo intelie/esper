@@ -58,6 +58,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private final EngineImportService engineImportService;
     private final VariableService variableService;
     private final TimeProvider timeProvider;
+    private final ExprEvaluatorContext exprEvaluatorContext;
     private final SelectClauseStreamSelectorEnum defaultStreamSelector;
     private final String engineURI;
     private final ConfigurationInformation configurationInformation;
@@ -75,7 +76,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     public EPLTreeWalker(TreeNodeStream input,
                          EngineImportService engineImportService,
                          VariableService variableService,
-                         TimeProvider timeProvider,
+                         final TimeProvider timeProvider,
                          SelectClauseStreamSelectorEnum defaultStreamSelector,
                          String engineURI,
                          ConfigurationInformation configurationInformation)
@@ -85,6 +86,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
         this.variableService = variableService;
         this.defaultStreamSelector = defaultStreamSelector;
         this.timeProvider = timeProvider;
+        exprEvaluatorContext = new ExprEvaluatorContext()
+        {
+            public TimeProvider getTimeProvider()
+            {
+                return timeProvider;
+            }
+        };
         this.engineURI = engineURI;
         this.configurationInformation = configurationInformation;
 
@@ -1707,7 +1715,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveOutputLimit");
 
-        OutputLimitSpec spec = ASTOutputLimitHelper.buildOutputLimitSpec(node, astExprNodeMap, variableService, engineURI, timeProvider);
+        OutputLimitSpec spec = ASTOutputLimitHelper.buildOutputLimitSpec(node, astExprNodeMap, variableService, engineURI, timeProvider, exprEvaluatorContext);
         statementSpec.setOutputLimitSpec(spec);
 
         if (spec.getVariableName() != null)

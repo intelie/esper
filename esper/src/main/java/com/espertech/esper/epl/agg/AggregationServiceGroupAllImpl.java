@@ -11,6 +11,7 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.agg.AggregationMethod;
 
 /**
@@ -28,20 +29,20 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
         super(evaluators, aggregators);
     }
 
-    public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
+    public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)
     {
         for (int j = 0; j < evaluators.length; j++)
         {
-            Object columnResult = evaluators[j].evaluate(eventsPerStream, true);
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, true, exprEvaluatorContext);
             aggregators[j].enter(columnResult);
         }
     }
 
-    public void applyLeave(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow)
+    public void applyLeave(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)
     {
         for (int j = 0; j < evaluators.length; j++)
         {
-            Object columnResult = evaluators[j].evaluate(eventsPerStream, false);
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, false, exprEvaluatorContext);
             aggregators[j].leave(columnResult);
         }
     }

@@ -13,6 +13,7 @@ import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.schedule.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -68,13 +69,13 @@ public final class OutputConditionCrontab implements OutputCondition
         int count = 0;
         for (ExprNode parameters : scheduleSpecExpressionList)
         {
-            ExprNode node = parameters.getValidatedSubtree(new StreamTypeServiceImpl(context.getEngineURI()), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService());
+            ExprNode node = parameters.getValidatedSubtree(new StreamTypeServiceImpl(context.getEngineURI()), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
             expressions[count++] = node;
         }
 
         try
         {
-            Object[] scheduleSpecParameterList = evaluate(expressions);
+            Object[] scheduleSpecParameterList = evaluate(expressions, context);
             scheduleSpec = ScheduleSpecUtil.computeValues(scheduleSpecParameterList);
         }
         catch (ScheduleParameterException e)
@@ -135,7 +136,7 @@ public final class OutputConditionCrontab implements OutputCondition
         context.getSchedulingService().add(scheduleSpec, handle, scheduleSlot);
     }
 
-    private static Object[] evaluate(ExprNode[] parameters)
+    private static Object[] evaluate(ExprNode[] parameters, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object[] results = new Object[parameters.length];
         int count = 0;
@@ -143,7 +144,7 @@ public final class OutputConditionCrontab implements OutputCondition
         {
             try
             {
-                results[count] = expr.evaluate(null, true);
+                results[count] = expr.evaluate(null, true, exprEvaluatorContext);
                 count++;
             }
             catch (RuntimeException ex)

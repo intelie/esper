@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.epl.join.rep.Cursor;
 import com.espertech.esper.epl.join.rep.Repository;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
 
@@ -105,7 +106,7 @@ public class LookupInstructionExec
      * @param repository supplies events for lookup, and place to add results to
      * @return true if one or more results, false if no results
      */
-    public boolean process(Repository repository)
+    public boolean process(Repository repository, ExprEvaluatorContext exprEvaluatorContext)
     {
         boolean hasOneResultRow = false;
         Iterator<Cursor> it = repository.getCursors(fromStream);
@@ -120,7 +121,7 @@ public class LookupInstructionExec
             // For that event, lookup in all required streams
             while (streamCount < requiredSubStreams.length)
             {
-                Set<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent, cursor);
+                Set<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent, cursor, exprEvaluatorContext);
 
                 // There is no result, break if this is a required stream
                 if (lookupResult == null)
@@ -149,7 +150,7 @@ public class LookupInstructionExec
             // For that event, lookup in all optional streams
             for (int i = 0; i < optionalSubStreams.length; i++)
             {
-                Set<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent, cursor);
+                Set<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent, cursor, exprEvaluatorContext);
 
                 if (lookupResult != null)
                 {

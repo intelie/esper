@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Set;
 import java.util.List;
@@ -42,10 +43,10 @@ public class TableLookupExecNode extends ExecNode
         return lookupStrategy;
     }
 
-    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result)
+    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
     {
         // Lookup events
-        Set<EventBean> joinedEvents = lookupStrategy.lookup(lookupEvent, null);
+        Set<EventBean> joinedEvents = lookupStrategy.lookup(lookupEvent, null, exprEvaluatorContext);
 
         if (joinedEvents == null)
         {

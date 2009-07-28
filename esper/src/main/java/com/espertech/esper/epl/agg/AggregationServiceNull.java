@@ -11,6 +11,7 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.agg.AggregationService;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * A null object implementation of the AggregationService
@@ -19,11 +20,13 @@ import com.espertech.esper.epl.agg.AggregationService;
 public class AggregationServiceNull implements AggregationService {
 
     public void applyEnter(EventBean[] eventsPerStream,
-                           MultiKeyUntyped optionalGroupKeyPerRow) {
+                           MultiKeyUntyped optionalGroupKeyPerRow,
+                           ExprEvaluatorContext exprEvaluatorContext) {
     }
 
     public void applyLeave(EventBean[] eventsPerStream,
-                           MultiKeyUntyped optionalGroupKeyPerRow) {
+                           MultiKeyUntyped optionalGroupKeyPerRow,
+                           ExprEvaluatorContext exprEvaluatorContext) {
     }
 
     public void setCurrentRow(MultiKeyUntyped groupKey) {

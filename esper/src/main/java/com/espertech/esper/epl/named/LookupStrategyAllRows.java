@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.named;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,7 +30,7 @@ public class LookupStrategyAllRows implements LookupStrategy
         this.source = source;
     }
 
-    public EventBean[] lookup(EventBean[] newData)
+    public EventBean[] lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext)
     {
         ArrayList<EventBean> events = new ArrayList<EventBean>();
         for (Iterator<EventBean> it = source.iterator(); it.hasNext();)

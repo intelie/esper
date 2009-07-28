@@ -10,6 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.spec.SelectClauseElementCompiled;
 import com.espertech.esper.epl.spec.SelectClauseElementWildcard;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
@@ -56,7 +57,7 @@ public class BindProcessor
                     final int streamNum = i;
                     expressions.add(new ExprEvaluator() {
 
-                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                         {
                             EventBean event = eventsPerStream[streamNum];
                             if (event != null)
@@ -80,7 +81,7 @@ public class BindProcessor
                 final SelectClauseStreamCompiledSpec streamSpec = (SelectClauseStreamCompiledSpec) element;
                 expressions.add(new ExprEvaluator() {
 
-                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                     {
                         EventBean event = eventsPerStream[streamSpec.getStreamNumber()];
                         if (event != null)
@@ -129,13 +130,13 @@ public class BindProcessor
      * @param isNewData true for new events
      * @return object array with select-clause results
      */
-    public Object[] process(EventBean[] eventsPerStream, boolean isNewData)
+    public Object[] process(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object[] parameters = new Object[expressionNodes.length];
 
         for (int i = 0; i < parameters.length; i++)
         {
-            Object result = expressionNodes[i].evaluate(eventsPerStream, isNewData);
+            Object result = expressionNodes[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             parameters[i] = result;
         }
 

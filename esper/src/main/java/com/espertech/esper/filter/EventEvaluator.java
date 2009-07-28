@@ -9,6 +9,8 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+
 import java.util.Collection;
 
 /**
@@ -23,5 +25,5 @@ public interface EventEvaluator
      * @param event is the event object wrapper to obtain event property values from
      * @param matches accumulates the matching filter callbacks
      */
-    public void matchEvent(EventBean event, Collection<FilterHandle> matches);
+    public void matchEvent(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext);
 }

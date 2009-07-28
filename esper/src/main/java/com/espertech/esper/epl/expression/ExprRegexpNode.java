@@ -40,7 +40,7 @@ public class ExprRegexpNode extends ExprNode
         this.isNot = not;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {
@@ -78,11 +78,11 @@ public class ExprRegexpNode extends ExprNode
         return false;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (pattern == null)
         {
-            String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
+            String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (patternText == null)
             {
                 return null;
@@ -100,7 +100,7 @@ public class ExprRegexpNode extends ExprNode
         {
             if (!isConstantPattern)
             {
-                String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
+                String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (patternText == null)
                 {
                     return null;
@@ -116,7 +116,7 @@ public class ExprRegexpNode extends ExprNode
             }
         }
 
-        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (evalValue == null)
         {
             return null;

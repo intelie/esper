@@ -107,7 +107,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
             eventsPerStream[0] = event;
             for (int i = 0; i < criteriaExpressions.length; i++)
             {
-                groupByValues[i] = criteriaExpressions[i].evaluate(eventsPerStream, true);
+                groupByValues[i] = criteriaExpressions[i].evaluate(eventsPerStream, true, statementContext);
             }
             MultiKey<Object> groupByValuesKey = new MultiKey<Object>(groupByValues);
 
@@ -162,7 +162,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
         eventsPerStream[0] = event;
         for (int i = 0; i < criteriaExpressions.length; i++)
         {
-            groupByValues[i] = criteriaExpressions[i].evaluate(eventsPerStream, true);
+            groupByValues[i] = criteriaExpressions[i].evaluate(eventsPerStream, true, statementContext);
         }
         MultiKey<Object> groupByValuesKey = new MultiKey<Object>(groupByValues);
 

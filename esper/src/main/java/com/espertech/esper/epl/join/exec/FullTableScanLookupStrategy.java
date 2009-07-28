@@ -11,6 +11,7 @@ package com.espertech.esper.epl.join.exec;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
 import com.espertech.esper.epl.join.rep.Cursor;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class FullTableScanLookupStrategy implements TableLookupStrategy
         this.eventIndex = eventIndex;
     }
 
-    public Set<EventBean> lookup(EventBean event, Cursor cursor)
+    public Set<EventBean> lookup(EventBean event, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
     {
         Set<EventBean> result = eventIndex.getEventSet();
         if (result.isEmpty())

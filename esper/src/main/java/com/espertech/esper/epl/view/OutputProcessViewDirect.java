@@ -12,6 +12,7 @@ import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.core.ResultSetProcessor;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
@@ -88,7 +89,7 @@ public class OutputProcessViewDirect extends OutputProcessView
      * @param newEvents - new events
      * @param oldEvents - old events
      */
-    public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {

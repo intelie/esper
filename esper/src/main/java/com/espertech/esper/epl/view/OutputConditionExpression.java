@@ -165,7 +165,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
         }
 
         boolean result = false;
-        Boolean output = (Boolean) whenExpressionNode.evaluate(eventsPerStream, true);
+        Boolean output = (Boolean) whenExpressionNode.evaluate(eventsPerStream, true, context);
         if ((output != null) && (output))
         {
             result = true;
@@ -210,7 +210,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
 
             ignoreVariableCallbacks = true;
             try {
-                variableReadWritePackage.writeVariables(context.getVariableService(), eventsPerStream, null);
+                variableReadWritePackage.writeVariables(context.getVariableService(), eventsPerStream, null, context);
             }
             finally {
                 ignoreVariableCallbacks = false;

@@ -92,7 +92,7 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
      * Make an expression node that represents the outer join criteria as specified in the on-clause.
      * @return expression node for outer join criteria
      */
-    public ExprNode makeExprNode()
+    public ExprNode makeExprNode(ExprEvaluatorContext exprEvaluatorContext)
     {
         ExprNode representativeNode = new ExprEqualsNode(false);
         representativeNode.addChildNode(leftNode);
@@ -115,7 +115,7 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
 
         try
         {
-            representativeNode.validate(null, null, null, null, null);
+            representativeNode.validate(null, null, null, null, null, exprEvaluatorContext);
         }
         catch (ExprValidationException e)
         {

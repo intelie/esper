@@ -11,6 +11,7 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -106,7 +107,7 @@ public final class FilterParamIndexNotRange extends FilterParamIndexPropBase
         return rangesRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object objAttributeValue = this.getGetter().get(eventBean);
 
@@ -186,7 +187,7 @@ public final class FilterParamIndexNotRange extends FilterParamIndexPropBase
         {
             if (!matchingEvals.contains(eval))
             {
-                eval.matchEvent(eventBean, matches);
+                eval.matchEvent(eventBean, matches, exprEvaluatorContext);
             }
         }
     }

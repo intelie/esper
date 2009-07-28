@@ -30,10 +30,10 @@ public class SubselectEvalStrategyRelOpAny implements SubselectEvalStrategy
         this.filterExpr = filterExpr;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         // Evaluate the value expression
-        Object valueLeft = valueExpr.evaluate(eventsPerStream, isNewData);
+        Object valueLeft = valueExpr.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
         if (matchingEvents == null)
         {
@@ -59,7 +59,7 @@ public class SubselectEvalStrategyRelOpAny implements SubselectEvalStrategy
             // Eval filter expression
             if (filterExpr != null)
             {
-                Boolean pass = (Boolean) filterExpr.evaluate(events, true);
+                Boolean pass = (Boolean) filterExpr.evaluate(events, true, exprEvaluatorContext);
                 if ((pass == null) || (!pass))
                 {
                     continue;
@@ -70,7 +70,7 @@ public class SubselectEvalStrategyRelOpAny implements SubselectEvalStrategy
             Object valueRight;
             if (selectClauseExpr != null)
             {
-                valueRight = selectClauseExpr.evaluate(events, true);
+                valueRight = selectClauseExpr.evaluate(events, true, exprEvaluatorContext);
             }
             else
             {

@@ -34,7 +34,7 @@ public class TestJoinExecStrategyDispatchable extends TestCase
         EventBean[] newDataTwo = SupportEventBeanFactory.makeEvents(new String[] {"d"});
 
         bufferViewOne.update(newDataOne, oldDataOne);
-        dispatchable.execute();
+        dispatchable.execute(null);
         assertEquals(1, joinExecutionStrategy.getLastNewDataPerStream()[0].length);
         assertSame(newDataOne[0], joinExecutionStrategy.getLastNewDataPerStream()[0][0]);
         assertSame(oldDataOne[0], joinExecutionStrategy.getLastOldDataPerStream()[0][0]);
@@ -43,7 +43,7 @@ public class TestJoinExecStrategyDispatchable extends TestCase
 
         bufferViewOne.update(newDataTwo, oldDataTwo);
         bufferViewTwo.update(newDataOne, oldDataOne);
-        dispatchable.execute();
+        dispatchable.execute(null);
         assertEquals(1, joinExecutionStrategy.getLastNewDataPerStream()[0].length);
         assertEquals(1, joinExecutionStrategy.getLastNewDataPerStream()[1].length);
         assertSame(newDataTwo[0], joinExecutionStrategy.getLastNewDataPerStream()[0][0]);

@@ -7,6 +7,7 @@ import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
@@ -38,9 +39,10 @@ public class PropertyEvaluatorFactory
                                                   String optionalSourceStreamName,
                                                   EventAdapterService eventAdapterService,
                                                   MethodResolutionService methodResolutionService,
-                                                  TimeProvider timeProvider,
+                                                  final TimeProvider timeProvider,
                                                   VariableService variableService,
-                                                  String engineURI)
+                                                  String engineURI
+                                                  )
             throws ExprValidationException
     {
         int length = spec.getAtoms().size();
@@ -53,6 +55,13 @@ public class PropertyEvaluatorFactory
         List<String> streamNames = new ArrayList<String>();
         Map<String, Integer> streamNameAndNumber = new HashMap<String,Integer>();
         List<String> propertyNames = new ArrayList<String>();
+        ExprEvaluatorContext validateContext = new ExprEvaluatorContext()
+        {
+            public TimeProvider getTimeProvider()
+            {
+                return timeProvider;
+            }
+        };
 
         streamEventTypes.add(sourceEventType);
         streamNames.add(optionalSourceStreamName);
@@ -88,7 +97,7 @@ public class PropertyEvaluatorFactory
                 EventType[] whereTypes = streamEventTypes.toArray(new EventType[streamEventTypes.size()]);
                 String[] whereStreamNames = streamNames.toArray(new String[streamNames.size()]);
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(whereTypes, whereStreamNames, engineURI);
-                whereClauses[i] = atom.getOptionalWhereClause().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService);
+                whereClauses[i] = atom.getOptionalWhereClause().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, validateContext);
             }
 
             // validate select clause
@@ -114,7 +123,7 @@ public class PropertyEvaluatorFactory
                     else if (raw instanceof SelectClauseExprRawSpec)
                     {
                         SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                        ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService);
+                        ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, validateContext);
                         String resultName = exprSpec.getOptionalAsName();
                         if (resultName == null)
                         {
@@ -173,7 +182,7 @@ public class PropertyEvaluatorFactory
             String[] whereStreamNames = streamNames.toArray(new String[streamNames.size()]);
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(whereTypes, whereStreamNames, engineURI);
 
-            SelectExprProcessor selectExpr = SelectExprProcessorFactory.getProcessor(cumulativeSelectClause, false, null, streamTypeService, eventAdapterService, null, null, null, methodResolutionService);
+            SelectExprProcessor selectExpr = SelectExprProcessorFactory.getProcessor(cumulativeSelectClause, false, null, streamTypeService, eventAdapterService, null, null, null, methodResolutionService, validateContext);
             return new PropertyEvaluatorSelect(selectExpr, accumulative);
         }
     }

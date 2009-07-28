@@ -24,7 +24,7 @@ public class TestExprTimestampNode extends TestCase
         node.addChildNode(new SupportExprNode(1));
         try
         {
-            node.validate(null, null, null, null, null);
+            node.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -42,8 +42,8 @@ public class TestExprTimestampNode extends TestCase
                 return 99;
             }
         };
-        node.validate(null, null, null, provider, null);
-        assertEquals(99L, node.evaluate(null, false));
+        node.validate(null, null, null, provider, null, null);
+        assertEquals(99L, node.evaluate(null, false, null));
     }
 
     public void testEquals() throws Exception

@@ -108,7 +108,7 @@ public class TestFilterParamIndexNotRange extends TestCase
     private void verify(FilterParamIndexBase index, Long testValue, boolean[] expected)
     {
         testBean.setLongBoxed(testValue);
-        index.matchEvent(testEventBean, matchesList);
+        index.matchEvent(testEventBean, matchesList, null);
         for (int i = 0; i < expected.length; i++)
         {
             assertEquals("Unexpected result for eval " + i, expected[i], testEvaluators[i].getAndResetCountInvoked() == 1);

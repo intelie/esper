@@ -8,18 +8,16 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.observer;
 
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.pattern.MatchedEventConvertor;
-import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.util.MetaDefItem;
 
-import java.util.List;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Factory for making observer instances.
@@ -63,7 +61,7 @@ public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefIte
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
     {
-        Object result = parameter.evaluate(convertor.convert(beginState), true);
+        Object result = parameter.evaluate(convertor.convert(beginState), true, context);
         if (result == null)
         {
             throw new EPException("Null value returned for guard expression");

@@ -27,7 +27,7 @@ public class TestExprInNode extends TestCase
     public void testValidate() throws Exception
     {
         inNodeNormal = SupportExprNodeFactory.makeInSetNode(true);
-        inNodeNormal.validate(null, null, null, null, null);
+        inNodeNormal.validate(null, null, null, null, null, null);
 
         // No subnodes: Exception is thrown.
         tryInvalidValidate(new ExprInNode(true));
@@ -46,15 +46,15 @@ public class TestExprInNode extends TestCase
 
     public void testEvaluate() throws Exception
     {
-        assertFalse((Boolean) inNodeNormal.evaluate(makeEvent(0), false));
-        assertTrue((Boolean) inNodeNormal.evaluate(makeEvent(1), false));
-        assertTrue((Boolean) inNodeNormal.evaluate(makeEvent(2), false));
-        assertFalse((Boolean) inNodeNormal.evaluate(makeEvent(3), false));
+        assertFalse((Boolean) inNodeNormal.evaluate(makeEvent(0), false, null));
+        assertTrue((Boolean) inNodeNormal.evaluate(makeEvent(1), false, null));
+        assertTrue((Boolean) inNodeNormal.evaluate(makeEvent(2), false, null));
+        assertFalse((Boolean) inNodeNormal.evaluate(makeEvent(3), false, null));
 
-        assertTrue((Boolean) inNodeNotIn.evaluate(makeEvent(0), false));
-        assertFalse((Boolean) inNodeNotIn.evaluate(makeEvent(1), false));
-        assertFalse((Boolean) inNodeNotIn.evaluate(makeEvent(2), false));
-        assertTrue((Boolean) inNodeNotIn.evaluate(makeEvent(3), false));
+        assertTrue((Boolean) inNodeNotIn.evaluate(makeEvent(0), false, null));
+        assertFalse((Boolean) inNodeNotIn.evaluate(makeEvent(1), false, null));
+        assertFalse((Boolean) inNodeNotIn.evaluate(makeEvent(2), false, null));
+        assertTrue((Boolean) inNodeNotIn.evaluate(makeEvent(3), false, null));
     }
 
     public void testEquals()  throws Exception
@@ -87,7 +87,7 @@ public class TestExprInNode extends TestCase
     private void tryInvalidValidate(ExprInNode exprInNode) throws Exception
     {
         try {
-            exprInNode.validate(null, null, null, null, null);
+            exprInNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

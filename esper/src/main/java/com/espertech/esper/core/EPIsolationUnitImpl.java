@@ -15,8 +15,10 @@ import com.espertech.esper.filter.FilterSet;
 import com.espertech.esper.schedule.ScheduleHandle;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSet;
+import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.ThreadLogUtil;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,6 +31,7 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
     private boolean isSubselectPreeval;
     private boolean isPrioritized;
     private boolean isLatchStatementInsertStream;
+    private ExprEvaluatorContext isolatedTimeEvalContext;
 
     private ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal;
     private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
@@ -40,6 +43,14 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
         isSubselectPreeval = unisolatedSvc.getEngineSettingsService().getEngineSettings().getExpression().isSelfSubselectPreeval();
         isPrioritized = unisolatedSvc.getEngineSettingsService().getEngineSettings().getExecution().isPrioritized();
         isLatchStatementInsertStream = unisolatedSvc.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
+
+        isolatedTimeEvalContext = new ExprEvaluatorContext()
+        {
+            public TimeProvider getTimeProvider()
+            {
+                return services.getSchedulingService();
+            }
+        };
 
         matchesPerStmtThreadLocal =
             new ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>>()
@@ -318,7 +329,7 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
             Object[] handleArray = handles.getArray();
             EPStatementHandleCallback handle = (EPStatementHandleCallback) handleArray[0];
 
-            EPRuntimeImpl.processStatementScheduleSingle(handle, unisolatedServices);
+            EPRuntimeImpl.processStatementScheduleSingle(handle, unisolatedServices, isolatedTimeEvalContext);
 
             handles.clear();
             return;
@@ -367,7 +378,7 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
             EPStatementHandle handle = entry.getKey();
             Object callbackObject = entry.getValue();
 
-            EPRuntimeImpl.processStatementScheduleMultiple(handle, callbackObject, unisolatedServices);
+            EPRuntimeImpl.processStatementScheduleMultiple(handle, callbackObject, unisolatedServices, isolatedTimeEvalContext);
 
             if ((isPrioritized) && (handle.isPreemptive()))
             {
@@ -399,7 +410,7 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
         }
 
         // Process named window deltas
-        boolean haveDispatched = unisolatedServices.getNamedWindowService().dispatch();
+        boolean haveDispatched = unisolatedServices.getNamedWindowService().dispatch(isolatedTimeEvalContext);
         if (haveDispatched)
         {
             // Dispatch results to listeners
@@ -511,7 +522,7 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
     {
         // get matching filters
         ArrayBackedCollection<FilterHandle> matches = matchesArrayThreadLocal.get();
-        services.getFilterService().evaluate(event, matches);
+        services.getFilterService().evaluate(event, matches, isolatedTimeEvalContext);
 
         if (ThreadLogUtil.ENABLED_TRACE)
         {
@@ -625,7 +636,7 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
             }
 
             // internal join processing, if applicable
-            handle.internalDispatch();
+            handle.internalDispatch(isolatedTimeEvalContext);
         }
         catch (RuntimeException ex)
         {
@@ -656,7 +667,7 @@ public class EPIsolationUnitImpl implements EPRuntimeIsolated, InternalEventRout
             handleCallback.getFilterCallback().matchFound(event);
 
             // internal join processing, if applicable
-            handle.internalDispatch();
+            handle.internalDispatch(isolatedTimeEvalContext);
         }
         catch (RuntimeException ex)
         {

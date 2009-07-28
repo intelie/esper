@@ -18,7 +18,7 @@ public class TestExternallyTimedWindowView extends TestCase
     public void setUp() throws Exception
     {
         // Set up timed window view and a test child view, set the time window size to 1 second
-        myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("longPrimitive"), 1000, null, false);
+        myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("longPrimitive"), 1000, null, false, null);
         childView = new SupportBeanClassView(SupportBean.class);
         myView.addView(childView);
     }
@@ -27,7 +27,7 @@ public class TestExternallyTimedWindowView extends TestCase
     {
         try
         {
-            myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("string"), 0, null, false);
+            myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("string"), 0, null, false, null);
         }
         catch (IllegalArgumentException ex)
         {

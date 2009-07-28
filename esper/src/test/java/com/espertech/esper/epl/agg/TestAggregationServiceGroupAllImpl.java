@@ -1,10 +1,9 @@
 package com.espertech.esper.epl.agg;
 
-import com.espertech.esper.support.epl.SupportExprNode;
-import com.espertech.esper.support.epl.SupportAggregator;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.agg.AggregationServiceGroupAllImpl;
 import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.support.epl.SupportAggregator;
+import com.espertech.esper.support.epl.SupportExprNode;
 import junit.framework.TestCase;
 
 public class TestAggregationServiceGroupAllImpl extends TestCase
@@ -27,8 +26,8 @@ public class TestAggregationServiceGroupAllImpl extends TestCase
     public void testApplyEnter()
     {
         // apply two rows, all aggregators evaluated their sub-expressions(constants 5 and 2) twice
-        service.applyEnter(new EventBean[1], null);
-        service.applyEnter(new EventBean[1], null);
+        service.applyEnter(new EventBean[1], null, null);
+        service.applyEnter(new EventBean[1], null, null);
         assertEquals(10, service.getValue(0));
         assertEquals(4, service.getValue(1));
     }
@@ -36,9 +35,9 @@ public class TestAggregationServiceGroupAllImpl extends TestCase
     public void testApplyLeave()
     {
         // apply 3 rows, all aggregators evaluated their sub-expressions(constants 5 and 2)
-        service.applyLeave(new EventBean[1], null);
-        service.applyLeave(new EventBean[1], null);
-        service.applyLeave(new EventBean[1], null);
+        service.applyLeave(new EventBean[1], null, null);
+        service.applyLeave(new EventBean[1], null, null);
+        service.applyLeave(new EventBean[1], null, null);
         assertEquals(-15, service.getValue(0));
         assertEquals(-6, service.getValue(1));
     }

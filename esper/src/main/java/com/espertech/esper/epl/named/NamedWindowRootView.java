@@ -148,7 +148,7 @@ public class NamedWindowRootView extends ViewSupport
 
         if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_DELETE)
         {
-            return new NamedWindowOnDeleteView(statementStopService, strategy.getFirst(), this, statementResultService);
+            return new NamedWindowOnDeleteView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext);
         }
         else
         {

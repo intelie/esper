@@ -37,7 +37,7 @@ public class TestTableLookupExecNode extends TestCase
 
         List<EventBean[]> result = new LinkedList<EventBean[]>();
         EventBean[] prefill = new EventBean[] {lookupEvents[0], null};
-        exec.process(lookupEvents[0], prefill, result);
+        exec.process(lookupEvents[0], prefill, result, null);
 
         // Test lookup found 1 row
         assertEquals(1, result.size());
@@ -47,7 +47,7 @@ public class TestTableLookupExecNode extends TestCase
 
         // Test lookup found no rows
         result.clear();
-        exec.process(lookupEvents[1], prefill, result);
+        exec.process(lookupEvents[1], prefill, result, null);
         assertEquals(0, result.size());
     }
 }

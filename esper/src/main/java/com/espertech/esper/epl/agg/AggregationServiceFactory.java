@@ -8,14 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.agg;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.expression.ExprAggregateNode;
-import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.expression.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Factory for aggregation service instances.
@@ -39,7 +39,8 @@ public class AggregationServiceFactory
                                                 List<ExprAggregateNode> havingAggregateExprNodes,
                                                 List<ExprAggregateNode> orderByAggregateExprNodes,
                                                 boolean hasGroupByClause,
-                                                MethodResolutionService methodResolutionService)
+                                                MethodResolutionService methodResolutionService,
+                                                ExprEvaluatorContext exprEvaluatorContext)
     {
         // No aggregates used, we do not need this service
         if ((selectAggregateExprNodes.isEmpty()) && (havingAggregateExprNodes.isEmpty()))
@@ -74,7 +75,7 @@ public class AggregationServiceFactory
         {
             if (aggregateNode.getChildNodes().size() > 1)
             {
-                evaluators[index] = getMultiNodeEvaluator(aggregateNode.getChildNodes());
+                evaluators[index] = getMultiNodeEvaluator(aggregateNode.getChildNodes(), exprEvaluatorContext);
             }
             else if (!aggregateNode.getChildNodes().isEmpty())
             {
@@ -85,7 +86,7 @@ public class AggregationServiceFactory
             else
             {
                 evaluators[index] = new ExprEvaluator() {
-                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                     {
                         return null;
                     }
@@ -132,7 +133,7 @@ public class AggregationServiceFactory
         return service;
     }
 
-    private static ExprEvaluator getMultiNodeEvaluator(List<ExprNode> childNodes)
+    private static ExprEvaluator getMultiNodeEvaluator(List<ExprNode> childNodes, ExprEvaluatorContext exprEvaluatorContext)
     {
         final int size = childNodes.size();
         final List<ExprNode> exprNodes = childNodes;
@@ -144,18 +145,18 @@ public class AggregationServiceFactory
         {
             if (node.isConstantResult())
             {
-                prototype[count] = node.evaluate(null, true);
+                prototype[count] = node.evaluate(null, true, exprEvaluatorContext);
             }
             count++;
         }
 
         return new ExprEvaluator() {
-            public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+            public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
             {
                 int count = 0;
                 for (ExprNode node : exprNodes)
                 {
-                    prototype[count] = node.evaluate(eventsPerStream, isNewData);
+                    prototype[count] = node.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     count++;
                 }
                 return prototype;

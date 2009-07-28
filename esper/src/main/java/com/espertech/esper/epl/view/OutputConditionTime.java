@@ -62,7 +62,7 @@ public final class OutputConditionTime implements OutputCondition
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
         this.timePeriod = timePeriod;
 
-        Double numSeconds = (Double) timePeriod.evaluate(null, true);
+        Double numSeconds = (Double) timePeriod.evaluate(null, true, context);
         if (numSeconds == null)
         {
             throw new IllegalArgumentException("Output condition by time returned a null value for the interval size");
@@ -100,7 +100,7 @@ public final class OutputConditionTime implements OutputCondition
         // If we pull the interval from a variable, then we may need to reschedule
         if (timePeriod.hasVariable())
         {
-            Double numSeconds = (Double) timePeriod.evaluate(null, true);
+            Double numSeconds = (Double) timePeriod.evaluate(null, true, context);
             if (numSeconds != null)
             {
                 long newMsecIntervalSize = Math.round(1000 * numSeconds);
@@ -136,7 +136,7 @@ public final class OutputConditionTime implements OutputCondition
         // If we pull the interval from a variable, get the current interval length
         if (timePeriod.hasVariable())
         {
-            Double param = (Double) timePeriod.evaluate(null, true);
+            Double param = (Double) timePeriod.evaluate(null, true, context);
             if (param != null)
             {
                 msecIntervalSize = Math.round(1000 * param);

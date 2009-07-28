@@ -1,9 +1,7 @@
 package com.espertech.esper.epl.join.exec;
 
-import com.espertech.esper.epl.join.exec.TableLookupStrategy;
-import com.espertech.esper.epl.join.exec.LookupInstructionExec;
-import com.espertech.esper.support.epl.join.SupportTableLookupStrategy;
 import com.espertech.esper.support.epl.join.SupportRepositoryImpl;
+import com.espertech.esper.support.epl.join.SupportTableLookupStrategy;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 
@@ -29,7 +27,7 @@ public class TestLookupInstructionExec extends TestCase
 
     public void testProcessAllResults()
     {
-        boolean result = exec.process(rep);
+        boolean result = exec.process(rep, null);
 
         assertTrue(result);
         assertEquals(4, rep.getLookupResultsList().size());
@@ -40,7 +38,7 @@ public class TestLookupInstructionExec extends TestCase
     {
         lookupStrategies[1] = new SupportTableLookupStrategy(0);
 
-        boolean result = exec.process(rep);
+        boolean result = exec.process(rep, null);
 
         assertFalse(result);
         assertEquals(0, rep.getLookupResultsList().size());
@@ -50,7 +48,7 @@ public class TestLookupInstructionExec extends TestCase
     {
         lookupStrategies[3] = new SupportTableLookupStrategy(0);
 
-        boolean result = exec.process(rep);
+        boolean result = exec.process(rep, null);
 
         assertTrue(result);
         assertEquals(3, rep.getLookupResultsList().size());

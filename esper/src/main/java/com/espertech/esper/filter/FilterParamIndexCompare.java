@@ -12,6 +12,7 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -108,7 +109,7 @@ public final class FilterParamIndexCompare extends FilterParamIndexPropBase
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object propertyValue = this.getGetter().get(eventBean);
 
@@ -184,7 +185,7 @@ public final class FilterParamIndexCompare extends FilterParamIndexPropBase
                 continue;
             }
 
-            matcher.matchEvent(eventBean, matches);
+            matcher.matchEvent(eventBean, matches, exprEvaluatorContext);
         }
 
         if (filterOperator == FilterOperator.GREATER_OR_EQUAL)
@@ -192,7 +193,7 @@ public final class FilterParamIndexCompare extends FilterParamIndexPropBase
             EventEvaluator matcher = constantsMap.get(propertyValue);
             if (matcher != null)
             {
-                matcher.matchEvent(eventBean, matches);
+                matcher.matchEvent(eventBean, matches, exprEvaluatorContext);
             }
         }
 

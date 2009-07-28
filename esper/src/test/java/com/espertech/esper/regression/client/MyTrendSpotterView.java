@@ -72,7 +72,7 @@ public class MyTrendSpotterView extends ViewSupport
             for (EventBean aNewData : newData)
             {
                 eventsPerStream[0] = aNewData;
-                double dataPoint = ((Number) expression.evaluate(eventsPerStream, true)).doubleValue();
+                double dataPoint = ((Number) expression.evaluate(eventsPerStream, true, null)).doubleValue();
 
                 if (lastDataPoint == null)
                 {

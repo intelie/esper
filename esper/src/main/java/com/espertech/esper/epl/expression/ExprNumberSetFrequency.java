@@ -37,7 +37,7 @@ public class ExprNumberSetFrequency extends ExprNode
         return true;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         Class type = this.getChildNodes().get(0).getType();
         if (!(JavaClassHelper.isNumericNonFP(type)))
@@ -51,9 +51,9 @@ public class ExprNumberSetFrequency extends ExprNode
         return FrequencyParameter.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object value = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+        Object value = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (value == null)
         {
             log.warn("Null value returned for frequency parameter");

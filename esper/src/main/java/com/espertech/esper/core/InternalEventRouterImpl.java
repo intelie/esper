@@ -7,6 +7,7 @@ import com.espertech.esper.client.annotation.Drop;
 import com.espertech.esper.client.annotation.Priority;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.spec.UpdateDesc;
 import com.espertech.esper.event.EventBeanCopyMethod;
@@ -41,12 +42,12 @@ public class InternalEventRouterImpl implements InternalEventRouter
         return hasPreprocessing;
     }
 
-    public EventBean preprocess(EventBean eventBean)
+    public EventBean preprocess(EventBean eventBean, ExprEvaluatorContext exprEvaluatorContext)
     {
-        return getPreprocessedEvent(eventBean);
+        return getPreprocessedEvent(eventBean, exprEvaluatorContext);
     }
 
-    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest)
+    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (!hasPreprocessing)
         {
@@ -54,7 +55,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
             return;
         }
 
-        EventBean preprocessed = getPreprocessedEvent(event);
+        EventBean preprocessed = getPreprocessedEvent(event, exprEvaluatorContext);
         if (preprocessed != null)
         {
             routeDest.route(preprocessed, statementHandle);
@@ -125,7 +126,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
         }
     }
 
-    private EventBean getPreprocessedEvent(EventBean event)
+    private EventBean getPreprocessedEvent(EventBean event, ExprEvaluatorContext exprEvaluatorContext)
     {
         NullableObject<InternalEventRouterPreprocessor> processor = preprocessors.get(event.getEventType());
         if (processor == null)
@@ -143,7 +144,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
         }
         else
         {
-            return processor.getObject().process(event);
+            return processor.getObject().process(event, exprEvaluatorContext);
         }
     }
 

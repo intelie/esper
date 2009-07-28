@@ -32,7 +32,7 @@ public class TestExprNode extends TestCase
         parent_2.addChildNode(supportNode2_1);
         parent_2.addChildNode(supportNode2_2);
 
-        topNode.getValidatedSubtree(null, null, null, null, null);
+        topNode.getValidatedSubtree(null, null, null, null, null, null);
 
         assertEquals(1, supportNode1_1.getValidateCountSnapshot());
         assertEquals(2, supportNode1_2.getValidateCountSnapshot());
@@ -51,19 +51,19 @@ public class TestExprNode extends TestCase
         MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineImportService, true);
 
         ExprNode identNode = new ExprIdentNode("Integer.valueOf(\"3\")");
-        ExprNode result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null);
+        ExprNode result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null, null);
         assertTrue(result instanceof ExprStaticMethodNode);
-        assertEquals(Integer.valueOf("3"), result.evaluate(null, false));
+        assertEquals(Integer.valueOf("3"), result.evaluate(null, false, null));
 
         identNode = new ExprIdentNode("Integer.valueOf(\'3\')");
-        result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null);
+        result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null, null);
         assertTrue(result instanceof ExprStaticMethodNode);
-        assertEquals(Integer.valueOf("3"), result.evaluate(null, false));
+        assertEquals(Integer.valueOf("3"), result.evaluate(null, false, null));
 
         identNode = new ExprIdentNode("UknownClass.nonexistentMethod(\"3\")");
         try
         {
-            result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null);
+            result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null, null);
             fail();
         }
         catch(ExprValidationException e)
@@ -74,7 +74,7 @@ public class TestExprNode extends TestCase
         identNode = new ExprIdentNode("unknownMap(\"key\")");
         try
         {
-            result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null);
+            result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null, null);
             fail();
         }
         catch(ExprValidationException e)

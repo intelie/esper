@@ -11,6 +11,7 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.core.MethodResolutionService;
 
 import java.util.Map;
@@ -49,7 +50,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         aggregatorsPerGroup.clear();
     }
 
-    public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
+    public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey, ExprEvaluatorContext exprEvaluatorContext)
     {
         AggregationMethod[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
 
@@ -64,12 +65,12 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         // For this row, evaluate sub-expressions, enter result
         for (int j = 0; j < evaluators.length; j++)
         {
-            Object columnResult = evaluators[j].evaluate(eventsPerStream, true);
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, true, exprEvaluatorContext);
             groupAggregators[j].enter(columnResult);
         }
     }
 
-    public void applyLeave(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
+    public void applyLeave(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey, ExprEvaluatorContext exprEvaluatorContext)
     {
         AggregationMethod[] groupAggregators = aggregatorsPerGroup.get(groupByKey);
 
@@ -84,7 +85,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         // For this row, evaluate sub-expressions, enter result
         for (int j = 0; j < evaluators.length; j++)
         {
-            Object columnResult = evaluators[j].evaluate(eventsPerStream, false);
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, false, exprEvaluatorContext);
             groupAggregators[j].leave(columnResult);
         }
     }

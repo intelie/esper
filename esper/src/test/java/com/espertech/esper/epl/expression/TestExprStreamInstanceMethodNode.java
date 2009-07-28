@@ -60,7 +60,7 @@ public class TestExprStreamInstanceMethodNode extends TestCase
         EventBean[] events = new EventBean[] {event};
 
         SupportExprNodeFactory.validate3Stream(node);
-        assertEquals(10, node.evaluate(events, false));
+        assertEquals(10, node.evaluate(events, false, null));
     }
 
     public void testEqualsNode() throws Exception
@@ -86,7 +86,7 @@ public class TestExprStreamInstanceMethodNode extends TestCase
     {
         try
         {
-            node.validate(streamTypeService, null, null, null, null);
+            node.validate(streamTypeService, null, null, null, null, null);
             fail();
         }
         catch(ExprValidationException ex)

@@ -10,6 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * A processor for ordering output events according to the order specified in the order-by clause.
@@ -25,7 +26,7 @@ public interface OrderByProcessor {
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
 	 * @return an array containing the output events in sorted order
 	 */
-	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData);
+	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
 
 	/**
 	 * Sort the output events, using the provided group-by keys for 
@@ -37,7 +38,7 @@ public interface OrderByProcessor {
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
 	 * @return an array containing the output events in sorted order
 	 */
-	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData);
+	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * Returns the sort key for a given row.
@@ -45,7 +46,7 @@ public interface OrderByProcessor {
      * @param isNewData is true for new data
      * @return sort key
      */
-    public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData);
+    public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * Returns the sort key for a each row where a row is a single event (no join, single stream).
@@ -53,7 +54,7 @@ public interface OrderByProcessor {
      * @param isNewData is true for new data
      * @return sort key for each row
      */
-    public MultiKeyUntyped[] getSortKeyPerRow(EventBean[] generatingEvents, boolean isNewData);
+    public MultiKeyUntyped[] getSortKeyPerRow(EventBean[] generatingEvents, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * Sort a given array of outgoing events using the sort keys returning a sorted outgoing event array.
@@ -61,5 +62,5 @@ public interface OrderByProcessor {
      * @param orderKeys is the keys to sort by
      * @return sorted events
      */
-    public EventBean[] sort(EventBean[] outgoingEvents, MultiKeyUntyped[] orderKeys);
+    public EventBean[] sort(EventBean[] outgoingEvents, MultiKeyUntyped[] orderKeys, ExprEvaluatorContext exprEvaluatorContext);
 }

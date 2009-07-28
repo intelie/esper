@@ -21,7 +21,7 @@ import com.espertech.esper.schedule.TimeProvider;
  */
 public class ExprAndNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean
         for (ExprNode child : this.getChildNodes())
@@ -49,11 +49,11 @@ public class ExprAndNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         for (ExprNode child : this.getChildNodes())
         {
-            Boolean evaluated = (Boolean) child.evaluate(eventsPerStream, isNewData);
+            Boolean evaluated = (Boolean) child.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (evaluated == null)
             {
                 return null;

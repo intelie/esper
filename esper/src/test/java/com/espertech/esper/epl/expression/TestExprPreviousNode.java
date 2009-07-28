@@ -44,7 +44,7 @@ public class TestExprPreviousNode extends TestCase {
         EventBean[] events = makeEvent(0, 5d);
         buffer.update(events, null);
 
-        assertEquals(5d, prevNode.evaluate(events, true));
+        assertEquals(5d, prevNode.evaluate(events, true, null));
     }
 
     public void testEquals()  throws Exception
@@ -69,7 +69,7 @@ public class TestExprPreviousNode extends TestCase {
     private void tryInvalidValidate(ExprPreviousNode exprPrevNode) throws Exception
     {
         try {
-            exprPrevNode.validate(null, null, null, null, null);
+            exprPrevNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

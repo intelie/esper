@@ -51,7 +51,7 @@ public class ExprInNode extends ExprNode
         return isNotIn;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {
@@ -132,9 +132,9 @@ public class ExprInNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object inPropResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+        Object inPropResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
         if (!hasCollectionOrArray)
         {
@@ -151,7 +151,7 @@ public class ExprInNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -188,7 +188,7 @@ public class ExprInNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {

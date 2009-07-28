@@ -59,7 +59,7 @@ public class TestOutputProcessViewPolicy extends TestCase
         oldData[0] = SupportEventBeanFactory.createObject(new SupportBean());
         newData[0] = SupportEventBeanFactory.createObject(new SupportBean());
 
-        outputProcessViewProcess.process(makeEventSet(newData[0]), makeEventSet(oldData[0]));
+        outputProcessViewProcess.process(makeEventSet(newData[0]), makeEventSet(oldData[0]), null);
     }
 
     private Set<MultiKey<EventBean>> makeEventSet(EventBean event)

@@ -33,7 +33,7 @@ public class MyFileExistsObserverFactory extends ObserverFactorySupport
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
     {
-        Object filename = PatternExpressionUtil.evaluate("File-exists observer ", beginState, filenameExpression, convertor);
+        Object filename = PatternExpressionUtil.evaluate("File-exists observer ", beginState, filenameExpression, convertor, null);
         if (filename == null)
         {
             throw new EPException("Filename evaluated to null");

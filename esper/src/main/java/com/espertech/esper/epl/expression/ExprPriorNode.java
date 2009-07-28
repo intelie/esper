@@ -39,7 +39,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
         return constantIndexNumber;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {
@@ -55,7 +55,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
             throw new ExprValidationException("Prior function requires an integer index parameter");
         }
 
-        Object value = constantNode.evaluate(null, false);
+        Object value = constantNode.evaluate(null, false, exprEvaluatorContext);
         constantIndexNumber = ((Number) value).intValue();
 
         // Determine stream number
@@ -84,7 +84,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
         return false;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         EventBean originalEvent = eventsPerStream[streamNumber];
         EventBean substituteEvent = null;
@@ -107,7 +107,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
 
         // Substitute original event with prior event, evaluate inner expression
         eventsPerStream[streamNumber] = substituteEvent;
-        Object evalResult = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
+        Object evalResult = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         eventsPerStream[streamNumber] = originalEvent;
 
         return evalResult;

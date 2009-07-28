@@ -1,6 +1,7 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.join.exec.ExecNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
 
@@ -17,7 +18,7 @@ public class SupportQueryExecNode extends ExecNode
         this.id = id;
     }
 
-    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result)
+    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
     {
         lastPrefillPath = prefillPath;
     }

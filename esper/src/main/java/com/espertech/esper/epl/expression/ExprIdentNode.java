@@ -105,7 +105,7 @@ public class ExprIdentNode extends ExprNode
         }
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
         resolvedStreamName = propertyInfoPair.getSecond();
@@ -285,7 +285,7 @@ public class ExprIdentNode extends ExprNode
                 " propertyInfo.type=" + propertyType;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         EventBean event = eventsPerStream[streamNum];
         if (event == null)

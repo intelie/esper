@@ -17,6 +17,7 @@ import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.view.ViewProcessingException;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.*;
 
@@ -103,14 +104,14 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processor;
     }
 
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized) throws ViewProcessingException
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized, ExprEvaluatorContext exprEvaluatorContext) throws ViewProcessingException
     {
         if (processors.containsKey(name))
         {
             throw new ViewProcessingException("A named window by name '" + name + "' has already been created");
         }
 
-        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName, isPrioritized);
+        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName, isPrioritized, exprEvaluatorContext);
         processors.put(name, processor);
 
         if (!observers.isEmpty())
@@ -150,7 +151,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         threadLocal.get().add(unit);
     }
 
-    public boolean dispatch()
+    public boolean dispatch(ExprEvaluatorContext exprEvaluatorContext)
     {
         List<NamedWindowConsumerDispatchUnit> dispatches = threadLocal.get();
         if (dispatches.isEmpty())
@@ -181,7 +182,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
                     }
 
                     // internal join processing, if applicable
-                    handle.internalDispatch();
+                    handle.internalDispatch(exprEvaluatorContext);
                 }
                 finally
                 {
@@ -258,7 +259,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
                     }
 
                     // internal join processing, if applicable
-                    handle.internalDispatch();
+                    handle.internalDispatch(exprEvaluatorContext);
                 }
                 finally
                 {
@@ -308,7 +309,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
                 }
 
                 // internal join processing, if applicable
-                handle.internalDispatch();
+                handle.internalDispatch(exprEvaluatorContext);
             }
             finally
             {

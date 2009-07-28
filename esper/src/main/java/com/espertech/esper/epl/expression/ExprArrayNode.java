@@ -41,7 +41,7 @@ public class ExprArrayNode extends ExprNode
     {
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         length = this.getChildNodes().size();
 
@@ -100,7 +100,7 @@ public class ExprArrayNode extends ExprNode
                 results = null;  // not using a constant result
                 break;
             }
-            results[index++] = child.evaluate(null, false);
+            results[index++] = child.evaluate(null, false, exprEvaluatorContext);
         }
 
         // Copy constants into array and coerce, if required
@@ -136,7 +136,7 @@ public class ExprArrayNode extends ExprNode
         return Array.newInstance(arrayReturnType, 0).getClass();
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (constantResult != null)
         {
@@ -153,7 +153,7 @@ public class ExprArrayNode extends ExprNode
         int index = 0;
         for (ExprNode child : this.getChildNodes())
         {
-            Object result = child.evaluate(eventsPerStream, isNewData);
+            Object result = child.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (result != null)
             {
                 if (mustCoerce)

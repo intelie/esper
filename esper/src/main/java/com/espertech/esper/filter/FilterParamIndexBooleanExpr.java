@@ -11,6 +11,7 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -67,7 +68,7 @@ public final class FilterParamIndexBooleanExpr extends FilterParamIndexBase
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
@@ -78,7 +79,7 @@ public final class FilterParamIndexBooleanExpr extends FilterParamIndexBase
         constantsMapRWLock.readLock().lock();
         for (ExprNodeAdapter exprNodeAdapter : evaluatorsMap.keySet())
         {
-            if (exprNodeAdapter.evaluate(eventBean))
+            if (exprNodeAdapter.evaluate(eventBean, exprEvaluatorContext))
             {
                 evaluators.add(evaluatorsMap.get(exprNodeAdapter));
             }
@@ -87,7 +88,7 @@ public final class FilterParamIndexBooleanExpr extends FilterParamIndexBase
 
         for (EventEvaluator evaluator : evaluators)
         {
-            evaluator.matchEvent(eventBean, matches);
+            evaluator.matchEvent(eventBean, matches, exprEvaluatorContext);
         }
     }
 

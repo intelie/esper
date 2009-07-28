@@ -59,7 +59,7 @@ public class IndexTreeBuilderRunnable implements Runnable
 
         // Fire a no-match
         List<FilterHandle> matches = new LinkedList<FilterHandle>();
-        topNode.matchEvent(unmatchedEvent, matches);
+        topNode.matchEvent(unmatchedEvent, matches, null);
 
         if (matches.size() != 0)
         {
@@ -69,7 +69,7 @@ public class IndexTreeBuilderRunnable implements Runnable
         }
 
         // Fire a match
-        topNode.matchEvent(matchedEvent, matches);
+        topNode.matchEvent(matchedEvent, matches, null);
 
         if (matches.size() != 1)
         {

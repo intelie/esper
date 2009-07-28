@@ -34,7 +34,7 @@ public class ExprSubstitutionNode extends ExprNode
         this.index = index;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         throw new ExprValidationException(ERROR_MSG);
     }
@@ -58,7 +58,7 @@ public class ExprSubstitutionNode extends ExprNode
         throw new IllegalStateException(ERROR_MSG);
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         throw new EPException(ERROR_MSG);
     }

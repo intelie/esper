@@ -18,6 +18,7 @@ import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * View for a moving window extending the specified amount of time into the past, driven entirely by external timing
@@ -47,6 +48,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     private final TimeWindow timeWindow;
     private ViewUpdatedCollection viewUpdatedCollection;
     private boolean isRemoveStreamHandling;
+    private ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Constructor.
@@ -63,7 +65,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      */
     public ExternallyTimedWindowView(ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory,
                                      ExprNode timestampExpression, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,
-                                     boolean isRemoveStreamHandling)
+                                     boolean isRemoveStreamHandling, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.externallyTimedWindowViewFactory = externallyTimedWindowViewFactory;
         this.timestampExpression = timestampExpression;
@@ -71,6 +73,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
         this.viewUpdatedCollection = viewUpdatedCollection;
         this.isRemoveStreamHandling = isRemoveStreamHandling;
         this.timeWindow = new TimeWindow(isRemoveStreamHandling);
+        this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
     public View cloneView(StatementContext statementContext)
@@ -177,7 +180,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     private long getLongValue(EventBean obj)
     {
         eventsPerStream[0] = obj;
-        Number num = (Number) timestampExpression.evaluate(eventsPerStream, true);
+        Number num = (Number) timestampExpression.evaluate(eventsPerStream, true, exprEvaluatorContext);
         return num.longValue();
     }
 

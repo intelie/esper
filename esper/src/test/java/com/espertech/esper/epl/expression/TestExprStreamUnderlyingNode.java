@@ -45,7 +45,7 @@ public class TestExprStreamUnderlyingNode extends TestCase
 
     public void testValidate() throws Exception
     {
-        node.validate(streamTypeService, null, null, null, null);
+        node.validate(streamTypeService, null, null, null, null, null);
         assertEquals(0, node.getStreamId());
         assertEquals(SupportBean.class, node.getType());
 
@@ -58,13 +58,13 @@ public class TestExprStreamUnderlyingNode extends TestCase
         EventBean event = makeEvent(10);
         EventBean[] events = new EventBean[] {event};
 
-        node.validate(streamTypeService, null, null, null, null);
-        assertEquals(event.getUnderlying(), node.evaluate(events, false));
+        node.validate(streamTypeService, null, null, null, null, null);
+        assertEquals(event.getUnderlying(), node.evaluate(events, false, null));
     }
 
     public void testEqualsNode() throws Exception
     {
-        node.validate(streamTypeService, null, null, null, null);
+        node.validate(streamTypeService, null, null, null, null, null);
         assertTrue(node.equalsNode(new ExprStreamUnderlyingNode("s0")));
         assertFalse(node.equalsNode(new ExprStreamUnderlyingNode("xxx")));
     }
@@ -80,7 +80,7 @@ public class TestExprStreamUnderlyingNode extends TestCase
     {
         try
         {
-            node.validate(streamTypeService, null, null, null, null);
+            node.validate(streamTypeService, null, null, null, null, null);
             fail();
         }
         catch(ExprValidationException ex)

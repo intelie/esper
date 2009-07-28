@@ -35,7 +35,7 @@ public class TestDatabasePollingViewable extends TestCase
 
         pollingViewable = new DatabasePollingViewable(1, inputProperties, supportPollingStrategy, dataCache, resultEventType);
 
-        pollingViewable.validate(new SupportStreamTypeSvc3Stream(), null, null, null);
+        pollingViewable.validate(new SupportStreamTypeSvc3Stream(), null, null, null, null);
 
         indexingStrategy = new PollResultIndexingStrategy()
         {
@@ -51,7 +51,7 @@ public class TestDatabasePollingViewable extends TestCase
         EventBean[][] input = new EventBean[2][2];
         input[0] = new EventBean[] {makeEvent(-1), null};
         input[1] = new EventBean[] {makeEvent(500), null};
-        EventTable[] resultRows = pollingViewable.poll(input, indexingStrategy);
+        EventTable[] resultRows = pollingViewable.poll(input, indexingStrategy, null);
 
         // should have joined to two rows
         assertEquals(2, resultRows.length);

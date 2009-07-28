@@ -13,6 +13,7 @@ import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.view.HistoricalEventViewable;
 
 import java.util.List;
@@ -57,10 +58,10 @@ public class HistoricalDataExecNode extends ExecNode
         lookupRows1Event[0] = new EventBean[numStreams];
     }
 
-    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result)
+    public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
     {
         lookupRows1Event[0] = prefillPath;
-        EventTable[] indexPerLookupRow = historicalEventViewable.poll(lookupRows1Event, indexingStrategy);
+        EventTable[] indexPerLookupRow = historicalEventViewable.poll(lookupRows1Event, indexingStrategy, exprEvaluatorContext);
 
         for (EventTable index : indexPerLookupRow)
         {

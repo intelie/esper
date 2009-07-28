@@ -12,6 +12,7 @@ import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.db.DataCacheClearableMap;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.Viewable;
 import com.espertech.esper.view.HistoricalEventViewable;
@@ -34,6 +35,7 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
     private Set<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
     private EventTable[][] tables = new EventTable[0][];
     private Viewable[] streamViews;
+    private ExprEvaluatorContext staticEvalExprEvaluatorContext;
 
     /**
      * Ctor.
@@ -41,11 +43,13 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
      * @param queryStrategies for each stream a strategy to execute the join
      * @param streamViews the viewable representing each stream
      */
-    public JoinSetComposerHistoricalImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, Viewable[] streamViews)
+    public JoinSetComposerHistoricalImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, Viewable[] streamViews,
+                                         ExprEvaluatorContext staticEvalExprEvaluatorContext)
     {
         this.repositories = repositories;
         this.queryStrategies = queryStrategies;
         this.streamViews = streamViews;
+        this.staticEvalExprEvaluatorContext = staticEvalExprEvaluatorContext;
     }
 
     public void init(EventBean[][] eventsPerStream)
@@ -86,7 +90,7 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
         }
     }
 
-    public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
+    public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
     {
         oldResults.clear();
         newResults.clear();
@@ -96,7 +100,7 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
         {
             if (oldDataPerStream[i] != null)
             {
-                queryStrategies[i].lookup(oldDataPerStream[i], oldResults);
+                queryStrategies[i].lookup(oldDataPerStream[i], oldResults, exprEvaluatorContext);
             }
         }
 
@@ -133,7 +137,7 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
         {
             if (newDataPerStream[i] != null)
             {
-                queryStrategies[i].lookup(newDataPerStream[i], newResults);
+                queryStrategies[i].lookup(newDataPerStream[i], newResults, exprEvaluatorContext);
             }
         }
 
@@ -190,7 +194,7 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
                         for (;streamEvents.hasNext();)
                         {
                             lookupEvents[0] = streamEvents.next();
-                            queryStrategies[stream].lookup(lookupEvents, result);
+                            queryStrategies[stream].lookup(lookupEvents, result, staticEvalExprEvaluatorContext);
                         }
                     }
                 }
@@ -200,7 +204,7 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
                     for (;streamEvents.hasNext();)
                     {
                         lookupEvents[0] = streamEvents.next();
-                        queryStrategies[stream].lookup(lookupEvents, result);
+                        queryStrategies[stream].lookup(lookupEvents, result,staticEvalExprEvaluatorContext);
                     }
                 }
             }

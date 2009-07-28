@@ -29,7 +29,7 @@ public class TestExprArrayNode extends TestCase
 
         for (int i = 0; i < arrayNodes.length; i++)
         {
-            arrayNodes[i].validate(null, null, null, null, null);
+            arrayNodes[i].validate(null, null, null, null, null, null);
         }
     }
 
@@ -43,23 +43,23 @@ public class TestExprArrayNode extends TestCase
 
     public void testEvaluate() throws Exception
     {
-        Object result = arrayNodes[0].evaluate(null, true);
+        Object result = arrayNodes[0].evaluate(null, true, null);
         assertEquals(Object[].class, result.getClass());
         assertEquals(0, ((Object[]) result).length);
 
-        result = arrayNodes[1].evaluate(null, true);
+        result = arrayNodes[1].evaluate(null, true, null);
         assertEquals(Integer[].class, result.getClass());
         assertEquals(2, ((Integer[]) result).length);
         assertEquals(2, (int) ((Integer[]) result)[0]);
         assertEquals(3, (int) ((Integer[]) result)[1]);
 
-        result = arrayNodes[2].evaluate(null, true);
+        result = arrayNodes[2].evaluate(null, true, null);
         assertEquals(Double[].class, result.getClass());
         assertEquals(2, ((Double[]) result).length);
         assertEquals(1.5, (double) ((Double[]) result)[0]);
         assertEquals(1.0, (double) ((Double[]) result)[1]);
 
-        result = arrayNodes[3].evaluate(null, true);
+        result = arrayNodes[3].evaluate(null, true, null);
         assertEquals(Object[].class, result.getClass());
         assertEquals(2, ((Object[]) result).length);
         assertEquals("a", ((Object[]) result)[0]);

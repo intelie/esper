@@ -11,6 +11,7 @@ package com.espertech.esper.epl.join;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.epl.join.exec.ExecNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Set;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ExecNodeQueryStrategy implements QueryStrategy
         this.execNode = execNode;
     }
 
-    public void lookup(EventBean[] lookupEvents, Set<MultiKey<EventBean>> joinSet)
+    public void lookup(EventBean[] lookupEvents, Set<MultiKey<EventBean>> joinSet, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (lookupEvents == null)
         {
@@ -53,7 +54,7 @@ public class ExecNodeQueryStrategy implements QueryStrategy
 
             // Perform execution
             List<EventBean[]> results = new LinkedList<EventBean[]>();
-            execNode.process(event, prototype, results);
+            execNode.process(event, prototype, results, exprEvaluatorContext);
 
             // Convert results into unique set
             for (EventBean[] row : results)

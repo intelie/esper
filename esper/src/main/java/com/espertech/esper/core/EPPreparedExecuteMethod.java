@@ -16,6 +16,7 @@ import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.core.ResultSetProcessorFactory;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.JoinSetComposer;
@@ -41,6 +42,7 @@ public class EPPreparedExecuteMethod
     private final ResultSetProcessor resultSetProcessor;
     private final NamedWindowProcessor[] processors;
     private final JoinSetComposer joinComposer;
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
@@ -56,6 +58,7 @@ public class EPPreparedExecuteMethod
             throws ExprValidationException
     {
         this.statementSpec = statementSpec;
+        this.exprEvaluatorContext = statementContext;
 
         validateExecuteQuery();
 
@@ -95,7 +98,7 @@ public class EPPreparedExecuteMethod
                 viewablePerStream[i] = processors[i].getTailView();
             }
             boolean[] falseArray = new boolean[numStreams];
-            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult);
+            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult, statementContext);
         }
         else
         {
@@ -153,7 +156,7 @@ public class EPPreparedExecuteMethod
             {
                 newDataPerStream[i] = snapshots[i].toArray(new EventBean[snapshots[i].size()]);
             }
-            UniformPair<Set<MultiKey<EventBean>>> result = joinComposer.join(newDataPerStream, oldDataPerStream);
+            UniformPair<Set<MultiKey<EventBean>>> result = joinComposer.join(newDataPerStream, oldDataPerStream, exprEvaluatorContext);
             results = resultSetProcessor.processJoinResult(result.getFirst(), null, true);
         }
 
@@ -197,7 +200,7 @@ public class EPPreparedExecuteMethod
             eventsPerStream[0] = row;
             for (ExprNode filter : filterExpressions)
             {
-                Boolean result = (Boolean) filter.evaluate(eventsPerStream, true);
+                Boolean result = (Boolean) filter.evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if (result != null)
                 {
                     if (!result)

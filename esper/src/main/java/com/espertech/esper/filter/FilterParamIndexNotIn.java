@@ -12,6 +12,7 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -112,7 +113,7 @@ public final class FilterParamIndexNotIn extends FilterParamIndexPropBase
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object attributeValue = this.getGetter().get(eventBean);
 
@@ -135,7 +136,7 @@ public final class FilterParamIndexNotIn extends FilterParamIndexPropBase
         {
             for (EventEvaluator eval : evaluatorsSet)
             {
-                eval.matchEvent(eventBean, matches);
+                eval.matchEvent(eventBean, matches, exprEvaluatorContext);
             }
             constantsMapRWLock.readLock().unlock();
             return;
@@ -153,7 +154,7 @@ public final class FilterParamIndexNotIn extends FilterParamIndexPropBase
         {
             if (!(evalNotMatching.contains(eval)))
             {
-                eval.matchEvent(eventBean, matches);
+                eval.matchEvent(eventBean, matches, exprEvaluatorContext);
             }
         }
 

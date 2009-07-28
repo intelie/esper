@@ -8,6 +8,7 @@ import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.view.ViewSupport;
 
 import java.util.Iterator;
@@ -20,6 +21,7 @@ public class RouteResultView extends ViewSupport
     private final static NullIterator nullIterator = new NullIterator();
     private final EventType eventType;
     private RouteResultViewHandler handler;
+    private ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
@@ -37,6 +39,7 @@ public class RouteResultView extends ViewSupport
             throw new IllegalArgumentException("Number of where-clauses and processors does not match");
         }
 
+        this.exprEvaluatorContext = exprEvaluatorContext;
         this.eventType = eventType;
         if (isFirst)
         {
@@ -57,7 +60,7 @@ public class RouteResultView extends ViewSupport
 
         for (EventBean bean : newData)
         {
-            boolean isHandled = handler.handle(bean);
+            boolean isHandled = handler.handle(bean, exprEvaluatorContext);
 
             if (!isHandled)
             {

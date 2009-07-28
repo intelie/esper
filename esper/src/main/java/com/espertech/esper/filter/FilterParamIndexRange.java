@@ -8,16 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
-import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Index for filter parameter constants for the range operators (range open/closed/half).
@@ -101,7 +104,7 @@ public final class FilterParamIndexRange extends FilterParamIndexPropBase
         return rangesRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object objAttributeValue = this.getGetter().get(eventBean);
 
@@ -133,7 +136,7 @@ public final class FilterParamIndexRange extends FilterParamIndexPropBase
                 if ((attributeValue > entry.getKey().getMin()) &&
                     (attributeValue < entry.getKey().getMax()))
                 {
-                    entry.getValue().matchEvent(eventBean, matches);
+                    entry.getValue().matchEvent(eventBean, matches, exprEvaluatorContext);
                 }
             }
         }
@@ -144,7 +147,7 @@ public final class FilterParamIndexRange extends FilterParamIndexPropBase
                 if ((attributeValue >= entry.getKey().getMin()) &&
                     (attributeValue <= entry.getKey().getMax()))
                 {
-                    entry.getValue().matchEvent(eventBean, matches);
+                    entry.getValue().matchEvent(eventBean, matches, exprEvaluatorContext);
                 }
             }
         }
@@ -155,7 +158,7 @@ public final class FilterParamIndexRange extends FilterParamIndexPropBase
                 if ((attributeValue > entry.getKey().getMin()) &&
                     (attributeValue <= entry.getKey().getMax()))
                 {
-                    entry.getValue().matchEvent(eventBean, matches);
+                    entry.getValue().matchEvent(eventBean, matches, exprEvaluatorContext);
                 }
             }
         }
@@ -166,7 +169,7 @@ public final class FilterParamIndexRange extends FilterParamIndexPropBase
                 if ((attributeValue >= entry.getKey().getMin()) &&
                     (attributeValue < entry.getKey().getMax()))
                 {
-                    entry.getValue().matchEvent(eventBean, matches);
+                    entry.getValue().matchEvent(eventBean, matches, exprEvaluatorContext);
                 }
             }
         }

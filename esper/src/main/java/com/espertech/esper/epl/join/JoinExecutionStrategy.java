@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Set;
 
@@ -25,7 +26,8 @@ public interface JoinExecutionStrategy
      * @param oldDataPerStream - old events for each stream
      */
     public void join(EventBean[][] newDataPerStream,
-                     EventBean[][] oldDataPerStream);
+                     EventBean[][] oldDataPerStream,
+                     ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * A static join is for use with iterating over join statements.

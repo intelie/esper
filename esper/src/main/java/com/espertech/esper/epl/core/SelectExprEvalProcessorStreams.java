@@ -12,12 +12,16 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.epl.spec.SelectClauseStreamCompiledSpec;
-import com.espertech.esper.event.*;
+import com.espertech.esper.event.DecoratingEventBean;
+import com.espertech.esper.event.EventAdapterException;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.WrapperEventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
@@ -46,6 +50,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
     private int underlyingStreamNumber;
     private boolean underlyingIsFragmentEvent;
     private EventPropertyGetter underlyingPropertyEventGetter;
+    private ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
@@ -64,9 +69,11 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
                                           boolean isUsingWildcard,
                                           StreamTypeService typeService,
                                           EventAdapterService eventAdapterService,
-                                          SelectExprEventTypeRegistry selectExprEventTypeRegistry) throws ExprValidationException
+                                          SelectExprEventTypeRegistry selectExprEventTypeRegistry,
+                                          ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         this.eventAdapterService = eventAdapterService;
+        this.exprEvaluatorContext = exprEvaluatorContext;
         this.isUsingWildcard = isUsingWildcard;
 
         // Get the un-name stream selectors (i.e. select s0.* from S0 as s0)
@@ -288,7 +295,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         int count = 0;
         for (ExprNode expressionNode : expressionNodes)
         {
-            Object evalResult = expressionNode.evaluate(eventsPerStream, isNewData);
+            Object evalResult = expressionNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             props.put(columnNames[count], evalResult);
             count++;
         }

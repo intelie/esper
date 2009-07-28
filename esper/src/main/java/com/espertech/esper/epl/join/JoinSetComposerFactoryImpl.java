@@ -12,6 +12,7 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.expression.ExprAndNode;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.plan.*;
 import com.espertech.esper.epl.join.table.*;
@@ -52,7 +53,8 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    String[] streamNames,
                                                    Viewable[] streamViews,
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
-                                                   StreamJoinAnalysisResult streamJoinAnalysisResult)
+                                                   StreamJoinAnalysisResult streamJoinAnalysisResult,
+                                                   ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
         // Determine if there is a historical stream, and what dependencies exist
@@ -76,7 +78,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         // Handle a join with a database or other historical data source for 2 streams
         if ((hasHistorical) && (streamViews.length == 2))
         {
-            return makeComposerHistorical2Stream(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
+            return makeComposerHistorical2Stream(outerJoinDescList, optionalFilterNode, streamTypes, streamViews, exprEvaluatorContext);
         }
 
         // Query graph for graph relationships between streams/historicals
@@ -116,7 +118,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         HistoricalStreamIndexList[] historicalStreamIndexLists = new HistoricalStreamIndexList[streamTypes.length];
 
         QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, queryGraph, streamNames,
-                hasHistorical, isHistorical, historicalDependencyGraph, historicalStreamIndexLists);
+                hasHistorical, isHistorical, historicalDependencyGraph, historicalStreamIndexLists, exprEvaluatorContext);
 
         // Build indexes
         QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
@@ -166,11 +168,11 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         {
             if (hasHistorical)
             {
-                return new JoinSetComposerHistoricalImpl(indexes, queryStrategies, streamViews);
+                return new JoinSetComposerHistoricalImpl(indexes, queryStrategies, streamViews, exprEvaluatorContext);
             }
             else
             {
-                return new JoinSetComposerImpl(indexes, queryStrategies, streamJoinAnalysisResult.isPureSelfJoin());
+                return new JoinSetComposerImpl(indexes, queryStrategies, streamJoinAnalysisResult.isPureSelfJoin(), exprEvaluatorContext);
             }
         }
         else
@@ -195,7 +197,8 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
     private JoinSetComposer makeComposerHistorical2Stream(List<OuterJoinDesc> outerJoinDescList,
                                                    ExprNode optionalFilterNode,
                                                    EventType[] streamTypes,
-                                                   Viewable[] streamViews)
+                                                   Viewable[] streamViews,
+                                                   ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
         QueryStrategy[] queryStrategies;
@@ -264,7 +267,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                     isOuterJoin = true;
             }
 
-            outerJoinEqualsNode  = outerJoinDesc.makeExprNode();
+            outerJoinEqualsNode  = outerJoinDesc.makeExprNode(exprEvaluatorContext);
         }
 
         // Determine filter for indexing purposes
@@ -319,7 +322,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                     new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
         }
 
-        return new JoinSetComposerHistoricalImpl(null, queryStrategies, streamViews);
+        return new JoinSetComposerHistoricalImpl(null, queryStrategies, streamViews, exprEvaluatorContext);
     }
 
     private static Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,

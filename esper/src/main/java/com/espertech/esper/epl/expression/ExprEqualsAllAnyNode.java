@@ -58,7 +58,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
         return isAll;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Must have 2 child nodes
         if (this.getChildNodes().size() < 1)
@@ -141,19 +141,19 @@ public class ExprEqualsAllAnyNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+        Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
         if (hasCollectionOrArray)
         {
             if (isAll)
             {
-                return compareAllColl(leftResult, eventsPerStream, isNewData);
+                return compareAllColl(leftResult, eventsPerStream, isNewData, exprEvaluatorContext);
             }
             else
             {
-                return compareAnyColl(leftResult, eventsPerStream, isNewData);
+                return compareAnyColl(leftResult, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
         else
@@ -166,16 +166,16 @@ public class ExprEqualsAllAnyNode extends ExprNode
 
             if (isAll)
             {
-                return compareAll(leftResult, eventsPerStream, isNewData);
+                return compareAll(leftResult, eventsPerStream, isNewData, exprEvaluatorContext);
             }
             else
             {
-                return compareAny(leftResult, eventsPerStream, isNewData);
+                return compareAny(leftResult, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
     }
 
-    private Object compareAll(Object leftResult, EventBean[] eventsPerStream, boolean isNewData)
+    private Object compareAll(Object leftResult, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (isNot)
         {
@@ -188,7 +188,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult != null)
                 {
@@ -232,7 +232,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult != null)
                 {
@@ -267,7 +267,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
         }
     }
 
-    private Object compareAllColl(Object leftResult, EventBean[] eventsPerStream, boolean isNewData)
+    private Object compareAllColl(Object leftResult, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (isNot)
         {
@@ -276,7 +276,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -386,7 +386,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -491,7 +491,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
         }
     }
 
-    private Object compareAny(Object leftResult, EventBean[] eventsPerStream, boolean isNewData)
+    private Object compareAny(Object leftResult, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         // Return true on the first not-equal.
         if (isNot)
@@ -501,7 +501,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             int len = this.getChildNodes().size() - 1;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (leftResult == null)
                 {
@@ -549,7 +549,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -583,7 +583,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
         }
     }
 
-    private Object compareAnyColl(Object leftResult, EventBean[] eventsPerStream, boolean isNewData)
+    private Object compareAnyColl(Object leftResult, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         // Return true on the first not-equal.
         if (isNot)
@@ -593,7 +593,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -706,7 +706,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {

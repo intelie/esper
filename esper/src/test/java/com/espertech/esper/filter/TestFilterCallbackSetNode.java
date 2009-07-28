@@ -67,7 +67,7 @@ public class TestFilterCallbackSetNode extends TestCase
 
         // Check matching without an index node
         List<FilterHandle> matches = new LinkedList<FilterHandle>();
-        testNode.matchEvent(eventBean, matches);
+        testNode.matchEvent(eventBean, matches, null);
         assertEquals(1, matches.size());
         assertEquals(expr, matches.get(0));
         matches.clear();
@@ -78,7 +78,7 @@ public class TestFilterCallbackSetNode extends TestCase
         index.put("DepositEvent_1", testEvaluator);
 
         // Verify matcher instance stored in index is called
-        testNode.matchEvent(eventBean, matches);
+        testNode.matchEvent(eventBean, matches, null);
 
         assertTrue(testEvaluator.getAndResetCountInvoked() == 1);
         assertTrue(testEvaluator.getLastEvent() == eventBean);

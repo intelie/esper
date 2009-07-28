@@ -73,7 +73,7 @@ public class FirstUniqueByPropertyViewFactory implements DataWindowViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new FirstUniqueByPropertyView(criteriaExpressions);
+        return new FirstUniqueByPropertyView(criteriaExpressions, statementContext);
     }
 
     public EventType getEventType()

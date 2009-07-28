@@ -56,7 +56,7 @@ public class TimerWithinGuardFactory implements GuardFactory, MetaDefItem, Seria
 
     public Guard makeGuard(PatternContext context, MatchedEventMap matchedEventMap, Quitable quitable, Object stateNodeId, Object guardState)
     {
-        Object millisecondVal = PatternExpressionUtil.evaluate("Timer-within guard", matchedEventMap, millisecondsExpr, convertor);
+        Object millisecondVal = PatternExpressionUtil.evaluate("Timer-within guard", matchedEventMap, millisecondsExpr, convertor, context);
 
         if (millisecondVal == null)
         {

@@ -46,6 +46,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private boolean isEmptyExpressionNodes;
     private boolean isPopulateUnderlying;
     private SelectExprInsertEventBean selectExprInsertEventBean;
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
@@ -66,10 +67,12 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                                    EventAdapterService eventAdapterService,
                                    ValueAddEventService revisionService,
                                    SelectExprEventTypeRegistry selectExprEventTypeRegistry,
-                                   MethodResolutionService methodResolutionService) throws ExprValidationException
+                                   MethodResolutionService methodResolutionService,
+                                   ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         this.eventAdapterService = eventAdapterService;
         this.isUsingWildcard = isUsingWildcard;
+        this.exprEvaluatorContext = exprEvaluatorContext;
 
         if (selectionList.size() == 0 && !isUsingWildcard)
         {
@@ -93,7 +96,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         // Build a subordinate wildcard processor for joins
         if(typeService.getStreamNames().length > 1 && isUsingWildcard)
         {
-        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, null, selectExprEventTypeRegistry, methodResolutionService);
+        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, null, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
         }
 
         // Resolve underlying event type in the case of wildcard select
@@ -199,7 +202,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                 // A match was found, we replace the expression
                 final EventPropertyGetter getter = eventTypeStream.getGetter(propertyName);
                 evaluatorFragment = new ExprEvaluator() {
-                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                     {
                         EventBean streamEvent = eventsPerStream[streamNum];
                         if (streamEvent == null)
@@ -219,7 +222,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                 // A match was found, we replace the expression
                 evaluatorFragment = new ExprEvaluator() {
 
-                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                     {
                         EventBean streamEvent = eventsPerStream[streamNum];
                         if (streamEvent == null)
@@ -259,7 +262,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             // A match was found, we replace the expression
             ExprEvaluator evaluator = new ExprEvaluator() {
 
-                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                 {
                     return eventsPerStream[streamNum];
                 }
@@ -398,7 +401,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     {
         if (isPopulateUnderlying)
         {
-            return selectExprInsertEventBean.manufacture(eventsPerStream, isNewData);
+            return selectExprInsertEventBean.manufacture(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         // Evaluate all expressions and build a map of name-value pairs
@@ -413,7 +416,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             props = new HashMap<String, Object>();
             for (int i = 0; i < expressionNodes.length; i++)
             {
-                Object evalResult = expressionNodes[i].evaluate(eventsPerStream, isNewData);
+                Object evalResult = expressionNodes[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 props.put(columnNames[i], evalResult);
             }
         }

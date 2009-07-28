@@ -9,6 +9,7 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Collection;
 
@@ -29,7 +30,7 @@ public interface FilterService
      * @param event is the event to be matched against filters
      * @param matches is a collection that is populated via add method with any handles for matching filters
      */
-    public void evaluate(EventBean event, Collection<FilterHandle> matches);
+    public void evaluate(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * Add a filter for events as defined by the filter specification, and register a

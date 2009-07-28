@@ -110,7 +110,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
         if (evalFilterNode.getFilterSpec().getOptionalPropertyEvaluator() != null)
         {
-            EventBean[] propertyEvents = evalFilterNode.getFilterSpec().getOptionalPropertyEvaluator().getProperty(event);
+            EventBean[] propertyEvents = evalFilterNode.getFilterSpec().getOptionalPropertyEvaluator().getProperty(event, context);
             if (propertyEvents == null)
             {
                 return; // no results, ignore match

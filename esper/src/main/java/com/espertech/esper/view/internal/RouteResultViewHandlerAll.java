@@ -7,6 +7,7 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * Handler for split-stream evaluating the all where-clauses and their matching select-clauses.
@@ -36,7 +37,7 @@ public class RouteResultViewHandlerAll implements RouteResultViewHandler
         this.statementContext = statementContext;
     }
 
-    public boolean handle(EventBean event)
+    public boolean handle(EventBean event, ExprEvaluatorContext exprEvaluatorContext)
     {
         eventsPerStream[0] = event;
         boolean isHandled = false;
@@ -46,7 +47,7 @@ public class RouteResultViewHandlerAll implements RouteResultViewHandler
             Boolean pass = true;
             if (whereClauses[i] != null)
             {
-                Boolean passEvent = (Boolean) whereClauses[i].evaluate(eventsPerStream, true);
+                Boolean passEvent = (Boolean) whereClauses[i].evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if ((passEvent == null) || (!passEvent))
                 {
                     pass = false;
@@ -59,7 +60,7 @@ public class RouteResultViewHandlerAll implements RouteResultViewHandler
                 if ((result != null) && (result.getFirst() != null) && (result.getFirst().length > 0))
                 {
                     isHandled = true;
-                    internalEventRouter.route(result.getFirst()[0], epStatementHandle, statementContext.getInternalEventEngineRouteDest());
+                    internalEventRouter.route(result.getFirst()[0], epStatementHandle, statementContext.getInternalEventEngineRouteDest(), exprEvaluatorContext);
                 }
             }
         }

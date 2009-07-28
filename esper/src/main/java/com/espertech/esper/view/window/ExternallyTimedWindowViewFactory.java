@@ -69,7 +69,7 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
         timestampExpression = validated[0];
 
         ViewFactorySupport.assertReturnsNonConstant("Externally-timed window", validated[0], 0);
-        Object parameter = ViewFactorySupport.evaluateAssertNoProperties("Externally-timed window", validated[1], 1);
+        Object parameter = ViewFactorySupport.evaluateAssertNoProperties("Externally-timed window", validated[1], 1, statementContext);
         if (!(parameter instanceof Number))
         {
             throw new ViewParameterException(errorMessage);
@@ -134,7 +134,7 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
             randomAccessGetterImpl.updated(randomAccess);
         }
 
-        return new ExternallyTimedWindowView(this, timestampExpression, millisecondsBeforeExpiry, randomAccess, isRemoveStreamHandling);
+        return new ExternallyTimedWindowView(this, timestampExpression, millisecondsBeforeExpiry, randomAccess, isRemoveStreamHandling, statementContext);
     }
 
     public EventType getEventType()

@@ -13,6 +13,7 @@ import com.espertech.esper.epl.spec.RowLimitSpec;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
@@ -94,27 +95,27 @@ public class OrderByProcessorRowLimit implements OrderByProcessor {
         }
     }
 
-    public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData)
+    public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         return applyLimit(outgoingEvents);
     }
 
-    public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData)
+    public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         return applyLimit(outgoingEvents);
     }
 
-    public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData)
+    public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         return null;
     }
 
-    public MultiKeyUntyped[] getSortKeyPerRow(EventBean[] generatingEvents, boolean isNewData)
+    public MultiKeyUntyped[] getSortKeyPerRow(EventBean[] generatingEvents, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         return null;
     }
 
-    public EventBean[] sort(EventBean[] outgoingEvents, MultiKeyUntyped[] orderKeys)
+    public EventBean[] sort(EventBean[] outgoingEvents, MultiKeyUntyped[] orderKeys, ExprEvaluatorContext exprEvaluatorContext)
     {
         return applyLimit(outgoingEvents);
     }

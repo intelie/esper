@@ -29,13 +29,13 @@ public class TestSelectExprEvalProcessor extends TestCase
         SupportValueAddEventService vaeService = new SupportValueAddEventService();
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
 
-        methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null);
+        methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null, null);
 
         InsertIntoDesc insertIntoDesc = new InsertIntoDesc(true, "Hello");
         insertIntoDesc.add("a");
         insertIntoDesc.add("b");
 
-        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null);
+        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null, null);
     }
 
     public void testGetResultEventType()

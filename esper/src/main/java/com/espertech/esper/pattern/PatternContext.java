@@ -15,12 +15,14 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * Contains handles to implementations of services needed by evaluation nodes.
  */
-public final class PatternContext
+public final class PatternContext implements ExprEvaluatorContext
 {
     private final int streamNumber;
     private final StatementContext statementContext;
@@ -156,5 +158,10 @@ public final class PatternContext
     public VariableService getVariableService()
     {
         return statementContext.getVariableService();
+    }
+
+    public TimeProvider getTimeProvider()
+    {
+        return statementContext.getTimeProvider();
     }
 }

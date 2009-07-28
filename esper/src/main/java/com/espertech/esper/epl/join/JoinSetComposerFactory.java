@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join;
 
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.client.EventType;
@@ -43,6 +44,7 @@ public interface JoinSetComposerFactory
                                                    String[] streamNames,
                                                    Viewable[] streamViews,
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
-                                                   StreamJoinAnalysisResult joinAnalysisResult)
+                                                   StreamJoinAnalysisResult joinAnalysisResult,
+                                                   ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException;
 }

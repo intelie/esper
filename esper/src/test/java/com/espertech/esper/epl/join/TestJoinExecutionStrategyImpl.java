@@ -27,12 +27,12 @@ public class TestJoinExecutionStrategyImpl extends TestCase
         filter = new SupportJoinSetProcessor();
         indicator = new SupportJoinSetProcessor();
 
-        join = new JoinExecutionStrategyImpl(composer, filter, indicator);
+        join = new JoinExecutionStrategyImpl(composer, filter, indicator, null);
     }
 
     public void testJoin()
     {
-        join.join(null, null);
+        join.join(null, null, null);
 
         assertSame(newEvents, filter.getLastNewEvents());
         assertSame(oldEvents, filter.getLastOldEvents());

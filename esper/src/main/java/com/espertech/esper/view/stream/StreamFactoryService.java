@@ -14,6 +14,7 @@ import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * Service on top of the filter service for reuseing filter callbacks and their associated EventStream instances.
@@ -36,7 +37,7 @@ public interface StreamFactoryService
      * @return event stream representing active filter
      */
     public Pair<EventStream, ManagedLock> createStream(final String statementId, FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
-                                    boolean isJoin, boolean isSubSelect);
+                                    boolean isJoin, boolean isSubSelect, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * Drop the event stream associated with the filter passed in.

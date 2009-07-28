@@ -31,7 +31,7 @@ public class ExprMinMaxAggrNode extends ExprAggregateNode
         this.minMaxTypeEnum = minMaxTypeEnum;
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
+    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
         {

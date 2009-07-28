@@ -16,6 +16,7 @@ import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypesException;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
@@ -43,6 +44,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
     private EventPropertyGetter[] getters;
     private int[] getterStreamNumbers;
     private SortedSet<Integer> subordinateStreams;
+    private ExprEvaluatorContext exprEvaluatorContext;
 
     private static final EventBean[][] NULL_ROWS;
     static {
@@ -86,7 +88,8 @@ public class DatabasePollingViewable implements HistoricalEventViewable
     public void validate(StreamTypeService streamTypeService,
                          MethodResolutionService methodResolutionService,
                          TimeProvider timeProvider,
-                         VariableService variableService) throws ExprValidationException
+                         VariableService variableService,
+                         ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         getters = new EventPropertyGetter[inputParameters.size()];
         getterStreamNumbers = new int[inputParameters.size()];
@@ -142,7 +145,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
         }
     }
 
-    public EventTable[] poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy)
+    public EventTable[] poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy, ExprEvaluatorContext exprEvaluatorContext)
     {
         DataCache localDataCache = dataCacheThreadLocal.get();
         boolean strategyStarted = false;
@@ -260,7 +263,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
 
     public Iterator<EventBean> iterator()
     {
-        EventTable[] result = poll(NULL_ROWS, iteratorIndexingStrategy);
+        EventTable[] result = poll(NULL_ROWS, iteratorIndexingStrategy, exprEvaluatorContext);
         return new IterablesArrayIterator(result);
     }
 

@@ -10,6 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * Sorter and row limiter in one: sorts using a sorter and row limits
@@ -30,31 +31,31 @@ public class OrderByProcessorOrderedLimit implements OrderByProcessor
         this.orderByProcessorRowLimit = orderByProcessorRowLimit;
     }
 
-    public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData)
+    public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        EventBean[] sorted = orderByProcessor.sort(outgoingEvents, generatingEvents, isNewData);
+        EventBean[] sorted = orderByProcessor.sort(outgoingEvents, generatingEvents, isNewData, exprEvaluatorContext);
         return orderByProcessorRowLimit.applyLimit(sorted);
     }
 
-    public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData)
+    public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        EventBean[] sorted = orderByProcessor.sort(outgoingEvents, generatingEvents, groupByKeys, isNewData);
+        EventBean[] sorted = orderByProcessor.sort(outgoingEvents, generatingEvents, groupByKeys, isNewData, exprEvaluatorContext);
         return orderByProcessorRowLimit.applyLimit(sorted);
     }
 
-    public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData)
+    public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        return orderByProcessor.getSortKey(eventsPerStream, isNewData);
+        return orderByProcessor.getSortKey(eventsPerStream, isNewData, exprEvaluatorContext);
     }
 
-    public MultiKeyUntyped[] getSortKeyPerRow(EventBean[] generatingEvents, boolean isNewData)
+    public MultiKeyUntyped[] getSortKeyPerRow(EventBean[] generatingEvents, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        return orderByProcessor.getSortKeyPerRow(generatingEvents, isNewData);
+        return orderByProcessor.getSortKeyPerRow(generatingEvents, isNewData, exprEvaluatorContext);
     }
 
-    public EventBean[] sort(EventBean[] outgoingEvents, MultiKeyUntyped[] orderKeys)
+    public EventBean[] sort(EventBean[] outgoingEvents, MultiKeyUntyped[] orderKeys, ExprEvaluatorContext exprEvaluatorContext)
     {
-        EventBean[] sorted = orderByProcessor.sort(outgoingEvents, orderKeys);
+        EventBean[] sorted = orderByProcessor.sort(outgoingEvents, orderKeys, exprEvaluatorContext);
         return orderByProcessorRowLimit.applyLimit(sorted);
     }
 }

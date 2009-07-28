@@ -6,6 +6,7 @@ import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,7 +37,7 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
         this.propertyName = propertyName;
     }
 
-    public EventBean[] getProperty(EventBean event)
+    public EventBean[] getProperty(EventBean event, ExprEvaluatorContext exprEvaluatorContext)
     {
         try
         {
@@ -56,7 +57,7 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
             {
                 return rows;
             }
-            return ExprNodeUtility.applyFilterExpression(filter, event, (EventBean[]) result);
+            return ExprNodeUtility.applyFilterExpression(filter, event, (EventBean[]) result, exprEvaluatorContext);
         }
         catch (RuntimeException ex)
         {

@@ -11,6 +11,7 @@ package com.espertech.esper.epl.join;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Set;
 import java.util.Iterator;
@@ -31,16 +32,16 @@ public class JoinSetFilter implements JoinSetProcessor
         this.filterExprNode = filterExprNode;
     }
 
-    public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         // Filter
         if (filterExprNode != null)
         {
-            filter(filterExprNode, newEvents, true);
+            filter(filterExprNode, newEvents, true, exprEvaluatorContext);
 
             if (oldEvents != null)
             {
-                filter(filterExprNode, oldEvents, false);
+                filter(filterExprNode, oldEvents, false, exprEvaluatorContext);
             }
         }
     }
@@ -51,14 +52,14 @@ public class JoinSetFilter implements JoinSetProcessor
      * @param events - set of tuples of events
      * @param isNewData - true to indicate filter new data (istream) and not old data (rstream)
      */
-    protected static void filter(ExprNode filterExprNode, Set<MultiKey<EventBean>> events, boolean isNewData)
+    protected static void filter(ExprNode filterExprNode, Set<MultiKey<EventBean>> events, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         for (Iterator<MultiKey<EventBean>> it = events.iterator(); it.hasNext();)
         {
             MultiKey<EventBean> key = it.next();
             EventBean[] eventArr = key.getArray();
 
-            Boolean matched = (Boolean) filterExprNode.evaluate(eventArr, isNewData);
+            Boolean matched = (Boolean) filterExprNode.evaluate(eventArr, isNewData, exprEvaluatorContext);
             if ((matched == null) || (!matched))
             {
                 it.remove();

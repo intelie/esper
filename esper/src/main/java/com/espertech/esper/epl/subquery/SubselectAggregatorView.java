@@ -10,6 +10,7 @@ package com.espertech.esper.epl.subquery;
 
 import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.ViewSupport;
@@ -24,15 +25,17 @@ public class SubselectAggregatorView extends ViewSupport
 {
     private final AggregationService aggregationService;
     private final ExprNode optionalFilterExpr;
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Ctor.
      * @param aggregationService for aggregating
      * @param optionalFilterExpr for filtering the view-posted events before aggregation
      */
-    public SubselectAggregatorView(AggregationService aggregationService, ExprNode optionalFilterExpr) {
+    public SubselectAggregatorView(AggregationService aggregationService, ExprNode optionalFilterExpr, ExprEvaluatorContext exprEvaluatorContext) {
         this.aggregationService = aggregationService;
         this.optionalFilterExpr = optionalFilterExpr;
+        this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData) {
@@ -44,10 +47,10 @@ public class SubselectAggregatorView extends ViewSupport
             {
                 eventsPerStream[0] = event;
 
-                boolean isPass = filter(eventsPerStream, true);
+                boolean isPass = filter(eventsPerStream, true, exprEvaluatorContext);
                 if (isPass)
                 {
-                    aggregationService.applyEnter(eventsPerStream, null);
+                    aggregationService.applyEnter(eventsPerStream, null, exprEvaluatorContext);
                 }
             }
         }
@@ -57,10 +60,10 @@ public class SubselectAggregatorView extends ViewSupport
             for (EventBean event : oldData)
             {
                 eventsPerStream[0] = event;
-                boolean isPass = filter(eventsPerStream, false);
+                boolean isPass = filter(eventsPerStream, false, exprEvaluatorContext);
                 if (isPass)
                 {
-                    aggregationService.applyLeave(eventsPerStream, null);
+                    aggregationService.applyLeave(eventsPerStream, null, exprEvaluatorContext);
                 }
             }
         }
@@ -74,14 +77,14 @@ public class SubselectAggregatorView extends ViewSupport
         return this.getParent().iterator();
     }
 
-    private boolean filter(EventBean[] eventsPerStream, boolean isNewData)
+    private boolean filter(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (optionalFilterExpr == null)
         {
             return true;
         }
 
-        Boolean result = (Boolean) optionalFilterExpr.evaluate(eventsPerStream, isNewData);
+        Boolean result = (Boolean) optionalFilterExpr.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (result == null)
         {
             return false;

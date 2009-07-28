@@ -41,11 +41,11 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
         return Boolean.class;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (matchingEvents == null)
         {
@@ -70,7 +70,7 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
             // Prepare filter expression event list
             events[0] = subselectEvent;
 
-            Boolean pass = (Boolean) filterExpr.evaluate(events, true);
+            Boolean pass = (Boolean) filterExpr.evaluate(events, true, exprEvaluatorContext);
             if ((pass != null) && (pass))
             {
                 return true;

@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join;
 
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.HistoricalEventViewable;
@@ -65,7 +66,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
         this.pollResultIndexingStrategy = pollResultIndexingStrategy;
     }
 
-    public void lookup(EventBean[] lookupEvents, Set<MultiKey<EventBean>> joinSet)
+    public void lookup(EventBean[] lookupEvents, Set<MultiKey<EventBean>> joinSet, ExprEvaluatorContext exprEvaluatorContext)
     {
         EventBean[][] lookupRows;
 
@@ -86,7 +87,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
             }
         }
 
-        EventTable[] indexPerLookupRow = historicalEventViewable.poll(lookupRows, pollResultIndexingStrategy);
+        EventTable[] indexPerLookupRow = historicalEventViewable.poll(lookupRows, pollResultIndexingStrategy, exprEvaluatorContext);
 
         int count = 0;
         for (EventTable index : indexPerLookupRow)
@@ -117,7 +118,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
                         // In an outer join compare the on-fields
                         if (outerJoinCompareNode != null)
                         {
-                            Boolean compareResult = (Boolean) outerJoinCompareNode.evaluate(resultRow, true);
+                            Boolean compareResult = (Boolean) outerJoinCompareNode.evaluate(resultRow, true, exprEvaluatorContext);
                             if ((compareResult != null) && (compareResult))
                             {
                                 joinSet.add(new MultiKey<EventBean>(resultRow));

@@ -36,9 +36,9 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
         factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {"longBoxed", 1000}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
-        assertFalse(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longPrimitive"), 1000, null, false)));
-        assertFalse(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longBoxed"), 999, null, false)));
-        assertTrue(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longBoxed"), 1000000, null, false)));
+        assertFalse(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longPrimitive"), 1000, null, false, null)));
+        assertFalse(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longBoxed"), 999, null, false, null)));
+        assertTrue(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longBoxed"), 1000000, null, false, null)));
     }
 
     public void testInvalid() throws Exception

@@ -19,7 +19,7 @@ public class TestUniqueByPropertyView extends TestCase
     public void setUp() throws Exception
     {
         // Set up length window view and a test child view
-        myView = new UniqueByPropertyView(SupportExprNodeFactory.makeIdentNodesMD("symbol"));
+        myView = new UniqueByPropertyView(SupportExprNodeFactory.makeIdentNodesMD("symbol"), null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }

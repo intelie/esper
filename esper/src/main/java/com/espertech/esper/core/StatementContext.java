@@ -10,6 +10,7 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.JoinSetComposerFactory;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
@@ -22,6 +23,7 @@ import com.espertech.esper.pattern.PatternObjectResolutionService;
 import com.espertech.esper.schedule.ScheduleAdjustmentService;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewResolutionService;
 
@@ -31,7 +33,7 @@ import java.util.HashSet;
 /**
  * Contains handles to the implementation of the the scheduling service for use in view evaluation.
  */
-public final class StatementContext
+public final class StatementContext implements ExprEvaluatorContext
 {
     private final String engineURI;
     private final String engineInstanceId;
@@ -400,6 +402,11 @@ public final class StatementContext
     public ScheduleAdjustmentService getScheduleAdjustmentService()
     {
         return scheduleAdjustmentService;
+    }
+
+    public TimeProvider getTimeProvider()
+    {
+        return schedulingService;
     }
 
     public String toString()

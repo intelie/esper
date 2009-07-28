@@ -17,6 +17,7 @@ import java.util.concurrent.locks.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 /**
  * Index for filter parameter constants to match using the equals (=) operator.
@@ -71,7 +72,7 @@ public final class FilterParamIndexEquals extends FilterParamIndexPropBase
         return constantsMapRWLock;
     }
 
-    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
+    public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object attributeValue = this.getGetter().get(eventBean);
 
@@ -98,7 +99,7 @@ public final class FilterParamIndexEquals extends FilterParamIndexPropBase
             return;
         }
 
-        evaluator.matchEvent(eventBean, matches);
+        evaluator.matchEvent(eventBean, matches, exprEvaluatorContext);
     }
 
     private void checkType(Object filterConstant)

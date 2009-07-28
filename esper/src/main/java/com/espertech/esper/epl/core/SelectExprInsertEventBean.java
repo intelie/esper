@@ -4,6 +4,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventBeanManufactureException;
@@ -99,7 +100,7 @@ public class SelectExprInsertEventBean
 
             final int streamNum = i;
             ExprEvaluator evaluator = new ExprEvaluator() {
-                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                 {
                     EventBean event = eventsPerStream[streamNum];
                     if (event != null)
@@ -183,7 +184,7 @@ public class SelectExprInsertEventBean
                     }
                     final int streamNumEval = streamNum;
                     evaluator = new ExprEvaluator() {
-                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                         {
                             EventBean event = eventsPerStream[streamNumEval];
                             if (event != null)
@@ -253,7 +254,7 @@ public class SelectExprInsertEventBean
                     final String propertyName = eventPropDescriptor.getPropertyName();
                     evaluator = new ExprEvaluator() {
 
-                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData,ExprEvaluatorContext exprEvaluatorContext)
                         {
                             EventBean event = eventsPerStream[0];
                             if (event != null)
@@ -300,13 +301,13 @@ public class SelectExprInsertEventBean
      * @param newData flag whether insert or remove stream
      * @return manufactured event
      */
-    public EventBean manufacture(EventBean[] eventsPerStream, boolean newData)
+    public EventBean manufacture(EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object[] values = new Object[writableProperties.length];
 
         for (int i = 0; i < writableProperties.length; i++)
         {
-            Object evalResult = expressionNodes[i].evaluate(eventsPerStream, newData);
+            Object evalResult = expressionNodes[i].evaluate(eventsPerStream, newData, exprEvaluatorContext);
             if ((evalResult != null) && (wideners[i] != null))
             {
                 evalResult = wideners[i].widen(evalResult);

@@ -37,7 +37,7 @@ public class ExprLikeNode extends ExprNode
         this.isNot = not;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if ((this.getChildNodes().size() != 2) && (this.getChildNodes().size() != 3))
         {
@@ -85,11 +85,11 @@ public class ExprLikeNode extends ExprNode
         return false;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (likeUtil == null)
         {
-            String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
+            String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (patternVal == null)
             {
                 return null;
@@ -98,7 +98,7 @@ public class ExprLikeNode extends ExprNode
             Character escapeCharacter = null;
             if (this.getChildNodes().size() == 3)
             {
-                escape = (String) this.getChildNodes().get(2).evaluate(eventsPerStream, isNewData);
+                escape = (String) this.getChildNodes().get(2).evaluate(eventsPerStream, isNewData,exprEvaluatorContext);
             }
             if (escape.length() > 0)
             {
@@ -110,7 +110,7 @@ public class ExprLikeNode extends ExprNode
         {
             if (!isConstantPattern)
             {
-                String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
+                String patternVal = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData,exprEvaluatorContext);
                 if (patternVal == null)
                 {
                     return null;
@@ -119,7 +119,7 @@ public class ExprLikeNode extends ExprNode
             }
         }
 
-        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData,exprEvaluatorContext);
         if (evalValue == null)
         {
             return null;

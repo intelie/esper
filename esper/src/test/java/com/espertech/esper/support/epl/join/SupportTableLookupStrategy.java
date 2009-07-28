@@ -2,6 +2,7 @@ package com.espertech.esper.support.epl.join;
 
 import com.espertech.esper.epl.join.exec.TableLookupStrategy;
 import com.espertech.esper.epl.join.rep.Cursor;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 
 import java.util.Set;
@@ -15,7 +16,7 @@ public class SupportTableLookupStrategy implements TableLookupStrategy
         this.numResults = numResults;
     }
 
-    public Set<EventBean> lookup(EventBean event, Cursor cursor)
+    public Set<EventBean> lookup(EventBean event, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
     {
         return SupportJoinResultNodeFactory.makeEventSet(numResults);
     }

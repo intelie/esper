@@ -88,8 +88,8 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
             for (int i = 0; i < newData.length; i++)
             {
                 eventsPerStream[0] = newData[i];
-                double point = ((Number) fieldNameX.evaluate(eventsPerStream, true)).doubleValue();
-                double weight = ((Number) fieldNameWeight.evaluate(eventsPerStream, true)).doubleValue();
+                double point = ((Number) fieldNameX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double weight = ((Number) fieldNameWeight.evaluate(eventsPerStream, true, statementContext)).doubleValue();
 
                 if (Double.valueOf(sumXtimesW).isNaN())
                 {
@@ -110,8 +110,8 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
             for (int i = 0; i < oldData.length; i++)
             {
                 eventsPerStream[0] = oldData[i];
-                double point = ((Number) fieldNameX.evaluate(eventsPerStream, true)).doubleValue();
-                double weight = ((Number) fieldNameWeight.evaluate(eventsPerStream, true)).doubleValue();
+                double point = ((Number) fieldNameX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double weight = ((Number) fieldNameWeight.evaluate(eventsPerStream, true, statementContext)).doubleValue();
 
                 sumXtimesW -= point * weight;
                 sumW -= weight;

@@ -11,6 +11,7 @@ package com.espertech.esper.view.std;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventBeanUtility;
@@ -39,20 +40,22 @@ public final class FirstUniqueByPropertyView extends ViewSupport implements Clon
     private final int numKeys;
     private EventBean[] eventsPerStream = new EventBean[1];
     private final Map<MultiKey<Object>, EventBean> firstEvents = new LinkedHashMap<MultiKey<Object>, EventBean>();
+    private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
      * Constructor.
      * @param uniqueCriteria is the expressions from which to pull the unique value
      */
-    public FirstUniqueByPropertyView(ExprNode[] uniqueCriteria)
+    public FirstUniqueByPropertyView(ExprNode[] uniqueCriteria, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.uniqueCriteria = uniqueCriteria;
+        this.exprEvaluatorContext = exprEvaluatorContext;
         numKeys = uniqueCriteria.length;
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new FirstUniqueByPropertyView(uniqueCriteria);
+        return new FirstUniqueByPropertyView(uniqueCriteria, exprEvaluatorContext);
     }
 
     /**
@@ -159,7 +162,7 @@ public final class FirstUniqueByPropertyView extends ViewSupport implements Clon
         eventsPerStream[0] = event;
         for (int i = 0; i < numKeys; i++)
         {
-            values[i] = uniqueCriteria[i].evaluate(eventsPerStream, true);
+            values[i] = uniqueCriteria[i].evaluate(eventsPerStream, true, exprEvaluatorContext);
         }
         return new MultiKey<Object>(values);
     }

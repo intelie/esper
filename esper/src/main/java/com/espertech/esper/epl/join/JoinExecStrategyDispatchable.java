@@ -12,6 +12,7 @@ import com.espertech.esper.collection.FlushedEventBuffer;
 import com.espertech.esper.core.EPStatementDispatch;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.internal.BufferObserver;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class JoinExecStrategyDispatchable implements EPStatementDispatch, Buffer
         newStreamBuffer = new HashMap<Integer, FlushedEventBuffer>();
     }
 
-    public void execute()
+    public void execute(ExprEvaluatorContext exprEvaluatorContext)
     {
         if (!hasNewData)
         {
@@ -60,7 +61,7 @@ public class JoinExecStrategyDispatchable implements EPStatementDispatch, Buffer
             newDataPerStream[i] = getBufferData(newStreamBuffer.get(i));
         }
 
-        joinExecutionStrategy.join(newDataPerStream, oldDataPerStream);
+        joinExecutionStrategy.join(newDataPerStream, oldDataPerStream, exprEvaluatorContext);
     }
 
     private static EventBean[] getBufferData(FlushedEventBuffer buffer)

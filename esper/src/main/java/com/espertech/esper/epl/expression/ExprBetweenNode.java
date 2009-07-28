@@ -78,7 +78,7 @@ public class ExprBetweenNode extends ExprNode
         return isNotBetween;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 3)
         {
@@ -134,7 +134,7 @@ public class ExprBetweenNode extends ExprNode
         return Boolean.class;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (isAlwaysFalse)
         {
@@ -143,13 +143,13 @@ public class ExprBetweenNode extends ExprNode
 
         // Evaluate first child which is the base value to compare to
         Iterator<ExprNode> it = this.getChildNodes().iterator();
-        Object value = it.next().evaluate(eventsPerStream, isNewData);
+        Object value = it.next().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (value == null)
         {
             return false;
         }
-        Object lower = it.next().evaluate(eventsPerStream, isNewData);
-        Object higher = it.next().evaluate(eventsPerStream, isNewData);
+        Object lower = it.next().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object higher = it.next().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
         boolean result = computer.isBetween(value, lower, higher);
 

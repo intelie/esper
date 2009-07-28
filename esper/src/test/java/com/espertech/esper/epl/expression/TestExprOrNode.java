@@ -24,13 +24,13 @@ public class TestExprOrNode extends TestCase
         // test success
         orNode.addChildNode(new SupportExprNode(Boolean.class));
         orNode.addChildNode(new SupportExprNode(Boolean.class));
-        orNode.validate(null, null, null, null, null);
+        orNode.validate(null, null, null, null, null, null);
 
         // test failure, type mismatch
         orNode.addChildNode(new SupportExprNode(String.class));
         try
         {
-            orNode.validate(null, null, null, null, null);
+            orNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -43,7 +43,7 @@ public class TestExprOrNode extends TestCase
         orNode.addChildNode(new SupportExprNode(Boolean.class));
         try
         {
-            orNode.validate(null, null, null, null, null);
+            orNode.validate(null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -56,17 +56,17 @@ public class TestExprOrNode extends TestCase
     {
         orNode.addChildNode(new SupportBoolExprNode(true));
         orNode.addChildNode(new SupportBoolExprNode(false));
-        assertTrue( (Boolean) orNode.evaluate(null, false));
+        assertTrue( (Boolean) orNode.evaluate(null, false, null));
 
         orNode = new ExprOrNode();
         orNode.addChildNode(new SupportBoolExprNode(false));
         orNode.addChildNode(new SupportBoolExprNode(false));
-        assertFalse( (Boolean) orNode.evaluate(null, false));
+        assertFalse( (Boolean) orNode.evaluate(null, false, null));
 
         orNode = new ExprOrNode();
         orNode.addChildNode(new SupportExprNode(null, Boolean.class));
         orNode.addChildNode(new SupportExprNode(false));
-        assertNull(orNode.evaluate(null, false));
+        assertNull(orNode.evaluate(null, false, null));
     }
 
     public void testToExpressionString() throws Exception

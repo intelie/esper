@@ -44,7 +44,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
         this.selectClauseExpr = selectClauseExpr;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((matchingEvents == null) || (matchingEvents.size() == 0))
         {
@@ -52,7 +52,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
         }
 
         // Evaluate the child expression
-        Object leftResult = valueExpr.evaluate(eventsPerStream, isNewData);
+        Object leftResult = valueExpr.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
         // Evaluation event-per-stream
         EventBean[] events = new EventBean[eventsPerStream.length + 1];
@@ -70,7 +70,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
                 Object rightResult;
                 if (selectClauseExpr != null)
                 {
-                    rightResult = selectClauseExpr.evaluate(events, true);
+                    rightResult = selectClauseExpr.evaluate(events, true, exprEvaluatorContext);
                 }
                 else
                 {
@@ -80,7 +80,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
                 // Eval filter expression
                 if (filterExpr != null)
                 {
-                    Boolean pass = (Boolean) filterExpr.evaluate(events, true);
+                    Boolean pass = (Boolean) filterExpr.evaluate(events, true,exprEvaluatorContext);
                     if ((pass == null) || (!pass))
                     {
                         continue;
@@ -136,7 +136,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
                 Object rightResult;
                 if (selectClauseExpr != null)
                 {
-                    rightResult = selectClauseExpr.evaluate(events, true);
+                    rightResult = selectClauseExpr.evaluate(events, true,  exprEvaluatorContext);
                 }
                 else
                 {
@@ -146,7 +146,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
                 // Eval filter expression
                 if (filterExpr != null)
                 {
-                    Boolean pass = (Boolean) filterExpr.evaluate(events, true);
+                    Boolean pass = (Boolean) filterExpr.evaluate(events, true,exprEvaluatorContext);
                     if ((pass == null) || (!pass))
                     {
                         continue;

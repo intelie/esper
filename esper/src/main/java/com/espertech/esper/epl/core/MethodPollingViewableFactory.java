@@ -16,6 +16,7 @@ import com.espertech.esper.epl.db.DataCache;
 import com.espertech.esper.epl.db.DataCacheFactory;
 import com.espertech.esper.epl.db.PollExecStrategy;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.spec.MethodStreamSpec;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.ScheduleBucket;
@@ -59,7 +60,8 @@ public class MethodPollingViewableFactory
                                                                MethodResolutionService methodResolutionService,
                                                                EngineImportService engineImportService,
                                                                SchedulingService schedulingService,
-                                                               ScheduleBucket scheduleBucket)
+                                                               ScheduleBucket scheduleBucket,
+                                                               ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
         // Try to resolve the method
@@ -145,6 +147,6 @@ public class MethodPollingViewableFactory
         DataCache dataCache = DataCacheFactory.getDataCache(dataCacheDesc, epStatementHandle, schedulingService, scheduleBucket);
         PollExecStrategy methodPollStrategy = new MethodPollingExecStrategy(eventAdapterService, staticMethod, mapTypeName != null, eventType);
 
-        return new MethodPollingViewable(methodStreamSpec, streamNumber, methodStreamSpec.getExpressions(), methodPollStrategy, dataCache, eventType);
+        return new MethodPollingViewable(methodStreamSpec, streamNumber, methodStreamSpec.getExpressions(), methodPollStrategy, dataCache, eventType, exprEvaluatorContext);
     }
 }
