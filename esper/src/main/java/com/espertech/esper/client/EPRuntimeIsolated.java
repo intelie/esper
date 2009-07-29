@@ -54,12 +54,4 @@ public interface EPRuntimeIsolated
      * @return current engine time
      */
     public long getCurrentTime();
-
-    public void takeStatement(EPStatement stmt);
-
-    public void returnStatement(EPStatement stmt);
-
-    public void takeStatement(EPStatement[] statements);
-
-    public void returnStatement(EPStatement[] stmt);
 }

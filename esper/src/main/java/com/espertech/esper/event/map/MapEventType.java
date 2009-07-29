@@ -1026,7 +1026,7 @@ public class MapEventType implements EventTypeSPI
                 {
                     eventTypeFragments.put(name, null);
                 }
-                propertyDescriptors.add(new EventPropertyDescriptor(name, classType, false, false, isArray, false, isFragment));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, classType, null, false, false, isArray, false, isFragment));
 
                 EventPropertyGetter getter = new MapEntryPropertyGetter(name, nativeFragmentType, eventAdapterService);
                 propertyGetters.put(name, getter);
@@ -1040,7 +1040,7 @@ public class MapEventType implements EventTypeSPI
                 propertyNameList.add(name);
                 EventPropertyGetter getter = new MapEntryPropertyGetter(name, null, null);
                 propertyGetters.put(name, getter);
-                propertyDescriptors.add(new EventPropertyDescriptor(name, null, false, false, false, false, false));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, null, null, false, false, false, false, false));
                 eventTypeFragments.put(name, null);
                 continue;
             }
@@ -1052,7 +1052,7 @@ public class MapEventType implements EventTypeSPI
                 propertyNameList.add(name);
                 EventPropertyGetter getter = new MapEntryPropertyGetter(name, null, null);
                 propertyGetters.put(name, getter);
-                propertyDescriptors.add(new EventPropertyDescriptor(name, Map.class, false, false, false, true, false));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, Map.class, null, false, false, false, true, false));
                 eventTypeFragments.put(name, null);
                 continue;
             }
@@ -1065,7 +1065,7 @@ public class MapEventType implements EventTypeSPI
                 propertyNameList.add(name);
                 EventPropertyGetter getter = new MapEventBeanPropertyGetter(name);
                 propertyGetters.put(name, getter);
-                propertyDescriptors.add(new EventPropertyDescriptor(name, eventType.getUnderlyingType(), false, false, false, false, true));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, eventType.getUnderlyingType(), null, false, false, false, false, true));
                 eventTypeFragments.put(name, new FragmentEventType(eventType, false, false));
                 continue;
             }
@@ -1079,7 +1079,7 @@ public class MapEventType implements EventTypeSPI
                 propertyNameList.add(name);
                 EventPropertyGetter getter = new MapEventBeanArrayPropertyGetter(name, eventType.getUnderlyingType());
                 propertyGetters.put(name, getter);
-                propertyDescriptors.add(new EventPropertyDescriptor(name, prototypeArray.getClass(), false, false, true, false, true));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, prototypeArray.getClass(), null, false, false, true, false, true));
                 eventTypeFragments.put(name, new FragmentEventType(eventType, true, false));
                 continue;
             }
@@ -1118,7 +1118,7 @@ public class MapEventType implements EventTypeSPI
                     getter = new MapMaptypedArrayPropertyGetter(name, eventType, eventAdapterService);
                 }
                 propertyGetters.put(name, getter);
-                propertyDescriptors.add(new EventPropertyDescriptor(name, underlyingType, false, false, isArray, false, true));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, underlyingType, null, false, false, isArray, false, true));
                 eventTypeFragments.put(name, new FragmentEventType(eventType, isArray, false));
                 continue;
             }

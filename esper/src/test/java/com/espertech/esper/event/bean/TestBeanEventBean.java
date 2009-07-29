@@ -122,14 +122,14 @@ public class TestBeanEventBean extends TestCase
         assertEquals(Object.class, eventBean.getEventType().getPropertyType("iterableUndefined[0]"));
         assertEquals(Object.class, eventBean.getEventType().getPropertyType("iterableObject[0]"));
 
-        assertEquals(new EventPropertyDescriptor("iterableNested", Iterable.class, false, false, true, false, true), eventBean.getEventType().getPropertyDescriptor("iterableNested"));
-        assertEquals(new EventPropertyDescriptor("iterableInteger", Iterable.class, false, false, true, false, false), eventBean.getEventType().getPropertyDescriptor("iterableInteger"));
-        assertEquals(new EventPropertyDescriptor("listNested", List.class, false, false, true, false, true), eventBean.getEventType().getPropertyDescriptor("listNested"));
-        assertEquals(new EventPropertyDescriptor("listInteger", List.class, false, false, true, false, false), eventBean.getEventType().getPropertyDescriptor("listInteger"));
-        assertEquals(new EventPropertyDescriptor("mapNested", Map.class, false, false, false, true, false), eventBean.getEventType().getPropertyDescriptor("mapNested"));
-        assertEquals(new EventPropertyDescriptor("mapInteger", Map.class, false, false, false, true, false), eventBean.getEventType().getPropertyDescriptor("mapInteger"));
-        assertEquals(new EventPropertyDescriptor("iterableUndefined", Iterable.class, false, false, true, false, false), eventBean.getEventType().getPropertyDescriptor("iterableUndefined"));
-        assertEquals(new EventPropertyDescriptor("iterableObject", Iterable.class, false, false, true, false, false), eventBean.getEventType().getPropertyDescriptor("iterableObject"));
+        assertEquals(new EventPropertyDescriptor("iterableNested", Iterable.class, SupportBeanIterableProps.SupportBeanSpecialGetterNested.class, false, false, true, false, true), eventBean.getEventType().getPropertyDescriptor("iterableNested"));
+        assertEquals(new EventPropertyDescriptor("iterableInteger", Iterable.class, Integer.class, false, false, true, false, false), eventBean.getEventType().getPropertyDescriptor("iterableInteger"));
+        assertEquals(new EventPropertyDescriptor("listNested", List.class, SupportBeanIterableProps.SupportBeanSpecialGetterNested.class, false, false, true, false, true), eventBean.getEventType().getPropertyDescriptor("listNested"));
+        assertEquals(new EventPropertyDescriptor("listInteger", List.class, Integer.class, false, false, true, false, false), eventBean.getEventType().getPropertyDescriptor("listInteger"));
+        assertEquals(new EventPropertyDescriptor("mapNested", Map.class, null, false, false, false, true, false), eventBean.getEventType().getPropertyDescriptor("mapNested"));
+        assertEquals(new EventPropertyDescriptor("mapInteger", Map.class, null, false, false, false, true, false), eventBean.getEventType().getPropertyDescriptor("mapInteger"));
+        assertEquals(new EventPropertyDescriptor("iterableUndefined", Iterable.class, Object.class, false, false, true, false, false), eventBean.getEventType().getPropertyDescriptor("iterableUndefined"));
+        assertEquals(new EventPropertyDescriptor("iterableObject", Iterable.class, Object.class, false, false, true, false, false), eventBean.getEventType().getPropertyDescriptor("iterableObject"));
 
         assertNestedCollection(eventBean, "iterableNested", "I");
         assertNestedCollection(eventBean, "listNested", "L");

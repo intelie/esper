@@ -45,6 +45,7 @@ public class EPStatementImpl implements EPStatementSPI
     private Object userObject;
     private Annotation[] annotations;
     private StatementContext statementContext;
+    private String serviceIsolated;
 
     /**
      * Ctor.
@@ -476,5 +477,15 @@ public class EPStatementImpl implements EPStatementSPI
     public String getExpressionNoAnnotations()
     {
         return expressionNoAnnotations;
+    }
+
+    public String getServiceIsolated()
+    {
+        return serviceIsolated;
+    }
+
+    public void setServiceIsolated(String serviceIsolated)
+    {
+        this.serviceIsolated = serviceIsolated;
     }
 }

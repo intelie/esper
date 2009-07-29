@@ -66,10 +66,10 @@ public class TestEventPropertyDynamicXML extends TestCase
         stmt.addListener(listener);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("type?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("dyn[1]?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested.nes2?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("map('a')?", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("type?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("dyn[1]?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested.nes2?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("map('a')?", Node.class, null, false, false, false, false, false),
            }, stmt.getEventType().getPropertyDescriptors());
         EventTypeAssertionUtil.assertConsistency(stmt.getEventType());
 
@@ -105,10 +105,10 @@ public class TestEventPropertyDynamicXML extends TestCase
         stmt.addListener(listener);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("type?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("dyn[1]?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested.nes2?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("map('a')?", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("type?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("dyn[1]?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested.nes2?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("map('a')?", Node.class, null, false, false, false, false, false),
            }, stmt.getEventType().getPropertyDescriptors());
         EventTypeAssertionUtil.assertConsistency(stmt.getEventType());
 
@@ -139,11 +139,11 @@ public class TestEventPropertyDynamicXML extends TestCase
         stmt.addListener(listener);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("type?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("dyn[1]?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested.nes2?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("map('a')?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("other?", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("type?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("dyn[1]?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested.nes2?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("map('a')?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("other?", Node.class, null, false, false, false, false, false),
            }, stmt.getEventType().getPropertyDescriptors());
         EventTypeAssertionUtil.assertConsistency(stmt.getEventType());
 
@@ -172,10 +172,10 @@ public class TestEventPropertyDynamicXML extends TestCase
         stmt.addListener(listener);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("type?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("dyn[1]?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested.nes2?", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("map('a')?", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("type?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("dyn[1]?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested.nes2?", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("map('a')?", Node.class, null, false, false, false, false, false),
            }, stmt.getEventType().getPropertyDescriptors());
         EventTypeAssertionUtil.assertConsistency(stmt.getEventType());
 

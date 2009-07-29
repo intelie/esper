@@ -15,8 +15,6 @@ import javax.naming.Context;
  */
 public interface EPServiceProvider
 {
-    public EPRuntimeIsolated getEPRuntimeIsolated();
-
     /**
      * Returns a class instance of EPRuntime.
      * @return an instance of EPRuntime
@@ -108,4 +106,8 @@ public interface EPServiceProvider
      * Remove all listeners to statement state changes.
      */
     public void removeAllStatementStateListeners();
+
+    public EPServiceProviderIsolated getEPServiceIsolated(String name);
+
+    public String[] getEPServiceIsolatedNames();
 }

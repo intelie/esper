@@ -68,9 +68,9 @@ public class TestMapEventNested extends TestCase
         assertEquals("[base1, base2, base3]", Arrays.toString(statementTwoSelectAll.getEventType().getPropertyNames()));
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("base3", Long.class, false, false, false, false, false),
-            new EventPropertyDescriptor("base2", Map.class, false, false, false, true, false),
-            new EventPropertyDescriptor("base1", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("base3", Long.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("base2", Map.class, null, false, false, false, true, false),
+            new EventPropertyDescriptor("base1", String.class, null, false, false, false, false, false),
            }, statementTwoSelectAll.getEventType().getPropertyDescriptors());
 
         try
@@ -120,9 +120,9 @@ public class TestMapEventNested extends TestCase
         epService.initialize();
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("base", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("sub1", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("suba", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("base", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("sub1", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("suba", String.class, null, false, false, false, false, false),
            }, ((EPServiceProviderSPI) epService).getEventAdapterService().getExistsTypeByName("SubAEvent").getPropertyDescriptors());
 
         runMapInheritanceInitTime(epService);

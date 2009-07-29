@@ -154,4 +154,6 @@ public interface EPStatement extends EPListenable, EPIterable
      * @return annotations or a zero-length array if no annotaions have been specified.
      */
     public Annotation[] getAnnotations();
+
+    public String getServiceIsolated();
 }

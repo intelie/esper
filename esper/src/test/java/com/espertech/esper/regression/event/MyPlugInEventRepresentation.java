@@ -41,7 +41,7 @@ public class MyPlugInEventRepresentation implements PlugInEventRepresentation
         Map<String, EventPropertyDescriptor> metadata = new LinkedHashMap<String, EventPropertyDescriptor>();
         for (String prop : typeProps)
         {
-            metadata.put(prop, new EventPropertyDescriptor(prop, String.class, false, false, false, false, false));
+            metadata.put(prop, new EventPropertyDescriptor(prop, String.class, null, false, false, false, false, false));
         }
 
         // save type for testing dynamic event object reflection

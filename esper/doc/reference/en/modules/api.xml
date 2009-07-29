@@ -1475,8 +1475,16 @@ epRuntime().sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
     <sect1 id="api-isolatedruntime">
         <title>Runtime Isolation</title>
 
+		<para>
+			Isolated service providers allow an application to control event visibility and the concept of time as desired on a statement level: Events sent into an isolated service are visible only to those statements that currently reside in the isolated service and are not visible to statements outside of that isolated service. Within an isolated service an application can control time independently, start time at a point in time and advance time at the resolution and pace suitable for the statements within that isolated service. 
+		</para>
+
+		<para>
+			Your application can create new statements that start in an isolated runtime. You can also move existing statements to the engine to the isolated service. When done, you may move statements back from the isolated service into the engine.
+		</para>
+
         <para>
-			An isolated runtime is a separate execution environment that may hold one or more statements. Statements are moved into an isolated runtime to isolate the statement from engine runtime event and timer-based processing. Statements are returned to the engine runtime when statements should continue to receive incoming events and take part in time-based processing of the engine runtime.
+			An isolated runtime is thus a separate execution environment that may hold one or more statements. Statements are moved into an isolated runtime to isolate the statement from engine runtime event and timer-based processing. Statements are returned to the engine runtime when statements should continue to receive incoming events and take part in time-based processing of the engine runtime.
         </para>
 
         <para>
@@ -1484,7 +1492,7 @@ epRuntime().sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
         </para>
 
         <para>
-			Subordinate to an Esper engine instance your application can additionally allocate multiple isolated execution environments (isolated runtimes), uniquely identified by a name and represented by the <literal>EPRuntimeIsolated</literal> interface. In the isolated runtime, time passes only 
+			Subordinate to an Esper engine instance your application can additionally allocate multiple isolated execution environments (isolated service), uniquely identified by a name and represented by the <literal>EPRuntimeIsolated</literal> interface. In the isolated runtime, time passes only 
 			when explicitly sending timer events to the <literal>EPRuntimeIsolated</literal> instance. Only events explicitly sent to the isolated runtime are visible to statements within.
         </para>
 

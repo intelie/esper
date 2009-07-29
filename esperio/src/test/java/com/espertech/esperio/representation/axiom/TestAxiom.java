@@ -85,11 +85,11 @@ public class TestAxiom extends TestCase
         assertEquals(5, eventType.getPropertyNames().length);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("xpathElement1", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("xpathCountE21", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("xpathAttrString", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("xpathAttrNum", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("xpathAttrBool", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathElement1", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathCountE21", Double.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrString", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrNum", Double.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrBool", Boolean.class, null, false, false, false, false, false),
            }, eventType.getPropertyDescriptors());
     }
 

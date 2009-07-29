@@ -32,10 +32,10 @@ public class TestSchemaXMLEvent extends TestCase
         EventTypeAssertionUtil.assertConsistency(type);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("nested1", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("prop4", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested3", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("customProp", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested1", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("prop4", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested3", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("customProp", Double.class, null, false, false, false, false, false),
            }, type.getPropertyDescriptors());
 
         String stmt =
@@ -54,14 +54,14 @@ public class TestSchemaXMLEvent extends TestCase
         type = selectStmt.getEventType();
         EventTypeAssertionUtil.assertConsistency(type);
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("nodeProp", Node.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested1Prop", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested2Prop", Boolean.class, false, false, false, false, false),
-            new EventPropertyDescriptor("complexProp", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("indexedProp", Integer.class, false, false, false, false, false),
-            new EventPropertyDescriptor("customProp", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("attrOneProp", Boolean.class, false, false, false, false, false),
-            new EventPropertyDescriptor("attrTwoProp", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nodeProp", Node.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested1Prop", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested2Prop", Boolean.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("complexProp", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("indexedProp", Integer.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("customProp", Double.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("attrOneProp", Boolean.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("attrTwoProp", String.class, null, false, false, false, false, false),
            }, type.getPropertyDescriptors());
 
         Document eventDoc = SupportXML.sendDefaultEvent(epService.getEPRuntime(), "test");
@@ -103,10 +103,10 @@ public class TestSchemaXMLEvent extends TestCase
         EventTypeAssertionUtil.assertConsistency(type);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("nested1", Node.class, false, false, false, false, true),
-            new EventPropertyDescriptor("prop4", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested3", Node.class, false, false, false, false, true),
-            new EventPropertyDescriptor("customProp", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested1", Node.class, null, false, false, false, false, true),
+            new EventPropertyDescriptor("prop4", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested3", Node.class, null, false, false, false, false, true),
+            new EventPropertyDescriptor("customProp", Double.class, null, false, false, false, false, false),
            }, type.getPropertyDescriptors());
 
         String stmt =
@@ -125,14 +125,14 @@ public class TestSchemaXMLEvent extends TestCase
         type = selectStmt.getEventType();
         EventTypeAssertionUtil.assertConsistency(type);
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("nodeProp", Node.class, false, false, false, false, true),
-            new EventPropertyDescriptor("nested1Prop", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("nested2Prop", Boolean.class, false, false, false, false, false),
-            new EventPropertyDescriptor("complexProp", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("indexedProp", Integer.class, false, false, false, false, false),
-            new EventPropertyDescriptor("customProp", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("attrOneProp", Boolean.class, false, false, false, false, false),
-            new EventPropertyDescriptor("attrTwoProp", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nodeProp", Node.class, null, false, false, false, false, true),
+            new EventPropertyDescriptor("nested1Prop", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("nested2Prop", Boolean.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("complexProp", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("indexedProp", Integer.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("customProp", Double.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("attrOneProp", Boolean.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("attrTwoProp", String.class, null, false, false, false, false, false),
            }, type.getPropertyDescriptors());
 
         Document eventDoc = SupportXML.sendDefaultEvent(epService.getEPRuntime(), "test");

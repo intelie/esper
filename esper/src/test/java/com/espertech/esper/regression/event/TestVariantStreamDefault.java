@@ -165,12 +165,12 @@ public class TestVariantStreamDefault extends TestCase
         }
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("string", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("boolBoxed", Boolean.class, false, false, false, false, false),
-            new EventPropertyDescriptor("intPrimitive", Integer.class, false, false, false, false, false),
-            new EventPropertyDescriptor("longPrimitive", Long.class, false, false, false, false, false),
-            new EventPropertyDescriptor("doublePrimitive", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("enumValue", SupportEnum.class, false, false, false, false, false),
+            new EventPropertyDescriptor("string", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("boolBoxed", Boolean.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("intPrimitive", Integer.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("longPrimitive", Long.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("doublePrimitive", Double.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("enumValue", SupportEnum.class, null, false, false, false, false, false),
            }, eventType.getPropertyDescriptors());
     }
 

@@ -65,21 +65,21 @@ public class TestBeanEventType extends TestCase
         assertTrue(properties[0].equals("myInt"));
         assertTrue(properties[1].equals("myString"));
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("myInt", int.class, false, false, false, false, false), 
-            new EventPropertyDescriptor("myString", String.class, false, false, false, false, false)
+            new EventPropertyDescriptor("myInt", int.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("myString", String.class, null, false, false, false, false, false)
            }, eventTypeSimple.getPropertyDescriptors());
 
         properties = eventTypeComplex.getPropertyNames();
         ArrayAssertionUtil.assertEqualsAnyOrder(SupportBeanComplexProps.PROPERTIES, properties);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("simpleProperty", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("mapProperty", Map.class, false, false, false, true, false),
-            new EventPropertyDescriptor("mapped", String.class, false, true, false, true, false),
-            new EventPropertyDescriptor("indexed", int.class, true, false, true, false, false),
-            new EventPropertyDescriptor("nested", SupportBeanComplexProps.SupportBeanSpecialGetterNested.class, false, false, false, false, true),
-            new EventPropertyDescriptor("arrayProperty", int[].class, false, false, true, false, false),
-            new EventPropertyDescriptor("objectArray", Object[].class, false, false, true, false, false),
+            new EventPropertyDescriptor("simpleProperty", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("mapProperty", Map.class, null, false, false, false, true, false),
+            new EventPropertyDescriptor("mapped", String.class, null, false, true, false, true, false),
+            new EventPropertyDescriptor("indexed", int.class, null, true, false, true, false, false),
+            new EventPropertyDescriptor("nested", SupportBeanComplexProps.SupportBeanSpecialGetterNested.class, null, false, false, false, false, true),
+            new EventPropertyDescriptor("arrayProperty", int[].class, int.class, false, false, true, false, false),
+            new EventPropertyDescriptor("objectArray", Object[].class, Object.class, false, false, true, false, false),
            }, eventTypeComplex.getPropertyDescriptors());
 
         properties = eventTypeNested.getPropertyNames();

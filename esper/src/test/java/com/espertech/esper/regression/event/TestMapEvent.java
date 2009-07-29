@@ -57,9 +57,9 @@ public class TestMapEvent extends TestCase
         assertEquals(1, types.length);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("myInt", Integer.class, false, false, false, false, false),
-            new EventPropertyDescriptor("myString", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("beanA", SupportBeanComplexProps.class, false, false, false, false, true),
+            new EventPropertyDescriptor("myInt", Integer.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("myString", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("beanA", SupportBeanComplexProps.class, null, false, false, false, false, true),
            }, type.getPropertyDescriptors());        
     }
 

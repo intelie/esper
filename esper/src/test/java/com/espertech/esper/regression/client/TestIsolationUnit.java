@@ -5,8 +5,8 @@ import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
 public class TestIsolationUnit extends TestCase
@@ -14,18 +14,11 @@ public class TestIsolationUnit extends TestCase
     // TODO
     // Test EHA
     //
-    // Test create statement in isolation unit
-    //  (3) ==> Change EPServiceProvider to EPServiceProdiderIsolated
-    //  (1) Annotation - hint but part of statement text
-    //  (2) new createEPL method
-    //  (4) add createEPL method to EPRuntimeIsolation
-    //
     // Test isolation unit mgmt + destroy
     //   epServiceManager.getIsolationUnit(name);
     //   String[] = epServiceManager.getIsolationUnits();
     //   epStatement.getIsolationUnit();
     //   
-    // Test subquery, aggregation state, view state
     // update doc: document schedule adjustment, view sharing must be disabled, note on listener delivery/threading, expensive op., Update statements apply to a stream even if the statement is not isolated, iterator threading
 
     private EPServiceProvider epService;
@@ -50,29 +43,29 @@ public class TestIsolationUnit extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         assertFalse(listener.getAndClearIsInvoked());
 
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
 
         // send fake to wrong place
-        unit.sendEvent(new SupportBean("E1", -1));
+        unit.getEPRuntime().sendEvent(new SupportBean("E1", -1));
 
-        unit.takeStatement(stmt);
+        unit.getEPAdministrator().addStatement(stmt);
 
         // send to 'wrong' engine
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 2));
         assertFalse(listener.getAndClearIsInvoked());
 
         // send to 'right' engine
-        unit.sendEvent(new SupportBean("E1", 3));
+        unit.getEPRuntime().sendEvent(new SupportBean("E1", 3));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a.string,a.intPrimitive,b.intPrimitive".split(","), new Object[] {"E1", 1, 3});
 
         // send second pair, and a fake to the wrong place
-        unit.sendEvent(new SupportBean("E2", 4));
+        unit.getEPRuntime().sendEvent(new SupportBean("E2", 4));
         epService.getEPRuntime().sendEvent(new SupportBean("E2", -1));
 
-        unit.returnStatement(stmt);
+        unit.getEPAdministrator().removeStatement(stmt);
 
         // send to 'wrong' engine
-        unit.sendEvent(new SupportBean("E2", 5));
+        unit.getEPRuntime().sendEvent(new SupportBean("E2", 5));
         assertFalse(listener.getAndClearIsInvoked());
 
         // send to 'right' engine
@@ -91,9 +84,9 @@ public class TestIsolationUnit extends TestCase
         sendTimerUnisolated(105000);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
 
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
         sendTimerIso(0, unit);
-        unit.takeStatement(stmt);
+        unit.getEPAdministrator().addStatement(stmt);
 
         sendTimerIso(9999, unit);
         assertFalse(listener.isInvoked());
@@ -102,12 +95,12 @@ public class TestIsolationUnit extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a.string".split(","), new Object[] {"E1"});
 
         sendTimerIso(11000, unit);
-        unit.sendEvent(new SupportBean("E2", 1));
+        unit.getEPRuntime().sendEvent(new SupportBean("E2", 1));
 
         sendTimerUnisolated(120000);
         assertFalse(listener.isInvoked());
 
-        unit.returnStatement(stmt);
+        unit.getEPAdministrator().removeStatement(stmt);
 
         sendTimerUnisolated(129999);
         assertFalse(listener.isInvoked());
@@ -132,14 +125,14 @@ public class TestIsolationUnit extends TestCase
         stmtSelect.addListener(listenerSelect);
 
         // unit takes "insert"
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
-        unit.takeStatement(stmtInsert);
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+        unit.getEPAdministrator().addStatement(stmtInsert);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         assertFalse(listenerSelect.getAndClearIsInvoked());
         assertFalse(listenerInsert.getAndClearIsInvoked());
 
-        unit.sendEvent(new SupportBean("E2", 2));
+        unit.getEPRuntime().sendEvent(new SupportBean("E2", 2));
         assertFalse(listenerSelect.getAndClearIsInvoked());
         ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), "string".split(","), new Object[] {"E2"});
 
@@ -148,13 +141,13 @@ public class TestIsolationUnit extends TestCase
         assertFalse(listenerInsert.getAndClearIsInvoked());    // is there a remaining event that gets flushed with the last one?
 
         // unit returns insert
-        unit.returnStatement(stmtInsert);
+        unit.getEPAdministrator().removeStatement(stmtInsert);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E4", 4));
         ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), "string".split(","), new Object[] {"E4"});
         ArrayAssertionUtil.assertProps(listenerSelect.assertOneGetNewAndReset(), "string".split(","), new Object[] {"E4"});
 
-        unit.sendEvent(new SupportBean("E5", 5));
+        unit.getEPRuntime().sendEvent(new SupportBean("E5", 5));
         assertFalse(listenerSelect.getAndClearIsInvoked());
         assertFalse(listenerInsert.getAndClearIsInvoked());
 
@@ -181,8 +174,8 @@ public class TestIsolationUnit extends TestCase
         statements[0] = epService.getEPAdministrator().getStatement("S0");
         statements[1] = epService.getEPAdministrator().getStatement("S2");
 
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
-        unit.takeStatement(statements);
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+        unit.getEPAdministrator().addStatement(statements);
 
         // send to unisolated
         for (int i = 0; i < count; i++)
@@ -197,18 +190,18 @@ public class TestIsolationUnit extends TestCase
         // send to isolated
         for (int i = 0; i < count; i++)
         {
-            unit.sendEvent(new SupportBean(Integer.toString(i), i));
+            unit.getEPRuntime().sendEvent(new SupportBean(Integer.toString(i), i));
         }
         assertFalse(listeners[1].isInvoked());
         assertFalse(listeners[3].isInvoked());
         ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, new Object[] {"0", 0});
         ArrayAssertionUtil.assertProps(listeners[2].assertOneGetNewAndReset(), fields, new Object[] {"2", 2});
 
-        unit.sendEvent(new SupportBean(Integer.toString(2), 2));
+        unit.getEPRuntime().sendEvent(new SupportBean(Integer.toString(2), 2));
         ArrayAssertionUtil.assertProps(listeners[2].assertOneGetNewAndReset(), fields, new Object[] {"2", 4});
 
         // return
-        unit.returnStatement(statements);
+        unit.getEPAdministrator().removeStatement(statements);
 
         // send to unisolated
         for (int i = 0; i < count; i++)
@@ -223,7 +216,7 @@ public class TestIsolationUnit extends TestCase
         // send to isolated
         for (int i = 0; i < count; i++)
         {
-            unit.sendEvent(new SupportBean(Integer.toString(i), i));
+            unit.getEPRuntime().sendEvent(new SupportBean(Integer.toString(i), i));
             assertFalse(listeners[i].isInvoked());
         }
 
@@ -237,34 +230,34 @@ public class TestIsolationUnit extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
 
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
-        unit.takeStatement(stmt);
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+        unit.getEPAdministrator().addStatement(stmt);
         
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
-        unit.sendEvent(new SupportBean("E2", 0));
+        unit.getEPRuntime().sendEvent(new SupportBean("E2", 0));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E2"}});
 
         stmt.stop();
 
-        unit.returnStatement(stmt);
+        unit.getEPAdministrator().removeStatement(stmt);
 
         stmt.start();
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E3", 0));
-        unit.sendEvent(new SupportBean("E4", 0));
+        unit.getEPRuntime().sendEvent(new SupportBean("E4", 0));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E3"}});
 
-        unit.takeStatement(stmt);
+        unit.getEPAdministrator().addStatement(stmt);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E5", 0));
-        unit.sendEvent(new SupportBean("E6", 0));
+        unit.getEPRuntime().sendEvent(new SupportBean("E6", 0));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E3"}, {"E6"}});
 
-        unit.returnStatement(stmt);
+        unit.getEPAdministrator().removeStatement(stmt);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E7", 0));
-        unit.sendEvent(new SupportBean("E8", 0));
+        unit.getEPRuntime().sendEvent(new SupportBean("E8", 0));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E3"}, {"E6"}, {"E7"}});
 
         stmt.stop();
@@ -285,18 +278,18 @@ public class TestIsolationUnit extends TestCase
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1"}});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
 
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
-        unit.takeStatement(epService.getEPAdministrator().getStatement("create"));
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+        unit.getEPAdministrator().addStatement(epService.getEPAdministrator().getStatement("create"));
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 0));
-        unit.sendEvent(new SupportBean("E3", 0));
+        unit.getEPRuntime().sendEvent(new SupportBean("E3", 0));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1"}});
         assertFalse(listener.isInvoked());
 
-        unit.takeStatement(stmtInsert);
+        unit.getEPAdministrator().addStatement(stmtInsert);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E4", 0));
-        unit.sendEvent(new SupportBean("E5", 0));
+        unit.getEPRuntime().sendEvent(new SupportBean("E5", 0));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1"}, {"E5"}});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E5"});    // yes receives it
 
@@ -309,12 +302,12 @@ public class TestIsolationUnit extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean_A("E1"));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, new Object[][] {{"E5"}});
 
-        unit.takeStatement(stmtDelete);
+        unit.getEPAdministrator().addStatement(stmtDelete);
 
         epService.getEPRuntime().sendEvent(new SupportBean_A("E5"));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, new Object[][] {{"E5"}});
 
-        unit.sendEvent(new SupportBean_A("E5"));
+        unit.getEPRuntime().sendEvent(new SupportBean_A("E5"));
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, null);
 
         epService.getEPAdministrator().destroyAllStatements();
@@ -327,21 +320,21 @@ public class TestIsolationUnit extends TestCase
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL("@Name('create') create window MyWindow.win:time(10) as SupportBean");
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL("@Name('insert') insert into MyWindow select * from SupportBean");
 
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
         sendTimerIso(0, unit);
-        unit.takeStatement(new EPStatement[] {stmtCreate, stmtInsert});
+        unit.getEPAdministrator().addStatement(new EPStatement[] {stmtCreate, stmtInsert});
 
         sendTimerIso(1000, unit);
-        unit.sendEvent(new SupportBean("E1", 1));
+        unit.getEPRuntime().sendEvent(new SupportBean("E1", 1));
 
         sendTimerIso(2000, unit);
-        unit.sendEvent(new SupportBean("E2", 2));
+        unit.getEPRuntime().sendEvent(new SupportBean("E2", 2));
 
         sendTimerIso(9000, unit);
-        unit.sendEvent(new SupportBean("E3", 3));
+        unit.getEPRuntime().sendEvent(new SupportBean("E3", 3));
 
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1"}, {"E2"}, {"E3"}});
-        unit.returnStatement(new EPStatement[] {stmtCreate});
+        unit.getEPAdministrator().removeStatement(new EPStatement[] {stmtCreate});
 
         sendTimerUnisolated(101000);    // equivalent to 10000  (E3 is 1 seconds old)
 
@@ -354,7 +347,7 @@ public class TestIsolationUnit extends TestCase
         sendTimerUnisolated(109000);    // equivalent to 18000 (E3 is 9 seconds old)
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, new Object[][] {{"E3"}});
 
-        unit.takeStatement(new EPStatement[] {stmtCreate});
+        unit.getEPAdministrator().addStatement(new EPStatement[] {stmtCreate});
 
         sendTimerIso(9999, unit);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.iterator(), fields, new Object[][] {{"E3"}});
@@ -375,11 +368,11 @@ public class TestIsolationUnit extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean());
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {5000L});
 
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
         sendTimerIso(100000, unit);
-        unit.takeStatement(new EPStatement[] {stmt});
+        unit.getEPAdministrator().addStatement(new EPStatement[] {stmt});
 
-        unit.sendEvent(new SupportBean());
+        unit.getEPRuntime().sendEvent(new SupportBean());
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {100000L});        
 
         epService.getEPAdministrator().destroyAllStatements();
@@ -387,29 +380,29 @@ public class TestIsolationUnit extends TestCase
         stmt = epService.getEPAdministrator().createEPL("select string as ct from SupportBean(current_timestamp() >= 10000)");
         stmt.addListener(listener);
         
-        unit.sendEvent(new SupportBean());
+        unit.getEPRuntime().sendEvent(new SupportBean());
         assertFalse(listener.isInvoked());
 
         sendTimerUnisolated(10000);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
         
-        unit.takeStatement(stmt);
+        unit.getEPAdministrator().addStatement(stmt);
 
-        unit.sendEvent(new SupportBean("E2", 1));
+        unit.getEPRuntime().sendEvent(new SupportBean("E2", 1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
 
         stmt.destroy();
         stmt = epService.getEPAdministrator().createEPL("select string as ct from SupportBean(current_timestamp() >= 120000)");
         stmt.addListener(listener);
-        unit.takeStatement(new EPStatement[] {stmt});
+        unit.getEPAdministrator().addStatement(new EPStatement[] {stmt});
 
-        unit.sendEvent(new SupportBean("E3", 1));
+        unit.getEPRuntime().sendEvent(new SupportBean("E3", 1));
         assertFalse(listener.isInvoked());
         
         sendTimerIso(120000, unit);
 
-        unit.sendEvent(new SupportBean("E4", 1));
+        unit.getEPRuntime().sendEvent(new SupportBean("E4", 1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4"});
     }
 
@@ -425,27 +418,116 @@ public class TestIsolationUnit extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean());
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"X"});
 
-        EPRuntimeIsolated unit = epService.getEPRuntimeIsolated();
-        unit.takeStatement(new EPStatement[] {stmtSelect});
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+        unit.getEPAdministrator().addStatement(new EPStatement[] {stmtSelect});
 
-        unit.sendEvent(new SupportBean());
+        unit.getEPRuntime().sendEvent(new SupportBean());
         assertFalse(listener.isInvoked());
 
         /**
          * Update statements apply to a stream even if the statement is not isolated.
          */
-        unit.takeStatement(new EPStatement[] {stmtInsert});
-        unit.sendEvent(new SupportBean("E1", 0));
+        unit.getEPAdministrator().addStatement(new EPStatement[] {stmtInsert});
+        unit.getEPRuntime().sendEvent(new SupportBean("E1", 0));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"X"});
 
-        unit.takeStatement(stmtUpd);
-        unit.sendEvent(new SupportBean("E2", 0));
+        unit.getEPAdministrator().addStatement(stmtUpd);
+        unit.getEPRuntime().sendEvent(new SupportBean("E2", 0));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"X"});
 
         stmtUpd.stop();
 
-        unit.sendEvent(new SupportBean("E3", 0));
+        unit.getEPRuntime().sendEvent(new SupportBean("E3", 0));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
+
+        epService.getEPAdministrator().destroyAllStatements();
+    }
+
+    public void testSuspend()
+    {
+        sendTimerUnisolated(1000);
+        String[] fields = new String[] {"string"};
+        String epl = "select irstream string from SupportBean.win:time(10)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        sendTimerUnisolated(2000);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
+
+        sendTimerUnisolated(3000);
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 0));
+
+        sendTimerUnisolated(7000);
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 0));
+
+        sendTimerUnisolated(8000);
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL("select 'x' as string from pattern [timer:interval(10)]");
+        stmtTwo.addListener(listener);
+
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+        unit.getEPAdministrator().addStatement(new EPStatement[] {stmt, stmtTwo});
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {stmt.getName(), stmtTwo.getName()}, unit.getEPAdministrator().getStatementNames());
+        assertEquals("i1", stmt.getServiceIsolated());
+        assertEquals("i1", stmt.getServiceIsolated());
+
+        listener.reset();
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 0));
+        sendTimerUnisolated(15000);
+        assertFalse(listener.isInvoked());
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1"}, {"E2"}, {"E3"}});
+
+        unit.getEPAdministrator().removeStatement(new EPStatement[] {stmt, stmtTwo});
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[0], unit.getEPAdministrator().getStatementNames());
+        assertNull(stmt.getServiceIsolated());
+        assertNull(stmt.getServiceIsolated());
+
+        sendTimerUnisolated(18999);
+        assertFalse(listener.isInvoked());
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1"}, {"E2"}, {"E3"}});
+        
+        sendTimerUnisolated(19000);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E1"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E2"}, {"E3"}});
+
+        sendTimerUnisolated(23999);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E3"}});
+
+        sendTimerUnisolated(24000);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E3"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendTimerUnisolated(25000);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"x"});
+
+        epService.getEPAdministrator().destroyAllStatements();
+    }
+
+    public void testCreateStmt()
+    {
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+        sendTimerUnisolated(100000);
+        sendTimerIso(1000, unit);
+
+        String[] fields = new String[] {"ct"};
+        EPStatement stmt = unit.getEPAdministrator().createEPL("select current_timestamp() as ct from pattern[every timer:interval(10)]", null, null);
+        stmt.addListener(listener);
+
+        sendTimerIso(10999, unit);
+        assertFalse(listener.isInvoked());
+
+        sendTimerIso(11000, unit);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {11000L});
+
+        sendTimerIso(15000, unit);
+
+        unit.getEPAdministrator().removeStatement(stmt);
+
+        sendTimerIso(21000, unit);
+        assertFalse(listener.isInvoked());
+
+        sendTimerUnisolated(106000);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {106000L});
 
         epService.getEPAdministrator().destroyAllStatements();
     }
@@ -454,7 +536,7 @@ public class TestIsolationUnit extends TestCase
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(millis));
     }
 
-    private void sendTimerIso(long millis, EPRuntimeIsolated unit){
-        unit.sendEvent(new CurrentTimeEvent(millis));
+    private void sendTimerIso(long millis, EPServiceProviderIsolated unit){
+        unit.getEPRuntime().sendEvent(new CurrentTimeEvent(millis));
     }
 }

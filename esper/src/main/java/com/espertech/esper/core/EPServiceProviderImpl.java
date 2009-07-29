@@ -31,10 +31,9 @@ import com.espertech.esper.util.SerializableObjectCopier;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.Hashtable;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,6 +50,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     private Set<EPServiceStateListener> serviceListeners;
     private Set<EPStatementStateListener> statementListeners;
     private StatementEventDispatcherUnthreaded stmtEventDispatcher;
+    private Map<String, EPServiceProviderIsolatedImpl> isolatedProviders;
 
     /**
      * Constructor - initializes services.
@@ -73,20 +73,31 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         configSnapshot = takeSnapshot(configuration);
         serviceListeners = new CopyOnWriteArraySet<EPServiceStateListener>();
         statementListeners = new CopyOnWriteArraySet<EPStatementStateListener>();
+        isolatedProviders = new ConcurrentHashMap<String, EPServiceProviderIsolatedImpl>();
         doInitialize();
     }
 
-    public EPRuntimeIsolated getEPRuntimeIsolated() {
+    public synchronized EPServiceProviderIsolated getEPServiceIsolated(String name) {
         if (engine.getServices().getConfigSnapshot().getEngineDefaults().getViewResources().isShareViews())
         {
             throw new EPException("Isolated runtime requires view sharing disabled, set engine defaults under view resources and share views to false");
         }
+        if (name == null)
+        {
+            throw new IllegalArgumentException("Name parameter does not have a value provided");
+        }
+
+        EPServiceProviderIsolatedImpl existing = isolatedProviders.get(name);
+        if (existing != null)
+        {
+            return existing;
+        }
 
         FilterServiceSPI filterService = FilterServiceProvider.newService();
         SchedulingServiceSPI scheduleService = new SchedulingServiceImpl(engine.getServices().getTimeSource());
-
         EPIsolationUnitServices services = new EPIsolationUnitServices(filterService, scheduleService);
-        return new EPIsolationUnitImpl(services, engine.getServices());
+
+        return new EPServiceProviderIsolatedImpl(name, services, engine.getServices());
     }
 
     /**
@@ -577,5 +588,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             this.getStatementLifecycleSvc().removeObserver(stmtEventDispatcher);
             stmtEventDispatcher = null;
         }
+    }
+
+    public String[] getEPServiceIsolatedNames()
+    {
+        // TODO
+        return new String[0];  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

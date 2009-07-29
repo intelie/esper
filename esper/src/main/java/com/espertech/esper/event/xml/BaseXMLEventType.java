@@ -140,7 +140,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
                 EventPropertyGetter getter = new XPathPropertyGetter(property.getName(), xpathExpression, expression, property.getType(), property.getOptionalCastToType(), fragmentFactory);
                 Class returnType = SchemaUtil.toReturnType(property.getType(), property.getOptionalCastToType());
                 
-                EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), returnType, false,false,isArray,false,isFragment);
+                EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), returnType, null, false,false,isArray,false,isFragment);
                 ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, isArray, property.getOptionaleventTypeName());
                 namedProperties.add(explicit);
             }

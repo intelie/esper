@@ -1184,6 +1184,14 @@ public class JavaClassHelper
         {
             return false;
         }
+        if (propertyType == Calendar.class)
+        {
+            return false;
+        }
+        if (propertyType == Date.class)
+        {
+            return false;
+        }
         return true;
     }
 

@@ -99,7 +99,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
             }
 
             EventPropertyGetter getter = doResolvePropertyGetter(propertyName, true);
-            EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, complex.isArray(), false, isFragment);
+            EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, null, false, false, complex.isArray(), false, isFragment);
             ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
             additionalSchemaProps.add(explicit);
         }
@@ -110,7 +110,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
             String propertyName = simple.getName();
             Class returnType = SchemaUtil.toReturnType(simple);
             EventPropertyGetter getter = doResolvePropertyGetter(propertyName, true);
-            EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, simple.isArray(), false, false);
+            EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, null, false, false, simple.isArray(), false, false);
             ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
             additionalSchemaProps.add(explicit);
         }
@@ -121,7 +121,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
             String propertyName = attribute.getName();
             Class returnType = SchemaUtil.toReturnType(attribute);
             EventPropertyGetter getter = doResolvePropertyGetter(propertyName, true);
-            EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, false, false, false);
+            EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, null, false, false, false, false, false);
             ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
             additionalSchemaProps.add(explicit);
         }

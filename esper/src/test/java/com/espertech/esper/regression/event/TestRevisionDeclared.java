@@ -80,13 +80,13 @@ public class TestRevisionDeclared extends TestCase
         assertSame(type, valueAddTypes[0]);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("k0", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("p0", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("p1", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("p2", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("p3", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("p4", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("p5", String.class, false, false, false, false, false)
+            new EventPropertyDescriptor("k0", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("p0", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("p1", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("p2", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("p3", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("p4", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("p5", String.class, null, false, false, false, false, false)
            }, type.getPropertyDescriptors());
     }
 

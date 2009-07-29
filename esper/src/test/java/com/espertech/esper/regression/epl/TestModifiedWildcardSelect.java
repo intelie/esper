@@ -51,9 +51,9 @@ public class TestModifiedWildcardSelect extends TestCase
         assertSimple();
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("myString", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("myInt", int.class, false, false, false, false, false),
-            new EventPropertyDescriptor("concat", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("myString", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("myInt", int.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("concat", String.class, null, false, false, false, false, false),
            }, statement.getEventType().getPropertyDescriptors());
     }
 

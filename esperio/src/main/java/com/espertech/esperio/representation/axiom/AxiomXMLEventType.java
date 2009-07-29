@@ -87,7 +87,7 @@ public class AxiomXMLEventType implements EventTypeSPI
             {
                 TypedEventPropertyGetter getter = resolvePropertyGetter(property.getName(), property.getXpath(), property.getType(), property.getOptionalCastToType());
                 propertyGetterCache.put(property.getName(), getter);
-                EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), getter.getResultClass(), false, false, false, false, false); 
+                EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), getter.getResultClass(), null, false, false, false, false, false); 
                 propertyDescriptorsMap.put(property.getName(), desc);
                 descriptors.add(desc);
             }

@@ -91,14 +91,14 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals(true, type.getMetadata().isApplicationConfigured());
         
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("xpathElement1", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("xpathCountE21", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("xpathAttrString", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("xpathAttrNum", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("xpathAttrBool", Boolean.class, false, false, false, false, false),
-            new EventPropertyDescriptor("stringCastLong", Long.class, false, false, false, false, false),
-            new EventPropertyDescriptor("stringCastDouble", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("numCastInt", Integer.class, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathElement1", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathCountE21", Double.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrString", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrNum", Double.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrBool", Boolean.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("stringCastLong", Long.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("stringCastDouble", Double.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("numCastInt", Integer.class, null, false, false, false, false, false),
            }, type.getPropertyDescriptors());
 
         String stmt =

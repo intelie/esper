@@ -1,9 +1,6 @@
 package com.espertech.esper.multithread;
 
-import com.espertech.esper.client.EPRuntimeIsolated;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.util.SupportMTUpdateListener;
 import junit.framework.Assert;
@@ -36,18 +33,18 @@ public class IsolateUnisolateCallable implements Callable
         {
             for (int i = 0; i < loopCount; i++)
             {
-                EPRuntimeIsolated isolated = engine.getEPRuntimeIsolated();
-                isolated.takeStatement(stmt);
+                EPServiceProviderIsolated isolated = engine.getEPServiceIsolated("i1");
+                isolated.getEPAdministrator().addStatement(stmt);
 
                 listenerIsolated.reset();
                 stmt.addListener(listenerIsolated);
                 Object event = new SupportBean();
                 //System.out.println("Sensing event : " + event + " by thread " + Thread.currentThread().getId());
-                isolated.sendEvent(event);
+                isolated.getEPRuntime().sendEvent(event);
                 findEvent(listenerIsolated, i, event);
                 stmt.removeAllListeners();
 
-                isolated.returnStatement(stmt);
+                isolated.getEPAdministrator().removeStatement(stmt);
 
                 stmt.addListener(listenerUnisolated);
                 event = new SupportBean();

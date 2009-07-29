@@ -11,7 +11,6 @@ package com.espertech.esper.core;
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
-import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.parse.*;
 import com.espertech.esper.epl.spec.*;
@@ -128,7 +127,7 @@ public class EPAdministratorImpl implements EPAdministrator
     private EPStatement createPatternStmt(String expression, String statementName, Object userObject) throws EPException
     {
         StatementSpecRaw rawPattern = compilePattern(expression);
-        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName, userObject);
+        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName, userObject, null);
 
         /**
          * For round-trip testing of all statements, of a statement to SODA and creation from SODA, use below lines:
@@ -141,7 +140,7 @@ public class EPAdministratorImpl implements EPAdministrator
     private EPStatement createEPLStmt(String eplStatement, String statementName, Object userObject) throws EPException
     {
         StatementSpecRaw statementSpec = compileEPL(eplStatement, statementName, services, defaultStreamSelector);
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
@@ -164,7 +163,7 @@ public class EPAdministratorImpl implements EPAdministrator
         StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot());
         String eplStatement = sodaStatement.toEPL();
 
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
@@ -176,7 +175,7 @@ public class EPAdministratorImpl implements EPAdministrator
         StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot());
         String eplStatement = sodaStatement.toEPL();
 
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null, null);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
@@ -214,7 +213,7 @@ public class EPAdministratorImpl implements EPAdministrator
         StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot());
         String eplStatement = impl.getModel().toEPL();
 
-        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject);
+        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
     }
 
     public EPStatement create(EPPreparedStatement prepared, String statementName) throws EPException
@@ -224,7 +223,7 @@ public class EPAdministratorImpl implements EPAdministrator
         StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot());
         String eplStatement = impl.getModel().toEPL();
 
-        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null);
+        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null, null);
     }
 
     public EPStatement create(EPPreparedStatement prepared) throws EPException

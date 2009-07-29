@@ -42,5 +42,6 @@ public interface StatementContextFactory
                                         OnTriggerDesc optOnTriggerDesc,
                                         CreateWindowDesc optCreateWindowDesc,
                                         boolean isFireAndForget,
-                                        Annotation[] annotations);
+                                        Annotation[] annotations,
+                                        EPIsolationUnitServices isolationUnitServices);
 }

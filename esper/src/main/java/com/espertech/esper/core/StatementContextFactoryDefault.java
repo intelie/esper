@@ -21,11 +21,13 @@ import com.espertech.esper.epl.spec.OnTriggerWindowDesc;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.schedule.ScheduleBucket;
+import com.espertech.esper.schedule.SchedulingServiceSPI;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.view.StatementStopServiceImpl;
 import com.espertech.esper.view.ViewEnumHelper;
 import com.espertech.esper.view.ViewResolutionService;
 import com.espertech.esper.view.ViewResolutionServiceImpl;
+import com.espertech.esper.filter.FilterServiceSPI;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
@@ -63,7 +65,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                                     OnTriggerDesc optOnTriggerDesc,
                                     CreateWindowDesc optCreateWindowDesc,
                                     boolean isFireAndForget,
-                                    Annotation[] annotations)
+                                    Annotation[] annotations,
+                                    EPIsolationUnitServices isolationUnitServices)
     {
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
@@ -113,13 +116,21 @@ public class StatementContextFactoryDefault implements StatementContextFactory
         ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(viewClasses);
         PatternObjectResolutionService patternResolutionService = new PatternObjectResolutionServiceImpl(patternObjectClasses);
 
+        SchedulingServiceSPI schedulingService = engineServices.getSchedulingService();
+        FilterServiceSPI filterService = engineServices.getFilterService();
+        if (isolationUnitServices != null)
+        {
+            filterService = isolationUnitServices.getFilterService();
+            schedulingService = isolationUnitServices.getSchedulingService(); 
+        }
+
         // Create statement context
         return new StatementContext(engineServices.getEngineURI(),
                 engineServices.getEngineInstanceId(),
                 statementId,
                 statementName,
                 expression,
-                engineServices.getSchedulingService(),
+                schedulingService,
                 scheduleBucket,
                 engineServices.getEventAdapterService(),
                 epStatementHandle,
@@ -129,7 +140,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 new StatementStopServiceImpl(),
                 methodResolutionService,
                 patternContextFactory,
-                engineServices.getFilterService(),
+                filterService,
                 new JoinSetComposerFactoryImpl(),
                 engineServices.getOutputConditionFactory(),
                 engineServices.getNamedWindowService(),

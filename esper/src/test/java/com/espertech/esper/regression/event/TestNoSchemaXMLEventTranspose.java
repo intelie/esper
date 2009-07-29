@@ -46,8 +46,8 @@ public class TestNoSchemaXMLEventTranspose extends TestCase
         EventTypeAssertionUtil.assertConsistency(stmtInsert.getEventType());
         EventTypeAssertionUtil.assertConsistency(stmtWildcard.getEventType());
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("nested1simple", Node.class, false, false, false, false, true),
-            new EventPropertyDescriptor("nested4array", Node[].class, false, false, true, false, true),
+            new EventPropertyDescriptor("nested1simple", Node.class, null, false, false, false, false, true),
+            new EventPropertyDescriptor("nested4array", Node[].class, null, false, false, true, false, true),
            }, stmtInsert.getEventType().getPropertyDescriptors());
 
         FragmentEventType fragmentTypeNested1 = stmtInsert.getEventType().getFragmentType("nested1simple");
@@ -98,7 +98,7 @@ public class TestNoSchemaXMLEventTranspose extends TestCase
 
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL("insert into MyNestedStream select nested1 from TestXMLSchemaType");
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("nested1", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested1", String.class, null, false, false, false, false, false),
            }, stmtInsert.getEventType().getPropertyDescriptors());
         EventTypeAssertionUtil.assertConsistency(stmtInsert.getEventType());
 
@@ -133,7 +133,7 @@ public class TestNoSchemaXMLEventTranspose extends TestCase
         // note class not a fragment
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL("insert into MyNestedStream select nested1 from TestXMLSchemaType");
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("nested1", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested1", Node.class, null, false, false, false, false, false),
            }, stmtInsert.getEventType().getPropertyDescriptors());
         EventTypeAssertionUtil.assertConsistency(stmtInsert.getEventType());
 

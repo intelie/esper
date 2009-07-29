@@ -65,7 +65,7 @@ public class VariantEventType implements EventTypeSPI
         for (Map.Entry<String, VariantPropertyDesc> desc : propertyDesc.entrySet())
         {
             Class type = desc.getValue().getPropertyType();
-            EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getKey(), type, false, false, false, false, JavaClassHelper.isFragmentableType(desc.getValue().getPropertyType()));
+            EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getKey(), type, null, false, false, false, false, JavaClassHelper.isFragmentableType(desc.getValue().getPropertyType()));
             propertyDescriptors[count++] = descriptor;
             propertyDescriptorMap.put(desc.getKey(), descriptor);
         }

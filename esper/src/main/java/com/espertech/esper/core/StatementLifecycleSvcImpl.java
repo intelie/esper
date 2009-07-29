@@ -106,11 +106,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // called after services are activated, to begin statement loading from store
     }
 
-    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject)
+    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices)
     {
         // Generate statement id
         String statementId = UuidGenerator.generate();
-        return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId, null, userObject);
+        return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId, null, userObject, isolationUnitServices);
     }
 
     /**
@@ -124,7 +124,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param userObject the application define user object associated to each statement, if supplied
      * @return started statement
      */
-    protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject)
+    protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject, EPIsolationUnitServices isolationUnitServices)
     {
         String statementName = statementId;
 
@@ -149,7 +149,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             statementName = getUniqueStatementName(optStatementName, statementId);
         }
 
-        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext, userObject);
+        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext, userObject, isolationUnitServices);
         start(statementId, desc, true, false);
         return desc.getEpStatement();
     }
@@ -165,13 +165,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param userObject the application define user object associated to each statement, if supplied
      * @return stopped statement
      */
-    protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject)
+    protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject, EPIsolationUnitServices isolationUnitServices)
     {
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
         Annotation[] annotations = AnnotationUtil.compileAnnotations(statementSpec.getAnnotations(), services.getEngineImportService(), expression);
-        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc(), false, annotations);
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc(), false, annotations, isolationUnitServices);
         StatementSpecCompiled compiledSpec;
         try
         {

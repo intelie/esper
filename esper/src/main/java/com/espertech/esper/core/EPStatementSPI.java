@@ -23,6 +23,8 @@ public interface EPStatementSPI extends EPStatement
      */
     public String getStatementId();
 
+    public void setServiceIsolated(String serviceIsolated);
+
     public String getExpressionNoAnnotations();
 
     /**

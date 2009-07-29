@@ -41,8 +41,8 @@ public class TestCompositeSelect extends TestCase
         }
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("a", SupportBean_A.class, false, false, false, false, true),
-            new EventPropertyDescriptor("b", SupportBean_B.class, false, false, false, false, true)
+            new EventPropertyDescriptor("a", SupportBean_A.class, null, false, false, false, false, true),
+            new EventPropertyDescriptor("b", SupportBean_B.class, null, false, false, false, false, true)
            }, ((EPServiceProviderSPI) epService).getEventAdapterService().getExistsTypeByName("StreamOne").getPropertyDescriptors());
     }
 
@@ -61,8 +61,8 @@ public class TestCompositeSelect extends TestCase
         stmt.addListener(listener);
         
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("a", SupportBean_A[].class, false, false, true, false, true),
-            new EventPropertyDescriptor("b", SupportBean_B.class, false, false, false, false, true)
+            new EventPropertyDescriptor("a", SupportBean_A[].class, SupportBean_A.class, false, false, true, false, true),
+            new EventPropertyDescriptor("b", SupportBean_B.class, null, false, false, false, false, true)
            }, stmt.getEventType().getPropertyDescriptors());
 
         epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));

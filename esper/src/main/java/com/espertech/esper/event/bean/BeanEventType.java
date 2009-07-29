@@ -350,6 +350,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         {
             String propertyName = desc.getPropertyName();
             Class underlyingType;
+            Class componentType;
             boolean isRequiresIndex;
             boolean isRequiresMapkey;
             boolean isIndexed;
@@ -377,6 +378,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                 }
 
                 underlyingType = type;
+                componentType = null;
                 isRequiresIndex = false;
                 isRequiresMapkey = false;
                 isIndexed = false;
@@ -392,12 +394,21 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                 {
                     isIndexed = true;
                     isFragment = JavaClassHelper.isFragmentableType(type.getComponentType());
+                    componentType = type.getComponentType();
                 }
                 else if (JavaClassHelper.isImplementsInterface(type, Iterable.class))
                 {
                     isIndexed = true;
                     Class genericType = JavaClassHelper.getGenericReturnType(desc.getReadMethod(), desc.getAccessorField(), true);
                     isFragment = JavaClassHelper.isFragmentableType(genericType);
+                    if (genericType != null)
+                    {
+                        componentType = genericType;
+                    }
+                    else
+                    {
+                        componentType = Object.class;
+                    }                    
                 }
                 else
                 {
@@ -428,6 +439,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                 mappedPropertyDescriptors.put(propertyName, desc);
 
                 underlyingType = desc.getReturnType();
+                componentType = null;
                 isRequiresIndex = false;
                 isRequiresMapkey = desc.getReadMethod().getParameterTypes().length > 0;
                 isIndexed = false;
@@ -456,6 +468,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                 indexedPropertyDescriptors.put(propertyName, desc);
 
                 underlyingType = desc.getReturnType();
+                componentType = null;
                 isRequiresIndex = desc.getReadMethod().getParameterTypes().length > 0;
                 isRequiresMapkey = false;
                 isIndexed = true;
@@ -485,7 +498,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
 
             propertyNames[count] = desc.getPropertyName();
             EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getPropertyName(),
-                underlyingType, isRequiresIndex, isRequiresMapkey, isIndexed, isMapped, isFragment);
+                underlyingType, componentType, isRequiresIndex, isRequiresMapkey, isIndexed, isMapped, isFragment);
             propertyDescriptors[count++] = descriptor; 
             propertyDescriptorMap.put(descriptor.getPropertyName(), descriptor);                    
         }
@@ -818,7 +831,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         int count = 0;
         for (final WriteablePropertyDescriptor writable : writables)
         {
-            EventPropertyDescriptor propertyDesc = new EventPropertyDescriptor(writable.getPropertyName(), writable.getType(), false, false, false, false, false);
+            EventPropertyDescriptor propertyDesc = new EventPropertyDescriptor(writable.getPropertyName(), writable.getType(), null, false, false, false, false, false);
             desc[count++] = propertyDesc;
 
             final FastMethod fastMethod = fastClass.getMethod(writable.getWriteMethod());
