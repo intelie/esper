@@ -11,16 +11,6 @@ import junit.framework.TestCase;
 
 public class TestIsolationUnit extends TestCase
 {
-    // TODO
-    // Test EHA
-    //
-    // Test isolation unit mgmt + destroy
-    //   epServiceManager.getIsolationUnit(name);
-    //   String[] = epServiceManager.getIsolationUnits();
-    //   epStatement.getIsolationUnit();
-    //   
-    // update doc: document schedule adjustment, view sharing must be disabled, note on listener delivery/threading, expensive op., Update statements apply to a stream even if the statement is not isolated, iterator threading
-
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
@@ -35,6 +25,46 @@ public class TestIsolationUnit extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testInvalid()
+    {
+        EPStatement stmt = epService.getEPAdministrator().createEPL("@Name('A') select * from SupportBean");
+        EPServiceProviderIsolated unitOne = epService.getEPServiceIsolated("i1");
+        EPServiceProviderIsolated unitTwo = epService.getEPServiceIsolated("i2");
+
+        unitOne.getEPAdministrator().addStatement(stmt);
+        try
+        {
+            unitTwo.getEPAdministrator().addStatement(stmt);
+            fail();
+        }
+        catch (EPServiceIsolationException ex)
+        {
+            assertEquals("Statement named 'A' already in service isolation under 'i1'", ex.getMessage());
+        }
+
+        try
+        {
+            unitTwo.getEPAdministrator().removeStatement(stmt);
+            fail();
+        }
+        catch (EPServiceIsolationException ex)
+        {
+            assertEquals("Statement named 'A' not in this service isolation but under service isolation 'A'", ex.getMessage());
+        }
+
+        unitOne.getEPAdministrator().removeStatement(stmt);
+
+        try
+        {
+            unitOne.getEPAdministrator().removeStatement(stmt);
+            fail();
+        }
+        catch (EPServiceIsolationException ex)
+        {
+            assertEquals("Statement named 'A' is not currently in service isolation", ex.getMessage());
+        }
+    }
+
     public void testIsolateFilter()
     {
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from pattern [every a=SupportBean -> b=SupportBean(string=a.string)]");
@@ -44,6 +74,7 @@ public class TestIsolationUnit extends TestCase
         assertFalse(listener.getAndClearIsInvoked());
 
         EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {"i1"}, epService.getEPServiceIsolatedNames());
 
         // send fake to wrong place
         unit.getEPRuntime().sendEvent(new SupportBean("E1", -1));
@@ -73,6 +104,9 @@ public class TestIsolationUnit extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a.string,a.intPrimitive,b.intPrimitive".split(","), new Object[] {"E2", 4, 6});
 
         epService.getEPAdministrator().destroyAllStatements();
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {"i1"}, epService.getEPServiceIsolatedNames());
+        epService.getEPServiceIsolated("i1").destroy();
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[0], epService.getEPServiceIsolatedNames());
     }
 
     public void testIsolatedSchedule()

@@ -28,10 +28,15 @@ public class EPServiceProviderIsolatedImpl implements EPServiceProviderIsolated
     private final String name;
     private final EPRuntimeIsolatedImpl runtime;
     private final EPAdministratorIsolatedImpl admin;
+    private final Map<String, EPServiceProviderIsolatedImpl> providers;
 
-    public EPServiceProviderIsolatedImpl(String name, EPIsolationUnitServices svc, EPServicesContext unisolatedSvc)
+    public EPServiceProviderIsolatedImpl(String name,
+                                         EPIsolationUnitServices svc,
+                                         EPServicesContext unisolatedSvc,
+                                         Map<String, EPServiceProviderIsolatedImpl> providers)
     {
         this.name = name;
+        this.providers = providers;
         runtime = new EPRuntimeIsolatedImpl(svc, unisolatedSvc);
         admin = new EPAdministratorIsolatedImpl(name, svc, unisolatedSvc, runtime);
     }
@@ -49,5 +54,10 @@ public class EPServiceProviderIsolatedImpl implements EPServiceProviderIsolated
     public String getName()
     {
         return name;
+    }
+
+    public void destroy()
+    {
+        providers.remove(name);
     }
 }

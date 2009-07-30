@@ -34,11 +34,11 @@ public interface EPAdministratorIsolated
      */
     public String[] getStatementNames();
 
-    public void addStatement(EPStatement stmt);
+    public void addStatement(EPStatement stmt) throws EPServiceIsolationException;
 
-    public void removeStatement(EPStatement stmt);
+    public void removeStatement(EPStatement stmt) throws EPServiceIsolationException;
 
-    public void addStatement(EPStatement[] statements);
+    public void addStatement(EPStatement[] statements) throws EPServiceIsolationException;
 
-    public void removeStatement(EPStatement[] stmt);
+    public void removeStatement(EPStatement[] stmt) throws EPServiceIsolationException;
 }

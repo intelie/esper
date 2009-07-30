@@ -11,6 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EPAdministratorIsolated;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.EPServiceIsolationException;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.filter.FilterSet;
@@ -82,7 +83,7 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
 
                 if (aStmt.getServiceIsolated() != null)
                 {
-                    throw new IllegalArgumentException("Statement named '" + aStmt.getName() + "' already in service isolation under '" + stmtSpi.getServiceIsolated() + "'");
+                    throw new EPServiceIsolationException("Statement named '" + aStmt.getName() + "' already in service isolation under '" + stmtSpi.getServiceIsolated() + "'");
                 }
             }
 
@@ -102,6 +103,10 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
                 statementNames.add(stmtSpi.getName());
                 stmtSpi.setServiceIsolated(name);
             }
+        }
+        catch (EPServiceIsolationException ex)
+        {
+            throw ex;
         }
         catch (RuntimeException ex)
         {
@@ -138,11 +143,11 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
 
                 if (aStmt.getServiceIsolated() == null)
                 {
-                    throw new IllegalArgumentException("Statement named '" + aStmt.getName() + "' already in service isolation under '" + stmtSpi.getServiceIsolated() + "'");
+                    throw new EPServiceIsolationException("Statement named '" + aStmt.getName() + "' is not currently in service isolation");
                 }
                 if (!aStmt.getServiceIsolated().equals(name))
                 {
-                    throw new IllegalArgumentException("Statement named '" + aStmt.getName() + "' not in this service isolation but under service isolation '" + aStmt.getName() + "'");
+                    throw new EPServiceIsolationException("Statement named '" + aStmt.getName() + "' not in this service isolation but under service isolation '" + aStmt.getName() + "'");
                 }
             }
 
@@ -162,6 +167,10 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
                 statementNames.remove(stmtSpi.getName());
                 stmtSpi.setServiceIsolated(null);
             }
+        }
+        catch (EPServiceIsolationException ex)
+        {
+            throw ex;
         }
         catch (RuntimeException ex)
         {

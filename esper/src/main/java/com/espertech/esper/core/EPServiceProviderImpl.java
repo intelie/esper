@@ -87,17 +87,18 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             throw new IllegalArgumentException("Name parameter does not have a value provided");
         }
 
-        EPServiceProviderIsolatedImpl existing = isolatedProviders.get(name);
-        if (existing != null)
+        EPServiceProviderIsolatedImpl serviceProviderIsolated = isolatedProviders.get(name);
+        if (serviceProviderIsolated != null)
         {
-            return existing;
+            return serviceProviderIsolated;
         }
 
         FilterServiceSPI filterService = FilterServiceProvider.newService();
         SchedulingServiceSPI scheduleService = new SchedulingServiceImpl(engine.getServices().getTimeSource());
         EPIsolationUnitServices services = new EPIsolationUnitServices(filterService, scheduleService);
-
-        return new EPServiceProviderIsolatedImpl(name, services, engine.getServices());
+        serviceProviderIsolated = new EPServiceProviderIsolatedImpl(name, services, engine.getServices(),isolatedProviders);
+        isolatedProviders.put(name, serviceProviderIsolated);
+        return serviceProviderIsolated;
     }
 
     /**
@@ -592,7 +593,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
 
     public String[] getEPServiceIsolatedNames()
     {
-        // TODO
-        return new String[0];  //To change body of implemented methods use File | Settings | File Templates.
+        Set<String> keyset = isolatedProviders.keySet();
+        return keyset.toArray(new String[keyset.size()]);
     }
 }

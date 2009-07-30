@@ -8,21 +8,36 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-public interface EPServiceProviderIsolated
+/**
+ * This exception is thrown to indicate a problem isolating statements.
+ */
+public class EPServiceIsolationException extends RuntimeException
 {
     /**
-     * Returns a class instance of EPRuntime.
-     * @return an instance of EPRuntime
+     * Ctor.
+     * @param message - error message
      */
-    public EPRuntimeIsolated getEPRuntime();
+    public EPServiceIsolationException(final String message)
+    {
+        super(message);
+    }
 
     /**
-     * Returns a class instance of EPAdministrator.
-     * @return an instance of EPAdministrator
+     * Ctor for an inner exception and message.
+     * @param message - error message
+     * @param cause - inner exception
      */
-    public EPAdministratorIsolated getEPAdministrator();
+    public EPServiceIsolationException(final String message, final Throwable cause)
+    {
+        super(message, cause);
+    }
 
-    public String getName();
-
-    public void destroy();
+    /**
+     * Ctor - just an inner exception.
+     * @param cause - inner exception
+     */
+    public EPServiceIsolationException(final Throwable cause)
+    {
+        super(cause);
+    }
 }
