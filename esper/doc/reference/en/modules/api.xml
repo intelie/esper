@@ -1478,7 +1478,7 @@ epRuntime().sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
 		<sect2 id="api-isolatedservice-overview">
 			<title>Overview</title>
 			<para>
-				An <emphasis>isolated service</emphasis> allows an application to control event visibility and the concept of time as desired on a statement level: Events sent into an isolated service are visible only to those statements that currently reside in the isolated service and are not visible to statements outside of that isolated service. Within an isolated service an application can control time independently, start time at a point in time and advance time at the resolution and pace suitable for the statements within that isolated service. 
+				An <emphasis>isolated service</emphasis> allows an application to control event visibility and the concept of time as desired on a statement level: Events sent into an isolated service are visible only to those statements that currently reside in the isolated service and are not visible to statements outside of that isolated service. Within an isolated service an application can control time independently, start time at a point in time and advance time at the resolution and pace suitable for the statements added to that isolated service. 
 			</para>
 	
 			<para>
@@ -1486,7 +1486,7 @@ epRuntime().sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
 			</para>
 	
 			<para>
-				Subordinate to an Esper engine instance, your application can additionally allocate multiple isolated services (or execution environments), uniquely identified by a name and represented by the <literal>EPServiceProviderIsolated</literal> interface. In the isolated service, time passes only when you application sends timer events to the <literal>EPRuntimeIsolated</literal> instance. Only events explicitly sent to the isolated service are visible to statements within.
+				Subordinate to an Esper engine instance, your application can additionally allocate multiple isolated services (or execution environments), uniquely identified by a name and represented by the <literal>EPServiceProviderIsolated</literal> interface. In the isolated service, time passes only when you application sends timer events to the <literal>EPRuntimeIsolated</literal> instance. Only events explicitly sent to the isolated service are visible to statements added.
 			</para>
 	
 			<para>
@@ -1569,11 +1569,11 @@ isolatedService.getEPAdministrator().addStatement(stmt);]]></programlisting>
 			<title>Example: Suspending a Statement</title>
 			
 			<para>
-				By adding an existing statement to an <literal>EPIsolatedService</literal> isolated service, the statement's processing effectively becomes suspended. Time does not pass for the statement and it will not process events, unless your application explicitly moves time forward or sends events into the isolated service.
+				By adding an existing statement to an isolated service, the statement's processing effectively becomes suspended. Time does not pass for the statement and it will not process events, unless your application explicitly moves time forward or sends events into the isolated service.
 			</para>
 			
 			<para>
-				First, lets create a statement and send events:
+				First, let's create a statement and send events:
 			</para>
 			<programlisting><![CDATA[EPStatement stmt = epServiceManager.getEPAdministrator().createEPL("select * from TemperatureEvent.win:time(30)");
 epServiceManager.getEPRuntime().send(new TemperatureEvent(...));
@@ -1586,7 +1586,7 @@ epServiceManager.getEPRuntime().send(new TemperatureEvent(...));
 isolatedService.getEPAdministrator().addStatement(stmt);]]></programlisting>
 
 			<para>
-				To unsuspend the statement, move the statement back to the engine:
+				To resume the statement, move the statement back to the engine:
 			</para>
 			<programlisting><![CDATA[isolatedService.getEPAdministrator().removeStatement(stmt);]]></programlisting>
 			
@@ -1599,7 +1599,7 @@ isolatedService.getEPAdministrator().addStatement(stmt);]]></programlisting>
 			<title>Example: Catching up a Statement from Historical Data</title>
 			
 			<para>
-				This example creates a statement in the isolated service, replays some events and advances time, then merges back the statement to the engine to let it partiticate in incoming events and engine time processing.
+				This example creates a statement in the isolated service, replays some events and advances time, then merges back the statement to the engine to let it participate in incoming events and engine time processing.
 			</para>
 			
 			<para>
@@ -1671,7 +1671,7 @@ isolatedService.getEPRuntime().send(historyEvent);
 				When adding statement B to an isolated service, and assuming a <literal>MyEvent</literal> is sent to either the engine runtime or the isolated service, a listener to statement A and C does not receive that event.
 			</para>
 			<para>
-				When adding statement C to an isolated service, and assuming a <literal>MyEvent</literal> is sent to the isolated service (and not the engine runtime), a listener to statement A and C does receive that event.
+				When adding statement C to an isolated service, and assuming a <literal>MyEvent</literal> is sent to the engine runtime, a listener to statement A and C does receive that event.
 			</para>
 		</sect2>
 		
