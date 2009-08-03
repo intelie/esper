@@ -162,6 +162,14 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new StddevAggregator();
     }
 
+    public AggregationMethod makeFirstValueAggregator(Class type) {
+        return new FirstValueAggregator(type);
+    }
+
+    public AggregationMethod makeLastValueAggregator(Class type) {
+        return new LastValueAggregator(type);
+    }
+
     public void setGroupKeyTypes(Class[] groupKeyTypes)
     {
         if (log.isDebugEnabled())

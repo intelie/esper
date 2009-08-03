@@ -41,6 +41,7 @@ public class StatementSpecCompiled
     private final Set<String> eventTypeReferences;
     private final Annotation[] annotations;
     private final UpdateDesc updateSpec;
+    private final MatchRecognizeSpec matchRecognizeSpec;
 
     /**
      * Ctor.
@@ -81,7 +82,8 @@ public class StatementSpecCompiled
                                  RowLimitSpec rowLimitSpec,
                                  Set<String> eventTypeReferences,
                                  Annotation[] annotations,
-                                 UpdateDesc updateSpec)
+                                 UpdateDesc updateSpec,
+                                 MatchRecognizeSpec matchRecognizeSpec)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -102,6 +104,7 @@ public class StatementSpecCompiled
         this.eventTypeReferences = eventTypeReferences;
         this.annotations = annotations;
         this.updateSpec = updateSpec;
+        this.matchRecognizeSpec = matchRecognizeSpec;
     }
 
     /**
@@ -128,6 +131,7 @@ public class StatementSpecCompiled
         eventTypeReferences = new HashSet<String>();
         annotations = new Annotation[0];
         updateSpec = null;
+        matchRecognizeSpec = null;
     }
 
     /**
@@ -330,4 +334,9 @@ public class StatementSpecCompiled
     {
         return updateSpec;
     }
+
+    public MatchRecognizeSpec getMatchRecognizeSpec() {
+        return matchRecognizeSpec;
+    }
+
 }

@@ -199,7 +199,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
 
         for (int i = 0; i < eventTypes.length; i++)
         {
-            if (eventTypes[i].isProperty(propertyName))
+            if ((eventTypes[i] != null) && (eventTypes[i].isProperty(propertyName)))
             {
                 streamType = eventTypes[i];
                 foundCount++;
@@ -235,6 +235,10 @@ public class StreamTypeServiceImpl implements StreamTypeService
         int bestMatchDiff = Integer.MAX_VALUE;
         for (int i = 0; i < eventTypes.length; i++)
         {
+            if (eventTypes[i] == null)
+            {
+                continue;
+            }
             EventPropertyDescriptor[] props = eventTypes[i].getPropertyDescriptors();
             for (int j = 0; j < props.length; j++)
             {
@@ -336,6 +340,11 @@ public class StreamTypeServiceImpl implements StreamTypeService
         // C)  select default.Event2.price from Event2.price   => possible prefix of engine name
         for (int i = 0; i < eventTypes.length; i++)
         {
+            if (eventTypes[i] == null)
+            {
+                index++;
+                continue;
+            }
             if ((streamNames[i] != null) && (streamNames[i].equals(streamName)))
             {
                 streamType = eventTypes[i];
@@ -368,6 +377,11 @@ public class StreamTypeServiceImpl implements StreamTypeService
                         bestMatchDiff = diff;
                         bestMatch = streamNames[i];
                     }
+                }
+
+                if (eventTypes[i] == null)
+                {
+                    continue;
                 }
 
                 // If the stream name is the event type name, that is also acceptable

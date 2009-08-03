@@ -335,6 +335,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             }
 
             engine.getServices().destroy();
+
+            isolatedProviders.clear();
         }
 
         // Make EP services context factory

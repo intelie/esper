@@ -1007,6 +1007,11 @@ public class MapEventType implements EventTypeSPI
                 propertyNameList.add(name);
 
                 boolean isArray = classType.isArray();
+                Class componentType = null;
+                if (isArray)
+                {
+                    componentType = classType.getComponentType();
+                }
                 boolean isFragment = JavaClassHelper.isFragmentableType(classType);
                 BeanEventType nativeFragmentType = null;
                 if (isFragment)
@@ -1026,7 +1031,7 @@ public class MapEventType implements EventTypeSPI
                 {
                     eventTypeFragments.put(name, null);
                 }
-                propertyDescriptors.add(new EventPropertyDescriptor(name, classType, null, false, false, isArray, false, isFragment));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, classType, componentType, false, false, isArray, false, isFragment));
 
                 EventPropertyGetter getter = new MapEntryPropertyGetter(name, nativeFragmentType, eventAdapterService);
                 propertyGetters.put(name, getter);
@@ -1079,7 +1084,7 @@ public class MapEventType implements EventTypeSPI
                 propertyNameList.add(name);
                 EventPropertyGetter getter = new MapEventBeanArrayPropertyGetter(name, eventType.getUnderlyingType());
                 propertyGetters.put(name, getter);
-                propertyDescriptors.add(new EventPropertyDescriptor(name, prototypeArray.getClass(), null, false, false, true, false, true));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, prototypeArray.getClass(), eventType.getUnderlyingType(), false, false, true, false, true));
                 eventTypeFragments.put(name, new FragmentEventType(eventType, true, false));
                 continue;
             }

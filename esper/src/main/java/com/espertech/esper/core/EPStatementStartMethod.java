@@ -45,6 +45,7 @@ import com.espertech.esper.pattern.EvalRootNode;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.PatternMatchCallback;
 import com.espertech.esper.pattern.PatternStopCallback;
+import com.espertech.esper.rowregex.EventRowRegexNFAViewFactory;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.util.StopCallback;
@@ -722,6 +723,14 @@ public class EPStatementStartMethod
             {
                 throw new ExprValidationException("Unknown stream specification type: " + streamSpec);
             }
+        }
+
+        // TODO handle recognize
+        if (statementSpec.getMatchRecognizeSpec() != null)
+        {
+            boolean isUnbound = (unmaterializedViewChain[0].getViewFactoryChain().isEmpty()) && (!(statementSpec.getStreamSpecs().get(0) instanceof NamedWindowConsumerStreamSpec));
+            EventRowRegexNFAViewFactory factory = new EventRowRegexNFAViewFactory(unmaterializedViewChain[0], statementSpec.getMatchRecognizeSpec(), statementContext, isUnbound, statementSpec.getAnnotations());
+            unmaterializedViewChain[0].getViewFactoryChain().add(factory);
         }
 
         // Obtain event types from ViewFactoryChains

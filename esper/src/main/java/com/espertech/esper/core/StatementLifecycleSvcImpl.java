@@ -964,7 +964,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getRowLimitSpec(),
                 eventTypeReferences,
                 annotations,
-                spec.getUpdateDesc()
+                spec.getUpdateDesc(),
+                spec.getMatchRecognizeSpec()
                 );
     }
 

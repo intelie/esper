@@ -43,7 +43,7 @@ public class KeyedMapMethodPropertyGetter extends BaseNativePropertyGetter imple
     {
         try
         {
-            Object result = method.invoke(object, null);
+            Object result = method.invoke(object, (Object[]) null);
             if (!(result instanceof Map)) {
                 return null;
             }

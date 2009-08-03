@@ -193,6 +193,38 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     }
 
     /**
+     * Accept the visitor. The visitor will first visit the parent then visit all child nodes, then their child nodes.
+     * <p>The visitor can decide to skip child nodes by returning false in isVisit.
+     *
+     * @param visitor to visit each node and each child node.
+     */
+    public void accept(ExprNodeVisitorWithParent visitor)
+    {
+        if (visitor.isVisit(this))
+        {
+            visitor.visit(this, null);
+
+            for (ExprNode childNode : childNodes)
+            {
+                childNode.acceptChildnodes(visitor, this);
+            }
+        }
+    }
+
+    protected void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
+    {
+        if (visitor.isVisit(this))
+        {
+            visitor.visit(this, parent);
+
+            for (ExprNode childNode : childNodes)
+            {
+                childNode.acceptChildnodes(visitor, this);
+            }
+        }
+    }
+
+    /**
      * Adds a child node.
      * @param childNode is the child evaluation tree node to add
      */

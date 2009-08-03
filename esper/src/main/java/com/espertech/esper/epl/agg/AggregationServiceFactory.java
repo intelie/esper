@@ -12,10 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Factory for aggregation service instances.
@@ -25,6 +22,92 @@ import java.util.Map;
  */
 public class AggregationServiceFactory
 {
+    public static AggregationServiceMatchRecognize getServiceMatchRecognize(int numStreams, Map<Integer, List<ExprAggregateNode>> measureExprNodesPerStream,
+                                                       MethodResolutionService methodResolutionService,
+                                                       ExprEvaluatorContext exprEvaluatorContext)
+    {
+        Map<Integer, Map<ExprAggregateNode, List<ExprAggregateNode>>> equivalencyListPerStream = new HashMap<Integer, Map<ExprAggregateNode, List<ExprAggregateNode>>>();
+
+        for (Map.Entry<Integer, List<ExprAggregateNode>> entry : measureExprNodesPerStream.entrySet())
+        {
+            Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList = new LinkedHashMap<ExprAggregateNode, List<ExprAggregateNode>>();
+            equivalencyListPerStream.put(entry.getKey(), equivalencyList);
+            for (ExprAggregateNode selectAggNode : entry.getValue())
+            {
+                addEquivalent(selectAggNode, equivalencyList);
+            }
+        }
+
+        LinkedHashMap<Integer, AggregationMethod[]> aggregatorsPerStream = new LinkedHashMap<Integer, AggregationMethod[]>();
+        Map<Integer, ExprEvaluator[]> evaluatorsPerStream = new HashMap<Integer, ExprEvaluator[]>();
+
+        for (Map.Entry<Integer, Map<ExprAggregateNode, List<ExprAggregateNode>>> equivalencyPerStream : equivalencyListPerStream.entrySet())
+        {
+            int index = 0;
+            int stream = equivalencyPerStream.getKey();
+
+            AggregationMethod[] aggregators = new AggregationMethod[equivalencyPerStream.getValue().size()];
+            aggregatorsPerStream.put(stream, aggregators);
+
+            ExprEvaluator[] evaluators = new ExprEvaluator[equivalencyPerStream.getValue().size()];
+            evaluatorsPerStream.put(stream, evaluators);
+
+            for (ExprAggregateNode aggregateNode : equivalencyPerStream.getValue().keySet())
+            {
+                if (aggregateNode.getChildNodes().size() > 1)
+                {
+                    evaluators[index] = getMultiNodeEvaluator(aggregateNode.getChildNodes(), exprEvaluatorContext);
+                }
+                else if (!aggregateNode.getChildNodes().isEmpty())
+                {
+                    // Use the evaluation node under the aggregation node to obtain the aggregation value
+                    evaluators[index] = aggregateNode.getChildNodes().get(0);
+                }
+                // For aggregation that doesn't evaluate any particular sub-expression, return null on evaluation
+                else
+                {
+                    evaluators[index] = new ExprEvaluator() {
+                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                        {
+                            return null;
+                        }
+                    };
+                }
+
+                aggregators[index] = aggregateNode.getPrototypeAggregator();
+                index++;
+            }
+        }
+
+        AggregationServiceMatchRecognizeImpl service = new AggregationServiceMatchRecognizeImpl(numStreams, aggregatorsPerStream, evaluatorsPerStream);
+
+        // Hand a service reference to the aggregation nodes themselves.
+        // Thus on expression evaluation time each aggregate node calls back to find out what the
+        // group's state is (and thus does not evaluate by asking its child node for its result).
+        int column = 0; // absolute index for all agg functions
+        for (Map.Entry<Integer, Map<ExprAggregateNode, List<ExprAggregateNode>>> equivalencyPerStream : equivalencyListPerStream.entrySet())
+        {
+            for (ExprAggregateNode aggregateNode : equivalencyPerStream.getValue().keySet())
+            {
+                aggregateNode.setAggregationResultFuture(service, column);
+
+                // hand to all equivalent-to
+                List<ExprAggregateNode> equivalentAggregators = equivalencyPerStream.getValue().get(aggregateNode);
+                if (equivalentAggregators != null)
+                {
+                    for (ExprAggregateNode equivalentAggNode : equivalentAggregators)
+                    {
+                        equivalentAggNode.setAggregationResultFuture(service, column);
+                    }
+                }
+
+                column++;
+            }
+        }
+
+        return service;
+    }
+
     /**
      * Returns an instance to handle the aggregation required by the aggregation expression nodes, depending on
      * whether there are any group-by nodes.

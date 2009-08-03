@@ -292,6 +292,28 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals("length", raw.getCreateWindowDesc().getViewSpecs().get(1).getObjectName());
     }
 
+    public void testWalkMatchRecognize() throws Exception
+    {
+        String[] patternTests = new String[] {
+                "A", "A B", "A? B*", "(A|B)+", "A C|B C", "(G1|H1) (I1|J1)", "(G1*|H1)? (I1+|J1?)", "A B (G) (H H|(I P)?) K?"};
+
+        for (int i = 0; i < patternTests.length; i++)
+        {
+            String expression = "select * from MyEvent.win:keepall() match_recognize (" +
+                    "  partition by string measures A.string as a_string pattern ( " + patternTests[i] + ") define A as (A.value = 1) )";
+
+            EPLTreeWalker walker = parseAndWalkEPL(expression);
+            StatementSpecRaw raw = walker.getStatementSpec();
+
+            assertEquals(1, raw.getMatchRecognizeSpec().getMeasures().size());
+            assertEquals(1, raw.getMatchRecognizeSpec().getDefines().size());
+            assertEquals(1, raw.getMatchRecognizeSpec().getPartitionByExpressions().size());
+
+            String received = raw.getMatchRecognizeSpec().getPattern().toExpressionString();
+            assertEquals(patternTests[i], received);
+        }
+    }
+
     public void testWalkSubstitutionParams() throws Exception
     {
         // try EPL
@@ -1185,7 +1207,7 @@ public class TestEPLTreeWalker extends TestCase
         return walker;
     }
 
-    private static EPLTreeWalker parseAndWalkEPL(String expression) throws Exception
+    public static EPLTreeWalker parseAndWalkEPL(String expression) throws Exception
     {
         return parseAndWalkEPL(expression, new EngineImportServiceImpl(), new VariableServiceImpl(0, null, null));
     }

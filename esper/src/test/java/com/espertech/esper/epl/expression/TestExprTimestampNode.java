@@ -7,6 +7,7 @@ import com.espertech.esper.schedule.TimeProvider;
 public class TestExprTimestampNode extends TestCase
 {
     private ExprTimestampNode node;
+    private ExprEvaluatorContext context;
 
     public void setUp()
     {
@@ -35,15 +36,22 @@ public class TestExprTimestampNode extends TestCase
 
     public void testEvaluate() throws Exception
     {
-        TimeProvider provider = new TimeProvider()
+        final TimeProvider provider = new TimeProvider()
         {
             public long getTime()
             {
                 return 99;
             }
         };
+        context = new ExprEvaluatorContext()
+        {
+            public TimeProvider getTimeProvider()
+            {
+                return provider;
+            }
+        };
         node.validate(null, null, null, provider, null, null);
-        assertEquals(99L, node.evaluate(null, false, null));
+        assertEquals(99L, node.evaluate(null, false, context));
     }
 
     public void testEquals() throws Exception
