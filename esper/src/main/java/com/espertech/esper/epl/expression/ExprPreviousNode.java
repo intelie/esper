@@ -17,7 +17,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.window.RandomAccessByIndex;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
 import com.espertech.esper.view.window.RandomAccessByIndexGetter;
-import com.espertech.esper.view.window.RelativeAccessByEventNIndexGetter;
+import com.espertech.esper.view.window.RelativeAccessByEventNIndexMap;
 import com.espertech.esper.view.ViewCapDataWindowAccess;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.schedule.TimeProvider;
@@ -35,15 +35,31 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
     private boolean isConstantIndex;
 
     private transient RandomAccessByIndexGetter randomAccessGetter;
-    private transient RelativeAccessByEventNIndexGetter relativeAccessGetter;
+    private transient RelativeAccessByEventNIndexMap relativeAccessGetter;
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
-        if (this.getChildNodes().size() != 2)
+        if (this.getChildNodes().size() > 2)
         {
-            throw new ExprValidationException("Previous node must have 2 child nodes");
+            throw new ExprValidationException("Previous node must have 1 or 2 child nodes");
         }
 
+        // add constant of 1 for previous index
+        if (this.getChildNodes().size() == 1)
+        {
+            this.getChildNodes().add(0, new ExprConstantNode(1));
+        }
+
+        // the row recognition patterns allows "prev(prop, index)", we switch index the first position
+        if (this.getChildNodes().get(1) instanceof ExprConstantNode)
+        {
+            ExprNode first = this.getChildNodes().get(0);
+            ExprNode second = this.getChildNodes().get(1);
+            this.getChildNodes().clear();
+            this.getChildNodes().add(second);
+            this.getChildNodes().add(first);
+        }
+        
         // Determine if the index is a constant value or an expression to evaluate
         if (this.getChildNodes().get(0).isConstantResult())
         {
@@ -171,9 +187,9 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         {
             randomAccessGetter = (RandomAccessByIndexGetter) resource;
         }
-        else if (resource instanceof RelativeAccessByEventNIndexGetter)
+        else if (resource instanceof RelativeAccessByEventNIndexMap)
         {
-            relativeAccessGetter = (RelativeAccessByEventNIndexGetter) resource;
+            relativeAccessGetter = (RelativeAccessByEventNIndexMap) resource;
         }
         else
         {

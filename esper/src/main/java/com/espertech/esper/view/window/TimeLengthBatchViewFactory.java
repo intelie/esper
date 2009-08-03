@@ -31,7 +31,7 @@ public class TimeLengthBatchViewFactory extends TimeBatchViewFactoryParams imple
     /**
      * The access into the data window.
      */
-    protected RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
+    protected RelativeAccessByEventNIndexMap relativeAccessGetterImpl;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
@@ -85,7 +85,7 @@ public class TimeLengthBatchViewFactory extends TimeBatchViewFactoryParams imple
         }
         if (relativeAccessGetterImpl == null)
         {
-            relativeAccessGetterImpl = new RelativeAccessByEventNIndexGetter();
+            relativeAccessGetterImpl = new RelativeAccessByEventNIndexMap();
         }
         resourceCallback.setViewResource(relativeAccessGetterImpl);
     }

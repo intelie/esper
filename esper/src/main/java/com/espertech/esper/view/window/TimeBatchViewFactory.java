@@ -31,7 +31,7 @@ public class TimeBatchViewFactory extends TimeBatchViewFactoryParams implements 
     /**
      * The access into the data window.
      */
-    protected RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
+    protected RelativeAccessByEventNIndexMap relativeAccessGetterImpl;
 
     /**
      * Flag to indicate that the view must handle the removed events from a parent view.
@@ -99,7 +99,7 @@ public class TimeBatchViewFactory extends TimeBatchViewFactoryParams implements 
         }
         if (relativeAccessGetterImpl == null)
         {
-            relativeAccessGetterImpl = new RelativeAccessByEventNIndexGetter();
+            relativeAccessGetterImpl = new RelativeAccessByEventNIndexMap();
         }
         resourceCallback.setViewResource(relativeAccessGetterImpl);
     }

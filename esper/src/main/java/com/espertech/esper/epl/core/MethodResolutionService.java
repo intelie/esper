@@ -89,6 +89,18 @@ public interface MethodResolutionService
     public AggregationMethod makeCountAggregator(boolean isIgnoreNull);
 
     /**
+     * Makes a new first-value aggregator.
+     * @return aggregator
+     */
+    public AggregationMethod makeFirstValueAggregator(Class type);
+
+    /**
+     * Makes a new last-value aggregator.
+     * @return aggregator
+     */
+    public AggregationMethod makeLastValueAggregator(Class type);
+
+    /**
      * Makes a new sum-aggregator.
      * @param type is the type to be summed up, i.e. float, long etc.
      * @return aggregator
@@ -136,6 +148,8 @@ public interface MethodResolutionService
      */
     public AggregationMethod makeStddevAggregator();
 
+    public void setGroupKeyTypes(Class[] groupKeyTypes);
+    
     /**
      * Returns a new set of aggregators given an existing prototype-set of aggregators for a given group key.
      * @param prototypes is the prototypes

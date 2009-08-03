@@ -343,6 +343,19 @@ public class SupportStaticMethodLib
         }
     }
 
+    public static boolean sleepReturnTrue(long msec)
+    {
+        try
+        {
+            Thread.sleep(msec);
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException("Interrupted during sleep", e);
+        }
+        return true;
+    }
+
     public static String delimitPipe(String string)
     {
         if (string == null)

@@ -144,8 +144,6 @@ public class TestEPLParser extends TestCase
         assertIsInvalid("select * from x, sql:xx [\"sfsf ']");
 
         // Previous and prior function
-        assertIsInvalid("select prev(10, a*b) from x");
-        assertIsInvalid("select prev(price, a*b) from x");
         assertIsInvalid("select prior(10) from x");
         assertIsInvalid("select prior(price, a*b) from x");
 
@@ -679,12 +677,40 @@ public class TestEPLParser extends TestCase
                 ")\n" +
                 "select * from MyField";
         assertIsValid(text);
-
-        // much simpler
         assertIsValid("@Name('MyStatementName')\n" +
                       "@Description('This statement does ABC')\n" +
                       "@Tag(name='abc', value='cde')\n" +
                       "select a from B");
+        
+        // row pattern recog
+        assertIsValid("select * from A match_recognize (measures A.symbol as A\n" +
+                      "pattern (A B)\n" +
+                      "define B as (B.price > A.price)" +
+                      ")");
+        assertIsValid("select * from A match_recognize (measures A.symbol as A\n" +
+                      "pattern (A* B+ C D?)\n" +
+                      "define B as (B.price > A.price)" +
+                      ")");
+        assertIsValid("select * from A match_recognize (measures A.symbol as A\n" +
+                      "pattern (A | B)\n" +
+                      "define B as (B.price > A.price)" +
+                      ")");
+        assertIsValid("select * from A match_recognize (measures A.symbol as A\n" +
+                      "pattern ( (A B) | (C D))\n" +
+                      "define B as (B.price > A.price)" +
+                      ")");
+        assertIsValid("select * from A match_recognize (measures A.symbol as A\n" +
+                      "pattern ( (A | B) (C | D) )\n" +
+                      "define B as (B.price > A.price)" +
+                      ")");
+        assertIsValid("select * from A match_recognize (measures A.symbol as A\n" +
+                      "pattern ( (A) | (B | (D | E+)) )\n" +
+                      "define B as (B.price > A.price)" +
+                      ")");
+        assertIsValid("select * from A match_recognize (measures A.symbol as A\n" +
+                      "pattern ( A (C | D)? E )\n" +
+                      "define B as (B.price > A.price)" +
+                      ")");
     }
 
     public void testBitWiseCases() throws Exception

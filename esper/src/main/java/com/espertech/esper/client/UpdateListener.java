@@ -24,8 +24,7 @@ public interface UpdateListener
      * the second will be empty. Similarly, if the call is a notification of deleted events, then the first argument
      * will be empty and the second will be non-empty.
      *
-     * Either the newEvents or oldEvents will be non-null. This method won't be called with both arguments being null
-     * (unless using output rate limiting or force-output options),
+     * Either the newEvents or oldEvents will be non-null. This method won't be called with both arguments being null,
      * but either one could be null. The same is true for zero-length arrays.
      * Either newEvents or oldEvents will be non-empty. If both are non-empty, then the update is a modification
      * notification.

@@ -31,7 +31,7 @@ public class LengthBatchViewFactory implements DataWindowViewFactory
     /**
      * The access into the window.
      */
-    protected RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
+    protected RelativeAccessByEventNIndexMap relativeAccessGetterImpl;
 
     /**
      * Flag to indicate that the view must handle the removed events from a parent view.
@@ -95,7 +95,7 @@ public class LengthBatchViewFactory implements DataWindowViewFactory
         }
         if (relativeAccessGetterImpl == null)
         {
-            relativeAccessGetterImpl = new RelativeAccessByEventNIndexGetter();
+            relativeAccessGetterImpl = new RelativeAccessByEventNIndexMap();
         }
         resourceCallback.setViewResource(relativeAccessGetterImpl);
     }

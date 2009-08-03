@@ -8,20 +8,24 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.agg.*;
 import com.espertech.esper.type.MinMaxTypeEnum;
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.client.EPException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Method;
-import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
 
 /**
  * Implements method resolution.
  */
 public class MethodResolutionServiceImpl implements MethodResolutionService
 {
+    private static final Log log = LogFactory.getLog(MethodResolutionServiceImpl.class);
 	private final EngineImportService engineImportService;
     private final boolean isUdfCache;
 
@@ -156,6 +160,22 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
     public AggregationMethod makeStddevAggregator()
     {
         return new StddevAggregator();
+    }
+
+    public AggregationMethod makeFirstValueAggregator(Class type) {
+        return new FirstValueAggregator(type);
+    }
+
+    public AggregationMethod makeLastValueAggregator(Class type) {
+        return new LastValueAggregator(type);
+    }
+
+    public void setGroupKeyTypes(Class[] groupKeyTypes)
+    {
+        if (log.isDebugEnabled())
+        {
+            log.debug("Group key typed are " + Arrays.toString(groupKeyTypes));
+        }
     }
 
     public AggregationMethod[] newAggregators(AggregationMethod[] prototypes, MultiKeyUntyped groupKey)

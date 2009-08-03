@@ -38,6 +38,7 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     private boolean existsSubstitutionParameters;
     private boolean hasVariables;
     private List<AnnotationDesc> annotations = new ArrayList<AnnotationDesc>();
+    private MatchRecognizeSpec matchRecognizeSpec;
     private static final long serialVersionUID = 5390766716794133693L;
 
     /**
@@ -334,5 +335,13 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     public void setAnnotations(List<AnnotationDesc> annotations)
     {
         this.annotations = annotations;
+    }
+
+    public MatchRecognizeSpec getMatchRecognizeSpec() {
+        return matchRecognizeSpec;
+    }
+
+    public void setMatchRecognizeSpec(MatchRecognizeSpec matchRecognizeSpec) {
+        this.matchRecognizeSpec = matchRecognizeSpec;
     }
 }
