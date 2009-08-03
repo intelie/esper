@@ -213,7 +213,7 @@ matchRecogMeasures
 	;
 	
 matchRecogMeasureListElement
-	:	^(m=MATCHREC_MEASURE_ITEM valueExpr IDENT { leaveNode($m); })
+	:	^(m=MATCHREC_MEASURE_ITEM valueExpr IDENT? { leaveNode($m); })
 	;
 		
 matchRecogPattern

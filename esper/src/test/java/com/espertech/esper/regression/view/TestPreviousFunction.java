@@ -202,7 +202,8 @@ public class TestPreviousFunction extends TestCase
 
     public void testLengthBatchPerGroup()
     {
-        String viewExpr = "select irstream symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
+        // Also testing the alternative syntax here of "prev(property)" and "prev(property, index)" versus "prev(index, property)"
+        String viewExpr = "select irstream symbol, prev(price) as prevPrice, prev(price, 2) as prevPrevPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:length_batch(3) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);

@@ -14,19 +14,6 @@ public class TestRowPatternRecognitionOps extends TestCase {
 
     private static final Log log = LogFactory.getLog(TestRowPatternRecognitionOps.class);
 
-    // TODO - docs (8 hrs)
-    // TODO - docs for FIRST, LAST, PREV change
-    // TODO - SODA (2 hrs)
-    // TODO - test in group-by, retain-union, subquery, aggregation, join (2 hrs)
-    // TODO - invalid test of two or more multi-variable used in aggregation, field in order by, double-defined DEFINE, invalid no data window specified
-    // TODO - as-keyword support
-    // TODO - invalid test cases (2 hrs)
-    // TODO : invalid check no join
-    // TODO : invalid check DEFINE name used only once
-    // TODO : invalid check each variable defined and no unused define left
-    // TODO : unbound iterate-only should not be allowed.
-    // TODO : test invalid pattern (A B C) define (A as C.id)
-
     // Out-list
     //  - SUBSET
     //  - ORDER BY

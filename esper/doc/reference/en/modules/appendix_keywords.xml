@@ -40,6 +40,7 @@ select insert from MyEvent]]></programlisting>
 				</row>
 			</thead>
 			<tbody>
+				<row><entry>after</entry><entry>-</entry></row>
 				<row><entry>all</entry><entry>-</entry></row>
 				<row><entry>and</entry><entry>-</entry></row>
 				<row><entry>as</entry><entry>-</entry></row>
@@ -58,6 +59,7 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>day</entry><entry>-</entry></row>
 				<row><entry>days</entry><entry>-</entry></row>
 				<row><entry>delete</entry><entry>-</entry></row>
+				<row><entry>define</entry><entry>yes</entry></row>
 				<row><entry>desc</entry><entry>-</entry></row>
 				<row><entry>distinct</entry><entry>-</entry></row>
 				<row><entry>else</entry><entry>-</entry></row>
@@ -89,7 +91,10 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>limit</entry><entry>-</entry></row>
 				<row><entry>like</entry><entry>-</entry></row>
 				<row><entry>max</entry><entry>yes</entry></row>
+				<row><entry>match_recognize</entry><entry>-</entry></row>
+				<row><entry>matches</entry><entry>-</entry></row>
 				<row><entry>median</entry><entry>yes</entry></row>
+				<row><entry>measures</entry><entry>yes</entry></row>
 				<row><entry>metadatasql</entry><entry>yes</entry></row>
 				<row><entry>min</entry><entry>yes</entry></row>
 				<row><entry>minute</entry><entry>yes</entry></row>
@@ -105,6 +110,7 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>order</entry><entry>-</entry></row>
 				<row><entry>outer</entry><entry>yes</entry></row>
 				<row><entry>output</entry><entry>-</entry></row>
+				<row><entry>partition</entry><entry>-</entry></row>
 				<row><entry>pattern</entry><entry>yes</entry></row>
 				<row><entry>prev</entry><entry>yes</entry></row>
 				<row><entry>prior</entry><entry>yes</entry></row>
@@ -118,6 +124,7 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>seconds</entry><entry>-</entry></row>
 				<row><entry>select</entry><entry>-</entry></row>
 				<row><entry>set</entry><entry>-</entry></row>
+				<row><entry>some</entry><entry>-</entry></row>
 				<row><entry>snapshot</entry><entry>yes</entry></row>
 				<row><entry>sql</entry><entry>yes</entry></row>
 				<row><entry>stddev</entry><entry>yes</entry></row>

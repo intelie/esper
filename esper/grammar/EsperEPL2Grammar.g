@@ -466,6 +466,13 @@ tokens
 	parserTokenParaphases.put(VALUE_NULL, "'null'");
 	parserTokenParaphases.put(ROW_LIMIT_EXPR, "'limit'");
 	parserTokenParaphases.put(OFFSET, "'offset'");
+	parserTokenParaphases.put(UPDATE, "'update'");
+	parserTokenParaphases.put(MATCH_RECOGNIZE, "'match_recognize'");
+	parserTokenParaphases.put(MEASURES, "'measures'");
+	parserTokenParaphases.put(DEFINE, "'define'");
+	parserTokenParaphases.put(PARTITION, "'partition'");
+	parserTokenParaphases.put(MATCHES, "'matches'");
+	parserTokenParaphases.put(AFTER, "'after';");
 
 	parserKeywordSet = new java.util.TreeSet<String>(parserTokenParaphases.values());
     }
@@ -830,8 +837,8 @@ matchRecogMeasures
 	;
 	
 matchRecogMeasureItem
-	:	expression AS i=IDENT
-		-> ^(MATCHREC_MEASURE_ITEM expression $i)
+	:	expression (AS (i=IDENT)? )?
+		-> ^(MATCHREC_MEASURE_ITEM expression $i?)
 	;
 	
 matchRecogMatchesSelection
@@ -1546,6 +1553,9 @@ keywordAllowedIdent returns [String result]
 		|OUTER { $result = "outer"; }
 		|FULL { $result = "full"; }
 		|JOIN { $result = "join"; }
+		|DEFINE { $result = "define"; }
+		|PARTITION { $result = "partition"; }
+		|MATCHES { $result = "matches"; }
 	;
 		
 escapableIdent returns [String result]

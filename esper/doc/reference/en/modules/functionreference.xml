@@ -434,6 +434,15 @@ select current_timestamp() from MyEvent]]></programlisting>
 			</para>
 			<programlisting>select prev(1, symbol) from Trade.win:time_batch(1 min)</programlisting>			
 
+			<para>
+				An alternative form of the <literal>prev</literal> function allows the index to not appear or appear after the property name if the index value is a constant and not an expression:
+			</para>
+			<programlisting>select prev(1, symbol) from Trade
+// ... equivalent to ...
+select prev(symbol) from Trade
+// ... and ...
+select prev(symbol, 1) from Trade</programlisting>			
+
 			<sect3 id="epl-single-row-function-ref-prev-group">
 				<title>Previous Event per Group</title>
 
@@ -560,10 +569,10 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 				</thead>
 				<tbody>
 					<row>
-						<entry>sum([all|distinct] <emphasis>expression</emphasis>)</entry>
+						<entry>avedev([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Totals the (distinct) values in the expression, returning a value of <literal>long, double, float or integer</literal> type depending on the expression.
+								Mean deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
 							</para>
 						</entry>
 					</row>
@@ -592,18 +601,26 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						</entry>
 					</row>
 					<row>
-						<entry>max([all|distinct] <emphasis>expression</emphasis>)</entry>
+						<entry>first([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Highest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
+								Returns the first value.
 							</para>
 						</entry>
 					</row>
 					<row>
-						<entry>min([all|distinct] <emphasis>expression</emphasis>)</entry>
+						<entry>last([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Lowest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
+								Returns the last value.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>max([all|distinct] <emphasis>expression</emphasis>)</entry>
+						<entry>
+							<para>
+								Highest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
 							</para>
 						</entry>
 					</row>
@@ -616,6 +633,14 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						</entry>
 					</row>
 					<row>
+						<entry>min([all|distinct] <emphasis>expression</emphasis>)</entry>
+						<entry>
+							<para>
+								Lowest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>stddev([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
@@ -624,10 +649,10 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						</entry>
 					</row>
 					<row>
-						<entry>avedev([all|distinct] <emphasis>expression</emphasis>)</entry>
+						<entry>sum([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Mean deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
+								Totals the (distinct) values in the expression, returning a value of <literal>long, double, float or integer</literal> type depending on the expression.
 							</para>
 						</entry>
 					</row>

@@ -8,6 +8,7 @@
 	<!ENTITY examples SYSTEM "modules/examples.xml">
 	<!ENTITY epl SYSTEM "modules/epl_clauses.xml">
 	<!ENTITY event_pattern SYSTEM "modules/event_pattern.xml">
+	<!ENTITY match_recognize SYSTEM "modules/match_recognize.xml">
 	<!ENTITY references SYSTEM "modules/references.xml">
 	<!ENTITY operatorreference SYSTEM "modules/operatorreference.xml">
 	<!ENTITY functionreference SYSTEM "modules/functionreference.xml">
@@ -95,6 +96,11 @@
 			</listitem>
 			<listitem>
 				<para>
+                    Read <xref linkend="match-recognize-intro"/> for an overview over event patterns using the match recognize syntax.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
                     Then glance over the examples <xref linkend="examples-overview"/>
                 </para>
 			</listitem>
@@ -115,6 +121,8 @@
     &epl;
 
     &event_pattern;
+
+    &match_recognize;
 
     &operatorreference;
 

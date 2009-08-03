@@ -9,6 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Arrays;
+import java.util.Set;
+import java.util.HashSet;
 
 public class TestRowPatternRecognitionRegex extends TestCase {
 
@@ -143,11 +145,17 @@ public class TestRowPatternRecognitionRegex extends TestCase {
         buf.append("\n pattern (" + testDesc.getPattern() + ") \n");
         buf.append("  define ");
 
-        delimiter = "";
+        Set<String> defines = new HashSet<String>();
         for (String measure : testDesc.getMeasures().split(","))
         {
+            defines.add(removeBrackets(measure).toUpperCase());
+        }
+
+        delimiter = "";
+        for (String define : defines)
+        {
             buf.append(delimiter);
-            buf.append(removeBrackets(measure).toUpperCase() + " as (" + removeBrackets(measure).toUpperCase() + ".string like '" + removeBrackets(measure) + "%')");
+            buf.append(define + " as (" + define + ".string like '" + define.toLowerCase() + "%')");
             delimiter = ",\n";
         }
         buf.append(")");

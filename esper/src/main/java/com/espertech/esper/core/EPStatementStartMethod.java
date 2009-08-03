@@ -725,9 +725,12 @@ public class EPStatementStartMethod
             }
         }
 
-        // TODO handle recognize
         if (statementSpec.getMatchRecognizeSpec() != null)
         {
+            if (isJoin)
+            {
+                throw new ExprValidationException("Joins are not allowed when using match recognize");
+            }
             boolean isUnbound = (unmaterializedViewChain[0].getViewFactoryChain().isEmpty()) && (!(statementSpec.getStreamSpecs().get(0) instanceof NamedWindowConsumerStreamSpec));
             EventRowRegexNFAViewFactory factory = new EventRowRegexNFAViewFactory(unmaterializedViewChain[0], statementSpec.getMatchRecognizeSpec(), statementContext, isUnbound, statementSpec.getAnnotations());
             unmaterializedViewChain[0].getViewFactoryChain().add(factory);

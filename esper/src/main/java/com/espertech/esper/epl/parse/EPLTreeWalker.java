@@ -1249,7 +1249,11 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         astExprNodeMap.remove(currentNode);
 
-        String name = node.getChild(1).getText();
+        String name = null;
+        if (node.getChildCount() > 1)
+        {
+            name = node.getChild(1).getText();
+        }
         statementSpec.getMatchRecognizeSpec().addMeasureItem(new MatchRecognizeMeasureItem(exprNode,name));
     }
 

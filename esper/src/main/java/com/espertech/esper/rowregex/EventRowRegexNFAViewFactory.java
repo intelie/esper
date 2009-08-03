@@ -14,11 +14,13 @@ import com.espertech.esper.epl.spec.MatchRecognizeDefineItem;
 import com.espertech.esper.epl.spec.MatchRecognizeMeasureItem;
 import com.espertech.esper.epl.spec.MatchRecognizeSpec;
 import com.espertech.esper.view.*;
+import com.espertech.esper.util.CollectionUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.lang.annotation.Annotation;
+import java.io.StringWriter;
 
 public class EventRowRegexNFAViewFactory extends ViewFactorySupport
 {
@@ -94,8 +96,15 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
 
         // determine type service for use with DEFINE
         // validate each DEFINE clause expression
+        Set<String> definedVariables = new HashSet<String>();
         for (MatchRecognizeDefineItem defineItem : matchRecognizeSpec.getDefines())
         {
+            if (definedVariables.contains(defineItem.getIdentifier()))
+            {
+                throw new ExprValidationException("Variable '" + defineItem.getIdentifier() + "' has already been defined");
+            }
+            definedVariables.add(defineItem.getIdentifier());
+
             String[] streamNamesDefine = new String[singleVarStreamNames.length];
             System.arraycopy(singleVarStreamNames, 0, streamNamesDefine, 0, singleVarStreamNames.length);
             EventType[] typesDefine = new EventType[singleVarTypes.length];
@@ -171,16 +180,13 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
                             multipleVarStream = streamNumAggregated;
                             continue;
                         }
-                        else if (streamNumAggregated != streamNumAggregated)
-                        {
-                            throw new ExprValidationException("Aggregation functions in the measure-clause must only refer to properties of a single DEFINE item returning multiple events");
-                        }
+                        throw new ExprValidationException("Aggregation functions in the measure-clause must only refer to properties of exactly one group variable returning multiple events");
                     }
                 }
 
                 if (multipleVarStream == null)
                 {
-                    throw new ExprValidationException("Aggregation functions in the measure-clause must refer to one or more properties of a single DEFINE item returning multiple events");
+                    throw new ExprValidationException("Aggregation functions in the measure-clause must refer to one or more properties of exactly one group variable returning multiple events");
                 }
 
                 List<ExprAggregateNode> aggNodesForStream = measureExprAggNodesPerStream.get(multipleVarStream);
@@ -203,7 +209,11 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         Map<String, Object> rowTypeDef = new LinkedHashMap<String, Object>();
         for (MatchRecognizeMeasureItem measureItem : matchRecognizeSpec.getMeasures())
         {
-            ExprNode validated = measureItem.getExpr().getValidatedSubtree(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+            if (measureItem.getName() == null)
+            {
+                throw new ExprValidationException("The measures clause requires that each expression utilizes the AS keyword to assign a column name");
+            }
+            ExprNode validated = validateMeasureClause(measureItem.getExpr(), typeServiceMeasure, variablesMultiple, variablesSingle, statementContext);
             measureItem.setExpr(validated);
             rowTypeDef.put(measureItem.getName(), validated.getType());
         }
@@ -221,6 +231,30 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
                 validated.add(partitionExpr.getValidatedSubtree(typeServicePartition, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext));
             }
             matchRecognizeSpec.setPartitionByExpressions(validated);
+        }
+    }
+
+    private ExprNode validateMeasureClause(ExprNode measureNode, StreamTypeService typeServiceMeasure, Set<String> variablesMultiple, Set<String> variablesSingle, StatementContext statementContext)
+            throws ExprValidationException
+    {
+        try
+        {
+            return measureNode.getValidatedSubtree(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+        }
+        catch (ExprValidationPropertyException e)
+        {
+            String grouped = CollectionUtil.toString(variablesMultiple);
+            String single = CollectionUtil.toString(variablesSingle);
+            String message = e.getMessage();
+            if (!variablesMultiple.isEmpty())
+            {
+                message += ", ensure that grouped variables (variables " + grouped + ") are accessed via index (i.e. variable[0].string) or appear within an aggregation";
+            }
+            if (!variablesSingle.isEmpty())
+            {
+                message += ", ensure that singleton variables (variables " + single + ") are not accessed via index";
+            }
+            throw new ExprValidationPropertyException(message, e);
         }
     }
 
