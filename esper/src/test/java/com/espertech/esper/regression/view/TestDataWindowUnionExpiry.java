@@ -16,6 +16,53 @@ public class TestDataWindowUnionExpiry extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
     
+    public void testBatchWindow()
+    {
+        init(false);
+        String[] fields = new String[] {"string"};
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.win:length_batch(3).std:unique(intPrimitive) retain-union");
+        stmt.addListener(listener);
+
+        sendEvent("E1", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
+
+        sendEvent("E2", 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
+
+        sendEvent("E3", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
+
+        sendEvent("E4", 4);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3", "E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4"});
+
+        sendEvent("E5", 4);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3", "E4", "E5"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E5"});
+
+        sendEvent("E6", 4);     // remove stream is E1, E2, E3
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3", "E4", "E5", "E6"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E6"});
+
+        sendEvent("E7", 5);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3", "E4", "E5", "E6", "E7"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E7"});
+
+        sendEvent("E8", 6);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3", "E5", "E4", "E6", "E7", "E8"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E8"});
+
+        sendEvent("E9", 7);     // remove stream is E4, E5, E6; E4 and E5 get removed as their
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3", "E6", "E7", "E8", "E9"));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastOldData(), fields, new Object[][] {{"E4"}, {"E5"}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E9"});
+        listener.reset();
+    }
+
     public void testUnionAndDerivedValue()
     {
         init(false);

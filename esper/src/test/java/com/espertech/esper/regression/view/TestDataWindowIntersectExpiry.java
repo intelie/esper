@@ -16,6 +16,54 @@ public class TestDataWindowIntersectExpiry extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
+    public void testBatchWindow()
+    {
+        init(false);
+        String[] fields = new String[] {"string"};
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.win:length_batch(3).std:unique(intPrimitive)");
+        stmt.addListener(listener);
+
+        sendEvent("E1", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
+
+        sendEvent("E2", 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
+
+        sendEvent("E3", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
+
+        sendEvent("E4", 4);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4"});
+
+        sendEvent("E5", 4);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E5"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E4"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E5"});
+        listener.reset();
+
+        sendEvent("E6", 4);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E6"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E5"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E6"});
+        listener.reset();
+
+        sendEvent("E7", 5);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E6", "E7"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E7"});
+        listener.reset();
+
+        sendEvent("E8", 6);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastOldData(), fields, new Object[][] {{"E1"}, {"E2"}, {"E3"}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E8"});
+        listener.reset();
+    }
+
     public void testIntersectAndDerivedValue()
     {
         init(false);
