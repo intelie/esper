@@ -70,7 +70,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
     {
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
-        ScheduleBucket scheduleBucket = engineServices.getSchedulingService().allocateBucket();
+        ScheduleBucket scheduleBucket = engineServices.getSchedulingMgmtService().allocateBucket();
 
         // Create a lock for the statement
         ManagedLock statementResourceLock = null;

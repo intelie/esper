@@ -9,6 +9,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.dispatch.DispatchServiceProvider;
 import com.espertech.esper.epl.core.EngineImportService;
@@ -17,12 +18,12 @@ import com.espertech.esper.epl.db.DatabaseConfigService;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
-import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterServiceSPI;
+import com.espertech.esper.schedule.SchedulingMgmtService;
 import com.espertech.esper.schedule.SchedulingServiceSPI;
 import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.timer.TimerService;
@@ -65,6 +66,8 @@ public final class EPServicesContext
     private ConfigurationInformation configSnapshot;
     private ThreadingService threadingService;
     private InternalEventRouteDest internalEventEngineRouteDest;
+    private StatementIsolationService statementIsolationService;
+    private SchedulingMgmtService schedulingMgmtService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -125,7 +128,9 @@ public final class EPServicesContext
                              StatementEventTypeRef statementEventTypeRef,
                              ConfigurationInformation configSnapshot,
                              ThreadingService threadingServiceImpl,
-                             InternalEventRouterImpl internalEventRouter)
+                             InternalEventRouterImpl internalEventRouter,
+                             StatementIsolationService statementIsolationService,
+                             SchedulingMgmtService schedulingMgmtService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -156,6 +161,8 @@ public final class EPServicesContext
         this.configSnapshot = configSnapshot;
         this.threadingService = threadingServiceImpl;
         this.internalEventRouter = internalEventRouter;
+        this.statementIsolationService = statementIsolationService;
+        this.schedulingMgmtService = schedulingMgmtService;
     }
 
     /**
@@ -364,6 +371,10 @@ public final class EPServicesContext
         {
             schedulingService.destroy();
         }
+        if (schedulingMgmtService != null)
+        {
+            schedulingMgmtService.destroy();
+        }
         if (streamFactoryService != null)
         {
             streamFactoryService.destroy();
@@ -375,6 +386,10 @@ public final class EPServicesContext
         if (extensionServicesContext != null)
         {
             extensionServicesContext.destroy();
+        }
+        if (statementIsolationService != null)
+        {
+            statementIsolationService.destroy();
         }
     }
 
@@ -515,5 +530,20 @@ public final class EPServicesContext
     public ConfigurationInformation getConfigSnapshot()
     {
         return configSnapshot;
+    }
+
+    public SchedulingMgmtService getSchedulingMgmtService()
+    {
+        return schedulingMgmtService;
+    }
+
+    public StatementIsolationService getStatementIsolationService()
+    {
+        return statementIsolationService;
+    }
+
+    public void setStatementIsolationService(StatementIsolationService statementIsolationService)
+    {
+        this.statementIsolationService = statementIsolationService;
     }
 }

@@ -1,10 +1,9 @@
 package com.espertech.esper.schedule;
 
-import junit.framework.TestCase;
 import com.espertech.esper.support.schedule.SupportScheduleCallback;
-import com.espertech.esper.type.ScheduleUnit;
-import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.timer.TimeSourceServiceImpl;
+import com.espertech.esper.type.ScheduleUnit;
+import junit.framework.TestCase;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -13,6 +12,7 @@ import java.util.LinkedList;
 public class TestSchedulingServiceImpl extends TestCase
 {
     private SchedulingServiceImpl service;
+    private SchedulingMgmtServiceImpl mgmtService;
 
     private ScheduleSlot slots[][];
     private SupportScheduleCallback callbacks[];
@@ -20,13 +20,14 @@ public class TestSchedulingServiceImpl extends TestCase
     public void setUp()
     {
         service = new SchedulingServiceImpl(new TimeSourceServiceImpl());
+        mgmtService = new SchedulingMgmtServiceImpl();
 
         // 2-by-2 table of buckets and slots
         ScheduleBucket[] buckets = new ScheduleBucket[3];
         slots = new ScheduleSlot[buckets.length][2];
         for (int i = 0; i < buckets.length; i++)
         {
-            buckets[i] = service.allocateBucket();
+            buckets[i] = mgmtService.allocateBucket();
             slots[i] = new ScheduleSlot[2];
             for (int j = 0; j < slots[i].length; j++)
             {

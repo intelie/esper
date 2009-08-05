@@ -66,7 +66,7 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 			throw new IllegalArgumentException("Illegal type of EPServiceProvider");
 		}
 		this.epService = epService;
-		this.scheduleBucket = ((EPServiceProviderSPI)epService).getSchedulingService().allocateBucket();
+		this.scheduleBucket = ((EPServiceProviderSPI)epService).getSchedulingMgmtService().allocateBucket();
 		this.usingEngineThread = usingEngineThread;
 		this.usingExternalTimer = usingExternalTimer;
 	}

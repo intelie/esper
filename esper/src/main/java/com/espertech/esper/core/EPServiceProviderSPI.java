@@ -17,6 +17,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.schedule.SchedulingMgmtService;
 import com.espertech.esper.timer.TimerService;
 
 import javax.naming.Context;
@@ -55,6 +56,12 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      * @return the SchedulingService
      */
     public SchedulingService getSchedulingService();
+
+    /**
+     * Get the SchedulingMgmtService for this engine.
+     * @return the SchedulingMgmtService
+     */
+    public SchedulingMgmtService getSchedulingMgmtService();
 
     /**
      * Returns the filter service.

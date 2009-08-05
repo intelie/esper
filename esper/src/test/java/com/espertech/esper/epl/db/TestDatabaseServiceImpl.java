@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.ConfigurationDBRef;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
+import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.support.epl.SupportDatabaseService;
 import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.timer.TimeSourceServiceImpl;
@@ -37,7 +38,7 @@ public class TestDatabaseServiceImpl extends TestCase
         configs.put("name3", config);
 
         SchedulingService schedulingService = new SchedulingServiceImpl(new TimeSourceServiceImpl());
-        databaseServiceImpl = new DatabaseConfigServiceImpl(configs, schedulingService, schedulingService.allocateBucket());
+        databaseServiceImpl = new DatabaseConfigServiceImpl(configs, schedulingService, new ScheduleBucket(1));
     }
 
     public void testGetConnection() throws Exception

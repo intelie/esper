@@ -9,34 +9,31 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.core.thread.ThreadingOption;
+import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
-import com.espertech.esper.core.thread.ThreadingOption;
-import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
-import com.espertech.esper.filter.FilterServiceProvider;
-import com.espertech.esper.filter.FilterServiceSPI;
 import com.espertech.esper.plugin.PluginLoader;
 import com.espertech.esper.schedule.SchedulingService;
-import com.espertech.esper.schedule.SchedulingServiceImpl;
-import com.espertech.esper.schedule.SchedulingServiceSPI;
+import com.espertech.esper.schedule.SchedulingMgmtService;
 import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.*;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
@@ -50,7 +47,6 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     private Set<EPServiceStateListener> serviceListeners;
     private Set<EPStatementStateListener> statementListeners;
     private StatementEventDispatcherUnthreaded stmtEventDispatcher;
-    private Map<String, EPServiceProviderIsolatedImpl> isolatedProviders;
 
     /**
      * Constructor - initializes services.
@@ -73,7 +69,6 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         configSnapshot = takeSnapshot(configuration);
         serviceListeners = new CopyOnWriteArraySet<EPServiceStateListener>();
         statementListeners = new CopyOnWriteArraySet<EPStatementStateListener>();
-        isolatedProviders = new ConcurrentHashMap<String, EPServiceProviderIsolatedImpl>();
         doInitialize();
     }
 
@@ -87,18 +82,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             throw new IllegalArgumentException("Name parameter does not have a value provided");
         }
 
-        EPServiceProviderIsolatedImpl serviceProviderIsolated = isolatedProviders.get(name);
-        if (serviceProviderIsolated != null)
-        {
-            return serviceProviderIsolated;
-        }
-
-        FilterServiceSPI filterService = FilterServiceProvider.newService();
-        SchedulingServiceSPI scheduleService = new SchedulingServiceImpl(engine.getServices().getTimeSource());
-        EPIsolationUnitServices services = new EPIsolationUnitServices(filterService, scheduleService);
-        serviceProviderIsolated = new EPServiceProviderIsolatedImpl(name, services, engine.getServices(),isolatedProviders);
-        isolatedProviders.put(name, serviceProviderIsolated);
-        return serviceProviderIsolated;
+        return engine.getServices().getStatementIsolationService().getIsolationUnit(name);
     }
 
     /**
@@ -335,8 +319,6 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             }
 
             engine.getServices().destroy();
-
-            isolatedProviders.clear();
         }
 
         // Make EP services context factory
@@ -595,7 +577,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
 
     public String[] getEPServiceIsolatedNames()
     {
-        Set<String> keyset = isolatedProviders.keySet();
-        return keyset.toArray(new String[keyset.size()]);
+        return engine.getServices().getStatementIsolationService().getIsolationUnitNames();
+    }
+
+    public SchedulingMgmtService getSchedulingMgmtService()
+    {
+        return engine.getServices().getSchedulingMgmtService();
     }
 }

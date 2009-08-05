@@ -69,12 +69,6 @@ public interface SchedulingService extends TimeProvider
     public void evaluate(Collection<ScheduleHandle> handles);
 
     /**
-     * Returns a bucket from which slots can be allocated for ordering concurrent callbacks.
-     * @return bucket
-     */
-    public ScheduleBucket allocateBucket();
-
-    /**
      * Destroy the service.
      */
     public void destroy();

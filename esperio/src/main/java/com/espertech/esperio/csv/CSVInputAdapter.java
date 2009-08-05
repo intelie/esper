@@ -208,7 +208,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 
 		EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;
 
-		scheduleSlot = spi.getSchedulingService().allocateBucket().allocateSlot();
+		scheduleSlot = spi.getSchedulingMgmtService().allocateBucket().allocateSlot();
 
 		reader = new CSVReader(spec.getAdapterInputSource());
 		reader.setLooping(spec.isLooping());

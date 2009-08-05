@@ -32,9 +32,6 @@ public final class SchedulingServiceImpl implements SchedulingServiceSPI
     // Current time - used for evaluation as well as for adding new handles
     private volatile long currentTime;
 
-    // Current bucket number - for use in ordering handles by bucket
-    private int curBucketNum;
-
     /**
      * Constructor.
      * @param timeSourceService time source provider
@@ -52,12 +49,6 @@ public final class SchedulingServiceImpl implements SchedulingServiceSPI
         log.debug("Destroying scheduling service");
         handleSetMap.clear();
         timeHandleMap.clear();
-    }
-
-    public synchronized ScheduleBucket allocateBucket()
-    {
-        curBucketNum++;
-        return new ScheduleBucket(curBucketNum);
     }
 
     public long getTime()

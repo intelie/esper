@@ -9,9 +9,15 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.epl.core.*;
+import com.espertech.esper.core.thread.ThreadingService;
+import com.espertech.esper.core.thread.ThreadingServiceImpl;
+import com.espertech.esper.epl.core.EngineImportException;
+import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.core.EngineImportServiceImpl;
+import com.espertech.esper.epl.core.EngineSettingsService;
 import com.espertech.esper.epl.db.DatabaseConfigService;
 import com.espertech.esper.epl.db.DatabaseConfigServiceImpl;
+import com.espertech.esper.epl.metric.MetricReportingServiceImpl;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.named.NamedWindowServiceImpl;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
@@ -21,36 +27,35 @@ import com.espertech.esper.epl.variable.VariableServiceImpl;
 import com.espertech.esper.epl.variable.VariableTypeException;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.epl.view.OutputConditionFactoryDefault;
-import com.espertech.esper.epl.metric.MetricReportingServiceImpl;
-import com.espertech.esper.core.thread.ThreadingService;
-import com.espertech.esper.core.thread.ThreadingServiceImpl;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventAdapterServiceImpl;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
+import com.espertech.esper.event.vaevent.ValueAddEventServiceImpl;
 import com.espertech.esper.event.xml.SchemaModel;
 import com.espertech.esper.event.xml.XSDSchemaMapper;
-import com.espertech.esper.event.vaevent.ValueAddEventServiceImpl;
-import com.espertech.esper.event.vaevent.ValueAddEventService;
-import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.filter.FilterServiceProvider;
 import com.espertech.esper.filter.FilterServiceSPI;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.plugin.PlugInEventRepresentationContext;
-import com.espertech.esper.schedule.ScheduleBucket;
-import com.espertech.esper.schedule.SchedulingService;
-import com.espertech.esper.schedule.SchedulingServiceProvider;
-import com.espertech.esper.schedule.SchedulingServiceSPI;
-import com.espertech.esper.timer.*;
+import com.espertech.esper.schedule.*;
+import com.espertech.esper.timer.TimeSourceService;
+import com.espertech.esper.timer.TimeSourceServiceImpl;
+import com.espertech.esper.timer.TimerService;
+import com.espertech.esper.timer.TimerServiceImpl;
+import com.espertech.esper.util.GraphCircularDependencyException;
+import com.espertech.esper.util.GraphUtil;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ManagedReadWriteLock;
-import com.espertech.esper.util.GraphUtil;
-import com.espertech.esper.util.GraphCircularDependencyException;
 import com.espertech.esper.view.stream.StreamFactoryService;
 import com.espertech.esper.view.stream.StreamFactoryServiceProvider;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Factory for services context.
@@ -68,9 +73,10 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         TimeSourceService timeSourceService = makeTimeSource(configSnapshot);
         SchedulingServiceSPI schedulingService = SchedulingServiceProvider.newService(timeSourceService);
+        SchedulingMgmtService schedulingMgmtService = new SchedulingMgmtServiceImpl();
         EngineImportService engineImportService = makeEngineImportService(configSnapshot);
         EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults(), configSnapshot.getPlugInEventTypeResolutionURIs());
-        DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
+        DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService, schedulingMgmtService);
 
         PluggableObjectCollection plugInViews = new PluggableObjectCollection();
         plugInViews.addViews(configSnapshot.getPlugInViews());
@@ -110,13 +116,15 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         InternalEventRouterImpl internalEventRouterImpl = new InternalEventRouterImpl();
 
+        StatementIsolationServiceImpl statementIsolationService = new StatementIsolationServiceImpl();
+
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
                 namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
-                configSnapshot, threadingService, internalEventRouterImpl);
+                configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
@@ -124,6 +132,9 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         // Observers to statement events
         statementLifecycleSvc.addObserver(metricsReporting);
+
+        // Circular dependency
+        statementIsolationService.setEpServicesContext(services);
 
         return services;
     }
@@ -380,14 +391,15 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      * @return database config svc
      */
     protected static DatabaseConfigService makeDatabaseRefService(ConfigurationInformation configSnapshot,
-                                                          SchedulingService schedulingService)
+                                                          SchedulingService schedulingService,
+                                                          SchedulingMgmtService schedulingMgmtService)
     {
         DatabaseConfigService databaseConfigService = null;
 
         // Add auto-imports
         try
         {
-            ScheduleBucket allStatementsBucket = schedulingService.allocateBucket();
+            ScheduleBucket allStatementsBucket = schedulingMgmtService.allocateBucket();
             databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.getDatabaseReferences(), schedulingService, allStatementsBucket);
         }
         catch (IllegalArgumentException ex)
