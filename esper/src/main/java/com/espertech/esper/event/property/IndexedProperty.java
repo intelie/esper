@@ -14,6 +14,7 @@ import com.espertech.esper.event.*;
 import com.espertech.esper.event.map.MapArrayMaptypedUndPropertyGetter;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.map.MapArrayPOJOEntryIndexedPropertyGetter;
+import com.espertech.esper.event.map.MapEventPropertyGetter;
 import com.espertech.esper.event.bean.*;
 import com.espertech.esper.event.xml.*;
 import com.espertech.esper.event.xml.DOMIndexedGetter;
@@ -277,7 +278,7 @@ public class IndexedProperty extends PropertyBase
         }
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
+    public MapEventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         Object type = optionalMapPropTypes.get(propertyNameAtomic);
         if (type == null)

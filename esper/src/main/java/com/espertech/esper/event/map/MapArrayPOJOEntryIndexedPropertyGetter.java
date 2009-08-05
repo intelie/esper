@@ -12,7 +12,7 @@ import java.lang.reflect.Array;
 /**
  * A getter that works on arrays residing within a Map as an event property.
  */
-public class MapArrayPOJOEntryIndexedPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
+public class MapArrayPOJOEntryIndexedPropertyGetter extends BaseNativePropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyMap;
     private final int index;
@@ -31,19 +31,8 @@ public class MapArrayPOJOEntryIndexedPropertyGetter extends BaseNativePropertyGe
         this.index = index;
     }
 
-    public Object get(EventBean obj)
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
     {
-        Object underlying = obj.getUnderlying();
-
-        // The underlying is expected to be a map
-        if (!(underlying instanceof Map))
-        {
-            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
-                    "the underlying data object is not of type java.lang.Map");
-        }
-
-        Map map = (Map) underlying;
-
         // If the map does not contain the key, this is allowed and represented as null
         Object value = map.get(propertyMap);
 
@@ -60,6 +49,26 @@ public class MapArrayPOJOEntryIndexedPropertyGetter extends BaseNativePropertyGe
             return null;
         }
         return Array.get(value, index);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return map.containsKey(propertyMap);
+    }
+
+    public Object get(EventBean obj)
+    {
+        Object underlying = obj.getUnderlying();
+
+        // The underlying is expected to be a map
+        if (!(underlying instanceof Map))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type java.lang.Map");
+        }
+
+        Map<String, Object> map = (Map<String, Object>) underlying;
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

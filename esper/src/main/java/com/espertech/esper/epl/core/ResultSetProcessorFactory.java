@@ -65,7 +65,9 @@ public class ResultSetProcessorFactory
                                                   StatementContext stmtContext,
                                                   StreamTypeService typeService,
                                                   ViewResourceDelegate viewResourceDelegate,
-                                                  boolean[] isUnidirectionalStream, boolean allowAggregation)
+                                                  boolean[] isUnidirectionalStream,
+                                                  boolean allowAggregation
+    )
             throws ExprValidationException
     {
         SelectClauseSpecCompiled selectClauseSpec = statementSpecCompiled.getSelectClauseSpec();

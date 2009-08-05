@@ -15,6 +15,7 @@ import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.event.EventBeanUtility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,9 +36,9 @@ public class OutputProcessViewDirect extends OutputProcessView
      * @param isInsertInto is true if the statement is a insert-into
      * @param statementResultService service for managing listener/subscribers and result generation needs
      */
-    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService)
+    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService, boolean isDistinct)
     {
-        super(resultSetProcessor, outputStrategy, isInsertInto, statementResultService);
+        super(resultSetProcessor, outputStrategy, isInsertInto, statementResultService, isDistinct);
 
         log.debug(".ctor");
         if (resultSetProcessor == null)
@@ -64,6 +65,12 @@ public class OutputProcessViewDirect extends OutputProcessView
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
         UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
+
+        if (isDistinct)
+        {
+            newOldEvents.setFirst(EventBeanUtility.getDistinctByProp(newOldEvents.getFirst(), eventBeanReader));
+            newOldEvents.setSecond(EventBeanUtility.getDistinctByProp(newOldEvents.getSecond(), eventBeanReader));
+        }
 
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {
@@ -102,6 +109,12 @@ public class OutputProcessViewDirect extends OutputProcessView
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
         UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+
+        if (isDistinct)
+        {
+            newOldEvents.setFirst(EventBeanUtility.getDistinctByProp(newOldEvents.getFirst(), eventBeanReader));
+            newOldEvents.setSecond(EventBeanUtility.getDistinctByProp(newOldEvents.getSecond(), eventBeanReader));
+        }
 
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {

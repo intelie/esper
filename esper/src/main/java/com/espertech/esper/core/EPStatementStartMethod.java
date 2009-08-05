@@ -226,9 +226,10 @@ public class EPStatementStartMethod
                     statementSpec, statementContext, typeService, null, new boolean[0], true);
 
             InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
-            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext);
+            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext, statementSpec.getSelectClauseSpec().isDistinct());
             eventStreamParentViewable.addView(onExprView);
         }
+        // variable assignments
         else if (statementSpec.getOnTriggerDesc() instanceof OnTriggerSetDesc)
         {
             OnTriggerSetDesc desc = (OnTriggerSetDesc) statementSpec.getOnTriggerDesc();
@@ -243,6 +244,7 @@ public class EPStatementStartMethod
             onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService(), statementContext);
             eventStreamParentViewable.addView(onExprView);
         }
+        // split-stream use case
         else 
         {
             OnTriggerSplitStreamDesc desc = (OnTriggerSplitStreamDesc) statementSpec.getOnTriggerDesc();

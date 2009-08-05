@@ -8,14 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.EventDistinctIterator;
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.core.StatementResultService;
+import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.join.JoinExecutionStrategy;
 import com.espertech.esper.epl.join.JoinSetIndicator;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.event.EventBeanReader;
+import com.espertech.esper.event.EventBeanReaderDefaultImpl;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.Viewable;
 
@@ -64,6 +68,9 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
      */
     protected boolean isGenerateSynthetic;
 
+    protected final boolean isDistinct;
+    protected EventBeanReader eventBeanReader;
+
     /**
      * Ctor.
      * @param resultSetProcessor processes the results posted by parent view or joins
@@ -71,7 +78,7 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
      * @param isInsertInto true if this is an insert-into
      * @param statementResultService for awareness of listeners and subscriber
      */
-    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService)
+    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService, boolean isDistinct)
     {
         this.resultSetProcessor = resultSetProcessor;
         this.outputStrategy = outputStrategy;
@@ -79,6 +86,19 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
 
         // by default, generate synthetic events only if we insert-into
         this.isGenerateSynthetic = isInsertInto;
+        this.isDistinct = isDistinct;
+        if (isDistinct)
+        {
+            if (resultSetProcessor.getResultEventType() instanceof EventTypeSPI)
+            {
+                EventTypeSPI eventTypeSPI = (EventTypeSPI) resultSetProcessor.getResultEventType();
+                eventBeanReader = eventTypeSPI.getReader();
+            }
+            if (eventBeanReader == null)
+            {
+                eventBeanReader = new EventBeanReaderDefaultImpl(resultSetProcessor.getResultEventType());
+            }
+        }
     }
 
     public Viewable getParent() {
@@ -146,18 +166,29 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
 
     public Iterator<EventBean> iterator()
     {
+        Iterator<EventBean> iterator;
+        EventType eventType;
         if (joinExecutionStrategy != null)
         {
             Set<MultiKey<EventBean>> joinSet = joinExecutionStrategy.staticJoin();
-            return resultSetProcessor.getIterator(joinSet);
+            iterator = resultSetProcessor.getIterator(joinSet);
+            eventType = resultSetProcessor.getResultEventType();
         }
-        if(resultSetProcessor != null)
+        else if(resultSetProcessor != null)
     	{
-            return resultSetProcessor.getIterator(parentView);
+            iterator = resultSetProcessor.getIterator(parentView);
+            eventType = resultSetProcessor.getResultEventType();
     	}
     	else
     	{
-    		return parentView.iterator();
+    		iterator = parentView.iterator();
+            eventType = parentView.getEventType();
     	}
+        
+        if (!isDistinct)
+        {
+            return iterator;
+        }
+        return new EventDistinctIterator(iterator, eventType);
     }
 }

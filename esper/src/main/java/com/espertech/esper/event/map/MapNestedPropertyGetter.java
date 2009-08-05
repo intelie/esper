@@ -8,12 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.event.map;
 
-import com.espertech.esper.event.*;
-import com.espertech.esper.event.map.MapEventBean;
-import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.bean.BeanEventType;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.Map;
 /**
  * Getter for one or more levels deep nested properties of maps.
  */
-public class MapNestedPropertyGetter implements EventPropertyGetter
+public class MapNestedPropertyGetter implements MapEventPropertyGetter
 {
     private final EventPropertyGetter[] getterChain;
     private final EventAdapterService eventAdaperService;
@@ -38,6 +37,16 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
         this.getterChain = getterChain.toArray(new EventPropertyGetter[getterChain.size()]);
         lastElementIndex = this.getterChain.length - 1;
         this.eventAdaperService = eventAdaperService;
+    }
+
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
+    {
+        return null;  // Not appliable
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return false;  // Not appliable
     }
 
     public Object get(EventBean eventBean) throws PropertyAccessException

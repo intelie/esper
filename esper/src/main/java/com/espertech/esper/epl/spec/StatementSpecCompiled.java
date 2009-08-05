@@ -117,7 +117,7 @@ public class StatementSpecCompiled
         createVariableDesc = null;
         insertIntoDesc = null;
         selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
-        selectClauseSpec = new SelectClauseSpecCompiled();
+        selectClauseSpec = new SelectClauseSpecCompiled(false);
         streamSpecs = new ArrayList<StreamSpecCompiled>();
         outerJoinDescList = new ArrayList<OuterJoinDesc>();
         filterExprRootNode = null;

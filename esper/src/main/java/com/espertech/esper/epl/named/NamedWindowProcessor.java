@@ -89,9 +89,9 @@ public class NamedWindowProcessor
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @return on trigger handling view
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)
     {
-        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext);
+        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext, isDistinct);
     }
 
     /**

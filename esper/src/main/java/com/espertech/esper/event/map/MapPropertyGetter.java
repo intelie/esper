@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * A getter that interrogates a given property in a map which may itself contain nested maps or indexed entries.
  */
-public class MapPropertyGetter implements EventPropertyGetter
+public class MapPropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyMap;
     private final EventPropertyGetter getter;
@@ -38,17 +38,8 @@ public class MapPropertyGetter implements EventPropertyGetter
         this.getter = getter;
     }
 
-    public Object get(EventBean eventBean) throws PropertyAccessException
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
     {
-        // The map contains a map-type property, that we are querying, named valueTop.
-        // (A map could also contain an object-type property handled as a Java object).
-        Object result = eventBean.getUnderlying();
-        if (!(result instanceof Map))
-        {
-            return null;
-        }
-        Map map = (Map) result;
-
         Object valueTopObj = map.get(propertyMap);
         if (!(valueTopObj instanceof Map))
         {
@@ -61,15 +52,8 @@ public class MapPropertyGetter implements EventPropertyGetter
         return getter.get(event);
     }
 
-    public boolean isExistsProperty(EventBean eventBean)
+    public boolean isMapExistsProperty(Map<String, Object> map)
     {
-        Object result = eventBean.getUnderlying();
-        if (!(result instanceof Map))
-        {
-            return false;
-        }
-        Map map = (Map) result;
-
         Object valueTopObj = map.get(propertyMap);
         if (!(valueTopObj instanceof Map))
         {
@@ -80,6 +64,30 @@ public class MapPropertyGetter implements EventPropertyGetter
         // Obtains for the inner map the property value
         EventBean event = new MapEventBean(valueTop, null);
         return getter.isExistsProperty(event);
+    }
+
+    public Object get(EventBean eventBean) throws PropertyAccessException
+    {
+        // The map contains a map-type property, that we are querying, named valueTop.
+        // (A map could also contain an object-type property handled as a Java object).
+        Object result = eventBean.getUnderlying();
+        if (!(result instanceof Map))
+        {
+            return null;
+        }
+        Map<String, Object> map = (Map<String, Object>) result;
+        return getMap(map);
+    }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        Object result = eventBean.getUnderlying();
+        if (!(result instanceof Map))
+        {
+            return false;
+        }
+        Map map = (Map) result;
+        return isMapExistsProperty(map);
     }
 
     public Object getFragment(EventBean eventBean)

@@ -195,4 +195,9 @@ public class VariantEventType implements EventTypeSPI
     {
         return null;
     }
+
+    public EventBeanReader getReader()
+    {
+        return null;
+    }
 }

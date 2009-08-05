@@ -9,6 +9,7 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.map.MapEventPropertyGetter;
 import com.espertech.esper.event.bean.DynamicSimplePropertyGetter;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.xml.SchemaElementComplex;
@@ -68,11 +69,21 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
         return Object.class;
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
+    public MapEventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         final String propertyName = this.getPropertyNameAtomic();
-        return new EventPropertyGetter()
+        return new MapEventPropertyGetter()
         {
+            public Object getMap(Map<String, Object> map) throws PropertyAccessException
+            {
+                return map.get(propertyName);
+            }
+
+            public boolean isMapExistsProperty(Map<String, Object> map)
+            {
+                return map.containsKey(propertyName);
+            }
+
             public Object get(EventBean eventBean) throws PropertyAccessException
             {
                 Map map = (Map) eventBean.getUnderlying();

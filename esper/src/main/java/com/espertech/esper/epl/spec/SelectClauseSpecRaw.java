@@ -19,6 +19,7 @@ import java.io.Serializable;
  */
 public class SelectClauseSpecRaw implements MetaDefItem, Serializable
 {
+    private boolean isDistinct;
 	private List<SelectClauseElementRaw> selectClauseElements;
     private static final long serialVersionUID = -6530225321409268186L;
 
@@ -28,6 +29,7 @@ public class SelectClauseSpecRaw implements MetaDefItem, Serializable
     public SelectClauseSpecRaw()
 	{
 		selectClauseElements = new ArrayList<SelectClauseElementRaw>();
+        isDistinct = false;
     }
 
     /**
@@ -62,5 +64,15 @@ public class SelectClauseSpecRaw implements MetaDefItem, Serializable
             }
         }
         return false;
-    }    
+    }
+
+    public boolean isDistinct()
+    {
+        return isDistinct;
+    }
+
+    public void setDistinct(boolean distinct)
+    {
+        isDistinct = distinct;
+    }
 }

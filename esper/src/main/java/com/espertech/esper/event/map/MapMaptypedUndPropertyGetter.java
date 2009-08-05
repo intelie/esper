@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Getter for retrieving a value from a map.
  */
-public class MapMaptypedUndPropertyGetter implements EventPropertyGetter
+public class MapMaptypedUndPropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyName;
     private final EventAdapterService eventAdapterService;
@@ -28,6 +28,16 @@ public class MapMaptypedUndPropertyGetter implements EventPropertyGetter
         propertyName = propertyNameAtomic;
         this.fragmentType = fragmentType;
         this.eventAdapterService = eventAdapterService;
+    }
+
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
+    {
+        return map.get(propertyName);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true;
     }
 
     public Object get(EventBean obj) throws PropertyAccessException

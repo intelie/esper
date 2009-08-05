@@ -21,6 +21,7 @@ public class SelectClause implements Serializable
 {
     private static final long serialVersionUID = 0L;
 
+    private boolean isDistinct;
     private StreamSelector streamSelector;
     private List<SelectClauseElement> selectList;
 
@@ -248,6 +249,10 @@ public class SelectClause implements Serializable
     {
         writer.write("select ");
 
+        if (isDistinct)
+        {
+            writer.write("distinct ");
+        }
         if (streamSelector == StreamSelector.ISTREAM_ONLY)
         {
             // the default, no action
@@ -269,5 +274,16 @@ public class SelectClause implements Serializable
             delimiter = ", ";
         }
         writer.write(' ');
+    }
+
+    public boolean isDistinct()
+    {
+        return isDistinct;
+    }
+
+    public SelectClause setDistinct(boolean distinct)
+    {
+        isDistinct = distinct;
+        return this;
     }
 }

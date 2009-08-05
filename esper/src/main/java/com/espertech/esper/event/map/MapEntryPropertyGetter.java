@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * A getter for use with Map-based events simply returns the value for the key.
  */
-public class MapEntryPropertyGetter implements EventPropertyGetter
+public class MapEntryPropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyName;
     private final EventAdapterService eventAdapterService;
@@ -37,6 +37,17 @@ public class MapEntryPropertyGetter implements EventPropertyGetter
         this.eventType = eventType;
     }
 
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
+    {
+        // If the map does not contain the key, this is allowed and represented as null
+        return map.get(propertyName);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
+
     public Object get(EventBean obj)
     {
         // The underlying is expected to be a map
@@ -47,9 +58,7 @@ public class MapEntryPropertyGetter implements EventPropertyGetter
         }
 
         Map map = (Map) obj.getUnderlying();
-
-        // If the map does not contain the key, this is allowed and represented as null
-        return map.get(propertyName);
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

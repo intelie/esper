@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * A getter that works on POJO events residing within a Map as an event property.
  */
-public class MapPOJOEntryPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
+public class MapPOJOEntryPropertyGetter extends BaseNativePropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyMap;
     private final EventPropertyGetter mapEntryGetter;
@@ -39,6 +39,26 @@ public class MapPOJOEntryPropertyGetter extends BaseNativePropertyGetter impleme
         this.eventAdapterService = eventAdapterService;
     }
 
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
+    {
+        // If the map does not contain the key, this is allowed and represented as null
+        Object value = map.get(propertyMap);
+
+        if (value == null)
+        {
+            return null;
+        }
+
+        // Object within the map
+        EventBean event = eventAdapterService.adapterForBean(value);
+        return mapEntryGetter.get(event);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
+
     public Object get(EventBean obj)
     {
         Object underlying = obj.getUnderlying();
@@ -51,18 +71,7 @@ public class MapPOJOEntryPropertyGetter extends BaseNativePropertyGetter impleme
         }
 
         Map map = (Map) underlying;
-
-        // If the map does not contain the key, this is allowed and represented as null
-        Object value = map.get(propertyMap);
-
-        if (value == null)
-        {
-            return null;
-        }
-
-        // Object within the map
-        EventBean event = eventAdapterService.adapterForBean(value);
-        return mapEntryGetter.get(event);
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

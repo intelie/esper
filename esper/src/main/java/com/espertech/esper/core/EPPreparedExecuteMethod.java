@@ -25,6 +25,10 @@ import com.espertech.esper.epl.spec.NamedWindowConsumerStreamSpec;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.epl.spec.StreamSpecCompiled;
+import com.espertech.esper.event.EventBeanReader;
+import com.espertech.esper.event.EventBeanReaderDefaultImpl;
+import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +47,7 @@ public class EPPreparedExecuteMethod
     private final NamedWindowProcessor[] processors;
     private final JoinSetComposer joinComposer;
     private final ExprEvaluatorContext exprEvaluatorContext;
+    private EventBeanReader eventBeanReader;
 
     /**
      * Ctor.
@@ -90,6 +95,18 @@ public class EPPreparedExecuteMethod
 
         resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null, new boolean[0], true);
 
+        if (statementSpec.getSelectClauseSpec().isDistinct())
+        {
+            if (resultSetProcessor.getResultEventType() instanceof EventTypeSPI)
+            {
+                eventBeanReader = ((EventTypeSPI) resultSetProcessor.getResultEventType()).getReader();
+            }
+            if (eventBeanReader == null)
+            {
+                eventBeanReader = new EventBeanReaderDefaultImpl(resultSetProcessor.getResultEventType());
+            }
+        }
+
         if (numStreams > 1)
         {
             Viewable[] viewablePerStream = new Viewable[numStreams];
@@ -97,7 +114,6 @@ public class EPPreparedExecuteMethod
             {
                 viewablePerStream[i] = processors[i].getTailView();
             }
-            boolean[] falseArray = new boolean[numStreams];
             joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult, statementContext);
         }
         else
@@ -158,6 +174,11 @@ public class EPPreparedExecuteMethod
             }
             UniformPair<Set<MultiKey<EventBean>>> result = joinComposer.join(newDataPerStream, oldDataPerStream, exprEvaluatorContext);
             results = resultSetProcessor.processJoinResult(result.getFirst(), null, true);
+        }
+
+        if (statementSpec.getSelectClauseSpec().isDistinct())
+        {
+            results.setFirst(EventBeanUtility.getDistinctByProp(results.getFirst(), eventBeanReader));
         }
 
         return new EPPreparedQueryResult(resultSetProcessor.getResultEventType(), results.getFirst());

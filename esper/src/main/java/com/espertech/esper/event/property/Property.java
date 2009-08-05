@@ -9,6 +9,7 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.map.MapEventPropertyGetter;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.xml.SchemaItem;
 import com.espertech.esper.event.xml.SchemaElementComplex;
@@ -63,7 +64,7 @@ public interface Property
      * @param eventAdapterService for resolving further map event types that are property types
      * @return getter for maps
      */
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService);
+    public MapEventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService);
 
     /**
      * Returns the property type for use with DOM event representations.

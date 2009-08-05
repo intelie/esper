@@ -267,5 +267,10 @@ public class RevisionEventType implements EventTypeSPI
     public EventBeanWriter getWriter(String[] properties)
     {
         return null;
-    }    
+    }
+
+    public EventBeanReader getReader()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

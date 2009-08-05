@@ -1,16 +1,15 @@
 package com.espertech.esper.event.map;
 
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 
-import java.util.Map;
 import java.lang.reflect.Array;
+import java.util.Map;
 
 /**
  * Returns the event bean or the underlying array.
  */
-public class MapEventBeanArrayPropertyGetter implements EventPropertyGetter
+public class MapEventBeanArrayPropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyName;
     private final Class underlyingType;
@@ -26,16 +25,8 @@ public class MapEventBeanArrayPropertyGetter implements EventPropertyGetter
         this.underlyingType = underlyingType;
     }
 
-    public Object get(EventBean obj)
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
     {
-        // The underlying is expected to be a map
-        if (!(obj.getUnderlying() instanceof Map))
-        {
-            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
-                    "the underlying data object is not of type java.lang.Map");
-        }
-
-        Map map = (Map) obj.getUnderlying();
         Object mapValue = map.get(propertyName);
 
         // If the map does not contain the key, this is allowed and represented as null
@@ -51,6 +42,24 @@ public class MapEventBeanArrayPropertyGetter implements EventPropertyGetter
         }
 
         return null;
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
+
+    public Object get(EventBean obj)
+    {
+        // The underlying is expected to be a map
+        if (!(obj.getUnderlying() instanceof Map))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type java.lang.Map");
+        }
+
+        Map map = (Map) obj.getUnderlying();
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

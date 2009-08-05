@@ -11,6 +11,7 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.map.MapMappedPropertyGetter;
+import com.espertech.esper.event.map.MapEventPropertyGetter;
 import com.espertech.esper.event.bean.*;
 import com.espertech.esper.event.xml.*;
 import com.espertech.esper.util.JavaClassHelper;
@@ -199,7 +200,7 @@ public class MappedProperty extends PropertyBase
         return null;  // Mapped properties are not allowed in non-dynamic form in a map
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
+    public MapEventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         Object type = optionalMapPropTypes.get(getPropertyNameAtomic());
         if (type == null)

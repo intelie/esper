@@ -31,4 +31,6 @@ public interface EventTypeSPI extends EventType
     public EventBeanCopyMethod getCopyMethod(String[] properties);
 
     public EventBeanWriter getWriter(String[] properties);
+
+    public EventBeanReader getReader();
 }

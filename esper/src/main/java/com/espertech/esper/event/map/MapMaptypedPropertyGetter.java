@@ -1,9 +1,8 @@
 package com.espertech.esper.event.map;
 
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.event.EventAdapterService;
 
 import java.util.Map;
@@ -11,7 +10,7 @@ import java.util.Map;
 /**
  * Getter for map entry.
  */
-public class MapMaptypedPropertyGetter implements EventPropertyGetter
+public class MapMaptypedPropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyName;
     private final EventType fragmentEventType;
@@ -30,6 +29,16 @@ public class MapMaptypedPropertyGetter implements EventPropertyGetter
         this.eventAdapterService = eventAdapterService;
     }
 
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
+    {
+        return map.get(propertyName);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true;
+    }
+
     public Object get(EventBean obj) throws PropertyAccessException
     {
         Object underlying = obj.getUnderlying();
@@ -42,8 +51,7 @@ public class MapMaptypedPropertyGetter implements EventPropertyGetter
         }
 
         Map map = (Map) underlying;
-
-        return map.get(propertyName);
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

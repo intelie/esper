@@ -12,7 +12,7 @@ import java.lang.reflect.Array;
 /**
  * A getter that works on POJO events residing within a Map as an event property.
  */
-public class MapArrayPOJOBeanEntryIndexedPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter {
+public class MapArrayPOJOBeanEntryIndexedPropertyGetter extends BaseNativePropertyGetter implements MapEventPropertyGetter {
 
     private final String propertyMap;
     private final int index;
@@ -35,19 +35,8 @@ public class MapArrayPOJOBeanEntryIndexedPropertyGetter extends BaseNativeProper
         this.eventAdapterService = eventAdapterService;
     }
 
-    public Object get(EventBean obj)
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
     {
-        Object underlying = obj.getUnderlying();
-
-        // The underlying is expected to be a map
-        if (!(underlying instanceof Map))
-        {
-            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
-                    "the underlying data object is not of type java.lang.Map");
-        }
-
-        Map map = (Map) underlying;
-
         // If the map does not contain the key, this is allowed and represented as null
         Object value = map.get(propertyMap);
 
@@ -72,6 +61,26 @@ public class MapArrayPOJOBeanEntryIndexedPropertyGetter extends BaseNativeProper
         // Object within the map
         EventBean event = eventAdapterService.adapterForBean(arrayItem);
         return mapEntryGetter.get(event);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
+
+    public Object get(EventBean obj)
+    {
+        Object underlying = obj.getUnderlying();
+
+        // The underlying is expected to be a map
+        if (!(underlying instanceof Map))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type java.lang.Map");
+        }
+
+        Map<String, Object> map = (Map<String, Object>) underlying;
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

@@ -607,10 +607,14 @@ select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
 			The syntax for the <literal>select</literal> clause is summarized below.
 		</para>
 
-		<synopsis>select [istream | irstream | rstream] * | <emphasis>expression_list</emphasis> ... </synopsis>
+		<synopsis>select [istream | irstream | rstream] [distinct] * | <emphasis>expression_list</emphasis> ... </synopsis>
 
 		<para>
 			The <literal>istream</literal> keyword is the default, and indicates that the engine only delivers insert stream events to listeners and observers. The <literal>irstream</literal> keyword indicates that the engine delivers both insert and remove stream. Finally, the <literal>rstream</literal> keyword tells the engine to deliver only the remove stream.
+		</para>
+
+		<para>
+			The <literal>distinct</literal> keyword outputs only unique rows depending on the column list you have specified after it. It must occur after the <literal>select</literal> and after the optional stream keywords, as described in more detail below.
 		</para>
 
         <sect2 id="epl-select-all-props" >
@@ -865,6 +869,41 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 
 		</sect2>
 
+		<sect2 id="epl-syntax-distinct">
+			<title>Select <literal>Distinct</literal></title>
+			
+			<para>
+				The optional <literal>distinct</literal> keyword removes duplicate output events from output. The keyword must occur after the <literal>select</literal> keyword and after the optional <literal>irstream</literal> keyword.
+			</para>
+
+			<para>
+				The <literal>distinct</literal> keyword in your <literal>select</literal> instructs the engine to consolidate, at time of output, the output event(s) and remove output events with identical property values.
+				Duplicate removal only takes place when two or more events are output together at any one time, therefore <literal>distinct</literal> is typically used with a batch data window, output rate limiting, on-demand queries, on-select or iterator pull API.
+			</para>
+
+			<para>
+				If two or more output event objects have same property values for all properties of the event, the <literal>distinct</literal> removes all but one duplicated event before outputting events to listeners. Indexed, nested and mapped properties
+				are considered in the comparison, if present in the output event.				
+			</para>
+
+			<para>
+				The next example outputs sensor ids of temperature sensor events, but only every 10 seconds and only unique sensor id values during the 10 seconds:
+			</para>
+			<programlisting>select distinct sensorId from TemperatureSensorEvent output every 10 seconds</programlisting>
+
+			<para>
+				Use <literal>distinct</literal> with wildcard (<literal>*</literal>) to remove duplicate output events considering all properties of an event.
+			</para>
+
+			<para>
+				This example statement outputs all distinct events either when 100 events arrive or when 10 seconds passed, whichever occurs first:
+			</para>
+			<programlisting>select distinct * from TemperatureSensorEvent.win:time_length_batch(10, 100)</programlisting>
+			
+			<para>
+				When selecting nested, indexed, mapped or dynamic properties in a <literal>select</literal> clause with <literal>distinct</literal>, it is relevant to know that the comparison uses hash code and the Java <literal>equals</literal> semantics.
+			</para>
+		</sect2>
     </sect1>
 
     <sect1 id="epl-from-clause">

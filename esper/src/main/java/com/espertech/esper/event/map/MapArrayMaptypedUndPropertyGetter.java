@@ -12,7 +12,7 @@ import java.lang.reflect.Array;
 /**
  * Getter for Map-entries with well-defined fragment type.
  */
-public class MapArrayMaptypedUndPropertyGetter implements EventPropertyGetter
+public class MapArrayMaptypedUndPropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyName;
     private final int index;
@@ -34,19 +34,8 @@ public class MapArrayMaptypedUndPropertyGetter implements EventPropertyGetter
         this.eventAdapterService = eventAdapterService;
     }
 
-    public Object get(EventBean obj) throws PropertyAccessException
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
     {
-        Object underlying = obj.getUnderlying();
-
-        // The underlying is expected to be a map
-        if (!(underlying instanceof Map))
-        {
-            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
-                    "the underlying data object is not of type java.lang.Map");
-        }
-
-        Map map = (Map) underlying;
-
         Object value = map.get(propertyName);
 
         if (value == null)
@@ -63,6 +52,26 @@ public class MapArrayMaptypedUndPropertyGetter implements EventPropertyGetter
         }
 
         return Array.get(value, index);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true;
+    }
+
+    public Object get(EventBean obj) throws PropertyAccessException
+    {
+        Object underlying = obj.getUnderlying();
+
+        // The underlying is expected to be a map
+        if (!(underlying instanceof Map))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type java.lang.Map");
+        }
+
+        Map<String, Object> map = (Map<String, Object>) underlying;
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

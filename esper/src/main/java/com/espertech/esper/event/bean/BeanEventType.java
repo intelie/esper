@@ -776,6 +776,11 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         return writeablePropertyDescriptors;
     }
 
+    public EventBeanReader getReader()
+    {
+        return new BeanEventBeanReader(this);
+    }
+
     public EventBeanCopyMethod getCopyMethod(String[] properties)
     {
         if (JavaClassHelper.isImplementsInterface(clazz, Serializable.class))

@@ -21,6 +21,12 @@ public class SupportBean_N implements Serializable
         this.boolBoxed = boolBoxed;
     }
 
+    public SupportBean_N(int intPrimitive, Integer intBoxed)
+    {
+        this.intPrimitive = intPrimitive;
+        this.intBoxed = intBoxed;
+    }
+
     public int getIntPrimitive()
     {
         return intPrimitive;

@@ -45,10 +45,11 @@ public class TestEPLTreeWalker extends TestCase
     public void testWalkJoinMethodStatement() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select * from " + className + " unidirectional, method:com.MyClass.myMethod(string, 2*intPrimitive) as s0";
+        String expression = "select distinct * from " + className + " unidirectional, method:com.MyClass.myMethod(string, 2*intPrimitive) as s0";
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         StatementSpecRaw statementSpec = walker.getStatementSpec();
+        assertTrue(statementSpec.getSelectClauseSpec().isDistinct());
         assertEquals(2, statementSpec.getStreamSpecs().size());
         assertTrue(statementSpec.getStreamSpecs().get(0).getOptions().isUnidirectional());
         assertFalse(statementSpec.getStreamSpecs().get(0).getOptions().isRetainUnion());

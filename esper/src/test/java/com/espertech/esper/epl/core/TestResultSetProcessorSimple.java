@@ -16,7 +16,6 @@ import java.util.Set;
 
 public class TestResultSetProcessorSimple extends TestCase
 {
-    private ResultSetProcessorSimple outputProcessorLast;
     private ResultSetProcessorSimple outputProcessorAll;
     private SelectExprProcessor selectExprProcessor;
     private OrderByProcessor orderByProcessor;
@@ -29,7 +28,6 @@ public class TestResultSetProcessorSimple extends TestCase
         orderByProcessor = null;
 
 		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, null);
-		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, null);
     }
 
     public void testUpdateAll() throws Exception

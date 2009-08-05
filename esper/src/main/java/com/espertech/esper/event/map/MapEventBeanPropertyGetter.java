@@ -9,7 +9,6 @@
 package com.espertech.esper.event.map;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
@@ -17,7 +16,7 @@ import java.util.Map;
 /**
  * A getter for use with Map-based events simply returns the value for the key.
  */
-public class MapEventBeanPropertyGetter implements EventPropertyGetter
+public class MapEventBeanPropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyName;
 
@@ -27,6 +26,26 @@ public class MapEventBeanPropertyGetter implements EventPropertyGetter
      */
     public MapEventBeanPropertyGetter(String propertyName) {
         this.propertyName = propertyName;
+    }
+
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
+    {
+        Object eventBean = map.get(propertyName);
+
+        if (eventBean == null)
+        {
+            return null;
+        }
+
+        EventBean event = (EventBean) eventBean;
+
+        // If the map does not contain the key, this is allowed and represented as null
+        return event.getUnderlying();
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
     }
 
     public Object get(EventBean obj)
@@ -39,18 +58,7 @@ public class MapEventBeanPropertyGetter implements EventPropertyGetter
         }
 
         Map map = (Map) obj.getUnderlying();
-
-        Object eventBean = map.get(propertyName);
-
-        if (eventBean == null)
-        {
-            return null;
-        }
-
-        EventBean event = (EventBean) eventBean;
-
-        // If the map does not contain the key, this is allowed and represented as null
-        return event.getUnderlying();
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

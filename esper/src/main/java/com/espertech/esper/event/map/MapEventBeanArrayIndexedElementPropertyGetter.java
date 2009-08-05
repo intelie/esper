@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Getter for an array of event bean using a nested getter.
  */
-public class MapEventBeanArrayIndexedElementPropertyGetter implements EventPropertyGetter
+public class MapEventBeanArrayIndexedElementPropertyGetter implements MapEventPropertyGetter
 {
     private final String propertyName;
     private final int index;
@@ -28,17 +28,8 @@ public class MapEventBeanArrayIndexedElementPropertyGetter implements EventPrope
         this.nestedGetter = nestedGetter;
     }
 
-    public Object get(EventBean obj)
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
     {
-        // The underlying is expected to be a map
-        if (!(obj.getUnderlying() instanceof Map))
-        {
-            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
-                    "the underlying data object is not of type java.lang.Map");
-        }
-
-        Map map = (Map) obj.getUnderlying();
-
         // If the map does not contain the key, this is allowed and represented as null
         EventBean[] wrapper = (EventBean[]) map.get(propertyName);
 
@@ -52,6 +43,24 @@ public class MapEventBeanArrayIndexedElementPropertyGetter implements EventPrope
         }
         EventBean innerArrayEvent = wrapper[index];
         return nestedGetter.get(innerArrayEvent);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
+
+    public Object get(EventBean obj)
+    {
+        // The underlying is expected to be a map
+        if (!(obj.getUnderlying() instanceof Map))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type java.lang.Map");
+        }
+
+        Map map = (Map) obj.getUnderlying();
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

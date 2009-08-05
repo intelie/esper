@@ -618,13 +618,13 @@ onSelectExpr
 @init  { paraphrases.push("on-select clause"); }
 @after { paraphrases.pop(); }
 	:	(INSERT insertIntoExpr)?
-		SELECT selectionList
+		SELECT DISTINCT? selectionList
 		onExprFrom?
 		(WHERE whereClause)?		
 		(GROUP BY groupByListExpr)?
 		(HAVING havingClause)?
 		(ORDER BY orderByListExpr)?
-		-> ^(ON_SELECT_EXPR insertIntoExpr? selectionList onExprFrom? whereClause? groupByListExpr? havingClause? orderByListExpr?)
+		-> ^(ON_SELECT_EXPR insertIntoExpr? DISTINCT? selectionList onExprFrom? whereClause? groupByListExpr? havingClause? orderByListExpr?)
 	;
 	
 onSelectInsertExpr
@@ -773,8 +773,8 @@ whereClause
 selectClause
 @init  { paraphrases.push("select clause"); }
 @after { paraphrases.pop(); }
-	:	(s=RSTREAM | s=ISTREAM | s=IRSTREAM)? selectionList
-		-> ^(SELECTION_EXPR $s? selectionList)
+	:	(s=RSTREAM | s=ISTREAM | s=IRSTREAM)? d=DISTINCT? selectionList
+		-> ^(SELECTION_EXPR $s? $d? selectionList)
 	;
 
 selectionList 	
@@ -1142,7 +1142,7 @@ subQueryExpr
 @init  { paraphrases.push("subquery"); }
 @after { paraphrases.pop(); }
 	:	LPAREN! 
-		SELECT! selectionListElement
+		SELECT! DISTINCT? selectionListElement
 	    FROM! subSelectFilterExpr
 	    (WHERE! whereClause)?
 	    RPAREN!

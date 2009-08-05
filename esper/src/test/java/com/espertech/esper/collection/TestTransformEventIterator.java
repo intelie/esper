@@ -58,5 +58,10 @@ public class TestTransformEventIterator extends TestCase
             Integer value = (Integer) event.get("intPrimitive");
             return SupportEventBeanFactory.createObject(new SupportBean_S0(value));
         }
+
+        public EventBean[] transform(EventBean[] events)
+        {
+            return new EventBean[0];
+        }
     }
 }

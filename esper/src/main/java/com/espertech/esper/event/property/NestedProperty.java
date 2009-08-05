@@ -16,6 +16,7 @@ import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.bean.NestedPropertyGetter;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.map.MapNestedPropertyGetter;
+import com.espertech.esper.event.map.MapEventPropertyGetter;
 import com.espertech.esper.event.xml.*;
 
 import java.io.StringWriter;
@@ -274,7 +275,7 @@ public class NestedProperty implements Property
         throw new IllegalStateException("Unexpected end of nested property");
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
+    public MapEventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
         Map currentDictionary = optionalMapPropTypes;

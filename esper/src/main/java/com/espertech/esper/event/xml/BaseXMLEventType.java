@@ -218,4 +218,9 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     {
         return configurationEventTypeXMLDOM.hashCode();
     }
+
+    public EventBeanReader getReader()
+    {
+        return null;
+    }    
 }

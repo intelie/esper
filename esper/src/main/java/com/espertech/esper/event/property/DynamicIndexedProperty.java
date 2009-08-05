@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.map.MapIndexedPropertyGetter;
+import com.espertech.esper.event.map.MapEventPropertyGetter;
 import com.espertech.esper.event.bean.DynamicIndexedPropertyGetter;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
@@ -71,7 +72,7 @@ public class DynamicIndexedProperty extends PropertyBase implements DynamicPrope
         return Object.class;
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
+    public MapEventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         return new MapIndexedPropertyGetter(this.getPropertyNameAtomic(), index);
     }

@@ -21,7 +21,7 @@ public class TestDataWindowIntersectExpiry extends TestCase
         init(false);
         String[] fields = new String[] {"string"};
 
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.win:length_batch(3).std:unique(intPrimitive)");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.win:length_batch(3).std:unique(intPrimitive) order by string asc");
         stmt.addListener(listener);
 
         sendEvent("E1", 1);

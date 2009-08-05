@@ -95,7 +95,7 @@ onDeleteExpr
 	;	
 
 onSelectExpr
-	:	^(ON_SELECT_EXPR insertIntoExpr? selectionList onExprFrom? whereClause[true]? groupByClause? havingClause? orderByClause?)
+	:	^(s=ON_SELECT_EXPR insertIntoExpr? DISTINCT? selectionList onExprFrom? whereClause[true]? groupByClause? havingClause? orderByClause? { leaveNode($s); }) 
 	;	
 
 onSelectInsertExpr
@@ -179,7 +179,7 @@ insertIntoExprCol
 	;
 
 selectClause
-	:	^(s=SELECTION_EXPR (RSTREAM | ISTREAM | IRSTREAM)? selectionList { leaveNode($s); })
+	:	^(s=SELECTION_EXPR (RSTREAM | ISTREAM | IRSTREAM)? DISTINCT? selectionList { leaveNode($s); })
 	;
 
 fromClause
@@ -454,7 +454,7 @@ subSelectInQueryExpr
 	;
 	
 subQueryExpr 
-	:	selectionListElement subSelectFilterExpr (whereClause[true])?
+	:	DISTINCT? selectionListElement subSelectFilterExpr (whereClause[true])?
 	;
 	
 subSelectFilterExpr

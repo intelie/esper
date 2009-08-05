@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.event.map;
 
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 
@@ -17,7 +16,7 @@ import java.util.Map;
 /**
  * Getter for a dynamic mappeds property for maps.
  */
-public class MapMappedPropertyGetter implements EventPropertyGetter
+public class MapMappedPropertyGetter implements MapEventPropertyGetter
 {
     private final String key;
     private final String fieldName;
@@ -33,14 +32,8 @@ public class MapMappedPropertyGetter implements EventPropertyGetter
         this.fieldName = fieldName;
     }
 
-    public Object get(EventBean eventBean) throws PropertyAccessException
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
     {
-        Object underlying = eventBean.getUnderlying();
-        if (!(underlying instanceof Map))
-        {
-            return null;
-        }
-        Map map = (Map) underlying;
         Object value = map.get(fieldName);
         if (value == null)
         {
@@ -54,14 +47,8 @@ public class MapMappedPropertyGetter implements EventPropertyGetter
         return innerMap.get(key);
     }
 
-    public boolean isExistsProperty(EventBean eventBean)
+    public boolean isMapExistsProperty(Map<String, Object> map)
     {
-        Object underlying = eventBean.getUnderlying();
-        if (!(underlying instanceof Map))
-        {
-            return false;
-        }
-        Map map = (Map) underlying;
         Object value = map.get(fieldName);
         if (value == null)
         {
@@ -73,6 +60,28 @@ public class MapMappedPropertyGetter implements EventPropertyGetter
         }
         Map innerMap = (Map) value;
         return innerMap.containsKey(key);
+    }
+
+    public Object get(EventBean eventBean) throws PropertyAccessException
+    {
+        Object underlying = eventBean.getUnderlying();
+        if (!(underlying instanceof Map))
+        {
+            return null;
+        }
+        Map<String, Object> map = (Map<String, Object>) underlying;
+        return getMap(map);
+    }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        Object underlying = eventBean.getUnderlying();
+        if (!(underlying instanceof Map))
+        {
+            return false;
+        }
+        Map<String, Object> map = (Map<String, Object>) underlying;
+        return isMapExistsProperty(map);
     }
 
     public Object getFragment(EventBean eventBean)

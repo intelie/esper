@@ -12,24 +12,20 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
-import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.collection.*;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Method to getSelectListEvents events in collections to other collections or other event types.
  */
 public class EventBeanUtility
 {
+    public static final EventBean[] nullArray = new EventBean[0];
+
     /**
      * Resizes an array of events to a new size.
      * <p>
@@ -447,5 +443,48 @@ public class EventBeanUtility
 
         EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false);
         return new FragmentEventType(type, isIndexed, true);
+    }
+
+    public static EventBean[] getDistinctByProp(ArrayDequeJDK6Backport<EventBean> events, EventBeanReader reader)
+    {
+        Set<MultiKeyUntypedEventPair> set = new LinkedHashSet<MultiKeyUntypedEventPair>();
+        for (EventBean event : events)
+        {
+            Object[] keys = reader.read(event);
+            MultiKeyUntypedEventPair pair = new MultiKeyUntypedEventPair(keys, event);
+            set.add(pair);
+        }
+
+        EventBean[] result = new EventBean[set.size()];
+        int count = 0;
+        for (MultiKeyUntypedEventPair row : set)
+        {
+            result[count++] = row.getEventBean();
+        }
+        return result;
+    }
+
+    public static EventBean[] getDistinctByProp(EventBean[] events, EventBeanReader reader)
+    {
+        if ((events == null) || (events.length < 2))
+        {
+            return events;
+        }
+        
+        Set<MultiKeyUntypedEventPair> set = new LinkedHashSet<MultiKeyUntypedEventPair>();
+        for (EventBean event : events)
+        {
+            Object[] keys = reader.read(event);
+            MultiKeyUntypedEventPair pair = new MultiKeyUntypedEventPair(keys, event);
+            set.add(pair);
+        }
+
+        EventBean[] result = new EventBean[set.size()];
+        int count = 0;
+        for (MultiKeyUntypedEventPair row : set)
+        {
+            result[count++] = row.getEventBean();
+        }
+        return result;
     }
 }

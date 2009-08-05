@@ -221,6 +221,11 @@ public class WrapperEventType implements EventTypeSPI
 		}
 	}
 
+    public EventBeanReader getReader()
+    {
+        return null;
+    }    
+
 	public EventType[] getSuperTypes()
 	{
 		return null;

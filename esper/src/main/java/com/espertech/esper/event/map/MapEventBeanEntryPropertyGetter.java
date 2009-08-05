@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * A getter that works on EventBean events residing within a Map as an event property.
  */
-public class MapEventBeanEntryPropertyGetter implements EventPropertyGetter {
+public class MapEventBeanEntryPropertyGetter implements MapEventPropertyGetter {
 
     private final String propertyMap;
     private final EventPropertyGetter eventBeanEntryGetter;
@@ -32,6 +32,26 @@ public class MapEventBeanEntryPropertyGetter implements EventPropertyGetter {
         this.eventBeanEntryGetter = eventBeanEntryGetter;
     }
 
+    public Object getMap(Map<String, Object> map) throws PropertyAccessException
+    {
+        // If the map does not contain the key, this is allowed and represented as null
+        Object value = map.get(propertyMap);
+
+        if (value == null)
+        {
+            return null;
+        }
+
+        // Object within the map
+        EventBean event = (EventBean) value;
+        return eventBeanEntryGetter.get(event);
+    }
+
+    public boolean isMapExistsProperty(Map<String, Object> map)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
+
     public Object get(EventBean obj)
     {
         Object underlying = obj.getUnderlying();
@@ -44,18 +64,7 @@ public class MapEventBeanEntryPropertyGetter implements EventPropertyGetter {
         }
 
         Map map = (Map) underlying;
-
-        // If the map does not contain the key, this is allowed and represented as null
-        Object value = map.get(propertyMap);
-
-        if (value == null)
-        {
-            return null;
-        }
-
-        // Object within the map
-        EventBean event = (EventBean) value;
-        return eventBeanEntryGetter.get(event);
+        return getMap(map);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

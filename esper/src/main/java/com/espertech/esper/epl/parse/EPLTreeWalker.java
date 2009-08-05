@@ -449,6 +449,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case MATCH_RECOGNIZE:
                 leaveMatchRecognize(node);
                 break;
+            case ON_SELECT_EXPR:
+                leaveOnSelect(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -1378,6 +1381,19 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         statementSpec.getMatchRecognizeSpec().setAllMatches(allMatches);
+    }
+
+    private void leaveOnSelect(Tree node) throws ASTWalkException
+    {
+        log.debug(".leaveOnSelect");
+
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            if (node.getChild(i).getType() == DISTINCT)
+            {
+                statementSpec.getSelectClauseSpec().setDistinct(true);
+            }
+        }
     }
 
     private void leaveMatchRecognizePartition(Tree node) throws ASTWalkException
@@ -2412,6 +2428,16 @@ public class EPLTreeWalker extends EsperEPL2Ast
         {
             statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
         }
+
+        boolean isDistinct = false;
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            if (node.getChild(i).getType() == DISTINCT)
+            {
+                isDistinct = true;
+            }
+        }
+        statementSpec.getSelectClauseSpec().setDistinct(isDistinct);
     }
 
     private List<ExprNode> getExprNodes(Tree parentNode, int startIndex)

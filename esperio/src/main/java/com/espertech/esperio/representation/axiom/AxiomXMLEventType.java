@@ -223,4 +223,9 @@ public class AxiomXMLEventType implements EventTypeSPI
     {
         return null;
     }
+
+    public EventBeanReader getReader()
+    {
+        return null;
+    }
 }

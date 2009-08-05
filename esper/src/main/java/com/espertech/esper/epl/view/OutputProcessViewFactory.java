@@ -42,6 +42,7 @@ public class OutputProcessViewFactory
         {
             isRouted = true;
         }
+        boolean isDistinct = statementSpec.getSelectClauseSpec().isDistinct();
 
         OutputStrategy outputStrategy;
         if ((statementSpec.getInsertIntoDesc() != null) || (statementSpec.getSelectStreamSelectorEnum() == SelectClauseStreamSelectorEnum.RSTREAM_ONLY))
@@ -69,14 +70,14 @@ public class OutputProcessViewFactory
             {
                 if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
                 {
-                    return new OutputProcessViewSnapshot(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext);
+                    return new OutputProcessViewSnapshot(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct);
                 }
                 else
                 {
-                    return new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext);
+                    return new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct);
                 }
             }
-            return new OutputProcessViewDirect(resultSetProcessor, outputStrategy, isRouted, statementContext.getStatementResultService());
+            return new OutputProcessViewDirect(resultSetProcessor, outputStrategy, isRouted, statementContext.getStatementResultService(), isDistinct);
         }
         catch (RuntimeException ex)
         {

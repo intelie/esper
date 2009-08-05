@@ -899,7 +899,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // Recursively compile the statement within the statement.
         ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
         List<SelectClauseElementCompiled> selectElements = new ArrayList<SelectClauseElementCompiled>();
-        SelectClauseSpecCompiled selectClauseCompiled = new SelectClauseSpecCompiled(selectElements);
+        SelectClauseSpecCompiled selectClauseCompiled = new SelectClauseSpecCompiled(selectElements, spec.getSelectClauseSpec().isDistinct());
         for (SelectClauseElementRaw raw : spec.getSelectClauseSpec().getSelectExprList())
         {
             if (raw instanceof SelectClauseExprRawSpec)
@@ -981,7 +981,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // Recursively compile the statement within the statement.
         ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
         List<SelectClauseElementCompiled> selectElements = new ArrayList<SelectClauseElementCompiled>();
-        SelectClauseSpecCompiled selectClauseCompiled = new SelectClauseSpecCompiled(selectElements);
+        SelectClauseSpecCompiled selectClauseCompiled = new SelectClauseSpecCompiled(selectElements, spec.isDistinct());
         for (SelectClauseElementRaw raw : spec.getSelectExprList())
         {
             if (raw instanceof SelectClauseExprRawSpec)

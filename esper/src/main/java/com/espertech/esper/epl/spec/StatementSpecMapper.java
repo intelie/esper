@@ -633,6 +633,7 @@ public class StatementSpecMapper
                 throw new IllegalStateException("Unexpected select clause element typed " + raw.getClass().getName());
             }
         }
+        clause.setDistinct(selectClauseSpec.isDistinct());
         return clause;
     }
 
@@ -758,6 +759,7 @@ public class StatementSpecMapper
                 spec.add(rawElement);
             }
         }
+        spec.setDistinct(selectClause.isDistinct());
         return spec;
     }
 

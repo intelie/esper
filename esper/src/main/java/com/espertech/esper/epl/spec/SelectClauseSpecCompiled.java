@@ -19,24 +19,27 @@ import java.io.Serializable;
  */
 public class SelectClauseSpecCompiled implements MetaDefItem, Serializable
 {
+    private final boolean isDistinct;
 	private List<SelectClauseElementCompiled> selectClauseElements;
     private static final long serialVersionUID = 5759170079421795146L;
 
     /**
      * Ctor.
      */
-    public SelectClauseSpecCompiled()
+    public SelectClauseSpecCompiled(boolean isDistinct)
 	{
 		selectClauseElements = new ArrayList<SelectClauseElementCompiled>();
+        this.isDistinct = isDistinct;
     }
 
     /**
      * Ctor.
      * @param selectList for a populates list of select expressions
      */
-    public SelectClauseSpecCompiled(List<SelectClauseElementCompiled> selectList)
+    public SelectClauseSpecCompiled(List<SelectClauseElementCompiled> selectList, boolean isDistinct)
 	{
         this.selectClauseElements = selectList;
+        this.isDistinct = isDistinct;
 	}
 
     /**
@@ -71,5 +74,10 @@ public class SelectClauseSpecCompiled implements MetaDefItem, Serializable
             }
         }
         return false;
+    }
+
+    public boolean isDistinct()
+    {
+        return isDistinct;
     }
 }

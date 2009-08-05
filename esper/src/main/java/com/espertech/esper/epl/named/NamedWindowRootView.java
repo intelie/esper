@@ -135,7 +135,7 @@ public class NamedWindowRootView extends ViewSupport
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @return base view for on-trigger expression
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)
     {
         // Determine strategy for deletion and index table to use (if any)
         Pair<LookupStrategy,PropertyIndexedEventTable> strategy = getStrategyPair(onTriggerDesc, joinExpr, filterEventType);
@@ -152,7 +152,7 @@ public class NamedWindowRootView extends ViewSupport
         }
         else
         {
-            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext);
+            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext, isDistinct);
         }
     }
 

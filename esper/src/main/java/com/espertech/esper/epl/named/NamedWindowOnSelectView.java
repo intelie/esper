@@ -19,6 +19,10 @@ import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.StatementStopService;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventBeanReaderDefaultImpl;
+import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.event.EventBeanReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,6 +44,8 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
     private final StatementContext statementContext;
     private EventBean[] lastResult;
     private Set<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
+    private boolean isDistinct;
+    private EventBeanReader eventBeanReader;
 
     /**
      * Ctor.
@@ -58,7 +64,8 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
                                    ResultSetProcessor resultSetProcessor,
                                    EPStatementHandle statementHandle,
                                    StatementResultService statementResultService,
-                                   StatementContext statementContext)
+                                   StatementContext statementContext,
+                                   boolean isDistinct)
     {
         super(statementStopService, lookupStrategy, rootView, statementContext);
         this.internalEventRouter = internalEventRouter;
@@ -66,6 +73,19 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
         this.statementHandle = statementHandle;
         this.statementResultService = statementResultService;
         this.statementContext = statementContext;
+        this.isDistinct = isDistinct;
+
+        if (isDistinct)
+        {
+            if (resultSetProcessor.getResultEventType() instanceof EventTypeSPI)
+            {
+                eventBeanReader = ((EventTypeSPI) resultSetProcessor.getResultEventType()).getReader();
+            }
+            if (eventBeanReader == null)
+            {
+                eventBeanReader = new EventBeanReaderDefaultImpl(resultSetProcessor.getResultEventType());
+            }
+        }
     }
 
     public void handleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
@@ -95,6 +115,11 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
         // process matches
         UniformPair<EventBean[]> pair = resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
         newData = (pair != null ? pair.getFirst() : null);
+
+        if (isDistinct)
+        {
+            newData = EventBeanUtility.getDistinctByProp(newData, eventBeanReader);
+        }
 
         if (internalEventRouter != null)
         {

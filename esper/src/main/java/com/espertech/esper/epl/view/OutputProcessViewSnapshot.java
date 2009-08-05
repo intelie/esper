@@ -17,6 +17,7 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.event.EventBeanUtility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,10 +49,12 @@ public class OutputProcessViewSnapshot extends OutputProcessView
                           boolean isInsertInto,
                           int streamCount,
     					  OutputLimitSpec outputLimitSpec,
-    					  StatementContext statementContext)
+    					  StatementContext statementContext,
+                          boolean isDistinct)
             throws ExprValidationException
     {
-        super(resultSetProcessor, outputStrategy, isInsertInto, statementContext.getStatementResultService());
+        // isDistinct handling through the iterator method
+        super(resultSetProcessor, outputStrategy, isInsertInto, statementContext.getStatementResultService(), isDistinct);
         log.debug(".ctor");
 
     	if(streamCount < 1)
