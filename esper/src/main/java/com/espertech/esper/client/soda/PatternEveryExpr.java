@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class PatternEveryExpr extends PatternExprBase
 {
+    private static final long serialVersionUID = 6325304538100271837L;
+
     /**
      * Ctor - for use to create a pattern expression tree, without pattern child expression.
      */

@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class LikeExpression extends ExpressionBase
 {
     private boolean isNot;
+    private static final long serialVersionUID = 6873736361487805660L;
 
     /**
      * Ctor - for use to create an expression tree, without child expression.

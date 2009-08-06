@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class SumProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;
+    private static final long serialVersionUID = -5248048600379786929L;
 
     /**
      * Ctor - for use to create an expression tree, without inner expression

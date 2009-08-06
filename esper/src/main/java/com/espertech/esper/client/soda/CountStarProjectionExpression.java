@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class CountStarProjectionExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = -784442964133996045L;
+
     /**
      * Ctor - for use to create an expression tree, without inner expression.
      */

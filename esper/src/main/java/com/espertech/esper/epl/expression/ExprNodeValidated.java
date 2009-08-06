@@ -11,6 +11,7 @@ import com.espertech.esper.client.EventBean;
 public class ExprNodeValidated extends ExprNode
 {
     private final ExprNode inner;
+    private static final long serialVersionUID = 301058622892268624L;
 
     public ExprNodeValidated(ExprNode inner)
     {

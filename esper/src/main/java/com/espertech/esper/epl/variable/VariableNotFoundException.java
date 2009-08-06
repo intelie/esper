@@ -13,6 +13,8 @@ package com.espertech.esper.epl.variable;
  */
 public class VariableNotFoundException extends VariableDeclarationException
 {
+    private static final long serialVersionUID = -6559271999235865015L;
+
     /**
      * Ctor.
      * @param msg the exception message.

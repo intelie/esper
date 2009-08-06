@@ -30,6 +30,7 @@ public class ExprMathNode extends ExprNode
 
     private MathArithTypeEnum.Computer arithTypeEnumComputer;
     private Class resultType;
+    private static final long serialVersionUID = 6479683588602862158L;
 
     /**
      * Ctor.

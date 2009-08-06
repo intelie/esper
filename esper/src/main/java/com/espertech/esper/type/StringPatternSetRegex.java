@@ -18,6 +18,7 @@ public class StringPatternSetRegex implements StringPatternSet
 {
     private final String patternText;
     private final Pattern pattern;
+    private static final long serialVersionUID = -506839196395937712L;
 
     /**
      * Ctor.

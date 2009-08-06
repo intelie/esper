@@ -21,6 +21,7 @@ public final class EvalGuardNode extends EvalNode
 {
     private PatternGuardSpec patternGuardSpec;
     private GuardFactory guardFactory;
+    private static final long serialVersionUID = -1300326291593373936L;
 
     /**
      * Constructor.

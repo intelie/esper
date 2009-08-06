@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 public class EngineNoSuchMethodException extends Exception
 {
     private Method nearestMissMethod;
+    private static final long serialVersionUID = 9217764859358996087L;
 
     /**
      * Ctor.

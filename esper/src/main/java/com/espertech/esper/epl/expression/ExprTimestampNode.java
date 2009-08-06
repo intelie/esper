@@ -20,6 +20,8 @@ import com.espertech.esper.schedule.TimeProvider;
  */
 public class ExprTimestampNode extends ExprNode
 {
+    private static final long serialVersionUID = -6332243334897136751L;
+
     /**
      * Ctor.
      */

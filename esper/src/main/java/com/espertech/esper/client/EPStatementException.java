@@ -15,6 +15,7 @@ package com.espertech.esper.client;
 public class EPStatementException extends EPException
 {
     private String expression;
+    private static final long serialVersionUID = 3279540500985257610L;
 
     /**
      * Ctor.

@@ -19,6 +19,8 @@ import java.io.StringWriter;
  */
 public class CaseSwitchExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = -5843078556996307245L;
+
     /**
      * Ctor - for use to create an expression tree, without inner expression
      */

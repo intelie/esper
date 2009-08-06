@@ -5,6 +5,8 @@ package com.espertech.esper.epl.annotation;
  */
 public class AnnotationException extends Exception
 {
+    private static final long serialVersionUID = 167248816444780182L;
+    
     /**
      * Ctor.
      * @param message error message

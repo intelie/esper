@@ -13,6 +13,8 @@ package com.espertech.esper.util;
  */
 public class PlaceholderParseException extends Exception
 {
+    private static final long serialVersionUID = -2247077092057635902L;
+
     /**
      * Ctor.
      * @param message is the error message

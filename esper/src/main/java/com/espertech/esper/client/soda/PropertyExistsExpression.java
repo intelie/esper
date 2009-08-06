@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class PropertyExistsExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = 415089848067641931L;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      */

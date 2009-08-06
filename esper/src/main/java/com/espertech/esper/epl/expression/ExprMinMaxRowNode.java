@@ -31,6 +31,7 @@ public class ExprMinMaxRowNode extends ExprNode
     private MinMaxTypeEnum minMaxTypeEnum;
     private Class resultType;
     private MinMaxTypeEnum.Computer computer;
+    private static final long serialVersionUID = -5244192656164983580L;
 
     /**
      * Ctor.

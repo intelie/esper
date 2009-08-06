@@ -19,6 +19,7 @@ public class RowRegexExprNodeAtom extends RowRegexExprNode
 
     private final String tag;
     private final RegexNFATypeEnum type;
+    private static final long serialVersionUID = -4844175686289523214L;
 
     public RowRegexExprNodeAtom(String tag, RegexNFATypeEnum type) {
         this.tag = tag;

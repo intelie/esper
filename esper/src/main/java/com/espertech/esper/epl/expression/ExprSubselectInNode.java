@@ -25,6 +25,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
 {
     private boolean isNotIn;
     private SubselectEvalStrategy subselectEvalStrategy;
+    private static final long serialVersionUID = -7233906204211162498L;
 
     /**
      * Ctor.

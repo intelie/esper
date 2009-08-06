@@ -16,6 +16,8 @@ import java.io.StringWriter;
  */
 public class Disjunction extends Junction
 {
+    private static final long serialVersionUID = -3457740552640868614L;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      * <p>

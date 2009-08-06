@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class PropertyValueExpression extends ExpressionBase
 {
     private String propertyName;
+    private static final long serialVersionUID = -1736666647795932881L;
 
     /**
      * Ctor.

@@ -21,6 +21,8 @@ import com.espertech.esper.schedule.TimeProvider;
  */
 public class ExprAndNode extends ExprNode
 {
+    private static final long serialVersionUID = 8105121208330622813L;
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean

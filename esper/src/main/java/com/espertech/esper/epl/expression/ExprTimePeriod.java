@@ -28,6 +28,7 @@ public class ExprTimePeriod extends ExprNode
     private final boolean hasSecond;
     private final boolean hasMillisecond;
     private boolean hasVariable;
+    private static final long serialVersionUID = -7229827032500659319L;
 
     /**
      * Ctor.

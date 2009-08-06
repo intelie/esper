@@ -22,6 +22,7 @@ public class ExprConstantNode extends ExprNode
 {
     private Object value;
     private final Class clazz;
+    private static final long serialVersionUID = 3154169410675962539L;
 
     /**
      * Ctor.

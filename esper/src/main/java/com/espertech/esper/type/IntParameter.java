@@ -18,6 +18,7 @@ import java.io.StringWriter;
 public class IntParameter implements NumberSetParameter
 {
     private int intValue;
+    private static final long serialVersionUID = -895750000874644640L;
 
     /**
      * Ctor.

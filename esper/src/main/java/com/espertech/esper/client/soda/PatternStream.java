@@ -20,6 +20,7 @@ import java.io.StringWriter;
 public class PatternStream extends ProjectedStream
 {
     private PatternExpr expression;
+    private static final long serialVersionUID = -8321367637970657123L;
 
     /**
      * Creates a pattern stream from a pattern expression.

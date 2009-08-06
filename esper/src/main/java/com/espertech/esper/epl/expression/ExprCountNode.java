@@ -17,6 +17,8 @@ import com.espertech.esper.epl.core.StreamTypeService;
  */
 public class ExprCountNode extends ExprAggregateNode
 {
+    private static final long serialVersionUID = 1859320277242087598L;
+
     /**
      * Ctor.
      * @param distinct - flag indicating unique or non-unique value aggregation

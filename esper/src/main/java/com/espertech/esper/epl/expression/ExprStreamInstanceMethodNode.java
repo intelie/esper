@@ -36,6 +36,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode
     private int streamNum = -1;
     private Class[] paramTypes;
 	private FastMethod instanceMethod;
+    private static final long serialVersionUID = 3422689488586035557L;
 
     /**
 	 * Ctor.

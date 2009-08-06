@@ -13,6 +13,8 @@ package com.espertech.esper.view;
  */
 public final class ViewProcessingException extends Exception
 {
+    private static final long serialVersionUID = -4098966582612999347L;
+
     /**
      * Constructor.
      * @param message is the error message

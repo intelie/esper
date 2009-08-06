@@ -9,6 +9,7 @@ import java.io.StringWriter;
 public class OrderedObjectParamExpression extends ExpressionBase
 {
     private boolean isDescending;
+    private static final long serialVersionUID = -8607653757516174092L;
 
     /**
      * Ctor.

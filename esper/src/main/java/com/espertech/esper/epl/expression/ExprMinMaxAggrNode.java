@@ -19,6 +19,7 @@ import com.espertech.esper.type.MinMaxTypeEnum;
 public class ExprMinMaxAggrNode extends ExprAggregateNode
 {
     private final MinMaxTypeEnum minMaxTypeEnum;
+    private static final long serialVersionUID = -7828413362615586145L;
 
     /**
      * Ctor.

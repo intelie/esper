@@ -15,6 +15,7 @@ import com.espertech.esper.view.stat.*;
 import com.espertech.esper.view.internal.PriorEventViewFactory;
 import com.espertech.esper.view.internal.UnionViewFactory;
 import com.espertech.esper.view.internal.IntersectViewFactory;
+import com.espertech.esper.rowregex.EventRowRegexNFAViewFactory;
 
 /**
  * Enum for all build-in views.
@@ -149,7 +150,12 @@ public enum ViewEnum
     /**
      * For retain-intersection policy.
      */
-    INTERNAL_INTERSECT("internal", "intersect", IntersectViewFactory.class, null);
+    INTERNAL_INTERSECT("internal", "intersect", IntersectViewFactory.class, null),
+
+    /**
+     * Match-recognize.
+     */
+    INTERNAL_MATCH_RECOG("internal", "match_recognize", EventRowRegexNFAViewFactory.class, null);
 
     private final String namespace;
     private final String name;

@@ -15,6 +15,8 @@ import com.espertech.esper.client.EPException;
  */
 public class CoercionException extends EPException
 {
+    private static final long serialVersionUID = 6562892150768930307L;
+
     /**
      * Ctor.
      * @param message supplies the detailed description

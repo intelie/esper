@@ -19,6 +19,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 public class ExprPlugInAggFunctionNode extends ExprAggregateNode
 {
     private AggregationSupport aggregationSupport;
+    private static final long serialVersionUID = 4512085880102791194L;
 
     /**
      * Ctor.

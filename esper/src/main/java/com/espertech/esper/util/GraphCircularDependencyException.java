@@ -13,6 +13,8 @@ package com.espertech.esper.util;
  */
 public class GraphCircularDependencyException extends Exception
 {
+    private static final long serialVersionUID = 2510973783421132985L;
+
     /**
      * Ctor.
      * @param message supplies the detailed description

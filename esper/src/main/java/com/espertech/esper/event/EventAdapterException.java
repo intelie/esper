@@ -15,6 +15,8 @@ import com.espertech.esper.client.EPException;
  */
 public class EventAdapterException extends EPException
 {
+    private static final long serialVersionUID = -6762596875991767135L;
+
     /**
      * Ctor.
      * @param message - error message

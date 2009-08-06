@@ -16,6 +16,7 @@ import com.espertech.esper.pattern.MatchedEventMap;
 public class RangeValueDouble implements FilterSpecParamRangeValue
 {
     private final double doubleValue;
+    private static final long serialVersionUID = -7724314003290299382L;
 
     /**
      * Ctor.

@@ -23,6 +23,7 @@ public final class FilterSpecParamIn extends FilterSpecParam
 {
     private final List<FilterSpecParamInValue> listOfValues;
     private MultiKeyUntyped inListConstantsOnly;
+    private static final long serialVersionUID = 1723225284589047752L;
 
     /**
      * Ctor.

@@ -14,6 +14,7 @@ public class RangeValueEventPropIndexed implements FilterSpecParamRangeValue
     private final String resultEventAsName;
     private final int resultEventIndex;
     private final String resultEventProperty;
+    private static final long serialVersionUID = -2443484252813342579L;
 
     /**
      * Ctor.

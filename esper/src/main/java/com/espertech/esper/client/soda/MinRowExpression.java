@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class MinRowExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = 8073671607714248651L;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      * <p>

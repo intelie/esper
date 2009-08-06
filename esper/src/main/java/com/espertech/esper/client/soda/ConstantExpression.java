@@ -18,6 +18,7 @@ import java.io.StringWriter;
 public class ConstantExpression extends ExpressionBase
 {
     private Object constant;
+    private static final long serialVersionUID = 1787950621647511049L;
 
     /**
      * Ctor.

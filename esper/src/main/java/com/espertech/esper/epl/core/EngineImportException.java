@@ -13,6 +13,8 @@ package com.espertech.esper.epl.core;
  */
 public class EngineImportException extends Exception
 {
+    private static final long serialVersionUID = 225164664276873019L;
+
     /**
      * Ctor.
      * @param msg - exception message

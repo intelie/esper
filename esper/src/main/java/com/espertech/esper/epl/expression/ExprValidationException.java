@@ -13,6 +13,8 @@ package com.espertech.esper.epl.expression;
  */
 public class ExprValidationException extends Exception
 {
+    private static final long serialVersionUID = 3208537526187204408L;
+
     /**
      * Ctor.
      * @param message - validation error message

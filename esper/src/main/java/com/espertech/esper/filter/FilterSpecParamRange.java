@@ -17,6 +17,7 @@ public final class FilterSpecParamRange extends FilterSpecParam
 {
     private final FilterSpecParamRangeValue min;
     private final FilterSpecParamRangeValue max;
+    private static final long serialVersionUID = -3381167844631490119L;
 
     /**
      * Constructor.

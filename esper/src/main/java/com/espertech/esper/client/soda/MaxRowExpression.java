@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class MaxRowExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = -286616738319179765L;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      * <p>

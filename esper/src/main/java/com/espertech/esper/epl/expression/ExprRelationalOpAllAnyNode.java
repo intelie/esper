@@ -26,6 +26,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
     private boolean hasCollectionOrArray;
 
     private RelationalOpEnum.Computer computer;
+    private static final long serialVersionUID = -9212002972361997109L;
 
     /**
      * Ctor.

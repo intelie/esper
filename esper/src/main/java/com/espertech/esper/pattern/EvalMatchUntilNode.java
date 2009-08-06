@@ -21,6 +21,7 @@ public final class EvalMatchUntilNode extends EvalNode
 {
     private final EvalMatchUntilSpec spec;
     private String[] tagsArrayed;
+    private static final long serialVersionUID = -959026931248456356L;
 
     /**
      * Ctor.

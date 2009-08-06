@@ -17,6 +17,8 @@ import java.util.List;
  */
 public class View extends EPBaseNamedObject
 {
+    private static final long serialVersionUID = 704960216123401420L;
+
     /**
      * Creates a view.
      * @param namespace is thie view namespace, i.e. "win" for data windows

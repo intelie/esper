@@ -29,6 +29,7 @@ public class ExprEqualsNode extends ExprNode
     private boolean mustCoerce;
     private SimpleNumberCoercer numberCoercerLHS;
     private SimpleNumberCoercer numberCoercerRHS;
+    private static final long serialVersionUID = 5504809379222369952L;
 
     /**
      * Ctor.

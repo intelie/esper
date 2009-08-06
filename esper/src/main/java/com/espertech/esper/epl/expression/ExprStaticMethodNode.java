@@ -38,6 +38,7 @@ public class ExprStaticMethodNode extends ExprNode
     private boolean isCachedResult;
     private Object cachedResult;
     private boolean isUseCache;
+    private static final long serialVersionUID = -2237283743896280252L;
 
     /**
 	 * Ctor.

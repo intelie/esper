@@ -13,6 +13,8 @@ package com.espertech.esper.schedule;
  */
 public class ScheduleServiceException extends RuntimeException
 {
+    private static final long serialVersionUID = 941833133771185390L;
+
     /**
      * Constructor.
      * @param message is the error message

@@ -13,6 +13,8 @@ package com.espertech.esper.view;
  */
 public class ViewParameterException extends Exception
 {
+    private static final long serialVersionUID = 8988506719651160950L;
+
     /**
      * Ctor.
      * @param message - validation error message

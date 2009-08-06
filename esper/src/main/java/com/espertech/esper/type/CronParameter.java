@@ -21,6 +21,7 @@ public class CronParameter implements NumberSetParameter {
     private Integer day, month;
 
     private static int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
+    private static final long serialVersionUID = -4006350378033980878L;
 
     /**
      * Ctor.

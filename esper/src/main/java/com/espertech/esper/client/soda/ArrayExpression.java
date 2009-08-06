@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class ArrayExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = 5332982041846659978L;
+    
     /**
      * Add a property to the expression.
      * @param property to add

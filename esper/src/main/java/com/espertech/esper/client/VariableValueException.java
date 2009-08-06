@@ -13,6 +13,8 @@ package com.espertech.esper.client;
  */
 public class VariableValueException extends EPException
 {
+    private static final long serialVersionUID = 68805851988328832L;
+
     /**
      * Ctor.
      * @param message supplies exception details

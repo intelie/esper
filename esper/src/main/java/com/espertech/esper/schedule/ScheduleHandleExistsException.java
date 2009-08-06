@@ -14,6 +14,8 @@ package com.espertech.esper.schedule;
  */
 public final class ScheduleHandleExistsException extends ScheduleServiceException
 {
+    private static final long serialVersionUID = 7987557146132195955L;
+
     /**
      * Constructor.
      * @param message is the error message

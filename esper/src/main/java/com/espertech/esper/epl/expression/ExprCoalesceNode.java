@@ -24,6 +24,7 @@ public class ExprCoalesceNode extends ExprNode
 {
     private Class resultType;
     private boolean[] isNumericCoercion;
+    private static final long serialVersionUID = -8276568753875819730L;
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {

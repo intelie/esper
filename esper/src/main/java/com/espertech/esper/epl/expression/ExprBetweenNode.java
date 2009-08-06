@@ -31,6 +31,7 @@ public class ExprBetweenNode extends ExprNode
 
     private boolean isAlwaysFalse;
     private ExprBetweenComp computer;
+    private static final long serialVersionUID = -9089344387956311948L;
 
     /**
      * Ctor.

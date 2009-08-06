@@ -18,6 +18,8 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
  */
 public final class EvalRootNode extends EvalNode implements PatternStarter
 {
+    private static final long serialVersionUID = 6894059650449481615L;
+
     public final PatternStopCallback start(PatternMatchCallback callback,
                                            PatternContext context)
     {

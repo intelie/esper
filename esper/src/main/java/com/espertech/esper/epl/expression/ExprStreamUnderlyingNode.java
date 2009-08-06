@@ -24,6 +24,7 @@ public class ExprStreamUnderlyingNode extends ExprNode
     private final String streamName;
     private int streamNum = -1;
     private Class type;
+    private static final long serialVersionUID = 6611578192872250478L;
 
     /**
      * Ctor.

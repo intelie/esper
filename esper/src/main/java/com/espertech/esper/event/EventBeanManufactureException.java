@@ -5,6 +5,8 @@ package com.espertech.esper.event;
  */
 public class EventBeanManufactureException extends Exception
 {
+    private static final long serialVersionUID = -7713342108994541449L;
+
     /**
      * Ctor.
      * @param message message

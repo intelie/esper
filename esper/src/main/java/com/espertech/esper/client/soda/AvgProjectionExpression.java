@@ -18,6 +18,7 @@ import java.io.StringWriter;
 public class AvgProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;
+    private static final long serialVersionUID = 8608818096433764685L;
 
     /**
      * Ctor - for use to create an expression tree, without inner expression

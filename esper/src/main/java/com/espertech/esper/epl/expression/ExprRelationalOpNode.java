@@ -24,6 +24,7 @@ public class ExprRelationalOpNode extends ExprNode
 {
     private final RelationalOpEnum relationalOpEnum;
     private RelationalOpEnum.Computer computer;
+    private static final long serialVersionUID = -6170161542681634598L;
 
     /**
      * Ctor.

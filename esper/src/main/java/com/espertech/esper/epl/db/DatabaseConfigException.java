@@ -13,6 +13,8 @@ package com.espertech.esper.epl.db;
  */
 public class DatabaseConfigException extends Exception
 {
+    private static final long serialVersionUID = 6493251258537897912L;
+
     /**
      * Ctor.
      * @param msg - message

@@ -27,6 +27,7 @@ public class ExprCastNode extends ExprNode
     private final String classIdentifier;
     private Class targetType;
     private CasterParserComputer casterParserComputer;
+    private static final long serialVersionUID = 7448449031028156455L;
 
     /**
      * Ctor.

@@ -36,6 +36,7 @@ public class ExprCaseNode extends ExprNode
     private boolean isNumericResult;
     private boolean mustCoerce;
     private SimpleNumberCoercer coercer;
+    private static final long serialVersionUID = 792538321520346459L;
 
     /**
      * Ctor.

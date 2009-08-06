@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class RelationalOpExpression extends ExpressionBase
 {
     private String operator;
+    private static final long serialVersionUID = -4590496481449181068L;
 
     /**
      * Ctor.

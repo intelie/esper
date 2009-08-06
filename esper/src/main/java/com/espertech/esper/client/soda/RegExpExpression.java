@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class RegExpExpression extends ExpressionBase
 {
     private boolean isNot;
+    private static final long serialVersionUID = -3147750744100550487L;
 
     /**
      * Ctor - for use to create an expression tree, without child expression.

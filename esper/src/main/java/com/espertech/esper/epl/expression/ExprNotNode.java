@@ -21,6 +21,8 @@ import com.espertech.esper.schedule.TimeProvider;
  */
 public class ExprNotNode extends ExprNode
 {
+    private static final long serialVersionUID = -5958420226808323787L;
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Must have a single child node

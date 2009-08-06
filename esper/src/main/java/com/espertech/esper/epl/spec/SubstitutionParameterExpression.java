@@ -22,6 +22,7 @@ public class SubstitutionParameterExpression extends ExpressionBase
     private final int index;
     private Object constant;
     private boolean isSatisfied;
+    private static final long serialVersionUID = -2310287186517093069L;
 
     /**
      * Ctor.

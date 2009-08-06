@@ -1,11 +1,15 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprTimePeriod;
+import com.espertech.esper.util.MetaDefItem;
 
-public class MatchRecognizeInterval
+import java.io.Serializable;
+
+public class MatchRecognizeInterval implements MetaDefItem, Serializable
 {
     private final ExprTimePeriod timePeriodExpr;
     private final long msec;
+    private static final long serialVersionUID = 9015877742992218244L;
 
     public MatchRecognizeInterval(ExprTimePeriod timePeriodExpr)
     {

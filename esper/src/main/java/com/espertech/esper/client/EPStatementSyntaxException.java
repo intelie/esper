@@ -21,6 +21,8 @@ import java.util.Set;
  */
 public class EPStatementSyntaxException extends EPStatementException
 {
+    private static final long serialVersionUID = -1042773433127517692L;
+
     /**
      * Ctor.
      * @param message - error message

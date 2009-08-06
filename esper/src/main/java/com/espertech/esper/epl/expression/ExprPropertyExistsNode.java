@@ -21,6 +21,7 @@ import com.espertech.esper.schedule.TimeProvider;
 public class ExprPropertyExistsNode extends ExprNode
 {
     private ExprIdentNode identNode;
+    private static final long serialVersionUID = -6304444201237275628L;
 
     /**
      * Ctor.

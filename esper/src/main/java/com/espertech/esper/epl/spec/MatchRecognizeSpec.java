@@ -2,12 +2,14 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.rowregex.RowRegexExprNode;
+import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class MatchRecognizeSpec {
-
+public class MatchRecognizeSpec implements MetaDefItem, Serializable
+{
     private List<ExprNode> partitionByExpressions;
     private List<MatchRecognizeMeasureItem> measures;
     private RowRegexExprNode pattern;
@@ -15,6 +17,7 @@ public class MatchRecognizeSpec {
     private boolean isAllMatches;
     private MatchRecognizeSkip skip;
     private MatchRecognizeInterval interval;
+    private static final long serialVersionUID = -2402650987323748877L;
 
     public MatchRecognizeSpec() {
         partitionByExpressions = new ArrayList<ExprNode>();

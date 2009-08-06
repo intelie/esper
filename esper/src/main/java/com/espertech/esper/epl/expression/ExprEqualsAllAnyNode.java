@@ -28,7 +28,8 @@ public class ExprEqualsAllAnyNode extends ExprNode
     private boolean mustCoerce;
     private SimpleNumberCoercer coercer;
     private boolean hasCollectionOrArray;
-    
+    private static final long serialVersionUID = -2410457251623137179L;
+
     /**
      * Ctor.
      * @param isNotEquals - true if this is a (!=) not equals rather then equals, false if its a '=' equals

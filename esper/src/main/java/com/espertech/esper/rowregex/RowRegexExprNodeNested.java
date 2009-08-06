@@ -18,6 +18,7 @@ public class RowRegexExprNodeNested extends RowRegexExprNode
     private static final Log log = LogFactory.getLog(RowRegexExprNodeNested.class);
 
     private final RegexNFATypeEnum type;
+    private static final long serialVersionUID = -2079284511194587570L;
 
     public RowRegexExprNodeNested(RegexNFATypeEnum type) {
         this.type = type;

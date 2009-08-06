@@ -82,7 +82,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             throw new IllegalArgumentException("Name parameter does not have a value provided");
         }
 
-        return engine.getServices().getStatementIsolationService().getIsolationUnit(name);
+        return engine.getServices().getStatementIsolationService().getIsolationUnit(name, null);
     }
 
     /**

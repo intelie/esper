@@ -15,6 +15,8 @@ import com.espertech.esper.collection.Pair;
  */
 public class PropertyNotFoundException extends StreamTypesException
 {
+    private static final long serialVersionUID = -29171552032256573L;
+
     /**
      * Ctor.
      * @param msg - message

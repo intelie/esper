@@ -153,6 +153,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(String, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -5155039606411608898L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getString(columnName);
@@ -166,6 +168,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(BigDecimal, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -648825691097776732L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getBigDecimal(columnName);
@@ -179,6 +183,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(Boolean, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = 5760469994325386982L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getBoolean(columnName);
@@ -192,6 +198,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(Byte, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -2840004368317980229L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getByte(columnName);
@@ -205,6 +213,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(ByteArray, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = 7531500030996242544L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getBytes(columnName);
@@ -218,6 +228,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(Double, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -7421693646427315376L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getDouble(columnName);
@@ -231,6 +243,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(Float, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -3368945008278992912L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getFloat(columnName);
@@ -244,6 +258,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(Int, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = 84694877489363201L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getInt(columnName);
@@ -257,6 +273,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(Long, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -1021242584650775564L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getLong(columnName);
@@ -270,6 +288,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(Short, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -2922908857447642497L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getShort(columnName);
@@ -283,6 +303,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(SqlDate, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = 7869800941910757215L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getDate(columnName);
@@ -296,6 +318,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(SqlTime, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -5259494991875064798L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getTime(columnName);
@@ -309,6 +333,8 @@ public enum DatabaseTypeEnum
 
         bindings.put(SqlTimestamp, new DatabaseTypeBinding()
         {
+            private static final long serialVersionUID = -8708251362439431175L;
+
             public Object getValue(ResultSet resultSet, String columnName) throws SQLException
             {
                 return resultSet.getTimestamp(columnName);

@@ -13,6 +13,8 @@ package com.espertech.esper.pattern;
  */
 public final class PatternObjectException extends Exception
 {
+    private static final long serialVersionUID = 3695386520684731455L;
+
     /**
      * Constructor.
      * @param message is the error message

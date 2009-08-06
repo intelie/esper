@@ -14,7 +14,9 @@ import java.io.StringWriter;
  * Case expression that act as a when-then-else.
  */
 public class CaseWhenThenExpression extends ExpressionBase
-{    
+{
+    private static final long serialVersionUID = -6478192972183336030L;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      * <p>

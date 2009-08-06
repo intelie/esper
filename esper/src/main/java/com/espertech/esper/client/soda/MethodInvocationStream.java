@@ -20,6 +20,7 @@ public class MethodInvocationStream extends Stream
     private String className;
     private String methodName;
     private List<Expression> parameterExpressions;
+    private static final long serialVersionUID = -4629123886680505829L;
 
     /**
      * Creates a new method-invocation-based stream without parameters.

@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class MaxProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;
+    private static final long serialVersionUID = -2052925266576308551L;
 
     /**
      * Ctor - for use to create an expression tree, without inner expression

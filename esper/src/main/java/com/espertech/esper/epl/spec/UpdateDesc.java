@@ -23,6 +23,7 @@ public class UpdateDesc implements MetaDefItem, Serializable
     private final String optionalStreamName;
     private final List<OnTriggerSetAssignment> assignments;
     private ExprNode optionalWhereClause;
+    private static final long serialVersionUID = -5995788555238052741L;
 
     public UpdateDesc(String optionalStreamName, List<OnTriggerSetAssignment> assignments, ExprNode optionalWhereClause) {
         this.optionalStreamName = optionalStreamName;

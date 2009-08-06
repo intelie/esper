@@ -18,6 +18,7 @@ import java.io.StringWriter;
 public class BitwiseOpExpression extends ExpressionBase
 {
     private BitWiseOpEnum binaryOp;
+    private static final long serialVersionUID = 5564205980185587363L;
 
     /**
      * Ctor - for use to create an expression tree, without child expression.

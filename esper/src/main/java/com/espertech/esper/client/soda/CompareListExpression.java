@@ -9,6 +9,7 @@ public class CompareListExpression extends ExpressionBase
 {
     private String operator;
     private boolean isAll;
+    private static final long serialVersionUID = 2915262248687901526L;
 
     /**
      * Ctor.

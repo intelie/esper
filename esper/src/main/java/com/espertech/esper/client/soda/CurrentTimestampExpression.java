@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class CurrentTimestampExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = -8873610275384531172L;
+
     /**
      * Ctor.
      */

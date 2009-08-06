@@ -26,6 +26,7 @@ import java.util.Set;
 public class ExprSubselectExistsNode extends ExprSubselectNode
 {
     private static final Log log = LogFactory.getLog(ExprSubselectExistsNode.class);
+    private static final long serialVersionUID = 7082390247880356269L;
 
     /**
      * Ctor.

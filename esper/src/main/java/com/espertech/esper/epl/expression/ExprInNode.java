@@ -32,6 +32,7 @@ public class ExprInNode extends ExprNode
     private boolean mustCoerce;
     private boolean hasCollectionOrArray;
     private SimpleNumberCoercer coercer;
+    private static final long serialVersionUID = -601723009914169907L;
 
     /**
      * Ctor.

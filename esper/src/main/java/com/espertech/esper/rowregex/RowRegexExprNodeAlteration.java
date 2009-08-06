@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 public class RowRegexExprNodeAlteration extends RowRegexExprNode
 {
     private static final Log log = LogFactory.getLog(RowRegexExprNodeAlteration.class);
+    private static final long serialVersionUID = 8383340732689436983L;
 
     public RowRegexExprNodeAlteration()
     {        

@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class PreviousExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = -4347875900366616364L;
+
     /**
      * Ctor.
      */

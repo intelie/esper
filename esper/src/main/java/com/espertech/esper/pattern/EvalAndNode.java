@@ -18,6 +18,8 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
  */
 public final class EvalAndNode extends EvalNode
 {
+    private static final long serialVersionUID = 6830000101092907359L;
+
     public final EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
                                         PatternContext context,

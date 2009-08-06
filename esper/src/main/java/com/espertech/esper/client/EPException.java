@@ -13,6 +13,8 @@ package com.espertech.esper.client;
  */
 public class EPException extends RuntimeException
 {
+    private static final long serialVersionUID = 359488863761406599L;
+
     /**
      * Ctor.
      * @param message - error message

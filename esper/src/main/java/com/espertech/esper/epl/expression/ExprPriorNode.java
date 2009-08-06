@@ -29,6 +29,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
     private int constantIndexNumber;
     private RelativeAccessByEventNIndex relativeAccess;
     private RandomAccessByIndex randomAccess;
+    private static final long serialVersionUID = -2115346817501589366L;
 
     /**
      * Returns the index of the prior.

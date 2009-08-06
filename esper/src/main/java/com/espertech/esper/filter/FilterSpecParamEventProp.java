@@ -23,6 +23,7 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
     private final boolean isMustCoerce;
     private final SimpleNumberCoercer numberCoercer;
     private final Class coercionType;
+    private static final long serialVersionUID = 7839598101507253516L;
 
     /**
      * Constructor.

@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class InExpression extends ExpressionBase
 {
     boolean isNotIn;
+    private static final long serialVersionUID = -5105764419995579144L;
 
     /**
      * Ctor - for use to create an expression tree, without child expression.

@@ -15,6 +15,8 @@ import com.espertech.esper.collection.Pair;
  */
 public class StreamNotFoundException extends StreamTypesException
 {
+    private static final long serialVersionUID = -665030219652415977L;
+
     /**
      * Ctor.
      * @param msg - message

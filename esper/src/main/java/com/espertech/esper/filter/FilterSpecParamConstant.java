@@ -16,6 +16,7 @@ import com.espertech.esper.pattern.MatchedEventMap;
 public final class FilterSpecParamConstant extends FilterSpecParam
 {
     private final Object filterConstant;
+    private static final long serialVersionUID = 5732440503234468449L;
 
     /**
      * Constructor.

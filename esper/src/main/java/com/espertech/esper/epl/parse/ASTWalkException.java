@@ -13,6 +13,8 @@ package com.espertech.esper.epl.parse;
  */
 public class ASTWalkException extends RuntimeException
 {
+    private static final long serialVersionUID = -339092618059394426L;
+
     /**
      * Ctor.
      * @param message is the error message

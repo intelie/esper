@@ -17,6 +17,8 @@ import java.io.StringWriter;
  */
 public class NotExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = -1247919838946739236L;
+
     /**
      * Ctor.
      * @param inner is the expression to negate

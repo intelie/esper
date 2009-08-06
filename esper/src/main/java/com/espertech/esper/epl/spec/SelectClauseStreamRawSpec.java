@@ -15,6 +15,7 @@ public class SelectClauseStreamRawSpec implements SelectClauseElementRaw
 {
     private String streamName;
     private String optionalAsName;
+    private static final long serialVersionUID = 3679315688549186789L;
 
     /**
      * Ctor.

@@ -35,6 +35,7 @@ public class ExprIdentNode extends ExprNode
     private EventPropertyGetter propertyGetter;
     private int streamNum = -1;
     private Class propertyType;
+    private static final long serialVersionUID = 5882493771230745244L;
 
     /**
      * Ctor.

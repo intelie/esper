@@ -18,6 +18,7 @@ public class SubqueryQualifiedExpression extends ExpressionBase
     private EPStatementObjectModel model;
     private String operator;
     private boolean isAll;
+    private static final long serialVersionUID = 7461569844284137858L;
 
     /**
      * Ctor - for use to create an expression tree, without child expression.

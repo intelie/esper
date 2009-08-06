@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class InstanceOfExpression extends ExpressionBase
 {
     private String[] typeNames;
+    private static final long serialVersionUID = 237629474193131995L;
 
     /**
      * Ctor - for use to create an expression tree, without child expression.

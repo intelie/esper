@@ -21,6 +21,7 @@ import com.espertech.esper.schedule.TimeProvider;
 public class ExprConcatNode extends ExprNode
 {
     private StringBuffer buffer;
+    private static final long serialVersionUID = 5811427566733004327L;
 
     /**
      * Ctor.

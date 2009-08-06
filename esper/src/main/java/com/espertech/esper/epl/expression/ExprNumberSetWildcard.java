@@ -14,6 +14,8 @@ import com.espertech.esper.type.WildcardParameter;
 public class ExprNumberSetWildcard extends ExprNode
 {
     private static final WildcardParameter wildcardParameter = new WildcardParameter();
+    private static final long serialVersionUID = -6098833102154556698L;
+
     public String toExpressionString()
     {
         return "*";

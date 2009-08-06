@@ -42,6 +42,7 @@ import java.util.*;
 public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 {
     private final EvalNode evalNode;
+    private static final long serialVersionUID = 6393401926404401433L;
 
     /**
      * Ctor.

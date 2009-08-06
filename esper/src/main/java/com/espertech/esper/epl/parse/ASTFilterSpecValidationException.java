@@ -13,6 +13,8 @@ package com.espertech.esper.epl.parse;
  */
 public class ASTFilterSpecValidationException extends ASTWalkException
 {
+    private static final long serialVersionUID = -2940818233788689612L;
+
     /**
      * Ctor.
      * @param message - error message

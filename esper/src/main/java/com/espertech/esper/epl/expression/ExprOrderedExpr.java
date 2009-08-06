@@ -14,6 +14,7 @@ import com.espertech.esper.client.EventBean;
 public class ExprOrderedExpr extends ExprNode
 {
     private final boolean isDescending;
+    private static final long serialVersionUID = -3140402807682771591L;
 
     /**
      * Ctor.

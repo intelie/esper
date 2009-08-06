@@ -13,6 +13,8 @@ package com.espertech.esper.client;
  */
 public class EventTypeException extends EPException
 {
+    private static final long serialVersionUID = 6379075288506028975L;
+
     /**
      * Ctor.
      * @param message supplies exception details

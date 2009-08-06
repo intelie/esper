@@ -28,6 +28,7 @@ public class ExprBitWiseNode extends ExprNode {
     private final BitWiseOpEnum _bitWiseOpEnum;
     private BitWiseOpEnum.Computer bitWiseOpEnumComputer;
     private Class resultType;
+    private static final long serialVersionUID = 9035943176810365437L;
 
     /**
      * Ctor.

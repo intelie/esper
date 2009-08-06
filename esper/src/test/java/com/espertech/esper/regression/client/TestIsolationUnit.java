@@ -63,6 +63,26 @@ public class TestIsolationUnit extends TestCase
         {
             assertEquals("Statement named 'A' is not currently in service isolation", ex.getMessage());
         }
+
+        try
+        {
+            unitTwo.getEPAdministrator().removeStatement(new EPStatement[] {null});
+            fail();
+        }
+        catch (EPServiceIsolationException ex)
+        {
+            assertEquals("Illegal argument, a null value was provided in the statement list", ex.getMessage());
+        }
+
+        try
+        {
+            unitTwo.getEPAdministrator().addStatement(new EPStatement[] {null});
+            fail();
+        }
+        catch (EPServiceIsolationException ex)
+        {
+            assertEquals("Illegal argument, a null value was provided in the statement list", ex.getMessage());
+        }
     }
 
     public void testIsolateFilter()

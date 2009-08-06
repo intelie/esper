@@ -17,6 +17,8 @@ import java.util.List;
  */
 public final class PatternObserverSpec extends ObjectSpec
 {
+    private static final long serialVersionUID = 4146597759173320714L;
+
     /**
      * Constructor.
      * @param namespace if the namespace the object is in

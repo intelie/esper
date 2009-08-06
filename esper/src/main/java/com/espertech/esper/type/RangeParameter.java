@@ -19,6 +19,7 @@ public class RangeParameter implements NumberSetParameter
 {
     private int low;
     private int high;
+    private static final long serialVersionUID = 8495531153029613902L;
 
     /**
      * Ctor.

@@ -20,6 +20,7 @@ public class BetweenExpression extends ExpressionBase
     private boolean isLowEndpointIncluded;
     private boolean isHighEndpointIncluded;
     private boolean isNotBetween;
+    private static final long serialVersionUID = 4626033892510751123L;
 
     /**
      * Ctor, creates a between range check.

@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class ArithmaticExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = 2237615280620839719L;
+    
     private String operator;
 
     /**

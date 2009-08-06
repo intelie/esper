@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 public class ExprNumberSetRange extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetRange.class);
+    private static final long serialVersionUID = -3777415170380735662L;
 
     public String toExpressionString()
     {

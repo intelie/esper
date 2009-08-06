@@ -22,6 +22,7 @@ public final class EvalObserverNode extends EvalNode
 {
     private final PatternObserverSpec patternObserverSpec;
     private ObserverFactory observerFactory;
+    private static final long serialVersionUID = 9045310817018028026L;
 
     /**
      * Constructor.

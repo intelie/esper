@@ -15,6 +15,8 @@ import com.espertech.esper.client.EPException;
  */
 public class ClassInstantiationException extends EPException
 {
+    private static final long serialVersionUID = 7562672676472269666L;
+
     /**
      * Ctor.
      * @param message supplies the detailed description

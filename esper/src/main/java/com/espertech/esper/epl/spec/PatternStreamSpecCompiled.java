@@ -29,6 +29,7 @@ public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamS
     private final EvalNode evalNode;
     private final Map<String, Pair<EventType, String>> taggedEventTypes;       // Stores types for filters with tags, single event
     private final Map<String, Pair<EventType, String>> arrayEventTypes;       // Stores types for filters with tags, array event
+    private static final long serialVersionUID = 1268004301792124753L;
 
     /**
      * Ctor.

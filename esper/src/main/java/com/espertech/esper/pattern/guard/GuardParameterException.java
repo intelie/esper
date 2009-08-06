@@ -13,6 +13,8 @@ package com.espertech.esper.pattern.guard;
  */
 public class GuardParameterException extends Exception
 {
+    private static final long serialVersionUID = -7356613905301615187L;
+
     /**
      * Ctor.
      * @param message - validation error message

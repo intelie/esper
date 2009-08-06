@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class MinProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;
+    private static final long serialVersionUID = -5521787388585609418L;
 
     /**
      * Ctor - for use to create an expression tree, without inner expression

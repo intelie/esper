@@ -19,6 +19,7 @@ public class StringPatternSetLike implements StringPatternSet
 {
     private final String likeString;
     private final LikeUtil likeUtil;
+    private static final long serialVersionUID = -707941336445095011L;
 
     /**
      * Ctor.

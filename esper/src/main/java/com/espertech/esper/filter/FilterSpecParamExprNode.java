@@ -31,6 +31,7 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
     private final EventAdapterService eventAdapterService;
     private final VariableService variableService;
     private final boolean hasVariable;
+    private static final long serialVersionUID = 2298436088557677833L;
 
     /**
      * Ctor.

@@ -7,6 +7,8 @@ import java.io.StringWriter;
  */
 public class CrontabParameterSetExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = -8683887158482697984L;
+
     /**
      * Ctor.
      */

@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class PriorExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = 3914409812498086994L;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      */

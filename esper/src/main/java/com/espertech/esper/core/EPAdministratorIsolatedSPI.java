@@ -6,31 +6,14 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package com.espertech.esper.pattern.observer;
+package com.espertech.esper.core;
+
+import com.espertech.esper.client.EPAdministratorIsolated;
 
 /**
- * Thrown to indicate a validation error in guard parameterization.
+ * Implementation for the admin interface.
  */
-public class ObserverParameterException extends Exception
+public interface EPAdministratorIsolatedSPI extends EPAdministratorIsolated
 {
-    private static final long serialVersionUID = -7069000986550813236L;
-
-    /**
-     * Ctor.
-     * @param message - validation error message
-     */
-    public ObserverParameterException(String message)
-    {
-        super(message);
-    }
-
-    /**
-     * Ctor.
-     * @param message the error message
-     * @param cause the causal exception
-     */
-    public ObserverParameterException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+    public void addStatement(String name);
 }

@@ -18,6 +18,7 @@ import java.io.StringWriter;
 public class FrequencyParameter implements NumberSetParameter
 {
     private int frequency;
+    private static final long serialVersionUID = -2303214112045704231L;
 
     /**
      * Ctor.

@@ -17,7 +17,8 @@ import org.apache.commons.logging.LogFactory;
 public class ExprNumberSetFrequency extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetFrequency.class);
-    
+    private static final long serialVersionUID = -5389069399403078192L;
+
     public String toExpressionString()
     {
         return "*/" + this.getChildNodes().get(0); 

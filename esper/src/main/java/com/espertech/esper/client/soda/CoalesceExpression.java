@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class CoalesceExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = 2591445292377310176L;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      * <p>

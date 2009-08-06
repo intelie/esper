@@ -22,6 +22,7 @@ public final class EvalEveryDistinctNode extends EvalNode
 {
     private List<ExprNode> expressions;
     private MatchedEventConvertor convertor;
+    private static final long serialVersionUID = 7455570958072753956L;
 
     /**
      * Ctor.

@@ -32,6 +32,7 @@ public class ExprSubselectAllSomeAnyNode extends ExprSubselectNode
     private final RelationalOpEnum relationalOp;
 
     private SubselectEvalStrategy evalStrategy;
+    private static final long serialVersionUID = -3884694910286266280L;
 
     /**
      * Ctor.

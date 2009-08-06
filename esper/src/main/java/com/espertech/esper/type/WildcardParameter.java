@@ -17,6 +17,8 @@ import java.io.StringWriter;
  */
 public class WildcardParameter implements NumberSetParameter
 {
+    private static final long serialVersionUID = -9199568581677973415L;
+
     public boolean isWildcard(int min, int max)
     {
         return true;

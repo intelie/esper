@@ -8,10 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.client.EPAdministratorIsolated;
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceIsolationException;
+import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.filter.FilterSet;
@@ -19,14 +18,14 @@ import com.espertech.esper.schedule.ScheduleSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collections;
 
 /**
  * Implementation for the admin interface.
  */
-public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
+public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
 {
     private static Log log = LogFactory.getLog(EPAdministratorIsolatedImpl.class);
 
@@ -52,12 +51,18 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
         EPStatementSPI stmtSpi = (EPStatementSPI) statement;
         stmtSpi.getStatementContext().setInternalEventEngineRouteDest(isolatedRuntime);
         stmtSpi.setServiceIsolated(name);
+        statementNames.add(name);
         return statement;
     }
 
     public String[] getStatementNames()
     {
         return statementNames.toArray(new String[statementNames.size()]);
+    }
+
+    public void addStatement(String name)
+    {
+        statementNames.add(name);   // for recovery
     }
 
     public void addStatement(EPStatement stmt) {
@@ -75,9 +80,14 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
             long toTime = services.getSchedulingService().getTime();
             long delta = toTime - fromTime;
 
+            // perform checking
             Set<String> statementIds = new HashSet<String>();
             for (EPStatement aStmt : stmt)
             {
+                if (aStmt == null)
+                {
+                    throw new EPServiceIsolationException("Illegal argument, a null value was provided in the statement list");
+                }
                 EPStatementSPI stmtSpi = (EPStatementSPI) aStmt;
                 statementIds.add(stmtSpi.getStatementId());
 
@@ -86,6 +96,9 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
                     throw new EPServiceIsolationException("Statement named '" + aStmt.getName() + "' already in service isolation under '" + stmtSpi.getServiceIsolated() + "'");
                 }
             }
+
+            // start txn
+            unisolatedServices.getStatementIsolationService().beginIsolatingStatements(name, services.getUnitId(), stmt);
 
             FilterSet filters = unisolatedServices.getFilterService().take(statementIds);
             ScheduleSet schedules = unisolatedServices.getSchedulingService().take(statementIds);
@@ -103,6 +116,9 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
                 statementNames.add(stmtSpi.getName());
                 stmtSpi.setServiceIsolated(name);
             }
+
+            // commit txn
+            unisolatedServices.getStatementIsolationService().commitIsolatingStatements(name, services.getUnitId(), stmt);
         }
         catch (EPServiceIsolationException ex)
         {
@@ -110,6 +126,8 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
         }
         catch (RuntimeException ex)
         {
+            unisolatedServices.getStatementIsolationService().rollbackIsolatingStatements(name, services.getUnitId(), stmt);
+
             String message = "Unexpected exception taking statements: " + ex.getMessage();
             log.error(message, ex);
             throw new EPException(message, ex);
@@ -138,6 +156,11 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
             Set<String> statementIds = new HashSet<String>();
             for (EPStatement aStmt : stmt)
             {
+                if (aStmt == null)
+                {
+                    throw new EPServiceIsolationException("Illegal argument, a null value was provided in the statement list");
+                }
+
                 EPStatementSPI stmtSpi = (EPStatementSPI) aStmt;
                 statementIds.add(stmtSpi.getStatementId());
 
@@ -150,6 +173,9 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
                     throw new EPServiceIsolationException("Statement named '" + aStmt.getName() + "' not in this service isolation but under service isolation '" + aStmt.getName() + "'");
                 }
             }
+
+            // start txn
+            unisolatedServices.getStatementIsolationService().beginUnisolatingStatements(name, services.getUnitId(), stmt);
 
             FilterSet filters = services.getFilterService().take(statementIds);
             ScheduleSet schedules = services.getSchedulingService().take(statementIds);
@@ -167,6 +193,9 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
                 statementNames.remove(stmtSpi.getName());
                 stmtSpi.setServiceIsolated(null);
             }
+
+            // commit txn
+            unisolatedServices.getStatementIsolationService().commitUnisolatingStatements(name, services.getUnitId(), stmt);
         }
         catch (EPServiceIsolationException ex)
         {
@@ -174,6 +203,8 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolated
         }
         catch (RuntimeException ex)
         {
+            unisolatedServices.getStatementIsolationService().rollbackUnisolatingStatements(name, services.getUnitId(), stmt);
+
             String message = "Unexpected exception taking statements: " + ex.getMessage();
             log.error(message, ex);
             throw new EPException(message, ex);

@@ -27,6 +27,7 @@ public class ExprLikeNode extends ExprNode
     private boolean isNumericValue;
     private boolean isConstantPattern;
     private LikeUtil likeUtil;
+    private static final long serialVersionUID = 34888860063217132L;
 
     /**
      * Ctor.

@@ -24,6 +24,7 @@ public class ExprNumberSetCronParam extends ExprNode
     
     private final CronOperatorEnum cronOperator;
     private TimeProvider timeProvider;
+    private static final long serialVersionUID = -1315999998249935318L;
 
     /**
      * Ctor.

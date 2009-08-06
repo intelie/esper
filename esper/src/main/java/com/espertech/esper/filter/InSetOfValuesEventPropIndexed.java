@@ -17,6 +17,7 @@ public class InSetOfValuesEventPropIndexed implements FilterSpecParamInValue
     private final String resultEventProperty;
     private final boolean isMustCoerce;
     private final Class coercionType;
+    private static final long serialVersionUID = -4424097388643812241L;
 
     /**
      * Ctor.

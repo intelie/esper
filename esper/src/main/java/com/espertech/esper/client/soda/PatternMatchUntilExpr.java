@@ -17,6 +17,7 @@ public class PatternMatchUntilExpr extends PatternExprBase
 {
     private Integer low;
     private Integer high;
+    private static final long serialVersionUID = -427123340111619016L;
 
     /**
      * Ctor - for use to create a pattern expression tree, without pattern child expression.

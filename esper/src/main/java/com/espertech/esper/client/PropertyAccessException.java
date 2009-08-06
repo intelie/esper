@@ -14,6 +14,7 @@ package com.espertech.esper.client;
 public final class PropertyAccessException extends RuntimeException
 {
     private String expression;
+    private static final long serialVersionUID = 6935348296074757184L;
 
     /**
      * Constructor.

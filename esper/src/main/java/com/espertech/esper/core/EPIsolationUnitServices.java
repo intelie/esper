@@ -13,12 +13,26 @@ import com.espertech.esper.util.ManagedReadWriteLock;
 
 public class EPIsolationUnitServices
 {
+    private final String name;
+    private final int unitId;
     private final FilterServiceSPI filterService;
     private final SchedulingServiceSPI schedulingService;
 
-    public EPIsolationUnitServices(FilterServiceSPI filterService, SchedulingServiceSPI schedulingService) {
+    public EPIsolationUnitServices(String name, int unitId, FilterServiceSPI filterService, SchedulingServiceSPI schedulingService) {
+        this.name = name;
+        this.unitId = unitId;
         this.filterService = filterService;
         this.schedulingService = schedulingService;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public int getUnitId()
+    {
+        return unitId;
     }
 
     public FilterServiceSPI getFilterService() {

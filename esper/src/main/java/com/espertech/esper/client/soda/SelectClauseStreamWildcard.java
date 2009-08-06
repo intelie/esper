@@ -21,6 +21,7 @@ public class SelectClauseStreamWildcard implements SelectClauseElement
 {
     private String streamName;
     private String optionalColumnName;
+    private static final long serialVersionUID = -1827870385836445548L;
 
     /**
      * Ctor.

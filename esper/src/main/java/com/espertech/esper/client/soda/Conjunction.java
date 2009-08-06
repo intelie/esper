@@ -14,7 +14,9 @@ import java.io.StringWriter;
  * Conjunction represents a logical AND allowing multiple sub-expressions to be connected by AND.
  */
 public class Conjunction extends Junction
-{    
+{
+    private static final long serialVersionUID = 755557538634794086L;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      * <p>

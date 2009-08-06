@@ -18,6 +18,7 @@ public class SQLStream extends Stream
     private String databaseName;
     private String sqlWithSubsParams;
     private String optionalMetadataSQL;
+    private static final long serialVersionUID = 2606529559298987982L;
 
     /**
      * Creates a new SQL-based stream.

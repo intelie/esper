@@ -20,6 +20,7 @@ import java.io.StringWriter;
 public class ListParameter implements NumberSetParameter
 {
     private List<NumberSetParameter> parameters;
+    private static final long serialVersionUID = 34502518196561940L;
 
     /**
      * Ctor.

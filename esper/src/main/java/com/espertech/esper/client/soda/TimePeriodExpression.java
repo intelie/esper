@@ -12,6 +12,7 @@ public class TimePeriodExpression extends ExpressionBase
     private boolean hasMinutes;
     private boolean hasSeconds;
     private boolean hasMilliseconds;
+    private static final long serialVersionUID = 1386645838943804276L;
 
     /**
      * Ctor.

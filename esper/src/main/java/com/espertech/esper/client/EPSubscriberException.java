@@ -14,6 +14,8 @@ package com.espertech.esper.client;
  */
 public class EPSubscriberException extends EPException
 {
+    private static final long serialVersionUID = -2217801048068728940L;
+
     /**
      * Ctor.
      * @param message - error message

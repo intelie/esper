@@ -17,6 +17,8 @@ import java.util.List;
  */
 public final class ViewSpec extends ObjectSpec
 {
+    private static final long serialVersionUID = -2881179463072647071L;
+
     /**
      * Constructor.
      * @param namespace if the namespace the object is in

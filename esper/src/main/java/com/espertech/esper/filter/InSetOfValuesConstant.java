@@ -16,6 +16,7 @@ import com.espertech.esper.pattern.MatchedEventMap;
 public class InSetOfValuesConstant implements FilterSpecParamInValue
 {
     private Object constant;
+    private static final long serialVersionUID = 575037486475447197L;
 
     /**
      * Ctor.

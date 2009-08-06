@@ -21,6 +21,8 @@ import com.espertech.esper.util.JavaClassHelper;
  */
 public class ExprOrNode extends ExprNode
 {
+    private static final long serialVersionUID = -1079540621551505814L;
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Sub-nodes must be returning boolean

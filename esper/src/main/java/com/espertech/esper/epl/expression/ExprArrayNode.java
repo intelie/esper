@@ -33,6 +33,7 @@ public class ExprArrayNode extends ExprNode
     private boolean mustCoerce;
     private int length;
     private transient Object constantResult;
+    private static final long serialVersionUID = 5533223915923867651L;
 
     /**
      * Ctor.

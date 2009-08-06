@@ -17,6 +17,8 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
  */
 public final class EvalEveryNode extends EvalNode
 {
+    private static final long serialVersionUID = 3672732014060588205L;
+
     /**
      * Ctor.
      */

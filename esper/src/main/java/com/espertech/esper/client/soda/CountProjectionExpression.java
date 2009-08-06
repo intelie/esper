@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class CountProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;
+    private static final long serialVersionUID = -2814984847197845844L;
 
     /**
      * Ctor - for use to create an expression tree, without inner expression

@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class SubqueryExistsExpression extends ExpressionBase
 {
     private EPStatementObjectModel model;
+    private static final long serialVersionUID = 2615782942153556969L;
 
     /**
      * Ctor - for use to create an expression tree, without child expression.

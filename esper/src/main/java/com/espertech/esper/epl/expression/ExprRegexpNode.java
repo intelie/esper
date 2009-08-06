@@ -30,6 +30,7 @@ public class ExprRegexpNode extends ExprNode
     private Pattern pattern;
     private boolean isNumericValue;
     private boolean isConstantPattern;
+    private static final long serialVersionUID = -837177267278295664L;
 
     /**
      * Ctor.

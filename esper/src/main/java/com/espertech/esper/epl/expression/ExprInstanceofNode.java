@@ -29,6 +29,7 @@ public class ExprInstanceofNode extends ExprNode
 
     private Class[] classes;
     private CopyOnWriteArrayList<Pair<Class, Boolean>> resultCache = new CopyOnWriteArrayList<Pair<Class, Boolean>>();
+    private static final long serialVersionUID = 3358616797009364727L;
 
     /**
      * Ctor.

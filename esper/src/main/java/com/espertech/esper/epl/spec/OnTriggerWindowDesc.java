@@ -15,6 +15,7 @@ public class OnTriggerWindowDesc extends OnTriggerDesc
 {
     private String windowName;
     private String optionalAsName;
+    private static final long serialVersionUID = 4146264160256741899L;
 
     /**
      * Ctor.

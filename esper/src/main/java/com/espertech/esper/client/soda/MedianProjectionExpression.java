@@ -16,6 +16,7 @@ import java.io.StringWriter;
 public class MedianProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;
+    private static final long serialVersionUID = 4859634868887801690L;
 
     /**
      * Ctor - for use to create an expression tree, without inner expression

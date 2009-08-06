@@ -14,6 +14,8 @@ package com.espertech.esper.view.stat;
  */
 public final class RegressionBean extends BaseStatisticsBean
 {
+    private static final long serialVersionUID = -3348474554218814231L;
+
     /**
      * Returns the Y intercept.
      * @return Y intercept

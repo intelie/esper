@@ -5,6 +5,8 @@ package com.espertech.esper.view.stat;
  */
 public final class CorrelationBean extends BaseStatisticsBean 
 {
+    private static final long serialVersionUID = -7978405496572117320L;
+
     /**
      * Return the correlation value for the two data series (Microsoft Excel function CORREL).
      * @return correlation value

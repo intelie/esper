@@ -1,10 +1,15 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.util.MetaDefItem;
 
-public class MatchRecognizeMeasureItem {
+import java.io.Serializable;
+
+public class MatchRecognizeMeasureItem implements MetaDefItem, Serializable 
+{
     private ExprNode expr;
     private String name;
+    private static final long serialVersionUID = 1609117378292500082L;
 
     public MatchRecognizeMeasureItem(ExprNode expr, String name) {
         this.expr = expr;
