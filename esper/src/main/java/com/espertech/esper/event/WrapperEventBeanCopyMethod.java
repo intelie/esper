@@ -5,12 +5,21 @@ import com.espertech.esper.client.EventBean;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Copy method for wrapper events.
+ */
 public class WrapperEventBeanCopyMethod implements EventBeanCopyMethod
 {
     private final WrapperEventType wrapperEventType;
     private final EventAdapterService eventAdapterService;
     private final EventBeanCopyMethod underlyingCopyMethod;
 
+    /**
+     * Ctor.
+     * @param wrapperEventType wrapper type
+     * @param eventAdapterService event adapter creation
+     * @param underlyingCopyMethod copy method for the underlying event
+     */
     public WrapperEventBeanCopyMethod(WrapperEventType wrapperEventType, EventAdapterService eventAdapterService, EventBeanCopyMethod underlyingCopyMethod)
     {
         this.wrapperEventType = wrapperEventType;

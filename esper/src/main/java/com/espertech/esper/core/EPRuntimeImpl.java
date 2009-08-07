@@ -153,6 +153,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         services.getThreadingService().initThreading(services, this);
     }
 
+    /**
+     * Sets the route for events to use
+     * @param internalEventRouterImpl router
+     */
     public void setInternalEventRouterImpl(InternalEventRouterImpl internalEventRouterImpl)
     {
         this.internalEventRouterImpl = internalEventRouterImpl;
@@ -870,6 +874,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      * @param handle statement handle
      * @param callbackObject object containing matches
      * @param services engine services
+     * @param exprEvaluatorContext context for expression evaluatiom
      */
     public static void processStatementScheduleMultiple(EPStatementHandle handle, Object callbackObject, EPServicesContext services, ExprEvaluatorContext exprEvaluatorContext)
     {
@@ -912,6 +917,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      * Processing single schedule matche for a statement.
      * @param handle statement handle
      * @param services engine services
+     * @param exprEvaluatorContext context for expression evaluatiom
      */
     public static void processStatementScheduleSingle(EPStatementHandleCallback handle, EPServicesContext services,ExprEvaluatorContext exprEvaluatorContext)
     {

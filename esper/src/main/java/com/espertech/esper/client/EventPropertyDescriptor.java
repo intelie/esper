@@ -18,6 +18,7 @@ public class EventPropertyDescriptor
      * Ctor.
      * @param propertyName name of the property
      * @param propertyType the property type
+     * @param propertyComponentType is the component type if the property is an indexed property
      * @param requiresIndex true if the access to property value access requires an integer index value
      * @param requiresMapkey true if the access to property value access requires a string map key
      * @param indexed true if the property is an indexed property, i.e. type is an array or the property value access requires an integer index value
@@ -56,6 +57,10 @@ public class EventPropertyDescriptor
         return propertyType;
     }
 
+    /**
+     * Returns the component type.
+     * @return component type
+     */
     public Class getPropertyComponentType()
     {
         return propertyComponentType;

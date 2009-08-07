@@ -24,6 +24,7 @@ public class ExprNodeUtility
      * @param filter expression
      * @param streamZeroEvent the event that represents stream zero
      * @param streamOneEvents all events thate are stream one events
+     * @param exprEvaluatorContext context for expression evaluation
      * @return filtered stream one events
      */
     public static EventBean[] applyFilterExpression(ExprNode filter, EventBean streamZeroEvent, EventBean[] streamOneEvents, ExprEvaluatorContext exprEvaluatorContext)
@@ -57,6 +58,7 @@ public class ExprNodeUtility
      * Apply a filter expression returning a pass indicator.
      * @param filter to apply
      * @param eventsPerStream events per stream
+     * @param exprEvaluatorContext context for expression evaluation
      * @return pass indicator
      */
     public static boolean applyFilterExpression(ExprNode filter, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)

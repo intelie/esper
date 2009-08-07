@@ -388,6 +388,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      * Creates the database config service.
      * @param configSnapshot is the config snapshot
      * @param schedulingService is the timer stuff
+     * @param schedulingMgmtService for statement schedule management
      * @return database config svc
      */
     protected static DatabaseConfigService makeDatabaseRefService(ConfigurationInformation configSnapshot,

@@ -12,8 +12,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * Utility for handling collection or array tasks.
+ */
 public class CollectionUtil<T>
 {
+    /**
+     * Returns a list of the elements invoking toString on non-null elements.
+     * @param set to render
+     * @param <T> type
+     * @return comma-separate list of values (no escape)
+     */
     public static <T> String toString(Set<T> set)
     {
         if (set == null)

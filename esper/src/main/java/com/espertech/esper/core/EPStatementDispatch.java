@@ -19,6 +19,7 @@ public interface EPStatementDispatch
 {
     /**
      * Execute dispatch.
+     * @param exprEvaluatorContext context for expression evaluation
      */
     public void execute(ExprEvaluatorContext exprEvaluatorContext);
 }

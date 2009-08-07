@@ -17,6 +17,9 @@ import com.espertech.esper.event.EventBeanReader;
 
 import java.util.Iterator;
 
+/**
+ * Iterator for obtaining distinct events.
+ */
 public class EventDistinctIterator implements Iterator<EventBean>
 {
     private static final Iterator<EventBean> NULL_ITER = new SingleEventIterator(null);
@@ -27,6 +30,7 @@ public class EventDistinctIterator implements Iterator<EventBean>
     /**
      * Ctor.
      * @param sourceIterator is the source event iterator
+     * @param eventType type of event
      */
     public EventDistinctIterator(Iterator<EventBean> sourceIterator, EventType eventType)
     {

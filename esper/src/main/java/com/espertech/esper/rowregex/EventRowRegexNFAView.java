@@ -28,6 +28,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
+/**
+ * View for match recognize support.
+ */
 public class EventRowRegexNFAView extends ViewSupport
 {
     private static final Log log = LogFactory.getLog(EventRowRegexNFAView.class);
@@ -64,6 +67,20 @@ public class EventRowRegexNFAView extends ViewSupport
     private LinkedHashSet<EventBean> windowMatchedEventset; // this is NOT per partition - some optimizations are done for batch-processing (minus is out-of-sequence in partition) 
     private int eventSequenceNumber;
 
+    /**
+     * Ctor.
+     * @param compositeEventType final event type
+     * @param rowEventType event type for input rows
+     * @param matchRecognizeSpec specification
+     * @param variableStreams variables and their assigned stream number
+     * @param streamsVariables stream number and the assigned variable
+     * @param variablesSingle single variables
+     * @param statementContext statement context
+     * @param callbacksPerIndex  for handling the 'prev' function
+     * @param aggregationService handles aggregations
+     * @param isUnbound true if unbound stream
+     * @param isIterateOnly true for iterate-only
+     */
     public EventRowRegexNFAView(EventType compositeEventType,
                                 EventType rowEventType,
                                 MatchRecognizeSpec matchRecognizeSpec,

@@ -7,10 +7,18 @@ import com.espertech.esper.client.EventPropertyGetter;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Reader implementation that utilizes event property getters and thereby works with all
+ * event types regardsless of whether a type returns an event reader when asked for.
+ */
 public class EventBeanReaderDefaultImpl implements EventBeanReader
 {
     private EventPropertyGetter gettersArray[];
 
+    /**
+     * Ctor.
+     * @param eventType the type of events to read
+     */
     public EventBeanReaderDefaultImpl(EventType eventType)
     {
         String[] properties = eventType.getPropertyNames();

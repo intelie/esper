@@ -7,10 +7,20 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
+/**
+ * Helper for match recognize.
+ */
 public class EventRowRegexHelper
 {
     private static final Log log = LogFactory.getLog(EventRowRegexHelper.class);
 
+    /**
+     * Inspect variables recursively.
+     * @param parent parent regex expression node
+     * @param isMultiple if the variable in the stack is multiple of single
+     * @param variablesSingle single variables list
+     * @param variablesMultiple group variables list
+     */
     protected static void recursiveInspectVariables(RowRegexExprNode parent, boolean isMultiple, Set<String> variablesSingle, Set<String> variablesMultiple)
     {
         if (parent instanceof RowRegexExprNodeNested)
@@ -72,6 +82,13 @@ public class EventRowRegexHelper
         }
     }
 
+    /**
+     * Build a list of start states from the parent node.
+     * @param parent to build start state for
+     * @param variableDefinitions each variable and its expressions
+     * @param variableStreams variable name and its stream number
+     * @return strand of regex state nodes
+     */
     protected static RegexNFAStrandResult recursiveBuildStartStates(RowRegexExprNode parent,
                                                Map<String, ExprNode> variableDefinitions,
                                                Map<String, Pair<Integer, Boolean>> variableStreams

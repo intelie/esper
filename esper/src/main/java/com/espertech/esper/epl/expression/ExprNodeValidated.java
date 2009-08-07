@@ -8,11 +8,18 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.client.EventBean;
 
+/**
+ * A placeholder for another expression node that has been validated already.
+ */
 public class ExprNodeValidated extends ExprNode
 {
     private final ExprNode inner;
     private static final long serialVersionUID = 301058622892268624L;
 
+    /**
+     * Ctor.
+     * @param inner
+     */
     public ExprNodeValidated(ExprNode inner)
     {
         this.inner = inner;

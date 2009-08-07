@@ -71,6 +71,10 @@ public class EPStatementHandle implements MetaDefItem, Serializable
         this.canSelfJoin = canSelfJoin;
     }
 
+    /**
+     * Returns the statement id.
+     * @return statement id
+     */
     public String getStatementId() {
         return statementId;
     }
@@ -134,6 +138,7 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     /**
      * Invoked by {@link com.espertech.esper.client.EPRuntime} to indicate that a statements's
      * filer and schedule processing is done, and now it's time to process join results.
+     * @param exprEvaluatorContext context for expression evaluation
      */
     public void internalDispatch(ExprEvaluatorContext exprEvaluatorContext)
     {

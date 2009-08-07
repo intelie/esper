@@ -10,6 +10,10 @@ package com.espertech.esper.client;
 
 import java.util.Map;
 
+/**
+ * Runtime interface for the isolated service provider, for controlling event visibility and scheduling
+ * for the statements contained within the isolated service.
+ */
 public interface EPRuntimeIsolated
 {
     /**

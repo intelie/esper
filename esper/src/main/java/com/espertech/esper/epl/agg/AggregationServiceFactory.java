@@ -22,6 +22,14 @@ import java.util.*;
  */
 public class AggregationServiceFactory
 {
+    /**
+     * Produces an aggregation service for use with match-recognice.
+     * @param numStreams number of streams
+     * @param measureExprNodesPerStream measure nodes
+     * @param methodResolutionService method resolution
+     * @param exprEvaluatorContext context for expression evaluatiom
+     * @return service
+     */
     public static AggregationServiceMatchRecognize getServiceMatchRecognize(int numStreams, Map<Integer, List<ExprAggregateNode>> measureExprNodesPerStream,
                                                        MethodResolutionService methodResolutionService,
                                                        ExprEvaluatorContext exprEvaluatorContext)
@@ -116,6 +124,7 @@ public class AggregationServiceFactory
      * @param orderByAggregateExprNodes - aggregation nodes extracted out of the select expression
      * @param hasGroupByClause - indicator on whethere there is group-by required, or group-all
      * @param methodResolutionService - is required to resolve aggregation methods
+     * @param exprEvaluatorContext context for expression evaluatiom
      * @return instance for aggregation handling
      */
     public static AggregationService getService(List<ExprAggregateNode> selectAggregateExprNodes,

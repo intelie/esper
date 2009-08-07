@@ -128,6 +128,7 @@ public class BindProcessor
      * Process select expressions into columns for native dispatch.
      * @param eventsPerStream each stream's events
      * @param isNewData true for new events
+     * @param exprEvaluatorContext context for expression evaluatiom
      * @return object array with select-clause results
      */
     public Object[] process(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

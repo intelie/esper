@@ -21,7 +21,14 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
+/**
+ * SPU for isolated service provider.
+ */
 public interface EPServiceProviderIsolatedSPI extends EPServiceProviderIsolated
 {
+    /**
+     * Return isolated services.
+     * @return isolated services
+     */
     public EPIsolationUnitServices getIsolatedServices(); 
 }

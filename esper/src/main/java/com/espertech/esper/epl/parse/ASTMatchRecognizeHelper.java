@@ -3,10 +3,18 @@ package com.espertech.esper.epl.parse;
 import org.antlr.runtime.tree.Tree;
 import com.espertech.esper.epl.spec.MatchRecognizeSkipEnum;
 
+/**
+ * Helper class for walking the match-recognize AST.
+ */
 public class ASTMatchRecognizeHelper {
 
     private final static String message = "Match-recognize AFTER clause must be either AFTER MATCH SKIP TO LAST ROW or AFTER MATCH SKIP TO NEXT ROW or AFTER MATCH SKIP TO CURRENT ROW";
 
+    /**
+     * Parse the skip clause.
+     * @param node parent AST node
+     * @return skip node enum
+     */
     public static MatchRecognizeSkipEnum parseSkip(Tree node) {
 
         if (node.getChildCount() != 5)

@@ -142,6 +142,7 @@ public abstract class ViewFactorySupport implements ViewFactory
      * @param viewName textual name of view
      * @param expression expression to check
      * @param index number offset of expression in view parameters
+     * @param exprEvaluatorContext context for expression evaluation
      * @return expression evaluation value
      * @throws ViewParameterException if assertion fails
      */

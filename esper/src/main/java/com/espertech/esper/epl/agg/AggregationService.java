@@ -23,6 +23,7 @@ public interface AggregationService extends AggregationResultFuture
      * @param eventsPerStream - events for each stream entering window
      * @param optionalGroupKeyPerRow - can be null if grouping without keys is desired, else the keys
      * to use for grouping, each distinct key value results in a new row of aggregation state.
+     * @param exprEvaluatorContext context for expression evaluatiom
      */
     public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext);
 
@@ -31,6 +32,7 @@ public interface AggregationService extends AggregationResultFuture
      * @param eventsPerStream - events for each stream entering window
      * @param optionalGroupKeyPerRow - can be null if grouping without keys is desired, else the keys
      * to use for grouping, each distinct key value results in a new row of aggregation state.
+     * @param exprEvaluatorContext context for expression evaluatiom
      */
     public void applyLeave(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext);
 

@@ -195,11 +195,19 @@ public class ConfigurationEventTypeLegacy implements Serializable
         this.factoryMethod = factoryMethod;
     }
 
+    /**
+     * Returns the method name of the method to use to copy the underlying event object.
+     * @return method name
+     */
     public String getCopyMethod()
     {
         return copyMethod;
     }
 
+    /**
+     * Sets the method name of the method to use to copy the underlying event object.
+     * @param copyMethod method name
+     */
     public void setCopyMethod(String copyMethod)
     {
         this.copyMethod = copyMethod;

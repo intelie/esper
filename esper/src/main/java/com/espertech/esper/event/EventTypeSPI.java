@@ -22,15 +22,44 @@ public interface EventTypeSPI extends EventType
      */
     public EventTypeMetadata getMetadata();
 
+    /**
+     * Return a writer for writing a single property value.
+     * @param propertyName to write to
+     * @return null or writer if writable
+     */
     public EventPropertyWriter getWriter(String propertyName);
 
+    /**
+     * Returns the writable properties.
+     * @return properties that can be written
+     */
     public EventPropertyDescriptor[] getWriteableProperties();
 
+    /**
+     * Returns the descriptor for a writable property.
+     * @param propertyName to get descriptor for
+     * @return descriptor
+     */
     public EventPropertyDescriptor getWritableProperty(String propertyName);
 
+    /**
+     * Returns the copy method, considering only the attached properties for a write operation onto the copy
+     * @param properties to write after copy
+     * @return copy method
+     */
     public EventBeanCopyMethod getCopyMethod(String[] properties);
 
+    /**
+     * Returns the write for writing a set of properties.
+     * @param properties to write
+     * @return writer
+     */
     public EventBeanWriter getWriter(String[] properties);
 
+    /**
+     * Returns a reader for reading all properties of an event. This is completely optional
+     * and need only be implemented for performance.
+     * @return reader
+     */
     public EventBeanReader getReader();
 }

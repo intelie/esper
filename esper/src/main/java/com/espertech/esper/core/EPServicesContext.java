@@ -101,6 +101,9 @@ public final class EPServicesContext
      * @param statementEventTypeRef - statement to event type reference holding
      * @param configSnapshot configuration snapshot
      * @param threadingServiceImpl - engine-level threading services
+     * @param internalEventRouter - routing of events
+     * @param statementIsolationService - maintains isolation information per statement
+     * @param schedulingMgmtService - schedule management for statements
      */
     public EPServicesContext(String engineURI,
                              String engineInstanceId,
@@ -174,11 +177,19 @@ public final class EPServicesContext
         this.statementLifecycleSvc = statementLifecycleSvc;
     }
 
+    /**
+     * Returns the event routing destination.
+     * @return event routing destination
+     */
     public InternalEventRouteDest getInternalEventEngineRouteDest()
     {
         return internalEventEngineRouteDest;
     }
 
+    /**
+     * Sets the event routing destination.
+     * @param internalEventEngineRouteDest event routing destination
+     */
     public void setInternalEventEngineRouteDest(InternalEventRouteDest internalEventEngineRouteDest)
     {
         this.internalEventEngineRouteDest = internalEventEngineRouteDest;
@@ -532,16 +543,28 @@ public final class EPServicesContext
         return configSnapshot;
     }
 
+    /**
+     * Returns the schedule management service.
+     * @return schedule management service
+     */
     public SchedulingMgmtService getSchedulingMgmtService()
     {
         return schedulingMgmtService;
     }
 
+    /**
+     * Returns the service for maintaining statement isolation information.
+     * @return isolation service
+     */
     public StatementIsolationService getStatementIsolationService()
     {
         return statementIsolationService;
     }
 
+    /**
+     * Sets the service for maintaining statement isolation information.
+     * @param statementIsolationService isolation service
+     */
     public void setStatementIsolationService(StatementIsolationService statementIsolationService)
     {
         this.statementIsolationService = statementIsolationService;

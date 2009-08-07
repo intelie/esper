@@ -10,7 +10,14 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.schedule.TimeProvider;
 
+/**
+ * Returns the context for expression evaluation.
+ */
 public interface ExprEvaluatorContext
 {
+    /**
+     * Returns the time provider.
+     * @return time provider
+     */
     public TimeProvider getTimeProvider();
 }

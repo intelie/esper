@@ -6,10 +6,17 @@ import com.espertech.esper.event.EventBeanReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Reader for fast access to all event properties for an event backed by a Java object.
+ */
 public class BeanEventBeanReader implements EventBeanReader
 {
     private BeanEventPropertyGetter[] getterArray;
 
+    /**
+     * Ctor.
+     * @param type the type of read
+     */
     public BeanEventBeanReader(BeanEventType type)
     {
         String[] properties = type.getPropertyNames();

@@ -29,6 +29,10 @@ public class ExprNodePreviousVisitorWParent implements ExprNodeVisitorWithParent
         }
     }
 
+    /**
+     * Returns the pair of previous nodes and their parent expression.
+     * @return nodes
+     */
     public List<Pair<ExprNode, ExprPreviousNode>> getPrevious() {
         return previous;
     }

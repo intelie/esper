@@ -61,6 +61,7 @@ public abstract class ExprAggregateNode extends ExprNode
      * Gives the aggregation node a chance to validate the sub-expression types.
      * @param streamTypeService is the types per stream
      * @param methodResolutionService used for resolving method and function names
+     * @param exprEvaluatorContext context for expression evaluation
      * @return aggregation function use
      * @throws ExprValidationException when expression validation failed
      */

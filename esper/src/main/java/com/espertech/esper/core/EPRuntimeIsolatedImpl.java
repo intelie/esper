@@ -2,28 +2,31 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPRuntimeIsolated;
-import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.ThreadWorkQueue;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
-import com.espertech.esper.filter.FilterSet;
 import com.espertech.esper.schedule.ScheduleHandle;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
-import com.espertech.esper.schedule.ScheduleSet;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.ThreadLogUtil;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
+/**
+ * Implementation for isolated runtime.
+ */
 public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRouteDest
 {
     private EPServicesContext unisolatedServices;
@@ -36,6 +39,11 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
     private ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal;
     private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
 
+    /**
+     * Ctor.
+     * @param svc isolated services
+     * @param unisolatedSvc engine services
+     */
     public EPRuntimeIsolatedImpl(EPIsolationUnitServices svc, EPServicesContext unisolatedSvc)
     {
         this.services = svc;
@@ -160,6 +168,11 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
         processEvent(eventBean);
     }
 
+    /**
+     * Route a XML docment event
+     * @param document to route
+     * @throws EPException if routing failed
+     */
     public void route(org.w3c.dom.Node document) throws EPException
     {
         if (document == null)
@@ -221,6 +234,10 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
         processWrappedEvent(eventBean);
     }
 
+    /**
+     * Process a wrapped event.
+     * @param eventBean to process
+     */
     public void processWrappedEvent(EventBean eventBean)
     {
         // Acquire main processing lock which locks out statement management

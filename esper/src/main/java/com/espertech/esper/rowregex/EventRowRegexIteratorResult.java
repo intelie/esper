@@ -1,42 +1,39 @@
 package com.espertech.esper.rowregex;
 
-import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.window.RandomAccessByIndexGetter;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.collection.SingleEventIterator;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.epl.agg.AggregationServiceMatchRecognize;
-import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.spec.MatchRecognizeSpec;
-import com.espertech.esper.epl.spec.MatchRecognizeDefineItem;
-import com.espertech.esper.epl.spec.MatchRecognizeMeasureItem;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
 
-import java.util.*;
-import java.io.StringWriter;
-import java.io.PrintWriter;
-
+/**
+ * Iteration result for row regex.
+ */
 public class EventRowRegexIteratorResult
 {
     private List<RegexNFAStateEntry> endStates;
     private int eventSequenceNum;
 
+    /**
+     * Ctor.
+     * @param endStates end states
+     * @param eventSequenceNum seq num of event
+     */
     public EventRowRegexIteratorResult(List<RegexNFAStateEntry> endStates, int eventSequenceNum)
     {
         this.endStates = endStates;
         this.eventSequenceNum = eventSequenceNum;
     }
 
+    /**
+     * Returns the end states
+     * @return end states
+     */
     public List<RegexNFAStateEntry> getEndStates()
     {
         return endStates;
     }
 
+    /**
+     * Returns the event seq num.
+     * @return seq num
+     */
     public int getEventSequenceNum()
     {
         return eventSequenceNum;

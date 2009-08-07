@@ -1,13 +1,17 @@
 package com.espertech.esper.client.soda;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.util.MetaDefItem;
 
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateClause implements Serializable
+/**
+ * Specification for the update clause.
+ */
+public class UpdateClause implements MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 0L;
 
@@ -16,6 +20,13 @@ public class UpdateClause implements Serializable
     private List<Pair<String, Expression>> assignments;
     private Expression optionalWhereClause;
 
+    /**
+     * Ctor.
+     * @param eventType the name of the type to update
+     * @param propertyName a property to write
+     * @param expression expression returning a value to write
+     * @return update clause
+     */
     public static UpdateClause create(String eventType, String propertyName, Expression expression)
     {
         UpdateClause clause = new UpdateClause(eventType, null);
@@ -25,6 +36,9 @@ public class UpdateClause implements Serializable
 
     /**
      * Ctor.
+     * @param eventType the name of the type to update
+     * @param optionalAsClauseStreamName as-clause for update, if any
+     * @return update clause
      */
     public UpdateClause(String eventType, String optionalAsClauseStreamName)
     {
@@ -63,30 +77,54 @@ public class UpdateClause implements Serializable
         this.assignments = assignments;
     }
 
+    /**
+     * Returns the name of the event type to update.
+     * @return name of type
+     */
     public String getEventType()
     {
         return eventType;
     }
 
+    /**
+     * Returns the name of the event type to update.
+     * @param eventType name of type
+     */
     public void setEventType(String eventType)
     {
         this.eventType = eventType;
     }
 
+    /**
+     * Returns the where-clause if any.
+     * @return where clause
+     */
     public Expression getOptionalWhereClause()
     {
         return optionalWhereClause;
     }
 
+    /**
+     * Sets the where-clause if any.
+     * @param optionalWhereClause where clause
+     */
     public void setOptionalWhereClause(Expression optionalWhereClause)
     {
         this.optionalWhereClause = optionalWhereClause;
     }
 
+    /**
+     * Returns the stream name.
+     * @return stream name
+     */
     public String getOptionalAsClauseStreamName() {
         return optionalAsClauseStreamName;
     }
 
+    /**
+     * Returns the stream name.
+     * @param optionalAsClauseStreamName stream name
+     */
     public void setOptionalAsClauseStreamName(String optionalAsClauseStreamName) {
         this.optionalAsClauseStreamName = optionalAsClauseStreamName;
     }

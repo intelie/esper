@@ -63,6 +63,8 @@ public class StatementSpecCompiled
      * @param rowLimitSpec row limit specification, or null if none supplied
      * @param eventTypeReferences event type names statically determined
      * @param annotations statement annotations
+     * @param updateSpec update specification if used
+     * @param matchRecognizeSpec if provided
      */
     public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
@@ -330,11 +332,19 @@ public class StatementSpecCompiled
         this.selectClauseSpec = selectClauseSpec;
     }
 
+    /**
+     * Returns the update spec if update clause is used.
+     * @return update desc
+     */
     public UpdateDesc getUpdateSpec()
     {
         return updateSpec;
     }
 
+    /**
+     * Returns the match recognize spec, if used
+     * @return match recognize spec
+     */
     public MatchRecognizeSpec getMatchRecognizeSpec() {
         return matchRecognizeSpec;
     }

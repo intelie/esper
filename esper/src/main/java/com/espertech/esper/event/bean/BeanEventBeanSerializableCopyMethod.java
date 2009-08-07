@@ -10,13 +10,21 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Copy method for bean events utilizing serializable.
+ */
 public class BeanEventBeanSerializableCopyMethod implements EventBeanCopyMethod
 {
     private static final Log log = LogFactory.getLog(BeanEventBeanSerializableCopyMethod.class);
 
     private final BeanEventType beanEventType;
     private final EventAdapterService eventAdapterService;
-    
+
+    /**
+     * Ctor.
+     * @param beanEventType event type
+     * @param eventAdapterService for creating the event object
+     */
     public BeanEventBeanSerializableCopyMethod(BeanEventType beanEventType, EventAdapterService eventAdapterService)
     {
         this.beanEventType = beanEventType;

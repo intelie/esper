@@ -26,6 +26,7 @@ public interface ValidatedView
      * @param methodResolutionService for resolving imports and classes and methods
      * @param timeProvider for providing current time
      * @param variableService for access to variables
+     * @param exprEvaluatorContext context for expression evaluation
      * @throws ExprValidationException is thrown to indicate an exception in validating the view
      */
     public void validate(StreamTypeService streamTypeService,

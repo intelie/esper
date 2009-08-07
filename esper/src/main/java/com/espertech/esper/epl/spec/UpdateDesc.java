@@ -25,6 +25,12 @@ public class UpdateDesc implements MetaDefItem, Serializable
     private ExprNode optionalWhereClause;
     private static final long serialVersionUID = -5995788555238052741L;
 
+    /**
+     * Ctor.
+     * @param optionalStreamName a stream name if provided for the update
+     * @param assignments the individual assignments made
+     * @param optionalWhereClause the where-clause expression if provided
+     */
     public UpdateDesc(String optionalStreamName, List<OnTriggerSetAssignment> assignments, ExprNode optionalWhereClause) {
         this.optionalStreamName = optionalStreamName;
         this.assignments = assignments;

@@ -37,6 +37,7 @@ public class ASTOutputLimitHelper
      * @param engineURI the engine uri
      * @param timeProvider provides time
      * @param variableService provides variable resolution
+     * @param exprEvaluatorContext context for expression evaluatiom
      * @return output limit spec
      */
     public static OutputLimitSpec buildOutputLimitSpec(Tree node, Map<Tree, ExprNode> astExprNodeMap, VariableService variableService, String engineURI, TimeProvider timeProvider, ExprEvaluatorContext exprEvaluatorContext)

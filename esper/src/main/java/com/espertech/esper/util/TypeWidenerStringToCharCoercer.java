@@ -1,5 +1,8 @@
 package com.espertech.esper.util;
 
+/**
+ * Type widner that coerces from String to char if required.
+ */
 public class TypeWidenerStringToCharCoercer implements TypeWidener
 {
     public Object widen(Object input)

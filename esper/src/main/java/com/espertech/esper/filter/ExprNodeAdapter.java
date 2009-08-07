@@ -57,6 +57,7 @@ public class ExprNodeAdapter
     /**
      * Evaluate the boolean expression given the event as a stream zero event.
      * @param event is the stream zero event (current event)
+     * @param exprEvaluatorContext context for expression evaluation
      * @return boolean result of the expression
      */
     public boolean evaluate(EventBean event, ExprEvaluatorContext exprEvaluatorContext)

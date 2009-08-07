@@ -8,13 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.epl.agg;
 
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
+/**
+ * Aggregation result future for use with match recognize.
+ */
 public interface AggregationServiceMatchRecognize extends AggregationResultFuture
 {
+    /**
+     * Enter a single event row consisting of one or more events per stream (each stream representing a variable).
+     * @param eventsPerStream events per stream
+     * @param streamId variable number that is the base
+     * @param exprEvaluatorContext context for expression evaluatiom
+     */
     public void applyEnter(EventBean[] eventsPerStream, int streamId, ExprEvaluatorContext exprEvaluatorContext);
 
     /**

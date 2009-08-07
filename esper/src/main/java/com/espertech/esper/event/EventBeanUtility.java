@@ -17,14 +17,17 @@ import com.espertech.esper.util.JavaClassHelper;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Method to getSelectListEvents events in collections to other collections or other event types.
  */
 public class EventBeanUtility
 {
-    public static final EventBean[] nullArray = new EventBean[0];
+    private static final EventBean[] nullArray = new EventBean[0];
 
     /**
      * Resizes an array of events to a new size.
@@ -445,6 +448,12 @@ public class EventBeanUtility
         return new FragmentEventType(type, isIndexed, true);
     }
 
+    /**
+     * Returns the distinct events by properties.
+     * @param events to inspect
+     * @param reader for retrieving properties
+     * @return distinct events
+     */
     public static EventBean[] getDistinctByProp(ArrayDequeJDK6Backport<EventBean> events, EventBeanReader reader)
     {
         Set<MultiKeyUntypedEventPair> set = new LinkedHashSet<MultiKeyUntypedEventPair>();
@@ -464,6 +473,12 @@ public class EventBeanUtility
         return result;
     }
 
+    /**
+     * Returns the distinct events by properties.
+     * @param events to inspect
+     * @param reader for retrieving properties
+     * @return distinct events
+     */
     public static EventBean[] getDistinctByProp(EventBean[] events, EventBeanReader reader)
     {
         if ((events == null) || (events.length < 2))

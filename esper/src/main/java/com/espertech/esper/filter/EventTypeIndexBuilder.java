@@ -147,6 +147,11 @@ public class EventTypeIndexBuilder
         }
     }
 
+    /**
+     * Returns filters for the statement ids.
+     * @param statementIds ids to take
+     * @return set of filters for taken statements
+     */
     public final FilterSet take(Set<String> statementIds)
     {
         List<FilterSetEntry> list = new ArrayList<FilterSetEntry>();
@@ -181,6 +186,10 @@ public class EventTypeIndexBuilder
         return new FilterSet(list);
     }
 
+    /**
+     * Add the filters, from previously-taken filters.
+     * @param filterSet to add
+     */
     public void apply(FilterSet filterSet)
     {
         for (FilterSetEntry entry : filterSet.getFilters())

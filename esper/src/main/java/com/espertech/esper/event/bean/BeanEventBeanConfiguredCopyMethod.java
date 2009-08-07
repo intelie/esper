@@ -12,6 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import net.sf.cglib.reflect.FastMethod;
 
+/**
+ * Copies an event for modification.
+ */
 public class BeanEventBeanConfiguredCopyMethod implements EventBeanCopyMethod
 {
     private static final Log log = LogFactory.getLog(BeanEventBeanConfiguredCopyMethod.class);
@@ -20,6 +23,12 @@ public class BeanEventBeanConfiguredCopyMethod implements EventBeanCopyMethod
     private final EventAdapterService eventAdapterService;
     private final FastMethod copyMethod;
 
+    /**
+     * Ctor.
+     * @param beanEventType type of bean to copy
+     * @param eventAdapterService for creating events
+     * @param copyMethod method to copy the event
+     */
     public BeanEventBeanConfiguredCopyMethod(BeanEventType beanEventType, EventAdapterService eventAdapterService, FastMethod copyMethod)
     {
         this.beanEventType = beanEventType;

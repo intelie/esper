@@ -35,6 +35,13 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
     private final EPRuntimeIsolatedImpl isolatedRuntime;
     private final Set<String> statementNames = Collections.synchronizedSet(new HashSet<String>());
 
+    /**
+     * Ctor.
+     * @param name name of the isolated service
+     * @param services isolated services
+     * @param unisolatedServices engine services
+     * @param isolatedRuntime the runtime for this isolated service
+     */
     public EPAdministratorIsolatedImpl(String name, EPIsolationUnitServices services, EPServicesContext unisolatedServices, EPRuntimeIsolatedImpl isolatedRuntime)
     {
         this.name = name;

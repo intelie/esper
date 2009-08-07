@@ -135,6 +135,11 @@ public abstract class EvalNode implements MetaDefItem, Serializable
         }
     }
 
+    /**
+     * Returns all child nodes as a set.
+     * @param currentNode parent node
+     * @return all child nodes
+     */
     public static Set<EvalNode> recursiveGetChildNodes(EvalNode currentNode)
     {
         Set<EvalNode> result = new HashSet<EvalNode>();
@@ -142,7 +147,7 @@ public abstract class EvalNode implements MetaDefItem, Serializable
         return result;
     }
 
-    public static void recursiveGetChildNodes(Set<EvalNode> set, EvalNode currentNode)
+    private static void recursiveGetChildNodes(Set<EvalNode> set, EvalNode currentNode)
     {
         for (EvalNode node : currentNode.getChildNodes())
         {

@@ -22,6 +22,9 @@ import java.util.*;
 import java.lang.annotation.Annotation;
 import java.io.StringWriter;
 
+/**
+ * View factory for match-recognize view.
+ */
 public class EventRowRegexNFAViewFactory extends ViewFactorySupport
 {
     private static final Log log = LogFactory.getLog(EventRowRegexNFAViewFactory.class);
@@ -38,6 +41,15 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
     private final boolean isUnbound;
     private final boolean isIterateOnly;
 
+    /**
+     * Ctor.
+     * @param viewChain views
+     * @param matchRecognizeSpec specification
+     * @param statementContext statement context
+     * @param isUnbound true for unbound stream
+     * @param annotations annotations
+     * @throws ExprValidationException if validation fails
+     */
     public EventRowRegexNFAViewFactory(ViewFactoryChain viewChain, MatchRecognizeSpec matchRecognizeSpec, StatementContext statementContext, boolean isUnbound, Annotation[] annotations)
             throws ExprValidationException
     {

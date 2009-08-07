@@ -107,7 +107,18 @@ public interface EPServiceProvider
      */
     public void removeAllStatementStateListeners();
 
+    /**
+     * Returns the isolated service provider for that name,
+     * creating an isolated service if the name is a new name, or
+     * returning an existing isolated service for an existing name.
+     * @param name to return isolated service for
+     * @return isolated service
+     */
     public EPServiceProviderIsolated getEPServiceIsolated(String name);
 
+    /**
+     * Returns the names of isolated service providers currently allocated.
+     * @return isolated service provider names
+     */
     public String[] getEPServiceIsolatedNames();
 }

@@ -23,8 +23,16 @@ public interface EPStatementSPI extends EPStatement
      */
     public String getStatementId();
 
+    /**
+     * Set the statement's isolated service name, or null to clear.
+     * @param serviceIsolated name of isolated service
+     */
     public void setServiceIsolated(String serviceIsolated);
 
+    /**
+     * Returns the statements expression without annotations.
+     * @return expression
+     */
     public String getExpressionNoAnnotations();
 
     /**
@@ -61,5 +69,9 @@ public interface EPStatementSPI extends EPStatement
      */
     public StatementMetadata getStatementMetadata();
 
+    /**
+     * Returns the statement context.
+     * @return statement context
+     */
     public StatementContext getStatementContext();
 }

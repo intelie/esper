@@ -63,6 +63,8 @@ public class EPStatementImpl implements EPStatementSPI
      * @param statementMetadata statement metadata
      * @param userObject the application define user object associated to each statement, if supplied
      * @param annotations annotations associated to statement
+     * @param statementContext the statement service context
+     * @param expressionNoAnnotations expression text witout annotations
      */
     public EPStatementImpl(String statementId,
                               String statementName,

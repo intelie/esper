@@ -435,11 +435,19 @@ public class EPStatementObjectModel implements Serializable
         this.rowLimitClause = rowLimitClause;
     }
 
+    /**
+     * Returns the update specification.
+     * @return update spec if defined
+     */
     public UpdateClause getUpdateClause()
     {
         return updateClause;
     }
 
+    /**
+     * Sets the update specification.
+     * @param updateClause update spec if defined
+     */
     public void setUpdateClause(UpdateClause updateClause)
     {
         this.updateClause = updateClause;

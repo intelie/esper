@@ -4,10 +4,17 @@ import com.espertech.esper.client.EventBean;
 
 import java.util.Map;
 
+/**
+ * Writer for wrapper events.
+ */
 public class WrapperEventBeanMapWriter implements EventBeanWriter
 {
     private final String[] properties;
 
+    /**
+     * Ctor.
+     * @param properties to write
+     */
     public WrapperEventBeanMapWriter(String[] properties)
     {
         this.properties = properties;

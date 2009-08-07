@@ -54,6 +54,7 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
     /**
      * Constructor.
      * @param criteriaExpressions is the expressions from which to pull the unique value
+     * @param exprEvaluatorContext context for expression evaluation
      */
     public UniqueByPropertyView(ExprNode[] criteriaExpressions, ExprEvaluatorContext exprEvaluatorContext)
     {

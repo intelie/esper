@@ -70,6 +70,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
      * @param viewResourceDelegate - delegates for view resources to expression nodes
      * @param timeProvider - provides engine current time
      * @param variableService - provides access to variable values
+     * @param exprEvaluatorContext context for expression evaluation
      * @throws ExprValidationException when the validation fails
      * @return the root node of the validated subtree, possibly
      *         different than the root node of the unvalidated subtree
@@ -211,6 +212,11 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         }
     }
 
+    /**
+     * Accept a visitor that receives both parent and child node.
+     * @param visitor to apply
+     * @param parent node
+     */
     protected void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
     {
         if (visitor.isVisit(this))

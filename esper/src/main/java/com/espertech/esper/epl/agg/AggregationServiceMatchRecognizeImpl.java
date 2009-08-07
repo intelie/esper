@@ -15,12 +15,21 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Implements an aggregation service for match recognize.
+ */
 public class AggregationServiceMatchRecognizeImpl implements AggregationServiceMatchRecognize
 {
     private ExprEvaluator evaluatorsEachStream[][];
     private AggregationMethod aggregatorsEachStream[][];
     private AggregationMethod aggregatorsAll[];
 
+    /**
+     * Ctor.
+     * @param countStreams number of streams/variables
+     * @param aggregatorsPerStream aggregation methods per stream
+     * @param evaluatorsPerStream evaluation functions per stream
+     */
     public AggregationServiceMatchRecognizeImpl(int countStreams, LinkedHashMap<Integer, AggregationMethod[]> aggregatorsPerStream, Map<Integer, ExprEvaluator[]> evaluatorsPerStream) {
         evaluatorsEachStream = new ExprEvaluator[countStreams][];
         aggregatorsEachStream = new AggregationMethod[countStreams][];

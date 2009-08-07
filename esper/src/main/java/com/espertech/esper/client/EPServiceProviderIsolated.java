@@ -8,6 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+/**
+ * Isolated service provider for controlling event visibility and scheduling on a statement level.
+ */
 public interface EPServiceProviderIsolated
 {
     /**
@@ -22,7 +25,14 @@ public interface EPServiceProviderIsolated
      */
     public EPAdministratorIsolated getEPAdministrator();
 
+    /**
+     * Name of isolated service.
+     * @return isolated service name
+     */
     public String getName();
 
+    /**
+     * Destroy the isolated service returning all statements to the engine.
+     */
     public void destroy();
 }

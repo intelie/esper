@@ -6,6 +6,9 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
+/**
+ * Implementation of the isolated service provider.
+ */
 public class EPServiceProviderIsolatedImpl implements EPServiceProviderIsolatedSPI
 {
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);
@@ -16,6 +19,13 @@ public class EPServiceProviderIsolatedImpl implements EPServiceProviderIsolatedS
     private final EPIsolationUnitServices isolatedServices;
     private final Map<String, EPServiceProviderIsolatedImpl> providers;
 
+    /**
+     * Ctor.
+     * @param name name of isolated service
+     * @param isolatedServices filter and scheduling service isolated
+     * @param unisolatedSvc engine services
+     * @param providers names and isolated service providers
+     */
     public EPServiceProviderIsolatedImpl(String name,
                                          EPIsolationUnitServices isolatedServices,
                                          EPServicesContext unisolatedSvc,

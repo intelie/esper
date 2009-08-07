@@ -15,5 +15,9 @@ import com.espertech.esper.client.EPAdministratorIsolated;
  */
 public interface EPAdministratorIsolatedSPI extends EPAdministratorIsolated
 {
+    /**
+     * Add a statement name to the list of statements held by the isolated service provider.
+     * @param name to add
+     */
     public void addStatement(String name);
 }
