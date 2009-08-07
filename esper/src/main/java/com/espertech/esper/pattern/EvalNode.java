@@ -9,11 +9,14 @@
 package com.espertech.esper.pattern;
 
 import com.espertech.esper.util.MetaDefItem;
+import com.espertech.esper.epl.expression.ExprNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.io.Serializable;
 
 /**
@@ -23,6 +26,7 @@ import java.io.Serializable;
  */
 public abstract class EvalNode implements MetaDefItem, Serializable
 {
+    private static final Log log = LogFactory.getLog(EvalNode.class);
     private static final long serialVersionUID = 0L;
 
     private final List<EvalNode> childNodes;
@@ -131,5 +135,19 @@ public abstract class EvalNode implements MetaDefItem, Serializable
         }
     }
 
-    private static final Log log = LogFactory.getLog(EvalNode.class);
+    public static Set<EvalNode> recursiveGetChildNodes(EvalNode currentNode)
+    {
+        Set<EvalNode> result = new HashSet<EvalNode>();
+        recursiveGetChildNodes(result, currentNode);
+        return result;
+    }
+
+    public static void recursiveGetChildNodes(Set<EvalNode> set, EvalNode currentNode)
+    {
+        for (EvalNode node : currentNode.getChildNodes())
+        {
+            set.add(node);
+            recursiveGetChildNodes(set, node);
+        }
+    }
 }

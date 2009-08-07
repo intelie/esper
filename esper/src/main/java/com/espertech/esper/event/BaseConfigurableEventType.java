@@ -118,6 +118,11 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
             {
                 propertyFragmentTypes.put(explicit.getDescriptor().getPropertyName(), new Pair<ExplicitPropertyDescriptor, FragmentEventType>(explicit, null));
             }
+
+            if (!desc.isFragment())
+            {
+                propertyFragmentTypes.put(explicit.getDescriptor().getPropertyName(), null);
+            }
             count++;
         }         
     }
@@ -150,6 +155,10 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
         Pair<ExplicitPropertyDescriptor, FragmentEventType> pair = propertyFragmentTypes.get(property);
         if (pair == null)
         {
+            if (propertyFragmentTypes.containsKey(property))
+            {
+                return null;
+            }
             return doResolveFragmentType(property);
         }
 

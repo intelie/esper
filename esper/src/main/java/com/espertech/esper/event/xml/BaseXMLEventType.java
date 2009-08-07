@@ -17,10 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.xml.xpath.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Base class for XML event types.
@@ -104,7 +101,12 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     protected void initialize(Collection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitXPathProperties,
                               List<ExplicitPropertyDescriptor> additionalSchemaProperties)
     {
-        List<ExplicitPropertyDescriptor> namedProperties = new ArrayList<ExplicitPropertyDescriptor>(additionalSchemaProperties);
+        // make sure we override those explicitly provided with those derived from a metadataz
+        Map<String, ExplicitPropertyDescriptor> namedProperties = new LinkedHashMap<String, ExplicitPropertyDescriptor>();
+        for (ExplicitPropertyDescriptor desc : additionalSchemaProperties)
+        {
+            namedProperties.put(desc.getDescriptor().getPropertyName(), desc);
+        }
 
         String xpathExpression = null;
         try {
@@ -142,7 +144,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
                 
                 EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), returnType, null, false,false,isArray,false,isFragment);
                 ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, isArray, property.getOptionaleventTypeName());
-                namedProperties.add(explicit);
+                namedProperties.put(desc.getPropertyName(), explicit);
             }
         }
         catch (XPathExpressionException ex)
@@ -150,7 +152,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
             throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + '\'', ex);
         }
 
-        super.initialize(namedProperties);
+        super.initialize(new ArrayList<ExplicitPropertyDescriptor>(namedProperties.values()));
     }
 
     /**

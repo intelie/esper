@@ -16,9 +16,55 @@ import javax.xml.xpath.XPathConstants;
 public class TestSchemaXMLEvent extends TestCase
 {
     private static String CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
+    private static String CLASSLOADER_SCHEMA_WITH_ALL_URI = "regression/simpleSchemaWithAll.xsd";
 
     private EPServiceProvider epService;
     private SupportUpdateListener updateListener;
+
+    public void testSchemaXMLWSchemaWithAll() throws Exception
+    {
+        Configuration config = getConfig(false);
+        ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
+        eventTypeMeta.setRootElementName("event-page-visit");
+        String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_WITH_ALL_URI).toString();
+        eventTypeMeta.setSchemaResource(schemaUri);
+        eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchemaWithAll");
+        eventTypeMeta.addXPathProperty("url", "/ss:event-page-visit/ss:url", XPathConstants.STRING);
+        config.addEventType("PageVisitEvent", eventTypeMeta);
+
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", config);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        // url='page4'
+        String text = "select a.url as sesja from pattern [ every a=PageVisitEvent(url='page1') ]";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(text);
+        stmt.addListener(updateListener);
+
+        SupportXML.sendEvent(epService.getEPRuntime(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<event-page-visit xmlns=\"samples:schemas:simpleSchemaWithAll\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"samples:schemas:simpleSchemaWithAll simpleSchemaWithAll.xsd\">\n" +
+            "<url>page1</url>" +
+            "</event-page-visit>");
+        EventBean event = updateListener.getLastNewData()[0];
+        assertEquals("page1", event.get("sesja"));
+        updateListener.reset();
+
+        SupportXML.sendEvent(epService.getEPRuntime(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<event-page-visit xmlns=\"samples:schemas:simpleSchemaWithAll\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"samples:schemas:simpleSchemaWithAll simpleSchemaWithAll.xsd\">\n" +
+            "<url>page2</url>" +
+            "</event-page-visit>");
+        assertFalse(updateListener.isInvoked());
+
+        EventType type = epService.getEPAdministrator().createEPL("select * from PageVisitEvent").getEventType();
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("sessionId", Node.class, null, false, false, false, false, true),
+            new EventPropertyDescriptor("customerId", Node.class, null, false, false, false, false, true),
+            new EventPropertyDescriptor("url", String.class, null, false, false, false, false, false),
+            new EventPropertyDescriptor("method", Node.class, null, false, false, false, false, true),
+           }, type.getPropertyDescriptors());
+    }
 
     public void testSchemaXMLQuery_XPathBacked() throws Exception
     {

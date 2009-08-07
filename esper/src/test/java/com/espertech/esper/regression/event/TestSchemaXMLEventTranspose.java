@@ -62,7 +62,7 @@ public class TestSchemaXMLEventTranspose extends TestCase
         EventTypeAssertionUtil.assertConsistency(stmtWildcard.getEventType());
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
             new EventPropertyDescriptor("nested1simple", Node.class, null, false, false, false, false, true),
-            new EventPropertyDescriptor("nested4array", Node[].class, null, false, false, true, false, true),
+            new EventPropertyDescriptor("nested4array", Node[].class, Node.class, false, false, true, false, true),
            }, stmtInsert.getEventType().getPropertyDescriptors());
 
         FragmentEventType fragmentTypeNested1 = stmtInsert.getEventType().getFragmentType("nested1simple");
@@ -143,7 +143,7 @@ public class TestSchemaXMLEventTranspose extends TestCase
             new EventPropertyDescriptor("prop1", String.class, null, false, false, false, false, false),
             new EventPropertyDescriptor("prop2", Boolean.class, null, false, false, false, false, false),
             new EventPropertyDescriptor("attr1", String.class, null, false, false, false, false, false),
-            new EventPropertyDescriptor("prop3", Integer[].class, null, false, false, true, false, false),
+            new EventPropertyDescriptor("prop3", Integer[].class, Integer.class, false, false, true, false, false),
             new EventPropertyDescriptor("prop3_0", Integer.class, null, false, false, false, false, false),
             new EventPropertyDescriptor("nested2", Node.class, null, false, false, false, false, true),
            }, stmtSelect.getEventType().getPropertyDescriptors());
@@ -224,7 +224,7 @@ public class TestSchemaXMLEventTranspose extends TestCase
         // try array property insert
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL("select nested3.nested4 as narr from TestXMLSchemaType");
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("narr", Node[].class, null, false, false, true, false, true),
+            new EventPropertyDescriptor("narr", Node[].class, Node.class, false, false, true, false, true),
            }, stmtInsert.getEventType().getPropertyDescriptors());
         EventTypeAssertionUtil.assertConsistency(stmtInsert.getEventType());
 

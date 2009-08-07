@@ -4,9 +4,8 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.client.EventBean;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -435,11 +434,23 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         assertEquals(5, event.get("c.intPrimitive"));
     }
 
+    public void testRepeatUseTags()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String stmt ="select * from pattern [every [2] (a=A() -> b=B(id=a.id))]";
+        SupportUpdateListener listener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
+        statement.addListener(listener);
+    }
+
     public void testInvalid()
     {
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
+        tryInvalid(epService, "every [2] (a=A() -> b=B(id=a[0].id))", "Property named 'a[0].id' is not valid in any stream [every [2] (a=A() -> b=B(id=a[0].id))]");
         tryInvalid(epService, "[-1] A", "Incorrect syntax near '-' at line 1 column 1, please check the pattern expression [[-1] A]");
         tryInvalid(epService, "[10..4] A", "Incorrect range specification, lower bounds value '10' is higher then higher bounds '4' [[10..4] A]");
         tryInvalid(epService, "[4..6] A", "Variable bounds repeat operator requires an until-expression [[4..6] A]");

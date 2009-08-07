@@ -108,7 +108,7 @@ public class DatabasePollingViewableFactory
         if (metaOriginPolicy == ConfigurationDBRef.MetadataOriginEnum.DEFAULT)
         {
             String connectionClass = connection.getClass().getName();
-            if (connectionClass.toLowerCase().contains("oracle"))
+            if ((connectionClass.toLowerCase().contains("oracle") || (connectionClass.toLowerCase().contains("timesten"))))
             {
                 // switch to sample statement if we are dealing with an oracle connection
                 metaOriginPolicy = ConfigurationDBRef.MetadataOriginEnum.SAMPLE;

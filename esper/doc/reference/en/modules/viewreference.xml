@@ -837,11 +837,11 @@ select * from Market.std:groupby(ticker).win:length(1000000).std:merge(ticker)
 								<entry>Variance</entry>
 							</row>
 							<row>
-								<entry><literal>stdev</literal></entry>
+								<entry><literal>stddev</literal></entry>
 								<entry>Sample standard deviation (square root of variance) </entry>
 							</row>
 							<row>
-								<entry><literal>stdevpa</literal></entry>
+								<entry><literal>stddevpa</literal></entry>
 								<entry>Population standard deviation</entry>
 							</row>
 						</tbody>
@@ -852,7 +852,7 @@ select * from Market.std:groupby(ticker).win:length(1000000).std:merge(ticker)
 					The below example selects the standard deviation on price for stock tick events for the last 10 events.
 				</para>
 	
-				<programlisting><![CDATA[select stdev from StockTickEvent.win:length(10).stat:uni(price)]]></programlisting>
+				<programlisting><![CDATA[select stddev from StockTickEvent.win:length(10).stat:uni(price)]]></programlisting>
 			</sect2>
 
 			<sect2 id="view-stat-linest" >

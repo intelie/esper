@@ -47,7 +47,7 @@ public class TestNoSchemaXMLEventTranspose extends TestCase
         EventTypeAssertionUtil.assertConsistency(stmtWildcard.getEventType());
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
             new EventPropertyDescriptor("nested1simple", Node.class, null, false, false, false, false, true),
-            new EventPropertyDescriptor("nested4array", Node[].class, null, false, false, true, false, true),
+            new EventPropertyDescriptor("nested4array", Node[].class, Node.class, false, false, true, false, true),
            }, stmtInsert.getEventType().getPropertyDescriptors());
 
         FragmentEventType fragmentTypeNested1 = stmtInsert.getEventType().getFragmentType("nested1simple");

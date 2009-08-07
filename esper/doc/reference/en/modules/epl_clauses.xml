@@ -663,7 +663,7 @@ select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
 			<para>
 				The following statement declares a further view onto the event stream of stock ticks: the univariate statistics view (<literal>stat:uni</literal>). The statement selects the properties that this view derives from the stream, for the last 100 events of IBM stock ticks in the length window.
 			</para>
-			<programlisting><![CDATA[select datapoints, total, average, variance, stdev, stdevpa 
+			<programlisting><![CDATA[select datapoints, total, average, variance, stddev, stddevpa
 from StockTick(symbol='IBM').win:length(100).stat:uni(volume)]]></programlisting>
 		</sect2>
 
