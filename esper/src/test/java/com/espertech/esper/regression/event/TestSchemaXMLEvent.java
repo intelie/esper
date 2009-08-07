@@ -15,15 +15,43 @@ import javax.xml.xpath.XPathConstants;
 
 public class TestSchemaXMLEvent extends TestCase
 {
-    private static String CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
-    private static String CLASSLOADER_SCHEMA_WITH_ALL_URI = "regression/simpleSchemaWithAll.xsd";
+    private static final String CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
+    private static final String CLASSLOADER_SCHEMA_WITH_ALL_URI = "regression/simpleSchemaWithAll.xsd";
+    private static final String CLASSLOADER_SCHEMA_WITH_RESTRICTION_URI = "regression/simpleSchemaWithRestriction.xsd";
 
     private EPServiceProvider epService;
     private SupportUpdateListener updateListener;
 
+    public void testSchemaXMLWSchemaWithRestriction() throws Exception
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
+        eventTypeMeta.setRootElementName("order");
+        String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_WITH_RESTRICTION_URI).toString();
+        eventTypeMeta.setSchemaResource(schemaUri);
+        config.addEventType("OrderEvent", eventTypeMeta);
+
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", config);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        String text = "select order_amount from OrderEvent";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(text);
+        stmt.addListener(updateListener);
+
+        SupportXML.sendEvent(epService.getEPRuntime(),
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<order>\n" +
+            "<order_amount>202.1</order_amount>" +
+            "</order>");
+        EventBean event = updateListener.getLastNewData()[0];
+        assertEquals(202.1d, event.get("order_amount"));
+        updateListener.reset();
+    }
+
     public void testSchemaXMLWSchemaWithAll() throws Exception
     {
-        Configuration config = getConfig(false);
+        Configuration config = SupportConfigFactory.getConfiguration();        
         ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
         eventTypeMeta.setRootElementName("event-page-visit");
         String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_WITH_ALL_URI).toString();

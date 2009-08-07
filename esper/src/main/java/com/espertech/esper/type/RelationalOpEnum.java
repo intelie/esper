@@ -97,6 +97,10 @@ public enum RelationalOpEnum
         computers.put(new MultiKey<Object>(new Object[] {Double.class, GE}), new GEDoubleComputer());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, LT}), new LTDoubleComputer());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, LE}), new LEDoubleComputer());
+        computers.put(new MultiKey<Object>(new Object[] {Float.class, GT}), new GTFloatComputer());
+        computers.put(new MultiKey<Object>(new Object[] {Float.class, GE}), new GEFloatComputer());
+        computers.put(new MultiKey<Object>(new Object[] {Float.class, LT}), new LTFloatComputer());
+        computers.put(new MultiKey<Object>(new Object[] {Float.class, LE}), new LEFloatComputer());
         computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, GT}), new GTBigDecComputer());
         computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, GE}), new GEBigDecComputer());
         computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, LT}), new LTBigDecComputer());
@@ -117,6 +121,7 @@ public enum RelationalOpEnum
     public RelationalOpEnum.Computer getComputer(Class coercedType, Class typeOne, Class typeTwo)
     {
         if ( (coercedType != Double.class) &&
+             (coercedType != Float.class) &&
              (coercedType != Integer.class) &&
              (coercedType != Long.class) &&
              (coercedType != String.class) &&
@@ -393,6 +398,55 @@ public enum RelationalOpEnum
             Number s1 = (Number) objOne;
             Number s2 = (Number) objTwo;
             return s1.doubleValue() <= s2.doubleValue();
+        }
+    }
+
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GTFloatComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            Number s1 = (Number) objOne;
+            Number s2 = (Number) objTwo;
+            return s1.floatValue() > s2.floatValue();
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GEFloatComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            Number s1 = (Number) objOne;
+            Number s2 = (Number) objTwo;
+            return s1.floatValue() >= s2.floatValue();
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LTFloatComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            Number s1 = (Number) objOne;
+            Number s2 = (Number) objTwo;
+            return s1.floatValue() < s2.floatValue();
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LEFloatComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            Number s1 = (Number) objOne;
+            Number s2 = (Number) objTwo;
+            return s1.floatValue() <= s2.floatValue();
         }
     }
 

@@ -98,12 +98,11 @@ public class DOMNestedPropertyGetter implements EventPropertyGetter, DOMProperty
                     "the underlying data object is not of type Node");
         }
 
-        Node node = (Node) obj.getUnderlying();
-        Node value;
+        Node value = (Node) obj.getUnderlying();
 
         for (int i = 0; i < domGetterChain.length; i++)
         {
-            value = domGetterChain[i].getValueAsNode(node);
+            value = domGetterChain[i].getValueAsNode(value);
 
             if (value == null)
             {
@@ -123,12 +122,11 @@ public class DOMNestedPropertyGetter implements EventPropertyGetter, DOMProperty
                     "the underlying data object is not of type Node");
         }
 
-        Node node = (Node) obj.getUnderlying();
-        Node value = node;
+        Node value = (Node) obj.getUnderlying();
 
         for (int i = 0; i < domGetterChain.length - 1; i++)
         {
-            value = domGetterChain[i].getValueAsNode(node);
+            value = domGetterChain[i].getValueAsNode(value);
 
             if (value == null)
             {

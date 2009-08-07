@@ -4,6 +4,7 @@ import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.util.ResourceLoader;
 import com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl;
 import com.sun.org.apache.xerces.internal.impl.dv.xs.XSSimpleTypeDecl;
+import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
 import com.sun.org.apache.xerces.internal.xs.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -187,9 +188,16 @@ public class XSDSchemaMapper
                         XSElementDeclaration decl = (XSElementDeclaration) childParticle.getTerm();
                         boolean isArrayFlag = isArray(childParticle);
 
+                        XSTypeDefinition type = decl.getTypeDefinition();
+                        //String name = type.getTypeName();
+                        Object o = type.getBaseType();
+                        
+
                         if (isSimpleTypeCategory(decl.getTypeDefinition().getTypeCategory())) {
+
                             XSSimpleTypeDecl simpleType = (XSSimpleTypeDecl) decl.getTypeDefinition();
-                            simpleElements.add(new SchemaElementSimple(decl.getName(), decl.getNamespace(), simpleType.getPrimitiveKind(), simpleType.getName(), isArrayFlag));
+                            Integer fractionDigits = getFractionRestriction(simpleType);
+                            simpleElements.add(new SchemaElementSimple(decl.getName(), decl.getNamespace(), simpleType.getPrimitiveKind(), simpleType.getName(), isArrayFlag, fractionDigits));
                         }
 
                         if (isComplexTypeCategory(decl.getTypeDefinition().getTypeCategory()))
@@ -234,6 +242,35 @@ public class XSDSchemaMapper
         }
 
         return complexElement;
+    }
+
+    private static Integer getFractionRestriction(XSSimpleTypeDecl simpleType)
+    {
+        if ((simpleType.getDefinedFacets() & XSSimpleType.FACET_FRACTIONDIGITS) != 0){
+            XSObjectList facets = simpleType.getFacets();
+            Integer digits = null;
+            for (int f = 0; f < facets.getLength(); f++)
+            {
+                XSObject item = facets.item(f);
+                if (item instanceof XSFacet)
+                {
+                    XSFacet facet = (XSFacet) item;
+                    if (facet.getFacetKind() == XSSimpleType.FACET_FRACTIONDIGITS)
+                    {
+                        try
+                        {
+                            digits = Integer.parseInt(facet.getLexicalFacetValue());
+                        }
+                        catch (RuntimeException ex)
+                        {
+                            log.warn("Error parsing fraction facet value '" + facet.getLexicalFacetValue() + "' : " + ex.getMessage(), ex);
+                        }
+                    }
+                }
+            }
+            return digits;
+        }
+        return null;
     }
 
     private static boolean isArray(XSParticle particle)

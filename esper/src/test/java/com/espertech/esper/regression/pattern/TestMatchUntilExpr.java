@@ -443,6 +443,12 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         SupportUpdateListener listener = new SupportUpdateListener();
         EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
         statement.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("A1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("A2"));
+        assertTrue(listener.isInvoked());
     }
 
     public void testInvalid()

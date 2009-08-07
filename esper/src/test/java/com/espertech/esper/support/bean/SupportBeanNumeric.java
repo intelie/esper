@@ -13,6 +13,8 @@ public class SupportBeanNumeric implements Serializable
     private BigDecimal bigdecTwo;
     private double doubleOne;
     private double doubleTwo;
+    private float floatOne;
+    private float floatTwo;
 
     public SupportBeanNumeric(Integer intOne, Integer intTwo, BigInteger bigint, BigDecimal bigdec, double doubleOne, double doubleTwo)
     {
@@ -34,6 +36,12 @@ public class SupportBeanNumeric implements Serializable
     {
         this.bigint = bigint;
         this.bigdec = bigdec;
+    }
+
+    public SupportBeanNumeric(float floatOne, float floatTwo)
+    {
+        this.floatOne = floatOne;
+        this.floatTwo = floatTwo;
     }
 
     public Integer getIntOne()
@@ -104,5 +112,25 @@ public class SupportBeanNumeric implements Serializable
     public void setBigdecTwo(BigDecimal bigdecTwo)
     {
         this.bigdecTwo = bigdecTwo;
+    }
+
+    public float getFloatOne()
+    {
+        return floatOne;
+    }
+
+    public void setFloatOne(float floatOne)
+    {
+        this.floatOne = floatOne;
+    }
+
+    public float getFloatTwo()
+    {
+        return floatTwo;
+    }
+
+    public void setFloatTwo(float floatTwo)
+    {
+        this.floatTwo = floatTwo;
     }
 }

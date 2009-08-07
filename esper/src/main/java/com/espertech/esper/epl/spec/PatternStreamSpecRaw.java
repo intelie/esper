@@ -71,61 +71,177 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                       boolean isInsertInto)
             throws ExprValidationException
     {
-        // Determine all the filter nodes used in the pattern
-        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(evalNode);
+        MatchEventSpec tags = new MatchEventSpec();
+        recursiveCompile(evalNode, context, eventTypeReferences, isInsertInto, tags);
+        return new PatternStreamSpecCompiled(evalNode, tags.getTaggedEventTypes(), tags.getArrayEventTypes(), this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
+    }
 
-        // Determine tags that are arrays of events, all under the "match" clause
-        Set<String> matchUntilArrayTags = new HashSet<String>();
-        for (EvalMatchUntilNode matchUntilNode : evalNodeAnalysisResult.getRepeatNodes())
+    private static void recursiveCompile(EvalNode evalNode, StatementContext context, Set<String> eventTypeReferences, boolean isInsertInto, MatchEventSpec tags) throws ExprValidationException
+    {
+        for (EvalNode child : evalNode.getChildNodes())
         {
-            Set<String> arrayTags = null;
-            EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
-            for (EvalFilterNode filterNode : matchUntilAnalysisResult.getFilterNodes())
+            recursiveCompile(child, context, eventTypeReferences, isInsertInto, tags);
+        }
+
+        LinkedHashMap<String, Pair<EventType, String>> newTaggedEventTypes = null;
+        LinkedHashMap<String, Pair<EventType, String>> newArrayEventTypes = null;
+
+        if (evalNode instanceof EvalFilterNode)
+        {
+            EvalFilterNode filterNode = (EvalFilterNode) evalNode;
+            String eventName = filterNode.getRawFilterSpec().getEventTypeName();
+            EventType resolvedEventType = FilterStreamSpecRaw.resolveType(context.getEngineURI(), eventName, context.getEventAdapterService(), context.getPlugInTypeResolutionURIs());
+            EventType finalEventType = resolvedEventType;
+            String optionalTag = filterNode.getEventAsName();
+            boolean isPropertyEvaluation = false;
+
+            // obtain property event type, if final event type is properties
+            if (filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec() != null)
             {
-                String optionalTag = filterNode.getEventAsName();
-                if (optionalTag != null)
+                PropertyEvaluator optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(), resolvedEventType, filterNode.getEventAsName(), context.getEventAdapterService(), context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEngineURI());
+                finalEventType = optionalPropertyEvaluator.getFragmentEventType();
+                isPropertyEvaluation = true;
+            }
+
+            if (finalEventType instanceof EventTypeSPI)
+            {
+                eventTypeReferences.add(((EventTypeSPI) finalEventType).getMetadata().getPrimaryName());
+            }
+
+            // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
+            if (optionalTag != null)
+            {
+                Pair<EventType, String> pair = tags.getTaggedEventTypes().get(optionalTag);
+                EventType existingType = null;
+                if (pair != null)
                 {
-                    if (arrayTags == null)
+                    existingType = pair.getFirst();
+                }
+                if (existingType == null)
+                {
+                    pair = tags.getArrayEventTypes().get(optionalTag);
+                    if (pair != null)
                     {
-                        arrayTags = new HashSet<String>();
+                        throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
+                                "' used in the repeat-until operator cannot also appear in other filter expressions");
                     }
-                    arrayTags.add(optionalTag);
+                }
+                if ((existingType != null) && (existingType != finalEventType))
+                {
+                    throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
+                            "' has already been declared for events of type " + existingType.getUnderlyingType().getName());
+                }
+                pair = new Pair<EventType, String>(finalEventType, eventName);
+
+                // add tagged type
+                if (isPropertyEvaluation)
+                {
+                    newArrayEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+                    newArrayEventTypes.put(optionalTag, pair);
+                }
+                else
+                {
+                    newTaggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+                    newTaggedEventTypes.put(optionalTag, pair);
                 }
             }
-            if (arrayTags != null)
+
+            // For this filter, filter types are all known tags at this time,
+            // and additionally stream 0 (self) is our event type.
+            // Stream type service allows resolution by property name event if that name appears in other tags.
+            // by defaulting to stream zero.
+            // Stream zero is always the current event type, all others follow the order of the map (stream 1 to N).
+            String selfStreamName = optionalTag;
+            if (selfStreamName == null)
             {
-                matchUntilArrayTags.addAll(arrayTags);
+                selfStreamName = "s_" + UuidGenerator.generate();
             }
-            matchUntilNode.setTagsArrayedSet(arrayTags);
+            LinkedHashMap<String, Pair<EventType, String>> filterTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+            Pair<EventType, String> typePair = new Pair<EventType, String>(finalEventType, eventName);
+            filterTypes.put(selfStreamName, typePair);
+            filterTypes.putAll(tags.getTaggedEventTypes());
+
+            // for the filter, specify all tags used
+            LinkedHashMap<String, Pair<EventType, String>> filterTaggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>(tags.getTaggedEventTypes());
+            filterTaggedEventTypes.remove(optionalTag);
+
+            // handle array tags (match-until clause)
+            LinkedHashMap<String, Pair<EventType, String>> arrayCompositeEventTypes = null;
+            if (tags.getArrayEventTypes() != null)
+            {
+                arrayCompositeEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+                EventType arrayTagCompositeEventType = context.getEventAdapterService().createSemiAnonymousMapType(new HashMap(), tags.getArrayEventTypes(), isInsertInto);
+                for (Map.Entry<String, Pair<EventType, String>> entry : tags.getArrayEventTypes().entrySet())
+                {
+                    String tag = entry.getKey();
+                    if (!filterTypes.containsKey(tag))
+                    {
+                        Pair<EventType, String> pair = new Pair<EventType, String>(arrayTagCompositeEventType, tag);
+                        filterTypes.put(tag, pair);
+                        arrayCompositeEventTypes.put(tag, pair);
+                    }
+                }
+            }
+
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, context.getEngineURI(), true, false);
+            List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
+
+            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(resolvedEventType, eventName, exprNodes, filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(),  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null, context);
+            filterNode.setFilterSpec(spec);
         }
-
-        // Resolve all event types; some filters are tagged and we keep the order in which they are specified
-        LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-        LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-        for (EvalNode activeNode : evalNodeAnalysisResult.getActiveNodes())
+        else if (evalNode instanceof EvalObserverNode)
         {
-            if (activeNode instanceof EvalFilterNode)
+            EvalObserverNode observerNode = (EvalObserverNode) evalNode;
+            try
             {
-                handleFilterNode((EvalFilterNode) activeNode, context, eventTypeReferences, matchUntilArrayTags, taggedEventTypes, arrayEventTypes, isInsertInto);
-            }
+                ObserverFactory observerFactory = context.getPatternResolutionService().create(observerNode.getPatternObserverSpec());
 
-            if (activeNode instanceof EvalObserverNode)
-            {
-                handleObserverNode((EvalObserverNode) activeNode, context,
-                                      taggedEventTypes,
-                                      arrayEventTypes);
-            }
+                StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), tags.taggedEventTypes, tags.arrayEventTypes);
+                List<ExprNode> validated = validateExpressions(observerNode.getPatternObserverSpec().getObjectParameters(),
+                        streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
 
-            if (activeNode instanceof EvalGuardNode)
+                MatchedEventConvertor convertor = new MatchedEventConvertorImpl(tags.taggedEventTypes, tags.arrayEventTypes, context.getEventAdapterService());
+
+                observerNode.setObserverFactory(observerFactory);
+                observerFactory.setObserverParameters(validated, convertor);
+            }
+            catch (ObserverParameterException e)
             {
-                handleGuardNode((EvalGuardNode) activeNode, context,
-                                      taggedEventTypes,
-                                      arrayEventTypes);
+                throw new ExprValidationException("Invalid parameter for pattern observer: " + e.getMessage(), e);
+            }
+            catch (PatternObjectException e)
+            {
+                throw new ExprValidationException("Failed to resolve pattern observer: " + e.getMessage(), e);
             }
         }
-
-        for (EvalEveryDistinctNode distinctNode : evalNodeAnalysisResult.getDistinctNodes())
+        else if (evalNode instanceof EvalGuardNode)
         {
+            EvalGuardNode guardNode = (EvalGuardNode) evalNode;
+            try
+            {
+                GuardFactory guardFactory = context.getPatternResolutionService().create(guardNode.getPatternGuardSpec());
+
+                StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), tags.taggedEventTypes, tags.arrayEventTypes);
+                List<ExprNode> validated = validateExpressions(guardNode.getPatternGuardSpec().getObjectParameters(),
+                        streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
+
+                MatchedEventConvertor convertor = new MatchedEventConvertorImpl(tags.taggedEventTypes, tags.arrayEventTypes, context.getEventAdapterService());
+
+                guardNode.setGuardFactory(guardFactory);
+                guardFactory.setGuardParameters(validated, convertor);
+            }
+            catch (GuardParameterException e)
+            {
+                throw new ExprValidationException("Invalid parameter for pattern guard: " + e.getMessage(), e);
+            }
+            catch (PatternObjectException e)
+            {
+                throw new ExprValidationException("Failed to resolve pattern guard: " + e.getMessage(), e);
+            }
+        }
+        else if (evalNode instanceof EvalEveryDistinctNode)
+        {
+            EvalEveryDistinctNode distinctNode = (EvalEveryDistinctNode) evalNode;
             MatchEventSpec matchEventFromChildNodes = analyzeMatchEvent(distinctNode);
             StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), matchEventFromChildNodes.getTaggedEventTypes(), matchEventFromChildNodes.getArrayEventTypes());
             List<ExprNode> validated;
@@ -144,171 +260,49 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             distinctNode.setConvertor(convertor);
             distinctNode.setExpressions(validated);
         }
-        
-        return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, arrayEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
-    }
-
-    private void handleGuardNode(EvalGuardNode guardNode, StatementContext context, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
-            throws ExprValidationException
-    {
-        try
+        else if (evalNode instanceof EvalMatchUntilNode)
         {
-            GuardFactory guardFactory = context.getPatternResolutionService().create(guardNode.getPatternGuardSpec());
-
-            StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), taggedEventTypes, arrayEventTypes);
-            List<ExprNode> validated = validateExpressions(guardNode.getPatternGuardSpec().getObjectParameters(),
-                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
-
-            MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, context.getEventAdapterService());
-
-            guardNode.setGuardFactory(guardFactory);
-            guardFactory.setGuardParameters(validated, convertor);
-        }
-        catch (GuardParameterException e)
-        {
-            throw new ExprValidationException("Invalid parameter for pattern guard: " + e.getMessage(), e);
-        }
-        catch (PatternObjectException e)
-        {
-            throw new ExprValidationException("Failed to resolve pattern guard: " + e.getMessage(), e);
-        }
-    }
-
-    private void handleObserverNode(EvalObserverNode observerNode, StatementContext context, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
-            throws ExprValidationException
-    {
-        try
-        {
-            ObserverFactory observerFactory = context.getPatternResolutionService().create(observerNode.getPatternObserverSpec());
-
-            StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), taggedEventTypes, arrayEventTypes);
-            List<ExprNode> validated = validateExpressions(observerNode.getPatternObserverSpec().getObjectParameters(),
-                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
-
-            MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, context.getEventAdapterService());
-
-            observerNode.setObserverFactory(observerFactory);
-            observerFactory.setObserverParameters(validated, convertor);
-        }
-        catch (ObserverParameterException e)
-        {
-            throw new ExprValidationException("Invalid parameter for pattern observer: " + e.getMessage(), e);
-        }
-        catch (PatternObjectException e)
-        {
-            throw new ExprValidationException("Failed to resolve pattern observer: " + e.getMessage(), e);
-        }
-    }
-
-    private void handleFilterNode(EvalFilterNode filterNode,
-                                  StatementContext context,
-                                  Set<String> eventTypeReferences,
-                                  Set<String> matchUntilArrayTags,
-                                  LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
-                                  LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
-                                  boolean isInsertInto)
-            throws ExprValidationException
-    {
-        String eventName = filterNode.getRawFilterSpec().getEventTypeName();
-        EventType resolvedEventType = FilterStreamSpecRaw.resolveType(context.getEngineURI(), eventName, context.getEventAdapterService(), context.getPlugInTypeResolutionURIs());
-        EventType finalEventType = resolvedEventType;
-        String optionalTag = filterNode.getEventAsName();
-        boolean isPropertyEvaluation = false;
-
-        // obtain property event type, if final event type is properties
-        if (filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec() != null)
-        {
-            PropertyEvaluator optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(), resolvedEventType, filterNode.getEventAsName(), context.getEventAdapterService(), context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEngineURI());
-            finalEventType = optionalPropertyEvaluator.getFragmentEventType();
-            isPropertyEvaluation = true;
-        }
-
-        if (finalEventType instanceof EventTypeSPI)
-        {
-            eventTypeReferences.add(((EventTypeSPI) finalEventType).getMetadata().getPrimaryName());
-        }
-
-        // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
-        if (optionalTag != null)
-        {
-            Pair<EventType, String> pair = taggedEventTypes.get(optionalTag);
-            EventType existingType = null;
-            if (pair != null)
+            EvalMatchUntilNode matchUntilNode = (EvalMatchUntilNode) evalNode;
+            Set<String> arrayTags = null;
+            EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
+            for (EvalFilterNode filterNode : matchUntilAnalysisResult.getFilterNodes())
             {
-                existingType = pair.getFirst();
-            }
-            if (existingType == null)
-            {
-                pair = arrayEventTypes.get(optionalTag);
-                if (pair != null)
+                String optionalTag = filterNode.getEventAsName();
+                if (optionalTag != null)
                 {
-                    throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
-                            "' used in the repeat-until operator cannot also appear in other filter expressions");
+                    if (arrayTags == null)
+                    {
+                        arrayTags = new HashSet<String>();
+                    }
+                    arrayTags.add(optionalTag);
                 }
             }
-            if ((existingType != null) && (existingType != finalEventType))
-            {
-                throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
-                        "' has already been declared for events of type " + existingType.getUnderlyingType().getName());
-            }
-            pair = new Pair<EventType, String>(finalEventType, eventName);
 
-            // add tagged type
-            if (matchUntilArrayTags.contains(optionalTag) || isPropertyEvaluation)
+            if (arrayTags != null)
             {
-                arrayEventTypes.put(optionalTag, pair);
-            }
-            else
-            {
-                taggedEventTypes.put(optionalTag, pair);
-            }
-        }
-
-        // For this filter, filter types are all known tags at this time,
-        // and additionally stream 0 (self) is our event type.
-        // Stream type service allows resolution by property name event if that name appears in other tags.
-        // by defaulting to stream zero.
-        // Stream zero is always the current event type, all others follow the order of the map (stream 1 to N).
-        String selfStreamName = optionalTag;
-        if (selfStreamName == null)
-        {
-            selfStreamName = "s_" + UuidGenerator.generate();
-        }
-        LinkedHashMap<String, Pair<EventType, String>> filterTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-        Pair<EventType, String> typePair = new Pair<EventType, String>(finalEventType, eventName);
-        filterTypes.put(selfStreamName, typePair);
-        filterTypes.putAll(taggedEventTypes);
-
-        // for the filter, specify all tags used
-        LinkedHashMap<String, Pair<EventType, String>> filterTaggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>(taggedEventTypes);
-        filterTaggedEventTypes.remove(optionalTag);
-
-        // handle array tags (match-until clause)
-        LinkedHashMap<String, Pair<EventType, String>> arrayCompositeEventTypes = null;
-        if (arrayEventTypes != null)
-        {
-            arrayCompositeEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-            EventType arrayTagCompositeEventType = context.getEventAdapterService().createSemiAnonymousMapType(new HashMap(), arrayEventTypes, isInsertInto);
-            for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
-            {
-                String tag = entry.getKey();
-                if (!filterTypes.containsKey(tag))
+                for (String arrayTag : arrayTags)
                 {
-                    Pair<EventType, String> pair = new Pair<EventType, String>(arrayTagCompositeEventType, tag);
-                    filterTypes.put(tag, pair);
-                    arrayCompositeEventTypes.put(tag, pair);
+                    if (!tags.arrayEventTypes.containsKey(arrayTag))
+                    {
+                        tags.arrayEventTypes.put(arrayTag, tags.taggedEventTypes.get(arrayTag));
+                        tags.taggedEventTypes.remove(arrayTag);
+                    }
                 }
             }
+            matchUntilNode.setTagsArrayedSet(arrayTags);
         }
 
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, context.getEngineURI(), true, false);
-        List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(resolvedEventType, eventName, exprNodes, filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(),  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null, context);
-        filterNode.setFilterSpec(spec);
+        if (newTaggedEventTypes != null)
+        {
+            tags.getTaggedEventTypes().putAll(newTaggedEventTypes);
+        }
+        if (newArrayEventTypes != null)
+        {
+            tags.getArrayEventTypes().putAll(newArrayEventTypes);
+        }
     }
 
-    private List<ExprNode> validateExpressions(List<ExprNode> objectParameters, StreamTypeService streamTypeService,
+    private static List<ExprNode> validateExpressions(List<ExprNode> objectParameters, StreamTypeService streamTypeService,
                          MethodResolutionService methodResolutionService,
                          ViewResourceDelegate viewResourceDelegate,
                          TimeProvider timeProvider,
@@ -328,7 +322,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return validated;
     }
 
-    private StreamTypeService getStreamTypeService(String engineURI, EventAdapterService eventAdapterService, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+    private static StreamTypeService getStreamTypeService(String engineURI, EventAdapterService eventAdapterService, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
     {
         LinkedHashMap<String, Pair<EventType, String>> filterTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         filterTypes.putAll(taggedEventTypes);
@@ -351,7 +345,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return new StreamTypeServiceImpl(filterTypes, engineURI, true, false);
     }
 
-    private MatchEventSpec analyzeMatchEvent(EvalNode relativeNode)
+    private static MatchEventSpec analyzeMatchEvent(EvalNode relativeNode)
     {
         LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
@@ -402,10 +396,16 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         private final LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes;
         private final LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes;
 
-        public MatchEventSpec(LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+        private MatchEventSpec(LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
         {
             this.taggedEventTypes = taggedEventTypes;
             this.arrayEventTypes = arrayEventTypes;
+        }
+
+        public MatchEventSpec()
+        {
+            this.taggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+            this.arrayEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         }
 
         public LinkedHashMap<String, Pair<EventType, String>> getArrayEventTypes()

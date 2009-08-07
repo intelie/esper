@@ -1933,7 +1933,7 @@ model.setFromClause(FromClause.create(
 model.setWhereClause(Expressions.isNotNull("RE.waverId"));
 model.setGroupByClause(GroupByClause.create("line"));
 model.setHavingClause(Expressions.lt(Expressions.avg("age"), Expressions.constant(0)));
-model.setOutputLimitClause(OutputLimitClause.create(10, OutputLimitUnit.SECONDS));
+model.setOutputLimitClause(OutputLimitClause.create(OutputLimitSelector.DEFAULT, Expressions.timePeriod(null, null, null, 10.0, null)));
 model.setOrderByClause(OrderByClause.create("line"));]]></programlisting>
 		</sect2>
 		

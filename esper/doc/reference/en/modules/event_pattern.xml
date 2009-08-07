@@ -1167,10 +1167,16 @@ from pattern [ every [2] a=A ] ]]></programlisting>
 			</sect3>		   
 			  
 		   <para>
-				You may not use tags defined in the sub-expression to the repeat operator in the same subexpression. For example, in the following pattern the subexpression to the repeat operator is <literal>(a=A() -> b=B(id=a[0].id))</literal> and the tag <literal>a</literal>  cannot be used in the filter for event B:
+				You may not use indexed tags defined in the sub-expression to the repeat operator in the same subexpression. For example, in the following pattern the subexpression to the repeat operator is <literal>(a=A() -> b=B(id=a[0].id))</literal> and the tag <literal>a</literal>  cannot be used in its indexed form in the filter for event B:
 		   </para>
 			<programlisting><![CDATA[// invalid
 every [2] (a=A() -> b=B(id=a[0].id))]]></programlisting>
+
+		   <para>
+				You can use tags without an index:
+		   </para>
+			<programlisting><![CDATA[// valid
+every [2] (a=A() -> b=B(id=a.id))]]></programlisting>
         </sect2>
 
         <sect2 id="pattern-logical-and" >

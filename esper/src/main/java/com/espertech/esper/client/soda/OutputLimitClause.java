@@ -355,7 +355,7 @@ public class OutputLimitClause implements Serializable
             }
             writer.write(")");
         }
-        else if (unit == OutputLimitUnit.TIME_PERIOD)
+        else if (unit == OutputLimitUnit.TIME_PERIOD && timePeriodExpression != null)
         {
             writer.write("every ");
             timePeriodExpression.toEPL(writer);
