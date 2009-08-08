@@ -65,6 +65,7 @@ public final class FilterSpecCompiler
      * @param optionalStreamName - the stream name, if provided
      * @param engineURI - the engine uri
      * @param optionalPropertyEvalSpec - specification for evaluating properties
+     * @param exprEvaluatorContext context for expression evalauation
      * @return compiled filter specification
      * @throws ExprValidationException if the expression or type validations failed
      */
@@ -175,6 +176,7 @@ public final class FilterSpecCompiler
      * @param methodResolutionService for resolving functions
      * @param timeProvider for providing current time
      * @param variableService provides access to variables
+     * @param exprEvaluatorContext context for expression evalauation
      * @return list of validated expression nodes
      * @throws ExprValidationException for validation errors
      */
@@ -325,6 +327,7 @@ public final class FilterSpecCompiler
      * @param constituent is the expression to look at
      * @param taggedEventTypes event types and their tags
      * @param arrayEventTypes @return filter parameter representing the expression, or null
+     * @param exprEvaluatorContext context for expression evalauation
      * @throws ExprValidationException if the expression is invalid
      * @return FilterSpecParam filter param
      */

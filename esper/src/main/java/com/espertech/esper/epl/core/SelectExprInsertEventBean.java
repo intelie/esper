@@ -299,6 +299,7 @@ public class SelectExprInsertEventBean
      * Manufacture an event for events-per-stream.
      * @param eventsPerStream result events
      * @param newData flag whether insert or remove stream
+     * @param exprEvaluatorContext context for expression evalauation
      * @return manufactured event
      */
     public EventBean manufacture(EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext exprEvaluatorContext)

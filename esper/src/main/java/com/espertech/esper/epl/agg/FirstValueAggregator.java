@@ -20,6 +20,10 @@ public class FirstValueAggregator implements AggregationMethod
     private boolean isSet;
     private Object firstValue;
 
+    /**
+     * Ctor.
+     * @param type type of value returned
+     */
     public FirstValueAggregator(Class type) {
         this.type = type;
     }

@@ -61,6 +61,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
      * @param typeService -service for information about streams
      * @param eventAdapterService - service for generating events and handling event types
      * @param selectExprEventTypeRegistry - service for statement to type registry
+     * @param exprEvaluatorContext context for expression evalauation
      * @throws ExprValidationException thrown if any of the expressions don't validate
      */
     public SelectExprEvalProcessorStreams(List<SelectClauseExprCompiledSpec> selectionList,

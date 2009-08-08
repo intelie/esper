@@ -41,6 +41,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param orderByProcessor - for sorting the outgoing events according to the order-by clause
      * @param optionalHavingNode - having clause expression node
      * @param isSelectRStream - true if remove stream events should be generated
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public ResultSetProcessorSimple(SelectExprProcessor selectExprProcessor,
                                     OrderByProcessor orderByProcessor,
@@ -138,6 +139,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param events - input events
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
+     * @param exprEvaluatorContext context for expression evalauation
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
@@ -193,6 +195,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param events - input events
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
+     * @param exprEvaluatorContext context for expression evalauation
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
@@ -243,6 +246,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param optionalHavingNode - supplies the having-clause expression
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
+     * @param exprEvaluatorContext context for expression evalauation
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
@@ -305,6 +309,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param optionalHavingNode - supplies the having-clause expression
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
+     * @param exprEvaluatorContext context for expression evalauation
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
@@ -467,6 +472,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param optionalHavingNode - supplies the having-clause expression
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
+     * @param exprEvaluatorContext context for expression evalauation
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
@@ -512,6 +518,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param optionalHavingNode - supplies the having-clause expression
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
+     * @param exprEvaluatorContext context for expression evalauation
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
@@ -551,6 +558,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @param result is the result event list to populate
+     * @param exprEvaluatorContext context for expression evalauation
      * @param optSortKeys is the result sort key list to populate, for sorting
      */
     protected static void getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
@@ -583,6 +591,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @param result is the result event list to populate
      * @param optSortKeys is the result sort key list to populate, for sorting
+     * @param exprEvaluatorContext context for expression evalauation
      */
     protected static void getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
     {
@@ -615,6 +624,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @param result is the result event list to populate
+     * @param exprEvaluatorContext context for expression evalauation
      * @param optSortKeys is the result sort key list to populate, for sorting
      */
     protected static void getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
@@ -656,6 +666,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @param result is the result event list to populate
      * @param optSortKeys is the result sort key list to populate, for sorting
+     * @param exprEvaluatorContext context for expression evalauation
      */
     protected static void getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize, List<EventBean> result, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
     {

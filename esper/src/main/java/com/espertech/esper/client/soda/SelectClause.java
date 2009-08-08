@@ -276,11 +276,19 @@ public class SelectClause implements Serializable
         writer.write(' ');
     }
 
+    /**
+     * Returns indicator whether distinct or not.
+     * @return distinct indicator
+     */
     public boolean isDistinct()
     {
         return isDistinct;
     }
 
+    /**
+     * Returns indicator whether distinct or not.
+     * @param distinct distinct indicator
+     */
     public SelectClause setDistinct(boolean distinct)
     {
         isDistinct = distinct;

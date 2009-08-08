@@ -45,6 +45,7 @@ public class NamedWindowProcessor
      * @param eplExpression epl expression
      * @param statementName statement name
      * @param isPrioritized if the engine is running with prioritized execution
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized, ExprEvaluatorContext exprEvaluatorContext)
     {
@@ -87,6 +88,8 @@ public class NamedWindowProcessor
      * @param statementHandle is the handle to the statement, used for routing/insert-into
      * @param joinExpr is the join expression or null if there is none
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
+     * @param statementContext statement services
+     * @param isDistinct is true for distinct output
      * @return on trigger handling view
      */
     public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)

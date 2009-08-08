@@ -29,6 +29,7 @@ public class ResultSetAggregateAllIterator implements Iterator<EventBean>
      * Ctor.
      * @param sourceIterator is the parent iterator
      * @param resultSetProcessor for getting outgoing rows
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public ResultSetAggregateAllIterator(Iterator<EventBean> sourceIterator, ResultSetProcessorAggregateAll resultSetProcessor, ExprEvaluatorContext exprEvaluatorContext)
     {

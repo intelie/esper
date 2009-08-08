@@ -31,6 +31,7 @@ public class FilterExprViewIterator implements Iterator<EventBean>
      * Ctor.
      * @param sourceIterator is the iterator supplying events to filter out.
      * @param filter is the filter expression
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public FilterExprViewIterator(Iterator<EventBean> sourceIterator, ExprEvaluator filter, ExprEvaluatorContext exprEvaluatorContext)
     {

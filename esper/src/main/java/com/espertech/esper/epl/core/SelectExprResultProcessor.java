@@ -31,6 +31,7 @@ public class SelectExprResultProcessor implements SelectExprProcessor
      * @param statementResultService for awareness of listeners and subscribers handles output results
      * @param syntheticProcessor is the processor generating synthetic events according to the select clause
      * @param bindProcessor for generating natural object column results
+     * @param exprEvaluatorContext context for expression evalauation
      * @throws ExprValidationException if the validation failed
      */
     public SelectExprResultProcessor(StatementResultService statementResultService,

@@ -53,6 +53,7 @@ public interface HistoricalEventViewable extends Viewable, ValidatedView, StopCa
      * first dimension is a number of rows (often 1 depending on windows used) and
      * the second dimension is the number of streams participating in a join.
      * @param indexingStrategy the strategy to use for converting poll results into a indexed table for fast lookup
+     * @param exprEvaluatorContext context for expression evalauation
      * @return array of lists with one list for each event-per-stream row
      */
     public EventTable[] poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy, ExprEvaluatorContext exprEvaluatorContext);

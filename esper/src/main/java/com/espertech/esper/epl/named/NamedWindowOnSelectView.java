@@ -56,6 +56,8 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
      * @param resultSetProcessor for processing aggregation, having and ordering
      * @param statementHandle required for routing events
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
+     * @param statementContext statement services
+     * @param isDistinct is true for distinct output
      */
     public NamedWindowOnSelectView(StatementStopService statementStopService,
                                    LookupStrategy lookupStrategy,

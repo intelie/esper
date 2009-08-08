@@ -42,6 +42,7 @@ public abstract class NamedWindowOnExprBaseView extends ViewSupport implements S
      * @param statementStopService for indicating a statement was stopped or destroyed for cleanup
      * @param lookupStrategy for handling trigger events to determine deleted events
      * @param rootView to indicate which events to delete
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public NamedWindowOnExprBaseView(StatementStopService statementStopService,
                                  LookupStrategy lookupStrategy,

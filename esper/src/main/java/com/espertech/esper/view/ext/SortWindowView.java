@@ -62,6 +62,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
      * expressions
      * @param sortWindowViewFactory for copying this view in a group-by
      * @param isSortUsingCollator for string value sorting using compare or Collator
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public SortWindowView(SortWindowViewFactory sortWindowViewFactory,
                           ExprNode[] sortCriteriaExpressions,

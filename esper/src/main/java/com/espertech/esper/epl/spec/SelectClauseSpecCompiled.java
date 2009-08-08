@@ -25,6 +25,7 @@ public class SelectClauseSpecCompiled implements MetaDefItem, Serializable
 
     /**
      * Ctor.
+     * @param isDistinct indicates distinct or not
      */
     public SelectClauseSpecCompiled(boolean isDistinct)
 	{
@@ -35,6 +36,7 @@ public class SelectClauseSpecCompiled implements MetaDefItem, Serializable
     /**
      * Ctor.
      * @param selectList for a populates list of select expressions
+     * @param isDistinct indicates distinct or not
      */
     public SelectClauseSpecCompiled(List<SelectClauseElementCompiled> selectList, boolean isDistinct)
 	{
@@ -76,6 +78,10 @@ public class SelectClauseSpecCompiled implements MetaDefItem, Serializable
         return false;
     }
 
+    /**
+     * Returns indictor whether distinct or not.
+     * @return distinct indicator
+     */
     public boolean isDistinct()
     {
         return isDistinct;

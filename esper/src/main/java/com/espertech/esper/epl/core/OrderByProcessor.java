@@ -24,6 +24,7 @@ public interface OrderByProcessor {
 	 * @param outgoingEvents - the events to be sorted
 	 * @param generatingEvents - the events that generated the output events (each event has a corresponding array of generating events per different event streams)
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param exprEvaluatorContext context for expression evalauation
 	 * @return an array containing the output events in sorted order
 	 */
 	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
@@ -36,6 +37,7 @@ public interface OrderByProcessor {
 	 * @param generatingEvents - the events that generated the output events (each event has a corresponding array of generating events per different event streams)
 	 * @param groupByKeys - the keys to use for determining the group-by group of output events 
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param exprEvaluatorContext context for expression evalauation
 	 * @return an array containing the output events in sorted order
 	 */
 	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
@@ -44,6 +46,7 @@ public interface OrderByProcessor {
      * Returns the sort key for a given row.
      * @param eventsPerStream is the row consisting of one event per stream
      * @param isNewData is true for new data
+     * @param exprEvaluatorContext context for expression evalauation
      * @return sort key
      */
     public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
@@ -52,6 +55,7 @@ public interface OrderByProcessor {
      * Returns the sort key for a each row where a row is a single event (no join, single stream).
      * @param generatingEvents is the rows consisting of one event per row
      * @param isNewData is true for new data
+     * @param exprEvaluatorContext context for expression evalauation
      * @return sort key for each row
      */
     public MultiKeyUntyped[] getSortKeyPerRow(EventBean[] generatingEvents, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);
@@ -60,6 +64,7 @@ public interface OrderByProcessor {
      * Sort a given array of outgoing events using the sort keys returning a sorted outgoing event array.
      * @param outgoingEvents is the events to sort
      * @param orderKeys is the keys to sort by
+     * @param exprEvaluatorContext context for expression evalauation
      * @return sorted events
      */
     public EventBean[] sort(EventBean[] outgoingEvents, MultiKeyUntyped[] orderKeys, ExprEvaluatorContext exprEvaluatorContext);

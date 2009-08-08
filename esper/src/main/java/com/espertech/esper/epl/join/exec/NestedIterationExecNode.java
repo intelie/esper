@@ -61,6 +61,7 @@ public class NestedIterationExecNode extends ExecNode
      * @param nestingOrderIndex - index within the child nodes indicating what nesting level we are at
      * @param currentPath - prototype result row to use by child nodes for generating result rows
      * @param result - result tuple rows to be populated
+     * @param exprEvaluatorContext context for expression evalauation
      */
     protected void recursiveNestedJoin(EventBean lookupEvent, int nestingOrderIndex, EventBean[] currentPath, List<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
     {

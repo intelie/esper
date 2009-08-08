@@ -133,6 +133,8 @@ public class NamedWindowRootView extends ViewSupport
      * @param statementHandle is the handle to the statement, used for routing/insert-into
      * @param joinExpr is the join expression or null if there is none
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
+     * @param statementContext statement services
+     * @param isDistinct is true for distinct output
      * @return base view for on-trigger expression
      */
     public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)

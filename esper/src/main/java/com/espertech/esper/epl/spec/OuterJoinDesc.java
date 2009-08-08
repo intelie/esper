@@ -90,6 +90,7 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
 
     /**
      * Make an expression node that represents the outer join criteria as specified in the on-clause.
+     * @param exprEvaluatorContext context for expression evalauation
      * @return expression node for outer join criteria
      */
     public ExprNode makeExprNode(ExprEvaluatorContext exprEvaluatorContext)

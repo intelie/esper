@@ -68,7 +68,14 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
      */
     protected boolean isGenerateSynthetic;
 
+    /**
+     * Returns the select-distinct indicator.
+     */
     protected final boolean isDistinct;
+
+    /**
+     * Returns a reader for reading all properties to an event for processing distinct events. 
+     */
     protected EventBeanReader eventBeanReader;
 
     /**

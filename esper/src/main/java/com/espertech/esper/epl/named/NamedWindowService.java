@@ -57,6 +57,7 @@ public interface NamedWindowService
      * @param eplExpression is the expression
      * @param statementName the name of the statement
      * @param isPrioritized if the engine is running with prioritized execution
+     * @param exprEvaluatorContext context for expression evalauation
      * @return processor for the named window
      * @throws ViewProcessingException if the named window already exists
      */
@@ -78,6 +79,7 @@ public interface NamedWindowService
     /**
      * Dispatch events of the insert and remove stream of named windows to consumers, as part of the
      * main event processing or dispatch loop.
+     * @param exprEvaluatorContext context for expression evalauation
      * @return send events to consuming statements
      */
     public boolean dispatch(ExprEvaluatorContext exprEvaluatorContext);

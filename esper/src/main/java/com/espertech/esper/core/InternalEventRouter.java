@@ -21,15 +21,30 @@ import java.lang.annotation.Annotation;
  */
 public interface InternalEventRouter
 {
+    /**
+     * Add preprocessing.
+     * @param eventType type to add for
+     * @param desc update statement specification
+     * @param annotations annotations
+     * @param outputView output view
+     * @throws ExprValidationException when expression validation fails
+     */
     public void addPreprocessing(EventType eventType, UpdateDesc desc, Annotation[] annotations, InternalRoutePreprocessView outputView)
             throws ExprValidationException;
 
+    /**
+     * Remove preprocessing.
+     * @param eventType type to remove for
+     * @param desc update statement specification
+     */
     public void removePreprocessing(EventType eventType, UpdateDesc desc);
     
     /**
      * Route the event such that the event is processed as required.
      * @param event to route
      * @param statementHandle provides statement resources
+     * @param exprEvaluatorContext context for expression evalauation
+     * @param routeDest routing destination
      */
     public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext);
 }

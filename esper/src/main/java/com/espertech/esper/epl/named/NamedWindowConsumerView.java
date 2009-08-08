@@ -43,6 +43,7 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
      * @param statementStopService for registering a callback when the view stopped, to unregister the statement as a consumer
      * @param tailView to indicate when the consumer stopped to remove the consumer
      * @param filterList is a list of filter expressions
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public NamedWindowConsumerView(List<ExprNode> filterList,
                                    EventType eventType,

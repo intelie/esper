@@ -36,6 +36,7 @@ public class ResultSetRowPerGroupIterator implements Iterator<EventBean>
      * @param sourceIterator is the parent view iterator
      * @param resultSetProcessor for providing results
      * @param aggregationService for pointing to the right aggregation row
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public ResultSetRowPerGroupIterator(Iterator<EventBean> sourceIterator, ResultSetProcessorRowPerGroup resultSetProcessor, AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext)
     {

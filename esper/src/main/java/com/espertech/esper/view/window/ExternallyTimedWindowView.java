@@ -62,6 +62,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * @param viewUpdatedCollection is a collection that the view must update when receiving events
      * @param externallyTimedWindowViewFactory for copying this view in a group-by
      * @param isRemoveStreamHandling flag to indicate that the view must handle the removed events from a parent view
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public ExternallyTimedWindowView(ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory,
                                      ExprNode timestampExpression, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,

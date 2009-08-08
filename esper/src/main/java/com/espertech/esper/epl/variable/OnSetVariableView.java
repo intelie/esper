@@ -50,6 +50,7 @@ public class OnSetVariableView extends ViewSupport
      * @param eventAdapterService for creating statements
      * @param variableService for setting variables
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
+     * @param exprEvaluatorContext context for expression evalauation
      * @throws ExprValidationException if the assignment expressions are invalid
      */
     public OnSetVariableView(OnTriggerSetDesc desc, EventAdapterService eventAdapterService, VariableService variableService, StatementResultService statementResultService, ExprEvaluatorContext exprEvaluatorContext)

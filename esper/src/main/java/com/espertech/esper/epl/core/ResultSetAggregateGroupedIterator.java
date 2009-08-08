@@ -33,6 +33,7 @@ public class ResultSetAggregateGroupedIterator implements Iterator<EventBean>
      * @param sourceIterator is the parent iterator
      * @param resultSetProcessor for constructing result rows
      * @param aggregationService for pointing to the right aggregation row
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public ResultSetAggregateGroupedIterator(Iterator<EventBean> sourceIterator, ResultSetProcessorAggregateGrouped resultSetProcessor, AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext)
     {

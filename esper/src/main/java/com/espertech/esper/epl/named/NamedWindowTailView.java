@@ -52,6 +52,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @param revisionProcessor handles update events
      * @param isPrioritized if the engine is running with prioritized execution
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, boolean isPrioritized, ExprEvaluatorContext exprEvaluatorContext)
     {

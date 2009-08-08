@@ -26,7 +26,7 @@ public interface ExprValidator
      * @param viewResourceDelegate - delegates for view resources to expression nodes
      * @param timeProvider - provides engine current time
      * @param variableService - provides access to variable values
-     * @param exprEvaluatorContext
+     * @param exprEvaluatorContext context for expression evalauation
      * @throws ExprValidationException thrown when validation failed
      */
     public void validate(StreamTypeService streamTypeService,

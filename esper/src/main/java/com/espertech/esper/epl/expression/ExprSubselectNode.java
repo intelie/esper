@@ -50,6 +50,7 @@ public abstract class ExprSubselectNode extends ExprNode
      * @param eventsPerStream is the events for each stream in a join
      * @param isNewData is true for new data, or false for old data
      * @param matchingEvents is filtered results from the table of stored lookup events
+     * @param exprEvaluatorContext context for expression evalauation
      * @return evaluation result
      */
     public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);

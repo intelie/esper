@@ -27,6 +27,7 @@ public class FilterExprView extends ViewSupport
     /**
      * Ctor.
      * @param exprEvaluator - Filter expression evaluation impl
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public FilterExprView(ExprEvaluator exprEvaluator, ExprEvaluatorContext exprEvaluatorContext)
     {
@@ -60,6 +61,7 @@ public class FilterExprView extends ViewSupport
      * @param exprEvaluator - evaluator to use
      * @param events - events to filter
      * @param isNewData - true to indicate filter new data (istream) and not old data (rstream)
+     * @param exprEvaluatorContext context for expression evalauation
      * @return filtered events, or null if no events got through the filter
      */
     protected static EventBean[] filterEvents(ExprEvaluator exprEvaluator, EventBean[] events, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

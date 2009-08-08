@@ -89,6 +89,7 @@ public final class StatementContext implements ExprEvaluatorContext
      * @param plugInTypeResolutionURIs is URIs for resolving the event name against plug-inn event representations, if any
      * @param valueAddEventService - service that handles update events
      * @param configSnapshot configuration snapshot
+     * @param internalEventEngineRouteDest routing destination
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -379,31 +380,55 @@ public final class StatementContext implements ExprEvaluatorContext
         return configSnapshot;
     }
 
+    /**
+     * Sets the scheduling service
+     * @param schedulingService service
+     */
     public void setSchedulingService(SchedulingService schedulingService)
     {
         this.schedulingService = schedulingService;
     }
 
+    /**
+     * Sets the filter service
+     * @param filterService filter service
+     */
     public void setFilterService(FilterService filterService)
     {
         this.filterService = filterService;
     }
 
+    /**
+     * Returns the internal event router.
+     * @return router
+     */
     public InternalEventRouteDest getInternalEventEngineRouteDest()
     {
         return internalEventEngineRouteDest;
     }
 
+    /**
+     * Sets the internal event router.
+     * @param internalEventEngineRouteDest router
+     */
     public void setInternalEventEngineRouteDest(InternalEventRouteDest internalEventEngineRouteDest)
     {
         this.internalEventEngineRouteDest = internalEventEngineRouteDest;
     }
 
+    /**
+     * Return the service for adjusting schedules.
+     * @return service for adjusting schedules
+     */
     public ScheduleAdjustmentService getScheduleAdjustmentService()
     {
         return scheduleAdjustmentService;
     }
 
+    /**
+     * Returns the time provider.
+     * @return time provider
+     */
     public TimeProvider getTimeProvider()
     {
         return schedulingService;

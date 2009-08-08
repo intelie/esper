@@ -45,6 +45,7 @@ public final class FirstUniqueByPropertyView extends ViewSupport implements Clon
     /**
      * Constructor.
      * @param uniqueCriteria is the expressions from which to pull the unique value
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public FirstUniqueByPropertyView(ExprNode[] uniqueCriteria, ExprEvaluatorContext exprEvaluatorContext)
     {

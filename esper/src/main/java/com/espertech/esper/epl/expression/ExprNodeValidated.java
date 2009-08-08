@@ -18,7 +18,7 @@ public class ExprNodeValidated extends ExprNode
 
     /**
      * Ctor.
-     * @param inner
+     * @param inner nested expression node
      */
     public ExprNodeValidated(ExprNode inner)
     {

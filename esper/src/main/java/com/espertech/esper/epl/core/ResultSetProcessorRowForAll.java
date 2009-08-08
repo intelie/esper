@@ -48,6 +48,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
      * @param isSelectRStream - true if remove stream events should be generated
      * @param orderByProcessor - for ordering output events
      * @param isUnidirectional - true if unidirectional join
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public ResultSetProcessorRowForAll(SelectExprProcessor selectExprProcessor,
                                        AggregationService aggregationService,

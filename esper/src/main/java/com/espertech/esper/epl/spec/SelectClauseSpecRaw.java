@@ -66,11 +66,19 @@ public class SelectClauseSpecRaw implements MetaDefItem, Serializable
         return false;
     }
 
+    /**
+     * Returns indictor whether distinct or not.
+     * @return distinct indicator
+     */
     public boolean isDistinct()
     {
         return isDistinct;
     }
 
+    /**
+     * Sets the indictor whether distinct or not.
+     * @param distinct indicator
+     */
     public void setDistinct(boolean distinct)
     {
         isDistinct = distinct;

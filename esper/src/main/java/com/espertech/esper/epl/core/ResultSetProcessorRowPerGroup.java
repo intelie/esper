@@ -62,6 +62,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
      * Aggregation functions in the having node must have been pointed to the AggregationService for evaluation.
      * @param isSelectRStream - true if remove stream events should be generated
      * @param isUnidirectional - true if unidirectional join
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public ResultSetProcessorRowPerGroup(SelectExprProcessor selectExprProcessor,
                                          OrderByProcessor orderByProcessor,

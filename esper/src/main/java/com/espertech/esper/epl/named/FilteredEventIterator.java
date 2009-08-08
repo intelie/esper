@@ -32,6 +32,7 @@ public class FilteredEventIterator implements Iterator<EventBean>
      * Ctor.
      * @param filters is a list of expression nodes for filtering
      * @param parent is the iterator supplying the events to apply the filter on
+     * @param exprEvaluatorContext context for expression evalauation
      */
     public FilteredEventIterator(List<ExprNode> filters, Iterator<EventBean> parent, ExprEvaluatorContext exprEvaluatorContext)
     {

@@ -55,6 +55,10 @@ public class ExprPreviousMatchRecognizeNode extends ExprNode
         resultType = this.getChildNodes().get(0).getType();
     }
 
+    /**
+     * Returns the index number.
+     * @return index number
+     */
     public Integer getConstantIndexNumber()
     {
         if (constantIndexNumber == null)
@@ -116,11 +120,19 @@ public class ExprPreviousMatchRecognizeNode extends ExprNode
         return true;
     }
 
+    /**
+     * Sets the getter to obtain the value.
+     * @param getter to set
+     */
     public void setGetter(RegexPartitionStateRandomAccessGetter getter)
     {
         this.getter = getter;
     }
 
+    /**
+     * Sets the index to use when accessing via getter
+     * @param assignedIndex index
+     */
     public void setAssignedIndex(int assignedIndex)
     {
         this.assignedIndex = assignedIndex;

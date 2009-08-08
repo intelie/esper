@@ -14,6 +14,10 @@ package com.espertech.esper.filter;
  */
 public interface FilterHandle
 {
+    /**
+     * Returns the statement id.
+     * @return statement id
+     */
     public String getStatementId();
 }
 

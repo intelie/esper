@@ -106,6 +106,7 @@ public class SchemaUtil {
      * Returns the type for a give short type and type name.
      * @param xsType XSSimplyType type
      * @param typeName type name in XML standard
+     * @param optionalFractionDigits fraction digits if any are defined
      * @return equivalent native type
      */
     public static Class toReturnType(short xsType, String typeName, Integer optionalFractionDigits)

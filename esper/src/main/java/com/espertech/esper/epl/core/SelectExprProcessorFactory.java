@@ -40,6 +40,7 @@ public class SelectExprProcessorFactory
      * @param valueAddEventService - service that handles update events and variant events
      * @param selectExprEventTypeRegistry - registry for event type to statements
      * @param methodResolutionService - for resolving write methods
+     * @param exprEvaluatorContext context for expression evalauation
      * @return select-clause expression processor
      * @throws ExprValidationException to indicate the select expression cannot be validated
      */
