@@ -104,6 +104,7 @@ public class LookupInstructionExec
      * Execute the instruction adding results to the repository and obtaining events for lookup from the
      * repository.
      * @param repository supplies events for lookup, and place to add results to
+     * @param exprEvaluatorContext expression evaluation context
      * @return true if one or more results, false if no results
      */
     public boolean process(Repository repository, ExprEvaluatorContext exprEvaluatorContext)

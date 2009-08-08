@@ -29,6 +29,7 @@ public final class MultiKeyUntypedEventPair implements MetaDefItem, Serializable
     /**
      * Constructor for multiple keys supplied in an object array.
      * @param keys is an array of key objects
+     * @param eventBean for pair
      */
     public MultiKeyUntypedEventPair(Object[] keys, EventBean eventBean)
     {
@@ -50,6 +51,10 @@ public final class MultiKeyUntypedEventPair implements MetaDefItem, Serializable
         this.eventBean = eventBean;
     }
 
+    /**
+     * Returns the event.
+     * @return event
+     */
     public EventBean getEventBean()
     {
         return eventBean;

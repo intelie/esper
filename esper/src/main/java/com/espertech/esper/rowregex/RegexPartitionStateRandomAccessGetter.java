@@ -19,6 +19,11 @@ public class RegexPartitionStateRandomAccessGetter
 
     private RegexPartitionStateRandomAccess randomAccess;
 
+    /**
+     * Ctor.
+     * @param randomAccessIndexesRequested requested indexes
+     * @param isUnbound true if unbound
+     */
     public RegexPartitionStateRandomAccessGetter(int[] randomAccessIndexesRequested, boolean isUnbound)
     {
         this.randomAccessIndexesRequested = randomAccessIndexesRequested;
@@ -36,21 +41,37 @@ public class RegexPartitionStateRandomAccessGetter
         this.maxPriorIndex = maxPriorIndex;
     }
 
+    /**
+     * Returns max index.
+     * @return index
+     */
     public int getMaxPriorIndex()
     {
         return maxPriorIndex;
     }
 
+    /**
+     * Returns indexs.
+     * @return indexes.
+     */
     public int[] getIndexesRequested()
     {
         return randomAccessIndexesRequested;
     }
 
+    /**
+     * Returns length of indexes.
+     * @return index len
+     */
     public int getIndexesRequestedLen()
     {
         return randomAccessIndexesRequested.length;
     }
 
+    /**
+     * Returns true for unbound.
+     * @return unbound indicator
+     */
     public boolean isUnbound()
     {
         return isUnbound;

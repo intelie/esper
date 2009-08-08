@@ -36,6 +36,7 @@ public class OutputStrategyPostProcess implements OutputStrategy
      * @param routeRStream true if routing the remove stream events, false if routing insert stream events
      * @param selectStreamDirEnum enumerator selecting what stream(s) are selected
      * @param internalEventRouter for performing the route operation
+     * @param statementContext for statement-level services
      * @param epStatementHandle for use in routing to determine which statement routed
      */
     public OutputStrategyPostProcess(boolean route, boolean routeRStream, SelectClauseStreamSelectorEnum selectStreamDirEnum, InternalEventRouter internalEventRouter, EPStatementHandle epStatementHandle, StatementContext statementContext)

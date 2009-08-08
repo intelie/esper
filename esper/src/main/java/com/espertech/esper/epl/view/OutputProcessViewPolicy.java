@@ -53,6 +53,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
      * @param statementContext is the services the output condition may depend on
      * @param isInsertInto is true if the statement is a insert-into
      * @param outputStrategy is the method to use to produce output
+     * @param isDistinct true for distinct
      * @throws ExprValidationException if validation of the output expressions fails
      */
     public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor,
@@ -64,7 +65,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
                           boolean isDistinct)
             throws ExprValidationException
     {
-        super(resultSetProcessor, outputStrategy, isInsertInto, statementContext.getStatementResultService(), isDistinct);
+        super(resultSetProcessor, outputStrategy, isInsertInto, statementContext, isDistinct, outputLimitSpec.getAfterTimePeriodExpr(), outputLimitSpec.getAfterNumberOfEvents());
         log.debug(".ctor");
 
     	if(streamCount < 1)
@@ -89,6 +90,11 @@ public class OutputProcessViewPolicy extends OutputProcessView
             log.debug(".update Received update, " +
                     "  newData.length==" + ((newData == null) ? 0 : newData.length) +
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
+        }
+
+        if (!super.checkAfterCondition(newData))
+        {
+            return;
         }
 
         int newDataLength = 0;
@@ -120,6 +126,11 @@ public class OutputProcessViewPolicy extends OutputProcessView
             log.debug(".process Received update, " +
                     "  newData.length==" + ((newEvents == null) ? 0 : newEvents.size()) +
                     "  oldData.length==" + ((oldEvents == null) ? 0 : oldEvents.size()));
+        }
+
+        if (!super.checkAfterCondition(newEvents))
+        {
+            return;
         }
 
         int newEventsSize = 0;

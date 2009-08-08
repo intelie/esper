@@ -339,30 +339,54 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
         this.annotations = annotations;
     }
 
+    /**
+     * Sets the update specification.
+     * @param updateDesc update spec
+     */
     public void setUpdateDesc(UpdateDesc updateDesc)
     {
         this.updateDesc = updateDesc;
     }
 
+    /**
+     * Returns the update spec.
+     * @return update spec
+     */
     public UpdateDesc getUpdateDesc()
     {
         return updateDesc;
     }
 
+    /**
+     * Sets the expression text without annotations.
+     * @param expressionNoAnnotations text
+     */
     public void setExpressionNoAnnotations(String expressionNoAnnotations)
     {
         this.expressionNoAnnotations = expressionNoAnnotations;
     }
 
+    /**
+     * Returns the expression text without annotations.
+     * @return expressionNoAnnotations text
+     */
     public String getExpressionNoAnnotations()
     {
         return expressionNoAnnotations;
     }
 
+    /**
+     * Returns the match recognize spec.
+     * @return spec
+     */
     public MatchRecognizeSpec getMatchRecognizeSpec() {
         return matchRecognizeSpec;
     }
 
+    /**
+     * Sets the match recognize spec
+     * @param matchRecognizeSpec spec
+     */
     public void setMatchRecognizeSpec(MatchRecognizeSpec matchRecognizeSpec) {
         this.matchRecognizeSpec = matchRecognizeSpec;
     }

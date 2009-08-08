@@ -6,15 +6,27 @@ import com.espertech.esper.client.EventBean;
 
 import java.util.Map;
 
+/**
+ * Writer method for writing to Map-type events.
+ */
 public class MapEventBeanWriter implements EventBeanWriter
 {
     private final String[] properties;
 
+    /**
+     * Ctor.
+     * @param properties names of properties to write
+     */
     public MapEventBeanWriter(String[] properties)
     {
         this.properties = properties;
     }
 
+    /**
+     * Write values to an event.
+     * @param values to write
+     * @param event to write to
+     */
     public void write(Object[] values, EventBean event)
     {
         MappedEventBean mappedEvent = (MappedEventBean) event;

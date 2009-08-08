@@ -50,6 +50,7 @@ public class PropertyEvaluatorAccumulative
     /**
      * Returns the accumulative events for the input event.
      * @param event is the input event
+     * @param exprEvaluatorContext expression evaluation context
      * @return events per stream for each row
      */
     public ArrayDequeJDK6Backport<EventBean[]> getAccumulative(EventBean event, ExprEvaluatorContext exprEvaluatorContext)

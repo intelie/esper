@@ -51,6 +51,7 @@ public class JoinSetFilter implements JoinSetProcessor
      * @param filterExprNode - top node of the filter expression tree.
      * @param events - set of tuples of events
      * @param isNewData - true to indicate filter new data (istream) and not old data (rstream)
+     * @param exprEvaluatorContext expression evaluation context
      */
     protected static void filter(ExprNode filterExprNode, Set<MultiKey<EventBean>> events, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {

@@ -253,6 +253,19 @@ public class StatementSpecMapper
             TimePeriodExpression timePeriod = (TimePeriodExpression) unmapExpressionDeep(outputLimitSpec.getTimePeriodExpr(), unmapContext);
             clause = new OutputLimitClause(selector, timePeriod);
         }
+        else if (outputLimitSpec.getRateType() == OutputLimitRateType.AFTER)
+        {
+            unit = OutputLimitUnit.AFTER;
+            if (outputLimitSpec.getAfterTimePeriodExpr() != null)
+            {
+                TimePeriodExpression after = (TimePeriodExpression) unmapExpressionDeep(outputLimitSpec.getAfterTimePeriodExpr(), unmapContext);
+                clause = new OutputLimitClause(OutputLimitSelector.DEFAULT, OutputLimitUnit.AFTER, after, null);
+            }
+            else
+            {
+                clause = new OutputLimitClause(OutputLimitSelector.DEFAULT, OutputLimitUnit.AFTER, null, outputLimitSpec.getAfterNumberOfEvents());
+            }
+        }
         else if (outputLimitSpec.getRateType() == OutputLimitRateType.WHEN_EXPRESSION)
         {
             unit = OutputLimitUnit.WHEN_EXPRESSION;
@@ -334,6 +347,10 @@ public class StatementSpecMapper
         {
             rateType = OutputLimitRateType.WHEN_EXPRESSION;
         }
+        else if (outputLimitClause.getUnit() == OutputLimitUnit.AFTER)
+        {
+            rateType = OutputLimitRateType.AFTER;
+        }
         else
         {
             throw new IllegalArgumentException("Unknown output limit unit " + outputLimitClause.getUnit());
@@ -373,7 +390,13 @@ public class StatementSpecMapper
             timePeriod = (ExprTimePeriod) mapExpressionDeep(outputLimitClause.getTimePeriodExpression(), mapContext);
         }
 
-        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, whenExpression, assignments, timerAtExprList, timePeriod);
+        ExprTimePeriod afterTimePeriod = null;
+        if (outputLimitClause.getAfterTimePeriodExpression() != null)
+        {
+            afterTimePeriod = (ExprTimePeriod) mapExpressionDeep(outputLimitClause.getAfterTimePeriodExpression(), mapContext);
+        }
+
+        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, whenExpression, assignments, timerAtExprList, timePeriod, afterTimePeriod, outputLimitClause.getAfterNumberOfEvents());
         raw.setOutputLimitSpec(spec);
     }
 

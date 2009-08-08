@@ -46,14 +46,26 @@ public class UpdateDesc implements MetaDefItem, Serializable
         return assignments;
     }
 
+    /**
+     * Returns the stream name if defined.
+     * @return stream name
+     */
     public String getOptionalStreamName() {
         return optionalStreamName;
     }
 
+    /**
+     * Returns the where-clause if defined.
+     * @return where clause
+     */
     public ExprNode getOptionalWhereClause() {
         return optionalWhereClause;
     }
 
+    /**
+     * Sets the where-clause if defined.
+     * @return where clause to set
+     */
     public void setOptionalWhereClause(ExprNode optionalWhereClause) {
         this.optionalWhereClause = optionalWhereClause;
     }

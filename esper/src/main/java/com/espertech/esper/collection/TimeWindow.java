@@ -44,6 +44,10 @@ public final class TimeWindow implements Iterable
         }
     }
 
+    /**
+     * Adjust expiry dates.
+     * @param delta delta to adjust for
+     */
     public void adjust(long delta)
     {
         for (Pair<Long, ArrayDequeJDK6Backport<EventBean>> data : window)

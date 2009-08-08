@@ -31,6 +31,7 @@ public class PatternExpressionUtil
      * @param beginState the pattern begin state
      * @param parameters object parameters
      * @param convertor for converting to a event-per-stream view for use to evaluate expressions
+     * @param exprEvaluatorContext expression evaluation context
      * @return expression results
      * @throws EPException if the evaluate failed
      */
@@ -68,6 +69,7 @@ public class PatternExpressionUtil
      * @param beginState pattern state
      * @param parameter expression node
      * @param convertor to converting from pattern match to event-per-stream
+     * @param exprEvaluatorContext expression evaluation context
      * @return evaluation result
      * @throws EPException if the evaluation failed
      */

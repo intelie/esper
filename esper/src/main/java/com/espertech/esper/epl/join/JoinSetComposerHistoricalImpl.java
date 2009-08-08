@@ -42,6 +42,7 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
      * @param repositories indexes for non-historical streams
      * @param queryStrategies for each stream a strategy to execute the join
      * @param streamViews the viewable representing each stream
+     * @param staticEvalExprEvaluatorContext expression evaluation context for static (not runtime) evaluation
      */
     public JoinSetComposerHistoricalImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, Viewable[] streamViews,
                                          ExprEvaluatorContext staticEvalExprEvaluatorContext)

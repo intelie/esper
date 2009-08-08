@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.client.EventBean;
-
-import java.util.Collection;
 import java.util.Set;
 
+/**
+ * Service provider interface for filter service.
+ */
 public interface FilterServiceSPI extends FilterService
 {
     /**

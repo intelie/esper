@@ -31,6 +31,7 @@ public class SubselectAggregatorView extends ViewSupport
      * Ctor.
      * @param aggregationService for aggregating
      * @param optionalFilterExpr for filtering the view-posted events before aggregation
+     * @param exprEvaluatorContext expression evaluation context
      */
     public SubselectAggregatorView(AggregationService aggregationService, ExprNode optionalFilterExpr, ExprEvaluatorContext exprEvaluatorContext) {
         this.aggregationService = aggregationService;

@@ -8,11 +8,19 @@ import com.espertech.esper.client.EventBean;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Copy method for Map-underlying events.
+ */
 public class MapEventBeanCopyMethod implements EventBeanCopyMethod
 {
     private final MapEventType mapEventType;
     private final EventAdapterService eventAdapterService;
 
+    /**
+     * Ctor.
+     * @param mapEventType map event type
+     * @param eventAdapterService for copying events
+     */
     public MapEventBeanCopyMethod(MapEventType mapEventType, EventAdapterService eventAdapterService)
     {
         this.mapEventType = mapEventType;

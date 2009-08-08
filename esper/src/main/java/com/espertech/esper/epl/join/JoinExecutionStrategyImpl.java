@@ -31,6 +31,7 @@ public class JoinExecutionStrategyImpl implements JoinExecutionStrategy
      * @param composer - determines join tuple set
      * @param filter - for filtering among tuples
      * @param indicator - for presenting the info to a view
+     * @param staticExprEvaluatorContext expression evaluation context for static evaluation (not for runtime eval)
      */
     public JoinExecutionStrategyImpl(JoinSetComposer composer, JoinSetProcessor filter, JoinSetProcessor indicator,
                                      ExprEvaluatorContext staticExprEvaluatorContext)

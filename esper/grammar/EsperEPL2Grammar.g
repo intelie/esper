@@ -174,6 +174,7 @@ tokens
    	EVENT_PROP_DYNAMIC_MAPPED;
    	EVENT_LIMIT_EXPR;
 	TIMEPERIOD_LIMIT_EXPR;
+   	AFTER_LIMIT_EXPR;
 	CRONTAB_LIMIT_EXPR;
 	CRONTAB_LIMIT_EXPR_PARAM;
 	WHEN_LIMIT_EXPR;
@@ -951,23 +952,31 @@ havingClause
 outputLimit
 @init  { paraphrases.push("output rate clause"); }
 @after { paraphrases.pop(); }
-	:   (k=ALL|k=FIRST|k=LAST|k=SNAPSHOT)? 
-	      (
-	        ( ev=EVERY_EXPR 
-		  ( 
-		    (timePeriod) => timePeriod
-		  | (number | i=IDENT) (e=EVENTS)
+	:      outputLimitAfter?
+ 	       (k=ALL|k=FIRST|k=LAST|k=SNAPSHOT)? 
+	        (
+	          ( ev=EVERY_EXPR 
+		    ( 
+		      (timePeriod) => timePeriod
+		    | (number | i=IDENT) (e=EVENTS)
+		    )
 		  )
-		)
-		|
-		( at=AT crontabLimitParameterSet )
-		|
-		( wh=WHEN expression (THEN onSetExpr)? )
-	      )
-	    -> {$ev != null && $e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i?)
-	    -> {$ev != null}? ^(TIMEPERIOD_LIMIT_EXPR $k? timePeriod)		
-	    -> {$at != null}? ^(CRONTAB_LIMIT_EXPR $k? crontabLimitParameterSet)		
-	    -> ^(WHEN_LIMIT_EXPR $k? expression onSetExpr?)		
+		  |
+		  ( at=AT crontabLimitParameterSet)
+		  |
+		  ( wh=WHEN expression (THEN onSetExpr)? )
+		  |
+	        )
+	    -> {$ev != null && $e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i? outputLimitAfter?)
+	    -> {$ev != null}? ^(TIMEPERIOD_LIMIT_EXPR $k? timePeriod outputLimitAfter?)		
+	    -> {$at != null}? ^(CRONTAB_LIMIT_EXPR $k? crontabLimitParameterSet outputLimitAfter?)		
+	    -> {$wh != null}? ^(WHEN_LIMIT_EXPR $k? expression onSetExpr? outputLimitAfter?)
+	    -> ^(AFTER_LIMIT_EXPR outputLimitAfter)
+	;	
+
+outputLimitAfter
+	:   a=AFTER (timePeriod | number EVENTS)
+	    -> ^(AFTER timePeriod? number?)
 	;	
 
 rowLimit

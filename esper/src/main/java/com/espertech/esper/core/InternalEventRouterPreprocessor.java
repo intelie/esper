@@ -45,6 +45,11 @@ public class InternalEventRouterPreprocessor
     private final InternalEventRouterEntry[] entries;
     private final boolean empty;
 
+    /**
+     * Ctor.
+     * @param copyMethod for copying the events to preprocess
+     * @param entries descriptors for pre-processing to apply
+     */
     public InternalEventRouterPreprocessor(EventBeanCopyMethod copyMethod, List<InternalEventRouterEntry> entries)
     {
         this.copyMethod = copyMethod;
@@ -53,6 +58,12 @@ public class InternalEventRouterPreprocessor
         empty = this.entries.length == 0;
     }
 
+    /**
+     * Pre-proces the event.
+     * @param event to pre-process
+     * @param exprEvaluatorContext expression evaluation context
+     * @return processed event
+     */
     public EventBean process(EventBean event, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (empty)

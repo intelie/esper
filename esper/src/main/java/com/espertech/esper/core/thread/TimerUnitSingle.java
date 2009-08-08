@@ -24,6 +24,7 @@ public class TimerUnitSingle implements TimerUnit
      * @param services engine services
      * @param runtime runtime to process
      * @param handleCallback callback 
+     * @param exprEvaluatorContext expression evaluation context
      */
     public TimerUnitSingle(EPServicesContext services, EPRuntimeImpl runtime, EPStatementHandleCallback handleCallback, ExprEvaluatorContext exprEvaluatorContext)
     {

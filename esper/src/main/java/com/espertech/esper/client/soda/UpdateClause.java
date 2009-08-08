@@ -38,7 +38,6 @@ public class UpdateClause implements MetaDefItem, Serializable
      * Ctor.
      * @param eventType the name of the type to update
      * @param optionalAsClauseStreamName as-clause for update, if any
-     * @return update clause
      */
     public UpdateClause(String eventType, String optionalAsClauseStreamName)
     {

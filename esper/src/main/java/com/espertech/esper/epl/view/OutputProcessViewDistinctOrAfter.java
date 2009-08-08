@@ -24,23 +24,23 @@ import java.util.Set;
 
 /**
  * Output process view that does not enforce any output policies and may simply
- * hand over events to child views, does not handle distinct.
+ * hand over events to child views, but works with distinct and after-output policies
  */
-public class OutputProcessViewDirect extends OutputProcessView
+public class OutputProcessViewDistinctOrAfter extends OutputProcessView
 {
-	private static final Log log = LogFactory.getLog(OutputProcessViewDirect.class);
+	private static final Log log = LogFactory.getLog(OutputProcessViewDistinctOrAfter.class);
 
     /**
      * Ctor.
      * @param resultSetProcessor is processing the result set for publishing it out
      * @param outputStrategy is the execution of output to sub-views or natively
      * @param isInsertInto is true if the statement is a insert-into
-     * @param statementContext statement services
      * @param isDistinct true for distinct
      * @param afterTimePeriod after-keyword time period
      * @param afterConditionNumberOfEvents after-keyword number of events
+     * @param statementContext for statement-level services
      */
-    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementContext statementContext, boolean isDistinct, ExprTimePeriod afterTimePeriod, Integer afterConditionNumberOfEvents)
+    public OutputProcessViewDistinctOrAfter(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementContext statementContext, boolean isDistinct, ExprTimePeriod afterTimePeriod, Integer afterConditionNumberOfEvents)
     {
         super(resultSetProcessor, outputStrategy, isInsertInto, statementContext, isDistinct, afterTimePeriod, afterConditionNumberOfEvents);
 
@@ -69,6 +69,17 @@ public class OutputProcessViewDirect extends OutputProcessView
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
         UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
+
+        if (!super.checkAfterCondition(newOldEvents))
+        {
+            return;
+        }
+
+        if (isDistinct)
+        {
+            newOldEvents.setFirst(EventBeanUtility.getDistinctByProp(newOldEvents.getFirst(), eventBeanReader));
+            newOldEvents.setSecond(EventBeanUtility.getDistinctByProp(newOldEvents.getSecond(), eventBeanReader));
+        }
 
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {
@@ -107,6 +118,17 @@ public class OutputProcessViewDirect extends OutputProcessView
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
         UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+
+        if (!checkAfterCondition(newOldEvents))
+        {
+            return;
+        }
+
+        if (isDistinct)
+        {
+            newOldEvents.setFirst(EventBeanUtility.getDistinctByProp(newOldEvents.getFirst(), eventBeanReader));
+            newOldEvents.setSecond(EventBeanUtility.getDistinctByProp(newOldEvents.getSecond(), eventBeanReader));
+        }
 
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {

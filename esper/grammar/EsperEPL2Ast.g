@@ -335,10 +335,15 @@ havingClause
 	;
 
 outputLimitExpr
-	:	^(e=EVENT_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode($e); } ) 
-	|   	^(tp=TIMEPERIOD_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? timePeriod { leaveNode($tp); } )
-	|   	^(cron=CRONTAB_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? crontabLimitParameterSet { leaveNode($cron); } )
-	|   	^(when=WHEN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? valueExpr onSetExpr? { leaveNode($when); } )
+	:	^(e=EVENT_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) outputLimitAfter? { leaveNode($e); } ) 
+	|   	^(tp=TIMEPERIOD_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? timePeriod outputLimitAfter? { leaveNode($tp); } )
+	|   	^(cron=CRONTAB_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? crontabLimitParameterSet outputLimitAfter? { leaveNode($cron); } )
+	|   	^(when=WHEN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? valueExpr onSetExpr? outputLimitAfter? { leaveNode($when); } )
+	|	^(after=AFTER_LIMIT_EXPR outputLimitAfter { leaveNode($after); })
+	;
+
+outputLimitAfter
+	:	^(AFTER timePeriod? number?)
 	;
 
 rowLimitClause

@@ -25,6 +25,7 @@ public interface TableLookupStrategy
      * always returns null to indicate no results.
      * @param event to look up
      * @param cursor the path in the query that the lookup took
+     * @param exprEvaluatorContext expression evaluation context
      * @return set of matching events, or null if none matching
      */
     public Set<EventBean> lookup(EventBean event, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext);

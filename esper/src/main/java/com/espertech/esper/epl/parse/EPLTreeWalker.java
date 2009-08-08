@@ -281,6 +281,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case TIMEPERIOD_LIMIT_EXPR:
             case CRONTAB_LIMIT_EXPR:
             case WHEN_LIMIT_EXPR:
+            case AFTER_LIMIT_EXPR:
             	leaveOutputLimit(node);
             	break;
             case ROW_LIMIT_EXPR:

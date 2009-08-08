@@ -12,9 +12,12 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.EventDistinctIterator;
 import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.epl.core.ResultSetProcessor;
+import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.epl.join.JoinExecutionStrategy;
 import com.espertech.esper.epl.join.JoinSetIndicator;
 import com.espertech.esper.event.EventBeanReader;
@@ -22,6 +25,8 @@ import com.espertech.esper.event.EventBeanReaderDefaultImpl;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.Viewable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,11 +41,23 @@ import java.util.Set;
  */
 public abstract class OutputProcessView implements View, JoinSetIndicator
 {
+    private static final Log log = LogFactory.getLog(OutputProcessView.class);
+
+    private JoinExecutionStrategy joinExecutionStrategy;
+    private Long afterConditionTime;
+    private Integer afterConditionNumberOfEvents;
+    private int afterConditionEventsFound;
+    private StatementContext statementContext;
+
+    /**
+     * If the after-condition is satisfied, if any.
+     */
+    protected boolean isAfterConditionSatisfied;
+
     /**
      * Processes the parent views result set generating events for pushing out to child view.
      */
     protected final ResultSetProcessor resultSetProcessor;
-    private JoinExecutionStrategy joinExecutionStrategy;
 
     /**
      * Strategy to performs the output once it's decided we need to output.
@@ -83,13 +100,17 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
      * @param resultSetProcessor processes the results posted by parent view or joins
      * @param outputStrategy the strategy to use for producing output
      * @param isInsertInto true if this is an insert-into
-     * @param statementResultService for awareness of listeners and subscriber
+     * @param statementContext for statement-level services
+     * @param isDistinct true for distinct
+     * @param afterTimePeriod after-keyword time period
+     * @param afterConditionNumberOfEvents after-keyword number of events
      */
-    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService, boolean isDistinct)
+    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementContext statementContext, boolean isDistinct, ExprTimePeriod afterTimePeriod, Integer afterConditionNumberOfEvents)
     {
         this.resultSetProcessor = resultSetProcessor;
         this.outputStrategy = outputStrategy;
-        this.statementResultService = statementResultService;
+        this.statementResultService = statementContext.getStatementResultService();
+        this.statementContext = statementContext;
 
         // by default, generate synthetic events only if we insert-into
         this.isGenerateSynthetic = isInsertInto;
@@ -105,6 +126,80 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
             {
                 eventBeanReader = new EventBeanReaderDefaultImpl(resultSetProcessor.getResultEventType());
             }
+        }
+
+        isAfterConditionSatisfied = true;
+        if (afterConditionNumberOfEvents != null)
+        {
+            this.afterConditionNumberOfEvents = afterConditionNumberOfEvents;
+            isAfterConditionSatisfied = false;            
+        }
+        else if (afterTimePeriod != null)
+        {
+            Object result = afterTimePeriod.evaluate(null, true, statementContext);
+            if (result == null)
+            {
+                log.warn("The expression in the 'after' clause time period has returned a null value, ignoring after-clause");
+                isAfterConditionSatisfied = true;
+            }
+            else
+            {
+                double sec = ((Number) result).doubleValue();
+                long msec = (long) (sec * 1000.0);
+                afterConditionTime = statementContext.getTimeProvider().getTime() + msec;
+            }
+        }
+    }
+
+
+
+    /**
+     * Returns true if the after-condition is satisfied.
+     * @return indicator for output condition
+     */
+    public boolean checkAfterCondition(EventBean[] newEvents)
+    {
+        return isAfterConditionSatisfied || checkAfterCondition(newEvents == null ? 0 : newEvents.length);
+    }
+
+    public boolean checkAfterCondition(Set<MultiKey<EventBean>> newEvents)
+    {
+        return isAfterConditionSatisfied || checkAfterCondition(newEvents == null ? 0 : newEvents.size());
+    }
+
+    public boolean checkAfterCondition(UniformPair<EventBean[]> newOldEvents)
+    {
+        return isAfterConditionSatisfied || checkAfterCondition(newOldEvents == null ? 0 : (newOldEvents.getFirst() == null ? 0 : newOldEvents.getFirst().length));
+    }
+
+    private boolean checkAfterCondition(int numOutputEvents)
+    {
+        if (afterConditionTime != null)
+        {
+            long time = statementContext.getTimeProvider().getTime();
+            if (time < afterConditionTime)
+            {
+                return false;
+            }
+
+            isAfterConditionSatisfied = true;
+            return true;
+        }
+        else if (afterConditionNumberOfEvents != null)
+        {
+            afterConditionEventsFound += numOutputEvents;
+            if (afterConditionEventsFound <= afterConditionNumberOfEvents)
+            {
+                return false;
+            }
+
+            isAfterConditionSatisfied = true;
+            return true;
+        }
+        else
+        {
+            isAfterConditionSatisfied = true;
+            return true;
         }
     }
 
@@ -164,7 +259,7 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
 
     /**
      * For joins, supplies the join execution strategy that provides iteration over statement results.
-     * @param joinExecutionStrategy executes joins including static (non-continuous) joins 
+     * @param joinExecutionStrategy executes joins including static (non-continuous) joins
      */
     public void setJoinExecutionStrategy(JoinExecutionStrategy joinExecutionStrategy)
     {
@@ -191,7 +286,7 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
     		iterator = parentView.iterator();
             eventType = parentView.getEventType();
     	}
-        
+
         if (!isDistinct)
         {
             return iterator;

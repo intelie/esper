@@ -34,6 +34,8 @@ public interface StreamFactoryService
      * @param isJoin is indicatng whether the stream will participate in a join statement, information
      * necessary for stream reuse and multithreading concerns
      * @param isSubSelect true for subselects
+     * @param statementId the statement id
+     * @param exprEvaluatorContext expression evaluation context
      * @return event stream representing active filter
      */
     public Pair<EventStream, ManagedLock> createStream(final String statementId, FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,

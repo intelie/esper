@@ -23,6 +23,9 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Routing implementation that allows to pre-process events.
+ */
 public class InternalEventRouterImpl implements InternalEventRouter
 {
     private static final Log log = LogFactory.getLog(InternalEventRouterImpl.class);
@@ -31,17 +34,30 @@ public class InternalEventRouterImpl implements InternalEventRouter
     private final ConcurrentHashMap<EventType, NullableObject<InternalEventRouterPreprocessor>> preprocessors;
     private final Map<UpdateDesc, IRDescEntry> descriptors;
 
+    /**
+     * Ctor.
+     */
     public InternalEventRouterImpl()
     {
         this.preprocessors = new ConcurrentHashMap<EventType, NullableObject<InternalEventRouterPreprocessor>>();
         this.descriptors = new LinkedHashMap<UpdateDesc, IRDescEntry>();
     }
 
+    /**
+     * Return true to indicate that there is pre-processing to take place.
+     * @return preprocessing indicator
+     */
     public boolean isHasPreprocessing()
     {
         return hasPreprocessing;
     }
 
+    /**
+     * Pre-process the event.
+     * @param eventBean to preprocess
+     * @param exprEvaluatorContext expression evaluation context
+     * @return preprocessed event
+     */
     public EventBean preprocess(EventBean eventBean, ExprEvaluatorContext exprEvaluatorContext)
     {
         return getPreprocessedEvent(eventBean, exprEvaluatorContext);

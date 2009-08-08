@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
 
+/**
+ * Specification for match_recognize.
+ */
 public class MatchRecognizeSpec implements MetaDefItem, Serializable
 {
     private List<ExprNode> partitionByExpressions;
@@ -19,6 +22,9 @@ public class MatchRecognizeSpec implements MetaDefItem, Serializable
     private MatchRecognizeInterval interval;
     private static final long serialVersionUID = -2402650987323748877L;
 
+    /**
+     * Ctor.
+     */
     public MatchRecognizeSpec() {
         partitionByExpressions = new ArrayList<ExprNode>();
         measures = new ArrayList<MatchRecognizeMeasureItem>();
@@ -26,61 +32,117 @@ public class MatchRecognizeSpec implements MetaDefItem, Serializable
         skip = new MatchRecognizeSkip(MatchRecognizeSkipEnum.PAST_LAST_ROW);
     }
 
+    /**
+     * Interval part of null.
+     * @return interval
+     */
     public MatchRecognizeInterval getInterval()
     {
         return interval;
     }
 
+    /**
+     * Sets the interval.
+     * @param interval to set
+     */
     public void setInterval(MatchRecognizeInterval interval)
     {
         this.interval = interval;
     }
 
+    /**
+     * True for all-matches.
+     * @return indicator all-matches
+     */
     public boolean isAllMatches() {
         return isAllMatches;
     }
 
+    /**
+     * Set to true for all-matches.
+     * @param allMatches indicator all-matches
+     */
     public void setAllMatches(boolean allMatches) {
         isAllMatches = allMatches;
     }
 
+    /**
+     * Returns partition expressions.
+     * @return partition expressions
+     */
     public List<ExprNode> getPartitionByExpressions() {
         return partitionByExpressions;
     }
 
+    /**
+     * Returns partition expressions.
+     * @param partitionByExpressions partition expressions
+     */
     public void setPartitionByExpressions(List<ExprNode> partitionByExpressions) {
         this.partitionByExpressions = partitionByExpressions;
     }
 
+    /**
+     * Add a measure item.
+     * @param item to add
+     */
     public void addMeasureItem(MatchRecognizeMeasureItem item)
     {
         measures.add(item);   
     }
 
+    /**
+     * Returns the define items.
+     * @return define items
+     */
     public List<MatchRecognizeDefineItem> getDefines() {
         return defines;
     }
 
+    /**
+     * Sets the pattern.
+     * @param pattern to set
+     */
     public void setPattern(RowRegexExprNode pattern) {
         this.pattern = pattern;
     }
 
+    /**
+     * Adds a define item.
+     * @param define to add
+     */
     public void addDefine(MatchRecognizeDefineItem define) {
         this.defines.add(define);
     }
 
+    /**
+     * Returns measures.
+     * @return measures
+     */
     public List<MatchRecognizeMeasureItem> getMeasures() {
         return measures;
     }
 
+    /**
+     * Returns the pattern.
+     * @return pattern
+     */
     public RowRegexExprNode getPattern() {
         return pattern;
     }
 
+    /**
+     * Returns the skip.
+     * @return skip
+     */
     public MatchRecognizeSkip getSkip() {
         return skip;
     }
 
+    /**
+     * Sets the skip.
+     * @param skip to set
+     */
     public void setSkip(MatchRecognizeSkip skip) {
         this.skip = skip;
     }

@@ -13,8 +13,23 @@ import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
 
+/**
+ * Property getter for Map-underlying events.
+ */
 public interface MapEventPropertyGetter extends EventPropertyGetter
 {
+    /**
+     * Returns a property of an event.
+     * @param map to interrogate
+     * @return property value
+     * @throws PropertyAccessException for property access errors
+     */
     public Object getMap(Map<String, Object> map) throws PropertyAccessException;
+
+    /**
+     * Exists-function for properties in a map-type event.
+     * @param map to interrogate
+     * @return indicator
+     */
     public boolean isMapExistsProperty(Map<String, Object> map);
 }

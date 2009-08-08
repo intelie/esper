@@ -90,12 +90,14 @@ public interface MethodResolutionService
 
     /**
      * Makes a new first-value aggregator.
+     * @param type of value
      * @return aggregator
      */
     public AggregationMethod makeFirstValueAggregator(Class type);
 
     /**
      * Makes a new last-value aggregator.
+     * @param type of value
      * @return aggregator
      */
     public AggregationMethod makeLastValueAggregator(Class type);
@@ -148,6 +150,10 @@ public interface MethodResolutionService
      */
     public AggregationMethod makeStddevAggregator();
 
+    /**
+     * Sets the group key types.
+     * @param groupKeyTypes types of group keys
+     */
     public void setGroupKeyTypes(Class[] groupKeyTypes);
     
     /**

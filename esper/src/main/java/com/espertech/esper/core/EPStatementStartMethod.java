@@ -733,10 +733,7 @@ public class EPStatementStartMethod
             {
                 throw new ExprValidationException("Joins are not allowed when using match recognize");
             }
-            // TODO
-            //ViewFactory f = statementContext.getViewResolutionService().create(ViewEnum.INTERNAL_MATCH_RECOG.getNamespace(), ViewEnum.INTERNAL_MATCH_RECOG.getName());
             boolean isUnbound = (unmaterializedViewChain[0].getViewFactoryChain().isEmpty()) && (!(statementSpec.getStreamSpecs().get(0) instanceof NamedWindowConsumerStreamSpec));
-            // f.set
             EventRowRegexNFAViewFactory factory = new EventRowRegexNFAViewFactory(unmaterializedViewChain[0], statementSpec.getMatchRecognizeSpec(), statementContext, isUnbound, statementSpec.getAnnotations());
             unmaterializedViewChain[0].getViewFactoryChain().add(factory);
         }

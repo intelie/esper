@@ -95,6 +95,7 @@ public class VariableReadWritePackage
      * @param variableService variable service
      * @param eventsPerStream events per stream
      * @param valuesWritten null or an empty map to populate with written values
+     * @param exprEvaluatorContext expression evaluation context
      */
     public void writeVariables(VariableService variableService,
                                  EventBean[] eventsPerStream,

@@ -19,6 +19,10 @@ public class LastValueAggregator implements AggregationMethod
     private final Class type;
     private Object lastValue;
 
+    /**
+     * Ctor.
+     * @param type of result
+     */
     public LastValueAggregator(Class type) {
         this.type = type;
     }

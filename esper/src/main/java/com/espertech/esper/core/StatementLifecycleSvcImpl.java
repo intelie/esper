@@ -122,6 +122,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementId is the statement id
      * @param optAdditionalContext additional context for use by the statement context
      * @param userObject the application define user object associated to each statement, if supplied
+     * @param isolationUnitServices isolated service services
      * @return started statement
      */
     protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject, EPIsolationUnitServices isolationUnitServices)
@@ -163,6 +164,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementId is the statement id
      * @param optAdditionalContext additional context for use by the statement context
      * @param userObject the application define user object associated to each statement, if supplied
+     * @param isolationUnitServices isolated service services
      * @return stopped statement
      */
     protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject, EPIsolationUnitServices isolationUnitServices)

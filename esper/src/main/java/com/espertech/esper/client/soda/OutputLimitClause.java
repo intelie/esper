@@ -31,6 +31,8 @@ public class OutputLimitClause implements Serializable
     private List<Pair<String, Expression>> thenAssignments;
     private Expression[] crontabAtParameters;
     private TimePeriodExpression timePeriodExpression;
+    private TimePeriodExpression afterTimePeriodExpression;
+    private Integer afterNumberOfEvents;
 
     /**
      * Creates an output limit clause.
@@ -40,6 +42,26 @@ public class OutputLimitClause implements Serializable
     public static OutputLimitClause create(TimePeriodExpression timePeriodExpression)
     {
         return new OutputLimitClause(OutputLimitSelector.DEFAULT, timePeriodExpression);
+    }
+
+    /**
+     * Create with after-only time period.
+     * @param afterTimePeriodExpression time period
+     * @return clause
+     */
+    public static OutputLimitClause createAfter(TimePeriodExpression afterTimePeriodExpression)
+    {
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, OutputLimitUnit.AFTER, afterTimePeriodExpression, null);
+    }
+
+    /**
+     * Create with after-only and number of events.
+     * @param afterNumEvents num events
+     * @return clause
+     */
+    public static OutputLimitClause createAfter(int afterNumEvents)
+    {
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, OutputLimitUnit.AFTER, null, afterNumEvents);
     }
 
     /**
@@ -141,6 +163,16 @@ public class OutputLimitClause implements Serializable
 
     /**
      * Ctor.
+     * @param afterTimePeriodExpression timer period for after.
+     */
+    public OutputLimitClause(TimePeriodExpression afterTimePeriodExpression)
+    {
+        this.unit = OutputLimitUnit.AFTER;
+        this.afterTimePeriodExpression = afterTimePeriodExpression;
+    }
+
+    /**
+     * Ctor.
      * @param selector is the events to select
      * @param frequencyVariable is the variable name providing output rate frequency values
      */
@@ -164,6 +196,21 @@ public class OutputLimitClause implements Serializable
         this.frequency = frequency;
         this.frequencyVariable = frequencyVariable;
         this.unit = unit;
+    }
+
+    /**
+     * Ctor.
+     * @param selector is the events to select
+     * @param unit the unit of selection
+     * @param afterTimePeriod after-keyword time period
+     * @param afterNumberOfEvents after-keyword number of events
+     */
+    public OutputLimitClause(OutputLimitSelector selector, OutputLimitUnit unit, TimePeriodExpression afterTimePeriod, Integer afterNumberOfEvents)
+    {
+        this.selector = selector;
+        this.unit = unit;
+        this.afterTimePeriodExpression = afterTimePeriod;
+        this.afterNumberOfEvents = afterNumberOfEvents;
     }
 
     /**
@@ -318,6 +365,19 @@ public class OutputLimitClause implements Serializable
      */
     public void toEPL(StringWriter writer)
     {
+        if (afterTimePeriodExpression != null)
+        {
+            writer.write("after ");
+            afterTimePeriodExpression.toEPL(writer);
+            writer.write(" ");
+        }
+        else if (afterNumberOfEvents != null)
+        {
+            writer.write("after ");
+            writer.write(Integer.toString(afterNumberOfEvents));
+            writer.write(" events ");
+        }
+
         if (selector != OutputLimitSelector.DEFAULT)
         {
             writer.write(selector.getText());
@@ -360,6 +420,10 @@ public class OutputLimitClause implements Serializable
             writer.write("every ");
             timePeriodExpression.toEPL(writer);
         }
+        else if (unit == OutputLimitUnit.AFTER)
+        {
+            // no action required
+        }
         else
         {
             writer.write("every ");
@@ -373,5 +437,45 @@ public class OutputLimitClause implements Serializable
             }
             writer.write(" events");
         }
+    }
+
+    /**
+     * Returns the after-keyword time period.
+     * @return after-keyword time period
+     */
+    public TimePeriodExpression getAfterTimePeriodExpression()
+    {
+        return afterTimePeriodExpression;
+    }
+
+    /**
+     * Sets the after-keyword time period.
+     * @param afterTimePeriodExpression after-keyword time period
+     * @return clause
+     */
+    public OutputLimitClause setAfterTimePeriodExpression(TimePeriodExpression afterTimePeriodExpression)
+    {
+        this.afterTimePeriodExpression = afterTimePeriodExpression;
+        return this;
+    }
+
+    /**
+     * Returns the after-keyword number of events, or null if undefined.
+     * @return num events for after-keyword
+     */
+    public Integer getAfterNumberOfEvents()
+    {
+        return afterNumberOfEvents;
+    }
+
+    /**
+     * Sets the after-keyword number of events, or null if undefined.
+     * @param afterNumberOfEvents set num events for after-keyword
+     * @return clause
+     */
+    public OutputLimitClause setAfterNumberOfEvents(Integer afterNumberOfEvents)
+    {
+        this.afterNumberOfEvents = afterNumberOfEvents;
+        return this;
     }
 }

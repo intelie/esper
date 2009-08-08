@@ -7,10 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Reader method for reading all properties of a Map event.
+ */
 public class MapEventBeanReader implements EventBeanReader
 {
     private MapEventPropertyGetter[] getterArray;
 
+    /**
+     * Ctor.
+     * @param type map to read
+     */
     public MapEventBeanReader(MapEventType type)
     {
         String[] properties = type.getPropertyNames();

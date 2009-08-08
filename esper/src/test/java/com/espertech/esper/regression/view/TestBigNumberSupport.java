@@ -73,8 +73,6 @@ public class TestBigNumberSupport extends TestCase
     public void testRelOp()
     {
         // relational op tests handled by relational op unit test
-        /*
-        TODO
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBeanNumeric where bigdec < 10 and bigint > 10");
         stmt.addListener(listener);
 
@@ -95,14 +93,13 @@ public class TestBigNumberSupport extends TestCase
         assertTrue(listener.getAndClearIsInvoked());
         stmt.destroy();
 
-         */
         // test float
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBeanNumeric where floatOne < 10f and floatTwo > 10f");
+        stmt = epService.getEPAdministrator().createEPL("select * from SupportBeanNumeric where floatOne < 10f and floatTwo > 10f");
         stmt.addListener(listener);
         
-        epService.getEPRuntime().sendEvent(new SupportBeanNumeric(1f, 20f));
+        epService.getEPRuntime().sendEvent(new SupportBeanNumeric(true, 1f, 20f));
         assertTrue(listener.getAndClearIsInvoked());
-        epService.getEPRuntime().sendEvent(new SupportBeanNumeric(20f, 1f));
+        epService.getEPRuntime().sendEvent(new SupportBeanNumeric(true, 20f, 1f));
         assertFalse(listener.getAndClearIsInvoked());
     }
 

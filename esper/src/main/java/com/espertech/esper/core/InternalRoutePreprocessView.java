@@ -12,6 +12,9 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.Iterator;
 
+/**
+ * View for use with pre-processing statement such as "update istream" for indicating previous and current event.
+ */
 public class InternalRoutePreprocessView extends ViewSupport
 {
     private static final Log log = LogFactory.getLog(InternalRoutePreprocessView.class);
@@ -19,6 +22,11 @@ public class InternalRoutePreprocessView extends ViewSupport
     private final Iterator<EventBean> noiter = new SingleEventIterator(null);
     private final StatementResultService statementResultService;
 
+    /**
+     * Ctor.
+     * @param eventType the type of event to indicator
+     * @param statementResultService determines whether listeners or subscribers are attached.
+     */
     public InternalRoutePreprocessView(EventType eventType, StatementResultService statementResultService)
     {
         this.eventType = eventType;
@@ -45,11 +53,20 @@ public class InternalRoutePreprocessView extends ViewSupport
         return noiter;
     }
 
+    /**
+     * Returns true if a subscriber or listener is attached.
+     * @return indicator
+     */
     public boolean isIndicate()
     {
         return (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic());
     }
-    
+
+    /**
+     * Indicate an modifed event and its previous version.
+     * @param newEvent modified event
+     * @param oldEvent previous version event
+     */
     public void indicate(EventBean newEvent, EventBean oldEvent)
     {
         try

@@ -32,6 +32,10 @@ public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedColl
         this.arrayList = new ArrayList<EventBean>();
     }
 
+    /**
+     * Sets the array providing previous events.
+     * @param arrayList previous event array
+     */
     public void setArrayList(ArrayList<EventBean> arrayList) {
         this.arrayList = arrayList;
     }
@@ -59,6 +63,10 @@ public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedColl
         }
     }
 
+    /**
+     * Remove event.
+     * @param oldData event to remove
+     */
     public void remove(EventBean oldData)
     {
         if (updateObserver !=null)
@@ -68,6 +76,10 @@ public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedColl
         arrayList.remove(arrayList.size() - 1);
     }
 
+    /**
+     * Apply event
+     * @param newData to apply
+     */
     public void update(EventBean newData)
     {
         if (updateObserver !=null)
@@ -97,6 +109,10 @@ public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedColl
         // No action required
     }
 
+    /**
+     * Returns true for empty.
+     * @return indicator
+     */
     public boolean isEmpty()
     {
         return arrayList.isEmpty();

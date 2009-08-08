@@ -31,7 +31,12 @@ public enum OutputLimitUnit
     /**
      * The unit representing a crontab-at-expression.
      */
-    CRONTAB_EXPRESSION ("crontab");
+    CRONTAB_EXPRESSION ("crontab"),
+
+    /**
+     * The unit representing just after a time period or after a number of events.
+     */
+    AFTER("after");
 
     private String text;
 

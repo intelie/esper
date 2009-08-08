@@ -3,6 +3,9 @@ package com.espertech.esper.rowregex;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Base for states.
+ */
 public abstract class RegexNFAStateBase implements RegexNFAState 
 {
     private final String nodeNumNested;
@@ -14,6 +17,14 @@ public abstract class RegexNFAStateBase implements RegexNFAState
 
     private int nodeNumFlat;
 
+        /**
+     * Ctor.
+     * @param nodeNum node num
+     * @param variableName variable
+     * @param streamNum stream num
+     * @param multiple indicator
+     * @param isGreedy greedy indicator
+     */
     public RegexNFAStateBase(String nodeNum, String variableName, int streamNum, boolean multiple, Boolean isGreedy)
     {
         this.nodeNumNested = nodeNum;

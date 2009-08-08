@@ -14,5 +14,9 @@ package com.espertech.esper.schedule;
  */
 public interface ScheduleHandle
 {
+    /**
+     * Returns the statement id.
+     * @return statement id
+     */
     public String getStatementId();
 }

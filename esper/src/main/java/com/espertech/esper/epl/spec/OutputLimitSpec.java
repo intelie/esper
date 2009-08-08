@@ -28,6 +28,8 @@ public class OutputLimitSpec implements MetaDefItem, Serializable
     private final List<OnTriggerSetAssignment> thenExpressions;    
     private final List<ExprNode> crontabAtSchedule;
     private final ExprTimePeriod timePeriodExpr;
+    private final ExprTimePeriod afterTimePeriodExpr;
+    private final Integer afterNumberOfEvents;
     private static final long serialVersionUID = 7314871194757342071L;
 
     /**
@@ -41,8 +43,10 @@ public class OutputLimitSpec implements MetaDefItem, Serializable
      * @param thenExpressions variable assignments, if null if none
      * @param crontabAtSchedule - crontab parameters
      * @param timePeriodExpr - the time period, or null if none
+     * @param afterTimePeriodExpr - after-keyword time period
+     * @param afterNumberOfEvents - after-keyword number of events
      */
-    public OutputLimitSpec(Double rate, String variableForRate, OutputLimitRateType rateType, OutputLimitLimitType displayLimit, ExprNode whenExpressionNode, List<OnTriggerSetAssignment> thenExpressions, List<ExprNode> crontabAtSchedule, ExprTimePeriod timePeriodExpr)
+    public OutputLimitSpec(Double rate, String variableForRate, OutputLimitRateType rateType, OutputLimitLimitType displayLimit, ExprNode whenExpressionNode, List<OnTriggerSetAssignment> thenExpressions, List<ExprNode> crontabAtSchedule, ExprTimePeriod timePeriodExpr, ExprTimePeriod afterTimePeriodExpr, Integer afterNumberOfEvents)
 	{
 		this.rate = rate;
 		this.displayLimit = displayLimit;
@@ -52,6 +56,8 @@ public class OutputLimitSpec implements MetaDefItem, Serializable
         this.whenExpressionNode = whenExpressionNode;
         this.thenExpressions = thenExpressions;
         this.timePeriodExpr = timePeriodExpr;
+        this.afterTimePeriodExpr = afterTimePeriodExpr;
+        this.afterNumberOfEvents = afterNumberOfEvents;
     }
 
     /**
@@ -133,5 +139,23 @@ public class OutputLimitSpec implements MetaDefItem, Serializable
     public ExprTimePeriod getTimePeriodExpr()
     {
         return timePeriodExpr;
+    }
+
+    /**
+     * Returns the after-keyword time period.
+     * @return after-keyword time period
+     */
+    public ExprTimePeriod getAfterTimePeriodExpr()
+    {
+        return afterTimePeriodExpr;
+    }
+
+    /**
+     * Returns the after-keyword number of events.
+     * @return after-keyword number of events
+     */
+    public Integer getAfterNumberOfEvents()
+    {
+        return afterNumberOfEvents;
     }
 }

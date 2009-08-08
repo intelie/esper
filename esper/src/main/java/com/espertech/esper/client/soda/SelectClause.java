@@ -288,6 +288,7 @@ public class SelectClause implements Serializable
     /**
      * Returns indicator whether distinct or not.
      * @param distinct distinct indicator
+     * @return the select clause
      */
     public SelectClause setDistinct(boolean distinct)
     {

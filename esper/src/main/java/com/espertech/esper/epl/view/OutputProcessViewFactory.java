@@ -12,10 +12,7 @@ import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
-import com.espertech.esper.epl.spec.StatementSpecCompiled;
-import com.espertech.esper.epl.spec.OutputLimitLimitType;
+import com.espertech.esper.epl.spec.*;
 
 /**
  * Factory for output processing views.
@@ -42,7 +39,6 @@ public class OutputProcessViewFactory
         {
             isRouted = true;
         }
-        boolean isDistinct = statementSpec.getSelectClauseSpec().isDistinct();
 
         OutputStrategy outputStrategy;
         if ((statementSpec.getInsertIntoDesc() != null) || (statementSpec.getSelectStreamSelectorEnum() == SelectClauseStreamSelectorEnum.RSTREAM_ONLY))
@@ -63,25 +59,43 @@ public class OutputProcessViewFactory
         // Do we need to enforce an output policy?
         int streamCount = statementSpec.getStreamSpecs().size();
         OutputLimitSpec outputLimitSpec = statementSpec.getOutputLimitSpec();
+        boolean isDistinct = statementSpec.getSelectClauseSpec().isDistinct();
 
+        OutputProcessView outputProcessView;
         try
         {
-            if (outputLimitSpec != null)
+            if (outputLimitSpec == null)
             {
-                if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
+                if (!isDistinct)
                 {
-                    return new OutputProcessViewSnapshot(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct);
+                    outputProcessView = new OutputProcessViewDirect(resultSetProcessor, outputStrategy, isRouted, statementContext, false, null, null);
                 }
                 else
                 {
-                    return new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct);
+                    outputProcessView = new OutputProcessViewDistinctOrAfter(resultSetProcessor, outputStrategy, isRouted, statementContext, true, null, null);
                 }
             }
-            return new OutputProcessViewDirect(resultSetProcessor, outputStrategy, isRouted, statementContext.getStatementResultService(), isDistinct);
+            else if (outputLimitSpec.getRateType() == OutputLimitRateType.AFTER)
+            {
+                outputProcessView = new OutputProcessViewDistinctOrAfter(resultSetProcessor, outputStrategy, isRouted, statementContext, isDistinct, outputLimitSpec.getAfterTimePeriodExpr(), outputLimitSpec.getAfterNumberOfEvents());
+            }
+            else
+            {
+                if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
+                {
+                    outputProcessView = new OutputProcessViewSnapshot(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct);
+                }
+                else
+                {
+                    outputProcessView = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct);
+                }
+            }
         }
         catch (RuntimeException ex)
         {
             throw new ExprValidationException("Error in the output rate limiting clause: " + ex.getMessage(), ex);
         }
+
+        return outputProcessView;
     }
 }

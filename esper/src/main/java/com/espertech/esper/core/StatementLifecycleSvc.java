@@ -50,7 +50,7 @@ public interface StatementLifecycleSvc
      * versus for non-pattern statements the iterator returns view content.
      * @param optStatementName is an optional statement name, null if none was supplied
      * @param userObject the application define user object associated to each statement, if supplied
-     * @param isolationUnitServices
+     * @param isolationUnitServices isolated service services
      * @return started statement
      */
     public EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices);

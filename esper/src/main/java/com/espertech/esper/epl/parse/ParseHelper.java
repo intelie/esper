@@ -30,7 +30,10 @@ import java.io.StringReader;
  */
 public class ParseHelper
 {
-    public static String newline = System.getProperty("line.separator");
+    /**
+     * Newline.
+     */
+    public final static String newline = System.getProperty("line.separator");
 
     /**
      * Walk parse tree starting at the rule the walkRuleSelector supplies.

@@ -39,7 +39,7 @@ public class TestOutputConditionFirst extends TestCase
         ExprTimePeriod timePeriodValid = new ExprTimePeriod(false, false, false, true, false);
         timePeriodValid.addChildNode(new ExprConstantNode(TEST_INTERVAL_MSEC/1000d));
 
-		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(null, null, OutputLimitRateType.TIME_PERIOD, OutputLimitLimitType.FIRST, null, null, null, timePeriodValid);
+		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(null, null, OutputLimitRateType.TIME_PERIOD, OutputLimitLimitType.FIRST, null, null, null, timePeriodValid, null, null);
 		SupportSchedulingServiceImpl schedulingServiceStub = new SupportSchedulingServiceImpl();
 		StatementContext statementContext = SupportStatementContextFactory.makeContext(schedulingServiceStub);
 		
@@ -82,7 +82,7 @@ public class TestOutputConditionFirst extends TestCase
 	public void testUpdateCount() throws Exception
 	{
 		// 'output first every 3 events'
-		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.FIRST, null, null, null, null);
+		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.FIRST, null, null, null, null, null, null);
 		StatementContext statementContext = SupportStatementContextFactory.makeContext();
 		
 		OutputCondition condition = (new OutputConditionFactoryDefault()).createCondition(outputConditionSpec, statementContext, callback);

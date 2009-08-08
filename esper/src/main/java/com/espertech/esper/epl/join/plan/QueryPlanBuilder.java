@@ -34,6 +34,7 @@ public class QueryPlanBuilder
      * @param isHistorical - indicator for each stream if it is a historical streams or not
      * @param dependencyGraph - dependencies between historical streams
      * @param historicalStreamIndexLists - index management, populated for the query plan
+     * @param exprEvaluatorContext expression evaluation context
      * @return query plan
      * @throws ExprValidationException if the query plan fails
      */

@@ -31,5 +31,10 @@ public enum OutputLimitRateType
     /**
      * Output based on a time period passing.
      */
-    TIME_PERIOD
+    TIME_PERIOD,
+
+    /**
+     * Output after a given time period
+     */
+    AFTER
 }

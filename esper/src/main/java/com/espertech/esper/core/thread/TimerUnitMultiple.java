@@ -26,6 +26,7 @@ public class TimerUnitMultiple implements TimerUnit
      * @param runtime runtime to process
      * @param handle statement handle
      * @param callbackObject callback list
+     * @param exprEvaluatorContext expression evaluation context
      */
     public TimerUnitMultiple(EPServicesContext services, EPRuntimeImpl runtime, EPStatementHandle handle, Object callbackObject, ExprEvaluatorContext exprEvaluatorContext)
     {

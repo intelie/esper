@@ -2,10 +2,22 @@ package com.espertech.esper.util;
 
 import com.espertech.esper.epl.expression.ExprValidationException;
 
+/**
+ * Factory for type widening.
+ */
 public class TypeWidenerFactory
 {
     private static TypeWidenerStringToCharCoercer stringToCharCoercer = new TypeWidenerStringToCharCoercer();
 
+    /**
+     * Returns the widener.
+     * @param columnName name of column
+     * @param columnType type of column
+     * @param writeablePropertyType property type
+     * @param writeablePropertyName propery name
+     * @return
+     * @throws ExprValidationException
+     */
     public static TypeWidener getCheckPropertyAssignType(String columnName, Class columnType, Class writeablePropertyType, String writeablePropertyName)
             throws ExprValidationException
     {

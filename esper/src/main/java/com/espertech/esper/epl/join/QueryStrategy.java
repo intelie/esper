@@ -23,6 +23,7 @@ public interface QueryStrategy
      * Look up events returning tuples of joined events.
      * @param lookupEvents - events to use to perform the join
      * @param joinSet - result join tuples of events
+     * @param exprEvaluatorContext expression evaluation context
      */
     public void lookup(EventBean[] lookupEvents, Set<MultiKey<EventBean>> joinSet, ExprEvaluatorContext exprEvaluatorContext);
 }

@@ -22,6 +22,7 @@ public class SchemaElementSimple implements SchemaElement, Serializable
      * @param type is the simple element type
      * @param isArray if unbound
      * @param typeName name of type
+     * @param fractionDigits fraction digits if defined
      */
     public SchemaElementSimple(String name, String namespace, short type, String typeName, boolean isArray, Integer fractionDigits)
     {
@@ -70,6 +71,10 @@ public class SchemaElementSimple implements SchemaElement, Serializable
         return typeName;
     }
 
+    /**
+     * Returns the fraction digits if defined.
+     * @return digits
+     */
     public Integer getFractionDigits()
     {
         return fractionDigits;

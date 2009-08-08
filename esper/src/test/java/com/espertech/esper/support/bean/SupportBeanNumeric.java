@@ -38,7 +38,7 @@ public class SupportBeanNumeric implements Serializable
         this.bigdec = bigdec;
     }
 
-    public SupportBeanNumeric(float floatOne, float floatTwo)
+    public SupportBeanNumeric(boolean floatDummy, float floatOne, float floatTwo)
     {
         this.floatOne = floatOne;
         this.floatTwo = floatTwo;

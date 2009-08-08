@@ -68,6 +68,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
      * @param pollExecStrategy the execution strategy
      * @param dataCache the cache to use
      * @param eventType the type of event returned
+     * @param exprEvaluatorContext expression evaluation context
      */
     public MethodPollingViewable(
                            MethodStreamSpec methodStreamSpec,

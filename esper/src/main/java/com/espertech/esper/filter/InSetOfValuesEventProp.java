@@ -52,7 +52,10 @@ public class InSetOfValuesEventProp implements FilterSpecParamInValue
         // Coerce if necessary
         if (isMustCoerce)
         {
-            value = JavaClassHelper.coerceBoxed((Number) value, coercionType);
+            if (value != null)
+            {
+                value = JavaClassHelper.coerceBoxed((Number) value, coercionType);
+            }
         }
         return value;
     }

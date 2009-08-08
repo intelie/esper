@@ -12,6 +12,7 @@ public interface PropertyEvaluator
     /**
      * Returns the result events based on property values, or null if none found.
      * @param event to inspect
+     * @param exprEvaluatorContext expression evaluation context
      * @return events representing property(s)
      */
     public EventBean[] getProperty(EventBean event, ExprEvaluatorContext exprEvaluatorContext);

@@ -24,6 +24,7 @@ public interface JoinExecutionStrategy
      * and the second dimension is the actual events generated.
      * @param newDataPerStream - new events for each stream
      * @param oldDataPerStream - old events for each stream
+     * @param exprEvaluatorContext expression evaluation context
      */
     public void join(EventBean[][] newDataPerStream,
                      EventBean[][] oldDataPerStream,

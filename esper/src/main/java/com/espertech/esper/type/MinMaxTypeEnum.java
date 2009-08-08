@@ -58,6 +58,7 @@ public enum MinMaxTypeEnum
          * Executes child expression nodes and compares results, returning the min/max.
          * @param eventsPerStream events per stream
          * @param isNewData true if new data
+         * @param exprEvaluatorContext expression evaluation context
          * @return result
          */
         public Number execute(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext);

@@ -1630,27 +1630,34 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				<title>Output Clause Options</title>
 			
 				<para>
-					The <literal>output</literal> clause is optional in Esper and is used to control or stabilize the rate at which events are output. The EPL language provides for several different ways to control output rate.
+					The <literal>output</literal> clause is optional in Esper and is used to control or stabilize the rate at which events are output and to suppress output events. The EPL language provides for several different ways to control output rate.
 				</para>
 
 				<para>
 					Here is the syntax for the <literal>output</literal> clause that specifies a rate in time interval or number of events:
 				</para>
-				<synopsis>output [all | first | last | snapshot] every <emphasis>output_rate</emphasis> [minutes | seconds | events]</synopsis>
+				<synopsis>output [after <emphasis>suppression_def</emphasis>] 
+  [[all | first | last | snapshot] every <emphasis>output_rate</emphasis> [seconds | events]]</synopsis>
 
 				<para>
 					An alternate syntax specifies the time period between output as outlined in <xref linkend="epl-syntax-time-periods"/> :
 				</para>
-				<synopsis>output [all | first | last | snapshot] every <emphasis>time_period</emphasis></synopsis>
+				<synopsis>output [after <emphasis>suppression_def</emphasis>] 
+  [[all | first | last | snapshot] every <emphasis>time_period</emphasis>]</synopsis>
 
 				<para>
 					A crontab-like schedule can also be specified. The schedule parameters follow the pattern observer parameters and are further described in <xref linkend="pattern-timer-at"/> :
 				</para>
-				<synopsis>output [all | first | last | snapshot] at 
-  (<emphasis>minutes, hours, days of month, months, days of week [, seconds]</emphasis>)</synopsis>
+				<synopsis>output [after <emphasis>suppression_def</emphasis>] 
+  [[all | first | last | snapshot] at 
+   (<emphasis>minutes, hours, days of month, months, days of week [, seconds]</emphasis>)]</synopsis>
 
 				<para>
 					Last, output can be controlled by an expression that may contain variables, user-defined functions and information about the number of collected events. Output that is controlled by an expression is discussed in detail below.
+				</para>
+
+				<para>
+					The <literal>after</literal> keyword and <emphasis>suppression_def</emphasis> can appear alone or together with further output conditions and suppresses output events.
 				</para>
 
 				<para>
@@ -1675,7 +1682,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				</para>
 
 				<para>
-					The <literal>snapshot</literal> keyword indicates that the engine output current computation results considering all events as per views specified and/or current aggregation results. While the other keywords control how a batch of events between output intervals is being considered, the <literal>snapshot</literal> keyword outputs all current state of a statement independent of the last batch. It's output is equivalent to the <literal>iterator</literal> method provided by a statement.
+					The <literal>snapshot</literal> keyword indicates that the engine output current computation results considering all events as per views specified and/or current aggregation results. While the other keywords control how a batch of events between output intervals is being considered, the <literal>snapshot</literal> keyword outputs all current state of a statement independent of the last batch. Its output is equivalent to the <literal>iterator</literal> method provided by a statement.
 				</para>
 
 				<para>
@@ -1719,7 +1726,8 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 					<para>
 						Output can also be controlled by an expression that may check variable values, use user-defined functions and query built-in properties that provide additional information. The synopsis is as follows:
 					</para>
-					<synopsis>output [all | first | last | snapshot] when <emphasis>trigger_expression</emphasis> 
+					<synopsis>output [after <emphasis>suppression_def</emphasis>] 
+  [[all | first | last | snapshot] when <emphasis>trigger_expression</emphasis> 
     [then set <emphasis>variable_name</emphasis> = <emphasis>assign_expression</emphasis> [, <emphasis>variable_name</emphasis> = <emphasis>assign_expression</emphasis> [,...]]]</synopsis>
 
 					<para>
@@ -1752,9 +1760,9 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 					<para>
 						By adding a <literal>then</literal> part to the EPL, we can reset any variables after the trigger expression evaluated to true:
 					</para>
-					<synopsis>select sum(price) from StockTickEvent 
+			    <programlisting>select sum(price) from StockTickEvent 
   output when OutputTriggerVar = true  
-  then set OutputTriggerVar = false</synopsis>
+  then set OutputTriggerVar = false</programlisting>
 
 					<para>
 						Expressions in the <literal>when</literal> and <literal>then</literal> may, for example, use variables, user defined functions or any of the built-in named properties that are described in the below list.
@@ -1818,6 +1826,40 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 					</itemizedlist>
 				</sect3>
 
+				<sect3 id="epl-output-suppress" >
+					<title>Suppressing Output With <literal>After</literal></title>
+
+					<indexterm><primary>output</primary><secondary>suppressing output</secondary></indexterm>
+					<indexterm><primary>after</primary></indexterm>
+					<para>
+						The <literal>after</literal> keyword and its time period or number of events parameters is optional and can occur after the <literal>output</literal> keyword, either alone or with output conditions as listed above.
+					</para>
+
+					<para>
+						The synopsis of <literal>after</literal> is as follows:
+					</para>
+					<synopsis>output after <emphasis>time_period</emphasis> | <emphasis>number</emphasis> events [...]</synopsis>
+
+					<para>
+						When using <literal>after</literal> either alone or together with further output conditions, the engine discards all output events until the time period passed as measured from the start of the statement, or until the
+						number of output events are reached. The discarded events are not output and do not count towards any further output conditions if any are specified.
+					</para>
+
+					<para>
+						For example, the following statement outputs every minute the total price for all orders in the 30-minute time window but only after 30 minutes have passed:		
+					</para>
+					<programlisting>select sum(price) from OrderEvent.win:time(30 min) output after 30 min snapshot every 1 min</programlisting>
+
+					<para>
+						An example in which <literal>after</literal> occur alone is below, in a statement that outputs total price for all orders in the last minute but only after 1 minute passed, each time an event arrives or leaves the data window:
+					</para>
+					<programlisting>select sum(price) from OrderEvent.win:time(1 min) output after 1 min</programlisting>
+
+					<para>
+						To demonstrate <literal>after</literal> when used with an event count, this statement find pairs of orders with the same id but suppresses output for the first 5 pairs:
+					</para>
+					<programlisting>select * from pattern[every o=OrderEvent->p=OrderEvent(id=o.id)] output after 5 events</programlisting>
+				</sect3>
 		</sect2>
 
         <sect2 id="epl-output-groupby" >
