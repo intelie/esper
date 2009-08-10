@@ -81,4 +81,9 @@ public class ConfigurationPluginLoader implements Serializable
     {
         this.loaderName = loaderName;
     }
+
+    public String toString()
+    {
+        return "ConfigurationPluginLoader name '" + loaderName + "' class '" + className + " ' properties '" + configProperties + "'";
+    }
 }

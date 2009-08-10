@@ -90,34 +90,22 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
      */
     public void postInitialize()
     {
-        try
+        // plugin-loaders
+        List<ConfigurationPluginLoader> pluginLoaders = engine.getServices().getConfigSnapshot().getPluginLoaders();
+        for (ConfigurationPluginLoader config : pluginLoaders)  // in the order configured
         {
-            Hashtable table = engine.getServices().getEngineEnvContext().getEnvironment();
-
-            for (Object key : table.keySet())
+            try
             {
-                if (key.toString().startsWith("plugin-loader/"))
-                {
-                    Object value = table.get(key);
-                    if (value instanceof PluginLoader)
-                    {
-                        try
-                        {
-                            ((PluginLoader) value).postInitialize();
-                        }
-                        catch (Throwable t)
-                        {
-                            log.error("Error post-initializing plugin class " + value.getClass().getSimpleName(), t);
-                        }
-                    }
-                }
+                PluginLoader plugin = (PluginLoader) engine.getServices().getEngineEnvContext().lookup("plugin-loader/" + config.getLoaderName());
+                plugin.postInitialize();
+            }
+            catch (Throwable t)
+            {
+                String message = "Error post-initializing plugin class " + config.getClassName() + ": " + t.getMessage();
+                log.error(message, t);
+                throw new EPException(message, t);
             }
         }
-        catch (NamingException e)
-        {
-            throw new EPException("Failed to use context to bind adapter loader", e);
-        }
-
     }
 
     /**
