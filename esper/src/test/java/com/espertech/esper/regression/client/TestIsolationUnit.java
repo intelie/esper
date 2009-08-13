@@ -129,6 +129,32 @@ public class TestIsolationUnit extends TestCase
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[0], epService.getEPServiceIsolatedNames());
     }
 
+    public void testDestroy()
+    {
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL("@Name('A') select * from SupportBean", null, null);
+        stmtOne.addListener(listener);
+
+        EPServiceProviderIsolated unit = epService.getEPServiceIsolated("i1");
+
+        EPStatement stmtTwo = unit.getEPAdministrator().createEPL("@Name('B') select * from SupportBean", null, null);
+        stmtTwo.addListener(listener);
+        unit.getEPAdministrator().addStatement(stmtOne);
+
+        unit.getEPRuntime().sendEvent(new SupportBean());
+        assertEquals(2, listener.getNewDataListFlattened().length);
+        listener.reset();
+
+        unit.destroy();
+
+        unit.getEPRuntime().sendEvent(new SupportBean());
+        assertEquals(0, listener.getNewDataListFlattened().length);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        assertEquals(2, listener.getNewDataListFlattened().length);
+        listener.reset();
+    }
+
     public void testIsolatedSchedule()
     {
         sendTimerUnisolated(100000);

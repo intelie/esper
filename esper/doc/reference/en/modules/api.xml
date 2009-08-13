@@ -1557,6 +1557,10 @@ isolatedService.getEPAdministrator().addStatement(stmt);]]></programlisting>
 // the example is passing the statement name in an annotation and no user object]]></programlisting>
 	
 			<para>
+				The <literal>destroy</literal> method on <literal>EPServiceProviderIsolated</literal> moves all currently-isolated statements for that isolated service provider back to engine runtime.
+			</para>
+
+			<para>
 				When moving a statement between engine runtime and isolated service or back, the algorithm ensures that events are aged according to the time that passed and time schedules stay intact.
 			</para>
 	

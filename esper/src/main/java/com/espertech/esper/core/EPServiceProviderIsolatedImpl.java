@@ -62,5 +62,7 @@ public class EPServiceProviderIsolatedImpl implements EPServiceProviderIsolatedS
     public void destroy()
     {
         providers.remove(name);
+
+        admin.removeAllStatements();
     }
 }

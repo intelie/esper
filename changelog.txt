@@ -1,7 +1,17 @@
 Esper Changelog
 ===================
 
+
 Changes in version 3.2.0
+------------------------
+
+- Support to the proposed SQL standard "match_recognize", a regular expression-based event pattern matching language
+- Support for isolated service providers, which allow to control event visibility and time-related behavior on a statement level
+- Support for "update istream" which allows declarative modification of event properties of events entering a stream.
+- Support for "last" and "first" aggregation functions.
+
+
+Changes in version 3.1.0
 ------------------------
 
 Major API changes

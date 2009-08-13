@@ -18,9 +18,7 @@ import com.espertech.esper.schedule.ScheduleSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation for the admin interface.
@@ -29,7 +27,7 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
 {
     private static Log log = LogFactory.getLog(EPAdministratorIsolatedImpl.class);
 
-    private final String name;
+    private final String isolatedServiceName;
     private final EPIsolationUnitServices services;
     private final EPServicesContext unisolatedServices;
     private final EPRuntimeIsolatedImpl isolatedRuntime;
@@ -37,14 +35,14 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
 
     /**
      * Ctor.
-     * @param name name of the isolated service
+     * @param isolatedServiceName name of the isolated service
      * @param services isolated services
      * @param unisolatedServices engine services
      * @param isolatedRuntime the runtime for this isolated service
      */
-    public EPAdministratorIsolatedImpl(String name, EPIsolationUnitServices services, EPServicesContext unisolatedServices, EPRuntimeIsolatedImpl isolatedRuntime)
+    public EPAdministratorIsolatedImpl(String isolatedServiceName, EPIsolationUnitServices services, EPServicesContext unisolatedServices, EPRuntimeIsolatedImpl isolatedRuntime)
     {
-        this.name = name;
+        this.isolatedServiceName = isolatedServiceName;
         this.services = services;
         this.unisolatedServices = unisolatedServices;
         this.isolatedRuntime = isolatedRuntime;
@@ -57,8 +55,8 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
         EPStatement statement = unisolatedServices.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, services);
         EPStatementSPI stmtSpi = (EPStatementSPI) statement;
         stmtSpi.getStatementContext().setInternalEventEngineRouteDest(isolatedRuntime);
-        stmtSpi.setServiceIsolated(name);
-        statementNames.add(name);
+        stmtSpi.setServiceIsolated(isolatedServiceName);
+        statementNames.add(stmtSpi.getName());
         return statement;
     }
 
@@ -105,7 +103,7 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
             }
 
             // start txn
-            unisolatedServices.getStatementIsolationService().beginIsolatingStatements(name, services.getUnitId(), stmt);
+            unisolatedServices.getStatementIsolationService().beginIsolatingStatements(isolatedServiceName, services.getUnitId(), stmt);
 
             FilterSet filters = unisolatedServices.getFilterService().take(statementIds);
             ScheduleSet schedules = unisolatedServices.getSchedulingService().take(statementIds);
@@ -121,11 +119,11 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
                 stmtSpi.getStatementContext().setInternalEventEngineRouteDest(isolatedRuntime);
                 stmtSpi.getStatementContext().getScheduleAdjustmentService().adjust(delta);
                 statementNames.add(stmtSpi.getName());
-                stmtSpi.setServiceIsolated(name);
+                stmtSpi.setServiceIsolated(isolatedServiceName);
             }
 
             // commit txn
-            unisolatedServices.getStatementIsolationService().commitIsolatingStatements(name, services.getUnitId(), stmt);
+            unisolatedServices.getStatementIsolationService().commitIsolatingStatements(isolatedServiceName, services.getUnitId(), stmt);
         }
         catch (EPServiceIsolationException ex)
         {
@@ -133,7 +131,7 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
         }
         catch (RuntimeException ex)
         {
-            unisolatedServices.getStatementIsolationService().rollbackIsolatingStatements(name, services.getUnitId(), stmt);
+            unisolatedServices.getStatementIsolationService().rollbackIsolatingStatements(isolatedServiceName, services.getUnitId(), stmt);
 
             String message = "Unexpected exception taking statements: " + ex.getMessage();
             log.error(message, ex);
@@ -175,14 +173,14 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
                 {
                     throw new EPServiceIsolationException("Statement named '" + aStmt.getName() + "' is not currently in service isolation");
                 }
-                if (!aStmt.getServiceIsolated().equals(name))
+                if (!aStmt.getServiceIsolated().equals(isolatedServiceName))
                 {
                     throw new EPServiceIsolationException("Statement named '" + aStmt.getName() + "' not in this service isolation but under service isolation '" + aStmt.getName() + "'");
                 }
             }
 
             // start txn
-            unisolatedServices.getStatementIsolationService().beginUnisolatingStatements(name, services.getUnitId(), stmt);
+            unisolatedServices.getStatementIsolationService().beginUnisolatingStatements(isolatedServiceName, services.getUnitId(), stmt);
 
             FilterSet filters = services.getFilterService().take(statementIds);
             ScheduleSet schedules = services.getSchedulingService().take(statementIds);
@@ -202,7 +200,7 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
             }
 
             // commit txn
-            unisolatedServices.getStatementIsolationService().commitUnisolatingStatements(name, services.getUnitId(), stmt);
+            unisolatedServices.getStatementIsolationService().commitUnisolatingStatements(isolatedServiceName, services.getUnitId(), stmt);
         }
         catch (EPServiceIsolationException ex)
         {
@@ -210,7 +208,7 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
         }
         catch (RuntimeException ex)
         {
-            unisolatedServices.getStatementIsolationService().rollbackUnisolatingStatements(name, services.getUnitId(), stmt);
+            unisolatedServices.getStatementIsolationService().rollbackUnisolatingStatements(isolatedServiceName, services.getUnitId(), stmt);
 
             String message = "Unexpected exception taking statements: " + ex.getMessage();
             log.error(message, ex);
@@ -220,5 +218,30 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
         {
             unisolatedServices.getEventProcessingRWLock().releaseWriteLock();
         }
+    }
+
+    public void removeAllStatements()
+    {
+        List<EPStatement> statements = new ArrayList<EPStatement>();
+        for (String stmtName : statementNames)
+        {
+            EPStatement stmt = unisolatedServices.getStatementLifecycleSvc().getStatementByName(stmtName);
+            if (stmt == null)
+            {
+                log.error("Error returning statement '" + stmtName + "', the statement could not be found");
+                continue;
+            }
+
+            if (stmt.getServiceIsolated() != null && (!stmt.getServiceIsolated().equals(isolatedServiceName)))
+            {
+                log.error("Error returning statement '" + stmtName + "', the internal isolation information is incorrect, isolated service for statement is currently '" +
+                        stmt.getServiceIsolated() + "' and mismatches this isolated services named '" + isolatedServiceName + "'");
+                continue;
+            }
+
+            statements.add(stmt);
+        }
+
+        removeStatement(statements.toArray(new EPStatement[statements.size()]));
     }
 }
