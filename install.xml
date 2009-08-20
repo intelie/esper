@@ -1,0 +1,58 @@
+<project name="esper-install" default="install" basedir="."
+    xmlns:ivy="antlib:org.apache.ivy.ant">
+    <!-- an Ant script that is copied as build.xml in the distriution
+    and can be used to help end user perform post install tasks such
+    as download dependencies that we don't want to ship on optional modules
+    such as EsperIO/AXIOM -->
+
+    <!-- BEGIN IVY BOOTSTRAP / see http://ant.apache.org/ivy/history/trunk/install.html -->
+    <property name="ivy.install.version" value="2.0.0-beta1" />
+    <condition property="ivy.home" value="${env.IVY_HOME}">
+      <isset property="env.IVY_HOME" />
+    </condition>
+    <property name="ivy.home" value="${user.home}/.ant" />
+    <property name="ivy.jar.dir" value="${ivy.home}/lib" />
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
+
+    <target name="download-ivy" unless="offline">
+
+        <mkdir dir="${ivy.jar.dir}"/>
+        <!-- download Ivy from web site so that it can be used even without any special installation -->
+        <get src="http://www.apache.org/dist/ant/ivy/${ivy.install.version}/ivy.jar"
+            dest="${ivy.jar.file}" usetimestamp="true" verbose="true"/>
+    </target>
+
+    <target name="init-ivy" depends="download-ivy">
+      <!-- try to load ivy here from ivy home, in case the user has not already dropped
+              it into ant's lib dir (note that the latter copy will always take precedence).
+              We will not fail as long as local lib dir exists (it may be empty) and
+              ivy is in at least one of ant's lib dir or the local lib dir. -->
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    </target>
+
+	<target name="clean-ivy" depends="init-ivy">
+		<delete dir="${ivy.jar.dir}"/>
+	</target>
+
+	<target name="clean-cache-ivy" depends="init-ivy">
+		<ivy:cleancache />
+	</target>
+    <!-- END IVY BOOTSTRAP / see http://ant.apache.org/ivy/history/trunk/install.html -->
+
+    <target name="install" depends="init-ivy, esperio-axiom-install"/>
+
+    <target name="esperio-axiom-install">
+        <echo message="... downloading EsperIO/AXIOM dependencies"/>
+        <mkdir dir="esperio/lib/axiom"/>
+        <ivy:retrieve organisation="org.apache.ws.commons.axiom"
+                      module="axiom-impl" revision="1.2.5" inline="true"
+                      pattern="esperio/lib/axiom/[artifact]-[revision].[ext]"
+                />
+    </target>
+
+ </project>
