@@ -7,6 +7,8 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.SupportStmtAwareUpdateListener;
+import com.espertech.esper.support.util.SupportSubscriber;
 
 public class TestEPStatement extends TestCase
 {
@@ -70,6 +72,34 @@ public class TestEPStatement extends TestCase
         try
         {
             stmt.addListenerWithReplay(listener);
+            fail();
+        }
+        catch (IllegalStateException ex)
+        {
+            //
+        }
+
+        stmt.removeAllListeners();
+        stmt.removeListener(listener);
+        stmt.removeListener(new SupportStmtAwareUpdateListener());
+        stmt.setSubscriber(new SupportSubscriber());
+
+        stmt.getAnnotations();
+        stmt.getState();
+        stmt.getSubscriber();
+
+        try
+        {
+            stmt.addListener(listener);
+            fail();
+        }
+        catch (IllegalStateException ex)
+        {
+            //
+        }
+        try
+        {
+            stmt.addListener(new SupportStmtAwareUpdateListener());
             fail();
         }
         catch (IllegalStateException ex)

@@ -18,6 +18,7 @@ public interface EPListenable
     /**
      * Add a listener that observes events.
      * @param listener to add
+     * @throws IllegalStateException when attempting to add a listener to a destroyed statement
      */
     public void addListener(UpdateListener listener);
 
@@ -35,6 +36,7 @@ public interface EPListenable
     /**
      * Add a statement-aware listener that observes events.
      * @param listener to add
+     * @throws IllegalStateException when attempting to add a listener to a destroyed statement
      */
     public void addListener(StatementAwareUpdateListener listener);
 

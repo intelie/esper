@@ -15,7 +15,7 @@ public class TestAdapterLoader extends TestCase
 {
     public void setUp()
     {
-        SupportPluginLoader.reset();        
+        SupportPluginLoader.reset();
     }
 
     public void testAdapterLoader() throws Exception
@@ -41,13 +41,8 @@ public class TestAdapterLoader extends TestCase
         service.initialize();
         assertEquals(1, SupportPluginLoader.getPostInitializes().size());
         assertEquals(1, SupportPluginLoader.getNames().size());
-    }
 
-    public void testDestroy() {
-        Configuration cf = SupportConfigFactory.getConfiguration();
-        cf.addPluginLoader("AP", SupportPluginLoader.class.getName(), null);
-        EPServiceProvider ep = EPServiceProviderManager.getProvider("TestAdapterLoader", cf);
-        ep.destroy();
+        service.destroy();
         assertEquals(1, SupportPluginLoader.getDestroys().size());
     }
 

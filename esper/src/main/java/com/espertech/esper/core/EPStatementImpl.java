@@ -273,6 +273,10 @@ public class EPStatementImpl implements EPStatementSPI
         {
             throw new IllegalArgumentException("Null listener reference supplied");
         }
+        if (isDestroyed())
+        {
+            throw new IllegalStateException("Statement is in destroyed state");
+        }
 
         statementListenerSet.addListener(listener);
         statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
@@ -370,8 +374,11 @@ public class EPStatementImpl implements EPStatementSPI
 
         statementListenerSet.removeListener(listener);
         statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
-        statementLifecycleSvc.dispatchStatementLifecycleEvent(
+        if (statementLifecycleSvc != null)
+        {
+            statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_REMOVE, listener));
+        }
     }
 
     /**
@@ -381,8 +388,11 @@ public class EPStatementImpl implements EPStatementSPI
     {
         statementListenerSet.removeAllListeners();
         statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
-        statementLifecycleSvc.dispatchStatementLifecycleEvent(
+        if (statementLifecycleSvc != null)
+        {
+            statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_REMOVE_ALL));
+        }
     }
 
     public void addListener(StatementAwareUpdateListener listener)
@@ -390,6 +400,10 @@ public class EPStatementImpl implements EPStatementSPI
         if (listener == null)
         {
             throw new IllegalArgumentException("Null listener reference supplied");
+        }
+        if (isDestroyed())
+        {
+            throw new IllegalStateException("Statement is in destroyed state");
         }
 
         statementListenerSet.addListener(listener);
@@ -407,8 +421,11 @@ public class EPStatementImpl implements EPStatementSPI
 
         statementListenerSet.removeListener(listener);
         statementContext.getStatementResultService().setUpdateListeners(statementListenerSet);
-        statementLifecycleSvc.dispatchStatementLifecycleEvent(
+        if (statementLifecycleSvc != null)
+        {
+            statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_REMOVE, listener));
+        }
     }
 
     public Iterator<StatementAwareUpdateListener> getStatementAwareListeners()
