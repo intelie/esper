@@ -15,6 +15,10 @@
 		</para>
 		
         <para>
+			The match recognize syntax is a proposal for incorporation into the SQL standard. It is thus subject to change as the standard evolves and finalizes (it has not finalized yet). Please consult <ulink url="http://dist.codehaus.org/esper//row-pattern-recogniton-11-public.pdf">row-pattern-recogniton-11-public</ulink> for further information.
+		</para>
+
+        <para>
 			You may be familiar with regular expressions in the context of finding text of interest in a string, such as particular characters, words, or patterns of characters. Instead of matching characters, match recognize matches sequences of events of interest.
 		</para>
 			
@@ -54,7 +58,7 @@
 					<row>
 						<entry>Standards</entry>
 						<entry>Not standardized, similar to Rapide pattern language.</entry>
-						<entry>Proposal for incorporation into SQL standard.</entry>
+						<entry>Proposal for incorporation into the SQL standard.</entry>
 					</row>
 					<row>
 						<entry>Real-time Processing</entry>
