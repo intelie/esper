@@ -155,15 +155,40 @@ public class TestOutputLimitCrontabWhen extends TestCase
 
         String epl = model.toEPL();
         assertEquals(expression, epl);
-        runAssertion(2, epService.getEPAdministrator().create(model));
+        stmt = epService.getEPAdministrator().create(model);
+        runAssertion(2, stmt);
 
         model = epService.getEPAdministrator().compileEPL(expression);
         assertEquals(expression, model.toEPL());
-        runAssertion(3, epService.getEPAdministrator().create(model));
+        stmt = epService.getEPAdministrator().create(model);
+        runAssertion(3, stmt);
 
         String outputLast = "select symbol from MarketData.win:length(2) output last when (myvar = 1) ";
         model = epService.getEPAdministrator().compileEPL(outputLast);
         assertEquals(outputLast.trim(), model.toEPL().trim());
+
+        // test same variable referenced multiple times JIRA-386
+        sendTimer(0);
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        EPStatement stmtOne =  epService.getEPAdministrator().createEPL("select * from MarketData output last when myvar=100");
+        stmtOne.addListener(listenerOne);
+        EPStatement stmtTwo =  epService.getEPAdministrator().createEPL("select * from MarketData output last when myvar=100");
+        stmtTwo.addListener(listenerTwo);
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", "E1", 100));
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", "E2", 100));
+
+        sendTimer(1000);
+        assertFalse(listenerOne.isInvoked());
+        assertFalse(listenerTwo.isInvoked());
+
+        epService.getEPRuntime().setVariableValue("myvar", 100);
+        sendTimer(2000);
+        assertTrue(listenerTwo.isInvoked());
+        assertTrue(listenerOne.isInvoked());
+
+        stmtOne.destroy();
+        stmtTwo.destroy();
     }
 
     private void runAssertion(int days, EPStatement stmt)
@@ -372,5 +397,12 @@ public class TestOutputLimitCrontabWhen extends TestCase
         {
             assertEquals(message, ex.getMessage());
         }
+    }
+
+    private void sendTimer(long timeInMSec)
+    {
+        CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
+        EPRuntime runtime = epService.getEPRuntime();
+        runtime.sendEvent(event);
     }
 }

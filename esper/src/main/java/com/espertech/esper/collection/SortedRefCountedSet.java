@@ -127,6 +127,10 @@ public class SortedRefCountedSet<K>
         return refSet.firstKey();
     }
 
+    /**
+     * Returns the number of data points.
+     * @return point count
+     */
     public long getCountPoints()
     {
         return countPoints;

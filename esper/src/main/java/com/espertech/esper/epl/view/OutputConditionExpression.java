@@ -25,6 +25,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.view.StatementStopCallback;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,7 +65,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
      * @param outputCallback callback
      * @throws ExprValidationException when validation fails
      */
-    public OutputConditionExpression(ExprNode whenExpressionNode, List<OnTriggerSetAssignment> assignments, StatementContext context, OutputCallback outputCallback)
+    public OutputConditionExpression(ExprNode whenExpressionNode, List<OnTriggerSetAssignment> assignments, final StatementContext context, OutputCallback outputCallback)
             throws ExprValidationException
     {
         this.whenExpressionNode = whenExpressionNode;
@@ -110,8 +111,14 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
             // if using variables, register a callback on the change of the variable
             for (String variableName : variableNames)
             {
-                VariableReader reader = context.getVariableService().getReader(variableName);
+                final VariableReader reader = context.getVariableService().getReader(variableName);
                 context.getVariableService().registerCallback(reader.getVariableNumber(), this);
+                context.getStatementStopService().addSubscriber(new StatementStopCallback() {
+                    public void statementStopped()
+                    {
+                        context.getVariableService().unregisterCallback(reader.getVariableNumber(), OutputConditionExpression.this);
+                    }
+                });
             }
         }
 

@@ -60,6 +60,13 @@ public interface VariableService
     public void registerCallback(int variableNumber, VariableChangeCallback variableChangeCallback);
 
     /**
+     * Removes a callback.
+     * @param variableNumber the variable index number
+     * @param variableChangeCallback a callback
+     */
+    public void unregisterCallback(int variableNumber, VariableChangeCallback variableChangeCallback);
+
+    /**
      * Writes a new variable value.
      * <p>
      * Must be followed by either a commit or rollback.

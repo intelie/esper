@@ -164,7 +164,16 @@ public interface MethodResolutionService
      */
     public AggregationMethod[] newAggregators(AggregationMethod[] prototypes, MultiKeyUntyped groupKey);
 
+    /**
+     * Opportunity to remove aggregations for a group.
+     * @param groupKey that is no longer used
+     */
     public void removeAggregators(MultiKeyUntyped groupKey);
 
+    /**
+     * Returns the current row count of an aggregation, for use with resilience.
+     * @param aggregators aggregators
+     * @return row count
+     */
     public long getCurrentRowCount(AggregationMethod[] aggregators);
 }

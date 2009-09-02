@@ -18,8 +18,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Variables service for reading and writing variables, and for setting a version number for the current thread to
@@ -102,7 +104,7 @@ public class VariableServiceImpl implements VariableService
     private final ArrayList<VersionedValueList<Object>> variableVersions;
 
     // Each variable may have a single callback to invoke when the variable changes
-    private final ArrayList<VariableChangeCallback> changeCallbacks;
+    private final ArrayList<Set<VariableChangeCallback>> changeCallbacks;
 
     // Write lock taken on write of any variable; and on read of older versions
     private final ReadWriteLock readWriteLock;
@@ -144,7 +146,7 @@ public class VariableServiceImpl implements VariableService
         this.variables = new HashMap<String, VariableReader>();
         this.variableVersions = new ArrayList<VersionedValueList<Object>>();
         this.readWriteLock = new ReentrantReadWriteLock();
-        this.changeCallbacks = new ArrayList<VariableChangeCallback>();
+        this.changeCallbacks = new ArrayList<Set<VariableChangeCallback>>();
         currentVersionNumber = startVersion;
     }
 
@@ -155,7 +157,22 @@ public class VariableServiceImpl implements VariableService
 
     public void registerCallback(int variableNumber, VariableChangeCallback variableChangeCallback)
     {
-        changeCallbacks.set(variableNumber, variableChangeCallback);
+        Set<VariableChangeCallback> callbacks = changeCallbacks.get(variableNumber);
+        if (callbacks == null)
+        {
+            callbacks = new CopyOnWriteArraySet<VariableChangeCallback>();
+            changeCallbacks.set(variableNumber, callbacks);
+        }
+        callbacks.add(variableChangeCallback);
+    }
+
+    public void unregisterCallback(int variableNumber, VariableChangeCallback variableChangeCallback)
+    {
+        Set<VariableChangeCallback> callbacks = changeCallbacks.get(variableNumber);
+        if (callbacks != null)
+        {
+            callbacks.remove(variableChangeCallback);
+        }
     }
 
     public synchronized void createNewVariable(String variableName, Class type, Object value, StatementExtensionSvcContext extensionServicesContext)
@@ -294,10 +311,13 @@ public class VariableServiceImpl implements VariableService
             Object oldValue = versions.addValue(newVersion, uncommittedEntry.getValue(), timestamp);
 
             // make a callback that the value changed
-            VariableChangeCallback callback = changeCallbacks.get(uncommittedEntry.getKey());
-            if (callback != null)
+            Set<VariableChangeCallback> callbacks = changeCallbacks.get(uncommittedEntry.getKey());
+            if (callbacks != null)
             {
-                callback.update(uncommittedEntry.getValue(), oldValue);
+                for (VariableChangeCallback callback : callbacks)
+                {
+                    callback.update(uncommittedEntry.getValue(), oldValue);
+                }
             }
 
             // Check current state - see if the variable exists in the state handler

@@ -90,6 +90,7 @@ public class EPStatementStartMethod
      * @return a viewable to attach to for listening to events, and a stop method to invoke to clean up
      * @param isNewStatement indicator whether the statement is new or a stop-restart statement
      * @param isRecoveringStatement true to indicate the statement is in the process of being recovered
+     * @param isRecoveringResilient true to indicate the statement is in the process of being recovered and that statement is resilient
      * @throws ExprValidationException when the expression validation fails
      * @throws ViewProcessingException when views cannot be started
      */
@@ -587,8 +588,15 @@ public class EPStatementStartMethod
             throw new ExprValidationException("Cannot create variable: " + ex.getMessage());
         }
 
-        CreateVariableView createView = new CreateVariableView(services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName(), statementContext.getStatementResultService());
-        services.getVariableService().registerCallback(services.getVariableService().getReader(createDesc.getVariableName()).getVariableNumber(), createView);
+        final CreateVariableView createView = new CreateVariableView(services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName(), statementContext.getStatementResultService());
+        final int variableNum = services.getVariableService().getReader(createDesc.getVariableName()).getVariableNumber();
+        services.getVariableService().registerCallback(variableNum, createView);
+        statementContext.getStatementStopService().addSubscriber(new StatementStopCallback() {
+            public void statementStopped()
+            {
+                services.getVariableService().unregisterCallback(variableNum, createView);
+            }
+        });
 
         // Create result set processor, use wildcard selection
         statementSpec.getSelectClauseSpec().getSelectExprList().clear();
