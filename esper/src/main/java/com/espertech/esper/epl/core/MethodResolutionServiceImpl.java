@@ -192,4 +192,9 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
     {
         return 0;   // since the aggregators are always fresh ones 
     }
+
+    public void removeAggregators(MultiKeyUntyped groupKey)
+    {
+        // To be overridden by implementations that care when aggregators get removed
+    }
 }

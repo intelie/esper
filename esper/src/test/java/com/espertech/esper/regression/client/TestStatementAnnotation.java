@@ -34,19 +34,19 @@ public class TestStatementAnnotation extends TestCase
         epService.getEPAdministrator().getConfiguration().addImport("com.espertech.esper.regression.client.*");
 
         tryInvalid("@MyAnnotationNested(nestableSimple=@MyAnnotationNestableSimple, nestableValues=@MyAnnotationNestableValues, nestableNestable=@MyAnnotationNestableNestable) select * from Bean", false,
-                   "Failed to process statement annotations: Annotation 'MyAnnotationNestableValues' requires a value for attribute 'arr' [@MyAnnotationNested(nestableSimple=@MyAnnotationNestableSimple, nestableValues=@MyAnnotationNestableValues, nestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
+                   "Failed to process statement annotations: Annotation 'MyAnnotationNestableNestable' requires a value for attribute 'value' [@MyAnnotationNested(nestableSimple=@MyAnnotationNestableSimple, nestableValues=@MyAnnotationNestableValues, nestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
 
-        tryInvalid("@MyAnnotationNested(nestableSimple=1) select * from Bean", false,
-                   "Failed to process statement annotations: Annotation 'MyAnnotationNested' requires a MyAnnotationNestableSimple-typed value for attribute 'nestableSimple' but received a Integer-typed value [@MyAnnotationNested(nestableSimple=1) select * from Bean]");
+        tryInvalid("@MyAnnotationNested(nestableNestable=@MyAnnotationNestableNestable('A'), nestableSimple=1) select * from Bean", false,
+                   "Failed to process statement annotations: Annotation 'MyAnnotationNested' requires a MyAnnotationNestableSimple-typed value for attribute 'nestableSimple' but received a Integer-typed value [@MyAnnotationNested(nestableNestable=@MyAnnotationNestableNestable('A'), nestableSimple=1) select * from Bean]");
 
         tryInvalid("@MyAnnotationValuePair(stringVal='abc') select * from Bean", false,
-                   "Failed to process statement annotations: Annotation 'MyAnnotationValuePair' requires a value for attribute 'intVal' [@MyAnnotationValuePair(stringVal='abc') select * from Bean]");
+                   "Failed to process statement annotations: Annotation 'MyAnnotationValuePair' requires a value for attribute 'booleanVal' [@MyAnnotationValuePair(stringVal='abc') select * from Bean]");
 
         tryInvalid("MyAnnotationValueArray(value=5) select * from Bean", true,
                    "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(value=5) select * from Bean]");
 
         tryInvalid("@MyAnnotationValueArray(value=null) select * from Bean", false,
-                   "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'intArray' [@MyAnnotationValueArray(value=null) select * from Bean]");
+                   "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'doubleArray' [@MyAnnotationValueArray(value=null) select * from Bean]");
 
         tryInvalid("@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean", false,
                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'stringArray' [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean]");

@@ -57,7 +57,7 @@ public class AggregationServiceGroupByRefcountedImpl extends AggregationServiceB
 
     public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey, ExprEvaluatorContext exprEvaluatorContext)
     {
-        if (!removedKeys.isEmpty())
+        if (!removedKeys.isEmpty())     // we collect removed keys lazily on the next enter to reduce the chance of empty-group queries creating empty aggregators temporarily
         {
             for (MultiKeyUntyped removedKey : removedKeys)
             {
@@ -97,23 +97,31 @@ public class AggregationServiceGroupByRefcountedImpl extends AggregationServiceB
         AggregationMethodRow row = aggregatorsPerGroup.get(groupByKey);
 
         // The aggregators for this group do not exist, need to create them from the prototypes
+        AggregationMethod[] groupAggregators;
         if (row != null)
         {
-            AggregationMethod[] groupAggregators = row.getMethods();
-            currentAggregatorRow = groupAggregators;
+            groupAggregators = row.getMethods();
+        }
+        else
+        {
+            groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
+            row = new AggregationMethodRow(methodResolutionService.getCurrentRowCount(aggregators) + 1, groupAggregators);
+            aggregatorsPerGroup.put(groupByKey, row);
+        }
+        currentAggregatorRow = groupAggregators;
 
-            // For this row, evaluate sub-expressions, enter result
-            for (int j = 0; j < evaluators.length; j++)
-            {
-                Object columnResult = evaluators[j].evaluate(eventsPerStream, false, exprEvaluatorContext);
-                groupAggregators[j].leave(columnResult);
-            }
+        // For this row, evaluate sub-expressions, enter result
+        for (int j = 0; j < evaluators.length; j++)
+        {
+            Object columnResult = evaluators[j].evaluate(eventsPerStream, false, exprEvaluatorContext);
+            groupAggregators[j].leave(columnResult);
+        }
 
-            row.decreaseRefcount();
-            if (row.getRefcount() <= 0)
-            {
-                removedKeys.add(groupByKey);
-            }
+        row.decreaseRefcount();
+        if (row.getRefcount() <= 0)
+        {
+            removedKeys.add(groupByKey);
+            methodResolutionService.removeAggregators(groupByKey);  // allow persistence to remove keys already
         }
     }
 

@@ -257,6 +257,14 @@ public class AnnotationUtil
 
             props.add(new AnnotationAttribute(methods[i].getName(), methods[i].getReturnType(), methods[i].getDefaultValue()));
         }
+
+        Collections.sort(props, new Comparator<AnnotationAttribute>()
+        {
+            public int compare(AnnotationAttribute o1, AnnotationAttribute o2)
+            {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
         return props;
     }
 }

@@ -151,7 +151,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
 
         EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext, userObject, isolationUnitServices);
-        start(statementId, desc, true, false);
+        start(statementId, desc, true, false, false);
         return desc.getEpStatement();
     }
 
@@ -450,7 +450,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 throw new IllegalStateException("Cannot start statement, statement is in destroyed state");
             }
-            startInternal(statementId, desc, false, false);
+            startInternal(statementId, desc, false, false, false);
         }
         catch (RuntimeException ex)
         {
@@ -469,7 +469,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param isNewStatement indicator whether the statement is new or a stop-restart statement
      * @param isRecoveringStatement if the statement is recovering or new
      */
-    public void start(String statementId, EPStatementDesc desc, boolean isNewStatement, boolean isRecoveringStatement)
+    public void start(String statementId, EPStatementDesc desc, boolean isNewStatement, boolean isRecoveringStatement, boolean isResilient)
     {
         if (log.isDebugEnabled())
         {
@@ -481,7 +481,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         eventProcessingRWLock.acquireWriteLock();
         try
         {
-            startInternal(statementId, desc, isNewStatement, isRecoveringStatement);
+            startInternal(statementId, desc, isNewStatement, isRecoveringStatement, isResilient);
         }
         catch (RuntimeException ex)
         {
@@ -493,7 +493,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
-    private void startInternal(String statementId, EPStatementDesc desc, boolean isNewStatement, boolean isRecoveringStatement)
+    private void startInternal(String statementId, EPStatementDesc desc, boolean isNewStatement, boolean isRecoveringStatement, boolean isResilient)
     {
         if (log.isDebugEnabled())
         {
@@ -515,7 +515,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         Pair<Viewable, EPStatementStopMethod> pair;
         try
         {
-            pair = desc.getStartMethod().start(isNewStatement, isRecoveringStatement);
+            pair = desc.getStartMethod().start(isNewStatement, isRecoveringStatement, isResilient);
         }
         catch (EPStatementException ex)
         {

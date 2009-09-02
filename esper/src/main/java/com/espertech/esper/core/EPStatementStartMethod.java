@@ -93,7 +93,7 @@ public class EPStatementStartMethod
      * @throws ExprValidationException when the expression validation fails
      * @throws ViewProcessingException when views cannot be started
      */
-    public Pair<Viewable, EPStatementStopMethod> start(boolean isNewStatement, boolean isRecoveringStatement)
+    public Pair<Viewable, EPStatementStopMethod> start(boolean isNewStatement, boolean isRecoveringStatement, boolean isRecoveringResilient)
         throws ExprValidationException, ViewProcessingException
     {
         statementContext.getVariableService().setLocalVersion();    // get current version of variables
@@ -116,7 +116,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            return startSelect();
+            return startSelect(isRecoveringResilient);
         }
     }
 
@@ -609,7 +609,7 @@ public class EPStatementStartMethod
         });
     }
 
-    private Pair<Viewable, EPStatementStopMethod> startSelect()
+    private Pair<Viewable, EPStatementStopMethod> startSelect(boolean isRecoveringResilient)
         throws ExprValidationException, ViewProcessingException
     {
         // Determine stream names for each stream - some streams may not have a name given
@@ -874,7 +874,7 @@ public class EPStatementStartMethod
                         eventsInWindow.add(aConsumerView);
                     }
                 }
-                if (!eventsInWindow.isEmpty())
+                if (!eventsInWindow.isEmpty() && !isRecoveringResilient)
                 {
                     EventBean[] newEvents = eventsInWindow.toArray(new EventBean[eventsInWindow.size()]);
                     view.update(newEvents, null);
@@ -888,7 +888,7 @@ public class EPStatementStartMethod
             }
         }
         // last, for aggregation we need to send the current join results to the result set processor
-        if ((hasNamedWindow) && (joinPreloadMethod != null))
+        if ((hasNamedWindow) && (joinPreloadMethod != null) && (!isRecoveringResilient))
         {
             joinPreloadMethod.preloadAggregation(resultSetProcessor);
         }

@@ -164,5 +164,7 @@ public interface MethodResolutionService
      */
     public AggregationMethod[] newAggregators(AggregationMethod[] prototypes, MultiKeyUntyped groupKey);
 
+    public void removeAggregators(MultiKeyUntyped groupKey);
+
     public long getCurrentRowCount(AggregationMethod[] aggregators);
 }
