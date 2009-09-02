@@ -602,6 +602,11 @@ following conditions occurs, whichever occurs first: the data window has collect
 				<synopsis>std:groupby(<emphasis>grouping_expression</emphasis> [, <emphasis>grouping_expression</emphasis> ...])</synopsis>
 
 				<para>
+					The <emphasis>grouping_expression</emphasis> expression(s) return one or more group keys, by which the view creates sub-views for each distinct group key. Note that the expression should not return an unlimited number of values: the grouping expression should not
+					return a time value or otherwise unlimited key. 
+				</para>
+
+				<para>
 					This example computes the total price for the last 5 events per each symbol:
 				</para>
 	

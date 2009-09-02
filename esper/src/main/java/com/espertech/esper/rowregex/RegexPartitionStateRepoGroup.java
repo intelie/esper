@@ -10,8 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Partition-by implementation for partition state.
+ */
 public class RegexPartitionStateRepoGroup implements RegexPartitionStateRepo
 {
+    /**
+     * Empty state collection initial threshold.
+     */
     public final static int INITIAL_COLLECTION_MIN = 100;
 
     private final RegexPartitionStateRandomAccessGetter getter;
@@ -22,6 +28,13 @@ public class RegexPartitionStateRepoGroup implements RegexPartitionStateRepo
     private final ExprEvaluatorContext exprEvaluatorContext;
     private int currentCollectionSize = INITIAL_COLLECTION_MIN;
 
+    /**
+     * Ctor.
+     * @param getter for "prev" function access
+     * @param partitionExpressions expressions for computing group key
+     * @param hasInterval true for interval
+     * @param exprEvaluatorContext context for evaluating expressions
+     */
     public RegexPartitionStateRepoGroup(RegexPartitionStateRandomAccessGetter getter,
                                         List<ExprNode> partitionExpressions,
                                         boolean hasInterval,

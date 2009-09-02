@@ -40,8 +40,12 @@ public class MatchRecognizeDefineItem implements MetaDefItem, Serializable
         return expression;
     }
 
+    /**
+     * Sets the validated expression
+     * @param validated to set
+     */
     public void setExpression(ExprNode validated)
     {
-        this.expression = expression;
+        this.expression = validated;
     }
 }

@@ -155,7 +155,11 @@ EPStatement myTrigger = admin.createEPL("select * from pattern [" +
            <title>Patterns in EPL</title>
            
 			<para>
-				A pattern may appear anywhere in the <literal>from</literal> clause of an EPL statement including joins and subqueries. Patterns may therefore be used in combination with the <literal>where</literal> clause, <literal>group by</literal> clause, <literal>having</literal> clause as well as output rate limiting and <literal>insert into</literal>. In addition, a data window view can be declared onto a pattern.
+				A pattern may appear anywhere in the <literal>from</literal> clause of an EPL statement including joins and subqueries. Patterns may therefore be used in combination with the <literal>where</literal> clause, <literal>group by</literal> clause, <literal>having</literal> clause as well as output rate limiting and <literal>insert into</literal>.
+			</para>
+
+			<para>
+				In addition, a data window view can be declared onto a pattern. A data window declared onto a pattern only serves to retain pattern matches. A data window declared onto a pattern does not limit, cancel, remove or delete intermediate pattern matches of the pattern when pattern matches leave the data window.
 			</para>
 
 			<para>

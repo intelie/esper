@@ -220,6 +220,9 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
         }
     }
 
+    /**
+     * Remove all statements from isolated services, such as upon destroy.
+     */
     public void removeAllStatements()
     {
         List<EPStatement> statements = new ArrayList<EPStatement>();

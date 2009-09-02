@@ -13,6 +13,9 @@ import com.espertech.esper.rowregex.RegexNFATypeEnum;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Atom in a regex expression tree.
+ */
 public class RowRegexExprNodeAtom extends RowRegexExprNode
 {
     private static final Log log = LogFactory.getLog(RowRegexExprNodeAtom.class);
@@ -21,15 +24,28 @@ public class RowRegexExprNodeAtom extends RowRegexExprNode
     private final RegexNFATypeEnum type;
     private static final long serialVersionUID = -4844175686289523214L;
 
+    /**
+     * Ctor.
+     * @param tag variable name
+     * @param type multiplicity and greedy indicator
+     */
     public RowRegexExprNodeAtom(String tag, RegexNFATypeEnum type) {
         this.tag = tag;
         this.type = type;
     }
 
+    /**
+     * Returns the variable name.
+     * @return variable
+     */
     public String getTag() {
         return tag;
     }
 
+    /**
+     * Returns multiplicity and greedy indicator.
+     * @return type
+     */
     public RegexNFATypeEnum getType() {
         return type;
     }

@@ -15,8 +15,8 @@ public class TypeWidenerFactory
      * @param columnType type of column
      * @param writeablePropertyType property type
      * @param writeablePropertyName propery name
-     * @return
-     * @throws ExprValidationException
+     * @return type widender
+     * @throws ExprValidationException if type validation fails
      */
     public static TypeWidener getCheckPropertyAssignType(String columnName, Class columnType, Class writeablePropertyType, String writeablePropertyName)
             throws ExprValidationException

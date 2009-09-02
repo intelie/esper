@@ -136,6 +136,7 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
         }
         else if (afterTimePeriod != null)
         {
+            isAfterConditionSatisfied = false;
             Object result = afterTimePeriod.evaluate(null, true, statementContext);
             if (result == null)
             {
@@ -155,6 +156,7 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
 
     /**
      * Returns true if the after-condition is satisfied.
+     * @param newEvents is the view new events
      * @return indicator for output condition
      */
     public boolean checkAfterCondition(EventBean[] newEvents)
@@ -162,11 +164,21 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
         return isAfterConditionSatisfied || checkAfterCondition(newEvents == null ? 0 : newEvents.length);
     }
 
+    /**
+     * Returns true if the after-condition is satisfied.
+     * @param newEvents is the join new events
+     * @return indicator for output condition
+     */
     public boolean checkAfterCondition(Set<MultiKey<EventBean>> newEvents)
     {
         return isAfterConditionSatisfied || checkAfterCondition(newEvents == null ? 0 : newEvents.size());
     }
 
+    /**
+     * Returns true if the after-condition is satisfied.
+     * @param newOldEvents is the new and old events pair
+     * @return indicator for output condition
+     */
     public boolean checkAfterCondition(UniformPair<EventBean[]> newOldEvents)
     {
         return isAfterConditionSatisfied || checkAfterCondition(newOldEvents == null ? 0 : (newOldEvents.getFirst() == null ? 0 : newOldEvents.getFirst().length));

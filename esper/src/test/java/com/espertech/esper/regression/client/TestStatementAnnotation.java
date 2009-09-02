@@ -34,7 +34,7 @@ public class TestStatementAnnotation extends TestCase
         epService.getEPAdministrator().getConfiguration().addImport("com.espertech.esper.regression.client.*");
 
         tryInvalid("@MyAnnotationNested(nestableSimple=@MyAnnotationNestableSimple, nestableValues=@MyAnnotationNestableValues, nestableNestable=@MyAnnotationNestableNestable) select * from Bean", false,
-                   "Failed to process statement annotations: Annotation 'MyAnnotationNestableValues' requires a value for attribute 'val' [@MyAnnotationNested(nestableSimple=@MyAnnotationNestableSimple, nestableValues=@MyAnnotationNestableValues, nestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
+                   "Failed to process statement annotations: Annotation 'MyAnnotationNestableValues' requires a value for attribute 'arr' [@MyAnnotationNested(nestableSimple=@MyAnnotationNestableSimple, nestableValues=@MyAnnotationNestableValues, nestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
 
         tryInvalid("@MyAnnotationNested(nestableSimple=1) select * from Bean", false,
                    "Failed to process statement annotations: Annotation 'MyAnnotationNested' requires a MyAnnotationNestableSimple-typed value for attribute 'nestableSimple' but received a Integer-typed value [@MyAnnotationNested(nestableSimple=1) select * from Bean]");
@@ -46,7 +46,7 @@ public class TestStatementAnnotation extends TestCase
                    "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(value=5) select * from Bean]");
 
         tryInvalid("@MyAnnotationValueArray(value=null) select * from Bean", false,
-                   "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'value' [@MyAnnotationValueArray(value=null) select * from Bean]");
+                   "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'intArray' [@MyAnnotationValueArray(value=null) select * from Bean]");
 
         tryInvalid("@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean", false,
                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'stringArray' [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean]");
@@ -73,6 +73,11 @@ public class TestStatementAnnotation extends TestCase
                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'value' but received a String-typed value [@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean]");
         tryInvalid("@MyAnnotationValueEnum(a.b.CC) select * from Bean", false,
                    "Annotation enumeration value 'a.b.CC' not recognized as an enumeration class, please check imports or type used [@MyAnnotationValueEnum(a.b.CC) select * from Bean]");
+
+        tryInvalid("@Hint('XXX') select * from Bean", false,
+                   "Failed to process statement annotations: Hint annotation value 'XXX' is not one of the known values [@Hint('XXX') select * from Bean]");
+        tryInvalid("@Hint('ITERATE_ONLY,XYZ') select * from Bean", false,
+                   "Failed to process statement annotations: Hint annotation value 'XYZ' is not one of the known values [@Hint('ITERATE_ONLY,XYZ') select * from Bean]");
     }
 
     private void tryInvalid(String stmtText, boolean isSyntax, String message)
@@ -109,6 +114,11 @@ public class TestStatementAnnotation extends TestCase
         stmtText = "@" + Name.class.getName() + "('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") every Bean";
         stmt = epService.getEPAdministrator().createPattern(stmtText);
         runAssertion(stmt);
+
+        epService.getEPAdministrator().createEPL("@Hint('ITERATE_ONLY') select * from Bean");
+        epService.getEPAdministrator().createEPL("@Hint('ITERATE_ONLY,DISABLE_RECLAIM_GROUP') select * from Bean");
+        epService.getEPAdministrator().createEPL("@Hint('ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') select * from Bean");
+        epService.getEPAdministrator().createEPL("@Hint('  iterate_only ') select * from Bean");
     }
 
     private void runAssertion(EPStatement stmt)

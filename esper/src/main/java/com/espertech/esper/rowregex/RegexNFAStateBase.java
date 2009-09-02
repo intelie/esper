@@ -40,6 +40,10 @@ public abstract class RegexNFAStateBase implements RegexNFAState
         return nodeNumFlat;
     }
 
+    /**
+     * Assign a node number.
+     * @param nodeNumFlat flat number
+     */
     public void setNodeNumFlat(int nodeNumFlat)
     {
         this.nodeNumFlat = nodeNumFlat;
@@ -54,6 +58,10 @@ public abstract class RegexNFAStateBase implements RegexNFAState
         return nextStates;
     }
 
+    /**
+     * Add a next state.
+     * @param next state to add
+     */
     public void addState(RegexNFAState next)
     {
         nextStates.add(next);

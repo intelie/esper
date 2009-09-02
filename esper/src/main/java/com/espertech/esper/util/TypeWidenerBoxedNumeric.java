@@ -1,5 +1,8 @@
 package com.espertech.esper.util;
 
+/**
+ * Widerner that coerces to a widened boxed number.
+ */
 public class TypeWidenerBoxedNumeric implements TypeWidener
 {
     private final SimpleNumberCoercer coercer;

@@ -17,11 +17,17 @@ import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Concatenation of atoms in a regular expression tree.
+ */
 public class RowRegexExprNodeConcatenation extends RowRegexExprNode
 {
     private static final Log log = LogFactory.getLog(RowRegexExprNodeConcatenation.class);
     private static final long serialVersionUID = 2450243642083341825L;
 
+    /**
+     * Ctor.
+     */
     public RowRegexExprNodeConcatenation()
     {        
     }

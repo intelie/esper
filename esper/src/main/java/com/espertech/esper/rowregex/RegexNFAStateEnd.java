@@ -6,8 +6,14 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import java.util.List;
 import java.util.Collections;
 
+/**
+ * End state in the regex NFA states.
+ */
 public class RegexNFAStateEnd extends RegexNFAStateBase
 {
+    /**
+     * Ctor.
+     */
     public RegexNFAStateEnd() {
         super("endstate", null, -1, false, null);
     }

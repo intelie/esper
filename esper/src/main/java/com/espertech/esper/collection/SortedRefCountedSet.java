@@ -18,6 +18,7 @@ import java.util.TreeMap;
 public class SortedRefCountedSet<K>
 {
     private TreeMap<K, Integer> refSet;
+    private long countPoints;
 
     /**
      * Constructor.
@@ -25,6 +26,7 @@ public class SortedRefCountedSet<K>
     public SortedRefCountedSet()
     {
         refSet = new TreeMap<K, Integer>();
+        countPoints = 0;
     }
 
     /**
@@ -33,6 +35,7 @@ public class SortedRefCountedSet<K>
     public void clear()
     {
         refSet.clear();
+        countPoints = 0;
     }
 
     /**
@@ -51,6 +54,7 @@ public class SortedRefCountedSet<K>
 
         value++;
         refSet.put(key, value);
+        countPoints++;
     }
 
     /**
@@ -86,6 +90,7 @@ public class SortedRefCountedSet<K>
             return;
         }
 
+        countPoints--;
         if (value == 1)
         {
             refSet.remove(key);
@@ -120,5 +125,10 @@ public class SortedRefCountedSet<K>
             return null;
         }
         return refSet.firstKey();
+    }
+
+    public long getCountPoints()
+    {
+        return countPoints;
     }
 }

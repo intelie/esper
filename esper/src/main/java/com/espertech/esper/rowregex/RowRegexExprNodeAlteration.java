@@ -8,20 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.rowregex;
 
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.util.MetaDefItem;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Or-condition in a regex expression tree.
+ */
 public class RowRegexExprNodeAlteration extends RowRegexExprNode
 {
     private static final Log log = LogFactory.getLog(RowRegexExprNodeAlteration.class);
     private static final long serialVersionUID = 8383340732689436983L;
 
+    /**
+     * Ctor.
+     */
     public RowRegexExprNodeAlteration()
     {        
     }

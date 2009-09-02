@@ -1,7 +1,7 @@
 package com.espertech.esper.rowregex;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.annotation.Hint;
+import com.espertech.esper.client.annotation.HintEnum;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.agg.AggregationServiceFactory;
@@ -13,14 +13,13 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.MatchRecognizeDefineItem;
 import com.espertech.esper.epl.spec.MatchRecognizeMeasureItem;
 import com.espertech.esper.epl.spec.MatchRecognizeSpec;
-import com.espertech.esper.view.*;
 import com.espertech.esper.util.CollectionUtil;
+import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
 import java.lang.annotation.Annotation;
-import java.io.StringWriter;
+import java.util.*;
 
 /**
  * View factory for match-recognize view.
@@ -56,7 +55,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         EventType parentViewType = viewChain.getEventType();
         this.matchRecognizeSpec = matchRecognizeSpec;
         this.isUnbound = isUnbound;
-        this.isIterateOnly = isIterateOnlyHint(annotations);
+        this.isIterateOnly = HintEnum.ITERATE_ONLY.containedIn(annotations);
 
         // Determine single-row and multiple-row variables
         variablesSingle = new LinkedHashSet<String>();
@@ -367,32 +366,5 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
 
     public EventType getEventType() {
         return rowEventType;
-    }
-
-    private boolean isIterateOnlyHint(Annotation[] annotations)
-    {
-        String hint = null;
-        for (Annotation annotation : annotations)
-        {
-            if (!(annotation instanceof Hint))
-            {
-                continue;
-            }
-            hint = ((Hint) annotation).value();
-        }
-        if (hint == null)
-        {
-            return false;
-        }
-        String[] hints = hint.split(",");
-        boolean isIterateOnly = false;
-        for (int i = 0; i < hints.length; i++)
-        {
-            if (hints[i].trim().toUpperCase().equals("ITERATE_ONLY"))
-            {
-                isIterateOnly = true;
-            }
-        }
-        return isIterateOnly;
     }
 }

@@ -64,7 +64,7 @@ public class UpdateDesc implements MetaDefItem, Serializable
 
     /**
      * Sets the where-clause if defined.
-     * @return where clause to set
+     * @param optionalWhereClause where clause to set or null
      */
     public void setOptionalWhereClause(ExprNode optionalWhereClause) {
         this.optionalWhereClause = optionalWhereClause;

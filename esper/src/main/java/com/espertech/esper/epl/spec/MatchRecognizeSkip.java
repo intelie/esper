@@ -28,6 +28,10 @@ public class MatchRecognizeSkip implements MetaDefItem, Serializable
         return skip;
     }
 
+    /**
+     * Sets the skip value.
+     * @param skip to set
+     */
     public void setSkip(MatchRecognizeSkipEnum skip)
     {
         this.skip = skip;

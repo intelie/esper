@@ -6,6 +6,9 @@ import com.espertech.esper.collection.RollingEventBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * "Prev" state for random access to event history.
+ */
 public class RegexPartitionStateRandomAccessImpl implements RegexPartitionStateRandomAccess
 {
     private final RegexPartitionStateRandomAccessGetter getter;
@@ -13,6 +16,10 @@ public class RegexPartitionStateRandomAccessImpl implements RegexPartitionStateR
     private final RollingEventBuffer newEvents;
     private EventBean[] lastNew;
 
+    /**
+     * Ctor.
+     * @param getter for access
+     */
     public RegexPartitionStateRandomAccessImpl(RegexPartitionStateRandomAccessGetter getter)
     {
         this.getter = getter;
@@ -29,6 +36,10 @@ public class RegexPartitionStateRandomAccessImpl implements RegexPartitionStateR
         }
     }
 
+    /**
+     * Add new event.
+     * @param newEvent to add
+     */
     public void newEventPrepare(EventBean newEvent)
     {
         // Add new event
@@ -51,6 +62,10 @@ public class RegexPartitionStateRandomAccessImpl implements RegexPartitionStateR
         getter.setRandomAccess(this);
     }
 
+    /**
+     * Prepare relative to existing event, for iterating.
+     * @param newEvent to consider for index
+     */
     public void existingEventPrepare(EventBean newEvent)
     {
         if (priorEventMap != null)
@@ -60,7 +75,11 @@ public class RegexPartitionStateRandomAccessImpl implements RegexPartitionStateR
         getter.setRandomAccess(this);
     }
 
-    // Always immediatly preceded by #newEventPrepare
+    /**
+     * Returns a previous event. Always immediatly preceded by #newEventPrepare.
+     * @param assignedRelativeIndex index
+     * @return event
+     */
     public EventBean getPreviousEvent(int assignedRelativeIndex)
     {
         if (lastNew == null)
@@ -70,6 +89,10 @@ public class RegexPartitionStateRandomAccessImpl implements RegexPartitionStateR
         return lastNew[assignedRelativeIndex];
     }
 
+    /**
+     * Remove events.
+     * @param oldEvents to remove
+     */
     public void remove(EventBean[] oldEvents)
     {
         if (oldEvents == null)
@@ -82,6 +105,10 @@ public class RegexPartitionStateRandomAccessImpl implements RegexPartitionStateR
         }
     }
 
+    /**
+     * Remove event.
+     * @param oldEvent to remove
+     */
     public void remove(EventBean oldEvent)
     {
         if (priorEventMap != null)
@@ -90,6 +117,10 @@ public class RegexPartitionStateRandomAccessImpl implements RegexPartitionStateR
         }
     }
 
+    /**
+     * Returns true for empty collection.
+     * @return indicator if empty
+     */
     public boolean isEmpty()
     {
         if (priorEventMap != null)

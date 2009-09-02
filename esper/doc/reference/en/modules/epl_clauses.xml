@@ -501,6 +501,14 @@ is placed here.")]]></programlisting></entry>
 								</entry>
 								<entry><programlisting><![CDATA[@Drop]]></programlisting></entry>
 							</row>
+							<row>
+								<entry>Hint</entry>
+								<entry>
+									<para>For providing one or more hints towards how the engine should execute a statement. Attributes are:</para>
+									<para>value : A comma-separated list of one or more keywords.</para>
+								</entry>
+								<entry><programlisting><![CDATA[@Hint('ITERATE_ONLY')]]></programlisting></entry>
+							</row>
 						</tbody>
 					</tgroup>				
 				</table>
@@ -586,6 +594,22 @@ select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
 					Example:
 				</para>	
 				<programlisting><![CDATA[@Drop select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
+			</sect3>
+
+			<sect3 id="epl-syntax-annotation-hint">
+				<title>@Hint</title>
+				<para>
+					A hint can be used to provide tips for the engine to affect statement execution. Hints change performance or memory-use of a statement but generally do not change its output.
+				</para>
+
+				<para>
+					The string value of a <literal>Hint</literal> annotation contains a keyword or a comma-separated list of multiple keywords. Hint keywords are case-insensitive. A list of hints is available in <xref linkend="perf-tips-15"/>.
+				</para>
+
+				<para>
+					Example:
+				</para>	
+				<programlisting><![CDATA[@Hint('disable_reclaim_group') select ipaddress, count(*) from SecurityFilter.win:time(60 sec) group by ipaddress]]></programlisting>
 			</sect3>
 		</sect2>
     </sect1>
@@ -1191,7 +1215,7 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
         <sect2 id="epl-from-clause-view-spec" >
            <title>Specifying Views</title>
 			<para>
-				Views are used to derive or aggregate data. Views can be staggered onto each other. See the section <xref linkend="epl-views"/> on the views available that also outlines the different types of views: Data Window views and Derived-Value views.
+				Views are used to specify an expiry policy of events (data window views) and also to derive data. Views can be staggered onto each other. See the section <xref linkend="epl-views"/> on the views available that also outlines the different types of views: Data Window views and Derived-Value views.
 			</para>
 						
 			<para>
@@ -1199,16 +1223,27 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 			</para>
 
 			<para>
-				The below example serves to show views and staggering of views. It uses a car location event that contains information about the location of a car on a highway. 
+				The example statement below outputs a count per segment for car location events (contains information about the location of a car on a highway) of the last 60 seconds:
 			</para>
 				
-         <programlisting><![CDATA[select * from CarLocEvent.std:groupby(carId).win:length(4).
-  std:groupby(expressway, direction, segment).std:size()]]></programlisting>
+         <programlisting><![CDATA[select expressway, direction, segment, count(*) from CarLocEvent.win:time(60) 
+group by carId, expressway, direction, segment]]></programlisting>
 
 			<para>
-				The first view <literal>std:groupby(carId)</literal> groups car location events by car id. The second view <literal>win:length(4)</literal> keeps a length window of the 4 last events, with one length window for each car id. The next view <literal>std:groupby(expressway, direction, segment)</literal> groups each event by its expressway, direction and segment property values. Again, the grouping is done for each car id considering the last 4 events only. The last view <literal>std:size()</literal> is used to report the number of events. Thus the below example reports the number of events per car id and per expressway, direction and segment considering the last 4 events for each car id only. 
+				The next example serves to show staggering of views. It uses the <literal>std:groupby</literal> view to create a separate length window per car id:
+			</para>
+				
+         <programlisting><![CDATA[select cardId, expressway, direction, segment, count(*) from CarLocEvent.std:groupby(carId).win:length(4) 
+group by carId, expressway, direction, segment]]></programlisting>
+
+			<para>
+				The first view <literal>std:groupby(carId)</literal> groups car location events by car id. The second view <literal>win:length(4)</literal> keeps a length window of the 4 last events, with one separate length window for each car id. The example reports the number of events per car id and per expressway, direction and segment considering the last 4 events for each car id only. 
 			</para>
 			
+			<para>
+				Note that the <literal>group by</literal> syntax is generally preferable over <literal>std:groupby</literal> for grouping information as it is SQL-compliant, easier to read and does not create a separate data window per group. The <literal>std:groupby</literal> in above example creates a separate data window (length window in the example) per group, demonstrating staggering views.
+			</para>
+
 			<para>
 				When views are staggered onto each other as a chain of views, then the insert and remove stream received by each view is the insert and remove stream made available by the view (or stream) earlier in the chain. 
 			</para>
@@ -1414,7 +1449,7 @@ where symbol='IBM'</programlisting>
 				<para>
 					The syntax of the <literal>group by</literal> clause is:
 				</para>
-				<synopsis>group by <emphasis>arregate_free_expression</emphasis> [, <emphasis>arregate_free_expression</emphasis>] [, ...]</synopsis>
+				<synopsis>group by <emphasis>aggregate_free_expression</emphasis> [, <emphasis>aggregate_free_expression</emphasis>] [, ...]</synopsis>
 			
 				<para>
 					Esper places the following restrictions on expressions in the <literal>group by</literal> clause:
@@ -1429,6 +1464,12 @@ where symbol='IBM'</programlisting>
 					<listitem>
 						<para>
 							Event properties that are used within aggregate functions in the <literal>select</literal> clause cannot also be used in a <literal>group by</literal> expression
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							When grouping an unbound stream, i.e. no data window is specified onto the stream providing groups, or when using output rate limiting with the ALL keyword, you should ensure your group-by expression does not return an unlimited number of values. 
+							If, for example, your group-by expression is a fine-grained timestamp, group state that accumulates for an unlimited number of groups potentially reduces available memory significantly.
 						</para>
 					</listitem>
 				</orderedlist>
@@ -1480,6 +1521,13 @@ group by symbol, tickDataFeed</programlisting>
 					You can use a <literal>where</literal> clause in a statement with <literal>group by</literal>. Events that do not satisfy the conditions in the <literal>where</literal> clause are eliminated before any grouping is done. For example, the statement below posts the number of stock ticks in the last 30 seconds with a volume larger then 100, posting one event per group (symbol).
 				</para>
 				<programlisting>select symbol, count(*) from StockTickEvent.win:time(30 sec) where volume &gt; 100 group by symbol</programlisting>
+
+				<sect4 id="epl-groupby-hints" >
+					 <title>Hints Pertaining to Group-By</title>
+					<para>
+						The Esper engine reclaims aggregation state agressively when it determines that a group has no data points. When your application data creates a large number of groups with a small or zero number of data points then performance may suffer as state is reclaimed and created anew. Esper provides the <literal>@Hint('disable_reclaim_group')</literal> hint that you can specify as part of an EPL statement text to avoid group reclaim.
+					</para>
+				</sect4>
 		</sect2>
 
         <sect2 id="epl-grouping-having" >

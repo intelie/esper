@@ -1,15 +1,13 @@
 package com.espertech.esper.regression.view;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.support.bean.SupportBeanString;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.support.bean.*;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,6 +27,65 @@ public class TestGroupByEventPerGroup extends TestCase
         config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+    }
+
+    public void testNamedWindowDelete()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_B", SupportBean_B.class);
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as select * from SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("on SupportBean_A a delete from MyWindow w where w.string = a.id");
+        epService.getEPAdministrator().createEPL("on SupportBean_B delete from MyWindow");
+
+        String fields[] = "string,mysum".split(",");
+        String viewExpr = "@Hint('DISABLE_RECLAIM_GROUP') select string, sum(intPrimitive) as mysum from MyWindow group by string order by string";
+        selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
+        selectTestView.addListener(listener);
+
+        runAssertion(fields);
+
+        selectTestView.destroy();
+        epService.getEPRuntime().sendEvent(new SupportBean_B("delete"));
+
+        viewExpr = "select string, sum(intPrimitive) as mysum from MyWindow group by string order by string";
+        selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
+        selectTestView.addListener(listener);
+
+        runAssertion(fields);
+    }
+
+    private void runAssertion(String[] fields)
+    {
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 100));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A", 100});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("B", 20));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"B", 20});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 101));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A", 201});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("B", 21));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"B", 41});
+        ArrayAssertionUtil.assertEqualsExactOrder(selectTestView.iterator(), fields, new Object[][] {{"A", 201}, {"B", 41}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A", null});
+        ArrayAssertionUtil.assertEqualsExactOrder(selectTestView.iterator(), fields, new Object[][] {{"B", 41}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 102));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A", 102});
+        ArrayAssertionUtil.assertEqualsExactOrder(selectTestView.iterator(), fields, new Object[][] {{"A", 102}, {"B", 41}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("B"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"B", null});
+        ArrayAssertionUtil.assertEqualsExactOrder(selectTestView.iterator(), fields, new Object[][] {{"A", 102}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("B", 22));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"B", 22});
+        ArrayAssertionUtil.assertEqualsExactOrder(selectTestView.iterator(), fields, new Object[][] {{"A", 102}, {"B", 22}});
     }
 
     public void testAggregateGroupedProps()

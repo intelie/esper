@@ -9,9 +9,11 @@
 package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.annotation.HintEnum;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.*;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -125,6 +127,7 @@ public class AggregationServiceFactory
      * @param hasGroupByClause - indicator on whethere there is group-by required, or group-all
      * @param methodResolutionService - is required to resolve aggregation methods
      * @param exprEvaluatorContext context for expression evaluatiom
+     * @param annotations - statement annotations
      * @return instance for aggregation handling
      */
     public static AggregationService getService(List<ExprAggregateNode> selectAggregateExprNodes,
@@ -132,7 +135,8 @@ public class AggregationServiceFactory
                                                 List<ExprAggregateNode> orderByAggregateExprNodes,
                                                 boolean hasGroupByClause,
                                                 MethodResolutionService methodResolutionService,
-                                                ExprEvaluatorContext exprEvaluatorContext)
+                                                ExprEvaluatorContext exprEvaluatorContext,
+                                                Annotation[] annotations)
     {
         // No aggregates used, we do not need this service
         if ((selectAggregateExprNodes.isEmpty()) && (havingAggregateExprNodes.isEmpty()))
@@ -192,8 +196,15 @@ public class AggregationServiceFactory
         AggregationService service;
         if (hasGroupByClause)
         {
-            // If there is a group-by clause, then we need to keep aggregators as prototypes
-            service = new AggregationServiceGroupByImpl(evaluators, aggregators, methodResolutionService);
+            boolean hasNoReclaim = HintEnum.DISABLE_RECLAIM_GROUP.containedIn(annotations);
+            if (hasNoReclaim)
+            {
+                service = new AggregationServiceGroupByImpl(evaluators, aggregators, methodResolutionService);
+            }
+            else
+            {
+                service = new AggregationServiceGroupByRefcountedImpl(evaluators, aggregators, methodResolutionService);                
+            }
         }
         else
         {

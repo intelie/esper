@@ -31,18 +31,18 @@ public class TestAggregationServiceFactory extends TestCase
     {
         // Test with aggregates but no group by
         selectAggregateNodes.add(SupportExprNodeFactory.makeSumAggregateNode());
-        AggregationService service = AggregationServiceFactory.getService(selectAggregateNodes, havingAggregateNodes, orderByAggregateNodes, false, methodResolutionService, null);
+        AggregationService service = AggregationServiceFactory.getService(selectAggregateNodes, havingAggregateNodes, orderByAggregateNodes, false, methodResolutionService, null, null);
         assertTrue(service instanceof AggregationServiceGroupAllImpl);
 
         // Test with aggregates and group by
-        service = AggregationServiceFactory.getService(selectAggregateNodes, havingAggregateNodes, orderByAggregateNodes, true, methodResolutionService, null);
-        assertTrue(service instanceof AggregationServiceGroupByImpl);
+        service = AggregationServiceFactory.getService(selectAggregateNodes, havingAggregateNodes, orderByAggregateNodes, true, methodResolutionService, null, null);
+        assertTrue(service instanceof AggregationServiceGroupByRefcountedImpl);
     }
 
     public void testGetNullService() throws Exception
     {
         // Test no aggregates and no group-by
-    	AggregationService service = AggregationServiceFactory.getService(selectAggregateNodes,havingAggregateNodes, orderByAggregateNodes, false, methodResolutionService, null);
+    	AggregationService service = AggregationServiceFactory.getService(selectAggregateNodes,havingAggregateNodes, orderByAggregateNodes, false, methodResolutionService, null, null);
     	assertTrue(service instanceof AggregationServiceNull);
     }
 }

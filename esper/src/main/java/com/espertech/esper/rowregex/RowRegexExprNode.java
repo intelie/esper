@@ -15,6 +15,9 @@ import org.apache.commons.logging.LogFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Base node for 
+ */
 public abstract class RowRegexExprNode implements MetaDefItem, Serializable
 {
     private static final Log log = LogFactory.getLog(RowRegexExprNode.class);

@@ -8,11 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.rowregex;
 
-import com.espertech.esper.rowregex.RegexNFATypeEnum;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Nested () regular expression in a regex expression tree.
+ */
 public class RowRegexExprNodeNested extends RowRegexExprNode
 {
     private static final Log log = LogFactory.getLog(RowRegexExprNodeNested.class);
@@ -20,10 +21,18 @@ public class RowRegexExprNodeNested extends RowRegexExprNode
     private final RegexNFATypeEnum type;
     private static final long serialVersionUID = -2079284511194587570L;
 
+    /**
+     * Ctor.
+     * @param type multiplicity and greedy
+     */
     public RowRegexExprNodeNested(RegexNFATypeEnum type) {
         this.type = type;
     }
 
+    /**
+     * Returns multiplicity and greedy.
+     * @return type
+     */
     public RegexNFATypeEnum getType() {
         return type;
     }

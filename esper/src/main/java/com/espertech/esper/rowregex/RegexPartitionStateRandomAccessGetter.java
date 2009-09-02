@@ -86,6 +86,10 @@ public class RegexPartitionStateRandomAccessGetter
         return randomAccess;
     }
 
+    /**
+     * Sets the random access.
+     * @param randomAccess to use
+     */
     public void setRandomAccess(RegexPartitionStateRandomAccess randomAccess)
     {
         this.randomAccess = randomAccess;

@@ -13,11 +13,15 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Average that generates a BigDecimal numbers.
  */
 public class BigDecimalAvgAggregator implements AggregationMethod
 {
+    private static final Log log = LogFactory.getLog(BigDecimalAvgAggregator.class);
     private BigDecimal sum;
     private long numDataPoints;
 
@@ -71,7 +75,15 @@ public class BigDecimalAvgAggregator implements AggregationMethod
         {
             return null;
         }
-        return sum.divide(new BigDecimal(numDataPoints));
+        try
+        {
+            return sum.divide(new BigDecimal(numDataPoints));
+        }
+        catch (ArithmeticException ex)
+        {
+            log.error("Error computing avg aggregation result: " + ex.getMessage(), ex);
+            return new BigDecimal(0);
+        }
     }
 
     public Class getValueType()

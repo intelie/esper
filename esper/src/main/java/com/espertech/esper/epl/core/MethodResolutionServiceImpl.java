@@ -187,4 +187,9 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         }
         return row;
     }
+
+    public long getCurrentRowCount(AggregationMethod[] aggregators)
+    {
+        return 0;   // since the aggregators are always fresh ones 
+    }
 }

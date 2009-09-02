@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Service to maintain currently active isoalted service providers for an engine.
+ */
 public class StatementIsolationServiceImpl implements StatementIsolationService
 {
     private static final Log log = LogFactory.getLog(StatementIsolationServiceImpl.class);
@@ -21,11 +24,18 @@ public class StatementIsolationServiceImpl implements StatementIsolationService
     private EPServicesContext epServicesContext;
     private volatile int currentUnitId = 0;
 
+    /**
+     * Ctor.
+     */
     public StatementIsolationServiceImpl()
     {
         isolatedProviders = new ConcurrentHashMap<String, EPServiceProviderIsolatedImpl>();
     }
 
+    /**
+     * Set the engine service context.
+     * @param epServicesContext services context
+     */
     public void setEpServicesContext(EPServicesContext epServicesContext)
     {
         this.epServicesContext = epServicesContext;
