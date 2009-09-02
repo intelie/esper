@@ -507,6 +507,47 @@ match_recognize (
 			<para>
 				Please find examples of singleton and group variables and example <literal>measures</literal> clauses below.
 			</para>
+
+			<sect3 id="match-recognize-patternops-singletonvars-aggfunc">
+				<title>Additional Aggregation Functions</title>
+				
+					<para>
+						For group variables all existing aggregation functions can be used and in addition the following aggregation functions may be used:
+					</para>
+				
+					<table frame="topbot" id="match-recognize-patternops-singletonvars-aggfunc-table" revision="2">
+						<title>Syntax and results of aggregate functions</title>
+						<tgroup cols="2">
+							<colspec colwidth="1*"/>
+							<colspec colwidth="2.0*"/>
+							<thead>
+								<row>
+									<entry>Aggregate Function</entry>
+									<entry>Result</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry>first([all|distinct] <emphasis>expression</emphasis>)</entry>
+									<entry>
+										<para>
+											Returns the first value.
+										</para>
+									</entry>
+								</row>
+								<row>
+									<entry>last([all|distinct] <emphasis>expression</emphasis>)</entry>
+									<entry>
+										<para>
+											Returns the last value.
+										</para>
+									</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+			</sect3>
+			
 		</sect2>
 
 		<sect2 id="match-recognize-patternops-iterator">

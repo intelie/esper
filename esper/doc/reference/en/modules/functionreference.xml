@@ -601,22 +601,6 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						</entry>
 					</row>
 					<row>
-						<entry>first([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Returns the first value.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>last([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Returns the last value.
-							</para>
-						</entry>
-					</row>
-					<row>
 						<entry>max([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
