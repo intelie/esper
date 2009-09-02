@@ -609,7 +609,8 @@ select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
 				<para>
 					Example:
 				</para>	
-				<programlisting><![CDATA[@Hint('disable_reclaim_group') select ipaddress, count(*) from SecurityFilter.win:time(60 sec) group by ipaddress]]></programlisting>
+				<programlisting><![CDATA[@Hint('disable_reclaim_group') 
+select ipaddress, count(*) from SecurityFilter.win:time(60 sec) group by ipaddress]]></programlisting>
 			</sect3>
 		</sect2>
     </sect1>
@@ -1215,25 +1216,26 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
         <sect2 id="epl-from-clause-view-spec" >
            <title>Specifying Views</title>
 			<para>
-				Views are used to specify an expiry policy of events (data window views) and also to derive data. Views can be staggered onto each other. See the section <xref linkend="epl-views"/> on the views available that also outlines the different types of views: Data Window views and Derived-Value views.
+				Views are used to specify an expiry policy for events (data window views) and also to derive data. Views can be staggered onto each other. See the section <xref linkend="epl-views"/> on the views available that also outlines the different types of views: Data Window views and Derived-Value views.
 			</para>
 						
 			<para>
-				Views can optionally take one or more parameters. These parameters are expressions themselves that may consists of any combination of variables, arithmatics, user-define function or substituion parameters for prepared statements, as example.
+				Views can optionally take one or more parameters. These parameters are expressions themselves that may consist of any combination of variables, arithmetic, user-defined function or substitution parameters for prepared statements, for example.
 			</para>
 
 			<para>
-				The example statement below outputs a count per segment for car location events (contains information about the location of a car on a highway) of the last 60 seconds:
+				The example statement below outputs a count per expressway for car location events (contains information about the location of a car on a highway) of the last 60 seconds:
 			</para>
 				
-         <programlisting><![CDATA[select expressway, direction, segment, count(*) from CarLocEvent.win:time(60) 
-group by carId, expressway, direction, segment]]></programlisting>
+         <programlisting><![CDATA[select expressway, count(*) from CarLocEvent.win:time(60) 
+group by expressway]]></programlisting>
 
 			<para>
 				The next example serves to show staggering of views. It uses the <literal>std:groupby</literal> view to create a separate length window per car id:
 			</para>
 				
-         <programlisting><![CDATA[select cardId, expressway, direction, segment, count(*) from CarLocEvent.std:groupby(carId).win:length(4) 
+         <programlisting><![CDATA[select cardId, expressway, direction, segment, count(*) 
+from CarLocEvent.std:groupby(carId).win:length(4) 
 group by carId, expressway, direction, segment]]></programlisting>
 
 			<para>
