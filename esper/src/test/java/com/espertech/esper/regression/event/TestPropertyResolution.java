@@ -35,6 +35,11 @@ public class TestPropertyResolution extends TestCase
         eventBean = listener.assertOneGetNewAndReset();
         assertEquals(1, eventBean.get("seconds"));
         assertEquals(2, eventBean.get("order"));
+
+        // ESPER-390
+        //stmt.destroy();
+        //stmt = epService.getEPAdministrator().createEPL("select `timestamp.hour` from SomeKeywords");
+        //stmt.addListener(listener);
     }
 
     public void testWriteOnly()

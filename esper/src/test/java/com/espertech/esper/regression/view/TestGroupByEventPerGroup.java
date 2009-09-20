@@ -56,6 +56,36 @@ public class TestGroupByEventPerGroup extends TestCase
         runAssertion(fields);
     }
 
+    public void testUnboundStreamUnlimitedKey()
+    {
+        // Test long-running
+        // Test variable
+        // Test invalid cases: variable type, double type, null+negative value
+        // Test variable changing
+
+        // TODO
+        // ESPER-396 Unbound stream and aggregating/grouping by unlimited key (i.e. timestamp) configurable state drop
+        sendTimer(0);
+        // After the oldest group is 60 second old, reclaim group older then  30 seconds
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("@Hint('reclaim_group_aged=30,reclaim_group_frequency=30') select longPrimitive, count(*) from SupportBean group by longPrimitive");
+
+        // 2.5 minute loop
+        for (int i = 0; i < 150; i++)
+        {
+            sendTimer(i * 1000);
+            SupportBean event = new SupportBean();
+            event.setLongPrimitive(i * 1000);
+            epService.getEPRuntime().sendEvent(event);
+        }
+
+        SupportBean event = new SupportBean();
+        event.setLongPrimitive(200 * 1000);
+        epService.getEPRuntime().sendEvent(event);
+
+        epService.getEPAdministrator().createEPL("@Hint('reclaim_group_aged=30') select longPrimitive, count(*) from SupportBean group by longPrimitive");
+    }
+
     private void runAssertion(String[] fields)
     {
         epService.getEPRuntime().sendEvent(new SupportBean("A", 100));
