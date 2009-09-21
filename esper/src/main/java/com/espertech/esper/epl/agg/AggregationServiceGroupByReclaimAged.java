@@ -21,6 +21,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.variable.VariableChangeCallback;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.type.DoubleValue;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.StatementStopCallback;
@@ -89,8 +90,8 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
         String hintValueFrequency = HintEnum.RECLAIM_GROUP_FREQ.getHintAssignedValue(reclaimGroupAged);
         if ((reclaimGroupFrequency == null) || (hintValueFrequency == null))
         {
+            evaluationFunctionFrequency = evaluationFunctionMaxAge;
             currentReclaimFrequency = getReclaimFrequency(currentReclaimFrequency);
-            evaluationFunctionFrequency = evaluationFunctionMaxAge; 
         }
         else
         {
@@ -113,7 +114,7 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
             {
                 public void update(Object newValue, Object oldValue)
                 {
-                    nextSweepTime = null;
+                    AggregationServiceGroupByReclaimAged.this.nextSweepTime = null;
                 }
             };
             variableService.registerCallback(variableReader.getVariableNumber(), changeCallback);
@@ -158,9 +159,9 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
         {
             currentMaxAge = getMaxAge(currentMaxAge);
             currentReclaimFrequency = getReclaimFrequency(currentReclaimFrequency);
-            if (log.isDebugEnabled())
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
             {
-                log.debug("Reclaiming groups older then " + currentMaxAge + " msec and every " + currentReclaimFrequency + " frequency");
+                log.debug("Reclaiming groups older then " + currentMaxAge + " msec and every " + currentReclaimFrequency + "msec in frequency");
             }
             nextSweepTime = currentTime + currentReclaimFrequency;
             sweep(currentTime, currentMaxAge);
@@ -208,7 +209,7 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
         for (Map.Entry<MultiKeyUntyped, AggregationMethodRowAged> entry : aggregatorsPerGroup.entrySet())
         {
             long age = currentTime - entry.getValue().getLastUpdateTime();
-            if (age >= currentMaxAge)
+            if (age > currentMaxAge)
             {
                 removed.add(entry.getKey());
             }
@@ -222,7 +223,7 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
 
     private long getMaxAge(long currentMaxAge)
     {
-        Double maxAge = evaluationFunctionMaxAge.getMaxAge();
+        Double maxAge = evaluationFunctionMaxAge.getLongValue();
         if ((maxAge == null) || (maxAge <= 0))
         {
             return currentMaxAge;
@@ -232,7 +233,7 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
 
     private long getReclaimFrequency(long currentReclaimFrequency)
     {
-        Double frequency = evaluationFunctionMaxAge.getMaxAge();
+        Double frequency = evaluationFunctionFrequency.getLongValue();
         if ((frequency == null) || (frequency <= 0))
         {
             return currentReclaimFrequency;
@@ -301,21 +302,21 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
 
     private static interface EvaluationFunction
     {
-        public Double getMaxAge();
+        public Double getLongValue();
     }
 
     private static class EvaluationFunctionConstant implements EvaluationFunction
     {
-        private final double maxAge;
+        private final double longValue;
 
-        private EvaluationFunctionConstant(double maxAge)
+        private EvaluationFunctionConstant(double longValue)
         {
-            this.maxAge = maxAge;
+            this.longValue = longValue;
         }
 
-        public Double getMaxAge()
+        public Double getLongValue()
         {
-            return maxAge;
+            return longValue;
         }
     }
 
@@ -328,7 +329,7 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
             this.variableReader = variableReader;
         }
 
-        public Double getMaxAge()
+        public Double getLongValue()
         {
             Object val = variableReader.getValue();
             if ((val != null) && (val instanceof Number))

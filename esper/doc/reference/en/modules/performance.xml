@@ -407,6 +407,10 @@ config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(fal
 			</para>
 
 			<para>
+				The hint for use with <literal>group by</literal> to specify aggregation state reclaim for unbound streams and timestamp groups is described in <xref linkend="epl-groupby-hints"/>.
+			</para>
+
+			<para>
 				The hint for use with <literal>match_recognize</literal> to specify iterate-only is described in <xref linkend="match-recognize-patternops-iterator"/>.
 			</para>
 		</sect2>

@@ -1470,8 +1470,8 @@ where symbol='IBM'</programlisting>
 					</listitem>
 					<listitem>
 						<para>
-							When grouping an unbound stream, i.e. no data window is specified onto the stream providing groups, or when using output rate limiting with the ALL keyword, you should ensure your group-by expression does not return an unlimited number of values. 
-							If, for example, your group-by expression is a fine-grained timestamp, group state that accumulates for an unlimited number of groups potentially reduces available memory significantly.
+							When grouping an unbound stream, i.e. no data window is specified onto the stream providing groups, or when using output rate limiting with the ALL keyword, you should ensure your group-by expression does not return an unlimited number of values. If, for example, your group-by expression is a fine-grained timestamp, group state that accumulates for an unlimited number of groups potentially reduces available memory significantly.
+							Use a @Hint as described below to instruct the engine when to discard group state.
 						</para>
 					</listitem>
 				</orderedlist>
@@ -1527,8 +1527,51 @@ group by symbol, tickDataFeed</programlisting>
 				<sect4 id="epl-groupby-hints" >
 					 <title>Hints Pertaining to Group-By</title>
 					<para>
-						The Esper engine reclaims aggregation state agressively when it determines that a group has no data points. When your application data creates a large number of groups with a small or zero number of data points then performance may suffer as state is reclaimed and created anew. Esper provides the <literal>@Hint('disable_reclaim_group')</literal> hint that you can specify as part of an EPL statement text to avoid group reclaim.
+						The Esper engine reclaims aggregation state agressively when it determines that a group has no data points, based on the data in the data windows. When your application data creates a large number of groups with a small or zero number of data points then performance may suffer as state is reclaimed and created anew. Esper provides the <literal>@Hint('disable_reclaim_group')</literal> hint that you can specify as part of an EPL statement text to avoid group reclaim.
 					</para>
+
+					<para>
+						When aggregating values over an unbound stream (i.e. no data window is specified onto the stream) and when your group-by expression returns an unlimited number of values, for example when a timestamp expression is used, 
+						then please note the next hint.  
+					</para>
+					
+					<para>
+						A sample statement that aggregates stock tick events by timestamp, assuming the event type offers a property by name <literal>timestamp</literal> that, reflects time in high resolution, for example arrival or system time:
+					</para>
+					<programlisting>// Note the below statement could lead to an out-of-memory problem:
+select symbol, sum(price) from StockTickEvent group by timestamp</programlisting>
+					
+					<para>
+						As the engine has no means of detecting when aggregation state (sums per symbol) can be discarded, you may use the following hints to control aggregation state lifetime.
+					</para>
+					
+					<para>
+						The @Hint("<literal>reclaim_group_aged=</literal><emphasis>age_in_seconds</emphasis>") hint instructs the engine to discard aggregation state that has not been 
+						updated for <emphasis>age_in_seconds</emphasis> seconds. 
+					</para>
+					
+					<para>
+						The optional @Hint("<literal>reclaim_group_freq=</literal><emphasis>sweep_frequency_in_seconds</emphasis>") can be used in addition to control the frequency at which the engine sweeps aggregation 
+						state to determine aggregation state age and remove state that is older then <emphasis>age_in_seconds</emphasis> seconds.
+						If the hint is not specified, the frequency defaults to the same value as <emphasis>age_in_seconds</emphasis>.
+					</para>
+
+					<para>
+						The updated sample statement with both hints:
+					</para>
+					<programlisting>// Instruct engine to remove state older then 10 seconds and sweep every 5 seconds
+@Hint('reclaim_group_aged=10,reclaim_group_freq=5')
+select symbol, sum(price) from StockTickEvent group by timestamp</programlisting>
+
+					<para>
+						Variables may also be used to provide values for <emphasis>age_in_seconds</emphasis> and <emphasis>sweep_frequency_in_seconds</emphasis>. 
+					</para>
+
+					<para>
+						This example statement uses a variable named <literal>varAge</literal> to control how long aggregation state remains in memory, and the engine defaults the sweep frequency to the same value as the variable provides:
+					</para>
+					<programlisting>@Hint('reclaim_group_aged=varAge')
+select symbol, sum(price) from StockTickEvent group by timestamp</programlisting>
 				</sect4>
 		</sect2>
 
