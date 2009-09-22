@@ -91,18 +91,35 @@ public class TestSelectExpr extends TestCase
         assertEquals("A\'B", stmt.getName());
         Description desc = (Description) stmt.getAnnotations()[1];
         assertEquals("A\"B", desc.value());
-
         stmt.destroy();
+
         stmt = epService.getEPAdministrator().createEPL("select 'volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
         stmt.addListener(testListener);
         epService.getEPRuntime().sendEvent(new SupportBean());
-        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), new String[] {"field1", "field2", "unicodeA"}, new Object[] {"volume", "sleep", "A"});        
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), new String[] {"field1", "field2", "unicodeA"}, new Object[] {"volume", "sleep", "A"});
+        stmt.destroy();
+
+        tryStatementMatch("John's", "select * from SupportBean(string='John\\'s')");
+        tryStatementMatch("John's", "select * from SupportBean(string='John\\u0027s')");
+        tryStatementMatch("Quote \"Hello\"", "select * from SupportBean(string like \"Quote \\\"Hello\\\"\")");
+        tryStatementMatch("Quote \"Hello\"", "select * from SupportBean(string like \"Quote \\u0022Hello\\u0022\")");
     }
 
     private void tryEscapeMatch(String property, String escaped)
     {
         String epl = "select * from SupportBean(string=" + escaped + ")";
         String text = "trying >" + escaped + "< (" + escaped.length() + " chars) EPL " + epl;
+        log.info("tryEscapeMatch for " + text);
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(testListener);
+        epService.getEPRuntime().sendEvent(new SupportBean(property, 1));
+        assertEquals(testListener.assertOneGetNewAndReset().get("intPrimitive"), 1);
+        stmt.destroy();
+    }
+
+    private void tryStatementMatch(String property, String epl)
+    {
+        String text = "trying EPL " + epl;
         log.info("tryEscapeMatch for " + text);
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(testListener);

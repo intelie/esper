@@ -39,7 +39,7 @@ public class TestLikeRegexpExpr extends TestCase
 
     public void testLikeRegexEscapedChar()
     {
-        String caseExpr = "select p00 regexp '\\w*-ABC' as result from " + SupportBean_S0.class.getName();
+        String caseExpr = "select p00 regexp '\\\\w*-ABC' as result from " + SupportBean_S0.class.getName();
 
         EPStatement selectTestCase = epService.getEPAdministrator().createEPL(caseExpr);
         selectTestCase.addListener(testListener);

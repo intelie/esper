@@ -199,24 +199,24 @@ select `insert` from `Order`]]></programlisting>
 			<para>
 				The sample EPL below escapes the single quote in the string constant <literal>John's</literal>, and filters out order events where the name value matches:
 			</para>
-			<programlisting><![CDATA[select * from Order(name='John\'s')
+			<programlisting><![CDATA[select * from OrderEvent(name='John\'s')
 // ...equivalent to...
-select * from Order(name='John\u0027s')]]></programlisting>
+select * from OrderEvent(name='John\u0027s')]]></programlisting>
 
 			<para>
 				The next EPL escapes the string constant <literal>Quote "Hello"</literal>:
 			</para>
-			<programlisting><![CDATA[select * from Order(description like "Quote \"Hello\"")
+			<programlisting><![CDATA[select * from OrderEvent(description like "Quote \"Hello\"")
 // is equivalent to
-select * from Order(description like "Quote \u0022Hello\u0022")]]></programlisting>
+select * from OrderEvent(description like "Quote \u0022Hello\u0022")]]></programlisting>
 
 			<para>
 				When building an escape string via the API, escape the backslash, as shown in below code snippet:
 			</para>
-			<programlisting><![CDATA[epService.getEPAdministrator().createEPL("select * from Order(name='John\\'s')");
+			<programlisting><![CDATA[epService.getEPAdministrator().createEPL("select * from OrderEvent(name='John\\'s')");
 // ... and for double quotes...
-epService.getEPAdministrator().createEPL("select * from Order(
-  description like \"Quote \\\"Hello!\\\"\")");]]></programlisting>
+epService.getEPAdministrator().createEPL("select * from OrderEvent(
+  description like \"Quote \\\"Hello\\\"\")");]]></programlisting>
 		</sect2>
 
 		<sect2 id="epl-syntax-datatype">
