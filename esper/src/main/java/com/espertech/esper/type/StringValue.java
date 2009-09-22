@@ -87,10 +87,39 @@ public final class StringValue extends PrimitiveValueBase
         {
             if (value.length() > 1)
             {
+                if (value.indexOf('\\') != -1)
+                {
+                    return unescape(value.substring(1, value.length() - 1));
+                }
                 return value.substring(1, value.length() - 1);
             }
         }
 
         throw new IllegalArgumentException("String value of '" + value + "' cannot be parsed");
+    }
+
+    private static String unescape(String s)
+    {
+        int i = 0, len = s.length();
+        char c;
+        StringBuffer sb = new StringBuffer(len);
+        while (i < len)
+        {
+            c = s.charAt(i++);
+            if (c == '\\')
+            {
+                if (i < len)
+                {
+                    c = s.charAt(i++);
+                    if (c == 'u')
+                    {
+                        c = (char) Integer.parseInt(s.substring(i, i + 4), 16);
+                        i += 4;
+                    } // add other cases here as desired...
+                }
+            } // fall through: \ escapes itself, quotes any character but u
+            sb.append(c);
+        }
+        return sb.toString();
     }
 }

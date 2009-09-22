@@ -183,6 +183,42 @@ select insert from MyEvent]]></programlisting>
 select `insert` from `Order`]]></programlisting>
 		</sect2>
 
+		<sect2 id="epl-syntax-escapestring">
+			<title>Escaping Strings</title>
+			<indexterm><primary>escape</primary></indexterm>
+
+			<para>
+				You may surround string values by either double-quotes (<literal>"</literal>) or single-quotes (<literal>'</literal>). When your string constant in an EPL statement itself contains double quotes or single quotes,
+				you must escape the quotes.
+			</para>
+
+			<para>
+				Double and single quotes may be escaped by the backslash (<literal>\</literal>) character or by unicode notation. Unicode 0027 is a single quote (<literal>'</literal>) and 0022 is a double quote (<literal>"</literal>).
+			</para>
+
+			<para>
+				The sample EPL below escapes the single quote in the string constant <literal>John's</literal>, and filters out order events where the name value matches:
+			</para>
+			<programlisting><![CDATA[select * from Order(name='John\'s')
+// ...equivalent to...
+select * from Order(name='John\u0027s')]]></programlisting>
+
+			<para>
+				The next EPL escapes the string constant <literal>Quote "Hello"</literal>:
+			</para>
+			<programlisting><![CDATA[select * from Order(description like "Quote \"Hello\"")
+// is equivalent to
+select * from Order(description like "Quote \u0022Hello\u0022")]]></programlisting>
+
+			<para>
+				When building an escape string via the API, escape the backslash, as shown in below code snippet:
+			</para>
+			<programlisting><![CDATA[epService.getEPAdministrator().createEPL("select * from Order(name='John\\'s')");
+// ... and for double quotes...
+epService.getEPAdministrator().createEPL("select * from Order(
+  description like \"Quote \\\"Hello!\\\"\")");]]></programlisting>
+		</sect2>
+
 		<sect2 id="epl-syntax-datatype">
 			<title>Data Types</title>
 			<indexterm><primary>data types</primary></indexterm>
