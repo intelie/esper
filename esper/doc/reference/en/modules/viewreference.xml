@@ -239,10 +239,10 @@
 
 				<para>
 					The next example keeps a length window of 10 events of stock trade events, with a separate window for each symbol. The
-					sum of price is calculated only for the last 10 events for each symbol.
+					sum of price is calculated only for the last 10 events for each symbol and aggregates per symbol:
 				</para>
 	
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)]]></programlisting>
+				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupby(symbol).win:length(10) group by symbol]]></programlisting>
 			</sect2>
 
 			<sect2 id="view-win-length-batch" >
@@ -607,7 +607,7 @@ following conditions occurs, whichever occurs first: the data window has collect
 				</para>
 
 				<para>
-					This example computes the total price for the last 5 events per each symbol:
+					This example computes the total price for the last 5 events per each symbol, aggregating the price across all symbols (since no <literal>group by</literal> clause is specified the aggregation is across all symbols):
 				</para>
 	
 				<programlisting><![CDATA[select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(5)]]></programlisting>

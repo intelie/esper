@@ -10,11 +10,8 @@ package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.annotation.HintEnum;
-import com.espertech.esper.client.annotation.Hint;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.*;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.view.StatementStopService;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -139,10 +136,7 @@ public class AggregationServiceFactory
                                                 boolean hasGroupByClause,
                                                 MethodResolutionService methodResolutionService,
                                                 ExprEvaluatorContext exprEvaluatorContext,
-                                                Annotation[] annotations,
-                                                VariableService variableService,
-                                                StatementStopService statementStopService)
-            throws ExprValidationException
+                                                Annotation[] annotations)
     {
         // No aggregates used, we do not need this service
         if ((selectAggregateExprNodes.isEmpty()) && (havingAggregateExprNodes.isEmpty()))
@@ -202,16 +196,10 @@ public class AggregationServiceFactory
         AggregationService service;
         if (hasGroupByClause)
         {
-            boolean hasNoReclaim = HintEnum.DISABLE_RECLAIM_GROUP.getHint(annotations) != null;
-            Hint reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.getHint(annotations);
-            Hint reclaimGroupFrequency = HintEnum.RECLAIM_GROUP_AGED.getHint(annotations);
+            boolean hasNoReclaim = HintEnum.DISABLE_RECLAIM_GROUP.containedIn(annotations);
             if (hasNoReclaim)
             {
                 service = new AggregationServiceGroupByImpl(evaluators, aggregators, methodResolutionService);
-            }
-            else if (reclaimGroupAged != null)
-            {
-                service = new AggregationServiceGroupByReclaimAged(evaluators, aggregators, methodResolutionService, reclaimGroupAged, reclaimGroupFrequency, variableService, statementStopService);
             }
             else
             {

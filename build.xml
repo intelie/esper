@@ -126,8 +126,10 @@
 	<target name="dist_maven" description="Maven distribution artifacts" >
 		<echo message="Building Maven distribution files" />
 		<checksum file="esper/maven-metadata.xml" algorithm="MD5" fileext=".md5"/>
-		<checksum file="esper/maven-metadata.xml" algorithm="SHA" fileext=".asc"/>		
+		<checksum file="esper/maven-metadata.xml" algorithm="SHA" fileext=".sha1"/>		
+		<checksum file="esper/maven-metadata.xml" algorithm="SHA1" fileext=".asc"/>		
 		<checksum file="esperio/maven-metadata.xml" algorithm="MD5" fileext=".md5"/>
+		<checksum file="esperio/maven-metadata.xml" algorithm="SHA1" fileext=".sha1"/>		
 		<checksum file="esperio/maven-metadata.xml" algorithm="SHA" fileext=".asc"/>		
 		<copy file="esper/pom.xml" tofile="${dist.dir}/esper-${version}.pom"/>		
 		<checksum file="${dist.dir}/esper-${version}.pom" algorithm="MD5" fileext=".md5"/>

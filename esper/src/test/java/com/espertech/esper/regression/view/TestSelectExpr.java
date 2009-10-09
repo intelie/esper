@@ -3,8 +3,6 @@ package com.espertech.esper.regression.view;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.annotation.HintEnum;
-import com.espertech.esper.client.annotation.Description;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.bean.SupportBeanKeywords;
@@ -69,46 +67,6 @@ public class TestSelectExpr extends TestCase
         assertEquals(1, event.get("stddev"));
         assertEquals(1L, event.get("count"));
         assertEquals(1, event.get("last"));
-    }
-
-    public void testEscapeString()
-    {
-        // TODO
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
-
-        // The following EPL syntax compiles but fails to match a string "A'B", we are looking into:
-        // EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean(string='A\\\'B')");
-
-        tryEscapeMatch("A'B", "\"A'B\"");       // opposite quotes
-        tryEscapeMatch("A'B", "'A\\'B'");      // escape '
-        tryEscapeMatch("A'B", "'A\\u0027B'");   // unicode
-
-        tryEscapeMatch("A\"B", "'A\"B'");       // opposite quotes
-        tryEscapeMatch("A\"B", "'A\\\"B'");      // escape "
-        tryEscapeMatch("A\"B", "'A\\u0022B'");   // unicode
-
-        EPStatement stmt = epService.getEPAdministrator().createEPL("@Name('A\\\'B') @Description(\"A\\\"B\") select * from SupportBean");
-        assertEquals("A\'B", stmt.getName());
-        Description desc = (Description) stmt.getAnnotations()[1];
-        assertEquals("A\"B", desc.value());
-
-        stmt.destroy();
-        stmt = epService.getEPAdministrator().createEPL("select 'volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
-        stmt.addListener(testListener);
-        epService.getEPRuntime().sendEvent(new SupportBean());
-        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), new String[] {"field1", "field2", "unicodeA"}, new Object[] {"volume", "sleep", "A"});        
-    }
-
-    private void tryEscapeMatch(String property, String escaped)
-    {
-        String epl = "select * from SupportBean(string=" + escaped + ")";
-        String text = "trying >" + escaped + "< (" + escaped.length() + " chars) EPL " + epl;
-        log.info("tryEscapeMatch for " + text);
-        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
-        stmt.addListener(testListener);
-        epService.getEPRuntime().sendEvent(new SupportBean(property, 1));
-        assertEquals(testListener.assertOneGetNewAndReset().get("intPrimitive"), 1);
-        stmt.destroy();
     }
 
     public void testGetEventType()

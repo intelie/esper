@@ -10,7 +10,6 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.annotation.Name;
-import com.espertech.esper.client.annotation.Hint;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.annotation.AnnotationUtil;
 import com.espertech.esper.epl.core.StreamTypeService;
@@ -174,17 +173,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementStartMethod startMethod;
 
         Annotation[] annotations = AnnotationUtil.compileAnnotations(statementSpec.getAnnotations(), services.getEngineImportService(), expression);
-        if (annotations != null)
-        {
-            for (Annotation annotation : annotations)
-            {
-                if (annotation instanceof Hint)
-                {
-                    statementSpec.setHasVariables(true);
-                }
-            }
-        }
-        
         StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc(), false, annotations, isolationUnitServices);
         StatementSpecCompiled compiledSpec;
         try

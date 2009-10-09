@@ -7,9 +7,6 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.core.EPAdministratorSPI;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprAndNode;
 
 public class TestEPAdministrator extends TestCase
 {
@@ -23,13 +20,6 @@ public class TestEPAdministrator extends TestCase
         config.getEngineDefaults().getLogging().setEnableTimerDebug(true);
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
-    }
-
-    public void testSPI()
-    {
-        EPAdministratorSPI spi = (EPAdministratorSPI) epService.getEPAdministrator();
-        ExprNode exprNode = spi.compileExpression("somevalue=1 and xyz");
-        assertTrue(exprNode instanceof ExprAndNode);
     }
 
     public void test1kValidStmtsPerformance()

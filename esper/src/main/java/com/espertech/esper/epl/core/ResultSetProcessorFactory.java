@@ -286,7 +286,7 @@ public class ResultSetProcessorFactory
 
         // Construct the appropriate aggregation service
         boolean hasGroupBy = !groupByNodes.isEmpty();
-        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, stmtContext.getMethodResolutionService(), stmtContext, statementSpecCompiled.getAnnotations(), stmtContext.getVariableService(), stmtContext.getStatementStopService());
+        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, stmtContext.getMethodResolutionService(), stmtContext, statementSpecCompiled.getAnnotations());
 
         boolean useCollatorSort = false;
         if (stmtContext.getConfigSnapshot() != null)

@@ -75,14 +75,6 @@ public class TestStatementAnnotation extends TestCase
                    "Failed to process statement annotations: Hint annotation value 'XXX' is not one of the known values [@Hint('XXX') select * from Bean]");
         tryInvalid("@Hint('ITERATE_ONLY,XYZ') select * from Bean", false,
                    "Failed to process statement annotations: Hint annotation value 'XYZ' is not one of the known values [@Hint('ITERATE_ONLY,XYZ') select * from Bean]");
-        tryInvalid("@Hint('testit=5') select * from Bean", false,
-                   "Failed to process statement annotations: Hint annotation value 'testit' is not one of the known values [@Hint('testit=5') select * from Bean]");
-        tryInvalid("@Hint('RECLAIM_GROUP_AGED') select * from Bean", false,
-                   "Failed to process statement annotations: Hint 'RECLAIM_GROUP_AGED' requires a parameter value [@Hint('RECLAIM_GROUP_AGED') select * from Bean]");
-        tryInvalid("@Hint('ITERATE_ONLY,RECLAIM_GROUP_AGED') select * from Bean", false,
-                   "Failed to process statement annotations: Hint 'RECLAIM_GROUP_AGED' requires a parameter value [@Hint('ITERATE_ONLY,RECLAIM_GROUP_AGED') select * from Bean]");
-        tryInvalid("@Hint('ITERATE_ONLY=5,RECLAIM_GROUP_AGED=5') select * from Bean", false,
-                   "Failed to process statement annotations: Hint 'ITERATE_ONLY' does not accept a parameter value [@Hint('ITERATE_ONLY=5,RECLAIM_GROUP_AGED=5') select * from Bean]");
     }
 
     private void tryInvalid(String stmtText, boolean isSyntax, String message)

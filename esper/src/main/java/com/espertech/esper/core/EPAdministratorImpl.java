@@ -14,7 +14,6 @@ import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.parse.*;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.epl.expression.ExprNode;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.Tree;
@@ -24,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Implementation for the admin interface.
  */
-public class EPAdministratorImpl implements EPAdministratorSPI
+public class EPAdministratorImpl implements EPAdministrator
 {
     private static ParseRuleSelector patternParseRule;
     private static ParseRuleSelector eplParseRule;
@@ -280,12 +279,6 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     {
         services = null;
         configurationOperations = null;
-    }
-
-    public ExprNode compileExpression(String expression) throws EPException
-    {
-        StatementSpecRaw raw = compileEPL("select * from java.lang.Object where " + expression, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
-        return raw.getFilterRootNode();
     }
 
     /**

@@ -79,6 +79,8 @@ select * from (select * from Market where ticker = 'GOOG') retain 1 event
 			</para>
 		
 <programlisting><![CDATA[// Esper statement with the same semantics:
+select * from MarketData(ticker='$').std:lastevent()
+// ... or ...
 select * from MarketData(ticker='$').win:length(1)]]></programlisting>
 
 			<para>
@@ -367,6 +369,55 @@ config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(fal
 			</para>
 		</sect2>
 
+		<sect2 id="perf-tips-13a">
+			<title>Joins And Where-clause And Data Windows</title>
+
+			<para>
+				When joining streams the engine builds a product of the joined data windows based on the <literal>where</literal> clause. It analyzes the <literal>where</literal> clause at time of statement compilation and
+				builds the appropriate indexes and query strategy. Avoid using expressions in the join <literal>where</literal> clause that require evaluation, such as user-defined functions or arithmatic expressions.
+			</para>
+
+			<para>
+				When joining streams and not providing a <literal>where</literal> clause, consider using the <literal>std:lastevent</literal> data window to join only the last event of each stream. 
+			</para>
+
+			<para>
+				The sample query below can produce up to 5,000 rows when both data windows are filled and an event arrives for either stream:
+			</para>
+
+<programlisting><![CDATA[// Avoid joins between streams with data windows without where-clause
+select * from StreamA.win:length(100), StreamB.win:length(50)]]></programlisting>
+
+			<para>
+				Consider using a subquery, consider using separate statements with insert-into and consider providing a <literal>where</literal> clause to limit the product of rows.
+			</para>
+
+			<para>
+				Below examples show different approaches, assuming that an <literal>MyEvent</literal> is defined with the properties symbol and value:
+			</para>
+
+<programlisting><![CDATA[// Replace the following statement as it may not perform well
+select a.symbol, avg(a.value), avg(b.value) 
+from MyEvent.win:length(100) a, MyEvent.win:length(50) b
+
+// Fast version, first alternative
+select a.symbol, avg(a.value), avg(b.value) 
+from MyEvent.win:length(100) a, MyEvent.win:length(50) b 
+where a.symbol = b.symbol
+
+// Fast version, second alternative
+select 
+  (select avg(value) from MyEvent.win:length(100)) as avgA, 
+  (select avg(value) from MyEvent.win:length(50)) as avgB,
+  a.symbol
+from MyEvent.std:lastevent() a, MyEvent.std:lastevent() b
+
+// Fast version, third alternative
+insert into StreamAvgA select symbol, avg(value) as avgA from MyEvent.win:length(100)
+insert into StreamAvgB select symbol, avg(value) as avgB from MyEvent.win:length(50)
+select a.symbol, avgA, avgB from StreamAvgA.std:lastevent() a, StreamAvgB.std:lastevent() b]]></programlisting>
+		</sect2>
+
 		<sect2 id="perf-tips-14">
 
 			<title>Performance, JVM, OS and hardware</title>
@@ -404,10 +455,6 @@ config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(fal
 
 			<para>
 				The hint for use with <literal>group by</literal> to specify how state for groups is reclaimed is described in <xref linkend="epl-groupby-hints"/>.
-			</para>
-
-			<para>
-				The hint for use with <literal>group by</literal> to specify aggregation state reclaim for unbound streams and timestamp groups is described in <xref linkend="epl-groupby-hints"/>.
 			</para>
 
 			<para>

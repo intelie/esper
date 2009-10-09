@@ -1457,7 +1457,7 @@ public class EPStatementStartMethod
                     {
                         List<ExprAggregateNode> havingAgg = Collections.emptyList();
                         List<ExprAggregateNode> orderByAgg = Collections.emptyList();
-                        aggregationService = AggregationServiceFactory.getService(aggExprNodes, havingAgg, orderByAgg, false, null, statementContext, annotations, statementContext.getVariableService(), statementContext.getStatementStopService());
+                        aggregationService = AggregationServiceFactory.getService(aggExprNodes, havingAgg, orderByAgg, false, null, statementContext, annotations);
 
                         // Other stream properties, if there is aggregation, cannot be under aggregation.
                         for (ExprAggregateNode aggNode : aggExprNodes)

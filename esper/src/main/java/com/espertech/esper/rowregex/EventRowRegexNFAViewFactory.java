@@ -54,7 +54,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         EventType parentViewType = viewChain.getEventType();
         this.matchRecognizeSpec = matchRecognizeSpec;
         this.isUnbound = isUnbound;
-        this.isIterateOnly = HintEnum.ITERATE_ONLY.getHint(annotations) != null;
+        this.isIterateOnly = HintEnum.ITERATE_ONLY.containedIn(annotations);
 
         // Determine single-row and multiple-row variables
         variablesSingle = new LinkedHashSet<String>();

@@ -2,9 +2,8 @@ package com.espertech.esper.support.bean;
 
 public class SupportBeanReservedKeyword
 {
-    private int seconds;
-    private int order;
-    private Inner timestamp;
+    public int seconds;
+    public int order;
 
     public SupportBeanReservedKeyword(int seconds, int order)
     {
@@ -30,30 +29,5 @@ public class SupportBeanReservedKeyword
     public void setOrder(int order)
     {
         this.order = order;
-    }
-
-    public Inner getTimestamp()
-    {
-        return timestamp;
-    }
-
-    public void setTimestamp(Inner timestamp)
-    {
-        this.timestamp = timestamp;
-    }
-
-    public static class Inner
-    {
-        private int hour;
-
-        public int getHour()
-        {
-            return hour;
-        }
-
-        public void setHour(int hour)
-        {
-            this.hour = hour;
-        }
     }
 }
