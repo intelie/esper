@@ -39,6 +39,41 @@ public class TestOrderBySimple extends TestCase {
         volumes = new LinkedList<Long>();
     }
 
+    public void testOrderByMultiDelivery() {
+        // test for QWY-933597
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        // try pattern
+        SupportUpdateListener listener = new SupportUpdateListener();
+        String stmtText = "select a.string from pattern [every a=SupportBean(string like 'A%') -> b=SupportBean(string like 'B%')] order by a.string desc";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtText);
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean("B", 3));
+
+        EventBean[] received = listener.getNewDataListFlattened();
+        assertEquals(2, received.length);
+        ArrayAssertionUtil.assertPropsPerRow(received, "a.string".split(","), new Object [][] {{"A2"}, {"A1"}});
+
+        // try grouped time window
+        String stmtTextTwo = "select rstream string from SupportBean.std:groupby(string).win:time(10) order by string desc";
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL(stmtTextTwo);
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        stmtTwo.addListener(listenerTwo);
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
+        epService.getEPRuntime().sendEvent(new SupportBean("A1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 1));
+        
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(11000));
+        EventBean[] receivedTwo = listenerTwo.getNewDataListFlattened();
+        assertEquals(2, receivedTwo.length);
+        ArrayAssertionUtil.assertPropsPerRow(receivedTwo, "string".split(","), new Object [][] {{"A2"}, {"A1"}});
+    }
+
     public void testCollatorSortLocale()
     {
         List<String> items = Arrays.asList("péché,pêche".split(","));
