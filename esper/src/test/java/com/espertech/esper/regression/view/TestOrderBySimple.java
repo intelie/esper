@@ -40,7 +40,7 @@ public class TestOrderBySimple extends TestCase {
     }
 
     public void testOrderByMultiDelivery() {
-        // test for QWY-933597
+        // test for QWY-933597 or ESPER-409
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
@@ -57,6 +57,22 @@ public class TestOrderBySimple extends TestCase {
         EventBean[] received = listener.getNewDataListFlattened();
         assertEquals(2, received.length);
         ArrayAssertionUtil.assertPropsPerRow(received, "a.string".split(","), new Object [][] {{"A2"}, {"A1"}});
+
+        // try pattern with output limit
+        SupportUpdateListener listenerThree = new SupportUpdateListener();
+        String stmtTextThree = "select a.string from pattern [every a=SupportBean(string like 'A%') -> b=SupportBean(string like 'B%')] " +
+                "output every 2 events order by a.string desc";
+        EPStatement stmtThree = epService.getEPAdministrator().createEPL(stmtTextThree);
+        stmtThree.addListener(listenerThree);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean("A3", 3));
+        epService.getEPRuntime().sendEvent(new SupportBean("B", 3));
+
+        EventBean[] receivedThree = listenerThree.getNewDataListFlattened();
+        assertEquals(2, receivedThree.length);
+        ArrayAssertionUtil.assertPropsPerRow(receivedThree, "a.string".split(","), new Object [][] {{"A2"}, {"A1"}});
 
         // try grouped time window
         String stmtTextTwo = "select rstream string from SupportBean.std:groupby(string).win:time(10) order by string desc";

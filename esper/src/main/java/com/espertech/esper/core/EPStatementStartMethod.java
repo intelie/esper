@@ -52,6 +52,7 @@ import com.espertech.esper.util.StopCallback;
 import com.espertech.esper.view.*;
 import com.espertech.esper.view.internal.BufferView;
 import com.espertech.esper.view.internal.RouteResultView;
+import com.espertech.esper.view.internal.SingleStreamDispatchView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -650,7 +651,7 @@ public class EPStatementStartMethod
 
                 // Since only for non-joins we get the existing stream's lock and try to reuse it's views
                 Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, false, statementContext, false);
+                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, false, statementContext, false | !statementSpec.getOrderByList().isEmpty());
                 eventStreamParentViewable[i] = streamLockPair.getFirst();
 
                 // Use the re-used stream's lock for all this statement's locking needs
@@ -789,7 +790,7 @@ public class EPStatementStartMethod
                     if (streamSpec instanceof FilterStreamSpecCompiled)
                     {
                         FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
-                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), statementContext.getFilterService(), isJoin, false, false);
+                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), statementContext.getFilterService(), isJoin, false, false | !statementSpec.getOrderByList().isEmpty());
                     }
                 }
                 for (StopCallback stopCallback : stopCallbacks)
@@ -892,6 +893,12 @@ public class EPStatementStartMethod
                 if (joinPreloadMethod != null)
                 {
                     joinPreloadMethod.preloadFromBuffer(i);
+                }
+                else
+                {
+                    if (statementContext.getEpStatementHandle().getOptionalDispatchable() != null) {
+                        statementContext.getEpStatementHandle().getOptionalDispatchable().execute(statementContext);                        
+                    }
                 }
             }
         }
@@ -1334,8 +1341,17 @@ public class EPStatementStartMethod
             finalView = filterView;
         }
 
+        // for ordered deliver without output limit/buffer
+        if (!statementSpec.getOrderByList().isEmpty() && (statementSpec.getOutputLimitSpec() == null)) {
+            SingleStreamDispatchView bf = new SingleStreamDispatchView();
+            statementContext.getEpStatementHandle().setOptionalDispatchable(bf);
+            finalView.addView(bf);
+            finalView = bf;
+        }
+
         OutputProcessView selectView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec,
                 statementContext, services.getInternalEventRouter());
+
         finalView.addView(selectView);
         finalView = selectView;
 

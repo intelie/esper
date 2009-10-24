@@ -203,4 +203,9 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     {
         return metricsHandle;
     }
+
+    public EPStatementDispatch getOptionalDispatchable()
+    {
+        return optionalDispatchable;
+    }
 }

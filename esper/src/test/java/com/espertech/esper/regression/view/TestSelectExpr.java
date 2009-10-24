@@ -73,7 +73,6 @@ public class TestSelectExpr extends TestCase
 
     public void testEscapeString()
     {
-        // TODO
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
         // The following EPL syntax compiles but fails to match a string "A'B", we are looking into:

@@ -302,6 +302,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
     private boolean isPotentialSelfJoin(StatementSpecCompiled spec)
     {
+        // if order-by is specified, ans since multiple output rows may produce, ensure dispatch
+        if (!spec.getOrderByList().isEmpty())
+        {
+            return true;
+        }
+
         // not a self join (pattern doesn't count)
         if ((spec.getStreamSpecs().size() <= 1) && (spec.getSubSelectExpressions().isEmpty()))
         {
