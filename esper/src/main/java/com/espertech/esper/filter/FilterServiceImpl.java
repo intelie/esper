@@ -10,10 +10,12 @@ package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.util.AuditPath;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +30,7 @@ public final class FilterServiceImpl implements FilterServiceSPI
     private final EventTypeIndexBuilder indexBuilder;
     private final EventTypeIndex eventTypeIndex;
     private final AtomicLong numEventsEvaluated = new AtomicLong();
+    private final CopyOnWriteArraySet<FilterServiceListener> filterServiceListeners;
 
     /**
      * Constructor.
@@ -36,6 +39,7 @@ public final class FilterServiceImpl implements FilterServiceSPI
     {
         eventTypeIndex = new EventTypeIndex();
         indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);
+        filterServiceListeners = new CopyOnWriteArraySet<FilterServiceListener>();
     }
 
     public void destroy()
@@ -61,6 +65,12 @@ public final class FilterServiceImpl implements FilterServiceSPI
 
         // Finds all matching filters and return their callbacks
         eventTypeIndex.matchEvent(eventBean, matches, exprEvaluatorContext);
+
+        if ((AuditPath.isAuditEnabled) && (!filterServiceListeners.isEmpty())) {
+            for (FilterServiceListener listener : filterServiceListeners) {
+                listener.filtering(eventBean, matches, exprEvaluatorContext);
+            }
+        }
     }
 
     public final long getNumEventsEvaluated()
@@ -70,6 +80,14 @@ public final class FilterServiceImpl implements FilterServiceSPI
 
     public void resetStats() {
         numEventsEvaluated.set(0);
+    }
+
+    public void addFilterServiceListener(FilterServiceListener filterServiceListener) {
+        filterServiceListeners.add(filterServiceListener);
+    }
+
+    public void removeFilterServiceListener(FilterServiceListener filterServiceListener) {
+        filterServiceListeners.remove(filterServiceListener);
     }
 
     public FilterSet take(Set<String> statementIds)

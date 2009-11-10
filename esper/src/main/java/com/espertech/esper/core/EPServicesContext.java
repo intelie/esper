@@ -16,6 +16,7 @@ import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineSettingsService;
 import com.espertech.esper.epl.db.DatabaseConfigService;
 import com.espertech.esper.epl.metric.MetricReportingService;
+import com.espertech.esper.epl.metric.MetricReportingServiceSPI;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.variable.VariableService;
@@ -61,7 +62,7 @@ public final class EPServicesContext
     private VariableService variableService;
     private TimeSourceService timeSourceService;
     private ValueAddEventService valueAddEventService;
-    private MetricReportingService metricsReportingService;
+    private MetricReportingServiceSPI metricsReportingService;
     private StatementEventTypeRef statementEventTypeRef;
     private ConfigurationInformation configSnapshot;
     private ThreadingService threadingService;
@@ -127,7 +128,7 @@ public final class EPServicesContext
                              VariableService variableService,
                              TimeSourceService timeSourceService,
                              ValueAddEventService valueAddEventService,
-                             MetricReportingService metricsReportingService,
+                             MetricReportingServiceSPI metricsReportingService,
                              StatementEventTypeRef statementEventTypeRef,
                              ConfigurationInformation configSnapshot,
                              ThreadingService threadingServiceImpl,
@@ -520,7 +521,7 @@ public final class EPServicesContext
      * Returns metrics reporting.
      * @return metrics reporting
      */
-    public MetricReportingService getMetricsReportingService()
+    public MetricReportingServiceSPI getMetricsReportingService()
     {
         return metricsReportingService;
     }

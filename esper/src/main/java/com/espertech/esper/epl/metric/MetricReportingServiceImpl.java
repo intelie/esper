@@ -15,19 +15,21 @@ import com.espertech.esper.client.metric.MetricEvent;
 import com.espertech.esper.core.EPServicesContext;
 import com.espertech.esper.core.StatementLifecycleObserver;
 import com.espertech.esper.core.StatementLifecycleEvent;
+import com.espertech.esper.core.StatementResultListener;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.MetricUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Metrics reporting.
  * <p>
  * Reports for all statements even if not in a statement group, i.e. statement in default group.
  */
-public class MetricReportingServiceImpl implements MetricReportingService, MetricEventRouter, StatementLifecycleObserver
+public class MetricReportingServiceImpl implements MetricReportingServiceSPI, MetricEventRouter, StatementLifecycleObserver
 {
     private static final Log log = LogFactory.getLog(MetricReportingServiceImpl.class);
 
@@ -47,6 +49,8 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
     private final Map<String, StatementMetricHandle> statementMetricHandles;
     private final MetricsExecutor metricsExecutor;
 
+    private CopyOnWriteArraySet<StatementResultListener> statementOutputHooks;
+
     /**
      * Ctor.
      * @param specification configuration
@@ -64,7 +68,8 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
 
         stmtMetricRepository = new StatementMetricRepository(engineUri, specification);
         statementGroupExecutions = new LinkedHashMap<String, MetricExecStatement>();
-        statementMetricHandles = new HashMap<String, StatementMetricHandle>(); 
+        statementMetricHandles = new HashMap<String, StatementMetricHandle>();
+        statementOutputHooks = new CopyOnWriteArraySet<StatementResultListener>();
 
         if (specification.isThreading())
         {
@@ -74,6 +79,18 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
         {
             metricsExecutor = new MetricsExecutorUnthreaded();
         }
+    }
+
+    public void addStatementResultListener(StatementResultListener listener) {
+        statementOutputHooks.add(listener);
+    }
+
+    public void removeStatementResultListener(StatementResultListener listener) {
+        statementOutputHooks.remove(listener);
+    }
+
+    public CopyOnWriteArraySet<StatementResultListener> getStatementOutputHooks() {
+        return statementOutputHooks;
     }
 
     public void setContext(EPRuntime runtime, EPServicesContext servicesContext)

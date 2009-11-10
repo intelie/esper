@@ -58,7 +58,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      */
     protected final Map<String, EPStatement> stmtNameToStmtMap;
 
-    private final EPServiceProvider epServiceProvider;
+    private final EPServiceProviderSPI epServiceProvider;
     private final ManagedReadWriteLock eventProcessingRWLock;
 
     private final Map<String, String> stmtNameToIdMap;
@@ -74,7 +74,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     public StatementLifecycleSvcImpl(EPServiceProvider epServiceProvider, EPServicesContext services)
     {
         this.services = services;
-        this.epServiceProvider = epServiceProvider;
+        this.epServiceProvider = (EPServiceProviderSPI) epServiceProvider;
 
         // lock for starting and stopping statements
         this.eventProcessingRWLock = services.getEventProcessingRWLock();

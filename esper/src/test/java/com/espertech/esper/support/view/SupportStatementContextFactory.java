@@ -64,6 +64,7 @@ public class SupportStatementContextFactory
                 null, // resolution URIs
                 new ValueAddEventServiceImpl(), // revison svc
                 config,
+                null,
                 null);
     }
 }
