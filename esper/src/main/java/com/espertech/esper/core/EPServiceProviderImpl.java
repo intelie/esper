@@ -145,6 +145,10 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return engine.getAdmin();
     }
 
+    public EPServicesContext getServicesContext() {
+        return engine.getServices();
+    }
+
     public ThreadingService getThreadingService()
     {
         return engine.getServices().getThreadingService();
@@ -211,6 +215,10 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     public Context getContext()
     {
         return engine.getServices().getEngineEnvContext();
+    }
+
+    public StatementContextFactory getStatementContextFactory() {
+        return engine.getServices().getStatementContextFactory();
     }
 
     public void destroy()

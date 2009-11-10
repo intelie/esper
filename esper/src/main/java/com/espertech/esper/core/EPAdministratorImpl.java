@@ -15,6 +15,7 @@ import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.parse.*;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.pattern.EvalNode;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.Tree;
@@ -389,7 +390,13 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     {
         StatementSpecRaw raw = compileEPL("select * from java.lang.Object where " + expression, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         return raw.getFilterRootNode();
-    }    
+    }
+
+    public PatternStreamSpecRaw compilePatternToNode(String pattern) throws EPException
+    {
+        StatementSpecRaw raw = compilePattern(pattern);
+        return (PatternStreamSpecRaw) raw.getStreamSpecs().get(0);
+    }
 
     private static String getNullableErrortext(String msg, String cause)
     {
