@@ -14,6 +14,7 @@ import com.espertech.esper.collection.EventDistinctIterator;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.core.StatementResultListener;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.epl.core.ResultSetProcessor;
@@ -47,7 +48,11 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
     private Long afterConditionTime;
     private Integer afterConditionNumberOfEvents;
     private int afterConditionEventsFound;
-    private StatementContext statementContext;
+
+    /**
+     * Statement services.
+     */
+    protected  StatementContext statementContext;
 
     /**
      * If the after-condition is satisfied, if any.
@@ -304,5 +309,13 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
             return iterator;
         }
         return new EventDistinctIterator(iterator, eventType);
+    }
+
+    public void indicateEarlyReturn(UniformPair<EventBean[]> newOldEvents) {
+        if (!statementContext.getMetricReportingService().getStatementOutputHooks().isEmpty()) {
+            for (StatementResultListener listener : statementContext.getMetricReportingService().getStatementOutputHooks()) {
+                listener.update(newOldEvents.getFirst(), newOldEvents.getSecond(), statementContext.getStatementName(), null, null);
+            }
+        }
     }
 }

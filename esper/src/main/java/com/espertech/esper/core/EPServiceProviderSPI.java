@@ -128,4 +128,7 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      * @return environment context
      */
     public EngineEnvContext getEngineEnvContext();
+
+    public EPServicesContext getServicesContext();
+    public StatementContextFactory getStatementContextFactory();
 }

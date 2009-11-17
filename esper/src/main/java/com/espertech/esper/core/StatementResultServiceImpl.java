@@ -8,23 +8,27 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.epl.metric.MetricReportingPath;
-import com.espertech.esper.epl.metric.MetricReportingService;
-import com.espertech.esper.epl.metric.StatementMetricHandle;
+import com.espertech.esper.core.thread.OutboundUnitRunnable;
 import com.espertech.esper.core.thread.ThreadingOption;
 import com.espertech.esper.core.thread.ThreadingService;
-import com.espertech.esper.core.thread.OutboundUnitRunnable;
+import com.espertech.esper.epl.metric.MetricReportingPath;
+import com.espertech.esper.epl.metric.MetricReportingService;
+import com.espertech.esper.epl.metric.MetricReportingServiceSPI;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Implements tracking of statement listeners and subscribers for a given statement
@@ -41,7 +45,7 @@ public class StatementResultServiceImpl implements StatementResultService
 
     // Part of the statement context
     private EPStatementSPI epStatement;
-    private EPServiceProvider epServiceProvider;
+    private EPServiceProviderSPI epServiceProvider;
     private boolean isInsertInto;
     private boolean isPattern;
     private StatementMetricHandle statementMetricHandle;
@@ -59,6 +63,8 @@ public class StatementResultServiceImpl implements StatementResultService
     // For iteration over patterns
     private EventBean lastIterableEvent;
 
+    private Set<StatementResultListener> statementOutputHooks;
+
     /**
      * Buffer for holding dispatchable events.
      */
@@ -74,16 +80,23 @@ public class StatementResultServiceImpl implements StatementResultService
      * @param metricReportingService for metrics reporting
      * @param threadingService for outbound threading
      */
-    public StatementResultServiceImpl(StatementLifecycleSvc statementLifecycleSvc, MetricReportingService metricReportingService,
+    public StatementResultServiceImpl(StatementLifecycleSvc statementLifecycleSvc, 
+                                      MetricReportingServiceSPI metricReportingService,
                                       ThreadingService threadingService)
     {
         log.debug(".ctor");
         this.statementLifecycleSvc = statementLifecycleSvc;
         this.metricReportingService = metricReportingService;
+        if (metricReportingService != null) {
+            this.statementOutputHooks = metricReportingService.getStatementOutputHooks();
+        }
+        else {
+            this.statementOutputHooks = new HashSet<StatementResultListener>();
+        }
         this.threadingService = threadingService;
     }
 
-    public void setContext(EPStatementSPI epStatement, EPServiceProvider epServiceProvider,
+    public void setContext(EPStatementSPI epStatement, EPServiceProviderSPI epServiceProvider,
                            boolean isInsertInto, boolean isPattern, StatementMetricHandle statementMetricHandle)
     {
         this.epStatement = epStatement;
@@ -241,6 +254,13 @@ public class StatementResultServiceImpl implements StatementResultService
                             "' : " + t.getClass().getSimpleName() + " : " + t.getMessage();
                     log.error(message, t);
                 }
+            }
+        }
+        if ((AuditPath.isAuditEnabled) && (!statementOutputHooks.isEmpty()))
+        {
+            for (StatementResultListener listener : statementOutputHooks)
+            {
+                listener.update(newEventArr, oldEventArr, epStatement.getName(), epStatement, epServiceProvider);
             }
         }
     }

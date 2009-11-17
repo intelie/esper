@@ -12,6 +12,8 @@ import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.JoinSetComposerFactory;
+import com.espertech.esper.epl.metric.MetricReportingService;
+import com.espertech.esper.epl.metric.MetricReportingServiceSPI;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
@@ -62,6 +64,7 @@ public final class StatementContext implements ExprEvaluatorContext
     private final HashSet<String> dynamicReferenceEventTypes;
     private final ConfigurationInformation configSnapshot;
     private final ScheduleAdjustmentService scheduleAdjustmentService;
+    private final MetricReportingServiceSPI metricReportingService;
 
     /**
      * Constructor.
@@ -115,7 +118,8 @@ public final class StatementContext implements ExprEvaluatorContext
                               URI[] plugInTypeResolutionURIs,
                               ValueAddEventService valueAddEventService,
                               ConfigurationInformation configSnapshot,
-                              InternalEventRouteDest internalEventEngineRouteDest)
+                              InternalEventRouteDest internalEventEngineRouteDest,
+                              MetricReportingServiceSPI metricReportingService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -144,6 +148,7 @@ public final class StatementContext implements ExprEvaluatorContext
         this.configSnapshot = configSnapshot;
         this.internalEventEngineRouteDest = internalEventEngineRouteDest;
         this.scheduleAdjustmentService = new ScheduleAdjustmentService();
+        this.metricReportingService = metricReportingService;
     }
 
     /**
@@ -423,6 +428,10 @@ public final class StatementContext implements ExprEvaluatorContext
     public ScheduleAdjustmentService getScheduleAdjustmentService()
     {
         return scheduleAdjustmentService;
+    }
+
+    public MetricReportingServiceSPI getMetricReportingService() {
+        return metricReportingService;
     }
 
     /**

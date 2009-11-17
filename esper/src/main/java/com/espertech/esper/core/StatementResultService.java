@@ -8,10 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.metric.StatementMetricHandle;
-import com.espertech.esper.client.EventBean;
 
 /**
  * Interface for a statement-level service for coordinating the insert/remove stream generation,
@@ -27,7 +26,7 @@ public interface StatementResultService
      * @param isPattern true if this is a pattern statement
      * @param statementMetricHandle handle for metrics reporting
      */
-    public void setContext(EPStatementSPI epStatement, EPServiceProvider epServiceProvider,
+    public void setContext(EPStatementSPI epStatement, EPServiceProviderSPI epServiceProvider,
                            boolean isInsertInto, boolean isPattern, StatementMetricHandle statementMetricHandle);
 
     /**

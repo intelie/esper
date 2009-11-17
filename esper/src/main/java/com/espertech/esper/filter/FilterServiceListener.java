@@ -8,27 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import java.util.Set;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-/**
- * Service provider interface for filter service.
- */
-public interface FilterServiceSPI extends FilterService
+import java.util.Collection;
+
+public interface FilterServiceListener
 {
-    /**
-     * Take a set of statements of out the active filters, returning a save-set of filters.
-     * @param statementId statement ids to remove
-     * @return filters
-     */
-    public FilterSet take(Set<String> statementId);
-
-    /**
-     * Apply a set of previously taken filters.
-     * @param filterSet to apply
-     */
-    public void apply(FilterSet filterSet);
-
-    public void addFilterServiceListener(FilterServiceListener filterServiceListener);
-
-    public void removeFilterServiceListener(FilterServiceListener filterServiceListener);
+    public void filtering(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext);
 }
