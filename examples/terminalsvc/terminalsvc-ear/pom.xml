@@ -1,5 +1,5 @@
 <project>
-	<modelVersion>4.0.0</modelVersion>
+	<modelVersion>3.3.0</modelVersion>
 	<name>Esper Examples TerminalSvc - EAR</name>
 	<artifactId>example-terminalsvc-ear</artifactId>
 	<groupId>com.espertech</groupId>

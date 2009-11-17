@@ -1,5 +1,5 @@
 <project>
-  <modelVersion>4.0.0</modelVersion>
+  <modelVersion>3.3.0</modelVersion>
   <name>Esper Examples TerminalSvc</name>
   <groupId>com.espertech</groupId>
   <version>1.0</version>

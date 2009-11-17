@@ -1,9 +1,9 @@
 <project>
-	<modelVersion>4.0.0</modelVersion>
+	<modelVersion>3.3.0</modelVersion>
 	<parent>
 		<groupId>com.espertech</groupId>
 		<artifactId>esper_examples</artifactId>
-		<version>4.0.0</version>
+		<version>3.3.0</version>
 	</parent>
 	<name>Esper Examples - QualityOfServiceSLA</name>
 	<groupId>com.espertech</groupId>

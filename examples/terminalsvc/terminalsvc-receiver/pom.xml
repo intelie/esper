@@ -1,5 +1,5 @@
 <project>
-	<modelVersion>4.0.0</modelVersion>
+	<modelVersion>3.3.0</modelVersion>
 	<name>Esper Examples TerminalSvc - Receiver</name>
 	<artifactId>example-terminalsvc-receiver</artifactId>
 	<groupId>com.espertech</groupId>
@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>
-			<version>4.0.0</version>
+			<version>3.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
