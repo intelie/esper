@@ -1624,6 +1624,12 @@ public class StatementSpecMapper
             PatternMatchUntilExpr until = (PatternMatchUntilExpr) eval;
             return new EvalMatchUntilNode(new EvalMatchUntilSpec(until.getLow(), until.getHigh()));
         }
+        else if (eval instanceof PatternEveryDistinctExpr)
+        {
+            PatternEveryDistinctExpr everyDist = (PatternEveryDistinctExpr) eval;
+            List<ExprNode> expressions = mapExpressionDeep(everyDist.getExpressions(), mapContext);
+            return new EvalEveryDistinctNode(expressions, null);
+        }
         throw new IllegalArgumentException("Could not map pattern expression node of type " + eval.getClass().getSimpleName());
     }
 
@@ -1673,6 +1679,12 @@ public class StatementSpecMapper
         {
             EvalMatchUntilNode matchUntilNode = (EvalMatchUntilNode) eval;
             return new PatternMatchUntilExpr(matchUntilNode.getSpec().getLowerBounds(), matchUntilNode.getSpec().getUpperBounds());
+        }
+        else if (eval instanceof EvalEveryDistinctNode)
+        {
+            EvalEveryDistinctNode everyDistinctNode = (EvalEveryDistinctNode) eval;
+            List<Expression> expressions = unmapExpressionDeep(everyDistinctNode.getExpressions(), unmapContext);
+            return new PatternEveryDistinctExpr(expressions);
         }
         throw new IllegalArgumentException("Could not map pattern expression node of type " + eval.getClass().getSimpleName());
     }

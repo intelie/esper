@@ -1,6 +1,7 @@
 package com.espertech.esper.regression.pattern;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanConstants;
@@ -45,6 +46,10 @@ public class TestEveryDistinct extends TestCase implements SupportBeanConstants
 
         engine.getEPRuntime().sendEvent(new SupportBean("E8", 0));
         assertEquals("E8", listener.assertOneGetNewAndReset().get("a.string"));
+
+        EPStatementObjectModel model = engine.getEPAdministrator().compileEPL(expression);
+        assertEquals(expression, model.toEPL());
+        engine.getEPAdministrator().create(model);
     }
 
     public void testRepeatOverDistinct() throws Exception
