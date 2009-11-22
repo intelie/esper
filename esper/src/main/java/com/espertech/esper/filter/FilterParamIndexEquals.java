@@ -106,7 +106,7 @@ public final class FilterParamIndexEquals extends FilterParamIndexPropBase
     {
         if (filterConstant != null)
         {
-            if (this.getPropertyBoxedType() != filterConstant.getClass())
+            if ((this.getPropertyBoxedType() != filterConstant.getClass()) && (!this.getPropertyBoxedType().isAssignableFrom(filterConstant.getClass())))
             {
                 throw new IllegalArgumentException("Invalid type of filter constant of " +
                         filterConstant.getClass().getName() + " for property " + this.getPropertyName());

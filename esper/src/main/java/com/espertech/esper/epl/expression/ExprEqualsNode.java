@@ -67,7 +67,7 @@ public class ExprEqualsNode extends ExprNode
             return;
         }
 
-        if (typeOne.equals(typeTwo))
+        if (typeOne.equals(typeTwo) || typeOne.isAssignableFrom(typeTwo))
         {
             mustCoerce = false;
             return;

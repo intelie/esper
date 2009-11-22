@@ -113,6 +113,30 @@ public class TestEPStatementSubstitutionParams extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean("e1", 10));
         assertFalse(listenerTwo.isInvoked());
         assertTrue(listenerOne.getAndClearIsInvoked());
+
+        // Test substitution parameter and inheritance in key matching
+        epService.getEPAdministrator().getConfiguration().addEventType("MyEventOne", MyEventOne.class);
+        String epl = "select * from MyEventOne(key = ?)";
+        EPPreparedStatement preparedStatement = epService.getEPAdministrator().prepareEPL(epl);
+        MyObjectKeyInterface lKey = new MyObjectKeyInterface();
+        preparedStatement.setObject(1, lKey);
+        statement = epService.getEPAdministrator().create(preparedStatement);
+        statement.addListener(listenerOne);
+
+        epService.getEPRuntime().sendEvent(new MyEventOne(lKey));
+        assertTrue(listenerOne.getAndClearIsInvoked());
+
+        // Test substitution parameter and concrete subclass in key matching 
+        epService.getEPAdministrator().getConfiguration().addEventType("MyEventTwo", MyEventTwo.class);
+        epl = "select * from MyEventTwo where key = ?";
+        preparedStatement = epService.getEPAdministrator().prepareEPL(epl);
+        MyObjectKeyConcrete cKey = new MyObjectKeyConcrete();
+        preparedStatement.setObject(1, cKey);
+        statement = epService.getEPAdministrator().create(preparedStatement);
+        statement.addListener(listenerOne);
+
+        epService.getEPRuntime().sendEvent(new MyEventTwo(cKey));
+        assertTrue(listenerOne.getAndClearIsInvoked());
     }
 
     public void testSimpleTwoParameterFilter()
@@ -357,6 +381,39 @@ public class TestEPStatementSubstitutionParams extends TestCase
         catch (EPException ex)
         {
             assertEquals("Incorrect syntax near '?' expecting a closing parenthesis ')' but found a questionmark '?' at line 1 column 70, please check the view specifications within the from clause [select * from com.espertech.esper.support.bean.SupportBean.win:length(?)]", ex.getMessage());
+        }
+    }
+
+    public interface IKey {
+    }
+
+    public class MyObjectKeyInterface implements IKey {
+    }
+
+    public class MyEventOne {
+        private IKey key;
+
+        public MyEventOne(IKey key) {
+            this.key = key;
+        }
+
+        public IKey getKey() {
+            return key;
+        }
+    }
+
+    public class MyObjectKeyConcrete {
+    }
+
+    public class MyEventTwo {
+        private MyObjectKeyConcrete key;
+
+        public MyEventTwo(MyObjectKeyConcrete key) {
+            this.key = key;
+        }
+
+        public MyObjectKeyConcrete getKey() {
+            return key;
         }
     }
 }

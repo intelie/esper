@@ -8,6 +8,7 @@ import com.espertech.esper.client.ConfigurationEngineDefaults;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.core.thread.ThreadingServiceImpl;
+import com.espertech.esper.epl.metric.MetricReportingPath;
 import junit.framework.TestCase;
 
 public class TestUpdateDispatchView extends TestCase
@@ -20,6 +21,7 @@ public class TestUpdateDispatchView extends TestCase
 
     public void setUp()
     {
+        MetricReportingPath.setMetricsEnabled(false);
         listenerOne = new SupportUpdateListener();
         listenerTwo = new SupportUpdateListener();
 
