@@ -1,6 +1,7 @@
 package com.espertech.esper.regression.client;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.client.annotation.Description;
 import com.espertech.esper.client.annotation.Name;
 import com.espertech.esper.client.annotation.Tag;
@@ -169,9 +170,9 @@ public class TestStatementAnnotation extends TestCase
                 "@MyAnnotationSimple " +
                 "@MyAnnotationValue('abc') " +
                 "@MyAnnotationValueDefaulted " +
-                "@MyAnnotationValueEnum(supportEnum = SupportEnum.ENUM_VALUE_3) " +
-                "@MyAnnotationValuePair(stringVal='a', intVal=-1, longVal=2, booleanVal=true, charVal='x', byteVal=10, shortVal=20, doubleVal=2.5) " +
-                "@Name('STMTONE')" +
+                "@MyAnnotationValueEnum(supportEnum=com.espertech.esper.support.bean.SupportEnum.ENUM_VALUE_3) " +
+                "@MyAnnotationValuePair(stringVal='a',intVal=-1,longVal=2,booleanVal=true,charVal='x',byteVal=10,shortVal=20,doubleVal=2.5) " +
+                "@Name('STMTONE') " +
                 "select * from Bean";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         EPStatementSPI spi = (EPStatementSPI) stmt;
@@ -206,6 +207,13 @@ public class TestStatementAnnotation extends TestCase
         assertEquals('D', pair.charValDef());
         assertEquals(1.1, pair.doubleValDef());
 
+        // statement model
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);
+        assertEquals(stmtText, model.toEPL());
+        EPStatement stmtTwo = epService.getEPAdministrator().create(model);
+        assertEquals(stmtTwo.getText(), model.toEPL());
+        assertEquals(6, stmtTwo.getAnnotations().length);
+
         // test array
         stmtText =
                 "@MyAnnotationValueArray(value={1, 2, 3}, intArray={4, 5}, doubleArray={}, \nstringArray={\"X\"})\n" +
@@ -222,6 +230,13 @@ public class TestStatementAnnotation extends TestCase
         assertTrue(Arrays.deepEquals(toObjectArray(array.doubleArray()), new Object[] {}));
         assertTrue(Arrays.deepEquals(toObjectArray(array.stringArray()), new Object[] {"X"}));
         assertTrue(Arrays.deepEquals(toObjectArray(array.stringArrayDef()), new Object[] {"XYZ"}));
+
+        // statement model
+        model = epService.getEPAdministrator().compileEPL(stmtText);
+        assertEquals("@MyAnnotationValueArray(value={1,2,3},intArray={4,5},doubleArray={},stringArray={'X'}) select * from Bean", model.toEPL());
+        stmtTwo = epService.getEPAdministrator().create(model);
+        assertEquals(stmtTwo.getText(), model.toEPL());
+        assertEquals(1, stmtTwo.getAnnotations().length);
     }
 
     public void testSPI()

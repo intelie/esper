@@ -45,6 +45,7 @@ public class EPStatementObjectModel implements Serializable
 {
     private static final long serialVersionUID = 0L;
 
+    private List<AnnotationPart> annotations;
     private UpdateClause updateClause;
     private CreateVariableClause createVariable;
     private CreateWindowClause createWindow;
@@ -234,6 +235,8 @@ public class EPStatementObjectModel implements Serializable
     public String toEPL()
     {
         StringWriter writer = new StringWriter();
+
+        AnnotationPart.toEPL(writer, annotations);
 
         if (createWindow != null)
         {
@@ -451,5 +454,13 @@ public class EPStatementObjectModel implements Serializable
     public void setUpdateClause(UpdateClause updateClause)
     {
         this.updateClause = updateClause;
+    }
+
+    public List<AnnotationPart> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(List<AnnotationPart> annotations) {
+        this.annotations = annotations;
     }
 }

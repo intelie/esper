@@ -58,6 +58,7 @@ public class StatementSpecMapper
     private static StatementSpecRaw map(EPStatementObjectModel sodaStatement, StatementSpecMapContext mapContext)
     {
         StatementSpecRaw raw = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+        mapAnnotations(sodaStatement.getAnnotations(), raw);
         mapUpdateClause(sodaStatement.getUpdateClause(), raw, mapContext);
         mapCreateWindow(sodaStatement.getCreateWindow(), raw, mapContext);
         mapCreateVariable(sodaStatement.getCreateVariable(), raw, mapContext);
@@ -85,6 +86,7 @@ public class StatementSpecMapper
         StatementSpecUnMapContext unmapContext = new StatementSpecUnMapContext();
 
         EPStatementObjectModel model = new EPStatementObjectModel();
+        unmapAnnotations(statementSpec.getAnnotations(), model);
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model, unmapContext);
         unmapCreateVariable(statementSpec.getCreateVariableDesc(), model, unmapContext);
         unmapUpdateClause(statementSpec.getStreamSpecs(), statementSpec.getUpdateDesc(), model, unmapContext);
@@ -1799,4 +1801,55 @@ public class StatementSpecMapper
         }
         return filterDef;
     }
+
+    private static void unmapAnnotations(List<AnnotationDesc> annotations, EPStatementObjectModel model) {
+        List<AnnotationPart> result = new ArrayList<AnnotationPart>();
+        for (AnnotationDesc desc : annotations) {
+            result.add(unmapAnnotation(desc));
+        }
+        model.setAnnotations(result);
+    }
+
+    private static AnnotationPart unmapAnnotation(AnnotationDesc desc) {
+        if ((desc.getAttributes() == null) || (desc.getAttributes().isEmpty())) {
+            return new AnnotationPart(desc.getName());
+        }
+
+        List<Pair<String, Object>> attributes = new ArrayList<Pair<String, Object>>();
+        for (Pair<String, Object> pair : desc.getAttributes()) {
+            if (pair.getSecond() instanceof AnnotationDesc) {
+                attributes.add(new Pair<String, Object>(pair.getFirst(), unmapAnnotation((AnnotationDesc) pair.getSecond())));
+            }
+            else {
+                attributes.add(new Pair<String, Object>(pair.getFirst(), pair.getSecond()));
+            }
+        }
+        return new AnnotationPart(desc.getName(), attributes);
+    }
+
+    private static void mapAnnotations(List<AnnotationPart> annotations, StatementSpecRaw raw) {
+        List<AnnotationDesc> result = new ArrayList<AnnotationDesc>();
+        for (AnnotationPart part : annotations) {
+            result.add(mapAnnotation(part));
+        }
+        raw.setAnnotations(result);
+    }
+
+    private static AnnotationDesc mapAnnotation(AnnotationPart part) {
+        if ((part.getAttributes() == null) || (part.getAttributes().isEmpty())) {
+            return new AnnotationDesc(part.getName(), Collections.EMPTY_LIST);
+        }
+
+        List<Pair<String, Object>> attributes = new ArrayList<Pair<String, Object>>();
+        for (Pair<String, Object> pair : part.getAttributes()) {
+            if (pair.getSecond() instanceof AnnotationPart) {
+                attributes.add(new Pair<String, Object>(pair.getFirst(), mapAnnotation((AnnotationPart) pair.getSecond())));
+            }
+            else {
+                attributes.add(new Pair<String, Object>(pair.getFirst(), pair.getSecond()));
+            }
+        }
+        return new AnnotationDesc(part.getName(), attributes);
+    }
+
 }
