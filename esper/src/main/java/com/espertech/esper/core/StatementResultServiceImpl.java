@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Set;
+import java.util.Collections;
 
 /**
  * Implements tracking of statement listeners and subscribers for a given statement
@@ -86,7 +87,12 @@ public class StatementResultServiceImpl implements StatementResultService
         log.debug(".ctor");
         this.statementLifecycleSvc = statementLifecycleSvc;
         this.metricReportingService = metricReportingService;
-        this.statementOutputHooks = metricReportingService.getStatementOutputHooks();
+        if (metricReportingService != null) {
+            this.statementOutputHooks = metricReportingService.getStatementOutputHooks();
+        }
+        else {
+            this.statementOutputHooks = Collections.EMPTY_SET;
+        }
         this.threadingService = threadingService;
     }
 

@@ -85,6 +85,17 @@ public class StatementMetricArray
         try
         {
             removedStatementNames.add(statementName);
+
+            if (removedStatementNames.size() > 1000) {
+                for (int i = 0; i <= currentLastElement; i++)
+                {
+                    if (removedStatementNames.contains(statementNames[i]))
+                    {
+                        statementNames[i] = null;
+                    }
+                }
+                removedStatementNames.clear();
+            }
         }
         finally
         {

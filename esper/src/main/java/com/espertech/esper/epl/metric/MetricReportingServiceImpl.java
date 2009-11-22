@@ -191,6 +191,11 @@ public class MetricReportingServiceImpl implements MetricReportingServiceSPI, Me
 
     public StatementMetricHandle getStatementHandle(String statementId, String statementName)
     {
+        if (!MetricReportingPath.isMetricsEnabled)
+        {
+            return null;   
+        }
+
         StatementMetricHandle handle = stmtMetricRepository.addStatement(statementName);
         statementMetricHandles.put(statementName, handle);
         return handle;
@@ -200,7 +205,7 @@ public class MetricReportingServiceImpl implements MetricReportingServiceSPI, Me
     {
         if (!MetricReportingPath.isMetricsEnabled)
         {
-            return;   
+            return;
         }
 
         if (event.getEventType() == StatementLifecycleEvent.LifecycleEventType.STATECHANGE)
