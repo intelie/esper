@@ -306,11 +306,11 @@ mapMessage.setObject(InputAdapter.ESPERIO_MAP_EVENT_TYPE, "MyInputEvent");]]></p
   </bean>
 
   <bean id="subscriptionOne" class="com.espertech.esperio.jms.JMSSubscription">
-    <property name="eventTypeAlias" value="MyOutputStream"/>
+    <property name="eventTypeName" value="MyOutputStream"/>
   </bean>
 
   <bean id="subscriptionTwo" class="com.espertech.esperio.jms.JMSSubscription">
-    <property name="eventTypeAlias" value="MyOtherOutputStream"/>
+    <property name="eventTypeName" value="MyOtherOutputStream"/>
     <property name="jmsMessageMarshaller">
       <ref bean="myCustomMarshaller"/>
     </property>

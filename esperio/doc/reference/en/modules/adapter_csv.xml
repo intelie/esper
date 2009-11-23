@@ -128,7 +128,7 @@ eventProperties.put("price", double.class);
 eventProperties.put("volume", Integer.class);
 
 Configuration configuration = new Configuration();
-configuration.addEventTypeAlias("PriceEvent", eventProperties);
+configuration.addEventType("PriceEvent", eventProperties);
 
 epService = EPServiceProviderManager.getDefaultProvider(configuration);
 
@@ -187,7 +187,7 @@ IBM,55.5,1000]]></programlisting>
 
 			<para>
 				<programlisting><![CDATA[Configuration configuration = new Configuration();
-configuration.addEventTypeAlias("PriceEvent", PriceEvent.class);
+configuration.addEventType("PriceEvent", PriceEvent.class);
 
 epService = EPServiceProviderManager.getDefaultProvider(configuration);
 
