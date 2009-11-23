@@ -13,6 +13,7 @@ import com.espertech.esper.core.StatementLockFactory;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EPException;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.view.ViewProcessingException;
@@ -99,7 +100,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         NamedWindowProcessor processor = processors.get(name);
         if (processor == null)
         {
-            throw new IllegalStateException("A named window by name '" + name + "' does not exist");
+            throw new EPException("A named window by name '" + name + "' does not exist");
         }
         return processor;
     }
