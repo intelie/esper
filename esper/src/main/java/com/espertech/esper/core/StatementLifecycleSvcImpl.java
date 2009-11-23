@@ -81,7 +81,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
         this.stmtIdToDescMap = new HashMap<String, EPStatementDesc>();
         this.stmtNameToStmtMap = new HashMap<String, EPStatement>();
-        this.stmtNameToIdMap = new HashMap<String, String>();
+        this.stmtNameToIdMap = new LinkedHashMap<String, String>();
 
         observers = new CopyOnWriteArraySet<StatementLifecycleObserver>();
     }
