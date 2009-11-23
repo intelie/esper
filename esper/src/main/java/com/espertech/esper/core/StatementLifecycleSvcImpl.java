@@ -130,15 +130,17 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         String statementName = statementId;
 
         // find name annotation
-        if ((statementSpec.getAnnotations() != null) && (!statementSpec.getAnnotations().isEmpty()))
-        {
-            for (AnnotationDesc desc : statementSpec.getAnnotations())
+        if (optStatementName == null) {
+            if ((statementSpec.getAnnotations() != null) && (!statementSpec.getAnnotations().isEmpty()))
             {
-                if ((desc.getName().equals(Name.class.getSimpleName())) || (desc.getName().equals(Name.class.getName())))
+                for (AnnotationDesc desc : statementSpec.getAnnotations())
                 {
-                    if (desc.getAttributes().get(0) != null)
+                    if ((desc.getName().equals(Name.class.getSimpleName())) || (desc.getName().equals(Name.class.getName())))
                     {
-                        optStatementName = desc.getAttributes().get(0).getSecond().toString();
+                        if (desc.getAttributes().get(0) != null)
+                        {
+                            optStatementName = desc.getAttributes().get(0).getSecond().toString();
+                        }
                     }
                 }
             }

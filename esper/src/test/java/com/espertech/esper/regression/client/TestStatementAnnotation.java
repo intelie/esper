@@ -123,6 +123,11 @@ public class TestStatementAnnotation extends TestCase
         epService.getEPAdministrator().createEPL("@Hint('ITERATE_ONLY,DISABLE_RECLAIM_GROUP') select * from Bean");
         epService.getEPAdministrator().createEPL("@Hint('ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') select * from Bean");
         epService.getEPAdministrator().createEPL("@Hint('  iterate_only ') select * from Bean");
+        
+        // test statement name override
+        stmtText = "@Name('MyAnnotatedName') select * from Bean";
+        stmt = epService.getEPAdministrator().createEPL(stmtText, "MyABCStmt");
+        assertEquals("MyABCStmt", stmt.getName());
     }
 
     private void runAssertion(EPStatement stmt)
