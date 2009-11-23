@@ -66,7 +66,8 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
         }
 
         // Start all child nodes
-        for (EvalStateNode child : activeChildNodes)
+        EvalStateNode[] activeChildNodesArray = activeChildNodes.toArray(new EvalStateNode[activeChildNodes.size()]);
+        for (EvalStateNode child : activeChildNodesArray)
         {
             child.start();
         }

@@ -2,9 +2,9 @@ package com.espertech.esper.regression.pattern;
 
 import junit.framework.*;
 import com.espertech.esper.regression.support.*;
-import com.espertech.esper.support.bean.SupportBeanConstants;
-import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
@@ -157,5 +157,27 @@ public class TestAndOperator extends TestCase implements SupportBeanConstants
 
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
         util.runTest();
+    }
+
+    public void testAndNotDefaultTrue() {
+
+        // ESPER-402
+        EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        SupportUpdateListener listener = new SupportUpdateListener();
+        engine.initialize();
+        engine.getEPAdministrator().getConfiguration().addEventType("CallWaiting", SupportBean_A.class);
+        engine.getEPAdministrator().getConfiguration().addEventType("CallFinished", SupportBean_B.class);
+        engine.getEPAdministrator().getConfiguration().addEventType("CallPickedUp", SupportBean_C.class);
+        String pattern =
+                " insert into NumberOfWaitingCalls(calls) " +
+                " select count(*)" +
+                " from pattern[every call=CallWaiting ->" + 
+                        " (not CallFinished(id=call.id) and" +
+                        " not CallPickedUp(id=call.id))]";
+        engine.getEPAdministrator().createEPL(pattern).addListener(listener);
+        engine.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        engine.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+        engine.getEPRuntime().sendEvent(new SupportBean_C("C1"));
+        assertTrue(listener.isInvoked());
     }
 }
