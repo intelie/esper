@@ -18,9 +18,22 @@ public class TestFilterExpressions extends TestCase
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("SupportEvent", SupportTradeEvent.class);
+        config.addEventType("SupportBean", SupportBean.class);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+    }
+
+    public void testRewriteWhere() {
+        String epl = "select * from SupportBean as A0 where A0.intPrimitive = 3";
+        EPStatement statement = epService.getEPAdministrator().createEPL(epl);
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 4));
+        assertFalse(listener.getAndClearIsInvoked());
     }
 
     public void testNullBooleanExpr()

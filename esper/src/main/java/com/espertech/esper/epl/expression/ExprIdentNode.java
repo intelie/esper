@@ -28,7 +28,7 @@ public class ExprIdentNode extends ExprNode
     // select indexed[1] from ...   is a indexed property
 
     private final String unresolvedPropertyName;
-    private final String streamOrPropertyName;
+    private String streamOrPropertyName;
 
     private String resolvedStreamName;
     private String resolvedPropertyName;
@@ -87,6 +87,10 @@ public class ExprIdentNode extends ExprNode
     public String getStreamOrPropertyName()
     {
         return streamOrPropertyName;
+    }
+
+    public void setStreamOrPropertyName(String streamOrPropertyName) {
+        this.streamOrPropertyName = streamOrPropertyName;
     }
 
     /**

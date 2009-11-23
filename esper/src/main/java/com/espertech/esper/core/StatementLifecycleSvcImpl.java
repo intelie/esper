@@ -804,8 +804,21 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 disqualified = viewResourceVisitor.getExprNodes().size() > 0;
             }
 
+
             if (!disqualified)
             {
+                // If an alias is provided, find all properties to ensure the alias gets removed
+                String alias = spec.getStreamSpecs().get(0).getOptionalStreamName();
+                if (alias != null) {
+                    ExprNodeIdentifierCollectVisitor v = new ExprNodeIdentifierCollectVisitor();
+                    whereClause.accept(v);
+                    for (ExprIdentNode node : v.getExprProperties()) {
+                        if (node.getStreamOrPropertyName() != null && (node.getStreamOrPropertyName().equals(alias))) {
+                            node.setStreamOrPropertyName(null);
+                        }
+                    }
+                }
+
                 spec.setFilterRootNode(null);
                 FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) spec.getStreamSpecs().get(0);
                 streamSpec.getRawFilterSpec().getFilterExpressions().add(whereClause);
