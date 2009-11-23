@@ -1828,9 +1828,15 @@ public class StatementSpecMapper
     }
 
     private static void mapAnnotations(List<AnnotationPart> annotations, StatementSpecRaw raw) {
-        List<AnnotationDesc> result = new ArrayList<AnnotationDesc>();
-        for (AnnotationPart part : annotations) {
-            result.add(mapAnnotation(part));
+        List<AnnotationDesc> result;
+        if (annotations != null) {
+            result = new ArrayList<AnnotationDesc>();
+            for (AnnotationPart part : annotations) {
+                result.add(mapAnnotation(part));
+            }
+        }
+        else {
+            result = Collections.emptyList();
         }
         raw.setAnnotations(result);
     }

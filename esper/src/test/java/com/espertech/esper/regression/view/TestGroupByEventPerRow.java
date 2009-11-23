@@ -1,18 +1,18 @@
 package com.espertech.esper.regression.view;
 
 import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.bean.SupportBeanString;
-import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
-
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBeanString;
+import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import junit.framework.TestCase;
 
 public class TestGroupByEventPerRow extends TestCase
 {
@@ -28,6 +28,25 @@ public class TestGroupByEventPerRow extends TestCase
         listener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+    }
+
+    public void testWildcard() {
+
+        // test no output limit
+        String fields[] = "string, intPrimitive, minval".split(",");
+        String epl = "select *, min(intPrimitive) as minval from SupportBean.win:length(2) group by string";
+        selectTestView = epService.getEPAdministrator().createEPL(epl);
+        selectTestView.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("G1", 10));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"G1", 10, 10});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("G1", 9));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"G1", 9, 9});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("G1", 11));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"G1", 11, 9});
     }
 
     public void testAggregationOverGroupedProps()

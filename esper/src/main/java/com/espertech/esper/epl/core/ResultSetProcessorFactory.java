@@ -354,7 +354,8 @@ public class ResultSetProcessorFactory
 
         // (2)
         // A wildcard select-clause has been specified and the group-by is ignored since no aggregation functions are used, and no having clause
-        if ((namedSelectionList.isEmpty()) && (propertiesAggregatedHaving.isEmpty()) && (havingAggregateExprNodes.isEmpty()))
+        boolean isLast = statementSpecCompiled.getOutputLimitSpec() != null && statementSpecCompiled.getOutputLimitSpec().getDisplayLimit() == OutputLimitLimitType.LAST;
+        if ((namedSelectionList.isEmpty()) && (propertiesAggregatedHaving.isEmpty()) && (havingAggregateExprNodes.isEmpty()) && (!isLast))
         {
             log.debug(".getProcessor Using ResultSetProcessorSimple");
             return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream, stmtContext);
@@ -397,7 +398,7 @@ public class ResultSetProcessorFactory
         }
 
         // Wildcard select-clause means we do not have all selected properties in the group
-        if (namedSelectionList.isEmpty())
+        if (isUsingWildcard)
         {
             allInGroupBy = false;
         }
@@ -415,7 +416,7 @@ public class ResultSetProcessorFactory
         }
 
         // Wildcard select-clause means that all order-by props in the select expression
-        if (namedSelectionList.isEmpty())
+        if (isUsingWildcard)
         {
             allInSelect = true;
         }

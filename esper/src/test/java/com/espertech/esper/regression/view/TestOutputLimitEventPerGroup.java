@@ -34,6 +34,43 @@ public class TestOutputLimitEventPerGroup extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testWildcardEventPerGroup() {
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean group by string output last every 3 events order by string asc");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("IBM", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("ATT", 11));
+        epService.getEPRuntime().sendEvent(new SupportBean("IBM", 100));
+
+        EventBean[] events = listener.getNewDataListFlattened();
+        listener.reset();
+        assertEquals(2, events.length);
+        assertEquals("ATT", events[0].get("string"));
+        assertEquals(11, events[0].get("intPrimitive"));
+        assertEquals("IBM", events[1].get("string"));
+        assertEquals(100, events[1].get("intPrimitive"));
+        stmt.destroy();
+
+        // All means each event
+        stmt = epService.getEPAdministrator().createEPL("select * from SupportBean group by string output all every 3 events");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("IBM", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("ATT", 11));
+        epService.getEPRuntime().sendEvent(new SupportBean("IBM", 100));
+
+        events = listener.getNewDataListFlattened();
+        assertEquals(3, events.length);
+        assertEquals("IBM", events[0].get("string"));
+        assertEquals(10, events[0].get("intPrimitive"));
+        assertEquals("ATT", events[1].get("string"));
+        assertEquals(11, events[1].get("intPrimitive"));
+        assertEquals("IBM", events[2].get("string"));
+        assertEquals(100, events[2].get("intPrimitive"));
+    }
+    
     public void test1NoneNoHavingNoJoin()
     {
         String stmtText = "select symbol, sum(price) " +
