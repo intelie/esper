@@ -253,7 +253,7 @@ public class ExprCaseNode extends ExprNode
             Boolean whenResult = (Boolean) p.getFirst().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
             // If the 'when'-expression returns true
-            if (whenResult)
+            if ((whenResult != null) && (whenResult))
             {
                 caseResult = p.getSecond().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 matched = true;
