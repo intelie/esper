@@ -2570,7 +2570,7 @@ where tick.symbol = news.symbol]]></programlisting>
 			Esper supports both simple subqueries as well as correlated subqueries. In a simple subquery, the inner query is not correlated to the outer query. Here is an example simple subquery within a <literal>select</literal> clause:
 	    </para>
 			
-		<programlisting><![CDATA[select assetId, (select zone from ZoneClosed.std:lastevent) as lastClosed from RFIDEvent]]></programlisting>
+		<programlisting><![CDATA[select assetId, (select zone from ZoneClosed.std:lastevent()) as lastClosed from RFIDEvent]]></programlisting>
 
 		<para>
 			If the inner query is dependent on the outer query, we will have a correlated subquery. An example of a correlated subquery is shown below. Notice the <literal>where</literal> clause in the inner query, where the condition involves a stream from the outer query:
