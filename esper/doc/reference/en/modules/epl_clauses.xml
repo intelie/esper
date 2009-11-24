@@ -2606,6 +2606,11 @@ where tick.symbol = news.symbol]]></programlisting>
 		</para>
 
 		<para>
+			When your subquery returns multiple rows, you must use an aggregation function in the <literal>select</literal> clause of the subselect, as a subquery can only return a single row and single value object. To return multiple values from a subquery,
+			consider having the subquery return an array of values via the <literal>{...}</literal> syntax or have the subquery return an application object.
+		</para>
+
+		<para>
 			Aggregation functions may be used in the <literal>select</literal> clause of the subselect as this example outlines:
 		</para>
 		<programlisting><![CDATA[select * from MarketData
@@ -3674,9 +3679,14 @@ from ServiceOrderEvent as order]]></programlisting>
 			<programlisting><![CDATA[select * from AllOrdersNamedWindow]]></programlisting>
 			
 			<para>
-				The statement as above simply receives the unfiltered insert and remove stream of the named window and reports that stream to its listeners. The <literal>iterator</literal> method returns returns all events in the named window, if any.
+				The statement as above simply receives the unfiltered insert stream of the named window and reports that stream to its listeners. The <literal>iterator</literal> method returns returns all events in the named window, if any.
 			</para>
 
+			<para>
+				If your application desires to obtain the events removed from the named window, use the <literal>rstream</literal> keyword as this statement shows:
+			</para>
+			<programlisting><![CDATA[select rstream * from AllOrdersNamedWindow]]></programlisting>
+			
 			<para>
 				The next statement derives an average price per symbol from all events posted by a named window: 
 			</para>

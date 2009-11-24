@@ -578,6 +578,10 @@ following conditions occurs, whichever occurs first: the data window has collect
 				</para>
 
 				<para>
+					An expression may return a <literal>null</literal> value. The engine treats a <literal>null</literal> value as any other value. An expression can also return a custom application object, whereby the application class should implement the <literal>hashCode</literal> and <literal>equals</literal> methods.
+				</para>
+
+				<para>
 					The below example creates a view that retains only the last event per symbol.
 				</para>
 				<programlisting><![CDATA[select * from StockTickEvent.std:unique(symbol)]]></programlisting>
@@ -607,10 +611,20 @@ following conditions occurs, whichever occurs first: the data window has collect
 				</para>
 
 				<para>
-					This example computes the total price for the last 5 events per each symbol, aggregating the price across all symbols (since no <literal>group by</literal> clause is specified the aggregation is across all symbols):
+					An expression may return a <literal>null</literal> value. The engine treats a <literal>null</literal> value as any other value. An expression can also return a custom application object, whereby the application class should implement the <literal>hashCode</literal> and <literal>equals</literal> methods.
+				</para>
+
+				<para>
+					This example computes the total price for the last 5 events considering the last 5 events per each symbol, aggregating the price across all symbols (since no <literal>group by</literal> clause is specified the aggregation is across all symbols):
 				</para>
 	
 				<programlisting><![CDATA[select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(5)]]></programlisting>
+
+				<para>
+					To compute the total price for the last 5 events considering the last 5 events per each symbol and outputting a price per symbol, add the <literal>group by</literal> clause:
+				</para>
+	
+				<programlisting><![CDATA[select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(5) group by symbol]]></programlisting>
 
 				<para>
 					The group-by view can also take multiple expressions that provide values to group by. This example computes the total price for each symbol and feed for the last 10 events per symbol and feed combination:

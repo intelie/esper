@@ -367,6 +367,24 @@ config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(fal
 			<para>
 				For high-volume streams, the locking required to protected statement state may slow down or introduce blocking for very high arrival rates of events that apply to the very same statement and its state. You may want to consider splitting a single statement into multiple statements that each look for a certain subset of the high-arrival-rate stream. There is very little cost in terms of memory or CPU resources per statement, the engine can handle larger number of statements usually as efficiently as single statements.
 			</para>
+
+			<para>
+				For example, consider the following statement:
+			</para>
+			<programlisting><![CDATA[// less effective in a highly threaded environment 
+select venue, ccyPair, side, sum(qty)
+from CumulativePrice.std:groupby(ccyPair,side) as w
+where w.side='O']]></programlisting>
+
+			<para>
+				The engine will protect state of a statements by a lock on the statement level, as discussed in the API section. In highly threaded applications threads may block on the single statement.
+			</para>
+
+			<para>
+				Consider creating a statement per currency instead, for example:			
+			</para>
+			<programlisting><![CDATA[select venue, ccyPair, side, sum(qty) from CumulativePrice(side='O', ccyPair='USD')
+select venue, ccyPair, side, sum(qty) from CumulativePrice(side='O', ccyPair='EURO')]]></programlisting>
 		</sect2>
 
 		<sect2 id="perf-tips-13a">

@@ -139,6 +139,34 @@ where sensor.sensorId = loc.sensorId</pre></div>
     </faq>   
   </part>
 
+  <part id="troubleshooting">
+  	<title>Troubleshooting</title>
+  	
+    <faq id="troubleshooting-1">
+      <question>My query presents incorrect or incomplete results? What can I do?</question>
+      <answer>
+        <p>
+          Make sure each event object is its own object. As Esper cannot detect when properties of an event object are changed by your application,
+          it is best not to change event properties of an existing event object, and it is best not to reuse an existing event object 
+          when sending an event into the engine.
+        </p>
+        <p>
+          The UpdateListener interface presents an array of output events (and not just one event). Make sure to inspect all events in the 
+          array output.
+        </p>
+        <p>
+          Turn on logging as described in the documentation to trace event processing. Ensure to turn off logging when deploying to production.
+        </p>
+        <p>
+          Consider adding a user-defined function to your EPL statement to output application information or to set a breakpoint.
+        </p>
+        <p>
+          The Reporting Issues page on this site provides further information for resolving issues.
+        </p>
+      </answer>
+    </faq>    
+  </part>
+
   <part id="general">
   	<title>General</title>
   	
@@ -286,6 +314,32 @@ select * from pattern [
   ]
 </pre></div>
   
+      </answer>
+    </faq>    
+
+    <faq id="correlate-5">
+      <question>How do I look for pairs of immediately-followed events?</question>
+      <answer>
+      
+	<p>
+	While one could use an EPL pattern statement to look for the absence of any other event between two events, i.e. (A -> (B and not C)),
+	the new match_recognize function provides a good solution.
+        </p>
+		
+	<p>
+	The next statement utilizes match_recognize to look for two immediately-followed events that both have the same alert name and picked flag.
+        </p>
+
+<div class="source"><pre>
+select * from AlertEventStream
+  match_recognize (
+    partition by alertName
+    measures sel[0].alarmNumber as alarmNumber, sel[0].notificationId as notificationId
+    pattern (sel sel)
+    define
+      sel as sel.alertName='123' and sel.picked=false
+)</pre></div>
+      
       </answer>
     </faq>    
 

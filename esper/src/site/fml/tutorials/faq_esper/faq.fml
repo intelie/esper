@@ -674,6 +674,65 @@ Esper is a 100% Java component and works anywhere Java 5 or 6 is fully supported
 	</p>
 	</answer>
     </faq>    
+
+    <faq id="unit_test">
+      <question>How do I test EPL? Is there an integration with a testing framework?</question>
+      <answer>
+        <p>
+	The best source of examples for testing is the regression test suite under folder "src/test/java/com/espertech/esper/regression",
+	accessible via Subversion browser or repository.	
+	</p>
+        <p>
+	When controlling time in a test case, use the CurrentTimeEvent class to set or advance time. You would want to set time before
+	creating a statement and advance time between events as needed (make sure you turn the internal timer off via configuration).
+	</p>
+        <p>
+	To help make the test cases in your test suite independent of each other, and independent of the order in which they are executed,
+	use the initialize method to reset engine state to the last provided configuration.
+	</p>
+        <p>
+	Consider implementing multi-threaded tests and/or a good simulator for production data to simulate production-like
+	conditions early on.
+	</p>
+        <p>
+	In below code snippet we provide a possible layout for test cases using the JUnit test suite:
+	</p>
+	<div class="source"><pre>
+public class TestSampleJUnit extends TestCase {
+    private EPServiceProvider epService;
+
+    // Called by the testing framework
+    public void setUp() {
+    	// configure with timer disabled, leaving the concept of time in control of this test
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
+	// use the initialize method to reset the engine to pristine state before each test, if desired
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+    }
+
+    public void testSampleOne() {
+        // set time to a start time, lets say time zero (0) but could be any time or System.currentTimeMillis 
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        
+        EPStatement stmt = epService.getEPAdministrator().createEPL("...my statement here...");
+        // add a listener or subscriber to the statement, or iterate the statement 
+
+        // send a new event object for each event
+        epService.getEPRuntime().sendEvent(new MyEvent());
+
+        // advance time as needed, here we pretend 1 second passed
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
+
+        // send more events and assert as needed
+    }
+
+    public void testSampleTwo() {...}
+}</pre></div>      
+
+	</answer>
+    </faq>    
   </part>
 
 </faqs>
