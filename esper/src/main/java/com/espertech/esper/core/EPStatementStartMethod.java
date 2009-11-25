@@ -55,8 +55,8 @@ import com.espertech.esper.view.internal.RouteResultView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
 import java.lang.annotation.Annotation;
+import java.util.*;
 
 /**
  * Starts and provides the stop method for EPL statements.
@@ -1388,7 +1388,7 @@ public class EPStatementStartMethod
         return subSelectStreamDesc;
     }
 
-    private void startSubSelect(SubSelectStreamCollection subSelectStreamDesc, String[] outerStreamNames, EventType[] outerEventTypes, String[] outereventTypeNamees, List<StopCallback> stopCallbacks, Annotation[] annotations)
+    private void startSubSelect(SubSelectStreamCollection subSelectStreamDesc, String[] outerStreamNames, EventType[] outerEventTypesSelect, String[] outerEventTypeNamees, List<StopCallback> stopCallbacks, Annotation[] annotations)
             throws ExprValidationException
     {
         for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
@@ -1424,15 +1424,27 @@ public class EPStatementStartMethod
                 viewResourceDelegate.requestCapability(0, new NotADataWindowViewCapability(), null);
             }
 
-            // Streams event types are the original stream types with the stream zero the subselect stream
-            LinkedHashMap<String, Pair<EventType, String>> namesAndTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-            namesAndTypes.put(subexpressionStreamName, new Pair<EventType, String>(eventType, subselecteventTypeName));
-            for (int i = 0; i < outerEventTypes.length; i++)
-            {
-                Pair<EventType, String> pair = new Pair<EventType, String>(outerEventTypes[i], outereventTypeNamees[i]);
-                namesAndTypes.put(outerStreamNames[i], pair);
+            EventType[] outerEventTypes;
+            StreamTypeService subselectTypeService;
+
+            // Use the override provided by the subselect if applicable
+            if (subselect.getFilterSubqueryStreamTypes() != null) {
+                subselectTypeService = subselect.getFilterSubqueryStreamTypes();
+                outerEventTypes = new EventType[subselectTypeService.getEventTypes().length - 1];
+                System.arraycopy(subselectTypeService.getEventTypes(), 1, outerEventTypes, 0, subselectTypeService.getEventTypes().length - 1);
             }
-            StreamTypeService subselectTypeService = new StreamTypeServiceImpl(namesAndTypes, services.getEngineURI(), true, true);
+            else {
+                // Streams event types are the original stream types with the stream zero the subselect stream
+                LinkedHashMap<String, Pair<EventType, String>> namesAndTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+                namesAndTypes.put(subexpressionStreamName, new Pair<EventType, String>(eventType, subselecteventTypeName));
+                for (int i = 0; i < outerEventTypesSelect.length; i++)
+                {
+                    Pair<EventType, String> pair = new Pair<EventType, String>(outerEventTypesSelect[i], outerEventTypeNamees[i]);
+                    namesAndTypes.put(outerStreamNames[i], pair);
+                }
+                subselectTypeService = new StreamTypeServiceImpl(namesAndTypes, services.getEngineURI(), true, true);
+                outerEventTypes = outerEventTypesSelect;
+            }
             ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain}, statementContext);
 
             // Validate select expression
@@ -1698,7 +1710,7 @@ public class EPStatementStartMethod
         return deleteJoinExpr.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
     }
 
-    private List<Pair<Integer, String>> getExpressionProperties(ExprNode exprNode, boolean visitAggregateNodes)
+    public static List<Pair<Integer, String>> getExpressionProperties(ExprNode exprNode, boolean visitAggregateNodes)
     {
         ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(visitAggregateNodes);
         exprNode.accept(visitor);

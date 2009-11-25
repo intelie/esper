@@ -22,6 +22,7 @@ import com.espertech.esper.event.NativeEventType;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
+import com.espertech.esper.filter.FilterSpecParamExprNode;
 import com.espertech.esper.pattern.EvalFilterNode;
 import com.espertech.esper.pattern.EvalNode;
 import com.espertech.esper.pattern.EvalNodeAnalysisResult;
@@ -827,6 +828,78 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
         }
 
+        // Look for expressions with sub-selects in select expression list and filter expression
+        // Recursively compile the statement within the statement.
+        ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+        List<SelectClauseElementCompiled> selectElements = new ArrayList<SelectClauseElementCompiled>();
+        SelectClauseSpecCompiled selectClauseCompiled = new SelectClauseSpecCompiled(selectElements, spec.getSelectClauseSpec().isDistinct());
+        for (SelectClauseElementRaw raw : spec.getSelectClauseSpec().getSelectExprList())
+        {
+            if (raw instanceof SelectClauseExprRawSpec)
+            {
+                SelectClauseExprRawSpec rawExpr = (SelectClauseExprRawSpec) raw;
+                rawExpr.getSelectExpression().accept(visitor);
+                selectElements.add(new SelectClauseExprCompiledSpec(rawExpr.getSelectExpression(), rawExpr.getOptionalAsName()));
+            }
+            else if (raw instanceof SelectClauseStreamRawSpec)
+            {
+                SelectClauseStreamRawSpec rawExpr = (SelectClauseStreamRawSpec) raw;
+                selectElements.add(new SelectClauseStreamCompiledSpec(rawExpr.getStreamName(), rawExpr.getOptionalAsName()));
+            }
+            else if (raw instanceof SelectClauseElementWildcard)
+            {
+                SelectClauseElementWildcard wildcard = (SelectClauseElementWildcard) raw;
+                selectElements.add(wildcard);
+            }
+            else
+            {
+                throw new IllegalStateException("Unexpected select clause element class : " + raw.getClass().getName());
+            }
+        }
+        if (spec.getFilterRootNode() != null)
+        {
+            spec.getFilterRootNode().accept(visitor);
+        }
+        if (spec.getUpdateDesc() != null)
+        {
+            if (spec.getUpdateDesc().getOptionalWhereClause() != null)
+            {
+                spec.getUpdateDesc().getOptionalWhereClause().accept(visitor);
+            }
+            for (OnTriggerSetAssignment assignment : spec.getUpdateDesc().getAssignments())
+            {
+                assignment.getExpression().accept(visitor);
+            }
+        }
+        // Determine pattern-filter subqueries
+        for (StreamSpecRaw streamSpecRaw : spec.getStreamSpecs()) {
+            if (streamSpecRaw instanceof PatternStreamSpecRaw) {
+                PatternStreamSpecRaw patternStreamSpecRaw = (PatternStreamSpecRaw) streamSpecRaw;
+                EvalNodeAnalysisResult analysisResult = EvalNode.recursiveAnalyzeChildNodes(patternStreamSpecRaw.getEvalNode());
+                for (EvalFilterNode filterNode : analysisResult.getFilterNodes()) {
+                    for (ExprNode filterExpr : filterNode.getRawFilterSpec().getFilterExpressions()) {
+                        filterExpr.accept(visitor);
+                    }
+                }
+            }
+        }
+        // Determine filter streams
+        for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
+        {
+            if (rawSpec instanceof FilterStreamSpecRaw) {
+                FilterStreamSpecRaw raw = (FilterStreamSpecRaw) rawSpec;
+                for (ExprNode filterExpr : raw.getRawFilterSpec().getFilterExpressions()) {
+                    filterExpr.accept(visitor);
+                }
+            }
+        }
+        for (ExprSubselectNode subselect : visitor.getSubselects())
+        {
+            StatementSpecRaw raw = subselect.getStatementSpecRaw();
+            StatementSpecCompiled compiled = compile(raw, eplStatement, statementContext, true, new Annotation[0]);
+            subselect.setStatementSpecCompiled(compiled);
+        }
+
         // compile each stream used
         try
         {
@@ -916,56 +989,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 throw new EPStatementException(e.getMessage(), eplStatement);
             }
-        }
-
-        // Look for expressions with sub-selects in select expression list and filter expression
-        // Recursively compile the statement within the statement.
-        ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
-        List<SelectClauseElementCompiled> selectElements = new ArrayList<SelectClauseElementCompiled>();
-        SelectClauseSpecCompiled selectClauseCompiled = new SelectClauseSpecCompiled(selectElements, spec.getSelectClauseSpec().isDistinct());
-        for (SelectClauseElementRaw raw : spec.getSelectClauseSpec().getSelectExprList())
-        {
-            if (raw instanceof SelectClauseExprRawSpec)
-            {
-                SelectClauseExprRawSpec rawExpr = (SelectClauseExprRawSpec) raw;
-                rawExpr.getSelectExpression().accept(visitor);
-                selectElements.add(new SelectClauseExprCompiledSpec(rawExpr.getSelectExpression(), rawExpr.getOptionalAsName()));
-            }
-            else if (raw instanceof SelectClauseStreamRawSpec)
-            {
-                SelectClauseStreamRawSpec rawExpr = (SelectClauseStreamRawSpec) raw;
-                selectElements.add(new SelectClauseStreamCompiledSpec(rawExpr.getStreamName(), rawExpr.getOptionalAsName()));
-            }
-            else if (raw instanceof SelectClauseElementWildcard)
-            {
-                SelectClauseElementWildcard wildcard = (SelectClauseElementWildcard) raw;
-                selectElements.add(wildcard);
-            }
-            else
-            {
-                throw new IllegalStateException("Unexpected select clause element class : " + raw.getClass().getName());
-            }
-        }
-        if (spec.getFilterRootNode() != null)
-        {
-            spec.getFilterRootNode().accept(visitor);
-        }
-        if (spec.getUpdateDesc() != null)
-        {
-            if (spec.getUpdateDesc().getOptionalWhereClause() != null)
-            {
-                spec.getUpdateDesc().getOptionalWhereClause().accept(visitor);
-            }
-            for (OnTriggerSetAssignment assignment : spec.getUpdateDesc().getAssignments())
-            {
-                assignment.getExpression().accept(visitor);
-            }
-        }
-        for (ExprSubselectNode subselect : visitor.getSubselects())
-        {
-            StatementSpecRaw raw = subselect.getStatementSpecRaw();
-            StatementSpecCompiled compiled = compile(raw, eplStatement, statementContext, true, new Annotation[0]);
-            subselect.setStatementSpecCompiled(compiled);
         }
 
         return new StatementSpecCompiled(

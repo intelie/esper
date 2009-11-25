@@ -173,7 +173,7 @@ public class TestSubselectUnfiltered extends TestCase {
                    "Error starting statement: Aggregation functions are not supported within subquery filters, consider using insert-into instead [select (select id from S1.std:lastevent() where (sum(id) = 5)) as idS1 from S0]");
 
         tryInvalid("select * from S0(id=5 and (select id from S1))",
-                   "Subselects not allowed within filters [select * from S0(id=5 and (select id from S1))]");
+                   "Subqueries require one or more views to limit the stream, consider declaring a length or time window [select * from S0(id=5 and (select id from S1))]");
 
         tryInvalid("select * from S0 group by id + (select id from S1)",
                    "Error starting statement: Subselects not allowed within group-by [select * from S0 group by id + (select id from S1)]");

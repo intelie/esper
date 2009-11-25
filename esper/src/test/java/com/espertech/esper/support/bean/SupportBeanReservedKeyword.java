@@ -4,6 +4,7 @@ public class SupportBeanReservedKeyword
 {
     public int seconds;
     public int order;
+    public SupportBeanReservedKeyword innerbean;
 
     public SupportBeanReservedKeyword(int seconds, int order)
     {
@@ -29,5 +30,13 @@ public class SupportBeanReservedKeyword
     public void setOrder(int order)
     {
         this.order = order;
+    }
+
+    public SupportBeanReservedKeyword getInnerbean() {
+        return innerbean;
+    }
+
+    public void setInnerbean(SupportBeanReservedKeyword innerbean) {
+        this.innerbean = innerbean;
     }
 }

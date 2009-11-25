@@ -2563,7 +2563,7 @@ where tick.symbol = news.symbol]]></programlisting>
 		<indexterm><primary>EPL</primary><secondary>subqueries</secondary></indexterm>
 
 		<para>
-			A subquery is a <literal>select</literal> within another statement. Esper supports subqueries in the <literal>select</literal> clause and in the <literal>where</literal> clause of EPL statements. Subqueries provide an alternative way to perform operations that would otherwise require complex joins. Subqueries can also make statements more readable then complex joins. 
+			A subquery is a <literal>select</literal> within another statement. Esper supports subqueries in the <literal>select</literal> clause, in the <literal>where</literal> clause and in stream and pattern filter expressions. Subqueries provide an alternative way to perform operations that would otherwise require complex joins. Subqueries can also make statements more readable then complex joins.
 	    </para>
 
 		<para>
@@ -2617,9 +2617,44 @@ where tick.symbol = news.symbol]]></programlisting>
 where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())]]></programlisting>
 
 		<para>
-			As the sub-select expression is evaluated first, the query above actually never fires for the GOOG symbol, only for other symbols that have a price higher then the current maximum for GOOG. As a sidenote, the <literal>insert into</literal> clause can also be handy to compute aggregation results for use in multiple subqueries.
+			As the sub-select expression is evaluated first (by default), the query above actually never fires for the GOOG symbol, only for other symbols that have a price higher then the current maximum for GOOG. As a sidenote, the <literal>insert into</literal> clause can also be handy to compute aggregation results for use in multiple subqueries.
 		</para>
 		
+		<para>
+			As the sub-select expression is evaluated first, the query above actually never fires for the GOOG symbol, only for other symbols that have a price higher then the current maximum for GOOG. As a sidenote, the <literal>insert into</literal> clause can also be handy to compute aggregation results for use in multiple subqueries.
+		</para>
+
+		<para>
+			Filter expressions in a pattern or stream may also employ subqueries. Subqueries can be uncorrelated or can be correlated to properties of the stream or to properties of tagged events in a pattern. Subqueries may reference named windows as well.
+		</para>
+
+		<para>
+			The following example filters <literal>BarData</literal> events that have a close price less then the last moving average (field <literal>movAgv</literal>) as provided by stream <literal>SMA20Stream</literal> (an uncorrelated subquery):
+		</para>
+		<programlisting><![CDATA[select * from BarData(ticker='MSFT', closePrice < 
+    (select movAgv from SMA20Stream(ticker='MSFT').std:lastevent()))]]></programlisting>
+
+		<para>
+			A few generic examples follow to demonstrate the point. The examples use short event and property names so they are easy to read. Assume <literal>A</literal> and <literal>B</literal> are streams and <literal>DNamedWindow</literal> is a named window, and properties <literal>a_id, b_id, d_id, a_val, b_val, d_val</literal> respectively:
+		</para>
+		<programlisting><![CDATA[// Sample correlated subquery as part of stream filter criteria
+select * from A(a_val in 
+  (select b_val from B.std:unique(b_val) as b where a.a_id = b.b_id)) as a
+		
+// Sample correlated subquery against a named window
+select * from A(a_val in 
+  (select b_val from DNamedWindow as d where a.a_id = d.d_id)) as a
+
+// Sample correlated subquery in the filter criteria as part of a pattern, querying a named window
+select * from pattern [
+  a=A -> b=B(bvalue = 
+    (select d_val from DNamedWindow as d where d.d_id = b.b_id and d.d_id = a.a_id))
+]]]></programlisting>
+
+		<para>
+			Subquery state starts to accumulate as soon as a statement starts (and not only when a pattern-subexpression activates).
+		</para>
+
 		<para>
 			The following restrictions apply to subqueries:
 		</para>

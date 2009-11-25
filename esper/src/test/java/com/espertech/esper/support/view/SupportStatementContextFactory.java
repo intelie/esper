@@ -65,6 +65,7 @@ public class SupportStatementContextFactory
                 new ValueAddEventServiceImpl(), // revison svc
                 config,
                 null,
+                null,
                 null);
     }
 }

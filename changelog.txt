@@ -1,8 +1,13 @@
 Esper Changelog
 ===================
 
-
 Changes in version 3.3.0
+------------------------
+
+- Support for subqueries to occur in filter expressions (stream or pattern)
+
+
+Changes in version 3.2.0
 ------------------------
 
 Major API changes

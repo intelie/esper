@@ -13,6 +13,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.lookup.TableLookupStrategy;
 import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
+import com.espertech.esper.epl.core.StreamTypeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,6 +41,7 @@ public abstract class ExprSubselectNode extends ExprNode
      */
     protected EventType rawEventType;
 
+    private StreamTypeService filterSubqueryStreamTypes;
     private StatementSpecRaw statementSpecRaw;
     private StatementSpecCompiled statementSpecCompiled;
     private TableLookupStrategy strategy;
@@ -194,5 +196,15 @@ public abstract class ExprSubselectNode extends ExprNode
     public EventType getRawEventType()
     {
         return rawEventType;
+    }
+
+    public StreamTypeService getFilterSubqueryStreamTypes()
+    {
+        return filterSubqueryStreamTypes;
+    }
+
+    public void setFilterSubqueryStreamTypes(StreamTypeService filterSubqueryStreamTypes)
+    {
+        this.filterSubqueryStreamTypes = filterSubqueryStreamTypes;
     }
 }

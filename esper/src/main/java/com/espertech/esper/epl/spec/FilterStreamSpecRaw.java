@@ -80,8 +80,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             EventType namedWindowType = context.getNamedWindowService().getProcessor(eventName).getTailView().getEventType();
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"}, context.getEngineURI());
 
-            List<ExprNode> validatedNodes = FilterSpecCompiler.validateDisallowSubquery(rawFilterSpec.getFilterExpressions(),
-                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context);
+            List<ExprNode> validatedNodes = FilterSpecCompiler.validateAllowSubquery(rawFilterSpec.getFilterExpressions(), streamTypeService, context, null, null);
 
             eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryName());
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.getOptions());

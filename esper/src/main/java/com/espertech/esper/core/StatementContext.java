@@ -12,7 +12,6 @@ import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.JoinSetComposerFactory;
-import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.metric.MetricReportingServiceSPI;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
@@ -28,6 +27,7 @@ import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewResolutionService;
+import com.espertech.esper.view.ViewService;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -65,6 +65,7 @@ public final class StatementContext implements ExprEvaluatorContext
     private final ConfigurationInformation configSnapshot;
     private final ScheduleAdjustmentService scheduleAdjustmentService;
     private final MetricReportingServiceSPI metricReportingService;
+    private final ViewService viewService;
 
     /**
      * Constructor.
@@ -119,7 +120,8 @@ public final class StatementContext implements ExprEvaluatorContext
                               ValueAddEventService valueAddEventService,
                               ConfigurationInformation configSnapshot,
                               InternalEventRouteDest internalEventEngineRouteDest,
-                              MetricReportingServiceSPI metricReportingService)
+                              MetricReportingServiceSPI metricReportingService,
+                              ViewService viewService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -149,6 +151,7 @@ public final class StatementContext implements ExprEvaluatorContext
         this.internalEventEngineRouteDest = internalEventEngineRouteDest;
         this.scheduleAdjustmentService = new ScheduleAdjustmentService();
         this.metricReportingService = metricReportingService;
+        this.viewService = viewService;
     }
 
     /**
@@ -441,6 +444,10 @@ public final class StatementContext implements ExprEvaluatorContext
     public TimeProvider getTimeProvider()
     {
         return schedulingService;
+    }
+
+    public ViewService getViewService() {
+        return viewService;
     }
 
     public String toString()
