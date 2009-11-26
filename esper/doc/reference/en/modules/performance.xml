@@ -211,6 +211,36 @@ select * from MarketData(price+10>50) ]]></programlisting>
 
 		</sect2>
 		
+		<sect2 id="perf-tips-6a">
+			<title>Remove Unneccessary Constructs</title>
+
+			<para>
+				If your statement uses <literal>order by</literal> to order output events, consider removing <literal>order by</literal> unless your application does indeed require the events it receives to be ordered.
+			</para>
+
+			<para>
+				If your statement specifies <literal>group by</literal> but does not use aggregation functions, consider removing <literal>group by</literal>.
+			</para>
+		</sect2>
+
+		<sect2 id="perf-tips-6b">
+			<title>End Pattern Sub-Expressions</title>
+
+			<para>
+				In patterns, the <literal>every</literal> keyword in conjunction with followed by (<literal>-></literal>) starts a new sub-expression per match. 				
+			</para>
+			<para>
+				For example, the following pattern starts a sub-expression looking for a B event for every A event that arrives.
+			</para>
+			<programlisting><![CDATA[every A -> B]]></programlisting>
+
+			<para>
+				Determine under what conditions a subexpression should end so the engine can stop looking for a B event. Here are a few generic examples:
+			</para>
+			<programlisting><![CDATA[every A -> (B and not C)
+every A -> B where timer:within(1 sec)]]></programlisting>
+		</sect2>
+
 		<sect2 id="perf-tips-7">
 			<title>Consider using EventPropertyGetter for fast access to event properties</title>
 
