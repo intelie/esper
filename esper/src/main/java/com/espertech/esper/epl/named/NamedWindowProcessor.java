@@ -12,6 +12,7 @@ import com.espertech.esper.epl.spec.OnTriggerDesc;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
@@ -93,6 +94,7 @@ public class NamedWindowProcessor
      * @return on trigger handling view
      */
     public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)
+            throws ExprValidationException
     {
         return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext, isDistinct);
     }

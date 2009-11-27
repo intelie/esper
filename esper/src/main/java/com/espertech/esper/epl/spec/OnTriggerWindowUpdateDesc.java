@@ -8,33 +8,27 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import java.util.List;
+
 /**
- * Enum for the type of on-trigger statement.
+ * Specification for the on-select and on-delete (no split-stream) statement.
  */
-public enum OnTriggerType
+public class OnTriggerWindowUpdateDesc extends OnTriggerWindowDesc
 {
-    /**
-     * For on-delete triggers that delete from a named window when a triggering event arrives.
-     */
-    ON_DELETE,
+    private List<OnTriggerSetAssignment> assignments;
 
     /**
-     * For on-select triggers that selected from a named window when a triggering event arrives.
+     * Ctor.
+     * @param windowName the window name
+     * @param optionalAsName the optional name
+     * @param assignments set-assignments
      */
-    ON_SELECT,
+    public OnTriggerWindowUpdateDesc(String windowName, String optionalAsName, List<OnTriggerSetAssignment> assignments) {
+        super(windowName, optionalAsName, OnTriggerType.ON_UPDATE);
+        this.assignments = assignments;
+    }
 
-    /**
-     * For the on-insert split-stream syntax allowing multiple insert-into streams.
-     */
-    ON_SPLITSTREAM,
-
-    /**
-     * For on-set triggers that set variable values when a triggering event arrives.
-     */
-    ON_SET,
-
-    /**
-     * For on-update triggers that update an event in a named window when a triggering event arrives.
-     */
-    ON_UPDATE    
+    public List<OnTriggerSetAssignment> getAssignments() {
+        return assignments;
+    }
 }

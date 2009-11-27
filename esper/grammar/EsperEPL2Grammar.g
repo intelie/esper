@@ -214,8 +214,10 @@ tokens
 	CREATE_WINDOW_EXPR;
 	CREATE_WINDOW_SELECT_EXPR;
 	ON_EXPR;
+	ON_STREAM;
 	ON_DELETE_EXPR;
 	ON_SELECT_EXPR;
+	ON_UPDATE_EXPR;
 	ON_SELECT_INSERT_EXPR;
 	ON_SELECT_INSERT_OUTPUT;
 	ON_EXPR_FROM;
@@ -603,11 +605,16 @@ selectExpr
 	;
 	
 onExpr 
-	:	ON (eventFilterExpression | patternInclusionExpression) (AS i=IDENT | i=IDENT)? 
-		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ outputClauseInsert?)? | onSetExpr)
-		-> ^(ON_EXPR eventFilterExpression? patternInclusionExpression? $i? onDeleteExpr? onSelectExpr? onSelectInsertExpr* outputClauseInsert? onSetExpr?)
+	:	ON onStreamExpr
+		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ outputClauseInsert?)? | onSetExpr | onUpdateExpr )
+		-> ^(ON_EXPR onStreamExpr onDeleteExpr? onSelectExpr? onSelectInsertExpr* outputClauseInsert? onSetExpr? onUpdateExpr?)
 	;
 	
+onStreamExpr
+	:	(eventFilterExpression | patternInclusionExpression) (AS i=IDENT | i=IDENT)?
+		-> ^(ON_STREAM eventFilterExpression? patternInclusionExpression? $i?)
+	;
+
 updateExpr
 	:	UPDATE ISTREAM classIdentifier (AS i=IDENT | i=IDENT)?
 		SET onSetAssignment (COMMA onSetAssignment)* 
@@ -629,6 +636,16 @@ onSelectExpr
 		-> ^(ON_SELECT_EXPR insertIntoExpr? DISTINCT? selectionList onExprFrom? whereClause? groupByListExpr? havingClause? orderByListExpr? rowLimit?)
 	;
 	
+onUpdateExpr	
+@init  { paraphrases.push("on-update clause"); }
+@after { paraphrases.pop(); }
+	:	UPDATE 
+		n=IDENT (AS i=IDENT | i=IDENT)?
+		SET onSetAssignment (COMMA onSetAssignment)*
+		(WHERE whereClause)?		
+		-> ^(ON_UPDATE_EXPR ^(ON_EXPR_FROM $n $i?) onSetAssignment+ whereClause?)
+	;
+
 onSelectInsertExpr
 @init  { paraphrases.push("on-select-insert clause"); }
 @after { paraphrases.pop(); }

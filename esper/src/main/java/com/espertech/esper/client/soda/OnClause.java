@@ -51,6 +51,17 @@ public abstract class OnClause implements Serializable
     }
 
     /**
+     * Creates an on-update clause for updating a named window.
+     * @param windowName is the named window name
+     * @param asName is the as-provided name of the named window
+     * @return on-update clause
+     */
+    public static OnUpdateClause createOnUpdate(String windowName, String asName, String variableName, Expression expression)
+    {
+        return OnUpdateClause.create(windowName, asName).addAssignment(variableName, expression);
+    }
+
+    /**
      * Creates an on-set clause for setting variable values.
      * @param variableName is the name of the first variable to set, additional ones can be added to the clause itself
      * @param expression is the assignment expression

@@ -7,6 +7,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportBean_S0;
+import com.espertech.esper.support.bean.SupportBean_S1;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -168,6 +169,26 @@ public class TestVariables extends TestCase
             // expected
         }
         assertVariableValues(new String[] {"var1", "var2"}, new Object[] {-1, null});
+    }
+
+    public void testSetSubquery() throws Exception
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("S1", SupportBean_S1.class);
+        epService.getEPAdministrator().getConfiguration().addVariable("var1", String.class, "a");
+        epService.getEPAdministrator().getConfiguration().addVariable("var2", String.class, "b");
+
+        String stmtTextSet = "on " + SupportBean_S0.class.getName() + " as s0str set var1 = (select p10 from S1.std:lastevent()), var2 = (select p11||s0str.p01 from S1.std:lastevent())";
+        EPStatement stmtSet = epService.getEPAdministrator().createEPL(stmtTextSet);
+        stmtSet.addListener(listenerSet);
+        String[] fieldsVar = new String[] {"var1", "var2"};
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{"a", "b"}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{null, null}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(0, "x", "y"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "1", "2"));
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{"x", "y2"}});
     }
 
     public void testVariableInFilterBoolean() throws Exception

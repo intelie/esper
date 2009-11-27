@@ -117,12 +117,23 @@ public class StatementSpecMapper
             OnTriggerWindowDesc window = (OnTriggerWindowDesc) onTriggerDesc;
             model.setOnExpr(new OnDeleteClause(window.getWindowName(), window.getOptionalAsName()));
         }
-        if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SELECT)
+        else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_UPDATE)
+        {
+            OnTriggerWindowUpdateDesc window = (OnTriggerWindowUpdateDesc) onTriggerDesc;
+            OnUpdateClause clause = new OnUpdateClause(window.getWindowName(), window.getOptionalAsName());
+            for (OnTriggerSetAssignment assignment : window.getAssignments())
+            {
+                Expression expr = unmapExpressionDeep(assignment.getExpression(), unmapContext);
+                clause.addAssignment(assignment.getVariableName(), expr);
+            }
+            model.setOnExpr(clause);
+        }
+        else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SELECT)
         {
             OnTriggerWindowDesc window = (OnTriggerWindowDesc) onTriggerDesc;
             model.setOnExpr(new OnSelectClause(window.getWindowName(), window.getOptionalAsName()));
         }
-        if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SET)
+        else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SET)
         {
             OnTriggerSetDesc trigger = (OnTriggerSetDesc) onTriggerDesc;
             OnSetClause clause = new OnSetClause();
@@ -133,7 +144,7 @@ public class StatementSpecMapper
             }
             model.setOnExpr(clause);
         }
-        if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SPLITSTREAM)
+        else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SPLITSTREAM)
         {
             OnTriggerSplitStreamDesc trigger = (OnTriggerSplitStreamDesc) onTriggerDesc;
             OnInsertSplitStreamClause clause = OnInsertSplitStreamClause.create();
@@ -412,12 +423,12 @@ public class StatementSpecMapper
         if (onExpr instanceof OnDeleteClause)
         {
             OnDeleteClause onDeleteClause = (OnDeleteClause) onExpr;
-            raw.setOnTriggerDesc(new OnTriggerWindowDesc(onDeleteClause.getWindowName(), onDeleteClause.getOptionalAsName(), true));
+            raw.setOnTriggerDesc(new OnTriggerWindowDesc(onDeleteClause.getWindowName(), onDeleteClause.getOptionalAsName(), OnTriggerType.ON_DELETE));
         }
         else if (onExpr instanceof OnSelectClause)
         {
             OnSelectClause onSelectClause = (OnSelectClause) onExpr;
-            raw.setOnTriggerDesc(new OnTriggerWindowDesc(onSelectClause.getWindowName(), onSelectClause.getOptionalAsName(), true));
+            raw.setOnTriggerDesc(new OnTriggerWindowDesc(onSelectClause.getWindowName(), onSelectClause.getOptionalAsName(), OnTriggerType.ON_SELECT));
         }
         else if (onExpr instanceof OnSetClause)
         {
@@ -430,6 +441,18 @@ public class StatementSpecMapper
                 assignments.add(new OnTriggerSetAssignment(pair.getFirst(), expr));
             }
             OnTriggerSetDesc desc = new OnTriggerSetDesc(assignments);
+            raw.setOnTriggerDesc(desc);
+        }
+        else if (onExpr instanceof OnUpdateClause)
+        {
+            OnUpdateClause updateClause = (OnUpdateClause) onExpr;
+            List<OnTriggerSetAssignment> assignments = new ArrayList<OnTriggerSetAssignment>();
+            for (Pair<String, Expression> pair : updateClause.getAssignments())
+            {
+                ExprNode expr = mapExpressionDeep(pair.getSecond(), mapContext);
+                assignments.add(new OnTriggerSetAssignment(pair.getFirst(), expr));
+            }
+            OnTriggerWindowUpdateDesc desc = new OnTriggerWindowUpdateDesc(updateClause.getWindowName(), updateClause.getOptionalAsName(), assignments);
             raw.setOnTriggerDesc(desc);
         }
         else if (onExpr instanceof OnInsertSplitStreamClause)

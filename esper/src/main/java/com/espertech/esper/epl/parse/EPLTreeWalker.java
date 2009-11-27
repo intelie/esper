@@ -453,6 +453,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case ON_SELECT_EXPR:
                 leaveOnSelect(node);
                 break;
+            case ON_STREAM:
+                leaveOnStream(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -626,6 +629,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
             {
                 typeChildNode = childNode;
             }
+            if (childNode.getType() == ON_UPDATE_EXPR)
+            {
+                typeChildNode = childNode;
+            }
             if (childNode.getType() == ON_SET_EXPR)
             {
                 typeChildNode = childNode;
@@ -636,10 +643,53 @@ public class EPLTreeWalker extends EsperEPL2Ast
             throw new IllegalStateException("Could not determine on-expr type");
         }
 
+        if (typeChildNode.getType() != ON_SET_EXPR)
+        {
+            // The ON_EXPR_FROM contains the window name
+            UniformPair<String> windowName = getWindowName(typeChildNode);
+            if (windowName == null)
+            {
+                // on the statement spec, the deepest spec is the outermost
+                List<OnTriggerSplitStream> splitStreams = new ArrayList<OnTriggerSplitStream>();
+                for (int i = 1; i <= statementSpecStack.size() - 1; i++)
+                {
+                    StatementSpecRaw raw = statementSpecStack.get(i);
+                    splitStreams.add(new OnTriggerSplitStream(raw.getInsertIntoDesc(), raw.getSelectClauseSpec(), raw.getFilterExprRootNode()));
+                }
+                splitStreams.add(new OnTriggerSplitStream(statementSpec.getInsertIntoDesc(), statementSpec.getSelectClauseSpec(), statementSpec.getFilterExprRootNode()));
+                if (!statementSpecStack.isEmpty())
+                {
+                    statementSpec = statementSpecStack.get(0);
+                }
+                boolean isFirst = isSelectInsertFirst(node);
+                statementSpec.setOnTriggerDesc(new OnTriggerSplitStreamDesc(OnTriggerType.ON_SPLITSTREAM, isFirst, splitStreams));
+                statementSpecStack.clear();
+            }
+            else if (typeChildNode.getType() == ON_UPDATE_EXPR) {
+                List<OnTriggerSetAssignment> assignments = getOnTriggerSetAssignments(typeChildNode, astExprNodeMap);
+                statementSpec.setOnTriggerDesc(new OnTriggerWindowUpdateDesc(windowName.getFirst(), windowName.getSecond(), assignments));
+                statementSpec.setFilterExprRootNode(getRemoveFirstByType(typeChildNode, WHERE_EXPR));
+            }
+            else
+            {
+                statementSpec.setOnTriggerDesc(new OnTriggerWindowDesc(windowName.getFirst(), windowName.getSecond(), isOnDelete ? OnTriggerType.ON_DELETE : OnTriggerType.ON_SELECT));
+            }
+        }
+        else
+        {
+            List<OnTriggerSetAssignment> assignments = getOnTriggerSetAssignments(typeChildNode, astExprNodeMap);
+            statementSpec.setOnTriggerDesc(new OnTriggerSetDesc(assignments));
+        }
+    }
+
+    private void leaveOnStream(Tree node)
+    {
+        log.debug(".leaveOnStream");
+
         // get optional filter stream as-name
         Tree childNode = node.getChild(1);
         String streamAsName = null;
-        if (childNode.getType() == IDENT)
+        if ((childNode != null) && (childNode.getType() == IDENT))
         {
             streamAsName = childNode.getText();
         }
@@ -666,38 +716,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
             throw new IllegalStateException("Invalid AST type node, cannot map to stream specification");
         }
 
-        if (typeChildNode.getType() != ON_SET_EXPR)
-        {
-            // The ON_EXPR_FROM contains the window name
-            UniformPair<String> windowName = getWindowName(typeChildNode);
-            if (windowName == null)
-            {
-                // on the statement spec, the deepest spec is the outermost
-                List<OnTriggerSplitStream> splitStreams = new ArrayList<OnTriggerSplitStream>();
-                for (int i = 1; i <= statementSpecStack.size() - 1; i++)
-                {
-                    StatementSpecRaw raw = statementSpecStack.get(i);
-                    splitStreams.add(new OnTriggerSplitStream(raw.getInsertIntoDesc(), raw.getSelectClauseSpec(), raw.getFilterExprRootNode()));
-                }
-                splitStreams.add(new OnTriggerSplitStream(statementSpec.getInsertIntoDesc(), statementSpec.getSelectClauseSpec(), statementSpec.getFilterExprRootNode()));
-                if (!statementSpecStack.isEmpty())
-                {
-                    statementSpec = statementSpecStack.get(0);
-                }
-                boolean isFirst = isSelectInsertFirst(node);
-                statementSpec.setOnTriggerDesc(new OnTriggerSplitStreamDesc(OnTriggerType.ON_SPLITSTREAM, isFirst, splitStreams));
-                statementSpecStack.clear();
-            }
-            else
-            {
-                statementSpec.setOnTriggerDesc(new OnTriggerWindowDesc(windowName.getFirst(), windowName.getSecond(), isOnDelete));
-            }
-        }
-        else
-        {
-            List<OnTriggerSetAssignment> assignments = getOnTriggerSetAssignments(typeChildNode, astExprNodeMap);
-            statementSpec.setOnTriggerDesc(new OnTriggerSetDesc(assignments));
-        }
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 
@@ -716,22 +734,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         List<OnTriggerSetAssignment> assignments = getOnTriggerSetAssignments(node, astExprNodeMap);
-
-        ExprNode whereClause = null;
-        for (int i = 0; i < node.getChildCount(); i++)
-        {
-            if (node.getChild(i).getType() == WHERE_EXPR)
-            {
-                ExprNode exprNode = astExprNodeMap.get(node.getChild(i).getChild(0));
-                if (exprNode == null)
-                {
-                    throw new IllegalStateException("Expression node for AST node not found for type " + node.getChild(i).getType() + " and text " + node.getChild(i).getText());
-                }
-                whereClause = exprNode;
-                astExprNodeMap.remove(node.getChild(i));
-            }
-        }
-
+        ExprNode whereClause = this.getRemoveFirstByType(node, WHERE_EXPR);
         statementSpec.setUpdateDesc(new UpdateDesc(optionalStreamName, assignments, whereClause));
     }
 
@@ -2438,6 +2441,23 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
         statementSpec.getSelectClauseSpec().setDistinct(isDistinct);
+    }
+
+    private ExprNode getRemoveFirstByType(Tree parent, int type) {
+        ExprNode exprNode = null;
+        for (int i = 0; i < parent.getChildCount(); i++)
+        {
+            if (parent.getChild(i).getType() == WHERE_EXPR)
+            {
+                exprNode = astExprNodeMap.get(parent.getChild(i).getChild(0));
+                if (exprNode == null)
+                {
+                    throw new IllegalStateException("Expression node for AST node not found for type " + parent.getChild(i).getType() + " and text " + parent.getChild(i).getText());
+                }
+                astExprNodeMap.remove(parent.getChild(i));
+            }
+        }
+        return exprNode;
     }
 
     private List<ExprNode> getExprNodes(Tree parentNode, int startIndex)

@@ -89,4 +89,8 @@ public abstract class NamedWindowOnExprBaseView extends ViewSupport implements S
         // Let the implementation handle the delete or
         handleMatching(newData, eventsFound);
     }
+
+    public ExprEvaluatorContext getExprEvaluatorContext() {
+        return exprEvaluatorContext;
+    }
 }

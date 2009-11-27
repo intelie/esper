@@ -81,9 +81,13 @@ eplExpressionRule
 	;
 
 onExpr 
-	:	^(i=ON_EXPR (eventFilterExpr | patternInclusionExpression) IDENT? 
-		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ onSelectInsertOutput?)? | onSetExpr)
+	:	^(i=ON_EXPR onStreamExpr
+		(onDeleteExpr | onUpdateExpr | onSelectExpr (onSelectInsertExpr+ onSelectInsertOutput?)? | onSetExpr)
 		{ leaveNode($i); } )
+	;
+	
+onStreamExpr
+	:	^(s=ON_STREAM (eventFilterExpr | patternInclusionExpression) IDENT? { leaveNode($s); })
 	;
 	
 updateExpr
@@ -108,6 +112,10 @@ onSelectInsertOutput
 
 onSetExpr
 	:	^(ON_SET_EXPR onSetAssignment (onSetAssignment)* whereClause[false]?)
+	;
+
+onUpdateExpr
+	:	^(ON_UPDATE_EXPR onExprFrom onSetAssignment+ whereClause[false]?)
 	;
 
 onSetAssignment

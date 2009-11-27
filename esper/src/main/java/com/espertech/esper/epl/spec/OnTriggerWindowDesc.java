@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.spec;
 
 /**
- * Specification for the on-select and on-delete (no split-stream) statement.
+ * Specification for the on-select and on-delete and on-update (via subclass) (no split-stream) statement.
  */
 public class OnTriggerWindowDesc extends OnTriggerDesc
 {
@@ -21,11 +21,11 @@ public class OnTriggerWindowDesc extends OnTriggerDesc
      * Ctor.
      * @param windowName the window name
      * @param optionalAsName the optional name
-     * @param isOnDelete true for on-delete and false for on-select
+     * @param onTriggerType for indicationg on-delete, on-select or on-update
      */
-    public OnTriggerWindowDesc(String windowName, String optionalAsName, boolean isOnDelete)
+    public OnTriggerWindowDesc(String windowName, String optionalAsName, OnTriggerType onTriggerType)
     {
-        super(isOnDelete ? OnTriggerType.ON_DELETE : OnTriggerType.ON_SELECT);
+        super(onTriggerType);
         this.windowName = windowName;
         this.optionalAsName = optionalAsName;
     }

@@ -126,6 +126,8 @@ public class EPStatementStartMethod
     {
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
 
+        SubSelectStreamCollection subSelectStreamDesc = createSubSelectStreams(true);
+        
         // Create streams
         Viewable eventStreamParentViewable;
         final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
@@ -195,6 +197,7 @@ public class EPStatementStartMethod
             EventType namedWindowType = processor.getNamedWindowType();
             statementContext.getDynamicReferenceEventTypes().add(onTriggerDesc.getWindowName());
 
+
             String namedWindowName = onTriggerDesc.getOptionalAsName();
             if (namedWindowName == null)
             {
@@ -209,13 +212,28 @@ public class EPStatementStartMethod
 
             StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowName, streamName}, services.getEngineURI());
 
+            // Materialize sub-select views
+            // 0 - named window stream
+            // 1 - arriving stream
+            startSubSelect(subSelectStreamDesc, new String[]{namedWindowName, streamSpec.getOptionalStreamName()}, new EventType[] {processor.getNamedWindowType(), streamEventType}, new String[]{namedWindowTypeName, triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
+
+            if (onTriggerDesc instanceof OnTriggerWindowUpdateDesc) {
+                OnTriggerWindowUpdateDesc updateDesc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
+                for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())
+                {
+                    ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+                    assignment.setExpression(validated);
+                    validateNoAggregations(validated, "Aggregation functions may not be used within an on-update-clause");
+                }
+            }
+
             // validate join expression
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
                     namedWindowType, namedWindowName, namedWindowTypeName,
                     streamEventType, streamName, triggereventTypeName);
 
             // validate filter, output rate limiting
-            validateNodes(statementSpec, statementContext, typeService, null, true);
+            validateNodes(statementSpec, statementContext, typeService, null);
 
             // Construct a processor for results; for use in on-select to process selection results
             // Use a wildcard select if the select-clause is empty, such as for on-delete.
@@ -236,6 +254,9 @@ public class EPStatementStartMethod
         {
             OnTriggerSetDesc desc = (OnTriggerSetDesc) statementSpec.getOnTriggerDesc();
             StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, services.getEngineURI());
+
+            // Materialize sub-select views
+            startSubSelect(subSelectStreamDesc, new String[]{streamSpec.getOptionalStreamName()}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
 
             for (OnTriggerSetAssignment assignment : desc.getAssignments())
             {
@@ -264,12 +285,11 @@ public class EPStatementStartMethod
             {
                 throw new ExprValidationException("A group-by clause, having-clause or order-by clause is not allowed for the split stream syntax");
             }
-            if (statementSpec.getSubSelectExpressions().size() > 0)
-            {
-                throw new ExprValidationException("Subqueries are not a supported feature of split stream syntax");
-            }
 
-            validateNodes(statementSpec, statementContext, typeService, null, true);
+            // Materialize sub-select views
+            startSubSelect(subSelectStreamDesc, new String[]{streamSpec.getOptionalStreamName()}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
+
+            validateNodes(statementSpec, statementContext, typeService, null);
 
             ResultSetProcessor[] processors = new ResultSetProcessor[desc.getSplitStreams().size() + 1];
             ExprNode[] whereClauses = new ExprNode[desc.getSplitStreams().size() + 1];
@@ -282,9 +302,9 @@ public class EPStatementStartMethod
             {
                 StatementSpecCompiled splitSpec = new StatementSpecCompiled();
                 splitSpec.setInsertIntoDesc(splits.getInsertInto());
-                splitSpec.setSelectClauseSpec(StatementLifecycleSvcImpl.compileSelectNoSubselect(splits.getSelectClause()));
+                splitSpec.setSelectClauseSpec(StatementLifecycleSvcImpl.compileSelectAllowSubselect(splits.getSelectClause()));
                 splitSpec.setFilterExprRootNode(splits.getWhereClause());
-                validateNodes(splitSpec, statementContext, typeService, null, false);
+                validateNodes(splitSpec, statementContext, typeService, null);
 
                 processors[index] = ResultSetProcessorFactory.getProcessor(
                     splitSpec, statementContext, typeService, null, new boolean[0], false);
@@ -837,7 +857,7 @@ public class EPStatementStartMethod
                 statementSpec, statementContext, typeService, viewResourceDelegate, joinAnalysisResult.getUnidirectionalInd(), true);
 
         // Validate where-clause filter tree, outer join clause and output limit expression
-        validateNodes(statementSpec, statementContext, typeService, viewResourceDelegate, true);
+        validateNodes(statementSpec, statementContext, typeService, viewResourceDelegate);
 
         // Materialize views
         Viewable[] streamViews = new Viewable[streamEventTypes.length];
@@ -1140,8 +1160,7 @@ public class EPStatementStartMethod
     protected static void validateNodes(StatementSpecCompiled statementSpec,
                                         StatementContext statementContext,
                                         StreamTypeService typeService,
-                                        ViewResourceDelegate viewResourceDelegate,
-                                        boolean allowSubqueryWhere)
+                                        ViewResourceDelegate viewResourceDelegate)
     {
         MethodResolutionService methodResolutionService = statementContext.getMethodResolutionService();
 
@@ -1152,16 +1171,6 @@ public class EPStatementStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                if (!allowSubqueryWhere)
-                {
-                    ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
-                    optionalFilterNode.accept(visitor);
-                    if (!visitor.getSubselects().isEmpty())
-                    {
-                        throw new ExprValidationException("Subqueries are not allowed in the where-clause in this context");
-                    }
-                }
-
                 optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                 statementSpec.setFilterExprRootNode(optionalFilterNode);
 

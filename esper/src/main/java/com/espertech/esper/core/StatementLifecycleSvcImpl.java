@@ -220,6 +220,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_DELETE) {
                 statementType = StatementType.ON_DELETE;
             }
+            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_UPDATE) {
+                statementType = StatementType.ON_UPDATE;
+            }
             else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SELECT) {
                 if (statementSpec.getInsertIntoDesc() != null) {
                     statementType = StatementType.ON_INSERT;
@@ -871,6 +874,39 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 assignment.getExpression().accept(visitor);
             }
         }
+        if (spec.getOnTriggerDesc() != null) {
+            if (spec.getOnTriggerDesc() instanceof OnTriggerWindowUpdateDesc) {
+                OnTriggerWindowUpdateDesc updates = (OnTriggerWindowUpdateDesc) spec.getOnTriggerDesc();
+                for (OnTriggerSetAssignment assignment : updates.getAssignments())
+                {
+                    assignment.getExpression().accept(visitor);
+                }
+            }
+            else if (spec.getOnTriggerDesc() instanceof OnTriggerSetDesc) {
+                OnTriggerSetDesc sets = (OnTriggerSetDesc) spec.getOnTriggerDesc();
+                for (OnTriggerSetAssignment assignment : sets.getAssignments())
+                {
+                    assignment.getExpression().accept(visitor);
+                }
+            }
+            else if (spec.getOnTriggerDesc() instanceof OnTriggerSplitStreamDesc) {
+                OnTriggerSplitStreamDesc splits = (OnTriggerSplitStreamDesc) spec.getOnTriggerDesc();
+                for (OnTriggerSplitStream split : splits.getSplitStreams())
+                {
+                    if (split.getWhereClause() != null) {
+                        split.getWhereClause().accept(visitor);
+                    }
+                    if (split.getSelectClause().getSelectExprList() != null) {
+                        for (SelectClauseElementRaw element : split.getSelectClause().getSelectExprList()) {
+                            if (element instanceof SelectClauseExprRawSpec) {
+                                SelectClauseExprRawSpec selectExpr = (SelectClauseExprRawSpec) element;
+                                selectExpr.getSelectExpression().accept(visitor);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         // Determine pattern-filter subqueries
         for (StreamSpecRaw streamSpecRaw : spec.getStreamSpecs()) {
             if (streamSpecRaw instanceof PatternStreamSpecRaw) {
@@ -1016,12 +1052,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     }
 
     /**
-     * Compile a select clause disallowing subselects.
+     * Compile a select clause allowing subselects.
      * @param spec to compile
      * @return select clause compiled
      * @throws ExprValidationException when validation fails
      */
-    public static SelectClauseSpecCompiled compileSelectNoSubselect(SelectClauseSpecRaw spec) throws ExprValidationException
+    public static SelectClauseSpecCompiled compileSelectAllowSubselect(SelectClauseSpecRaw spec) throws ExprValidationException
     {
         // Look for expressions with sub-selects in select expression list and filter expression
         // Recursively compile the statement within the statement.
@@ -1050,10 +1086,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 throw new IllegalStateException("Unexpected select clause element class : " + raw.getClass().getName());
             }
-        }
-        if (!visitor.getSubselects().isEmpty())
-        {
-            throw new ExprValidationException("Subselects are not allowed in this context");
         }
         return selectClauseCompiled;
     }

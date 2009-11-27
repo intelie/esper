@@ -208,6 +208,11 @@ public class TestEPLParser extends TestCase
         assertIsInvalid("on MyEvent set");
         assertIsInvalid("on MyEvent set a=dkdkd a");
         assertIsInvalid("on MyEvent set a=, b=");
+
+        // on-update statement
+        assertIsInvalid("on MyEvent update ABC as abc");
+        assertIsInvalid("on MyEvent update ABC set");
+        assertIsInvalid("on pattern[every B] update ABC as abc set a=");
     }
 
     public void testValidCases() throws Exception
@@ -602,6 +607,11 @@ public class TestEPLParser extends TestCase
         assertIsValid("on MyEvent as event set var = event.val");
         assertIsValid("on MyEvent as event set var = event.val");
         assertIsValid("on MyEvent as event set var = event.val * 2, var2='abc', var3='def'");
+
+        // on-update statement
+        assertIsValid("on MyEvent update ABC as abc set a=1, b=c");
+        assertIsValid("on MyEvent update ABC set a=1");
+        assertIsValid("on pattern[every B] update ABC as abc set a=1, b=abc.c");
 
         // create variable
         assertIsValid("create variable integer a = 77");

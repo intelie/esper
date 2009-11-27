@@ -277,6 +277,11 @@ public class EPStatementObjectModel implements Serializable
                 writer.write(" delete from ");
                 ((OnDeleteClause)onExpr).toEPL(writer);
             }
+            else if (onExpr instanceof OnUpdateClause)
+            {
+                writer.write(" update ");
+                ((OnUpdateClause)onExpr).toEPL(writer);
+            }
             else if (onExpr instanceof OnSelectClause)
             {
                 writer.write(" ");

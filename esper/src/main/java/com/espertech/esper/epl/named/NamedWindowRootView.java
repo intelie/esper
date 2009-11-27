@@ -8,31 +8,33 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.core.EPStatementHandle;
+import com.espertech.esper.core.InternalEventRouter;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.core.StatementResultService;
+import com.espertech.esper.epl.core.ResultSetProcessor;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.plan.FilterExprAnalyzer;
 import com.espertech.esper.epl.join.plan.QueryGraph;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.epl.lookup.IndexedTableLookupStrategy;
 import com.espertech.esper.epl.lookup.IndexedTableLookupStrategyCoercing;
-import com.espertech.esper.epl.lookup.TableLookupStrategy;
 import com.espertech.esper.epl.lookup.JoinedPropDesc;
+import com.espertech.esper.epl.lookup.TableLookupStrategy;
 import com.espertech.esper.epl.spec.OnTriggerDesc;
 import com.espertech.esper.epl.spec.OnTriggerType;
-import com.espertech.esper.epl.core.ResultSetProcessor;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.spec.OnTriggerWindowUpdateDesc;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
 import com.espertech.esper.view.Viewable;
-import com.espertech.esper.core.InternalEventRouter;
-import com.espertech.esper.core.EPStatementHandle;
-import com.espertech.esper.core.StatementResultService;
-import com.espertech.esper.core.StatementContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -138,6 +140,7 @@ public class NamedWindowRootView extends ViewSupport
      * @return base view for on-trigger expression
      */
     public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)
+            throws ExprValidationException
     {
         // Determine strategy for deletion and index table to use (if any)
         Pair<LookupStrategy,PropertyIndexedEventTable> strategy = getStrategyPair(onTriggerDesc, joinExpr, filterEventType);
@@ -152,9 +155,18 @@ public class NamedWindowRootView extends ViewSupport
         {
             return new NamedWindowOnDeleteView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext);
         }
-        else
+        else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SELECT)
         {
             return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext, isDistinct);
+        }
+        else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_UPDATE)
+        {
+            OnTriggerWindowUpdateDesc desc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
+            return new NamedWindowOnUpdateView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc);
+        }
+        else
+        {
+            throw new IllegalStateException("Unknown trigger type " + onTriggerDesc.getOnTriggerType());
         }
     }
 

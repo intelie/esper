@@ -3,6 +3,7 @@ package com.espertech.esper.regression.epl;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
@@ -17,6 +18,7 @@ public class TestSplitStream extends TestCase
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("SupportBean", SupportBean.class);
+        config.addEventType("S0", SupportBean_S0.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
@@ -37,9 +39,6 @@ public class TestSplitStream extends TestCase
 
         tryInvalid("on SupportBean insert into AStream select * where intPrimitive=1 insert into BStream select avg(intPrimitive) where 1=2",
                    "Error starting statement: Aggregation functions are not allowed in this context [on SupportBean insert into AStream select * where intPrimitive=1 insert into BStream select avg(intPrimitive) where 1=2]");
-
-        tryInvalid("on SupportBean insert into DStream select * where intPrimitive=1 insert into BStream select * where intPrimitive > (select max(intPrimitive) from SupportBean)",
-                   "Error validating expression: Subqueries are not allowed in the where-clause in this context [on SupportBean insert into DStream select * where intPrimitive=1 insert into BStream select * where intPrimitive > (select max(intPrimitive) from SupportBean)]");
     }
 
     private void tryInvalid(String stmtText, String message)
@@ -113,6 +112,34 @@ public class TestSplitStream extends TestCase
         stmtOrig = epService.getEPAdministrator().create(newModel);
         assertEquals(stmtOrigText, newModel.toEPL());
         runAssertion(stmtOrig);
+    }
+
+    public void testSubquery()
+    {
+        String stmtOrigText = "on SupportBean " +
+                              "insert into AStream select (select p00 from S0.std:lastevent()) as string where intPrimitive=(select id from S0.std:lastevent()) " +
+                              "insert into BStream select (select p01 from S0.std:lastevent()) as string where intPrimitive<>(select id from S0.std:lastevent())";
+        EPStatement stmtOrig = epService.getEPAdministrator().createEPL(stmtOrigText);
+        stmtOrig.addListener(listener);
+
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL("select * from AStream");
+        stmtOne.addListener(listeners[0]);
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL("select * from BStream");
+        stmtTwo.addListener(listeners[1]);
+        
+        sendSupportBean("E1", 1);
+        assertFalse(listeners[0].getAndClearIsInvoked());
+        assertNull(listeners[1].assertOneGetNewAndReset().get("string"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(10, "x", "y"));
+
+        sendSupportBean("E2", 10);
+        assertEquals("x", listeners[0].assertOneGetNewAndReset().get("string"));
+        assertFalse(listeners[1].getAndClearIsInvoked());
+
+        sendSupportBean("E3", 9);
+        assertFalse(listeners[0].getAndClearIsInvoked());
+        assertEquals("y", listeners[1].assertOneGetNewAndReset().get("string"));
     }
 
     public void test2SplitNoDefaultOutputAll()

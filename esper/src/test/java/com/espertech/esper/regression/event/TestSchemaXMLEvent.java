@@ -15,9 +15,9 @@ import javax.xml.xpath.XPathConstants;
 
 public class TestSchemaXMLEvent extends TestCase
 {
-    private static final String CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
-    private static final String CLASSLOADER_SCHEMA_WITH_ALL_URI = "regression/simpleSchemaWithAll.xsd";
-    private static final String CLASSLOADER_SCHEMA_WITH_RESTRICTION_URI = "regression/simpleSchemaWithRestriction.xsd";
+    public static final String CLASSLOADER_SCHEMA_URI = "regression/simpleSchema.xsd";
+    public static final String CLASSLOADER_SCHEMA_WITH_ALL_URI = "regression/simpleSchemaWithAll.xsd";
+    public static final String CLASSLOADER_SCHEMA_WITH_RESTRICTION_URI = "regression/simpleSchemaWithRestriction.xsd";
 
     private EPServiceProvider epService;
     private SupportUpdateListener updateListener;

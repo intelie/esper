@@ -48,5 +48,10 @@ public enum StatementType
     /**
      * On-set statement.
      */
-    ON_SET
+    ON_SET,
+
+    /**
+     * On-update statement.
+     */
+    ON_UPDATE,
 }
