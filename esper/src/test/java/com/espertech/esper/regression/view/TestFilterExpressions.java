@@ -719,7 +719,7 @@ public class TestFilterExpressions extends TestCase
                 "Implicit conversion from datatype 'SupportEnum' to 'String' is not allowed [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(string=com.espertech.esper.support.bean.SupportEnum.ENUM_VALUE_1)]");
 
         tryInvalid("select * from " + SupportBeanWithEnum.class.getName() + "(supportEnum=A.b)",
-                "Failed to find a stream named 'A' (did you mean 's0'?) [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(supportEnum=A.b)]");
+                "Failed to resolve property 'A.b' to a stream or nested property in a stream [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(supportEnum=A.b)]");
 
         tryInvalid("select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
                 SupportBean.class.getName() + "(doubleBoxed not in (doubleBoxed, x.intBoxed, 9))]",

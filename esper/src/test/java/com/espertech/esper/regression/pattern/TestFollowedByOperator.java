@@ -378,6 +378,31 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
         ArrayAssertionUtil.assertProps(listener.getLastNewData()[1], fields, new Object[] {events[1], events[2], events[3], events[4]});
     }
 
+    public void testFilterGreaterThen()
+    {
+        // ESPER-411
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventType("SupportBean", SupportBean.class);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        EPStatement statement = epService.getEPAdministrator().createPattern("every a=SupportBean -> b=SupportBean(b.intPrimitive <= a.intPrimitive)");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 11));
+        assertFalse(listener.isInvoked());
+
+        statement.destroy();
+        statement = epService.getEPAdministrator().createPattern("every a=SupportBean -> b=SupportBean(a.intPrimitive >= b.intPrimitive)");
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 11));
+        assertFalse(listener.isInvoked());
+    }
+
     private long dateToLong(String dateText) throws ParseException
     {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

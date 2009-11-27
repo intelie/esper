@@ -296,7 +296,6 @@ public final class FilterSpecCompiler
 
         // Validate select expression
         SelectClauseSpecCompiled selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
-        AggregationService aggregationService = null;
         if (selectClauseSpec.getSelectExprList().size() > 0)
         {
             SelectClauseElementCompiled element = selectClauseSpec.getSelectExprList().get(0);
@@ -704,6 +703,26 @@ public final class FilterSpecCompiler
             }
             if ((identNodeRight.getStreamId() == 0) && (identNodeLeft.getStreamId() != 0))
             {
+                if (constituent instanceof ExprRelationalOpNode) {
+                    ExprRelationalOpNode relNode = (ExprRelationalOpNode) constituent;
+                    // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
+                    if (relNode.getRelationalOpEnum() == RelationalOpEnum.GT)
+                    {
+                        op = FilterOperator.LESS;
+                    }
+                    else if (relNode.getRelationalOpEnum() == RelationalOpEnum.LT)
+                    {
+                        op = FilterOperator.GREATER;
+                    }
+                    else if (relNode.getRelationalOpEnum() == RelationalOpEnum.LE)
+                    {
+                        op = FilterOperator.GREATER_OR_EQUAL;
+                    }
+                    else if (relNode.getRelationalOpEnum() == RelationalOpEnum.GE)
+                    {
+                        op = FilterOperator.LESS_OR_EQUAL;
+                    }
+                }
                 return handleProperty(op, identNodeRight, identNodeLeft, arrayEventTypes);
             }
         }
