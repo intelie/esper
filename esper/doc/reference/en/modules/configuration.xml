@@ -1831,7 +1831,7 @@ config.getEngineDefaults().getExecution().setPrioritized(true);]]></programlisti
 			<title>Revision Event Type</title>
 			
 			<para>
-			   Revision event types reflect an update or versioning relationship between events of same or different event types. Please refer to <xref linkend="eventrep-update"/> and <xref linkend="named_update"/>.
+			   Revision event types reflect a versioning relationship between events of same or different event types. Please refer to <xref linkend="eventrep-update"/> and <xref linkend="named_versioning"/>.
 			</para>
 
 			<para>

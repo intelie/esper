@@ -3499,103 +3499,6 @@ where asset.assetid = desc.assetid]]></programlisting>
 
 		</sect2>
 
-		<sect2 id="named_delete" revision="1">
-			<title>Deleting From Named Windows: the <literal>On Delete</literal> clause</title>
-			
-			<indexterm><primary>on-delete</primary></indexterm>
-			<indexterm><primary>named window</primary><secondary>deleting from</secondary></indexterm>
-			<indexterm><primary>EPL</primary><secondary>named window</secondary><tertiary>deleting from</tertiary></indexterm>
-
-			<para>
-				An <literal>on delete</literal> clause removes events from a named window. The clause can be used to remove all events, or only events that match certain criteria, or events that correlate with an arriving event or a pattern of arriving events.
-			</para>
-
-			<para>
-				The syntax for the <literal>on delete</literal> clause is as follows: 
-			</para>
-			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>stream_name</emphasis>]
-delete from <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
-[where <emphasis>criteria_expression</emphasis>]</synopsis>
-				
-			<para>
-				The <emphasis>event_type</emphasis> is the name of the type of events that trigger removal from the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an name for use in the <literal>where</literal> clause. Patterns and named windows can also be specified in the <literal>on</literal> clause as described in the next section.
-			</para>
-				
-			<para>
-				The <emphasis>window_name</emphasis> is the name of the named window to delete events from. The <literal>as</literal> keyword is also available to assign a name to the named window.
-			</para>
-				
-			<para>
-				The optional <literal>where</literal> clause contains a <emphasis>criteria_expression</emphasis> that correlates the arriving (triggering) event to the events to be removed from the named window. The <emphasis>criteria_expression</emphasis> may also simply filter for events in the named window to be removed from the named window.
-			</para>
-
-			<para>
-				The <literal>iterator</literal> of the <literal>EPStatement</literal> object representing the <literal>on delete</literal> clause can also be helpful: It returns the last batch of deleted events in response to the last triggering event, in any order, or null if the last triggering event did not remove any rows.
-			</para>
-
-			<para>				
-				Let's look at a couple of examples. In the simplest form, this statement deletes all events from the named window 'AllOrdersNamedWindow' when any 'FlushOrderEvent' arrives:
-			</para>
-			<programlisting><![CDATA[on FlushOrderEvent delete from AllOrdersNamedWindow]]></programlisting>
-
-			<para>				
-				This example adds a <literal>where</literal> clause to the example above. Upon arrival of a triggering 'ZeroVolumeEvent', the statement removes from the named window any orders that have a volume of zero or less:
-			</para>
-			<programlisting><![CDATA[on ZeroVolumeEvent delete from AllOrdersNamedWindow where volume <= 0]]></programlisting>
-
-			<para>				
-				The next example shows a more complete use of the syntax, and correlates the triggering event with events held by the named window:
-			</para>
-			<programlisting><![CDATA[on NewOrderEvent(volume>0) as myNewOrders
-delete from AllOrdersNamedWindow as myNamedWindow 
-where myNamedWindow.symbol = myNewOrders.symbol]]></programlisting>
-
-			<para>				
-				In the above sample statement, only if a 'NewOrderEvent' event with a volume greater then zero arrives does the statement trigger. Upon triggering, all events in the named window that have the same value for the symbol property as the triggering 'NewOrderEvent' event are then removed from the named window. The statement also showcases the <literal>as</literal> keyword to assign a name for use in the <literal>where</literal> expression.
-			</para>
-
-			<para>				
-				For correlated queries (as above) that correlate triggering events with events held by a named window, Esper internally creates efficient indexes to enable high performance removal of events especially from named windows that hold large numbers of events.
-			</para>
-
-			<para>
-				Your application can subscribe a listener to your <literal>on delete</literal> statements to determine removed events. The statement post any events that are deleted from a named window to all listeners attached to the statement as new data. Upon iteration, the statement provides the last deleted event, if any.
-			</para>
-
-			<sect3 id="named_delete_pattern" >
-			   <title>Using Patterns in the <literal>On Delete</literal> Clause</title>
-
-				<para>
-					By means of patterns the <literal>on delete</literal> clause and <literal>on select</literal> clause (described below) can look for more complex conditions to occur, possibly involving multiple events or the passing of time. The syntax for <literal>on delete</literal> with a pattern expression is show next:
-				</para>
-				<synopsis>on pattern [<emphasis>pattern_expression</emphasis>] [as <emphasis>stream_name</emphasis>]
-delete from <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
-[where <emphasis>criteria_expression</emphasis>]</synopsis>
-					
-				<para>
-					The <emphasis>pattern_expression</emphasis> is any pattern that matches zero or more arriving events. Tags can be used to name events in the pattern and can occur in the optional <literal>where</literal> clause to correlate to events to be removed from a named window.
-				</para>
-					
-				<para>
-					In the next example the triggering pattern fires every 10 seconds. The effect is that every 10 seconds the statement removes from 'MyNamedWindow' all rows:
-				</para>
-				<programlisting><![CDATA[on pattern [every timer:interval(10 sec)] delete from MyNamedWindow]]></programlisting>
-
-				<para>
-					The following example shows the use of tags in a pattern: 
-				</para>
-				<programlisting><![CDATA[on pattern [every ord=OrderEvent(volume>0) or every flush=FlushOrderEvent] 
-delete from OrderWindow as win
-where ord.id = win.id or flush.id = win.id]]></programlisting>
-
-				<para>
-					The pattern above looks for OrderEvent events with a volume value greater then zero and tags such events as 'ord'. 
-					The pattern also looks for FlushOrderEvent events and tags such events as 'flush'. The <literal>where</literal> clause deletes from the 'OrderWindow' named window any events that match in the value of the 'id' property either of the arriving events.
-				</para>
-
-			</sect3>
-		</sect2>
-
 		<sect2 id="named_inserting" revision="1">
 			<title>Inserting Into Named Windows</title>
 			
@@ -3922,10 +3825,215 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 		</sect2> 
 
 		<sect2 id="named_update" revision="1">
-			<title>Updating and Versioning Events in Named Windows</title>
+			<title>Updating Named Windows: the <literal>On Update</literal> clause</title>
 			
-			<indexterm><primary>update</primary></indexterm>
-			<indexterm><primary>named window</primary><secondary>updating events</secondary></indexterm>
+			<indexterm><primary>on-update</primary></indexterm>
+			<indexterm><primary>named window</primary><secondary>updating</secondary></indexterm>
+			<indexterm><primary>EPL</primary><secondary>named window</secondary><tertiary>updating</tertiary></indexterm>
+
+			<para>
+				An <literal>on update</literal> clause updates events held by a named window. The clause can be used to update all events, or only events that match certain criteria, or events that correlate with an arriving event or a pattern of arriving events.
+			</para>
+
+			<para>
+				The syntax for the <literal>on update</literal> clause is as follows: 
+			</para>
+			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>stream_name</emphasis>]
+update <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
+set <emphasis>property_name</emphasis> = <emphasis>expression</emphasis> [, <emphasis>property_name</emphasis> = <emphasis>expression</emphasis> [,...]]
+[where <emphasis>criteria_expression</emphasis>]</synopsis>
+				
+			<para>
+				The <emphasis>event_type</emphasis> is the name of the type of events that trigger an update of rows in a named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an name for use in expressions and the <literal>where</literal> clause. Patterns and named windows can also be specified in the <literal>on</literal> clause.
+			</para>
+				
+			<para>
+				The <emphasis>window_name</emphasis> is the name of the named window to update events. The <literal>as</literal> keyword is also available to assign a name to the named window.
+			</para>
+				
+			<para>
+				The comma-separated list of property names and expressions set the value of one or more properties. Subqueries may by part of expressions however aggregation functions and the <literal>prev</literal> or <literal>prior</literal> function may not be used in expressions.
+			</para>
+
+			<para>
+				The optional <literal>where</literal> clause contains a <emphasis>criteria_expression</emphasis> that correlates the arriving (triggering) event to the events to be updated in the named window. The <emphasis>criteria_expression</emphasis> may also simply filter for events in the named window to be updated.
+			</para>
+
+			<para>
+				The <literal>iterator</literal> of the <literal>EPStatement</literal> object representing the <literal>on update</literal> clause can also be helpful: It returns the last batch of updated events in response to the last triggering event, in any order, or null if the last triggering event did not update any rows.
+			</para>
+
+			<para>
+				Statements that reference the named window receive the new event in the insert stream and the event prior to the update in the remove stream. 
+			</para>
+
+			<para>				
+				Let's look at a couple of examples. In the simplest form, this statement updates all events in the named window 'AllOrdersNamedWindow' when any 'UpdateOrderEvent' event arrives, setting the price property to zero for all events currently held by the named window:
+			</para>
+			<programlisting><![CDATA[on UpdateOrderEvent update AllOrdersNamedWindow set price = 0]]></programlisting>
+
+			<para>
+				This example adds a <literal>where</literal> clause to the example above. Upon arrival of a triggering 'ZeroVolumeEvent', the statement updates prices on any orders that have a volume of zero or less:
+			</para>
+			<programlisting><![CDATA[on ZeroVolumeEvent update AllOrdersNamedWindow set price = 0 where volume <= 0]]></programlisting>
+
+			<para>				
+				The next example shows a more complete use of the syntax, and correlates the triggering event with events held by the named window:
+			</para>
+			<programlisting><![CDATA[on NewOrderEvent(volume>0) as myNewOrders
+update AllOrdersNamedWindow as myNamedWindow 
+set price = myNewOrders.price
+where myNamedWindow.symbol = myNewOrders.symbol]]></programlisting>
+
+			<para>				
+				In the above sample statement, only if a 'NewOrderEvent' event with a volume greater then zero arrives does the statement trigger. Upon triggering, all events in the named window that have the same value for the symbol property as the triggering 'NewOrderEvent' event are then updated (their price property is set to that of the arriving event). The statement also showcases the <literal>as</literal> keyword to assign a name for use in the <literal>where</literal> expression.
+			</para>
+
+			<para>				
+				For correlated queries (as above) that correlate triggering events with events held by a named window, Esper internally creates efficient indexes to enable high performance update of events.
+			</para>
+
+			<para>
+				Your application can subscribe a listener to your <literal>on update</literal> statements to determine update events. The statement post any events that are updated to all listeners attached to the statement as new data, and the events prior to the update as old data. Upon iteration, the statement provides the last update event, if any.
+			</para>
+
+			<para>
+				The following example shows the use of tags and a pattern. It sets the price value of orders to that of either a 'FlushOrderEvent' or 'OrderUpdateEvent' depending on which arrived:
+			</para>
+			<programlisting><![CDATA[on pattern [every ord=OrderUpdateEvent(volume>0) or every flush=FlushOrderEvent] 
+update AllOrdersNamedWindow as win
+set price = case when ord.price is null then flush.price else ord.price end
+where ord.id = win.id or flush.id = win.id]]></programlisting>
+
+			<para>
+				The following restrictions apply:
+			</para>
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						Each property to be updated must be writable.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						For underlying event representations that are Java objects, a event object class must implement the java.io.Serializable interface as discussed in <xref linkend="epl-update-object"/> and must provide setter methods for updated properties.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When using an XML underlying event type, event properties in the XML document representation are not available for update.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Nested, indexed and mapped properties are not supported for update. Revision event types and variant streams may also not be updated.						
+					</para>
+				</listitem>
+			</orderedlist>
+
+		</sect2>
+
+		<sect2 id="named_delete" revision="1">
+			<title>Deleting From Named Windows: the <literal>On Delete</literal> clause</title>
+			
+			<indexterm><primary>on-delete</primary></indexterm>
+			<indexterm><primary>named window</primary><secondary>deleting from</secondary></indexterm>
+			<indexterm><primary>EPL</primary><secondary>named window</secondary><tertiary>deleting from</tertiary></indexterm>
+
+			<para>
+				An <literal>on delete</literal> clause removes events from a named window. The clause can be used to remove all events, or only events that match certain criteria, or events that correlate with an arriving event or a pattern of arriving events.
+			</para>
+
+			<para>
+				The syntax for the <literal>on delete</literal> clause is as follows: 
+			</para>
+			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>stream_name</emphasis>]
+delete from <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
+[where <emphasis>criteria_expression</emphasis>]</synopsis>
+				
+			<para>
+				The <emphasis>event_type</emphasis> is the name of the type of events that trigger removal from the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an name for use in the <literal>where</literal> clause. Patterns and named windows can also be specified in the <literal>on</literal> clause as described in the next section.
+			</para>
+				
+			<para>
+				The <emphasis>window_name</emphasis> is the name of the named window to delete events from. The <literal>as</literal> keyword is also available to assign a name to the named window.
+			</para>
+				
+			<para>
+				The optional <literal>where</literal> clause contains a <emphasis>criteria_expression</emphasis> that correlates the arriving (triggering) event to the events to be removed from the named window. The <emphasis>criteria_expression</emphasis> may also simply filter for events in the named window to be removed from the named window.
+			</para>
+
+			<para>
+				The <literal>iterator</literal> of the <literal>EPStatement</literal> object representing the <literal>on delete</literal> clause can also be helpful: It returns the last batch of deleted events in response to the last triggering event, in any order, or null if the last triggering event did not remove any rows.
+			</para>
+
+			<para>				
+				Let's look at a couple of examples. In the simplest form, this statement deletes all events from the named window 'AllOrdersNamedWindow' when any 'FlushOrderEvent' arrives:
+			</para>
+			<programlisting><![CDATA[on FlushOrderEvent delete from AllOrdersNamedWindow]]></programlisting>
+
+			<para>				
+				This example adds a <literal>where</literal> clause to the example above. Upon arrival of a triggering 'ZeroVolumeEvent', the statement removes from the named window any orders that have a volume of zero or less:
+			</para>
+			<programlisting><![CDATA[on ZeroVolumeEvent delete from AllOrdersNamedWindow where volume <= 0]]></programlisting>
+
+			<para>				
+				The next example shows a more complete use of the syntax, and correlates the triggering event with events held by the named window:
+			</para>
+			<programlisting><![CDATA[on NewOrderEvent(volume>0) as myNewOrders
+delete from AllOrdersNamedWindow as myNamedWindow 
+where myNamedWindow.symbol = myNewOrders.symbol]]></programlisting>
+
+			<para>				
+				In the above sample statement, only if a 'NewOrderEvent' event with a volume greater then zero arrives does the statement trigger. Upon triggering, all events in the named window that have the same value for the symbol property as the triggering 'NewOrderEvent' event are then removed from the named window. The statement also showcases the <literal>as</literal> keyword to assign a name for use in the <literal>where</literal> expression.
+			</para>
+
+			<para>				
+				For correlated queries (as above) that correlate triggering events with events held by a named window, Esper internally creates efficient indexes to enable high performance removal of events especially from named windows that hold large numbers of events.
+			</para>
+
+			<para>
+				Your application can subscribe a listener to your <literal>on delete</literal> statements to determine removed events. The statement post any events that are deleted from a named window to all listeners attached to the statement as new data. Upon iteration, the statement provides the last deleted event, if any.
+			</para>
+
+			<sect3 id="named_delete_pattern" >
+			   <title>Using Patterns in the <literal>On Delete</literal> Clause</title>
+
+				<para>
+					By means of patterns the <literal>on delete</literal> clause and <literal>on select</literal> clause (described below) can look for more complex conditions to occur, possibly involving multiple events or the passing of time. The syntax for <literal>on delete</literal> with a pattern expression is show next:
+				</para>
+				<synopsis>on pattern [<emphasis>pattern_expression</emphasis>] [as <emphasis>stream_name</emphasis>]
+delete from <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
+[where <emphasis>criteria_expression</emphasis>]</synopsis>
+					
+				<para>
+					The <emphasis>pattern_expression</emphasis> is any pattern that matches zero or more arriving events. Tags can be used to name events in the pattern and can occur in the optional <literal>where</literal> clause to correlate to events to be removed from a named window.
+				</para>
+					
+				<para>
+					In the next example the triggering pattern fires every 10 seconds. The effect is that every 10 seconds the statement removes from 'MyNamedWindow' all rows:
+				</para>
+				<programlisting><![CDATA[on pattern [every timer:interval(10 sec)] delete from MyNamedWindow]]></programlisting>
+
+				<para>
+					The following example shows the use of tags in a pattern: 
+				</para>
+				<programlisting><![CDATA[on pattern [every ord=OrderEvent(volume>0) or every flush=FlushOrderEvent] 
+delete from OrderWindow as win
+where ord.id = win.id or flush.id = win.id]]></programlisting>
+
+				<para>
+					The pattern above looks for OrderEvent events with a volume value greater then zero and tags such events as 'ord'. 
+					The pattern also looks for FlushOrderEvent events and tags such events as 'flush'. The <literal>where</literal> clause deletes from the 'OrderWindow' named window any events that match in the value of the 'id' property either of the arriving events.
+				</para>
+
+			</sect3>
+		</sect2>
+
+		<sect2 id="named_versioning" revision="1">
+			<title>Versioning and Merging Events in Named Windows</title>
+			
+			<indexterm><primary>named window</primary><secondary>versioning events</secondary></indexterm>
 
 			<para>
 				As outlined in <xref linkend="eventrep-update"/>, revision event types process updates or new versions of events held by a named window.
@@ -3942,7 +4050,7 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 			<orderedlist spacing="compact">
 				<listitem>
 					<para>
-						Some of your events carry only partial information that is related to a prior event.
+						Some of your events carry only partial information that is related to a prior event and must be merged together.
 					</para>
 				</listitem>
 				<listitem>
@@ -4020,9 +4128,7 @@ insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting
 					</para>
 				</listitem>
 			</itemizedlist>
-
 		</sect2>
-
 	</sect1>
 	
 	<sect1 id="split_overview" revision="1">
@@ -4109,7 +4215,7 @@ can be used to assign a stream name. Patterns and named windows can also be spec
 		<orderedlist spacing="compact">
 			<listitem>
 				<para>
-					Sub-selects, aggregation functions and the <literal>prev</literal> and <literal>prior</literal> operators are not available in conditions and the <literal>select</literal>-clause.
+					Aggregation functions and the <literal>prev</literal> and <literal>prior</literal> operators are not available in conditions and the <literal>select</literal>-clause.
 				</para>
 			</listitem>
 		</orderedlist>
@@ -4213,7 +4319,11 @@ can be used to assign a stream name. Patterns and named windows can also be spec
 			</para>
 			
 			<para>
-				The comma-separated list of variable names and expressions set the value of one or more variables. All new variable values are applied atomically: the changes to variable values by the <literal>on set</literal> statement 
+				The comma-separated list of variable names and expressions set the value of one or more variables. Subqueries may by part of expressions however aggregation functions and the <literal>prev</literal> or <literal>prior</literal> function may not be used in expressions.
+			</para>
+
+			<para>
+				All new variable values are applied atomically: the changes to variable values by the <literal>on set</literal> statement 
 				become visible to other statements all at the same time. No changes are visible to other processing threads until the <literal>on set</literal> statement completed processing, and at that time all changes become visible at once.
 			</para>
 
@@ -4670,7 +4780,7 @@ where productId = bookId]]></programlisting>
 	</sect1>
 	
 	<sect1 id="epl-update">
-	   <title>Updating Event Properties: the Update Clause</title>
+	   <title>Updating an Insert Stream: the Update IStream Clause</title>
 	   
 		<para>
 			The <literal>update istream</literal> statement allows declarative modification of event properties of events entering a stream. Update is a pre-processing step to each new event, modifying an event before the event applies to any statements.
@@ -4810,11 +4920,7 @@ update istream DoubleWithdrawalStream set minimum = 1000 where account in (10002
 
 			<para>
 				For Java application objects, the copy operation is implemented by serialization. Your event object must therefore implement the <literal>java.io.Serializable</literal> interface to become eligible for update. As an alternative to serialization, you may instead configure a copy method as part of the event type configuration via <literal>ConfigurationEventTypeLegacy</literal>.
-			</para>
-			
-			<para>
-				Esper also provides a feature related in purpose to update: the revision event type. A revision event type is useful when there are two or more event types: full events that carry all the information, and delta events that provide only a partial update to the full events, and the full events and delta events are associated with each other via primary key(s).
-			</para>
+			</para>			
 		</sect2>
 	</sect1>
 </chapter>

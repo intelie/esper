@@ -1358,7 +1358,7 @@ such event metadata and event data into one of the built-in event representation
 	</sect1>
 
 	<sect1 id="eventrep-update">
-	   <title>Updating and Versioning Events</title>
+	   <title>Updating, Merging and Versioning Events</title>
 	   
 		<indexterm><primary>event</primary><secondary>update</secondary></indexterm>
 		<indexterm><primary>event</primary><secondary>version</secondary></indexterm>
@@ -1374,17 +1374,23 @@ such event metadata and event data into one of the built-in event representation
 
         <para>
 			During the retention time of an event more information about the event may become available, such as additional properties or changes to existing properties. 
-			Esper provides the concept of revision event type to handle such situations. A revision event type instructs the engine that new versions of an existing event are to be processed that update, amend or add to an existing event.
+			Esper provides three concepts for handling updates to events.
         </para>
         
         <para>
-			Revision event types work together with the named window feature of the engine: A named window provides an explicit expiration policy for event instances that can be updated,
-			thereby allowing the engine to retain only those versions that are relevant to any retained event and discarding updates to events not retained.
+			  The first means to handle updating events is the <literal>update istream</literal> clause as further described in <xref linkend="epl-update"/>. It is useful when you need to update events as they enter a stream, before events are evaluated by any particular 
+			  consuming statement to that stream.
         </para>
 
-		<para>
-			Please see <xref linkend="named_update"/> for further instructions and examples.
-		</para>
+        <para>
+			  The second means to update events is the <literal>on-update</literal> clause, for use with named windows only, as further described in <xref linkend="named_update"/>. On-update
+			  can be used to update individual properties of events held in a named window.
+        </para>
+
+        <para>
+			  The third means to handle updating events is the revision event types, for use with named windows only, as further described in <xref linkend="named_versioning"/>. With revision event types one can declare multiple different event types and then
+			  have the engine present a merged event type that contains a superset of properties of all merged types, and have the engine merge events as they arrive.
+        </para>
 
 		<para>
 			Note that patterns do not reflect changes to past events. For the temporal nature of patterns, any changes to events that were observed in the past do not reflect upon current pattern state.
