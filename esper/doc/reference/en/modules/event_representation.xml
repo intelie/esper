@@ -546,6 +546,18 @@ where address('work').streetName = 'Park Ave']]></programlisting>
 			<programlisting><![CDATA[select name, education, education[0].date, addresses('home').street
 from NewEmployeeEvent]]></programlisting>
 		</sect2>
+
+		<sect2 id="event-properties-knownlimit">
+		   <title>Known Limitations</title>
+
+			<para>
+				Esper employs byte code generation for fast access to event properties. When byte code generation is unsuccessful, the engine logs a warning and uses Java reflection to obtain property values instead.
+			</para>
+
+			<para>
+				A known limitation is that when an interface has an attribute of a particular type and the actual event bean class returns a subclass of that attribute, the engine logs a warning and uses reflection for that property.
+			</para>	
+		</sect2>
     </sect1>
     
 	<sect1 id="eventrep-java-util-map">
