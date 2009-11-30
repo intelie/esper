@@ -32,6 +32,7 @@ import java.util.Set;
  */
 public class ResultSetProcessorRowForAll implements ResultSetProcessor
 {
+    private final static EventBean[] EVENT_PER_STREAM_EMPTY = new EventBean[0];
     private final boolean isSelectRStream;
     private final boolean isUnidirectional;
     private final SelectExprProcessor selectExprProcessor;
@@ -157,7 +158,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
     private EventBean[] getSelectListEvents(boolean isNewData, boolean isSynthesize)
     {
         // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-        EventBean event = selectExprProcessor.process(null, isNewData, isSynthesize);
+        EventBean event = selectExprProcessor.process(EVENT_PER_STREAM_EMPTY, isNewData, isSynthesize);
 
         if (optionalHavingNode != null)
         {
@@ -175,7 +176,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
     private EventBean getSelectListEvent(boolean isNewData, boolean isSynthesize)
     {
         // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-        EventBean event = selectExprProcessor.process(null, isNewData, isSynthesize);
+        EventBean event = selectExprProcessor.process(EVENT_PER_STREAM_EMPTY, isNewData, isSynthesize);
 
         if (optionalHavingNode != null)
         {
@@ -526,7 +527,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
     private void getSelectListEvent(boolean isNewData, boolean isSynthesize, List<EventBean> resultEvents)
     {
         // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-        EventBean event = selectExprProcessor.process(null, isNewData, isSynthesize);
+        EventBean event = selectExprProcessor.process(EVENT_PER_STREAM_EMPTY, isNewData, isSynthesize);
 
         if (optionalHavingNode != null)
         {

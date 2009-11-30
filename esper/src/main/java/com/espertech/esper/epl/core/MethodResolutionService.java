@@ -142,7 +142,7 @@ public interface MethodResolutionService
      * @param targetType is the type to max or min
      * @return aggregator
      */
-    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxType, Class targetType);
+    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxType, Class targetType, boolean isHasDataWindows);
 
     /**
      * Makes a new stddev-aggregator.

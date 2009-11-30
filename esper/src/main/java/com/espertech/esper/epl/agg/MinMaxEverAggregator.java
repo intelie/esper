@@ -12,16 +12,21 @@ import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.type.MinMaxTypeEnum;
 import com.espertech.esper.collection.SortedRefCountedSet;
+import com.espertech.esper.util.ExecutionPathDebugLog;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * Min/max aggregator for all values.
+ * Min/max aggregator for all values, not considering events leaving the aggregation (i.e. ever).
  */
-public class MinMaxAggregator implements AggregationMethod
+public class MinMaxEverAggregator implements AggregationMethod
 {
+    private static final Log log = LogFactory.getLog(MinMaxEverAggregator.class);
+
     private final MinMaxTypeEnum minMaxTypeEnum;
     private final Class returnType;
 
-    private SortedRefCountedSet<Object> refSet;
+    private Comparable currentMinMax;
 
     /**
      * Ctor.
@@ -29,16 +34,15 @@ public class MinMaxAggregator implements AggregationMethod
      * @param minMaxTypeEnum - enum indicating to return minimum or maximum values
      * @param returnType     - is the value type returned by aggregator
      */
-    public MinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Class returnType)
+    public MinMaxEverAggregator(MinMaxTypeEnum minMaxTypeEnum, Class returnType)
     {
         this.minMaxTypeEnum = minMaxTypeEnum;
         this.returnType = returnType;
-        this.refSet = new SortedRefCountedSet<Object>();
     }
 
     public void clear()
     {
-        refSet.clear();
+        currentMinMax = null;
     }
 
     public void enter(Object object)
@@ -47,28 +51,31 @@ public class MinMaxAggregator implements AggregationMethod
         {
             return;
         }
-        refSet.add(object);
+        if (currentMinMax == null) {
+            currentMinMax = (Comparable) object;
+            return;
+        }
+        if (minMaxTypeEnum == MinMaxTypeEnum.MAX) {
+            if (currentMinMax.compareTo(object) < 0) {
+                currentMinMax = (Comparable) object;
+            }
+        }
+        else {
+            if (currentMinMax.compareTo(object) > 0) {
+                currentMinMax = (Comparable) object;
+            }
+        }
     }
 
     public void leave(Object object)
     {
-        if (object == null)
-        {
-            return;
-        }
-        refSet.remove(object);
+        // no-op, this is designed to handle min-max ever
+        log.warn(".leave Received remove stream, none was expected");
     }
 
     public Object getValue()
     {
-        if (minMaxTypeEnum == MinMaxTypeEnum.MAX)
-        {
-            return refSet.maxValue();
-        }
-        else
-        {
-            return refSet.minValue();
-        }
+        return currentMinMax;
     }
 
     public Class getValueType()
@@ -78,6 +85,6 @@ public class MinMaxAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, returnType, true);
+        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, returnType, false);
     }
 }

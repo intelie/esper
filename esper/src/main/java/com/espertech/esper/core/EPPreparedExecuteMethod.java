@@ -90,7 +90,9 @@ public class EPPreparedExecuteMethod
             typesPerStream[i] = processors[i].getTailView().getEventType();
         }
 
-        StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, services.getEngineURI());
+        boolean[] isIStreamOnly = new boolean[namesPerStream.length];
+        Arrays.fill(isIStreamOnly, true);
+        StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, isIStreamOnly, services.getEngineURI());
         EPStatementStartMethod.validateNodes(statementSpec, statementContext, typeService, null);
 
         resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null, new boolean[0], true);

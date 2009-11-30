@@ -152,8 +152,11 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new MedianAggregator();
     }
 
-    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Class targetType)
+    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Class targetType, boolean isHasDataWindows)
     {
+        if (!isHasDataWindows) {
+            return new MinMaxEverAggregator(minMaxTypeEnum, targetType);
+        }
         return new MinMaxAggregator(minMaxTypeEnum, targetType);
     }
 

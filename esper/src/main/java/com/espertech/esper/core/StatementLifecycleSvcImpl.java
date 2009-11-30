@@ -998,7 +998,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                         {
                             throw new ExprValidationException("Create window where-clause may not have " + checkMinimal);
                         }
-                        StreamTypeService streamTypeService = new StreamTypeServiceImpl(selectFromType, selectFromTypeName, statementContext.getEngineURI());
+                        StreamTypeService streamTypeService = new StreamTypeServiceImpl(selectFromType, selectFromTypeName, true, statementContext.getEngineURI());
                         ExprNode insertFilter = spec.getCreateWindowDesc().getInsertFilter().getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                         spec.getCreateWindowDesc().setInsertFilter(insertFilter);
                     }
@@ -1169,7 +1169,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private static List<NamedWindowSelectedProps> compileLimitedSelect(SelectClauseSpecRaw spec, String eplStatement, EventType singleType, String selectFromTypeName, String engineURI, ExprEvaluatorContext exprEvaluatorContext)
     {
         List<NamedWindowSelectedProps> selectProps = new LinkedList<NamedWindowSelectedProps>();
-        StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"}, engineURI);
+        StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"}, new boolean[] {false}, engineURI);
 
         for (SelectClauseElementRaw raw : spec.getSelectExprList())
         {

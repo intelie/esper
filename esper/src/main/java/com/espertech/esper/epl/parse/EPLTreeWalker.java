@@ -1603,15 +1603,15 @@ public class EPLTreeWalker extends EsperEPL2Ast
             return;
         }
 
+        boolean isDistinct = false;
+        if ((node.getChild(1) != null) && (node.getChild(1).getType() == DISTINCT))
+        {
+            isDistinct = true;
+        }
+
         try
         {
             AggregationSupport aggregation = engineImportService.resolveAggregation(childNodeText);
-
-            boolean isDistinct = false;
-            if ((node.getChild(1) != null) && (node.getChild(1).getType() == DISTINCT))
-            {
-                isDistinct = true;
-            }
 
             astExprNodeMap.put(node, new ExprPlugInAggFunctionNode(isDistinct, aggregation, childNodeText));
             return;
@@ -1625,6 +1625,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             throw new IllegalStateException("Error resolving aggregation: " + e.getMessage(), e);
         }
 
+        if (childNodeText.equals("local_max") || childNodeText.equals("local_min")) {
+            astExprNodeMap.put(node, new ExprLocalAggrNode(isDistinct, childNodeText));
+        }
         throw new IllegalStateException("Unknown method named '" + childNodeText + "' could not be resolved");
     }
 

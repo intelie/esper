@@ -119,6 +119,8 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             System.arraycopy(singleVarStreamNames, 0, streamNamesDefine, 0, singleVarStreamNames.length);
             EventType[] typesDefine = new EventType[singleVarTypes.length];
             System.arraycopy(singleVarTypes, 0, typesDefine, 0, singleVarTypes.length);
+            boolean[] isIStreamOnly = new boolean[singleVarTypes.length];
+            Arrays.fill(isIStreamOnly, true);
 
             // the own stream is available for querying
             if (!variableStreams.containsKey(defineItem.getIdentifier()))
@@ -129,7 +131,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             streamNamesDefine[streamNumDefine] = defineItem.getIdentifier();
             typesDefine[streamNumDefine] = parentViewType;
 
-            StreamTypeService typeServiceDefines = new StreamTypeServiceImpl(typesDefine, streamNamesDefine, statementContext.getEngineURI());
+            StreamTypeService typeServiceDefines = new StreamTypeServiceImpl(typesDefine, streamNamesDefine, isIStreamOnly, statementContext.getEngineURI());
             ExprNode exprNodeResult = handlePreviousFunctions(defineItem.getExpression());
             ExprNode validated = exprNodeResult.getValidatedSubtree(typeServiceDefines, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
             defineItem.setExpression(validated);
@@ -146,7 +148,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             measureTypeDef.put(variableMultiple, new EventType[] {parentViewType});
         }
         compositeEventType = statementContext.getEventAdapterService().createAnonymousMapType(measureTypeDef);
-        StreamTypeService typeServiceMeasure = new StreamTypeServiceImpl(compositeEventType, "MATCH_RECOGNIZE", statementContext.getEngineURI());
+        StreamTypeService typeServiceMeasure = new StreamTypeServiceImpl(compositeEventType, "MATCH_RECOGNIZE", true, statementContext.getEngineURI());
 
         // find MEASURE clause aggregations
         List<ExprAggregateNode> measureAggregateExprNodes = new ArrayList<ExprAggregateNode>();
@@ -156,7 +158,9 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         }
         if (!measureAggregateExprNodes.isEmpty())
         {
-            StreamTypeServiceImpl typeServiceAggregateMeasure = new StreamTypeServiceImpl(allTypes, allStreamNames, statementContext.getEngineURI());
+            boolean[] isIStreamOnly = new boolean[allStreamNames.length];
+            Arrays.fill(isIStreamOnly, true);
+            StreamTypeServiceImpl typeServiceAggregateMeasure = new StreamTypeServiceImpl(allTypes, allStreamNames, isIStreamOnly, statementContext.getEngineURI());
             Map<Integer, List<ExprAggregateNode>> measureExprAggNodesPerStream = new HashMap<Integer, List<ExprAggregateNode>>();
 
             for (ExprAggregateNode aggregateNode : measureAggregateExprNodes)
@@ -234,7 +238,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         // validate partition-by expressions, if any
         if (!matchRecognizeSpec.getPartitionByExpressions().isEmpty())
         {
-            StreamTypeService typeServicePartition = new StreamTypeServiceImpl(parentViewType, "MATCH_RECOGNIZE_PARTITION", statementContext.getEngineURI());
+            StreamTypeService typeServicePartition = new StreamTypeServiceImpl(parentViewType, "MATCH_RECOGNIZE_PARTITION", true, statementContext.getEngineURI());
             List<ExprNode> validated = new ArrayList<ExprNode>();
             for (ExprNode partitionExpr : matchRecognizeSpec.getPartitionByExpressions())
             {

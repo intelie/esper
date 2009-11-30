@@ -25,8 +25,9 @@ Getting Help
 	
 	* The complete stack trace of any exception, if an exception is reported.
 	
-	* Optimally a tiny Java code to reproduce the issue or question.
-	
+	* A snippet of Java code or a unit test to reproduce the issue or question.
+	  Keep this code very simple and minimal without any additional classes, in the style of our regression test suite.
+	  	
 	
 * Please consider obtaining support from EsperTech.
 

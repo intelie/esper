@@ -39,7 +39,39 @@ public class ExprMinMaxAggrNode extends ExprAggregateNode
             throw new ExprValidationException(minMaxTypeEnum.toString() + " node must have exactly 1 child node");
         }
         ExprNode child = this.getChildNodes().get(0);
-        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, child.getType());
+
+        // Determine whether all streams are istream-only or irstream
+        boolean[] isIStreamOnly = streamTypeService.getIStreamOnly();
+        boolean isAllIStream = true;    // all true?
+        boolean isAllIRStream = true;   // all false?
+        for (boolean anIsIStreamOnly : isIStreamOnly) {
+            if (!anIsIStreamOnly) {
+                isAllIStream = false;
+            }
+            else {
+                isAllIRStream = false;
+            }
+        }
+
+        // determine if a data-window applies to this max function
+        boolean hasDataWindows = true;
+        if (isAllIStream) {
+            hasDataWindows = false;
+        }
+        else if (!isAllIRStream) {
+            hasDataWindows = false;
+            // get all aggregated properties to determine if any is from a windowed stream
+            ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+            child.accept(visitor);
+            for (ExprIdentNode node : visitor.getExprProperties()) {
+                if (!isIStreamOnly[node.getStreamId()]) {
+                    hasDataWindows = true;
+                    break;
+                }
+            }
+        }
+
+        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, child.getType(), hasDataWindows);
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)

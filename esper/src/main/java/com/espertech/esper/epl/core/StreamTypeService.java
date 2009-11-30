@@ -72,4 +72,6 @@ public interface StreamTypeService
      * @return event types
      */
     public EventType[] getEventTypes();
+
+    public boolean[] getIStreamOnly();
 }

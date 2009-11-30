@@ -25,6 +25,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
 {
     private final EventType[] eventTypes;
     private final String[] streamNames;
+    private final boolean[] isIStreamOnly;
     private final String engineURIQualifier;
     private boolean isStreamZeroUnambigous;
     private boolean requireStreamNames;
@@ -35,7 +36,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
      */
     public StreamTypeServiceImpl (String engineURI)
     {
-        this(new EventType[0], new String[0], engineURI);
+        this(new EventType[0], new String[0], new boolean[0], engineURI);
     }
 
     /**
@@ -44,9 +45,9 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param streamName the stream name of the single stream
      * @param engineURI engine URI
      */
-    public StreamTypeServiceImpl (EventType eventType, String streamName, String engineURI)
+    public StreamTypeServiceImpl (EventType eventType, String streamName, boolean isIStreamOnly, String engineURI)
     {
-        this(new EventType[] {eventType}, new String[] {streamName}, engineURI);
+        this(new EventType[] {eventType}, new String[] {streamName}, new boolean[] {isIStreamOnly}, engineURI);
     }
 
     /**
@@ -55,10 +56,11 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param streamNames - array of stream names, one for each stream
      * @param engineURI - engine URI
      */
-    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, String engineURI)
+    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, boolean[] isIStreamOnly, String engineURI)
     {
         this.eventTypes = eventTypes;
         this.streamNames = streamNames;
+        this.isIStreamOnly = isIStreamOnly;
 
         if (engineURI == null || EPServiceProviderSPI.DEFAULT_ENGINE_URI.equals(engineURI))
         {
@@ -88,6 +90,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
         this.isStreamZeroUnambigous = isStreamZeroUnambigous;
         this.requireStreamNames = requireStreamNames;
         this.engineURIQualifier = engineURI;
+        this.isIStreamOnly = new boolean[namesAndTypes.size()];
         eventTypes = new EventType[namesAndTypes.size()] ;
         streamNames = new String[namesAndTypes.size()] ;
         int count = 0;
@@ -107,6 +110,10 @@ public class StreamTypeServiceImpl implements StreamTypeService
     public String[] getStreamNames()
     {
         return streamNames;
+    }
+
+    public boolean[] getIStreamOnly() {
+        return isIStreamOnly;
     }
 
     public PropertyResolutionDescriptor resolveByPropertyName(String propertyName)
