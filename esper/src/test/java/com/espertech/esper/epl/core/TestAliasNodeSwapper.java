@@ -6,6 +6,7 @@ import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.epl.core.ColumnNamedNodeSwapper;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprEqualsNode;
 import junit.framework.TestCase;
 
 public class TestAliasNodeSwapper extends TestCase 
@@ -30,7 +31,7 @@ public class TestAliasNodeSwapper extends TestCase
 	
 	public void testPartReplaced() throws Exception
 	{
-		exprTree = SupportExprNodeFactory.makeEqualsNode();
+		exprTree = makeEqualsNode();
 		alias = "intPrimitive";
 		resultingTree = ColumnNamedNodeSwapper.swap(exprTree, alias, fullExpr);
 		
@@ -58,5 +59,18 @@ public class TestAliasNodeSwapper extends TestCase
 		assertTrue(childNodes.get(0) == newFullExpr);
 		assertTrue(childNodes.get(1) == newFullExpr);
 	}
-	
+
+    public static ExprEqualsNode makeEqualsNode() throws Exception
+    {
+        ExprEqualsNode topNode = new ExprEqualsNode(false);
+        ExprIdentNode i1_1 = new ExprIdentNode("intPrimitive");
+        ExprIdentNode i1_2 = new ExprIdentNode("intBoxed");
+        topNode.addChildNode(i1_1);
+        topNode.addChildNode(i1_2);
+
+        SupportExprNodeFactory.validate1StreamBean(topNode);
+
+        return topNode;
+    }
+
 }

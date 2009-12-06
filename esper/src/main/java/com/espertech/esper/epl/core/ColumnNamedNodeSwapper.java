@@ -82,7 +82,8 @@ public class ColumnNamedNodeSwapper
 			{
 				throw new IllegalStateException("Ident node has unexpected child nodes");
 			}
-			return ((ExprIdentNode) node).getUnresolvedPropertyName().equals(name);
+            ExprIdentNode identNode = (ExprIdentNode) node;
+			return identNode.getUnresolvedPropertyName().equals(name) && identNode.getStreamOrPropertyName() == null;
 		}
 		else
 		{
