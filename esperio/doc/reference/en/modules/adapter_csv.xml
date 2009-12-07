@@ -196,6 +196,46 @@ EPStatement stmt = epService.getEPAdministrator().createEPL(
 
 (new CSVInputAdapter(epService, new AdapterInputSource(filename), "PriceEvent")).start();]]></programlisting>		
 			</para>
+			
+			<para>
+				When using JavaBean POJO Events, the event properties types are known from the underlying event type configuration.
+				The CSV file row header does not need to define column type explicitly.
+			</para>
+		</sect2>
+		
+		<sect2 id="nested">
+			<title>Dealing with event with nested properties</title>
+			
+			<para>
+				Wether you use JavaBean POJO or Map-based event types, EsperIO provides support for nested event properties up to one level of nesting.
+				The row header must then refer to the properties using a <literal>propertyName.nestedPropertyName</literal> syntax.
+				There is no support for mapped or indexed properties. 
+			</para>
+			
+			<para>
+				For example consider the following:
+				<programlisting><![CDATA[
+				public class Point {
+					int x;
+					int y;
+				
+					// with getters & setters
+				}
+				public class Figure {
+					String name;
+					Point point; // point.x and point.y are nested properties 
+				
+					//with getters & setters
+				}
+				]]></programlisting>
+				Or the equivalent representation with nested maps,
+				assuming "Figure" is the declared event type name,
+				the CSV file can contain the following row header:
+				<programlisting><![CDATA[
+				name, point.x, point.y
+				]]>
+				</programlisting>
+			</para>
 		</sect2>
 	
     </sect1>

@@ -77,7 +77,8 @@ public class CSVPropertyOrderHelper
 		{
 			return false;
 		}
-		return ( row.length == propertyTypes.size() ) || ( row.length == propertyTypes.size() + 1 );
+		// same row size, or with timestamp column added, or longer due to flatten nested properties
+		return ( row.length == propertyTypes.size() ) || ( row.length == propertyTypes.size() + 1 ) || (row.length > propertyTypes.size());
 	}
 
 }

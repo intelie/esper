@@ -32,7 +32,26 @@ public class SendableMapEvent extends AbstractSendableEvent
 	public SendableMapEvent(Map<String, Object> mapToSend, String eventTypeName, long timestamp, ScheduleSlot scheduleSlot)
 	{
 		super(timestamp, scheduleSlot);
-		this.mapToSend = new HashMap<String, Object>(mapToSend);
+		//if properties names contain a '.' we need to rebuild the nested map property
+		Map toSend = new HashMap();
+		for (String property : mapToSend.keySet()) {
+			int dot = property.indexOf('.');
+			if (dot > 0) {
+				String prefix = property.substring(0, dot);
+				String postfix = property.substring(dot+1, property.length());
+				if (!toSend.containsKey(prefix)) {
+					Map nested = new HashMap();
+					nested.put(postfix, mapToSend.get(property));
+					toSend.put(prefix, nested);
+				} else {
+					Map nested = (Map) toSend.get(prefix);
+					nested.put(postfix, mapToSend.get(property));
+				}
+			} else {
+				toSend.put(property, mapToSend.get(property));
+			}
+		}
+		this.mapToSend = toSend;
 		this.eventTypeName = eventTypeName;
 	}
 

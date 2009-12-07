@@ -8,10 +8,15 @@
  **************************************************************************************/
 package com.espertech.esperio;
 
+import java.beans.PropertyDescriptor;
 import java.util.Map;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.schedule.ScheduleSlot;
+
+import net.sf.cglib.core.ReflectUtils;
+import net.sf.cglib.reflect.FastClass;
+
 import org.apache.commons.beanutils.BeanUtils;
 
 /**
@@ -36,6 +41,13 @@ public class SendableBeanEvent extends AbstractSendableEvent
 
 		try {
 			beanToSend = beanClass.newInstance();
+			// pre-create nested properties if any, as BeanUtils does not otherwise populate 'null' objects from their respective properties
+			PropertyDescriptor[] pds = ReflectUtils.getBeanSetters(beanClass);
+			for (PropertyDescriptor pd : pds) {
+				if (!pd.getPropertyType().isPrimitive() && !pd.getPropertyType().getName().startsWith("java")) {
+					BeanUtils.setProperty(beanToSend, pd.getName(), pd.getPropertyType().newInstance());
+				}
+			}
 			// this method silently ignores read only properties on the dest bean but we should
 			// have caught them in CSVInputAdapter.constructPropertyTypes.
 			BeanUtils.copyProperties(beanToSend, mapToSend);

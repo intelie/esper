@@ -12,14 +12,17 @@ import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esperio.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+
+import net.sf.cglib.core.ReflectUtils;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanUtils;
 
 import java.io.EOFException;
 import java.util.*;
@@ -322,7 +325,12 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 			}
             // we can't set read-only properties for bean
             if(!eventType.getUnderlyingType().equals(Map.class)) {
-            	PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(beanClass, property);
+            	PropertyDescriptor[] pds = ReflectUtils.getBeanProperties(beanClass);
+            	PropertyDescriptor pd = null;
+            	for (PropertyDescriptor p :pds) {
+            		if (p.getName().equals(property))
+            			pd = p;
+            	}
                 if (pd == null)
                 {
                     continue;
@@ -338,7 +346,33 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
             }
 			propertyTypes.put(property, type);
 		}
-		return propertyTypes;
+		
+		// flatten nested types
+		Map<String, Object> flattenPropertyTypes = new HashMap<String, Object>();
+		for (String p : propertyTypes.keySet()) {
+			Object type = propertyTypes.get(p);
+			if (type instanceof Class && ((Class)type).getName().equals("java.util.Map") && eventType instanceof MapEventType) {
+				MapEventType mapEventType = (MapEventType) eventType;
+				Map<String, Object> nested = (Map) mapEventType.getTypes().get(p);
+				for (String nestedProperty : nested.keySet()) {
+					flattenPropertyTypes.put(p+"."+nestedProperty, nested.get(nestedProperty));
+				}
+			} else if (type instanceof Class) {
+				Class c = (Class)type;
+				if (!c.isPrimitive() && !c.getName().startsWith("java")) {
+					PropertyDescriptor[] pds = ReflectUtils.getBeanProperties(c);
+					for (PropertyDescriptor pd : pds) {
+						if (pd.getWriteMethod()!=null)
+							flattenPropertyTypes.put(p+"."+pd.getName(), pd.getPropertyType());
+					}
+				} else {
+					flattenPropertyTypes.put(p, type);
+				}
+			} else {
+				flattenPropertyTypes.put(p, type);
+			}
+		}
+		return flattenPropertyTypes;
 	}
 
 	private void updateTotalDelay(Map<String, Object> map, boolean isFirstRow)

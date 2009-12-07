@@ -8,12 +8,21 @@
  **************************************************************************************/
 package com.espertech.esperio.csv;
 
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esperio.AdapterInputSource;
+import com.espertech.esperio.support.util.SupportUpdateListener;
+
 import junit.framework.TestCase;
 
 import java.io.EOFException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TestCSVReader extends TestCase
 {
@@ -239,5 +248,80 @@ public class TestCSVReader extends TestCase
 		}
 
 		reader.close();
+	}
+	
+	public void testNestedProperties() {
+		Configuration configuration = new Configuration();
+		configuration.addEventType(Figure.class);
+		EPServiceProvider ep = EPServiceProviderManager.getProvider("testNestedProperties", configuration);
+		SupportUpdateListener ul = new SupportUpdateListener();
+		ep.getEPAdministrator().createEPL("select * from Figure").addListener(ul);
+
+		AdapterInputSource source = new AdapterInputSource("regression/nestedProperties.csv");
+		CSVInputAdapterSpec spec = new CSVInputAdapterSpec(source, "Figure");
+		CSVInputAdapter adapter = new CSVInputAdapter(ep, spec);
+		adapter.start();
+		
+		assertTrue(ul.isInvoked());
+		EventBean e = ul.assertOneGetNewAndReset();
+		Figure f = (Figure) e.getUnderlying();
+		assertEquals(1, f.getPoint().getX());
+	}
+	
+	public void testNestedMapProperties() {
+		Configuration configuration = new Configuration();
+		Map point = new HashMap();
+		point.put("x", int.class);
+		point.put("y", int.class);
+		Map figure = new HashMap();
+		figure.put("name", String.class);
+		figure.put("point", point);
+		configuration.addEventType("Figure", figure);
+		EPServiceProvider ep = EPServiceProviderManager.getProvider("testNestedMapProperties", configuration);
+		SupportUpdateListener ul = new SupportUpdateListener();
+		ep.getEPAdministrator().createEPL("select * from Figure").addListener(ul);
+
+		AdapterInputSource source = new AdapterInputSource("regression/nestedProperties.csv");
+		CSVInputAdapterSpec spec = new CSVInputAdapterSpec(source, "Figure");
+		CSVInputAdapter adapter = new CSVInputAdapter(ep, spec);
+		adapter.start();
+		
+		assertTrue(ul.isInvoked());
+		EventBean e = ul.assertOneGetNewAndReset();
+		assertEquals(1, e.get("point.x"));
+	}
+
+	public static class Figure {
+		String name;
+		Point point;
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public Point getPoint() {
+			return point;
+		}
+		public void setPoint(Point point) {
+			this.point = point;
+		}
+	}
+	public static class Point {
+		int x;
+		int y;
+		public int getX() {
+			return x;
+		}
+		public void setX(int x) {
+			this.x = x;
+		}
+		public int getY() {
+			return y;
+		}
+		public void setY(int y) {
+			this.y = y;
+		}
+		
 	}
 }
