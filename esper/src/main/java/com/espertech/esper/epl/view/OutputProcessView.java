@@ -312,7 +312,12 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
     }
 
     public void indicateEarlyReturn(UniformPair<EventBean[]> newOldEvents) {
-        if (!statementContext.getMetricReportingService().getStatementOutputHooks().isEmpty()) {
+        if (newOldEvents == null) {
+            return;
+        }
+        if ((statementContext.getMetricReportingService() != null) &&
+            (statementContext.getMetricReportingService().getStatementOutputHooks() != null) &&
+            (!statementContext.getMetricReportingService().getStatementOutputHooks().isEmpty())) {
             for (StatementResultListener listener : statementContext.getMetricReportingService().getStatementOutputHooks()) {
                 listener.update(newOldEvents.getFirst(), newOldEvents.getSecond(), statementContext.getStatementName(), null, null);
             }

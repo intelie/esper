@@ -13,7 +13,7 @@ mvn install:install
 mvn javadoc:javadoc
 -->
 <project>
-	<modelVersion>3.3.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 	<name>Esper</name>
 	<groupId>com.espertech</groupId>
 	<artifactId>esper</artifactId>

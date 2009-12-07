@@ -30,21 +30,6 @@ public class TestMinMaxCases extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("S0", SupportBean_S0.class);
     }
 
-    public void testLocalMax()
-    {
-        String[] fields = "maxi,mini".split(",");
-        String epl = "select local_max(intPrimitive) as maxi, local_min(intPrimitive) as mini " +
-                     " from SupportBean.win:length_batch(3)";
-        epService.getEPAdministrator().createEPL(epl).addListener(listener);
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 3));
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 2));
-        assertFalse(listener.isInvoked());
-        
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 1));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {3, 1});
-    }
-
     public void testMinMaxNoDataWindowSubquery() {
 
         String[] fields = "maxi,mini,max0,min0".split(",");
