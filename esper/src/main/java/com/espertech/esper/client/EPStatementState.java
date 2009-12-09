@@ -26,5 +26,10 @@ public enum EPStatementState
     /**
      * Destroyed state.
      */
-    DESTROYED
+    DESTROYED,
+
+    /**
+     * Failed state, equivalent to STOPPED state and reserved for a failed recovery of statement state; Not applicable to core engine.
+     */
+    FAILED
 }

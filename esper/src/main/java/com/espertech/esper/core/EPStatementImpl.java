@@ -81,7 +81,8 @@ public class EPStatementImpl implements EPStatementSPI
                               StatementMetadata statementMetadata,
                               Object userObject,
                               Annotation[] annotations,
-                              StatementContext statementContext)
+                              StatementContext statementContext,
+                              boolean isFailed)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
@@ -106,7 +107,12 @@ public class EPStatementImpl implements EPStatementSPI
         {
             this.dispatchChildView = new UpdateDispatchViewNonBlocking(statementContext.getStatementResultService(), dispatchService);
         }
-        this.currentState = EPStatementState.STOPPED;
+        if (!isFailed) {
+            this.currentState = EPStatementState.STOPPED;
+        }
+        else {
+            this.currentState = EPStatementState.FAILED;
+        }
         this.timeLastStateChange = timeLastStateChange;
         this.statementMetadata = statementMetadata;
         this.userObject = userObject;
