@@ -121,6 +121,16 @@ public class TestRowPatternInvalid extends TestCase {
                 ")";
         tryInvalid(text, "Error starting statement: Aggregation functions in the measure-clause must refer to one or more properties of exactly one group variable returning multiple events [select * from MyEvent.win:keepall() match_recognize (  measures sum(A.value) as mytotal  pattern (A B*)   define     A as A.string like 'A%')]");
 
+        // aggregation in define
+        text = "select * from MyEvent.win:keepall() " +
+                "match_recognize (" +
+                "  measures A.string as astring" +
+                "  pattern (A B) " +
+                "  define " +
+                "    A as sum(A.value + B.value) > 3000" +
+                ")";
+        tryInvalid(text, "Error starting statement: An aggregate function may not appear in a DEFINE clause [select * from MyEvent.win:keepall() match_recognize (  measures A.string as astring  pattern (A B)   define     A as sum(A.value + B.value) > 3000)]");
+
         // join disallowed
         text = "select * from MyEvent.win:keepall(), MyEvent.win:keepall() " +
                 "match_recognize (" +

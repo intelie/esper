@@ -107,6 +107,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         // determine type service for use with DEFINE
         // validate each DEFINE clause expression
         Set<String> definedVariables = new HashSet<String>();
+        List<ExprAggregateNode> aggregateNodes = new ArrayList<ExprAggregateNode>();
         for (MatchRecognizeDefineItem defineItem : matchRecognizeSpec.getDefines())
         {
             if (definedVariables.contains(defineItem.getIdentifier()))
@@ -135,6 +136,12 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             ExprNode exprNodeResult = handlePreviousFunctions(defineItem.getExpression());
             ExprNode validated = exprNodeResult.getValidatedSubtree(typeServiceDefines, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
             defineItem.setExpression(validated);
+
+            ExprAggregateNode.getAggregatesBottomUp(validated, aggregateNodes);
+            if (!aggregateNodes.isEmpty())
+            {
+                throw new ExprValidationException("An aggregate function may not appear in a DEFINE clause");
+            }
         }
 
         // determine type service for use with MEASURE
