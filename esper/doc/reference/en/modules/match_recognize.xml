@@ -945,6 +945,10 @@ match_recognize (
 			If a variable in your condition expression is a group variable, then only indexed columns may be referenced. If the variable is not matched by an event, a <literal>null</literal> value is returned.
         </para>
         
+        <para>
+			Aggregation functions are not allowed within expressions of the <literal>define</literal> clause.
+        </para>
+
 		<sect2 id="match-recognize-define-prev">
 			<title>The <literal>Prev</literal> Operator</title>
         
