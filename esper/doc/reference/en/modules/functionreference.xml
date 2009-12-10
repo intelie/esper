@@ -690,6 +690,10 @@ from StockTick.win:time(30 sec)]]></programlisting>
 		 </para> 
 		<programlisting><![CDATA[select MyLib.mapEvents(e1, e2) from pattern [every e1=E1 -> e2=E2]]]></programlisting>
 
+		 <para>
+			 A user-defined function should be implemented thread-safe. 
+		 </para> 
+
 		<sect3 id="epl-function-user-defined-converting">
 			<title>Event Type Conversion via User-Defined Function</title>
 			 <para>
