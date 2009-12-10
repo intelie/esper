@@ -2324,4 +2324,70 @@ String xml = epService.getEPRuntime().getEventRenderer().renderXML(event);]]></p
 			</para>
 		</sect2>
 	</sect1>
+
+    <sect1 id="api-plugin">
+        <title>Plug-in Loader</title>
+        
+		<indexterm><primary>plug-in loader</primary></indexterm>
+        <para>
+			A plug-in loader is for general use with input adapters, output adapters or EPL code deployment or any other task that can benefits from being part of an Esper configuration file and that follows engine lifecycle.
+        </para>
+
+        <para>
+			A plug-in loader implements the <literal>com.espertech.esper.plugin.PluginLoader</literal> interface and can be listed in the configuration. 
+        </para>
+
+        <para>
+			Each configured plug-in loader follows the engine instance lifecycle: When an engine instance initializes, it instantiates each <literal>PluginLoader</literal> implementation class listed in the configuration. The engine then invokes the lifecycle 
+			methods of the <literal>PluginLoader</literal> implementation class before and after the engine is fully initialized and before an engine instance is destroyed.
+        </para>
+        
+        <para>
+			Declare a plug-in loader in your configuration XML as follows:
+        </para>
+		<programlisting><![CDATA[...
+  <plugin-loader name="MyLoader" class-name="org.mypackage.MyLoader">
+    <init-arg name="property1" value="val1"/>
+  </plugin-loader>
+...]]></programlisting>
+
+        <para>
+			Alternatively, add the plug-in loader via the configuration API:
+        </para>
+		<programlisting><![CDATA[Configuration config = new Configuration();
+Properties props = new Properties();
+props.put("property1", "value1");
+config.addPluginLoader("MyLoader", "org.mypackage.MyLoader", props);]]></programlisting>
+
+		<para>
+			Implement the <literal>init</literal> method of your <literal>PluginLoader</literal> implementation to receive
+			initialization parameters. The engine invokes this method before the engine is fully initialized, therefore your implementation
+			should not yet rely on the engine instance within the method body:
+		</para>
+		
+		<programlisting><![CDATA[public class MyPluginLoader implements PluginLoader {
+  public void init(String loaderName, Properties properties, EPServiceProviderSPI epService) {
+     // save the configuration for later, perform checking
+  }
+  ...]]></programlisting>
+
+		<para>
+			The engine calls the <literal>postInitialize</literal> method once the engine completed initialization
+			and to indicate the engine is ready for traffic.
+		</para>
+
+		<programlisting><![CDATA[public void postInitialize() {
+  // Start the actual interaction with external feeds or the engine here
+}
+...]]></programlisting>
+
+		<para>
+			The engine calls the <literal>destroy</literal> method once the engine is destroyed or initialized for a second time.
+		</para>
+
+		<programlisting><![CDATA[public void destroy() {
+  // Destroy resources allocated as the engine instance is being destroyed
+}]]></programlisting>
+	</sect1>
+
 </chapter>
