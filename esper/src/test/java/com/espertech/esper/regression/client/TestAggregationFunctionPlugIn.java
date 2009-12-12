@@ -189,6 +189,18 @@ public class TestAggregationFunctionPlugIn extends TestCase
         listener.assertFieldEqualsAndReset("val", new Object[] {2}, new Object[] {1});
     }
 
+    public void testObjectModelSupportForMultipleParams()
+    {
+        epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("countboundary", SupportPluginAggregationMethodThree.class.getName());
+
+        String text = "select irstream countboundary(1, 10, intPrimitive) as val from " + SupportBean.class.getName();
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(text);
+
+        //NOTE: A more robust assertion would be preferred. It might break if toEPL changes.
+        assertEquals(text, model.toEPL());
+
+    }
+
     public void testNoSubnodesRuntimeAdd()
     {
         epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("countback", SupportPluginAggregationMethodOne.class.getName());

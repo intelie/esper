@@ -130,9 +130,9 @@ public class Expressions implements Serializable
      * @param parameter provides the values to aggregate
      * @return expression
      */
-    public static PlugInProjectionExpression plugInAggregation(String functionName, Expression parameter)
+    public static PlugInProjectionExpression plugInAggregation(String functionName, Expression... moreExpressions)
     {
-        return new PlugInProjectionExpression(functionName, false, parameter);
+        return new PlugInProjectionExpression(functionName, false, moreExpressions);
     }
 
     /**

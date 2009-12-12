@@ -512,8 +512,8 @@ public EventType getEventType() {
 			<programlisting><![CDATA[public void validateMultiParameter(Class[] parameterType, 
   boolean[] isConstantValue, 
   Object[] constantValue) {
-  super.validateMultiParameter(childNodeType, isConstantValue, constantValue);
-  if ((childNodeType[0] != Integer.class) || (childNodeType[1] != Integer.class)) {
+  super.validateMultiParameter(parameterType, isConstantValue, constantValue);
+  if ((parameterType[0] != Integer.class) || (parameterType[1] != Integer.class)) {
     throw new IllegalArgumentException("Expected integer bounds");        
   }
 }]]></programlisting>

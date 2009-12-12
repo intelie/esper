@@ -34,13 +34,16 @@ public class PlugInProjectionExpression extends ExpressionBase
      * Ctor.
      * @param functionName the name of the function
      * @param isDistinct true for distinct
-     * @param expression provides aggregated values
+     * @param moreExpressions provides aggregated values
      */
-    public PlugInProjectionExpression(String functionName, boolean isDistinct, Expression expression)
+    public PlugInProjectionExpression(String functionName, boolean isDistinct, Expression ...moreExpressions)
     {
         this.functionName = functionName;
         this.isDistinct = isDistinct;
-        this.getChildren().add(expression);
+        for (int i = 0; i < moreExpressions.length; i++)
+        {
+            this.getChildren().add(moreExpressions[i]);
+        }
     }
 
     /**
@@ -55,10 +58,15 @@ public class PlugInProjectionExpression extends ExpressionBase
         {
             writer.write("distinct ");
         }
-        if (this.getChildren().size() > 0)
+
+        String delimiter = "";
+        for (Expression expr : this.getChildren())
         {
-            this.getChildren().get(0).toEPL(writer);
+            writer.write(delimiter);
+            expr.toEPL(writer);
+            delimiter = ", ";
         }
+
         writer.write(")");
     }
 

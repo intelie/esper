@@ -343,6 +343,13 @@ timer:interval(5 min) and not MyEvent]]></programlisting></entry>
 						<entry>The <literal>or</literal> operator has higher precedence then the <literal>followed-by</literal> operator.</entry>
 					</row>
 					<row>
+						<entry>A -> B or B -> A</entry>
+						<entry>A -> (B or B) -> A</entry>
+						<entry>The <literal>or</literal> operator has higher precedence then the <literal>followed-by</literal> operator,
+						  specify as (A -> B) or (B -> A) instead.
+						 </entry>
+					</row>
+					<row>
 						<entry>A and B or C</entry>
 						<entry>(A and B) or C</entry>
 						<entry>The <literal>and</literal> operator has higher precedence then the <literal>or</literal> operator.</entry>
