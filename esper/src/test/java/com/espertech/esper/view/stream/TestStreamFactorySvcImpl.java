@@ -10,6 +10,7 @@ import com.espertech.esper.support.filter.SupportFilterServiceImpl;
 import com.espertech.esper.support.filter.SupportFilterSpecBuilder;
 import com.espertech.esper.view.EventStream;
 import com.espertech.esper.core.EPStatementHandle;
+import com.espertech.esper.core.StatementFilterVersion;
 import com.espertech.esper.util.ManagedLockImpl;
 
 public class TestStreamFactorySvcImpl extends TestCase
@@ -97,7 +98,7 @@ public class TestStreamFactorySvcImpl extends TestCase
 
     public void testCreateNoJoin()
     {
-        EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false, null, 1, false);
+        EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false, null, 1, false, new StatementFilterVersion());
         streams = new EventStream[4];
         streams[0] = streamFactoryService.createStream("id1", filterSpecs[0], supportFilterService, stmtHande, false, false, null, false).getFirst();
         streams[1] = streamFactoryService.createStream("id2", filterSpecs[0], supportFilterService, stmtHande, false, false, null, false).getFirst();
@@ -118,7 +119,7 @@ public class TestStreamFactorySvcImpl extends TestCase
 
     public void testDropNoJoin()
     {
-        EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false, null, 1, false);
+        EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false, null, 1, false, new StatementFilterVersion());
         streams = new EventStream[4];
         streams[0] = streamFactoryService.createStream("id1", filterSpecs[0], supportFilterService, stmtHande, false, false, null, false).getFirst();
         streams[1] = streamFactoryService.createStream("id2", filterSpecs[0], supportFilterService, stmtHande, false, false, null, false).getFirst();

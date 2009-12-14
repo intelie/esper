@@ -16,7 +16,12 @@ public class SupportFilterServiceImpl implements FilterService
     private List<Pair<FilterValueSet, FilterHandle>> added = new LinkedList<Pair<FilterValueSet, FilterHandle>>();
     private List<FilterHandle> removed = new LinkedList<FilterHandle>();
 
-    public void evaluate(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
+    public long evaluate(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public long evaluate(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext, String statementId)
     {
         throw new UnsupportedOperationException();
     }
@@ -53,5 +58,9 @@ public class SupportFilterServiceImpl implements FilterService
     public void destroy()
     {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public long getFiltersVersion() {
+        return Long.MIN_VALUE;  
     }
 }

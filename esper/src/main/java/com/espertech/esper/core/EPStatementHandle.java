@@ -37,6 +37,7 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     private final boolean preemptive;
     private transient InsertIntoLatchFactory insertIntoLatchFactory;
     private transient StatementMetricHandle metricsHandle;
+    private final StatementFilterVersion statementFilterVersion;
 
     /**
      * Ctor.
@@ -48,7 +49,7 @@ public class EPStatementHandle implements MetaDefItem, Serializable
      * @param priority priority, zero is default
      * @param preemptive true for drop after done
      */
-    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive)
+    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive, StatementFilterVersion statementFilterVersion)
     {
         this.statementId = statementId;
         this.statementLock = statementLock;
@@ -56,7 +57,12 @@ public class EPStatementHandle implements MetaDefItem, Serializable
         this.metricsHandle = metricsHandle;
         this.priority = priority;
         this.preemptive = preemptive;
+        this.statementFilterVersion = statementFilterVersion;
         hashCode = expressionText.hashCode() ^ statementLock.hashCode();
+    }
+
+    public boolean isCurrentFilter(long filterVersion) {
+        return statementFilterVersion.isCurrentFilter(filterVersion);
     }
 
     /**

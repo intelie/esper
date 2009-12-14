@@ -65,6 +65,7 @@ public final class StatementContext implements ExprEvaluatorContext
     private final ConfigurationInformation configSnapshot;
     private final ScheduleAdjustmentService scheduleAdjustmentService;
     private final MetricReportingServiceSPI metricReportingService;
+    private final StatementFilterVersion statementFilterVersion;
 
     /**
      * Constructor.
@@ -119,7 +120,8 @@ public final class StatementContext implements ExprEvaluatorContext
                               ValueAddEventService valueAddEventService,
                               ConfigurationInformation configSnapshot,
                               InternalEventRouteDest internalEventEngineRouteDest,
-                              MetricReportingServiceSPI metricReportingService)
+                              MetricReportingServiceSPI metricReportingService,
+                              StatementFilterVersion statementFilterVersion)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -149,6 +151,7 @@ public final class StatementContext implements ExprEvaluatorContext
         this.internalEventEngineRouteDest = internalEventEngineRouteDest;
         this.scheduleAdjustmentService = new ScheduleAdjustmentService();
         this.metricReportingService = metricReportingService;
+        this.statementFilterVersion = statementFilterVersion;
     }
 
     /**
@@ -441,6 +444,10 @@ public final class StatementContext implements ExprEvaluatorContext
     public TimeProvider getTimeProvider()
     {
         return schedulingService;
+    }
+
+    public StatementFilterVersion getStatementFilterVersion() {
+        return statementFilterVersion;
     }
 
     public String toString()

@@ -14,6 +14,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.EPStatementHandleCallback;
+import com.espertech.esper.core.StatementFilterVersion;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.filter.FilterHandleCallback;
@@ -98,7 +99,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
 
         String name = "subscription:" + subscriptionName;
         StatementMetricHandle metricsHandle = spi.getMetricReportingService().getStatementHandle(name, name);
-        EPStatementHandle statementHandle = new EPStatementHandle(name, new ManagedLockImpl(name), name, false, metricsHandle, 0, false);
+        EPStatementHandle statementHandle = new EPStatementHandle(name, new ManagedLockImpl(name), name, false, metricsHandle, 0, false, new StatementFilterVersion());
         EPStatementHandleCallback registerHandle = new EPStatementHandleCallback(statementHandle, this);
         spi.getFilterService().add(fvs, registerHandle);
     }

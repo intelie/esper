@@ -15,5 +15,5 @@ import java.util.Collection;
 
 public interface FilterServiceListener
 {
-    public void filtering(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext);
+    public void filtering(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext, String statementId);
 }

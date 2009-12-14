@@ -1720,4 +1720,11 @@ public class EPStatementStartMethod
         exprNode.accept(visitor);
         return visitor.getExprProperties();
     }
+
+    private String getNull(Object value) {
+        if (value == null) {
+            return "-";
+        }
+        return value.toString();
+    }
 }

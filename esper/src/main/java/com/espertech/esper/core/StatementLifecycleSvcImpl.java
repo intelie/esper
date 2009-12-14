@@ -308,7 +308,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             return true;
         }
 
-        // not a self join (pattern doesn't count)
+        for (StreamSpecCompiled streamSpec : spec.getStreamSpecs())
+        {
+            if (streamSpec instanceof PatternStreamSpecCompiled)
+            {
+                return true;
+            }
+        }
+
+        // not a self join
         if ((spec.getStreamSpecs().size() <= 1) && (spec.getSubSelectExpressions().isEmpty()))
         {
             return false;
@@ -328,15 +336,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 EventType type = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec().getFilterForEventType();
                 filteredTypes.add(type);
                 hasFilterStream = true;
-            }
-            else if (streamSpec instanceof PatternStreamSpecCompiled)
-            {
-                EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(((PatternStreamSpecCompiled)streamSpec).getEvalNode());
-                List<EvalFilterNode> filterNodes = evalNodeAnalysisResult.getFilterNodes();
-                for (EvalFilterNode filterNode : filterNodes)
-                {
-                    filteredTypes.add(filterNode.getFilterSpec().getFilterForEventType());
-                }
             }
         }
 

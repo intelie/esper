@@ -11,6 +11,7 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.util.AuditPath;
+import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 
 import java.util.Collection;
 import java.util.Set;
@@ -31,6 +32,7 @@ public final class FilterServiceImpl implements FilterServiceSPI
     private final EventTypeIndex eventTypeIndex;
     private final AtomicLong numEventsEvaluated = new AtomicLong();
     private final CopyOnWriteArraySet<FilterServiceListener> filterServiceListeners;
+    private volatile long filtersVersion = 1;
 
     /**
      * Constructor.
@@ -40,6 +42,10 @@ public final class FilterServiceImpl implements FilterServiceSPI
         eventTypeIndex = new EventTypeIndex();
         indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);
         filterServiceListeners = new CopyOnWriteArraySet<FilterServiceListener>();
+    }
+
+    public long getFiltersVersion() {
+        return filtersVersion;
     }
 
     public void destroy()
@@ -52,15 +58,18 @@ public final class FilterServiceImpl implements FilterServiceSPI
     public final void add(FilterValueSet filterValueSet, FilterHandle filterCallback)
     {
         indexBuilder.add(filterValueSet, filterCallback);
+        filtersVersion++;
     }
 
     public final void remove(FilterHandle filterCallback)
     {
         indexBuilder.remove(filterCallback);
+        filtersVersion++;
     }
 
-    public final void evaluate(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
+    public final long evaluate(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
+        long version = filtersVersion;
         numEventsEvaluated.incrementAndGet();
 
         // Finds all matching filters and return their callbacks
@@ -68,9 +77,37 @@ public final class FilterServiceImpl implements FilterServiceSPI
 
         if ((AuditPath.isAuditEnabled) && (!filterServiceListeners.isEmpty())) {
             for (FilterServiceListener listener : filterServiceListeners) {
-                listener.filtering(eventBean, matches, exprEvaluatorContext);
+                listener.filtering(eventBean, matches, exprEvaluatorContext, null);
             }
         }
+
+        return version;
+    }
+
+    public final long evaluate(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext, String statementId)
+    {
+        long version = filtersVersion;
+        numEventsEvaluated.incrementAndGet();
+
+        ArrayDequeJDK6Backport<FilterHandle> allMatches = new ArrayDequeJDK6Backport<FilterHandle>(); 
+
+        // Finds all matching filters
+        eventTypeIndex.matchEvent(eventBean, allMatches, exprEvaluatorContext);
+
+        // Add statement matches to collection passed
+        for (FilterHandle match : allMatches) {
+            if (match.getStatementId().equals(statementId)) {
+                matches.add(match);
+            }
+        }
+
+        if ((AuditPath.isAuditEnabled) && (!filterServiceListeners.isEmpty())) {
+            for (FilterServiceListener listener : filterServiceListeners) {
+                listener.filtering(eventBean, matches, exprEvaluatorContext, statementId);
+            }
+        }
+
+        return version;
     }
 
     public final long getNumEventsEvaluated()
@@ -92,11 +129,13 @@ public final class FilterServiceImpl implements FilterServiceSPI
 
     public FilterSet take(Set<String> statementIds)
     {
+        filtersVersion++;
         return indexBuilder.take(statementIds);
     }
 
     public void apply(FilterSet filterSet)
     {
+        filtersVersion++;
         indexBuilder.apply(filterSet);
     }
 }

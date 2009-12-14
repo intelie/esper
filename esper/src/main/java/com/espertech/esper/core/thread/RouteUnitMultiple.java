@@ -19,6 +19,7 @@ public class RouteUnitMultiple implements RouteUnitRunnable
     private final EventBean event;
     private ArrayDequeJDK6Backport<FilterHandleCallback> callbackList;
     private EPStatementHandle handle;
+    private final long filterVersion;
 
     /**
      * Ctor.
@@ -27,19 +28,20 @@ public class RouteUnitMultiple implements RouteUnitRunnable
      * @param event event to pass
      * @param handle statement handle
      */
-    public RouteUnitMultiple(EPRuntimeImpl epRuntime, ArrayDequeJDK6Backport<FilterHandleCallback> callbackList, EventBean event, EPStatementHandle handle)
+    public RouteUnitMultiple(EPRuntimeImpl epRuntime, ArrayDequeJDK6Backport<FilterHandleCallback> callbackList, EventBean event, EPStatementHandle handle, long filterVersion)
     {
         this.epRuntime = epRuntime;
         this.callbackList = callbackList;
         this.event = event;
         this.handle = handle;
+        this.filterVersion = filterVersion;
     }
 
     public void run()
     {
         try
         {
-            epRuntime.processStatementFilterMultiple(handle, callbackList, event);
+            epRuntime.processStatementFilterMultiple(handle, callbackList, event, filterVersion);
 
             epRuntime.dispatch();
 

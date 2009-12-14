@@ -178,6 +178,8 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         handle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
         FilterValueSet filterValues = evalFilterNode.getFilterSpec().getValueSet(beginState);
         context.getFilterService().add(filterValues, handle);
+        long filtersVersion = context.getFilterService().getFiltersVersion();
+        context.getStatementFilterVersion().setStmtFilterVersion(filtersVersion);
     }
 
     private void stopFiltering()
@@ -185,6 +187,8 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         context.getFilterService().remove(handle);
         handle = null;
         isStarted = false;
+        long filtersVersion = context.getFilterService().getFiltersVersion();
+        context.getStatementFilterVersion().setStmtFilterVersion(filtersVersion);
     }
 
     private static final Log log = LogFactory.getLog(EvalFilterStateNode.class);

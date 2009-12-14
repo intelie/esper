@@ -11,6 +11,7 @@ package com.espertech.esper.pattern;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.StatementExtensionSvcContext;
+import com.espertech.esper.core.StatementFilterVersion;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.ScheduleBucket;
@@ -163,5 +164,9 @@ public final class PatternContext implements ExprEvaluatorContext
     public TimeProvider getTimeProvider()
     {
         return statementContext.getTimeProvider();
+    }
+
+    public StatementFilterVersion getStatementFilterVersion() {
+        return statementContext.getStatementFilterVersion();
     }
 }

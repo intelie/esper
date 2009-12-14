@@ -18,12 +18,12 @@ import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.ThreadWorkQueue;
 import com.espertech.esper.core.thread.*;
 import com.espertech.esper.epl.annotation.AnnotationUtil;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.event.util.EventRendererImpl;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
@@ -480,10 +480,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             services.getSchedulingService().evaluate(handles);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             services.getEventProcessingRWLock().releaseReadLock();
@@ -493,10 +489,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         try
         {
             processScheduleHandles(handles);
-        }
-        catch (RuntimeException ex)
-        {
-            throw ex;
         }
         finally
         {
@@ -682,10 +674,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             processMatches(eventBean);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             insertIntoLatch.done();
@@ -715,10 +703,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             processMatches(eventBean);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             insertIntoLatch.done();
@@ -745,10 +729,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             processMatches(eventBean);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             services.getEventProcessingRWLock().releaseReadLock();
@@ -761,7 +741,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     {
         // get matching filters
         ArrayBackedCollection<FilterHandle> matches = matchesArrayThreadLocal.get();
-        services.getFilterService().evaluate(event, matches, engineFilterAndDispatchTimeContext);
+        long version = services.getFilterService().evaluate(event, matches, engineFilterAndDispatchTimeContext);
 
         if (ThreadLogUtil.ENABLED_TRACE)
         {
@@ -805,7 +785,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 long cpuTimeBefore = MetricUtil.getCPUCurrentThread();
                 long wallTimeBefore = MetricUtil.getWall();
 
-                processStatementFilterSingle(handle, handleCallback, event);
+                processStatementFilterSingle(handle, handleCallback, event, version);
 
                 long wallTimeAfter = MetricUtil.getWall();
                 long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
@@ -817,11 +797,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             {
                 if ((ThreadingOption.isThreadingEnabled) && (services.getThreadingService().isRouteThreading()))
                 {
-                    services.getThreadingService().submitRoute(new RouteUnitSingle(this, handleCallback, event));
+                    services.getThreadingService().submitRoute(new RouteUnitSingle(this, handleCallback, event, version));
                 }
                 else
                 {
-                    processStatementFilterSingle(handle, handleCallback, event);
+                    processStatementFilterSingle(handle, handleCallback, event, version);
                 }
             }
         }
@@ -841,7 +821,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 long cpuTimeBefore = MetricUtil.getCPUCurrentThread();
                 long wallTimeBefore = MetricUtil.getWall();
 
-                processStatementFilterMultiple(handle, callbackList, event);
+                processStatementFilterMultiple(handle, callbackList, event, version);
 
                 long wallTimeAfter = MetricUtil.getWall();
                 long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
@@ -853,11 +833,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             {
                 if ((ThreadingOption.isThreadingEnabled) && (services.getThreadingService().isRouteThreading()))
                 {
-                    services.getThreadingService().submitRoute(new RouteUnitMultiple(this, callbackList, event, handle));
+                    services.getThreadingService().submitRoute(new RouteUnitMultiple(this, callbackList, event, handle, version));
                 }
                 else
                 {
-                    processStatementFilterMultiple(handle, callbackList, event);
+                    processStatementFilterMultiple(handle, callbackList, event, version);
                 }
 
                 if ((isPrioritized) && (handle.isPreemptive()))
@@ -903,10 +883,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             // internal join processing, if applicable
             handle.internalDispatch(exprEvaluatorContext);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             handle.getStatementLock().releaseLock(services.getStatementLockFactory());
@@ -934,10 +910,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
             handle.getEpStatementHandle().internalDispatch(exprEvaluatorContext);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             handle.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
@@ -950,7 +922,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      * @param callbackList object containing callbacks
      * @param event to process
      */
-    public void processStatementFilterMultiple(EPStatementHandle handle, ArrayDequeJDK6Backport<FilterHandleCallback> callbackList, EventBean event)
+    public void processStatementFilterMultiple(EPStatementHandle handle, ArrayDequeJDK6Backport<FilterHandleCallback> callbackList, EventBean event, long version)
     {
         handle.getStatementLock().acquireLock(services.getStatementLockFactory());
         try
@@ -958,6 +930,15 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             if (handle.isHasVariables())
             {
                 services.getVariableService().setLocalVersion();
+            }
+            if (!handle.isCurrentFilter(version)) {
+                callbackList.clear();
+                ArrayDequeJDK6Backport<FilterHandle> callbackListNew = getCallbackList(event, handle.getStatementId());
+                for (FilterHandle callback : callbackListNew)
+                {
+                    EPStatementHandleCallback handleCallbackFilter = (EPStatementHandleCallback) callback;
+                    callbackList.add(handleCallbackFilter.getFilterCallback());
+                }
             }
 
             if (isSubselectPreeval)
@@ -1002,14 +983,16 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             // internal join processing, if applicable
             handle.internalDispatch(this.engineFilterAndDispatchTimeContext);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             handle.getStatementLock().releaseLock(services.getStatementLockFactory());
         }
+    }
+
+    private ArrayDequeJDK6Backport<FilterHandle> getCallbackList(EventBean event, String statementId) {
+        ArrayDequeJDK6Backport<FilterHandle> callbacks = new ArrayDequeJDK6Backport<FilterHandle>();
+        services.getFilterService().evaluate(event, callbacks, engineFilterAndDispatchTimeContext, statementId);
+        return callbacks;
     }
 
     /**
@@ -1018,7 +1001,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      * @param handleCallback callback
      * @param event event to indicate
      */
-    public void processStatementFilterSingle(EPStatementHandle handle, EPStatementHandleCallback handleCallback, EventBean event)
+    public void processStatementFilterSingle(EPStatementHandle handle, EPStatementHandleCallback handleCallback, EventBean event, long version)
     {
         handle.getStatementLock().acquireLock(services.getStatementLockFactory());
         try
@@ -1027,15 +1010,20 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             {
                 services.getVariableService().setLocalVersion();
             }
-
-            handleCallback.getFilterCallback().matchFound(event);
+            if (!handle.isCurrentFilter(version)) {
+                ArrayDequeJDK6Backport<FilterHandle> callbackList = getCallbackList(event, handle.getStatementId());
+                for (FilterHandle callback : callbackList)
+                {
+                    EPStatementHandleCallback handleCallbackFilter = (EPStatementHandleCallback) callback;
+                    handleCallbackFilter.getFilterCallback().matchFound(event);
+                }
+            }
+            else {
+                handleCallback.getFilterCallback().matchFound(event);
+            }
 
             // internal join processing, if applicable
             handle.internalDispatch(engineFilterAndDispatchTimeContext);
-        }
-        catch (RuntimeException ex)
-        {
-            throw ex;
         }
         finally
         {

@@ -16,6 +16,7 @@ public class RouteUnitSingle implements RouteUnitRunnable
     private final EPRuntimeImpl epRuntime;
     private EPStatementHandleCallback handleCallback;
     private final EventBean event;
+    private final long filterVersion;
 
     /**
      * Ctor.
@@ -23,18 +24,19 @@ public class RouteUnitSingle implements RouteUnitRunnable
      * @param handleCallback callback
      * @param event event
      */
-    public RouteUnitSingle(EPRuntimeImpl epRuntime, EPStatementHandleCallback handleCallback, EventBean event)
+    public RouteUnitSingle(EPRuntimeImpl epRuntime, EPStatementHandleCallback handleCallback, EventBean event, long filterVersion)
     {
         this.epRuntime = epRuntime;
         this.event = event;
         this.handleCallback = handleCallback;
+        this.filterVersion = filterVersion;
     }
 
     public void run()
     {
         try
         {
-            epRuntime.processStatementFilterSingle(handleCallback.getEpStatementHandle(), handleCallback, event);
+            epRuntime.processStatementFilterSingle(handleCallback.getEpStatementHandle(), handleCallback, event, filterVersion);
 
             epRuntime.dispatch();
 
