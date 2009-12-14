@@ -1589,7 +1589,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     	log.debug(".leaveLibFunction");
 
         String childNodeText = node.getChild(0).getText();
-        if ((childNodeText.equals("max")) || (childNodeText.equals("min")))
+        if ((childNodeText.toLowerCase().equals("max")) || (childNodeText.toLowerCase().equals("min")))
         {
             handleMinMax(node);
             return;
@@ -1609,6 +1609,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             isDistinct = true;
         }
 
+        // try plug-in aggregation function
         try
         {
             AggregationSupport aggregation = engineImportService.resolveAggregation(childNodeText);
@@ -1623,6 +1624,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
         catch (EngineImportException e)
         {
             throw new IllegalStateException("Error resolving aggregation: " + e.getMessage(), e);
+        }
+
+        // try built-in expanded set of aggregation functions
+        if (childNodeText.toLowerCase().equals("rate"))
+        {
+            astExprNodeMap.put(node, new ExprRateAggNode(isDistinct));
+            return;
         }
 
         throw new IllegalStateException("Unknown method named '" + childNodeText + "' could not be resolved");

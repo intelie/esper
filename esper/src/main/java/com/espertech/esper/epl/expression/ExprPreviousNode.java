@@ -81,13 +81,20 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         }
 
         // Determine stream number
-        if (!(this.getChildNodes().get(1) instanceof ExprIdentNode))
+        if (this.getChildNodes().get(1) instanceof ExprIdentNode) {
+            ExprIdentNode identNode = (ExprIdentNode) this.getChildNodes().get(1);
+            streamNumber = identNode.getStreamId();
+            resultType = this.getChildNodes().get(1).getType();
+        }
+        else if (this.getChildNodes().get(1) instanceof ExprStreamUnderlyingNode) {
+            ExprStreamUnderlyingNode streamNode = (ExprStreamUnderlyingNode) this.getChildNodes().get(1);
+            streamNumber = streamNode.getStreamId();
+            resultType = this.getChildNodes().get(1).getType();
+        }
+        else
         {
             throw new ExprValidationException("Previous function requires an event property as parameter");
         }
-        ExprIdentNode identNode = (ExprIdentNode) this.getChildNodes().get(1);
-        streamNumber = identNode.getStreamId();
-        resultType = this.getChildNodes().get(1).getType();
 
         if (viewResourceDelegate == null)
         {
