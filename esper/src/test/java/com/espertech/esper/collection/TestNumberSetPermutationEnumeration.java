@@ -19,7 +19,7 @@ public class TestNumberSetPermutationEnumeration extends TestCase
         catch (IllegalArgumentException ex)
         {
             // expected
-        }
+        }        
     }
 
     public void testNext()

@@ -8,17 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
-import java.util.Arrays;
-import java.util.SortedSet;
-import java.util.Map;
-
-import com.espertech.esper.collection.NumberSetPermutationEnumeration;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.collection.NumberSetPermutationEnumeration;
+import com.espertech.esper.collection.NumberSetShiftGroupEnumeration;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
-
+import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.SortedSet;
 
 /**
  *
@@ -299,13 +300,19 @@ public class NStreamQueryPlanBuilder
     protected static BestChainResult computeBestPath(int lookupStream, QueryGraph queryGraph, HistoricalDependencyGraph dependencyGraph)
     {
         int[] defNestingorder = buildDefaultNestingOrder(queryGraph.getNumStreams(), lookupStream);
-        NumberSetPermutationEnumeration permutations = new NumberSetPermutationEnumeration(defNestingorder);
+        Enumeration<int[]> streamEnum;
+        if (defNestingorder.length < 6) {
+            streamEnum = new NumberSetPermutationEnumeration(defNestingorder);
+        }
+        else {
+            streamEnum = new NumberSetShiftGroupEnumeration(defNestingorder);
+        }
         int[] bestPermutation = null;
         int bestDepth = -1;
 
-        while(permutations.hasMoreElements())
+        while(streamEnum.hasMoreElements())
         {
-            int[] permutation = permutations.nextElement();
+            int[] permutation = streamEnum.nextElement();
 
             // Only if the permutation satisfies all dependencies is the permutation considered
             if (dependencyGraph != null)
