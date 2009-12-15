@@ -101,7 +101,7 @@ public class TestVariablesDestroy extends TestCase
         stmtUseFour.destroy();
         assertNotFound("v4");
 
-        assertEquals(0, epService.getEPRuntime().getVariableValueAll().size());
+        assertEquals(1, epService.getEPRuntime().getVariableValueAll().size());
     }
 
     public void testConfigAPI()
