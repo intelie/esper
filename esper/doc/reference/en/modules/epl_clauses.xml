@@ -4167,6 +4167,10 @@ can be used to assign a stream name. Patterns and named windows can also be spec
 			 The engine guarantees consistency and atomicity of variable reads and writes on a statement-level (this is a soft guarantee, see below). Variables are optimized for fast read access and are also multithread-safe.
 		</para>		
 		
+		<para>
+			 Variables can also be removed, at runtime, by destroying all referencing statements including the statement that created the variable, or by means of the runtime configuration API.
+		</para>		
+
 		<sect2 id="variable_create" revision="1">
 			<title>Creating Variables: the <literal>Create Variable</literal> clause</title>
 
@@ -4225,6 +4229,11 @@ can be used to assign a stream name. Patterns and named windows can also be spec
 			</para>
 			<programlisting><![CDATA[epService.getEPAdministrator().getConfiguration()
   .addVariable("myVar", String.class, "init value");]]></programlisting>
+  
+			  <para>
+				  The engine removes the variable if the statement that created the variable is destroyed and all statements that reference the variable are also destroyed. 
+				  The <literal>getVariableNameUsedBy</literal> and the <literal>removeVariable</literal> methods, both part of the runtime <literal>ConfigurationOperations</literal> API, provide use information and can remove a variable. If the variable was added via configuration, it can only be removed via the configuration API.
+			  </para>
 
 		</sect2>
 

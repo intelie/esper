@@ -14,6 +14,7 @@ import com.espertech.esper.util.MetaDefItem;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 import java.io.Serializable;
 
 /**
@@ -41,6 +42,7 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     private List<AnnotationDesc> annotations = new ArrayList<AnnotationDesc>();
     private String expressionNoAnnotations;
     private MatchRecognizeSpec matchRecognizeSpec;
+    private Set<String> referencedVariables;
     private static final long serialVersionUID = 5390766716794133693L;
 
     /**
@@ -389,5 +391,13 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
      */
     public void setMatchRecognizeSpec(MatchRecognizeSpec matchRecognizeSpec) {
         this.matchRecognizeSpec = matchRecognizeSpec;
+    }
+
+    public void setReferencedVariables(Set<String> referencedVariables) {
+        this.referencedVariables = referencedVariables;
+    }
+
+    public Set<String> getReferencedVariables() {
+        return referencedVariables;
     }
 }

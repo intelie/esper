@@ -111,6 +111,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         MetricReportingServiceImpl metricsReporting = new MetricReportingServiceImpl(configSnapshot.getEngineDefaults().getMetricsReporting(), epServiceProvider.getURI());
         StatementEventTypeRef statementEventTypeRef = new StatementEventTypeRefImpl();
+        StatementVariableRef statementVariableRef = new StatementVariableRefImpl(variableService);
 
         ThreadingService threadingService = new ThreadingServiceImpl(configSnapshot.getEngineDefaults().getThreading());
 
@@ -124,7 +125,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
                 namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
-                configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService);
+                statementVariableRef, configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

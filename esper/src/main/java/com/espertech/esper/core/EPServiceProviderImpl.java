@@ -19,8 +19,8 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.plugin.PluginLoader;
-import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.SchedulingMgmtService;
+import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -374,7 +373,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         services.getStatementLifecycleSvc().init();
 
         // New admin
-        ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService(), services.getEngineImportService(), services.getVariableService(), services.getEngineSettingsService(), services.getValueAddEventService(), services.getMetricsReportingService(), services.getStatementEventTypeRefService());
+        ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService(), services.getEngineImportService(), services.getVariableService(), services.getEngineSettingsService(), services.getValueAddEventService(), services.getMetricsReportingService(), services.getStatementEventTypeRefService(), services.getStatementVariableRefService());
         SelectClauseStreamSelectorEnum defaultStreamSelector = SelectClauseStreamSelectorEnum.mapFromSODA(configSnapshot.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
         EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps, defaultStreamSelector);
 

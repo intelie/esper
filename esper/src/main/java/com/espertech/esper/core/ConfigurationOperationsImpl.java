@@ -16,6 +16,7 @@ import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.variable.VariableExistsException;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableTypeException;
+import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.xml.SchemaModel;
@@ -41,6 +42,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     private final ValueAddEventService valueAddEventService;
     private final MetricReportingService metricReportingService;
     private final StatementEventTypeRef statementEventTypeRef;
+    private final StatementVariableRef statementVariableRef;
 
     /**
      * Ctor.
@@ -58,7 +60,8 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
                                        EngineSettingsService engineSettingsService,
                                        ValueAddEventService valueAddEventService,
                                        MetricReportingService metricReportingService,
-                                       StatementEventTypeRef statementEventTypeRef)
+                                       StatementEventTypeRef statementEventTypeRef,
+                                       StatementVariableRef statementVariableRef)
     {
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
@@ -67,6 +70,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         this.valueAddEventService = valueAddEventService;
         this.metricReportingService = metricReportingService;
         this.statementEventTypeRef = statementEventTypeRef;
+        this.statementVariableRef = statementVariableRef;
     }
 
     public void addEventTypeAutoName(String javaPackageName)
@@ -390,9 +394,39 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         return true;
     }
 
+    public boolean removeVariable(String name, boolean force) throws ConfigurationException
+    {
+        if (!force) {
+            Set<String> statements = statementVariableRef.getStatementNamesForVar(name);
+            if ((statements != null) && (!statements.isEmpty())) {
+                throw new ConfigurationException("Variable '" + name + "' is in use by one or more statements");
+            }
+        }
+
+        VariableReader reader = variableService.getReader(name);
+        if (reader == null)
+        {
+            return false;
+        }
+
+        variableService.removeVariable(name);
+        statementVariableRef.removeReferencesVariable(name);
+        return true;
+    }
+
     public Set<String> getEventTypeNameUsedBy(String name)
     {
         Set<String> statements = statementEventTypeRef.getStatementNamesForType(name);
+        if ((statements == null) || (statements.isEmpty()))
+        {
+            return Collections.emptySet();
+        }
+        return Collections.unmodifiableSet(statements);
+    }
+
+    public Set<String> getVariableNameUsedBy(String variableName)
+    {
+        Set<String> statements = statementVariableRef.getStatementNamesForVar(variableName);
         if ((statements == null) || (statements.isEmpty()))
         {
             return Collections.emptySet();

@@ -24,6 +24,23 @@ public class TestLikeRegexpExpr extends TestCase
         epService.initialize();
     }
 
+    public void testRegexpFilterWithDanglingMetaCharacter() throws Exception {
+
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.addEventType("SupportBean", SupportBean.class);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean where string regexp \"*any*\"");
+        stmt.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        assertFalse(testListener.isInvoked());
+
+        stmt.destroy();
+        epService.destroy();
+    }
+
     public void testLikeRegexStringAndNull()
     {
         String caseExpr = "select p00 like p01 as r1, " +

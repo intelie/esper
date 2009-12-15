@@ -52,6 +52,7 @@ public class StatementSpecMapper
         {
             raw.setHasVariables(true);
         }
+        raw.setReferencedVariables(mapContext.getVariableNames());
         return raw;
     }
 
@@ -467,6 +468,7 @@ public class StatementSpecMapper
             (rowLimitClause.getOptionalOffsetRowsVariable() != null))
         {
             raw.setHasVariables(true);
+            mapContext.getVariableNames().add(rowLimitClause.getOptionalOffsetRowsVariable());
         }
         raw.setRowLimitSpec(new RowLimitSpec(rowLimitClause.getNumRows(), rowLimitClause.getOptionalOffsetRows(),
                 rowLimitClause.getNumRowsVariable(), rowLimitClause.getOptionalOffsetRowsVariable()));

@@ -64,6 +64,7 @@ public final class EPServicesContext
     private ValueAddEventService valueAddEventService;
     private MetricReportingServiceSPI metricsReportingService;
     private StatementEventTypeRef statementEventTypeRef;
+    private StatementVariableRef statementVariableRef;
     private ConfigurationInformation configSnapshot;
     private ThreadingService threadingService;
     private InternalEventRouteDest internalEventEngineRouteDest;
@@ -130,6 +131,7 @@ public final class EPServicesContext
                              ValueAddEventService valueAddEventService,
                              MetricReportingServiceSPI metricsReportingService,
                              StatementEventTypeRef statementEventTypeRef,
+                             StatementVariableRef statementVariableRef,
                              ConfigurationInformation configSnapshot,
                              ThreadingService threadingServiceImpl,
                              InternalEventRouterImpl internalEventRouter,
@@ -167,6 +169,7 @@ public final class EPServicesContext
         this.internalEventRouter = internalEventRouter;
         this.statementIsolationService = statementIsolationService;
         this.schedulingMgmtService = schedulingMgmtService;
+        this.statementVariableRef = statementVariableRef;
     }
 
     /**
@@ -542,6 +545,14 @@ public final class EPServicesContext
     public ConfigurationInformation getConfigSnapshot()
     {
         return configSnapshot;
+    }
+
+    /**
+     * Service for keeping track of variable-statement use.
+     * @return svc
+     */
+    public StatementVariableRef getStatementVariableRefService() {
+        return statementVariableRef;
     }
 
     /**

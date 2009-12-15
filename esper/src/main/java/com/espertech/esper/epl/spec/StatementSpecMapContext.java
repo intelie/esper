@@ -12,6 +12,9 @@ import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.ConfigurationInformation;
 
+import java.util.Set;
+import java.util.HashSet;
+
 /**
  * Context for mapping a SODA statement to a statement specification, or multiple for subqueries,
  * and obtaining certain optimization information from a statement.
@@ -23,6 +26,7 @@ public class StatementSpecMapContext
     private final ConfigurationInformation configuration;
 
     private boolean hasVariables;
+    private Set<String> variableNames;
 
     /**
      * Ctor.
@@ -35,6 +39,7 @@ public class StatementSpecMapContext
         this.engineImportService = engineImportService;
         this.variableService = variableService;
         this.configuration = configuration;
+        this.variableNames = new HashSet<String>();
     }
 
     /**
@@ -80,5 +85,9 @@ public class StatementSpecMapContext
     public ConfigurationInformation getConfiguration()
     {
         return configuration;
+    }
+
+    public Set<String> getVariableNames() {
+        return variableNames;
     }
 }

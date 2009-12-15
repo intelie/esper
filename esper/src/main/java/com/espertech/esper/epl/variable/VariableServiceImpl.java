@@ -23,6 +23,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Variables service for reading and writing variables, and for setting a version number for the current thread to
  * consider variables for.
@@ -79,6 +82,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class VariableServiceImpl implements VariableService
 {
+    private static Log log = LogFactory.getLog(VariableServiceImpl.class);
+
     /**
      * Sets the boundary above which a reader considers the high-version list of variable values.
      * For use in roll-over when the current version number overflows the ROLLOVER_WRITER_BOUNDARY.
@@ -148,6 +153,23 @@ public class VariableServiceImpl implements VariableService
         this.readWriteLock = new ReentrantReadWriteLock();
         this.changeCallbacks = new ArrayList<Set<VariableChangeCallback>>();
         currentVersionNumber = startVersion;
+    }
+
+    public synchronized void removeVariable(String name) {
+        VariableReader reader = variables.get(name);
+        if (reader == null)
+        {
+            return;
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("Removing variable '" + name + "'");
+        }
+        variables.remove(name);
+
+        int number = reader.getVariableNumber();
+        variableVersions.set(number, null);
+        changeCallbacks.set(number, null);
     }
 
     public void setLocalVersion()
@@ -250,15 +272,34 @@ public class VariableServiceImpl implements VariableService
         // create new holder for versions
         VersionedValueList<Object> valuePerVersion = new VersionedValueList<Object>(variableName, currentVersionNumber, coercedValue, timestamp, millisecondLifetimeOldVersions, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, false);
 
-        // add entries matching in index the variable number
-        variableVersions.add(valuePerVersion);
-        changeCallbacks.add(null);
+        // find empty spot
+        int emptySpot = -1;
+        int count = 0;
+        for (VersionedValueList<Object> entry : variableVersions) {
+            if (entry == null) {
+                emptySpot = count;
+                break;
+            }
+            count++;
+        }
+
+        int variableNumber;
+        if (emptySpot != -1) {
+            variableVersions.set(emptySpot, valuePerVersion);
+            changeCallbacks.set(emptySpot, null);
+            variableNumber = emptySpot;
+        }
+        else {
+            // add entries matching in index the variable number
+            variableVersions.add(valuePerVersion);
+            changeCallbacks.add(null);
+            variableNumber = currentVariableNumber;
+            currentVariableNumber++;
+        }
 
         // create reader
-        reader = new VariableReader(versionThreadLocal, variableType, variableName, currentVariableNumber, valuePerVersion);
+        reader = new VariableReader(versionThreadLocal, variableType, variableName, variableNumber, valuePerVersion);
         variables.put(variableName, reader);
-
-        currentVariableNumber++;
     }
 
     public VariableReader getReader(String variableName)

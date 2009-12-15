@@ -1020,6 +1020,11 @@ public class EPLTreeWalker extends EsperEPL2Ast
         {
             statementSpec.setHasVariables(true);
         }
+        if (currentSpec.getReferencedVariables() != null) {
+            for (String var : currentSpec.getReferencedVariables()) {
+                addVariable(statementSpec, var);
+            }
+        }
 
         astExprNodeMap = astExprNodeMapStack.pop();
 
@@ -1490,6 +1495,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     if (variableService.getReader(fragment.getValue()) != null)
                     {
                         statementSpec.setHasVariables(true);
+                        addVariable(statementSpec, fragment.getValue());
                     }
                 }
             }
@@ -1576,9 +1582,17 @@ public class EPLTreeWalker extends EsperEPL2Ast
         {
             exprNode = new ExprVariableNode(propertyName);
             statementSpec.setHasVariables(true);
+            addVariable(statementSpec, propertyName);
         }
 
         astExprNodeMap.put(node, exprNode);
+    }
+
+    private void addVariable(StatementSpecRaw statementSpec, String propertyName) {
+        if (statementSpec.getReferencedVariables() == null) {
+            statementSpec.setReferencedVariables(new HashSet<String>());
+        }
+        statementSpec.getReferencedVariables().add(propertyName);
     }
 
     private void leaveLibFunction(Tree node)
@@ -1955,6 +1969,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         if (spec.getVariableName() != null)
         {
             statementSpec.setHasVariables(true);
+            addVariable(statementSpec, spec.getVariableName());
         }
     }
 
@@ -1968,6 +1983,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         if ((spec.getNumRowsVariable() != null) || (spec.getOptionalOffsetVariable() != null))
         {
             statementSpec.setHasVariables(true);
+            addVariable(statementSpec, spec.getOptionalOffsetVariable());
         }
     }
 

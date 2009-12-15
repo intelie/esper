@@ -217,6 +217,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start
         services.getStatementEventTypeRefService().addReferences(statementName, compiledSpec.getEventTypeReferences());
 
+        // add variable references
+        services.getStatementVariableRefService().addReferences(statementName, compiledSpec.getVariableReferences());
+
         // determine statement type
         StatementType statementType = null;
         if (statementSpec.getCreateVariableDesc() != null) {
@@ -278,7 +281,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeName();
             }
 
-            statementDesc = new EPStatementDesc(statement, startMethod, null, insertIntoStreamName, statementContext.getEpStatementHandle(), statementContext);
+            statementDesc = new EPStatementDesc(statement, startMethod, null, null, insertIntoStreamName, statementContext.getEpStatementHandle(), statementContext);
             stmtIdToDescMap.put(statementId, statementDesc);
             stmtNameToStmtMap.put(statementName, statement);
             stmtNameToIdMap.put(statementName, statementId);
@@ -469,10 +472,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
             startInternal(statementId, desc, false, false, false);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             eventProcessingRWLock.releaseWriteLock();
@@ -501,10 +500,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             startInternal(statementId, desc, isNewStatement, isRecoveringStatement, isResilient);
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             eventProcessingRWLock.releaseWriteLock();
@@ -530,10 +525,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             return;
         }
 
-        Pair<Viewable, EPStatementStopMethod> pair;
+        EPStatementStartResult startResult;
         try
         {
-            pair = desc.getStartMethod().start(isNewStatement, isRecoveringStatement, isResilient);
+            startResult = desc.getStartMethod().start(isNewStatement, isRecoveringStatement, isResilient);
         }
         catch (EPStatementException ex)
         {
@@ -564,9 +559,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         services.getStatementEventTypeRefService().addReferences(desc.getEpStatement().getName(), desc.getStatementContext().getDynamicReferenceEventTypes());
 
         // hook up
-        Viewable parentView = pair.getFirst();
-        EPStatementStopMethod stopMethod = pair.getSecond();
-        desc.setStopMethod(stopMethod);
+        Viewable parentView = startResult.getViewable();
+        desc.setStopMethod(startResult.getStopMethod());
+        desc.setDestroyMethod(startResult.getDestroyMethod());
         statement.setParentView(parentView);
         long timeLastStateChange = services.getSchedulingService().getTime();
         statement.setCurrentState(EPStatementState.STARTED, timeLastStateChange);
@@ -609,10 +604,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
             dispatchStatementLifecycleEvent(new StatementLifecycleEvent(statement, StatementLifecycleEvent.LifecycleEventType.STATECHANGE));
         }
-        catch (RuntimeException ex)
-        {
-            throw ex;
-        }
         finally
         {
             eventProcessingRWLock.releaseWriteLock();
@@ -636,12 +627,19 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             // remove referenced event types
             services.getStatementEventTypeRefService().removeReferencesStatement(desc.getEpStatement().getName());
 
+            // remove referenced variabkes
+            services.getStatementVariableRefService().removeReferencesStatement(desc.getEpStatement().getName());
+
             EPStatementSPI statement = desc.getEpStatement();
             if (statement.getState() == EPStatementState.STARTED)
             {
                 EPStatementStopMethod stopMethod = desc.getStopMethod();
                 statement.setParentView(null);
                 stopMethod.stop();
+            }
+
+            if (desc.getDestroyMethod() != null) {
+                desc.getDestroyMethod().destroy();
             }
 
             long timeLastStateChange = services.getSchedulingService().getTime();
@@ -652,10 +650,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             stmtIdToDescMap.remove(statementId);
 
             dispatchStatementLifecycleEvent(new StatementLifecycleEvent(statement, StatementLifecycleEvent.LifecycleEventType.STATECHANGE));
-        }
-        catch (RuntimeException ex)
-        {
-            throw ex;
         }
         finally
         {
@@ -985,7 +979,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getOutputLimitSpec(),
                 spec.getOrderByList(),
                 visitor.getSubselects(),
-                spec.isHasVariables(),
+                spec.getReferencedVariables(),
                 spec.getRowLimitSpec(),
                 eventTypeReferences,
                 annotations,
@@ -1177,6 +1171,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         private EPStatementSPI epStatement;
         private EPStatementStartMethod startMethod;
         private EPStatementStopMethod stopMethod;
+        private EPStatementDestroyMethod destroyMethod;
         private String optInsertIntoStream;
         private EPStatementHandle statementHandle;
         private StatementContext statementContext;
@@ -1190,11 +1185,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
          * @param statementHandle is the locking handle for the statement
          * @param statementContext statement context
          */
-        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream, EPStatementHandle statementHandle, StatementContext statementContext)
+        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, EPStatementDestroyMethod destroyMethod, String optInsertIntoStream, EPStatementHandle statementHandle, StatementContext statementContext)
         {
             this.epStatement = epStatement;
             this.startMethod = startMethod;
             this.stopMethod = stopMethod;
+            this.destroyMethod = destroyMethod;
             this.optInsertIntoStream = optInsertIntoStream;
             this.statementHandle = statementHandle;
             this.statementContext = statementContext;
@@ -1261,6 +1257,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         public StatementContext getStatementContext()
         {
             return statementContext;
+        }
+
+        public void setDestroyMethod(EPStatementDestroyMethod destroyMethod) {
+            this.destroyMethod = destroyMethod;
+        }
+
+        public EPStatementDestroyMethod getDestroyMethod() {
+            return destroyMethod;
         }
     }
 }

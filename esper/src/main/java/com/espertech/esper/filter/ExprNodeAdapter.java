@@ -12,6 +12,8 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Adapter for use by {@link FilterParamIndexBooleanExpr} to evaluate boolean expressions, providing
@@ -20,6 +22,8 @@ import com.espertech.esper.client.EventBean;
  */
 public class ExprNodeAdapter
 {
+    private static final Log log = LogFactory.getLog(ExprNodeAdapter.class);
+
     private final ExprNode exprNode;
     private final EventBean[] prototype;
     private final VariableService variableService;
@@ -69,11 +73,17 @@ public class ExprNodeAdapter
         EventBean[] eventsPerStream = arrayPerThread.get();
         eventsPerStream[0] = event;
 
-        Boolean result = (Boolean) exprNode.evaluate(eventsPerStream, true, exprEvaluatorContext);
-        if (result == null)
-        {
+        try {
+            Boolean result = (Boolean) exprNode.evaluate(eventsPerStream, true, exprEvaluatorContext);
+            if (result == null)
+            {
+                return false;
+            }
+            return result;
+        }
+        catch (RuntimeException ex) {
+            log.error("Error evaluating expression '" + exprNode.toExpressionString() + "': " + ex.getMessage(), ex);
             return false;
         }
-        return result;
     }
 }

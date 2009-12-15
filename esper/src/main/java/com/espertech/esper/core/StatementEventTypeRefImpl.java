@@ -162,7 +162,7 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
         {
             if (!types.remove(eventTypeName))
             {
-                log.info("Failed to find event type '" + statementName + "' in collection");
+                log.info("Failed to find event type '" + eventTypeName + "' in collection");
             }
 
             if (types.isEmpty())

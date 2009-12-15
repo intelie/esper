@@ -185,7 +185,7 @@ public class TestResultSetProcessorFactory extends TestCase
                 outputLimitSpec,
                 orderByList,
                 null,
-                false,
+                null,
                 null,
                 new HashSet<String>(),
                 new Annotation[0],

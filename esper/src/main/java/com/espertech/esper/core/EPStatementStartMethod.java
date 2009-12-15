@@ -95,7 +95,7 @@ public class EPStatementStartMethod
      * @throws ExprValidationException when the expression validation fails
      * @throws ViewProcessingException when views cannot be started
      */
-    public Pair<Viewable, EPStatementStopMethod> start(boolean isNewStatement, boolean isRecoveringStatement, boolean isRecoveringResilient)
+    public EPStatementStartResult start(boolean isNewStatement, boolean isRecoveringStatement, boolean isRecoveringResilient)
         throws ExprValidationException, ViewProcessingException
     {
         statementContext.getVariableService().setLocalVersion();    // get current version of variables
@@ -122,7 +122,7 @@ public class EPStatementStartMethod
         }
     }
 
-    private Pair<Viewable, EPStatementStopMethod> startOnTrigger()
+    private EPStatementStartResult startOnTrigger()
         throws ExprValidationException, ViewProcessingException
     {
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
@@ -336,10 +336,10 @@ public class EPStatementStartMethod
 
         log.debug(".start Statement start completed");
 
-        return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
+        return new EPStatementStartResult(onExprView, stopMethod);
     }
 
-    private Pair<Viewable, EPStatementStopMethod> startUpdate()
+    private EPStatementStartResult startUpdate()
         throws ExprValidationException, ViewProcessingException
     {
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
@@ -417,10 +417,10 @@ public class EPStatementStartMethod
                 }
             }
         };
-        return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
+        return new EPStatementStartResult(onExprView, stopMethod);
     }
 
-    private Pair<Viewable, EPStatementStopMethod> startCreateWindow(boolean isNewStatement, boolean isRecoveringStatement)
+    private EPStatementStartResult startCreateWindow(boolean isNewStatement, boolean isRecoveringStatement)
         throws ExprValidationException, ViewProcessingException
     {
         final FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
@@ -535,13 +535,13 @@ public class EPStatementStartMethod
 
         log.debug(".start Statement start completed");
 
-        return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
+        return new EPStatementStartResult(finalView, stopMethod);
     }
 
-    private Pair<Viewable, EPStatementStopMethod> startCreateVariable(boolean isNewStatement)
+    private EPStatementStartResult startCreateVariable(boolean isNewStatement)
         throws ExprValidationException, ViewProcessingException
     {
-        CreateVariableDesc createDesc = statementSpec.getCreateVariableDesc();
+        final CreateVariableDesc createDesc = statementSpec.getCreateVariableDesc();
 
         // Determime the variable type
         Class type;
@@ -611,14 +611,28 @@ public class EPStatementStartMethod
         OutputProcessView outputView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec, statementContext, services.getInternalEventRouter());
         createView.addView(outputView);
 
-        return new Pair<Viewable, EPStatementStopMethod>(outputView, new EPStatementStopMethod(){
+        services.getStatementVariableRefService().addReferences(statementContext.getStatementName(), Collections.singleton(createDesc.getVariableName()));
+        EPStatementDestroyMethod destroyMethod = new EPStatementDestroyMethod() {
+            public void destroy() {
+                try {
+                    services.getStatementVariableRefService().removeReferencesStatement(statementContext.getStatementName());
+                }
+                catch (RuntimeException ex) {
+                    log.error("Error removing variable '" + createDesc.getVariableName() + "': " + ex.getMessage());
+                }
+            }
+        };
+
+        EPStatementStopMethod stopMethod = new EPStatementStopMethod(){
             public void stop()
             {
             }
-        });
+        };
+
+        return new EPStatementStartResult(outputView, stopMethod, destroyMethod);
     }
 
-    private Pair<Viewable, EPStatementStopMethod> startSelect(boolean isRecoveringResilient)
+    private EPStatementStartResult startSelect(boolean isRecoveringResilient)
         throws ExprValidationException, ViewProcessingException
     {
         // Determine stream names for each stream - some streams may not have a name given
@@ -910,7 +924,7 @@ public class EPStatementStartMethod
 
         log.debug(".start Statement start completed");
 
-        return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
+        return new EPStatementStartResult(finalView, stopMethod);
     }
 
     /**

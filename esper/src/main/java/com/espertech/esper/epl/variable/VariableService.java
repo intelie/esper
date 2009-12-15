@@ -99,4 +99,10 @@ public interface VariableService
      * @return variable names and readers
      */
     public Map<String, VariableReader> getVariables();
+
+    /**
+     * Removes a variable.
+     * @param name to remove
+     */
+    public void removeVariable(String name);
 }

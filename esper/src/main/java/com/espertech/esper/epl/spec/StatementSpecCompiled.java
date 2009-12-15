@@ -11,11 +11,11 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprSubselectNode;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Specification object representing a complete EPL statement including all EPL constructs.
@@ -36,7 +36,7 @@ public class StatementSpecCompiled
     private final OutputLimitSpec outputLimitSpec;
     private final List<OrderByItem> orderByList;
     private final List<ExprSubselectNode> subSelectExpressions;
-    private final boolean hasVariables;
+    private final Set<String> variableReferences;
     private final RowLimitSpec rowLimitSpec;
     private final Set<String> eventTypeReferences;
     private final Annotation[] annotations;
@@ -59,7 +59,6 @@ public class StatementSpecCompiled
      * @param onTriggerDesc describes on-delete statements
      * @param createWindowDesc describes create-window statements
      * @param createVariableDesc describes create-variable statements
-     * @param hasVariables indicator whether the statement uses variables
      * @param rowLimitSpec row limit specification, or null if none supplied
      * @param eventTypeReferences event type names statically determined
      * @param annotations statement annotations
@@ -80,7 +79,7 @@ public class StatementSpecCompiled
                                  OutputLimitSpec outputLimitSpec,
                                  List<OrderByItem> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions,
-                                 boolean hasVariables,
+                                 Set<String> variableReferences,
                                  RowLimitSpec rowLimitSpec,
                                  Set<String> eventTypeReferences,
                                  Annotation[] annotations,
@@ -101,7 +100,7 @@ public class StatementSpecCompiled
         this.outputLimitSpec = outputLimitSpec;
         this.orderByList = orderByList;
         this.subSelectExpressions = subSelectExpressions;
-        this.hasVariables = hasVariables;
+        this.variableReferences = variableReferences;
         this.rowLimitSpec = rowLimitSpec;
         this.eventTypeReferences = eventTypeReferences;
         this.annotations = annotations;
@@ -128,7 +127,7 @@ public class StatementSpecCompiled
         outputLimitSpec = null;
         orderByList = new ArrayList<OrderByItem>();
         subSelectExpressions = new ArrayList<ExprSubselectNode>();
-        hasVariables = false;
+        variableReferences = new HashSet<String>();
         rowLimitSpec = null;
         eventTypeReferences = new HashSet<String>();
         annotations = new Annotation[0];
@@ -271,12 +270,12 @@ public class StatementSpecCompiled
     }
 
     /**
-     * Returns true to indicate the statement has vaiables.
+     * Returns true to indicate the statement has variables.
      * @return true for statements that use variables
      */
     public boolean isHasVariables()
     {
-        return hasVariables;
+        return variableReferences != null && !variableReferences.isEmpty();
     }
 
     /**
@@ -349,4 +348,7 @@ public class StatementSpecCompiled
         return matchRecognizeSpec;
     }
 
+    public Set<String> getVariableReferences() {
+        return variableReferences;
+    }
 }

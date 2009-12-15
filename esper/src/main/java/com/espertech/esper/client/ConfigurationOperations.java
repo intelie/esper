@@ -333,4 +333,37 @@ public interface ConfigurationOperations
      * @return statement names referencing that type
      */
     public Set<String> getEventTypeNameUsedBy(String eventTypeName);
+
+    /**
+     * Return the set of statement names of statements that are in started or stopped state and
+     * that reference the given variable name.
+     * <p>
+     * A reference counts as any mention of the variable in any expression.
+     * @param variableName name of the variable
+     * @return statement names referencing that variable
+     */
+    public Set<String> getVariableNameUsedBy(String variableName);
+
+    /**
+     * Remove a variable by its name, returning an indicator whether the variable was found and removed.
+     * <p>
+     * This method deletes the variable by it's name from the memory of the engine,
+     * thereby allowing that the name to be reused for a new variable and disallowing new statements
+     * that attempt to use the deleted name.
+     * <p>
+     * If there are one or more statements in started or stopped state that reference the variable,
+     * this operation throws ConfigurationException unless the force flag is passed.
+     * <p>
+     * If using the force flag to remove the variable while statements use the variable, the exact
+     * behavior is not well defined and affected statements may log errors.
+     * It is recommended to destroy statements that use the variable before removing the variable.
+     * Use #getVariableNameUsedBy to obtain a list of statements that use a variable.
+     * <p>
+     * @param name the name of the variable to remove
+     * @param force false to include a check that the variable is no longer in use, true to force the remove
+     * even though there can be one or more statements relying on that variable
+     * @return indicator whether the variable was found and removed
+     * @throws ConfigurationException thrown to indicate that the remove operation failed
+     */
+    public boolean removeVariable(String name, boolean force) throws ConfigurationException;
 }

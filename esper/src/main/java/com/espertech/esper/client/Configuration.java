@@ -745,6 +745,14 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return true;
     }
 
+    public Set<String> getVariableNameUsedBy(String variableName) {
+        throw new UnsupportedOperationException("Get variable use information is only available in runtime configuration");
+    }
+
+    public boolean removeVariable(String name, boolean force) throws ConfigurationException {
+        return this.variables.remove(name) != null;
+    }
+
     /**
 	 * Use the mappings and properties specified in the given XML document.
 	 * The format of the file is defined in
