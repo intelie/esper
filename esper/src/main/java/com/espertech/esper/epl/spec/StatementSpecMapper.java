@@ -1105,17 +1105,21 @@ public class StatementSpecMapper
         else if (expr instanceof PlugInProjectionExpression)
         {
             PlugInProjectionExpression node = (PlugInProjectionExpression) expr;
+
+            // first try the configured aggregation
             try
             {
                 AggregationSupport aggregation = mapContext.getEngineImportService().resolveAggregation(node.getFunctionName());
                 return new ExprPlugInAggFunctionNode(node.isDistinct(), aggregation, node.getFunctionName());
             }
-            catch (EngineImportUndefinedException e)
+            catch (Exception e)
             {
-                throw new EPException("Error resolving aggregation: " + e.getMessage(), e);
-            }
-            catch (EngineImportException e)
-            {
+                // then try the builtin aggregation
+                ExprNode exprNode = mapContext.getEngineImportService().resolveAggExtendedBuiltin(node.getFunctionName(), node.isDistinct());
+                if (exprNode != null) {
+                    return exprNode;
+                }
+
                 throw new EPException("Error resolving aggregation: " + e.getMessage(), e);
             }
         }
@@ -1296,6 +1300,10 @@ public class StatementSpecMapper
         else if (expr instanceof ExprPriorNode)
         {
             return new PriorExpression();
+        }
+        else if (expr instanceof ExprRateAggNode)
+        {
+            return new PlugInProjectionExpression("rate", false);
         }
         else if (expr instanceof ExprPreviousNode)
         {

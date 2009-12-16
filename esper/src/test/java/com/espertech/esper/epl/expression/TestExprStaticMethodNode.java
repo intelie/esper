@@ -23,9 +23,9 @@ public class TestExprStaticMethodNode extends TestCase
     protected void setUp() throws Exception
     {
         streamTypeService = null;
-        EngineImportService engineImportService = new EngineImportServiceImpl();
+        EngineImportService engineImportService = new EngineImportServiceImpl(true);
         engineImportService.addImport("java.lang.*");
-        methodResolutionService = new MethodResolutionServiceImpl(engineImportService, true);
+        methodResolutionService = new MethodResolutionServiceImpl(engineImportService, null, true);
         staticMethodResolver = new MethodResolver();
         intThree = new ExprConstantNode(3);
         intFive = new ExprConstantNode(5);

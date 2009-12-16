@@ -11,7 +11,7 @@ public class TestEngineImportServiceImpl extends TestCase
 
     public void setUp()
     {
-        this.engineImportService = new EngineImportServiceImpl();
+        this.engineImportService = new EngineImportServiceImpl(true);
     }
 
     public void testResolveMethodNoArgTypes() throws Exception

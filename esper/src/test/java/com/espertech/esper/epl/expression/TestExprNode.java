@@ -46,9 +46,9 @@ public class TestExprNode extends TestCase
     public void testIdentToStaticMethod() throws ExprValidationException, EngineImportException
     {
         StreamTypeService typeService = new SupportStreamTypeSvc1Stream();
-        EngineImportService engineImportService = new EngineImportServiceImpl();
+        EngineImportService engineImportService = new EngineImportServiceImpl(true);
         engineImportService.addImport("java.lang.*");
-        MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineImportService, true);
+        MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineImportService, null, true);
 
         ExprNode identNode = new ExprIdentNode("Integer.valueOf(\"3\")");
         ExprNode result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null, null);

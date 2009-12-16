@@ -8,17 +8,21 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.epl.agg.AggregationSupport;
-import com.espertech.esper.util.MethodResolver;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.client.ConfigurationMethodRef;
+import com.espertech.esper.epl.agg.AggregationSupport;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprRateAggNode;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.MethodResolver;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation for engine-level imports.
@@ -29,15 +33,17 @@ public class EngineImportServiceImpl implements EngineImportService
 	private final List<String> imports;
     private final Map<String, String> aggregationFunctions;
     private final Map<String, ConfigurationMethodRef> methodInvocationRef;
+    private final boolean allowExtendedAggregationFunc;
 
     /**
 	 * Ctor.
 	 */
-	public EngineImportServiceImpl()
+	public EngineImportServiceImpl(boolean allowExtendedAggregationFunc)
     {
         imports = new ArrayList<String>();
         aggregationFunctions = new HashMap<String, String>();
         methodInvocationRef = new HashMap<String, ConfigurationMethodRef>();
+        this.allowExtendedAggregationFunc = allowExtendedAggregationFunc;
     }
 
     public ConfigurationMethodRef getConfigurationMethodRef(String className)
@@ -314,6 +320,17 @@ public class EngineImportServiceImpl implements EngineImportService
             message += (" (nearest match found was '" + e.getNearestMissMethod().getName() + "' taking type(s) '" + JavaClassHelper.getParameterAsString(e.getNearestMissMethod().getParameterTypes()) + "')");
         }
         return new EngineImportException(message, e);
+    }
+
+    public ExprNode resolveAggExtendedBuiltin(String name, boolean isDistinct) {
+        if (!allowExtendedAggregationFunc) {
+            return null;
+        }
+        if (name.toLowerCase().equals("rate"))
+        {
+            return new ExprRateAggNode(isDistinct);
+        }
+        return null;
     }
 
     /**

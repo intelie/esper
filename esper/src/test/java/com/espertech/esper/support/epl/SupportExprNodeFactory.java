@@ -361,7 +361,7 @@ public class SupportExprNodeFactory
         variableService.createNewVariable("intPrimitive", Integer.class, 10, null);
         variableService.createNewVariable("var1", String.class, "my_variable_value", null);
 
-        topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(new EngineImportServiceImpl(), true), viewResources, null, variableService, null);
+        topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(new EngineImportServiceImpl(true), null, true), viewResources, null, variableService, null);
     }
 
     public static void validate1StreamBean(ExprNode topNode) throws Exception

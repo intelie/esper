@@ -151,6 +151,18 @@ public interface MethodResolutionService
     public AggregationMethod makeStddevAggregator();
 
     /**
+     * Makes a new rate-aggregator.
+     * @return aggregator
+     */
+    public AggregationMethod makeRateAggregator();
+
+    /**
+     * Makes a new rate-aggregator.
+     * @return aggregator
+     */
+    public AggregationMethod makeRateEverAggregator(long interval);
+
+    /**
      * Sets the group key types.
      * @param groupKeyTypes types of group keys
      */

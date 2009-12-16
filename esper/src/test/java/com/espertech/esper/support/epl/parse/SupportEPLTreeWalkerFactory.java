@@ -21,6 +21,6 @@ public class SupportEPLTreeWalkerFactory
 
     public static EPLTreeWalker makeWalker(Tree tree)
     {
-        return makeWalker(tree, new EngineImportServiceImpl(), new VariableServiceImpl(0, null, null));
+        return makeWalker(tree, new EngineImportServiceImpl(true), new VariableServiceImpl(0, null, null));
     }
 }

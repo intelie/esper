@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.epl.agg.AggregationSupport;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.ConfigurationMethodRef;
 
 import java.lang.reflect.Method;
@@ -88,4 +89,6 @@ public interface EngineImportService
      * @throws EngineImportException if the method cannot be resolved to a visible static or instance method
      */
     public Method resolveMethod(Class clazz, String methodName, Class[] paramTypes) throws EngineImportException;
+
+    public ExprNode resolveAggExtendedBuiltin(String name, boolean isDistinct);
 }

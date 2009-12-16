@@ -1627,9 +1627,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         // try built-in expanded set of aggregation functions
-        if (childNodeText.toLowerCase().equals("rate"))
+        ExprNode extentedBuiltIn = engineImportService.resolveAggExtendedBuiltin(childNodeText, isDistinct);
+        if (extentedBuiltIn != null)
         {
-            astExprNodeMap.put(node, new ExprRateAggNode(isDistinct));
+            astExprNodeMap.put(node, extentedBuiltIn);
             return;
         }
 

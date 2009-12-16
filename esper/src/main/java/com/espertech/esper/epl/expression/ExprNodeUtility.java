@@ -10,6 +10,7 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.epl.core.StreamTypeService;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,43 @@ import java.util.List;
  */
 public class ExprNodeUtility
 {
+    public static boolean hasRemoveStream(ExprNode child, StreamTypeService streamTypeService) {
+
+        // Determine whether all streams are istream-only or irstream
+        boolean[] isIStreamOnly = streamTypeService.getIStreamOnly();
+        boolean isAllIStream = true;    // all true?
+        boolean isAllIRStream = true;   // all false?
+        for (boolean anIsIStreamOnly : isIStreamOnly) {
+            if (!anIsIStreamOnly) {
+                isAllIStream = false;
+            }
+            else {
+                isAllIRStream = false;
+            }
+        }
+
+        // determine if a data-window applies to this max function
+        boolean hasDataWindows = true;
+        if (isAllIStream) {
+            hasDataWindows = false;
+        }
+        else if (!isAllIRStream) {
+            hasDataWindows = false;
+            // get all aggregated properties to determine if any is from a windowed stream
+            ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+            child.accept(visitor);
+            for (ExprIdentNode node : visitor.getExprProperties()) {
+                if (!isIStreamOnly[node.getStreamId()]) {
+                    hasDataWindows = true;
+                    break;
+                }
+            }
+        }
+
+        return hasDataWindows;
+    }
+
+
     /**
      * Apply a filter expression.
      * @param filter expression

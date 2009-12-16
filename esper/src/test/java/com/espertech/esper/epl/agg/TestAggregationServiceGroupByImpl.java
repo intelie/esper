@@ -24,7 +24,7 @@ public class TestAggregationServiceGroupByImpl extends TestCase
             aggregators[i] = new SupportAggregator();
         }
         ExprEvaluator evaluators[] = new ExprEvaluator[] { new SupportExprNode(5), new SupportExprNode(2) };
-        methodResolutionService = new MethodResolutionServiceImpl(null, true);
+        methodResolutionService = new MethodResolutionServiceImpl(null, null, true);
 
         service = new AggregationServiceGroupByImpl(evaluators, aggregators, methodResolutionService);
 
