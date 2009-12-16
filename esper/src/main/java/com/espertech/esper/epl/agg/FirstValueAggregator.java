@@ -12,7 +12,7 @@ import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.core.MethodResolutionService;
 
 /**
- * Sum for float values.
+ * Aggregator for the very first value.
  */
 public class FirstValueAggregator implements AggregationMethod
 {

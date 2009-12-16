@@ -8,51 +8,32 @@
  **************************************************************************************/
 package com.espertech.esper.epl.agg;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.core.MethodResolutionService;
 
-/**
- * Aggregator for the very last value.
- */
-public class LastValueAggregator implements AggregationMethod
-{
-    private final Class type;
-    private Object lastValue;
+public class LeavingAggregator implements AggregationMethod {
 
-    /**
-     * Ctor.
-     * @param type of result
-     */
-    public LastValueAggregator(Class type) {
-        this.type = type;
+    private boolean leaving = false;
+
+    public void enter(Object value) {
     }
 
-    public void clear()
-    {
-        lastValue = null;
+    public void leave(Object value) {
+        leaving = true;
     }
 
-    public void enter(Object object)
-    {
-        lastValue = object;
+    public Class getValueType() {
+        return Boolean.class;
     }
 
-    public void leave(Object object)
-    {
+    public Object getValue() {
+        return leaving;
     }
 
-    public Object getValue()
-    {
-        return lastValue;
+    public void clear() {
+        leaving = false;
     }
 
-    public Class getValueType()
-    {
-        return type;
-    }
-
-    public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
-    {
-        return methodResolutionService.makeLastValueAggregator(type);
+    public AggregationMethod newAggregator(MethodResolutionService methodResolutionService) {
+        return methodResolutionService.makeLeavingAggregator();
     }
 }

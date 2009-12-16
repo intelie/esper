@@ -163,6 +163,14 @@ public interface MethodResolutionService
     public AggregationMethod makeRateEverAggregator(long interval);
 
     /**
+     * Makes a Nth element aggregator.
+     * @return aggregator
+     */
+    public AggregationMethod makeNthAggregator(Class returnType, int size);
+
+    public AggregationMethod makeLeavingAggregator();
+
+    /**
      * Sets the group key types.
      * @param groupKeyTypes types of group keys
      */

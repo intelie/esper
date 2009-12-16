@@ -11,34 +11,27 @@ package com.espertech.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Represents a plug-in aggregation function.
+ * Represents the "first" aggregation function.
  */
-public class PlugInProjectionExpression extends ExpressionBase
+public class FirstProjectionExpression extends ExpressionBase
 {
-    private String functionName;
     private boolean isDistinct;
-    private static final long serialVersionUID = -4474825377733541468L;
 
     /**
      * Ctor.
-     * @param functionName the name of the function
      * @param isDistinct true for distinct
      */
-    public PlugInProjectionExpression(String functionName, boolean isDistinct)
+    public FirstProjectionExpression(boolean isDistinct)
     {
-        this.functionName = functionName;
         this.isDistinct = isDistinct;
     }
 
     /**
      * Ctor.
-     * @param functionName the name of the function
      * @param isDistinct true for distinct
-     * @param expression provides aggregated values
      */
-    public PlugInProjectionExpression(String functionName, boolean isDistinct, Expression expression)
+    public FirstProjectionExpression(Expression expression, boolean isDistinct)
     {
-        this.functionName = functionName;
         this.isDistinct = isDistinct;
         this.getChildren().add(expression);
     }
@@ -49,37 +42,17 @@ public class PlugInProjectionExpression extends ExpressionBase
      */
     public void toEPL(StringWriter writer)
     {
-        writer.write(functionName);
+        writer.write("first");
         writer.write('(');
         if (isDistinct)
         {
             writer.write("distinct ");
         }
-        String delimiter = "";
-        for (Expression expr : this.getChildren()) {
-            writer.append(delimiter);
-            expr.toEPL(writer);
-            delimiter = ", ";
+        if (this.getChildren().size() > 0)
+        {
+            this.getChildren().get(0).toEPL(writer);
         }
         writer.write(")");
-    }
-
-    /**
-     * Returns the function name.
-     * @return name of function
-     */
-    public String getFunctionName()
-    {
-        return functionName;
-    }
-
-    /**
-     * Sets the function name.
-     * @param functionName name of function
-     */
-    public void setFunctionName(String functionName)
-    {
-        this.functionName = functionName;
     }
 
     /**

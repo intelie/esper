@@ -1789,6 +1789,24 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
   </defaults>
 </engine-settings>]]></programlisting>			
 			</sect3>
+
+			<sect3 id="config-engine-expression-extendedagg" revision="1">
+				<title>Extended Built-in Aggregation Functions</title>
+				<para>
+					By default Esper provides a number of additional aggregation functions over the SQL standards. To have Esper only allow the standard SQL aggregation functions and not the additional ones,
+					disable the setting as described here.
+				</para>
+	
+				<para>
+					 The XML configuration as below sets the same as the default value:
+				</para>
+	
+				<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <expression extend-agg="true"/>
+  </defaults>
+</engine-settings>]]></programlisting>			
+			</sect3>
 		</sect2>
 
 		<sect2 id="config-engine-execution" revision="1">

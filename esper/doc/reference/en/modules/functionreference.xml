@@ -564,11 +564,11 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 
 		<indexterm><primary>aggregation functions</primary><secondary>overview</secondary></indexterm>
 		<para>
-			The syntax of the aggregation functions and the results they produce are shown in below table.
+			The SQL-standard aggregation functions are shown in below table, additional built-in aggregation functions are listed in the next table.
 		</para>
 
-		<table frame="topbot" id="epl-grouping-aggregate-func-table" revision="2">
-			<title>Syntax and results of aggregate functions</title>
+		<table frame="topbot" id="epl-grouping-aggregate-func-table-SQL" revision="2">
+			<title>Syntax and results of SQL-standard aggregation functions</title>
 			<tgroup cols="2">
 				<colspec colwidth="1*"/>
 				<colspec colwidth="2.0*"/>
@@ -657,6 +657,147 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 
 		<para>
 			Your application may also add its own aggregation function as <xref linkend="custom-aggregation-function"/> describes.
+		</para>
+		
+		<para>
+			Esper provides the following additional aggregation functions beyond those in the SQL standard:
+		</para>
+
+		<table frame="topbot" id="epl-grouping-aggregate-func-table-ext" revision="2">
+			<title>Syntax and results of EPL aggregation functions</title>
+			<tgroup cols="2">
+				<colspec colwidth="1*"/>
+				<colspec colwidth="2.0*"/>
+				<thead>
+					<row>
+						<entry>Aggregate Function</entry>
+						<entry>Result</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>first(<emphasis>expression</emphasis>)</entry>
+						<entry>
+							<para>
+								The <literal>first</literal> aggregation function returns the very first value ever or per group if used with <literal>group by</literal>.
+							</para>				
+							<para>
+								If used with a data window, the result of the function does not change as data points leave a data window. Use the <literal>prev</literal> function to return values relative to a data window.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>last(<emphasis>expression</emphasis>)</entry>
+						<entry>
+							<para>
+								Returns the last value or last value per group, if used with <literal>group by</literal>.
+							</para>
+							<para>
+								This sample statement outputs the total price, the first price and the last price per symbol for the last 30 seconds of events and every 5 seconds:
+							</para>
+							<programlisting>select symbol, sum(price), last(price), first(price)
+from StockTickEvent.win:time(30 sec) 
+group by symbol
+output every 5 sec</programlisting>
+						</entry>
+					</row>
+					<row>
+						<entry>leaving()</entry>
+						<entry>
+							<para>
+								Returns true when any remove stream data has passed, for use in the <literal>having</literal> clause to output only when a data window has filled.
+							</para>
+							<para>
+								The <literal>leaving</literal> aggregation function is useful when you want to trigger output after a data window has a remove stream data point. Use the <literal>output after</literal> syntax as an alternative to output after a time interval.
+							</para>
+							<para>
+								This sample statement uses <literal>leaving()</literal> to output after the first data point leaves the data window, ignoring the first datapoint:
+							</para>
+							<programlisting>select symbol, sum(price) 
+from StockTickEvent.win:time(30 sec) 
+having leaving()</programlisting>
+						</entry>
+					</row>
+					<row>
+						<entry>nth(<emphasis>expression</emphasis>, <emphasis>N_index</emphasis>)</entry>
+						<entry>
+							<para>
+								Returns the Nth oldest element; If N=1 returns the most recent value. If N is larger than the events held in the data window, returns null.
+							</para>
+							<para>
+								A maximum N historical values are stored, so it can be safely used to compare
+								recent values in large views without incurring excessive overhead.
+							</para>
+							<para>
+								As compared to the <literal>prev</literal> row function, this aggregation function works within the current <literal>group by</literal> group, see <xref linkend="processingmodel_aggregation_output"/>.
+							</para>
+							<para>
+								This statement outputs every 2 seconds the groups that have new data and their last price and the previous-to-last price:
+							</para>
+							<programlisting>select symbol, nth(price, 2), last(price) 
+from StockTickEvent 
+group by symbol
+output last every 2 sec</programlisting>
+						</entry>
+					</row>
+					<row>
+						<entry>
+							<para>
+								rate(<emphasis>number_of_seconds</emphasis>)
+							</para>
+						</entry>
+						<entry>
+							<para>
+								Returns an event arrival rate per second over the provided number of seconds, computed based on engine time.								
+							</para>
+							<para>
+								Returns null until events fill the number of seconds. Useful with <literal>output snapshot</literal> to output a current rate. Does not require a data window onto the stream(s).
+							</para>
+							<para>
+								A sample statement to output, every 2 seconds, the arrival rate per second considering the last 10 seconds of events is shown here:
+							</para>
+							<programlisting>select rate(10) from StockTickEvent
+output snapshot every 2 sec</programlisting>
+							<para>
+								The aggregation function retains an engine timestamp value for each arriving event.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>
+							<para>
+								rate(<emphasis>timestamp_property</emphasis>[, <emphasis>accumulator</emphasis>])
+							</para>
+						</entry>
+						<entry>
+							<para>
+								Returns an event arrival rate over the data window including the last remove stream event. The <emphasis>timestamp_property</emphasis>
+								is the name of a long-type property of the event that provides a timestamp value.
+							</para>
+							<para>
+								The first parameter is a property name or expression providing millisecond timestamp values.
+							</para>
+							<para>
+								The optional second parameter is a property or expression for computing an accumulation rate: If a value is provided as a second parameter then the accumulation rate for that quantity is returned (e.g. turnover in dollars per second).
+							</para>
+							<para>
+								Requires a data window declared onto the stream. Returns null until events start leaving the window.
+							</para>
+							<para>
+								This sample statement outputs event rate for each group (symbol) with fixed sample size of four events 
+								(and considering the last event that left). The <literal>timestamp</literal> event property must be part of the event for this to work.
+							</para>
+							<programlisting>select colour, rate(timestamp) as rate 
+from StockTickEvent.std:groupby(symbol).win:length(4) 
+group by symbol</programlisting>
+						</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+
+		<para>
+			Built-in aggregation functions can be disabled via configuration (see <xref linkend="config-engine-expression-extendedagg"/>). A custom aggregation function of the same name as a built-on function may be registered to override the built-in function.
 		</para>
 	</sect1>		
 

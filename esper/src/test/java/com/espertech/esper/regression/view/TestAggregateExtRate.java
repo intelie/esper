@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 import java.util.TimerTask;
 
-public class TestAggregateExpandedLastFirst extends TestCase {
+public class TestAggregateExtRate extends TestCase {
 
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
@@ -43,7 +43,7 @@ public class TestAggregateExpandedLastFirst extends TestCase {
         stmt = epService.getEPAdministrator().create(model);
         stmt.addListener(listener);
         assertEquals(epl, model.toEPL());
-
+        
         runAssertion();
 
         tryInvalid("select rate() from SupportBean",
@@ -154,7 +154,7 @@ public class TestAggregateExpandedLastFirst extends TestCase {
         EPStatement stmt = epService.getEPAdministrator().createEPL(viewExpr);
         stmt.addListener(new UpdateListener() {
             public void update(EventBean[] newEvents, EventBean[] oldEvents) {
-                System.out.println(newEvents[0].get("myrate"));
+                System.out.println(newEvents[0].get("myrate"));                
             }
         });
 

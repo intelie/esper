@@ -11,40 +11,48 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.util.JavaClassHelper;
 
 /**
- * Represents the "first" aggregate function is an expression tree.
+ * Represents the nth(...) and aggregate function is an expression tree.
  */
-public class ExprFirstNode extends ExprAggregateNode
+public class ExprNthAggNode extends ExprAggregateNode
 {
-    private static final long serialVersionUID = 1436994080693454617L;
-
     /**
      * Ctor.
      * @param distinct - flag indicating unique or non-unique value aggregation
      */
-    public ExprFirstNode(boolean distinct)
+    public ExprNthAggNode(boolean distinct)
     {
         super(distinct);
     }
 
     public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        if (this.getChildNodes().size() != 1)
-        {
-            throw new ExprValidationException("First aggregation node must have 1 child nodes");
+        String message = "The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant";
+        if (this.getChildNodes().size() != 2) {
+            throw new ExprValidationException(message);
         }
-        return methodResolutionService.makeFirstValueAggregator(this.getChildNodes().get(0).getType());
+
+        ExprNode first = this.getChildNodes().get(0);
+        ExprNode second = this.getChildNodes().get(1);
+        if (!second.isConstantResult()) {
+            throw new ExprValidationException(message);
+        }
+
+        Number num = (Number) second.evaluate(null, true, exprEvaluatorContext);
+        int size = num.intValue();
+
+        return methodResolutionService.makeNthAggregator(first.getType(), size);
     }
 
     protected String getAggregationFunctionName()
     {
-        return "first";
+        return "nth";
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)
     {
-        return node instanceof ExprFirstNode;
-
+        return node instanceof ExprNthAggNode;
     }
 }

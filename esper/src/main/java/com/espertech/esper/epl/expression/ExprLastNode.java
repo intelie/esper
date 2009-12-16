@@ -32,23 +32,19 @@ public class ExprLastNode extends ExprAggregateNode
     {
         if (this.getChildNodes().size() != 1)
         {
-            throw new ExprValidationException("Count node must have 1 child nodes");
+            throw new ExprValidationException("Last aggregation function must have 1 child node");
         }
         return methodResolutionService.makeLastValueAggregator(this.getChildNodes().get(0).getType());
     }
 
     protected String getAggregationFunctionName()
     {
-        return "count";
+        return "last";
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)
     {
-        if (!(node instanceof ExprLastNode))
-        {
-            return false;
-        }
+        return node instanceof ExprLastNode;
 
-        return true;
     }
 }

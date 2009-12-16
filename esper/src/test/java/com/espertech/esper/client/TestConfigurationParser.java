@@ -74,7 +74,7 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getExpression().isDivisionByZeroReturnsNull());
         assertTrue(config.getEngineDefaults().getExpression().isSelfSubselectPreeval());
         assertTrue(config.getEngineDefaults().getExpression().isUdfCache());
-        assertTrue(config.getEngineDefaults().getExpression().isExpandedAggregation());
+        assertTrue(config.getEngineDefaults().getExpression().isExtendedAggregation());
 
         ConfigurationEventTypeXMLDOM domType = new ConfigurationEventTypeXMLDOM();
         assertFalse(domType.isXPathPropertyExpr());
@@ -333,7 +333,7 @@ public class TestConfigurationParser extends TestCase
         assertTrue(config.getEngineDefaults().getExpression().isDivisionByZeroReturnsNull());
         assertFalse(config.getEngineDefaults().getExpression().isSelfSubselectPreeval());
         assertFalse(config.getEngineDefaults().getExpression().isUdfCache());
-        assertFalse(config.getEngineDefaults().getExpression().isExpandedAggregation());
+        assertFalse(config.getEngineDefaults().getExpression().isExtendedAggregation());
 
         // variables
         assertEquals(2, config.getVariables().size());

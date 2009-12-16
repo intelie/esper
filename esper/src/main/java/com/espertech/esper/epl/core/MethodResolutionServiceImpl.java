@@ -185,6 +185,14 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new RateEverAggregator(interval, timeProvider);
     }
 
+    public AggregationMethod makeNthAggregator(Class returnType, int size) {
+        return new NthAggregator(returnType, size);
+    }
+
+    public AggregationMethod makeLeavingAggregator() {
+        return new LeavingAggregator();
+    }
+
     public void setGroupKeyTypes(Class[] groupKeyTypes)
     {
         if (log.isDebugEnabled())

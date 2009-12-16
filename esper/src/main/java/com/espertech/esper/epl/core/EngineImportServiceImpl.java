@@ -12,6 +12,8 @@ import com.espertech.esper.client.ConfigurationMethodRef;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprRateAggNode;
+import com.espertech.esper.epl.expression.ExprNthAggNode;
+import com.espertech.esper.epl.expression.ExprLeavingAggNode;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MethodResolver;
 import org.apache.commons.logging.Log;
@@ -329,6 +331,14 @@ public class EngineImportServiceImpl implements EngineImportService
         if (name.toLowerCase().equals("rate"))
         {
             return new ExprRateAggNode(isDistinct);
+        }
+        if (name.toLowerCase().equals("nth"))
+        {
+            return new ExprNthAggNode(isDistinct);
+        }
+        if (name.toLowerCase().equals("leaving"))
+        {
+            return new ExprLeavingAggNode(isDistinct);
         }
         return null;
     }

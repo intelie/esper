@@ -1009,6 +1009,46 @@ public class Expressions implements Serializable
     }
 
     /**
+     * Last-value aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static LastProjectionExpression last(String propertyName)
+    {
+        return new LastProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Last-value aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static LastProjectionExpression last(Expression expression)
+    {
+        return new LastProjectionExpression(expression, false);
+    }
+
+    /**
+     * First-value aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static FirstProjectionExpression first(String propertyName)
+    {
+        return new FirstProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Last-value aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static FirstProjectionExpression first(Expression expression)
+    {
+        return new FirstProjectionExpression(expression, false);
+    }
+
+    /**
      * Mean deviation aggregation function.
      * @param expression provides the values to aggregate.
      * @return expression

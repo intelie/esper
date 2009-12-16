@@ -955,7 +955,7 @@ public class ConfigurationEngineDefaults implements Serializable
         private boolean divisionByZeroReturnsNull;
         private boolean udfCache;
         private boolean selfSubselectPreeval;
-        private boolean expandedAggregation;
+        private boolean extendedAggregation;
 
         /**
          * Ctor.
@@ -966,7 +966,7 @@ public class ConfigurationEngineDefaults implements Serializable
             divisionByZeroReturnsNull = false;
             udfCache = true;
             selfSubselectPreeval = true;
-            expandedAggregation = true;
+            extendedAggregation = true;
         }
 
         /**
@@ -1060,14 +1060,14 @@ public class ConfigurationEngineDefaults implements Serializable
             this.selfSubselectPreeval = selfSubselectPreeval;
         }
 
-        public boolean isExpandedAggregation()
+        public boolean isExtendedAggregation()
         {
-            return expandedAggregation;
+            return extendedAggregation;
         }
 
-        public void setExpandedAggregation(boolean expandedAggregation)
+        public void setExtendedAggregation(boolean extendedAggregation)
         {
-            this.expandedAggregation = expandedAggregation;
+            this.extendedAggregation = extendedAggregation;
         }
     }
 

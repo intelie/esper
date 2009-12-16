@@ -1058,6 +1058,16 @@ public class StatementSpecMapper
             StddevProjectionExpression node = (StddevProjectionExpression) expr;
             return new ExprStddevNode(node.isDistinct());
         }
+        else if (expr instanceof LastProjectionExpression)
+        {
+            LastProjectionExpression node = (LastProjectionExpression) expr;
+            return new ExprLastNode(node.isDistinct());
+        }
+        else if (expr instanceof FirstProjectionExpression)
+        {
+            FirstProjectionExpression node = (FirstProjectionExpression) expr;
+            return new ExprFirstNode(node.isDistinct());
+        }
         else if (expr instanceof InstanceOfExpression)
         {
             InstanceOfExpression node = (InstanceOfExpression) expr;
@@ -1305,6 +1315,14 @@ public class StatementSpecMapper
         {
             return new PlugInProjectionExpression("rate", false);
         }
+        else if (expr instanceof ExprNthAggNode)
+        {
+            return new PlugInProjectionExpression("nth", false);
+        }
+        else if (expr instanceof ExprLeavingAggNode)
+        {
+            return new PlugInProjectionExpression("leaving", false);
+        }
         else if (expr instanceof ExprPreviousNode)
         {
             return new PreviousExpression();
@@ -1383,6 +1401,16 @@ public class StatementSpecMapper
         {
             ExprMedianNode median = (ExprMedianNode) expr;
             return new MedianProjectionExpression(median.isDistinct());
+        }
+        else if (expr instanceof ExprLastNode)
+        {
+            ExprLastNode last = (ExprLastNode) expr;
+            return new LastProjectionExpression(last.isDistinct());
+        }
+        else if (expr instanceof ExprFirstNode)
+        {
+            ExprFirstNode first = (ExprFirstNode) expr;
+            return new FirstProjectionExpression(first.isDistinct());
         }
         else if (expr instanceof ExprAvedevNode)
         {
