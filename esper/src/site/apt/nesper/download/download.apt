@@ -1,0 +1,46 @@
+Download NEsper
+~~~~~~~~~~~~~~
+
+	NEsper can be downloaded as a zip-file and as an MSI installer:
+
+*------------------------+------------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
+|                        | Download                                                                     | License
+*------------------------+------------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
+| NEsper 3.2 (zip) released on 1/2/2010| {{{http://dist.codehaus.org/esper/NEsper-3.2.zip} NEsper-3.2.zip  }}| {{{http://www.opensource.org/licenses/gpl-license.php} GNU GPL verison 2}}
+*------------------------+------------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
+| NEsper 3.2 (MSI) released on 1/2/2010| {{{http://dist.codehaus.org/esper/NEsper-3.2.msi} NEsper-3.2.msi  }}| {{{http://www.opensource.org/licenses/gpl-license.php} GNU GPL verison 2}}
+*------------------------+------------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
+	
+
+* Previous Releases
+	
+	Earlier versions of NEsper can be downloaded from {{{http://dist.codehaus.org/esper}here}}.
+
+
+* Prerequisite For Clients 
+
+	.NET Framework minimum of 3.5 
+
+
+* Installation Steps 
+
+	Installation from distributed MSI 
+		
+	* Run the MSI 
+
+	* Select components 
+
+	* Select installation directory (defaults to [Program Files]\Espertech\Esper) 
+	
+	[]
+	
+	
+	Installation from Zip File 
+	
+	* Select installation directory 
+
+	* Unzip contents into installation directory 
+
+* Server
+
+	* This is a CEP component for inclusion into your own application process and does not include a server executable to run.
