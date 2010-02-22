@@ -321,6 +321,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="esper:init-arg" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="esper:config-xml" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="class-name" type="xs:string" use="required"/>
@@ -610,6 +611,13 @@
 		</xs:complexType>
 	</xs:element>
     <xs:element name="initializer">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:any minOccurs="0" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+    <xs:element name="config-xml">
       <xs:complexType>
         <xs:sequence>
           <xs:any minOccurs="0" processContents="lax"/>

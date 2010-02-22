@@ -19,6 +19,7 @@ public class ConfigurationPluginLoader implements Serializable
     private String loaderName;
     private String className;
     private Properties configProperties;
+    private String configurationXML;
     private static final long serialVersionUID = 6053550897594738083L;
 
     /**
@@ -80,6 +81,16 @@ public class ConfigurationPluginLoader implements Serializable
     public void setLoaderName(String loaderName)
     {
         this.loaderName = loaderName;
+    }
+
+    public String getConfigurationXML()
+    {
+        return configurationXML;
+    }
+
+    public void setConfigurationXML(String configurationXML)
+    {
+        this.configurationXML = configurationXML;
     }
 
     public String toString()

@@ -8,21 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.adapter;
 
-import com.espertech.esper.adapter.OutputAdapter;
-import com.espertech.esper.adapter.AdapterSPI;
 import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.StatementFilterVersion;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.filter.FilterValueSet;
 import com.espertech.esper.util.ManagedLockImpl;
-import com.espertech.esper.epl.metric.StatementMetricHandle;
 
 import java.util.LinkedList;
 
@@ -88,11 +86,11 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
     public void registerAdapter(OutputAdapter adapter)
     {
         this.adapter = adapter;
-        EPServiceProvider epService = ((AdapterSPI) adapter).getEPServiceProvider();
-        if (!(epService instanceof EPServiceProviderSPI))
-        {
-            throw new IllegalArgumentException("Invalid type of EPServiceProvider");
-        }
+        registerAdapter(((AdapterSPI) adapter).getEPServiceProvider());
+    }
+
+    public void registerAdapter(EPServiceProvider epService)
+    {
         EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
         EventType eventType = spi.getEventAdapterService().getExistsTypeByName(eventTypeName);
         FilterValueSet fvs = new FilterSpecCompiled(eventType, null, new LinkedList<FilterSpecParam>(), null).getValueSet(null);

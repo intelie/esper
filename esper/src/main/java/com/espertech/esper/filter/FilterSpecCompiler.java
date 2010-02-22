@@ -12,7 +12,6 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPStatementStartMethod;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.named.NamedWindowProcessor;

@@ -1,6 +1,7 @@
 package com.espertech.esper.support.plugin;
 
 import com.espertech.esper.plugin.PluginLoader;
+import com.espertech.esper.plugin.PluginLoaderInitContext;
 import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.Properties;
@@ -53,9 +54,9 @@ public class SupportPluginLoader implements PluginLoader
         destroys.add(new Date());
     }
 
-    public void init(String name, Properties properties, EPServiceProviderSPI epService)
+    public void init(PluginLoaderInitContext context)
     {
-        names.add(name);
-        props.add(properties);
+        names.add(context.getName());
+        props.add(context.getProperties());
     }
 }

@@ -25,6 +25,8 @@ create table mytesttable_large(
 
 create unique index mytesttable_index_1 on mytesttable(mybigint);
 
+create table mytestupsert(key1 varchar(20), key2 int, value1 varchar(20), value2 double);
+
 insert into mytesttable values (1, 10, "A", "Z", true, 5000, 100, 1.2, 1.3);
 insert into mytesttable values (2, 20, "B", "Y", false, 100, 200, 2.2, 2.3);
 insert into mytesttable values (3, 30, "C", "X", false, 100, 300, 3.2, 3.3);

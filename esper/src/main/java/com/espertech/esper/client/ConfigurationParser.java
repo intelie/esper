@@ -616,6 +616,7 @@ class ConfigurationParser {
         String loaderName = element.getAttributes().getNamedItem("name").getTextContent();
         String className = element.getAttributes().getNamedItem("class-name").getTextContent();
         Properties properties = new Properties();
+        String configXML = null;
         DOMElementIterator nodeIterator = new DOMElementIterator(element.getChildNodes());
         while (nodeIterator.hasNext())
         {
@@ -626,8 +627,27 @@ class ConfigurationParser {
                 String value = subElement.getAttributes().getNamedItem("value").getTextContent();
                 properties.put(name, value);
             }
+            if (subElement.getNodeName().equals("config-xml"))
+            {
+                DOMElementIterator nodeIter = new DOMElementIterator(subElement.getChildNodes());
+                if (!nodeIter.hasNext())
+                {
+                    throw new ConfigurationException("Error handling config-xml for plug-in loader '" + loaderName + "', no child node found under initializer element, expecting an element node");
+                }
+
+                StringWriter output = new StringWriter();
+                try
+                {
+                    TransformerFactory.newInstance().newTransformer().transform(new DOMSource(nodeIter.next()), new StreamResult(output));
+                }
+                catch (TransformerException e)
+                {
+                    throw new ConfigurationException("Error handling config-xml for plug-in loader '" + loaderName + "' :" + e.getMessage(), e);
+                }
+                configXML = output.toString();
+            }
         }
-        configuration.addPluginLoader(loaderName, className, properties);
+        configuration.addPluginLoader(loaderName, className, properties, configXML);
     }
 
     private static void handlePlugInEventRepresentation(Configuration configuration, Element element)

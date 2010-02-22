@@ -14,6 +14,7 @@ import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.bean.EventBeanManufacturerBean;
 import com.espertech.esper.event.bean.PropertyHelper;
 import com.espertech.esper.event.map.MapEventType;
+import com.espertech.esper.util.JavaClassHelper;
 import net.sf.cglib.reflect.FastClass;
 
 import java.util.HashSet;
@@ -56,6 +57,15 @@ public class EventAdapterServiceHelper
                 if (types.getValue() instanceof Class)
                 {
                     writables.add(new WriteablePropertyDescriptor(types.getKey(), (Class) types.getValue(), null));
+                }
+                if (types.getValue() instanceof String)
+                {
+                    String typeName = types.getValue().toString();
+                    Class clazz = JavaClassHelper.getPrimitiveClassForName(typeName);
+                    if (clazz != null)
+                    {
+                        writables.add(new WriteablePropertyDescriptor(types.getKey(), clazz, null));
+                    }                    
                 }
             }
             return writables;

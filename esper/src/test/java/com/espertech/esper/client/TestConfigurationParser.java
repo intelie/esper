@@ -233,6 +233,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(2, pluginOne.getConfigProperties().size());
         assertEquals("val1", pluginOne.getConfigProperties().get("name1"));
         assertEquals("val2", pluginOne.getConfigProperties().get("name2"));
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><sample-initializer><some-any-xml-can-be-here>This section for use by a plugin loader.</some-any-xml-can-be-here></sample-initializer>", pluginOne.getConfigurationXML());
 
         ConfigurationPluginLoader pluginTwo = plugins.get(1);
         assertEquals("Loader2", pluginTwo.getLoaderName());

@@ -4,6 +4,7 @@ Esper Changelog
 Changes in version 3.3.0
 ------------------------
 - SODA change: EPStatementObjectModel methods setSelectClause now returns void
+- PluginLoader init method changed slightly
 
 
 Changes in version 3.3.0

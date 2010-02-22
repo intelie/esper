@@ -27,7 +27,7 @@ public interface PluginLoader
      * @param properties is a set of properties from the configuration
      * @param epService is the SPI of the engine itself for sending events to
      */
-    public void init(String name, Properties properties, EPServiceProviderSPI epService);
+    public void init(PluginLoaderInitContext context);
 
     /**
      * Called after an engine instances has fully initialized and is already

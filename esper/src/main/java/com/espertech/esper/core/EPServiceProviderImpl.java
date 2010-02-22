@@ -19,6 +19,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.plugin.PluginLoader;
+import com.espertech.esper.plugin.PluginLoaderInitContext;
 import com.espertech.esper.schedule.SchedulingMgmtService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
@@ -469,7 +470,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             }
 
             PluginLoader pluginLoader = (PluginLoader) pluginLoaderObj;
-            pluginLoader.init(config.getLoaderName(), config.getConfigProperties(), this);
+            PluginLoaderInitContext context = new PluginLoaderInitContext(config.getLoaderName(), config.getConfigProperties(), config.getConfigurationXML(), this);
+            pluginLoader.init(context);
 
             // register adapter loader in JNDI context tree
             try
