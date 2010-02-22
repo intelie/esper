@@ -1,0 +1,70 @@
+package com.espertech.esper.regression.view;
+
+import junit.framework.TestCase;
+import com.espertech.esper.client.*;
+import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.bean.SupportBean;
+
+public class TestViewTimeBatch extends TestCase
+{
+    private EPServiceProvider epService;
+    private SupportUpdateListener listener;
+
+    public void setUp()
+    {
+        listener = new SupportUpdateListener();
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventType("SupportBean", SupportBean.class);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+    }
+
+    public void testStartEagerForceUpdate()
+    {
+        sendTimer(1000);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream * from SupportBean.win:time_batch(1, \"START_EAGER,FORCE_UPDATE\")");
+        stmt.addListener(listener);
+
+        sendTimer(1999);
+        assertFalse(listener.getAndClearIsInvoked());
+        
+        sendTimer(2000);
+        assertTrue(listener.getAndClearIsInvoked());
+
+        sendTimer(2999);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(3000);
+        assertTrue(listener.getAndClearIsInvoked());
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(4000);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "string".split(",") , new Object[] {"E1"});
+
+        sendTimer(5000);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), "string".split(",") , new Object[] {"E1"});
+
+        sendTimer(5999);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(6000);
+        assertTrue(listener.getAndClearIsInvoked());
+
+        sendTimer(7000);
+        assertTrue(listener.getAndClearIsInvoked());
+    }
+
+    private void sendTimer(long timeInMSec)
+    {
+        CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
+        EPRuntime runtime = epService.getEPRuntime();
+        runtime.sendEvent(event);
+    }    
+}
