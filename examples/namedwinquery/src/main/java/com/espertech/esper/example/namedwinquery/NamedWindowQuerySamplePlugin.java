@@ -1,6 +1,7 @@
 package com.espertech.esper.example.namedwinquery;
 
 import com.espertech.esper.plugin.PluginLoader;
+import com.espertech.esper.plugin.PluginLoaderInitContext;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.client.EPServiceProviderManager;
 import org.apache.commons.logging.Log;
@@ -20,15 +21,15 @@ public class NamedWindowQuerySamplePlugin implements PluginLoader
     private String engineURI;
     private NamedWindowQueryMain main;
 
-    public void init(String pluginName, Properties properties, EPServiceProviderSPI epServiceProviderSPI)
+    public void init(PluginLoaderInitContext context)
     {
-        if (properties.getProperty(ENGINE_URI) != null)
+        if (context.getProperties().getProperty(ENGINE_URI) != null)
         {
-            engineURI = properties.getProperty(ENGINE_URI);
+            engineURI = context.getProperties().getProperty(ENGINE_URI);
         }
         else
         {
-            engineURI = epServiceProviderSPI.getURI();
+            engineURI = context.getEpServiceProvider().getURI();
         }
     }
 

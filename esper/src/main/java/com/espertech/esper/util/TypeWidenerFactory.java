@@ -52,7 +52,7 @@ public class TypeWidenerFactory
                 throw new ExprValidationException(message);
             }
 
-            if (!columnType.isPrimitive() && JavaClassHelper.isNumeric(targetClass))
+            if (JavaClassHelper.isNumeric(targetClass))
             {
                 return new TypeWidenerBoxedNumeric(SimpleNumberCoercerFactory.getCoercer(columnClassBoxed, targetClassBoxed));
             }

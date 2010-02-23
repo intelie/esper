@@ -3,6 +3,7 @@ package com.espertech.esper.example.matchmaker;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.plugin.PluginLoader;
+import com.espertech.esper.plugin.PluginLoaderInitContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,15 +21,15 @@ public class MatchMakerSamplePlugin implements PluginLoader
     private String engineURI;
     private MatchMakerMain matchMakerMain;
 
-    public void init(String pluginName, Properties properties, EPServiceProviderSPI epServiceProviderSPI)
+    public void init(PluginLoaderInitContext context)
     {
-        if (properties.getProperty(ENGINE_URI) != null)
+        if (context.getProperties().getProperty(ENGINE_URI) != null)
         {
-            engineURI = properties.getProperty(ENGINE_URI);
+            engineURI = context.getProperties().getProperty(ENGINE_URI);
         }
         else
         {
-            engineURI = epServiceProviderSPI.getURI();
+            engineURI = context.getEpServiceProvider().getURI();
         }
     }
 

@@ -11,6 +11,7 @@ package com.espertech.esperio;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.plugin.PluginLoader;
+import com.espertech.esper.plugin.PluginLoaderInitContext;
 import com.espertech.esper.adapter.AdapterState;
 import com.espertech.esper.adapter.Adapter;
 import com.espertech.esper.adapter.AdapterSPI;
@@ -59,14 +60,14 @@ public class SpringContextLoader implements PluginLoader
         }
     }
 
-    public void init(String name, Properties properties, EPServiceProviderSPI epService)
+    public void init(PluginLoaderInitContext context)
     {
         boolean fromClassPath = true;
-        String resource = properties.getProperty(SpringContext.CLASSPATH_CONTEXT);
+        String resource = context.getProperties().getProperty(SpringContext.CLASSPATH_CONTEXT);
         if (resource == null)
         {
             fromClassPath = false;
-            resource = properties.getProperty(SpringContext.FILE_APP_CONTEXT);
+            resource = context.getProperties().getProperty(SpringContext.FILE_APP_CONTEXT);
         }
         if (resource == null)
         {
@@ -93,7 +94,7 @@ public class SpringContextLoader implements PluginLoader
             if (adapter instanceof AdapterSPI)
             {
                 AdapterSPI spi = (AdapterSPI) adapter;
-                spi.setEPServiceProvider(epService);
+                spi.setEPServiceProvider(context.getEpServiceProvider());
             }
             adapter.start();
         }
