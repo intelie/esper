@@ -1,4 +1,4 @@
-<chapter id="adapterdb">
+<chapter id="adapter_db">
     <title>The Relational Database Adapter</title>
     
     <para>
@@ -14,10 +14,6 @@
 
         <para>
 			If your application only reads from tables, the Esper jar file and Esper configuration suffices and there is no additional EsperIO DB adapter configuration or jar file required. Please see below tips for reading or polling tables.
-		</para>
-
-        <para>
-			To configure the EsperIO DB adapter to write to database tables, please follow below configuration steps.
 		</para>
 
         <para>
@@ -38,7 +34,7 @@
 		</orderedlist>
 		
 		<para>
-			The adapter also provide infrastructure for queueing database write requests for execution by a thread pool as well as for managing thread pool queue sizes.
+			The adapter also provides infrastructure for queuing database write requests for execution by a thread pool.
 		</para>
 	</sect1>
 
@@ -46,7 +42,7 @@
         <title>Getting Started</title>
 
 		<para>
-			You may configure the EsperIO DB adapter either as part of your Esper configuration file in the plugin loader section or via the adapter API.	Add the <literal>esperio-db-<emphasis>version</emphasis>.jar</literal> file to your classpath.
+			You may configure the EsperIO DB adapter either as part of your Esper configuration file in the plugin loader section or via the adapter API.	Add the <literal>esperio-db-version.jar</literal> file to your classpath.
 		</para>
         
 		<para>
@@ -76,7 +72,8 @@
 			<programlisting><![CDATA[<esper-configuration>
   <plugin-loader name="EsperIODBAdapter" 
       class-name="com.espertech.esperio.db.EsperIODBAdapterPlugin">
-      <init-arg name="esperio.db.configuration.file" value="file:/path/esperio-db-sample-config.xml" />
+      <init-arg name="esperio.db.configuration.file" 
+          value="file:/path/esperio-db-sample-config.xml" />
   </plugin-loader>
 </esper-configuration>]]></programlisting>		
 		</sect2>
@@ -132,7 +129,8 @@ dbAdapter.start();]]></programlisting>
 		
 		<programlisting><![CDATA[<esperio-db-configuration>
   <jdbc-connection name="db1">
-    <drivermanager-connection class-name="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/test" user="root" password="password">
+    <drivermanager-connection class-name="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/test" 
+        user="root" password="password">
     <connection-settings auto-commit="true" catalog="TEST"/>
   </jdbc-connection>
   <!-- Add DML and Upsert configurations here, as below. -->
@@ -154,7 +152,7 @@ dbAdapter.start();]]></programlisting>
 			The synopsis is as follows:
 		</para>
 			<programlisting><![CDATA[<dml connection="[connection]" stream="[stream]"  
-        [name="name"]   [executor-name="executor"] [retry="count"] [retry-interval-sec="sec"]>
+    [name="name"] [executor-name="executor"] [retry="count"] [retry-interval-sec="sec"]>
   <sql>[sql]</sql>
   <bindings>
     <parameter pos="[position]" property="[property_name]"/>
@@ -184,7 +182,7 @@ dbAdapter.start();]]></programlisting>
 		</para>
 
 		<para>
-		  The <emphasis>sql</emphasis> element is required and provides the SQL DML or stored procedure call to execute, with parameters as questionmarks (?).
+		  The <emphasis>sql</emphasis> element is required and provides the SQL DML or stored procedure call to execute, with parameters as question mark (?).
 		</para>
 
 		<para>
@@ -192,7 +190,7 @@ dbAdapter.start();]]></programlisting>
 		</para>
 
 		<para>
-		  The <emphasis>parameter</emphasis> element should occur as often as there are parameters in the sql query. The <emphasis>position</emphasis> attribute starts at 1 and counts up for each parameter. The <emphasis>property</emphasis> parameter provide the name of the event property of the stream to use as the parameter value.
+		  The <emphasis>parameter</emphasis> element should occur as often as there are parameters in the SQL query. The <emphasis>position</emphasis> attribute starts at 1 and counts up for each parameter. The <emphasis>property</emphasis> parameter provide the name of the event property of the stream to use as the parameter value.
 		</para>
 		
 		<para>
@@ -219,7 +217,7 @@ dbAdapter.start();]]></programlisting>
 		</para>
 
 		<para>
-			Define a <literal>upsert</literal> element in the adapter configuration file (or use the <literal>UpsertQuery</literal> class) for every update-insert to execute. 
+			Define an <literal>upsert</literal> element in the adapter configuration file (or use the <literal>UpsertQuery</literal> class) for every update-insert to execute. 
 		</para>
         
 		<para>
@@ -267,15 +265,15 @@ dbAdapter.start();]]></programlisting>
 		</para>
 
 		<para>
-		  The <emphasis>column</emphasis> element should occur as often as there are key and value columns in the table. The <emphasis>property</emphasis> attribute provides the name of the event property, the <emphasis>column</emphasis> attribute provides the database table column name and the <emphasis>type</emphasis> is any of the <literal>java.sql.Types</literal> names (case ignored).
+		  The <emphasis>column</emphasis> element should occur as many as there are key and value columns in the table. The <emphasis>property</emphasis> attribute provides the name of the event property, the <emphasis>column</emphasis> attribute provides the database table column name and the <emphasis>type</emphasis> is any of the <literal>java.sql.Types</literal> names (case ignored).
 		</para>
 		
 		<para>
 		 A sample Update-Insert configuration follows:
 		</para>
 
-		<programlisting><![CDATA[<upsert connection="db1" stream="UpdateInsertDBTableTrigger" name="UpdateInsertSample" table-name="MyKeyedTable" 
-       executor-name="queue1" retry="3">
+		<programlisting><![CDATA[<upsert connection="db1" stream="UpdateInsertDBTableTrigger" name="UpdateInsertSample" 
+    table-name="MyKeyedTable" executor-name="queue1" retry="3">
   <keys>
     <column property="eventProperty1" column="keyColumn1" type="varchar"/>
     <column property="eventProperty2" column="keyColumn2" type="varchar"/>
@@ -331,7 +329,7 @@ dbAdapter.start();]]></programlisting>
         <title>Reading and Polling Database Tables</title>
 
 		<para>
-			Herein we provide sample statements and documentation pointers to use Esper EPL for reading from database tables. If only reading and not writing to a database, no configuration or EsperIO jar file required.
+			Herein we provide sample statements and documentation pointers to use Esper EPL for reading from database tables. If only reading and not writing to a database, no configuration or EsperIO jar is file required.
 		</para>
 
 		<para>
@@ -355,7 +353,7 @@ dbAdapter.start();]]></programlisting>
 			</para>
 			
 			<para>
-				The next EPL statements create a variable and use the variable to poll for new rows:
+				The next EPL statements create a variable and pass the variable value to the query to poll for new rows only. It assumes the <literal>timestamp</literal> column in the <literal>MyTable</literal> table holds long-type millisecond values:
 			</para>
 			<programlisting><![CDATA[// Create a variable to hold the last poll timestamp
 create variable long VarLastTimestamp = 0
