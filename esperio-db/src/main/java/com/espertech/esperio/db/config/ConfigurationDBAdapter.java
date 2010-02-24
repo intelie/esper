@@ -82,7 +82,7 @@ public class ConfigurationDBAdapter {
      */
 	public ConfigurationDBAdapter configure() throws RuntimeException
     {
-		configure('/' + "esperhq.cfg.xml");
+		configure('/' + "esperio.db.cfg.xml");
 		return this;
 	}
 

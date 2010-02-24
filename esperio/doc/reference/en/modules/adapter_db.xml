@@ -42,7 +42,7 @@
         <title>Getting Started</title>
 
 		<para>
-			You may configure the EsperIO DB adapter either as part of your Esper configuration file in the plugin loader section or via the adapter API.	Add the <literal>esperio-db-version.jar</literal> file to your classpath.
+			You may configure the EsperIO DB adapter either as part of your Esper configuration file in the plugin loader section or via the adapter API.	Add the <literal>esperio-db-version.jar</literal> file to your classpath as well as the JDBC driver. There are not other dependent jar files required by the adapter.
 		</para>
         
 		<para>
