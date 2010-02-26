@@ -15,6 +15,7 @@ import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
+import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
@@ -22,6 +23,7 @@ import com.espertech.esper.plugin.PluginLoader;
 import com.espertech.esper.plugin.PluginLoaderInitContext;
 import com.espertech.esper.schedule.SchedulingMgmtService;
 import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
@@ -584,5 +586,13 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     public SchedulingMgmtService getSchedulingMgmtService()
     {
         return engine.getServices().getSchedulingMgmtService();
+    }
+
+    public EngineImportService getEngineImportService() {
+        return engine.getServices().getEngineImportService();
+    }
+
+    public TimeProvider getTimeProvider() {
+        return engine.getServices().getSchedulingService();
     }
 }

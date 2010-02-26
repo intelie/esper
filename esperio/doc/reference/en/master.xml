@@ -6,6 +6,7 @@
 	<!ENTITY adapter_jms_spring SYSTEM "modules/adapter_jms_spring.xml">
 	<!ENTITY adapter_event_representations SYSTEM "modules/adapter_event_representations.xml">	
 	<!ENTITY adapter_db SYSTEM "modules/adapter_db.xml">	
+	<!ENTITY adapter_http SYSTEM "modules/adapter_http.xml">	
 ]>
 <book lang="en">
 	<bookinfo>
@@ -40,6 +41,8 @@
 
     &adapter_jms_spring;
     
+    &adapter_http;
+
     &adapter_db;
 
     &adapter_event_representations;

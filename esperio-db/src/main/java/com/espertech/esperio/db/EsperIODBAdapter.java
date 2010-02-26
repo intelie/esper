@@ -181,7 +181,7 @@ public class EsperIODBAdapter
 
         EventType eventType = engineSPI.getEventAdapterService().getExistsTypeByName(dmlQuery.getStream());
         if (eventType == null) {
-            log.warn("Event type by name '" + dmlQuery.getStream() + "' not found");
+            throw new ConfigurationException("Event type by name '" + dmlQuery.getStream() + "' not found");
         }
 
         try {
