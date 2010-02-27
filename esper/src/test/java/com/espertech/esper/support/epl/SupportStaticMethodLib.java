@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.lang.reflect.Array;
 
 public class SupportStaticMethodLib 
 {
@@ -246,6 +247,14 @@ public class SupportStaticMethodLib
 		return object;
 	}
 	
+    public static int arrayLength(Object object)
+	{
+        if (!object.getClass().isArray()) {
+            return -1;
+        }
+		return Array.getLength(object);
+	}
+
 	public static void throwException() throws Exception
 	{
 		throw new Exception("throwException text here");

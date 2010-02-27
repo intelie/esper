@@ -181,6 +181,10 @@ httpAdapter.destroy();]]></programlisting>
 			  For example, the URI <literal>http://localhost:8079/sendevent?type=MyFirewallEvent&amp;name=Joe&amp;changed=true</literal> entered into a browser sends an input event of type <literal>MyFirewallEvent</literal> setting the <literal>name</literal> property of the event to "Joe" and the <literal>changed</literal> property of the event to true.
 			</para>
 			
+			<para>
+				Note that if your target type is a Java object event, your event class must provide setter-methods according to JavaBean conventions. The event class should also provide a default constructor taking no parameters. If your event class does not have a default constructor, your application may configure a factory method via <literal>ConfigurationEventTypeLegacy</literal>.
+			</para>
+
 		</sect2>
 	</sect1>
 

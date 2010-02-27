@@ -4,9 +4,11 @@
 	<!ENTITY adapter_overview SYSTEM "modules/adapter_overview.xml">
 	<!ENTITY adapter_csv SYSTEM "modules/adapter_csv.xml">
 	<!ENTITY adapter_jms_spring SYSTEM "modules/adapter_jms_spring.xml">
-	<!ENTITY adapter_event_representations SYSTEM "modules/adapter_event_representations.xml">	
 	<!ENTITY adapter_db SYSTEM "modules/adapter_db.xml">	
 	<!ENTITY adapter_http SYSTEM "modules/adapter_http.xml">	
+	<!ENTITY adapter_socket SYSTEM "modules/adapter_socket.xml">	
+	<!ENTITY adapter_xmljson SYSTEM "modules/adapter_xmljson.xml">	
+	<!ENTITY adapter_event_representations SYSTEM "modules/adapter_event_representations.xml">	
 ]>
 <book lang="en">
 	<bookinfo>
@@ -43,7 +45,11 @@
     
     &adapter_http;
 
+    &adapter_socket;
+
     &adapter_db;
+
+    &adapter_xmljson;
 
     &adapter_event_representations;
 

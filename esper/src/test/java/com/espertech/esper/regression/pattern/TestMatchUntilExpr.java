@@ -6,9 +6,12 @@ import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.lang.reflect.Array;
 
 public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
 {
@@ -21,6 +24,7 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         config.addEventType("B", SupportBean_B.class.getName());
         config.addEventType("C", SupportBean_C.class.getName());
         config.addEventType("SupportBean", SupportBean.class.getName());
+        config.addImport(SupportStaticMethodLib.class);
     }
 
     public void testOp() throws Exception
@@ -449,6 +453,25 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
         epService.getEPRuntime().sendEvent(new SupportBean_B("A2"));
         assertTrue(listener.isInvoked());
+    }
+
+    public void testArrayFunctionRepeat()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String stmt ="select SupportStaticMethodLib.arrayLength(a) as length, java.lang.reflect.Array.getLength(a) as l2 from pattern [[1..] a=A until B]";
+        SupportUpdateListener listener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A3"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("A2"));
+        EventBean event = listener.assertOneGetNewAndReset();
+        assertEquals(3, event.get("length"));
+        assertEquals(3, event.get("l2"));
     }
 
     public void testInvalid()
