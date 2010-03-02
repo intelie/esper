@@ -380,6 +380,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case CREATE_WINDOW_EXPR:
                 leaveCreateWindow(node);
                 break;
+            case CREATE_INDEX_EXPR:
+                leaveCreateIndex(node);
+                break;
             case CREATE_WINDOW_SELECT_EXPR:
                 leaveCreateWindowSelect(node);
                 break;
@@ -582,6 +585,27 @@ public class EPLTreeWalker extends EsperEPL2Ast
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>(), null);
         FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, streamSpecOptions);
         statementSpec.getStreamSpecs().add(streamSpec);
+    }
+
+    private void leaveCreateIndex(Tree node)
+    {
+        log.debug(".leaveCreateIndex");
+
+        String indexName = node.getChild(0).getText();
+        String windowName = node.getChild(1).getText();
+
+        Tree nodeExpr = node.getChild(2);
+        List<String> columns = new ArrayList<String>();
+
+        for (int i = 0; i < nodeExpr.getChildCount(); i++)
+        {
+            if (nodeExpr.getChild(i).getType() == IDENT)
+            {
+                columns.add(nodeExpr.getChild(i).getText());
+            }
+        }
+
+        statementSpec.setCreateIndexDesc(new CreateIndexDesc(indexName, windowName, columns));
     }
 
     private void leaveCreateVariable(Tree node)
@@ -2107,7 +2131,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         // optional columns
         child = node.getChild(++count);
-        if ((child != null) && (child.getType() == INSERTINTO_EXPRCOL))
+        if ((child != null) && (child.getType() == EXPRCOL))
         {
             // Each child to the insert-into AST node represents a column name
             for (int i = 0; i < child.getChildCount(); i++)

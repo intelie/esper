@@ -424,7 +424,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         {
             if (optCoercionTypes == null)
             {
-                table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps);
+                table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps, null);
             }
             else
             {

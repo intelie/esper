@@ -78,6 +78,7 @@ public class StatementSpecMapper
         mapAnnotations(sodaStatement.getAnnotations(), raw);
         mapUpdateClause(sodaStatement.getUpdateClause(), raw, mapContext);
         mapCreateWindow(sodaStatement.getCreateWindow(), raw, mapContext);
+        mapCreateIndex(sodaStatement.getCreateIndex(), raw, mapContext);
         mapCreateVariable(sodaStatement.getCreateVariable(), raw, mapContext);
         mapOnTrigger(sodaStatement.getOnExpr(), raw, mapContext);
         InsertIntoDesc desc = mapInsertInto(sodaStatement.getInsertInto());
@@ -107,6 +108,7 @@ public class StatementSpecMapper
         List<AnnotationPart> annotations = unmapAnnotations(statementSpec.getAnnotations());
         model.setAnnotations(annotations);
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model, unmapContext);
+        unmapCreateIndex(statementSpec.getCreateIndexDesc(), model, unmapContext);
         unmapCreateVariable(statementSpec.getCreateVariableDesc(), model, unmapContext);
         unmapUpdateClause(statementSpec.getStreamSpecs(), statementSpec.getUpdateDesc(), model, unmapContext);
         unmapOnClause(statementSpec.getOnTriggerDesc(), model, unmapContext);
@@ -221,6 +223,15 @@ public class StatementSpecMapper
         clause.setInsert(createWindowDesc.isInsert());
         clause.setInsertWhereClause(filter);
         model.setCreateWindow(clause);
+    }
+
+    private static void unmapCreateIndex(CreateIndexDesc createIndexDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    {
+        if (createIndexDesc == null)
+        {
+            return;
+        }
+        model.setCreateIndex(new CreateIndexClause(createIndexDesc.getIndexName(), createIndexDesc.getWindowName(), createIndexDesc.getColumns().toArray(new String[createIndexDesc.getColumns().size()])));
     }
 
     private static void unmapCreateVariable(CreateVariableDesc createVariableDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -797,6 +808,17 @@ public class StatementSpecMapper
             insertFromWhereExpr = mapExpressionDeep(createWindow.getInsertWhereClause(), mapContext);
         }
         raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews(), mapContext), new StreamSpecOptions(), createWindow.isInsert(), insertFromWhereExpr));
+    }
+
+    private static void mapCreateIndex(CreateIndexClause clause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    {
+        if (clause == null)
+        {
+            return;
+        }
+
+        CreateIndexDesc desc = new CreateIndexDesc(clause.getIndexName(),clause.getWindowName(), clause.getColumns());
+        raw.setCreateIndexDesc(desc);
     }
 
     private static void mapUpdateClause(UpdateClause updateClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)

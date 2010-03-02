@@ -4208,6 +4208,63 @@ insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting
 				</listitem>
 			</itemizedlist>
 		</sect2>
+
+		<sect2 id="named_explicit_index" revision="1">
+			<title>Explicitly Indexing Named Windows</title>
+			
+			<indexterm><primary>named window</primary><secondary>index</secondary></indexterm>
+			<indexterm><primary>named window</primary><secondary>create index</secondary></indexterm>
+			<indexterm><primary>create index</primary></indexterm>
+
+			<para>
+				You may explicitly create an index on a named window. When executing on-demand (fire-and-forget) queries as described in <xref linkend="api-runtime-ondemand"/> using prepared or unprepared queries, 
+				an explicit index can help speed query performance.
+			</para>
+
+			<para>
+				You do not need to explicitly create an index unless using on-demand (fire-and-forget) queries. Therefore you do not need to explicitly create an index for <literal>on-select</literal>, <literal>on-update</literal>, <literal>on-delete</literal> as well as subqueries or consuming statements against named windows.
+			</para>
+
+			<para>
+				Please use the following syntax to create an explicit index on a named window:
+			</para>
+			<synopsis>create index <emphasis>index_name</emphasis> on <emphasis>named_window_name</emphasis> (<emphasis>property</emphasis>[, property] [,...] )</synopsis>
+			
+			<para>
+				The <emphasis>index_name</emphasis> is the name assigned to the index. The name uniquely identifies the index and is used in engine logging.
+			</para>
+
+			<para>
+				The <emphasis>named_window_name</emphasis> is the name of an existing named window. If the named window has data already, the engine builds an index for the data in the named window.
+			</para>
+
+			<para>
+				The list of <emphasis>property</emphasis> names are the properties of events within the named window to include in the index.
+			</para>
+
+			<para>
+				We list a few example EPL statements next that create a named window and create a single index:
+			</para>
+			<programlisting><![CDATA[// create a named window
+create window UserProfileWindow.win:time(1 hour) select * from UserProfile
+
+// create an index for the user id property only
+create index UserProfileIndex on UserProfileWindow(userId)]]></programlisting>
+
+			<para>
+				Next, execute a on-demand fire-and-forget query as shown below, herein we use the prepared version to demonstrate:
+			</para>
+			<programlisting><![CDATA[String query = "select * from UserProfileWindow where userId='Joe'";
+EPOnDemandPreparedQuery prepared = epRuntime.prepareQuery(query);
+// query performance excellent in the face of large number of rows
+EPOnDemandQueryResult result = prepared.execute();
+// ...later ...
+prepared.execute();	// execute a second time]]></programlisting>
+
+			<para>
+				The engine builds a hash code -based index useful for direct comparison via equals (=), filter expressions that look for ranges or use <literal>in, between </literal> do not benefit from the hash-based index. Named windows that hold a revision event type or a variant stream event type may not be indexed.
+			</para>			
+		</sect2>
 	</sect1>
 	
 	<sect1 id="split_overview" revision="1">

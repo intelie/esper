@@ -44,7 +44,7 @@ public class PollResultIndexingStrategyIndex implements PollResultIndexingStrate
         {
             return new UnindexedEventTableList(pollResult);
         }
-        PropertyIndexedEventTable table = new PropertyIndexedEventTable(streamNum, eventType, propertyNames);
+        PropertyIndexedEventTable table = new PropertyIndexedEventTable(streamNum, eventType, propertyNames, null);
         table.add(pollResult.toArray(new EventBean[pollResult.size()]));
         return table;
     }

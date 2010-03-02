@@ -12,24 +12,22 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.epl.core.ResultSetProcessor;
-import com.espertech.esper.epl.core.ResultSetProcessorFactory;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.StreamTypeServiceImpl;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.JoinSetComposer;
+import com.espertech.esper.epl.join.plan.FilterExprAnalyzer;
+import com.espertech.esper.epl.join.plan.QueryGraph;
 import com.espertech.esper.epl.named.NamedWindowProcessor;
-import com.espertech.esper.epl.spec.NamedWindowConsumerStreamSpec;
-import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
-import com.espertech.esper.epl.spec.StatementSpecCompiled;
-import com.espertech.esper.epl.spec.StreamSpecCompiled;
-import com.espertech.esper.event.EventBeanReader;
-import com.espertech.esper.event.EventBeanReaderDefaultImpl;
-import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.epl.spec.*;
+import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.*;
 import com.espertech.esper.view.Viewable;
+import com.espertech.esper.filter.FilterSpecCompiled;
+import com.espertech.esper.filter.FilterSpecCompiler;
+import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,6 +46,7 @@ public class EPPreparedExecuteMethod
     private final JoinSetComposer joinComposer;
     private final ExprEvaluatorContext exprEvaluatorContext;
     private EventBeanReader eventBeanReader;
+    private final FilterSpecCompiled[] filters;
 
     /**
      * Ctor.
@@ -88,6 +87,24 @@ public class EPPreparedExecuteMethod
 
             processors[i] = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
             typesPerStream[i] = processors[i].getTailView().getEventType();
+        }
+
+        // compile filter to optimize access to named window
+        filters = new FilterSpecCompiled[numStreams];
+        if (statementSpec.getFilterRootNode() != null) {
+            LinkedHashMap<String, Pair<EventType, String>> tagged = new LinkedHashMap<String, Pair<EventType, String>>();
+            for (int i = 0; i < numStreams; i++) {
+                // TODO - exception handling
+                StreamTypeServiceImpl types = new StreamTypeServiceImpl(typesPerStream, namesPerStream, new boolean[numStreams], services.getEngineURI());
+                filters[i] = FilterSpecCompiler.makeFilterSpec(typesPerStream[i], namesPerStream[i],
+                        Collections.singletonList(statementSpec.getFilterRootNode()), null,
+                        tagged, tagged, types,
+                        statementContext.getMethodResolutionService(),
+                        statementContext.getTimeProvider(),
+                        statementContext.getVariableService(),
+                        statementContext.getEventAdapterService(),
+                        services.getEngineURI(), null, statementContext);
+            }
         }
 
         boolean[] isIStreamOnly = new boolean[namesPerStream.length];
@@ -146,7 +163,7 @@ public class EPPreparedExecuteMethod
         {
             final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
             NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
-            snapshots[i] = processors[i].getTailView().snapshot();
+            snapshots[i] = processors[i].getTailView().snapshot(filters[i]);
 
             if (namedSpec.getFilterExpressions().size() != 0)
             {

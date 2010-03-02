@@ -24,6 +24,7 @@ public class StatementSpecCompiled
 {
     private final OnTriggerDesc onTriggerDesc;
     private final CreateWindowDesc createWindowDesc;
+    private final CreateIndexDesc createIndexDesc;
     private final CreateVariableDesc createVariableDesc;
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum;
@@ -68,6 +69,7 @@ public class StatementSpecCompiled
      */
     public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
+                                 CreateIndexDesc createIndexDesc,
                                  CreateVariableDesc createVariableDesc,
                                  InsertIntoDesc insertIntoDesc,
                                  SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum,
@@ -89,6 +91,7 @@ public class StatementSpecCompiled
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
+        this.createIndexDesc = createIndexDesc;
         this.createVariableDesc = createVariableDesc;
         this.insertIntoDesc = insertIntoDesc;
         this.selectStreamDirEnum = selectClauseStreamSelectorEnum;
@@ -116,6 +119,7 @@ public class StatementSpecCompiled
     {
         onTriggerDesc = null;
         createWindowDesc = null;
+        createIndexDesc = null;
         createVariableDesc = null;
         insertIntoDesc = null;
         selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
@@ -355,5 +359,10 @@ public class StatementSpecCompiled
      */
     public Set<String> getVariableReferences() {
         return variableReferences;
+    }
+
+    public CreateIndexDesc getCreateIndexDesc()
+    {
+        return createIndexDesc;
     }
 }

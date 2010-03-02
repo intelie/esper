@@ -1188,7 +1188,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         catch (Throwable t)
         {
             String message = "Error executing statement: " + t.getMessage();
-            log.debug(message, t);
+            log.info(message, t);
             throw new EPStatementException(message, epl);
         }
     }

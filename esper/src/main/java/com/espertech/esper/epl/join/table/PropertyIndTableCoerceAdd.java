@@ -41,7 +41,7 @@ public class PropertyIndTableCoerceAdd extends PropertyIndexedEventTable
      */
     public PropertyIndTableCoerceAdd(int streamNum, EventType eventType, String[] propertyNames, Class[] coercionType)
     {
-        super(streamNum, eventType, propertyNames);
+        super(streamNum, eventType, propertyNames, coercionType);
         this.coercionType = coercionType;
         coercers = new SimpleNumberCoercer[coercionType.length];
         for (int i = 0; i < coercionType.length; i++)

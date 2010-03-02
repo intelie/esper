@@ -30,6 +30,19 @@ public class TestEPLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
+    public void testWalkCreateIndex() throws Exception
+    {
+        String expression = "create index A_INDEX on B_NAMEDWIN (c, d)";
+
+        EPLTreeWalker walker = parseAndWalkEPL(expression);
+        CreateIndexDesc createIndex = walker.getStatementSpec().getCreateIndexDesc();
+        assertEquals("A_INDEX", createIndex.getIndexName());
+        assertEquals("B_NAMEDWIN", createIndex.getWindowName());
+        assertEquals(2, createIndex.getColumns().size());
+        assertEquals("c", createIndex.getColumns().get(0));
+        assertEquals("d", createIndex.getColumns().get(1));
+    }
+
     public void testWalkViewExpressions() throws Exception
     {
         String className = SupportBean.class.getName();

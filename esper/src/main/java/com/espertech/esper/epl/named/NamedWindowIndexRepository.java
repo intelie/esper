@@ -8,16 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndTableCoerceAdd;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
-import com.espertech.esper.epl.lookup.JoinedPropDesc;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.collection.MultiKey;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A repository of index tables for use with a single named window and all it's deleting statements that
@@ -28,33 +30,33 @@ import java.util.*;
  */
 public class NamedWindowIndexRepository
 {
-    private List<EventTable> tables;
-    private Map<MultiKey<JoinedPropDesc>, Pair<PropertyIndexedEventTable, Integer>> tableIndexes;
+    private List<PropertyIndexedEventTable> tables;
+    private Map<MultiKey<IndexedPropDesc>, Pair<PropertyIndexedEventTable, Integer>> tableIndexes;
 
     /**
      * Ctor.
      */
     public NamedWindowIndexRepository()
     {
-        tables = new ArrayList<EventTable>();
-        tableIndexes = new HashMap<MultiKey<JoinedPropDesc>, Pair<PropertyIndexedEventTable, Integer>>();
+        tables = new ArrayList<PropertyIndexedEventTable>();
+        tableIndexes = new HashMap<MultiKey<IndexedPropDesc>, Pair<PropertyIndexedEventTable, Integer>>();
     }
 
     /**
      * Create a new index table or use an existing index table, by matching the
      * join descriptor properties to an existing table.
-     * @param joinedPropDesc must be in sorted natural order and define the properties joined
+     * @param indexedPropDescs must be in sorted natural order and define the properties joined
      * @param prefilledEvents is the events to enter into a new table, if a new table is created
      * @param indexedType is the type of event to hold in the index
      * @param mustCoerce is an indicator whether coercion is required or not.
      * @return new or existing index table
      */
-    public PropertyIndexedEventTable addTable(JoinedPropDesc[] joinedPropDesc,
+    public PropertyIndexedEventTable addTable(IndexedPropDesc[] indexedPropDescs,
                                Iterable<EventBean> prefilledEvents,
                                EventType indexedType,
                                boolean mustCoerce)
     {
-        MultiKey<JoinedPropDesc> indexPropKey = new MultiKey<JoinedPropDesc>(joinedPropDesc);
+        MultiKey<IndexedPropDesc> indexPropKey = new MultiKey<IndexedPropDesc>(indexedPropDescs);
 
         // Get an existing table, if any
         Pair<PropertyIndexedEventTable, Integer> refTablePair = tableIndexes.get(indexPropKey);
@@ -64,12 +66,12 @@ public class NamedWindowIndexRepository
             return refTablePair.getFirst();
         }
 
-        String[] indexProps = JoinedPropDesc.getIndexProperties(joinedPropDesc);
-        Class[] coercionTypes = JoinedPropDesc.getCoercionTypes(joinedPropDesc);
+        String[] indexProps = IndexedPropDesc.getIndexProperties(indexedPropDescs);
+        Class[] coercionTypes = IndexedPropDesc.getCoercionTypes(indexedPropDescs);
         PropertyIndexedEventTable table;
         if (!mustCoerce)
         {
-            table = new PropertyIndexedEventTable(0, indexedType, indexProps);
+            table = new PropertyIndexedEventTable(0, indexedType, indexProps, coercionTypes);
         }
         else
         {
@@ -100,7 +102,7 @@ public class NamedWindowIndexRepository
      */
     public void removeTableReference(EventTable table)
     {
-        for (Map.Entry<MultiKey<JoinedPropDesc>, Pair<PropertyIndexedEventTable, Integer>> entry : tableIndexes.entrySet())
+        for (Map.Entry<MultiKey<IndexedPropDesc>, Pair<PropertyIndexedEventTable, Integer>> entry : tableIndexes.entrySet())
         {
             if (entry.getValue().getFirst() == table)
             {
@@ -123,7 +125,7 @@ public class NamedWindowIndexRepository
      * Returns a list of current index tables in the repository.
      * @return index tables
      */
-    public List<EventTable> getTables()
+    public List<PropertyIndexedEventTable> getTables()
     {
         return tables;
     }

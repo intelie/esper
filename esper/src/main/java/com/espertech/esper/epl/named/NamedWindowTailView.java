@@ -21,6 +21,7 @@ import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.view.BatchingDataWindowView;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
+import com.espertech.esper.filter.FilterSpecCompiled;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -225,7 +226,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      * Returns a snapshot of window contents, thread-safely
      * @return window contents
      */
-    public Collection<EventBean> snapshot()
+    public Collection<EventBean> snapshot(FilterSpecCompiled filter)
     {
         if (revisionProcessor != null)
         {
@@ -235,6 +236,12 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         createWindowStmtHandle.getStatementLock().acquireLock(null);
         try
         {
+            if (filter != null) {
+                Collection<EventBean> indexedResult = namedWindowRootView.snapshot(filter);
+                if (indexedResult != null) {
+                    return indexedResult;
+                }
+            }
             Iterator<EventBean> it = parent.iterator();
             if (!it.hasNext())
             {

@@ -650,17 +650,22 @@ finally {
 				</listitem>
 				<listitem>
 					<para>
+						Add and remove variables (get and set variable values is done via the runtime API).
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Add, change and remove event types.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
 						Add a variant stream.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						Add a revision event type.
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Add variables (get and set variable values is done via the runtime API).
 					</para>
 				</listitem>
 				<listitem>
@@ -681,6 +686,11 @@ finally {
 				<listitem>
 					<para>
 						Control metrics reporting.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Additional items please see the <literal>ConfigurationOperations</literal> interface.
 					</para>
 				</listitem>
 			</itemizedlist>				
@@ -794,6 +804,10 @@ sender.sendEvent(myEvent);]]></programlisting>
 			</para>
 
 			<para>
+				Esper also provides the facility to explicitly index named windows to speed up queries. Please consult <xref linkend="named_explicit_index"/> for more information.
+			</para>
+			
+			<para>
 				The following limitations apply:
 			</para>
 
@@ -868,6 +882,11 @@ EPOnDemandQueryResult result = prepared.execute();
 prepared.execute();	// execute a second time]]></programlisting>
 
 			</sect3>
+
+			<para>
+				Esper also provides the facility to explicitly index named windows to speed up queries. Please consult <xref linkend="named_explicit_index"/> for more information.
+			</para>
+			
 		</sect2>
     </sect1>
 

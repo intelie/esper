@@ -19,6 +19,7 @@ import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.view.ViewProcessingException;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
 
 import java.util.*;
 
@@ -95,12 +96,12 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processors.containsKey(name);
     }
 
-    public NamedWindowProcessor getProcessor(String name)
+    public NamedWindowProcessor getProcessor(String name) throws ExprValidationException
     {
         NamedWindowProcessor processor = processors.get(name);
         if (processor == null)
         {
-            throw new EPException("A named window by name '" + name + "' does not exist");
+            throw new ExprValidationException("A named window by name '" + name + "' does not exist");
         }
         return processor;
     }

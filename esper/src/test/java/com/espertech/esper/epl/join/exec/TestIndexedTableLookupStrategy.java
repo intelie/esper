@@ -20,7 +20,7 @@ public class TestIndexedTableLookupStrategy extends TestCase
     {
         eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
 
-        propertyMapEventIndex = new PropertyIndexedEventTable(0, eventType, new String[] {"string", "intPrimitive"});
+        propertyMapEventIndex = new PropertyIndexedEventTable(0, eventType, new String[] {"string", "intPrimitive"}, null);
         lookupStrategy = new IndexedTableLookupStrategy(eventType, new String[] {"string", "intPrimitive"}, propertyMapEventIndex);
 
         propertyMapEventIndex.add(new EventBean[] {SupportEventBeanFactory.createObject(new SupportBean("a", 1))});

@@ -173,6 +173,7 @@ public class TestResultSetProcessorFactory extends TestCase
     {
         return new StatementSpecCompiled(null, // on trigger
                 null,  // create win
+                null,  // create index 
                 null,  // create var
                 insertIntoDesc,
                 SelectClauseStreamSelectorEnum.ISTREAM_ONLY,

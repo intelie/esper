@@ -38,7 +38,7 @@ public class TestNamedWindowDelete extends TestCase
         listenerDelete = new SupportUpdateListener();
     }
 
-    public void testStaggeredNamedWindow()
+    public void testStaggeredNamedWindow() throws Exception
     {
         String[] fieldsOne = new String[] {"a1", "b1"};
         String[] fieldsTwo = new String[] {"a2", "b2"};
@@ -98,7 +98,7 @@ public class TestNamedWindowDelete extends TestCase
         stmtCreateTwo.destroy();
     }
 
-    public void testDeletePattern()
+    public void testDeletePattern() throws Exception
     {
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
@@ -148,7 +148,7 @@ public class TestNamedWindowDelete extends TestCase
         stmtCreate.destroy();
     }
 
-    public void testDeleteAll()
+    public void testDeleteAll() throws Exception
     {
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
@@ -215,7 +215,7 @@ public class TestNamedWindowDelete extends TestCase
         assertEquals(0, getCount("MyWindow"));
     }
 
-    public void testDeleteCondition()
+    public void testDeleteCondition() throws Exception
     {
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
@@ -408,7 +408,7 @@ public class TestNamedWindowDelete extends TestCase
         return bean;
     }
 
-    private long getCount(String windowName)
+    private long getCount(String windowName) throws Exception
     {
         NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).getNamedWindowService().getProcessor(windowName);
         return processor.getCountDataWindow();

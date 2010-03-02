@@ -13,6 +13,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.agg.AggregationServiceFactory;
 import com.espertech.esper.epl.core.*;
@@ -112,6 +113,10 @@ public class EPStatementStartMethod
         {
             return startCreateWindow(isNewStatement, isRecoveringStatement);
         }
+        else if (statementSpec.getCreateIndexDesc() != null)
+        {
+            return startCreateIndex();
+        }
         else if (statementSpec.getCreateVariableDesc() != null)
         {
             return startCreateVariable(isNewStatement);
@@ -120,6 +125,59 @@ public class EPStatementStartMethod
         {
             return startSelect(isRecoveringResilient);
         }
+    }
+
+    private EPStatementStartResult startCreateIndex()
+        throws ExprValidationException, ViewProcessingException
+    {
+        final CreateIndexDesc spec = statementSpec.getCreateIndexDesc();
+        final NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(spec.getWindowName());
+        processor.getRootView().addExplicitIndex(spec.getWindowName(), spec.getIndexName(), spec.getColumns());
+
+        Viewable viewable = new Viewable() {
+
+            public View addView(View view)
+            {
+                return null;
+            }
+
+            public List<View> getViews()
+            {
+                return null;
+            }
+
+            public boolean removeView(View view)
+            {
+                return false;
+            }
+
+            public void removeAllViews()
+            {
+            }
+
+            public boolean hasViews()
+            {
+                return false;
+            }
+
+            public EventType getEventType()
+            {
+                return processor.getNamedWindowType();
+            }
+
+            public Iterator<EventBean> iterator()
+            {
+                return new ArrayEventIterator(null);
+            }
+        };
+        EPStatementStopMethod stopMethod = new EPStatementStopMethod() {
+            public void stop()
+            {
+                processor.getRootView().removeExplicitIndex(spec.getIndexName());
+            }
+        };
+        EPStatementStartResult result = new EPStatementStartResult(viewable, stopMethod, null);
+        return result;
     }
 
     private EPStatementStartResult startOnTrigger()
@@ -1712,17 +1770,17 @@ public class EPStatementStartMethod
             String indexedProps[] = joinProps.keySet().toArray(new String[joinProps.keySet().size()]);
             int[] keyStreamNums = JoinedPropDesc.getKeyStreamNums(joinProps.values());
             String[] keyProps = JoinedPropDesc.getKeyProperties(joinProps.values());
+            Class coercionTypes[] = JoinedPropDesc.getCoercionTypes(joinProps.values());
 
             if (!mustCoerce)
             {
-                PropertyIndexedEventTable table = new PropertyIndexedEventTable(0, viewableEventType, indexedProps);
+                PropertyIndexedEventTable table = new PropertyIndexedEventTable(0, viewableEventType, indexedProps, coercionTypes);
                 TableLookupStrategy strategy = new IndexedTableLookupStrategy( outerEventTypes,
                         keyStreamNums, keyProps, table);
                 return new Pair<EventTable, TableLookupStrategy>(table, strategy);
             }
             else
-            {
-                Class coercionTypes[] = JoinedPropDesc.getCoercionTypes(joinProps.values());
+            {                
                 PropertyIndTableCoerceAdd table = new PropertyIndTableCoerceAdd(0, viewableEventType, indexedProps, coercionTypes);
                 TableLookupStrategy strategy = new IndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
                 return new Pair<EventTable, TableLookupStrategy>(table, strategy);

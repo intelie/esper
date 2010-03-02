@@ -15,6 +15,7 @@ import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.view.ViewProcessingException;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
 
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public interface NamedWindowService
      * @param name window name
      * @return processor for the named window
      */
-    public NamedWindowProcessor getProcessor(String name);
+    public NamedWindowProcessor getProcessor(String name) throws ExprValidationException;
 
     /**
      * Upon destroy of the named window creation statement, the named window processor must be removed.

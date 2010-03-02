@@ -1052,6 +1052,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return new StatementSpecCompiled(
                 spec.getOnTriggerDesc(),
                 spec.getCreateWindowDesc(),
+                spec.getCreateIndexDesc(),
                 spec.getCreateVariableDesc(),
                 spec.getInsertIntoDesc(),
                 spec.getSelectStreamSelectorEnum(),

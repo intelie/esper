@@ -46,6 +46,7 @@ public class EPStatementObjectModel implements Serializable
     private UpdateClause updateClause;
     private CreateVariableClause createVariable;
     private CreateWindowClause createWindow;
+    private CreateIndexClause createIndex;
     private OnClause onExpr;
     private InsertIntoClause insertInto;
     private SelectClause selectClause;
@@ -308,6 +309,11 @@ public class EPStatementObjectModel implements Serializable
 
         AnnotationPart.toEPL(writer, annotations);
 
+        if (createIndex != null)
+        {
+            createIndex.toEPL(writer);
+            return writer.toString();
+        }
         if (createWindow != null)
         {
             createWindow.toEPL(writer);
@@ -571,5 +577,13 @@ public class EPStatementObjectModel implements Serializable
 
     public void setMatchRecognizeClause(MatchRecognizeClause matchRecognizeClause) {
         this.matchRecognizeClause = matchRecognizeClause;
+    }
+
+    public CreateIndexClause getCreateIndex() {
+        return createIndex;
+    }
+
+    public void setCreateIndex(CreateIndexClause createIndex) {
+        this.createIndex = createIndex;
     }
 }

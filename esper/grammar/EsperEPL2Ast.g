@@ -77,7 +77,7 @@ startEPLExpressionRule
 	;
 
 eplExpressionRule
-	:	(selectExpr | createWindowExpr | createVariableExpr | onExpr | updateExpr)		 
+	:	(selectExpr | createWindowExpr | createIndexExpr | createVariableExpr | onExpr | updateExpr)		 
 	;
 
 onExpr 
@@ -137,6 +137,10 @@ createWindowExpr
 		{ leaveNode($i); })
 	;
 
+createIndexExpr
+	:	^(i=CREATE_INDEX_EXPR IDENT IDENT exprCol { leaveNode($i); })
+	;
+
 createWindowExprInsert
 	:	^(INSERT valueExpr?)
 	;
@@ -179,11 +183,11 @@ selectExpr
 	;
 	
 insertIntoExpr
-	:	^(i=INSERTINTO_EXPR (ISTREAM | RSTREAM)? IDENT (insertIntoExprCol)? { leaveNode($i); } )
+	:	^(i=INSERTINTO_EXPR (ISTREAM | RSTREAM)? IDENT (exprCol)? { leaveNode($i); } )
 	;
 	
-insertIntoExprCol
-	:	^(INSERTINTO_EXPRCOL IDENT (IDENT)* )
+exprCol
+	:	^(EXPRCOL IDENT (IDENT)* )
 	;
 
 selectClause
