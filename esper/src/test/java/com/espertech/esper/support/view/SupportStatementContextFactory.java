@@ -37,7 +37,7 @@ public class SupportStatementContextFactory
 
     public static StatementContext makeContext(SchedulingService stub)
     {
-        VariableServiceImpl variableService = new VariableServiceImpl(1000, null, null);
+        VariableServiceImpl variableService = new VariableServiceImpl(1000, null, SupportEventAdapterService.getService(), null);
         Configuration config = new Configuration();
         config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
 

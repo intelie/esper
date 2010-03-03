@@ -8,18 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.epl.variable;
 
-import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.VariableValueException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;
-
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A convenience class for dealing with reading and updating multiple variable values.
@@ -31,6 +33,7 @@ public class VariableReadWritePackage
     private final List<OnTriggerSetAssignment> assignments;
     private final VariableReader[] readers;
     private final boolean[] mustCoerce;
+    private final EventAdapterService eventAdapterService;
     private final Map<String, Object> variableTypes;
 
     /**
@@ -39,13 +42,14 @@ public class VariableReadWritePackage
      * @param variableService variable service
      * @throws ExprValidationException when variables cannot be found
      */
-    public VariableReadWritePackage(List<OnTriggerSetAssignment> assignments, VariableService variableService)
+    public VariableReadWritePackage(List<OnTriggerSetAssignment> assignments, VariableService variableService, EventAdapterService eventAdapterService)
             throws ExprValidationException
     {
         this.assignments = assignments;
         this.readers = new VariableReader[assignments.size()];
         this.mustCoerce = new boolean[assignments.size()];
         this.variableTypes = new HashMap<String, Object>();
+        this.eventAdapterService = eventAdapterService;
 
         int count = 0;
         for (OnTriggerSetAssignment assignment : assignments)
@@ -58,31 +62,47 @@ public class VariableReadWritePackage
             }
 
             // determine types
-            Class variableType = readers[count].getType();
+            VariableReader variableReader = readers[count];
             Class expressionType = assignment.getExpression().getType();
-            variableTypes.put(variableName, variableType);
 
-            // determine if the expression type can be assigned
-            if ((JavaClassHelper.getBoxedType(expressionType) != variableType) &&
-                (expressionType != null))
-            {
-                if ((!JavaClassHelper.isNumeric(variableType)) ||
-                    (!JavaClassHelper.isNumeric(expressionType)))
-                {
-                    throw new ExprValidationException("Variable '" + variableName
-                        + "' of declared type '" + variableType.getName() +
+            if (variableReader.getEventType() != null) {
+                if ((expressionType != null) && (!JavaClassHelper.isSubclassOrImplementsInterface(expressionType, variableReader.getEventType().getUnderlyingType()))) {
+                    throw new VariableValueException("Variable '" + variableName
+                        + "' of declared event type '" + variableReader.getEventType().getName() + "' underlying type '" + variableReader.getEventType().getUnderlyingType().getName() +
                             "' cannot be assigned a value of type '" + expressionType.getName() + "'");
                 }
-
-                if (!(JavaClassHelper.canCoerce(expressionType, variableType)))
-                {
-                    throw new ExprValidationException("Variable '" + variableName
-                        + "' of declared type '" + variableType.getName() +
-                            "' cannot be assigned a value of type '" + expressionType.getName() + "'");
-                }
-
-                mustCoerce[count] = true;
+                variableTypes.put(variableName, variableReader.getEventType().getUnderlyingType());
             }
+            else {
+
+                Class variableType = variableReader.getType();
+                variableTypes.put(variableName, variableType);
+
+                // determine if the expression type can be assigned
+                if (variableType != java.lang.Object.class) {
+                    if ((JavaClassHelper.getBoxedType(expressionType) != variableType) &&
+                        (expressionType != null))
+                    {
+                        if ((!JavaClassHelper.isNumeric(variableType)) ||
+                            (!JavaClassHelper.isNumeric(expressionType)))
+                        {
+                            throw new ExprValidationException("Variable '" + variableName
+                                + "' of declared type '" + variableType.getName() +
+                                    "' cannot be assigned a value of type '" + expressionType.getName() + "'");
+                        }
+
+                        if (!(JavaClassHelper.canCoerce(expressionType, variableType)))
+                        {
+                            throw new ExprValidationException("Variable '" + variableName
+                                + "' of declared type '" + variableType.getName() +
+                                    "' cannot be assigned a value of type '" + expressionType.getName() + "'");
+                        }
+
+                        mustCoerce[count] = true;
+                    }
+                }
+            }
+
             count++;
         }
     }
@@ -115,12 +135,19 @@ public class VariableReadWritePackage
             {
                 VariableReader reader = readers[count];
                 Object value = assignment.getExpression().evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if ((value != null) && (mustCoerce[count]))
-                {
-                    value = JavaClassHelper.coerceBoxed((Number) value, reader.getType());
-                }
 
-                variableService.write(reader.getVariableNumber(), value);
+                if (reader.getEventType() != null) {
+                    EventBean eventBean = eventAdapterService.adapterForType(value, reader.getEventType());
+                    variableService.write(reader.getVariableNumber(), eventBean);
+                }
+                else {
+                    if ((value != null) && (mustCoerce[count]))
+                    {
+                        value = JavaClassHelper.coerceBoxed((Number) value, reader.getType());
+                    }
+                    variableService.write(reader.getVariableNumber(), value);
+                }
+                
                 count++;
 
                 if (valuesWritten != null)

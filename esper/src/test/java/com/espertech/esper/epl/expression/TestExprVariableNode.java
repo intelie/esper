@@ -9,7 +9,7 @@ public class TestExprVariableNode extends TestCase
 
     public void setUp() throws Exception
     {
-        varNode = new ExprVariableNode("var1");
+        varNode = new ExprVariableNode("var1", null);
     }
 
     public void testGetType()  throws Exception
@@ -27,17 +27,17 @@ public class TestExprVariableNode extends TestCase
     public void testValidate() throws Exception
     {
         // variable doesn't exists
-        tryInvalidValidate(new ExprVariableNode("dummy"));
+        tryInvalidValidate(new ExprVariableNode("dummy", null));
 
         // variable and property are ambigours
-        tryInvalidValidate(new ExprVariableNode("intPrimitive"));
+        tryInvalidValidate(new ExprVariableNode("intPrimitive", null));
     }
 
     public void testEquals()  throws Exception
     {
         ExprInNode otherInNode = SupportExprNodeFactory.makeInSetNode(false);
-        ExprVariableNode otherVarOne = new ExprVariableNode("dummy");
-        ExprVariableNode otherVarTwo = new ExprVariableNode("var1");
+        ExprVariableNode otherVarOne = new ExprVariableNode("dummy", null);
+        ExprVariableNode otherVarTwo = new ExprVariableNode("var1", null);
 
         assertTrue(varNode.equalsNode(varNode));
         assertTrue(varNode.equalsNode(otherVarTwo));

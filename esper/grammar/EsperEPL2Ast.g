@@ -166,7 +166,7 @@ createSelectionListElement
 	;
 
 createVariableExpr
-	:	^(i=CREATE_VARIABLE_EXPR IDENT IDENT (valueExpr)? { leaveNode($i); } )
+	:	^(i=CREATE_VARIABLE_EXPR CLASS_IDENT IDENT (valueExpr)? { leaveNode($i); } )
 	;
 
 selectExpr

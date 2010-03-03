@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 EsperEPL2Ast.g 2010-03-01 08:06:18
+// $ANTLR 3.1.1 EsperEPL2Ast.g 2010-03-02 09:04:22
 
   package com.espertech.esper.epl.generated;
   import java.util.Stack;
@@ -2364,20 +2364,20 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "createVariableExpr"
-    // EsperEPL2Ast.g:168:1: createVariableExpr : ^(i= CREATE_VARIABLE_EXPR IDENT IDENT ( valueExpr )? ) ;
+    // EsperEPL2Ast.g:168:1: createVariableExpr : ^(i= CREATE_VARIABLE_EXPR CLASS_IDENT IDENT ( valueExpr )? ) ;
     public final void createVariableExpr() throws RecognitionException {
         CommonTree i=null;
 
         try {
-            // EsperEPL2Ast.g:169:2: ( ^(i= CREATE_VARIABLE_EXPR IDENT IDENT ( valueExpr )? ) )
-            // EsperEPL2Ast.g:169:4: ^(i= CREATE_VARIABLE_EXPR IDENT IDENT ( valueExpr )? )
+            // EsperEPL2Ast.g:169:2: ( ^(i= CREATE_VARIABLE_EXPR CLASS_IDENT IDENT ( valueExpr )? ) )
+            // EsperEPL2Ast.g:169:4: ^(i= CREATE_VARIABLE_EXPR CLASS_IDENT IDENT ( valueExpr )? )
             {
             i=(CommonTree)match(input,CREATE_VARIABLE_EXPR,FOLLOW_CREATE_VARIABLE_EXPR_in_createVariableExpr857); 
 
             match(input, Token.DOWN, null); 
-            match(input,IDENT,FOLLOW_IDENT_in_createVariableExpr859); 
+            match(input,CLASS_IDENT,FOLLOW_CLASS_IDENT_in_createVariableExpr859); 
             match(input,IDENT,FOLLOW_IDENT_in_createVariableExpr861); 
-            // EsperEPL2Ast.g:169:41: ( valueExpr )?
+            // EsperEPL2Ast.g:169:47: ( valueExpr )?
             int alt43=2;
             int LA43_0 = input.LA(1);
 
@@ -2386,7 +2386,7 @@ public class EsperEPL2Ast extends TreeParser {
             }
             switch (alt43) {
                 case 1 :
-                    // EsperEPL2Ast.g:169:42: valueExpr
+                    // EsperEPL2Ast.g:169:48: valueExpr
                     {
                     pushFollow(FOLLOW_valueExpr_in_createVariableExpr864);
                     valueExpr();
@@ -13096,7 +13096,7 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_constant_in_createSelectionListElement818 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8000000000000000L});
     public static final BitSet FOLLOW_IDENT_in_createSelectionListElement821 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CREATE_VARIABLE_EXPR_in_createVariableExpr857 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_createVariableExpr859 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8000000000000000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_createVariableExpr859 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8000000000000000L});
     public static final BitSet FOLLOW_IDENT_in_createVariableExpr861 = new BitSet(new long[]{0x0000000037CC23C8L,0x0000000000000E70L,0x078260004001F800L,0x0000FE6000000477L,0x0000000001DE6070L});
     public static final BitSet FOLLOW_valueExpr_in_createVariableExpr864 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_insertIntoExpr_in_selectExpr882 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000080000040000L});

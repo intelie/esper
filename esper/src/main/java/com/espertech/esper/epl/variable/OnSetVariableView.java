@@ -62,7 +62,7 @@ public class OnSetVariableView extends ViewSupport
         this.statementResultService = statementResultService;
         this.exprEvaluatorContext = exprEvaluatorContext;
 
-        variableReadWritePackage = new VariableReadWritePackage(desc.getAssignments(), variableService);
+        variableReadWritePackage = new VariableReadWritePackage(desc.getAssignments(), variableService, eventAdapterService);
         eventType = eventAdapterService.createAnonymousMapType(variableReadWritePackage.getVariableTypes());
     }
 
@@ -112,7 +112,12 @@ public class OnSetVariableView extends ViewSupport
         for (OnTriggerSetAssignment assignment : desc.getAssignments())
         {
             Object value = variableReadWritePackage.getReaders()[count].getValue();
-            values.put(assignment.getVariableName(), value);
+            if (value instanceof EventBean) {
+                values.put(assignment.getVariableName(), ((EventBean) value).getUnderlying());
+            }
+            else {
+                values.put(assignment.getVariableName(), value);
+            }
             count++;
         }
 

@@ -713,8 +713,8 @@ createIndexExpr
 	;
 
 createVariableExpr
-	:	CREATE VARIABLE t=IDENT n=IDENT (EQUALS expression)?
-		-> ^(CREATE_VARIABLE_EXPR $t $n expression?)
+	:	CREATE VARIABLE classIdentifier n=IDENT (EQUALS expression)?
+		-> ^(CREATE_VARIABLE_EXPR classIdentifier $n expression?)
 	;
 
 createWindowColumnList 	

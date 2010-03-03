@@ -209,6 +209,8 @@ public interface EventAdapterService
      */
     public EventBean adapterForTypedDOM(Node node, EventType eventType);
 
+    public EventBean adapterForType(Object event, EventType eventType);
+
     /**
      * Create a new anonymous event type with the given underlying event type,
      * as well as the additional given properties.

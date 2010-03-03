@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
 import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.timer.TimeSourceServiceImpl;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 
 import java.util.concurrent.*;
 
@@ -13,7 +14,7 @@ public class TestVariableService extends TestCase
     
     public void setUp()
     {
-        service = new VariableServiceImpl(10000, new SchedulingServiceImpl(new TimeSourceServiceImpl()), null);
+        service = new VariableServiceImpl(10000, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.getService(), null);
     }
 
     public void testPerfSetVersion()
@@ -55,7 +56,7 @@ public class TestVariableService extends TestCase
             char c = 'A';
             c+=i;
             variables[i] = Character.toString(c);
-            service.createNewVariable(variables[i], Integer.class, 0, null);
+            service.createNewVariable(variables[i], Integer.class, null, 0, null);
         }
 
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
@@ -89,7 +90,7 @@ public class TestVariableService extends TestCase
     {
         assertNull(service.getReader("a"));
 
-        service.createNewVariable("a", Long.class, 100L, null);
+        service.createNewVariable("a", Long.class, null, 100L, null);
         VariableReader reader = service.getReader("a");
         assertEquals(Long.class, reader.getType());
         assertEquals(100L, reader.getValue());
@@ -109,13 +110,13 @@ public class TestVariableService extends TestCase
 
     public void testRollover() throws Exception
     {
-        service = new VariableServiceImpl(VariableServiceImpl.ROLLOVER_READER_BOUNDARY - 100, 10000, new SchedulingServiceImpl(new TimeSourceServiceImpl()), null);
+        service = new VariableServiceImpl(VariableServiceImpl.ROLLOVER_READER_BOUNDARY - 100, 10000, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.getService(), null);
         String[] variables = "a,b,c,d".split(",");
 
         VariableReader readers[] = new VariableReader[variables.length];
         for (int i = 0; i < variables.length; i++)
         {
-            service.createNewVariable(variables[i], Long.class, 100L, null);
+            service.createNewVariable(variables[i], Long.class, null, 100L, null);
             readers[i] = service.getReader(variables[i]);
         }
 
@@ -141,12 +142,12 @@ public class TestVariableService extends TestCase
 
     public void testInvalid() throws Exception
     {
-        service.createNewVariable("a", Long.class, null, null);
+        service.createNewVariable("a", Long.class, null, null, null);
         assertNull(service.getReader("dummy"));
 
         try
         {
-            service.createNewVariable("a", Long.class, null, null);
+            service.createNewVariable("a", Long.class, null, null, null);
             fail();
         }
         catch (VariableExistsException e)

@@ -10,6 +10,7 @@ package com.espertech.esper.epl.variable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.espertech.esper.client.EventType;
 
 /**
  * Reads and writes variable values.
@@ -25,6 +26,7 @@ public class VariableReader
     private volatile VersionedValueList<Object> versionsHigh;
     private volatile VersionedValueList<Object> versionsLow;
     private final Class type;
+    private final EventType eventType;
 
     /**
      * Ctor.
@@ -34,12 +36,13 @@ public class VariableReader
      * @param variableNumber number of the variable
      * @param versions a list of versioned-values to ask for the version
      */
-    public VariableReader(VariableVersionThreadLocal versionThreadLocal, Class type, String variableName, int variableNumber, VersionedValueList<Object> versions)
+    public VariableReader(VariableVersionThreadLocal versionThreadLocal, Class type, EventType eventType, String variableName, int variableNumber, VersionedValueList<Object> versions)
     {
         this.variableName = variableName;
         this.variableNumber = variableNumber;
         this.versionThreadLocal = versionThreadLocal;
         this.type = type;
+        this.eventType = eventType;
         this.versionsLow = versions;
         this.versionsHigh = null;
     }
@@ -88,6 +91,10 @@ public class VariableReader
     public void setVersionsLow(VersionedValueList<Object> versionsLow)
     {
         this.versionsLow = versionsLow;
+    }
+
+    public EventType getEventType() {
+        return eventType;
     }
 
     /**

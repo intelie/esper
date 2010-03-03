@@ -9,6 +9,7 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.bean.EventBeanManufacturerBean;
@@ -20,6 +21,8 @@ import net.sf.cglib.reflect.FastClass;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.w3c.dom.Node;
 
 /**
  * Helper for writeable events.
@@ -69,6 +72,26 @@ public class EventAdapterServiceHelper
                 }
             }
             return writables;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static EventBean adapterForType(Object event, EventType eventType, EventAdapterService eventAdapterService)
+    {
+        if (eventType instanceof BeanEventType)
+        {
+            return eventAdapterService.adapterForTypedBean(event, (BeanEventType) eventType);
+        }
+        else if (eventType instanceof MapEventType)
+        {
+            return eventAdapterService.adaptorForTypedMap((Map) event, eventType);
+        }
+        else if (eventType instanceof BaseConfigurableEventType)
+        {
+            return eventAdapterService.adapterForTypedDOM((Node) event, eventType);
         }
         else
         {

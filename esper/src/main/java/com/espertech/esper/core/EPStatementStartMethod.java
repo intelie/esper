@@ -11,9 +11,9 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.agg.AggregationServiceFactory;
 import com.espertech.esper.epl.core.*;
@@ -622,15 +622,31 @@ public class EPStatementStartMethod
         final CreateVariableDesc createDesc = statementSpec.getCreateVariableDesc();
 
         // Determime the variable type
-        Class type;
+        Class type = null;
+        EventType eventType = null;
         try
         {
             type = JavaClassHelper.getClassForSimpleName(createDesc.getVariableType());
         }
         catch (Throwable t)
         {
-            throw new ExprValidationException("Cannot create variable '" + createDesc.getVariableName() + "', type '" +
-                createDesc.getVariableType() + "' is not a recognized type");
+            if (createDesc.getVariableType().toLowerCase().equals("object")) {
+                type = Object.class;
+            }
+            if (type == null) {
+                eventType = services.getEventAdapterService().getExistsTypeByName(createDesc.getVariableType());
+                if (eventType != null) {
+                    type = eventType.getUnderlyingType();
+                }
+            }
+            if (type == null) {
+                throw new ExprValidationException("Cannot create variable '" + createDesc.getVariableName() + "', type '" +
+                    createDesc.getVariableType() + "' is not a recognized type");
+            }
+        }
+
+        if ((eventType == null) && (!JavaClassHelper.isJavaBuiltinDataType(type)) && (type != Object.class)) {
+            eventType = services.getEventAdapterService().addBeanType(type.getName(), type, false);
         }
 
         // Get assignment value
@@ -646,7 +662,7 @@ public class EPStatementStartMethod
         // Create variable
         try
         {
-            services.getVariableService().createNewVariable(createDesc.getVariableName(), type, value, statementContext.getExtensionServicesContext());
+            services.getVariableService().createNewVariable(createDesc.getVariableName(), type, eventType, value, statementContext.getExtensionServicesContext());
         }
         catch (VariableExistsException ex)
         {

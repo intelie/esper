@@ -253,7 +253,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            variableService.createNewVariable(variableName, type, initializationValue, null);
+            variableService.createNewVariable(variableName, type, null, initializationValue, null); // TODO
             statementVariableRef.addConfiguredVariable(variableName);
         }
         catch (VariableExistsException e)

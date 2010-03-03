@@ -1604,12 +1604,21 @@ public class EPLTreeWalker extends EsperEPL2Ast
             String leadingIdentifier = node.getChild(0).getChild(0).getText();
             String streamOrNestedPropertyName = ASTFilterSpecHelper.escapeDot(leadingIdentifier);
             propertyName = ASTFilterSpecHelper.getPropertyName(node, 1);
-            exprNode = new ExprIdentNode(propertyName, streamOrNestedPropertyName);
+
+            if (variableService.getReader(leadingIdentifier) != null)
+            {
+                exprNode = new ExprVariableNode(leadingIdentifier, propertyName);
+                statementSpec.setHasVariables(true);
+                addVariable(statementSpec, propertyName);
+            }
+            else {
+                exprNode = new ExprIdentNode(propertyName, streamOrNestedPropertyName);
+            }
         }
 
         if (variableService.getReader(propertyName) != null)
         {
-            exprNode = new ExprVariableNode(propertyName);
+            exprNode = new ExprVariableNode(propertyName, null);
             statementSpec.setHasVariables(true);
             addVariable(statementSpec, propertyName);
         }

@@ -19,7 +19,6 @@ import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.bean.BeanEventTypeFactory;
 import com.espertech.esper.event.map.MapEventBean;
 import com.espertech.esper.event.map.MapEventType;
-import com.espertech.esper.event.MappedEventBean;
 import com.espertech.esper.event.xml.*;
 import com.espertech.esper.plugin.*;
 import com.espertech.esper.util.URIUtil;
@@ -548,6 +547,10 @@ public class EventAdapterServiceImpl implements EventAdapterService
         xmldomRootElementNames.put(configurationEventTypeXMLDOM.getRootElementName(), type);
 
         return type;
+    }
+
+    public final EventBean adapterForType(Object event, EventType eventType) {
+        return EventAdapterServiceHelper.adapterForType(event, eventType, this);
     }
 
     public final EventBean adaptorForTypedMap(Map<String, Object> properties, EventType eventType)

@@ -13,6 +13,9 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementExtensionSvcContext;
 import com.espertech.esper.client.VariableValueException;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -120,6 +123,7 @@ public class VariableServiceImpl implements VariableService
     // Number of milliseconds that old versions of a variable are allowed to live
     private final long millisecondLifetimeOldVersions;
     private final TimeProvider timeProvider;
+    private final EventAdapterService eventAdapterService;
     private final VariableStateHandler optionalStateHandler;
 
     private volatile int currentVersionNumber;
@@ -131,9 +135,9 @@ public class VariableServiceImpl implements VariableService
      * @param timeProvider provides the current time
      * @param optionalStateHandler a optional plug-in that may store variable state and retrieve state upon creation
      */
-    public VariableServiceImpl(long millisecondLifetimeOldVersions, TimeProvider timeProvider, VariableStateHandler optionalStateHandler)
+    public VariableServiceImpl(long millisecondLifetimeOldVersions, TimeProvider timeProvider, EventAdapterService eventAdapterService, VariableStateHandler optionalStateHandler)
     {
-        this(0, millisecondLifetimeOldVersions, timeProvider, optionalStateHandler);
+        this(0, millisecondLifetimeOldVersions, timeProvider, eventAdapterService, optionalStateHandler);
     }
 
     /**
@@ -143,10 +147,11 @@ public class VariableServiceImpl implements VariableService
      * @param timeProvider provides the current time
      * @param optionalStateHandler a optional plug-in that may store variable state and retrieve state upon creation
      */
-    protected VariableServiceImpl(int startVersion, long millisecondLifetimeOldVersions, TimeProvider timeProvider, VariableStateHandler optionalStateHandler)
+    protected VariableServiceImpl(int startVersion, long millisecondLifetimeOldVersions, TimeProvider timeProvider, EventAdapterService eventAdapterService, VariableStateHandler optionalStateHandler)
     {
         this.millisecondLifetimeOldVersions = millisecondLifetimeOldVersions;
         this.timeProvider = timeProvider;
+        this.eventAdapterService = eventAdapterService;
         this.optionalStateHandler = optionalStateHandler;
         this.variables = new HashMap<String, VariableReader>();
         this.variableVersions = new ArrayList<VersionedValueList<Object>>();
@@ -197,17 +202,11 @@ public class VariableServiceImpl implements VariableService
         }
     }
 
-    public synchronized void createNewVariable(String variableName, Class type, Object value, StatementExtensionSvcContext extensionServicesContext)
+    public synchronized void createNewVariable(String variableName, Class type, EventType eventType, Object value, StatementExtensionSvcContext extensionServicesContext)
             throws VariableExistsException, VariableTypeException
     {
         // check type
         Class variableType = JavaClassHelper.getBoxedType(type);
-
-        if (!JavaClassHelper.isJavaBuiltinDataType(variableType))
-        {
-            throw new VariableTypeException("Invalid variable type for variable '" + variableName
-                + "' as type '" + variableType.getName() + "', only Java primitive, boxed or String types are allowed");
-        }
 
         // check coercion
         Object coercedValue = value;
@@ -298,7 +297,7 @@ public class VariableServiceImpl implements VariableService
         }
 
         // create reader
-        reader = new VariableReader(versionThreadLocal, variableType, variableName, variableNumber, valuePerVersion);
+        reader = new VariableReader(versionThreadLocal, variableType, eventType, variableName, variableNumber, valuePerVersion);
         variables.put(variableName, reader);
     }
 
@@ -415,14 +414,26 @@ public class VariableServiceImpl implements VariableService
 
         Class valueType = newValue.getClass();
         String variableName = variableVersions.get(variableNumber).getName();
-        Class variableType = variables.get(variableName).getType();
+        VariableReader variableReader = variables.get(variableName);
 
-        if (valueType.equals(variableType))
+        if (variableReader.getEventType() != null) {
+            if ((newValue != null) && (!JavaClassHelper.isSubclassOrImplementsInterface(newValue.getClass(), variableReader.getEventType().getUnderlyingType()))) {
+                throw new VariableValueException("Variable '" + variableName
+                    + "' of declared event type '" + variableReader.getEventType().getName() + "' underlying type '" + variableReader.getEventType().getUnderlyingType().getName() +
+                        "' cannot be assigned a value of type '" + valueType.getName() + "'");
+            }
+            EventBean eventBean = eventAdapterService.adapterForType(newValue, variableReader.getEventType());
+            write(variableNumber, eventBean);
+            return;
+        }
+
+        Class variableType = variableReader.getType();
+        if ((valueType.equals(variableType)) || (variableType == Object.class))
         {
             write(variableNumber, newValue);
             return;
         }
-
+        
         if ((!JavaClassHelper.isNumeric(variableType)) ||
             (!JavaClassHelper.isNumeric(valueType)))
         {

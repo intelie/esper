@@ -8,13 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.*;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.epl.core.*;
+import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
+import com.espertech.esper.schedule.TimeProvider;
 
 /**
  * Represents a variable in an expression tree.
@@ -24,20 +26,25 @@ public class ExprVariableNode extends ExprNode
     private static final long serialVersionUID = 0L;
 
     private final String variableName;
+    private final String optSubPropName;
     private Class variableType;
+    private boolean isPrimitive;
     private transient VariableReader reader;
+    private transient EventPropertyGetter eventTypeGetter;
+    private transient BeanEventPropertyGetter beanTypeGetter;
 
     /**
      * Ctor.
      * @param variableName is the name of the variable
      */
-    public ExprVariableNode(String variableName)
+    public ExprVariableNode(String variableName, String optSubPropName)
     {
         if (variableName == null)
         {
             throw new IllegalArgumentException("Variables name is null");
         }
         this.variableName = variableName;
+        this.optSubPropName = optSubPropName;
     }
 
     /**
@@ -87,6 +94,17 @@ public class ExprVariableNode extends ExprNode
         }
 
         variableType = reader.getType();
+        isPrimitive = reader.getEventType() == null;
+
+        if (optSubPropName != null) {
+            if (reader.getEventType() == null) {
+                throw new ExprValidationException("Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");
+            }            
+            eventTypeGetter = reader.getEventType().getGetter(optSubPropName);
+            if (eventTypeGetter == null) {
+                throw new ExprValidationException("Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");
+            }
+        }
     }
 
     public Class getType()
@@ -110,13 +128,28 @@ public class ExprVariableNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        return reader.getValue();
+        Object value = reader.getValue();
+        if (isPrimitive) {
+            return value;
+        }
+        if (value == null) {
+            return null;
+        }
+        EventBean event = (EventBean) value;
+        if (optSubPropName == null) {
+            return event.getUnderlying();
+        }
+        return eventTypeGetter.get((EventBean) value);
     }
 
     public String toExpressionString()
     {
         StringBuilder buffer = new StringBuilder();
         buffer.append(variableName);
+        if (optSubPropName != null) {
+            buffer.append(".");
+            buffer.append(optSubPropName);
+        }
         return buffer.toString();
     }
 
@@ -127,8 +160,11 @@ public class ExprVariableNode extends ExprNode
             return false;
         }
 
-        ExprVariableNode other = (ExprVariableNode) node;
+        ExprVariableNode that = (ExprVariableNode) node;
 
-        return other.variableName.equals(this.variableName);
+        if (optSubPropName != null ? !optSubPropName.equals(that.optSubPropName) : that.optSubPropName != null) {
+            return false;
+        }
+        return that.variableName.equals(this.variableName);
     }
 }

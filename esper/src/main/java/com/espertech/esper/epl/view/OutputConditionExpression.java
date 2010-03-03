@@ -124,7 +124,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
 
         if (assignments != null)
         {
-            variableReadWritePackage = new VariableReadWritePackage(assignments, context.getVariableService());
+            variableReadWritePackage = new VariableReadWritePackage(assignments, context.getVariableService(), context.getEventAdapterService());
         }
         else
         {

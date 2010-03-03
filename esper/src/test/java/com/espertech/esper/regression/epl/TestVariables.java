@@ -34,6 +34,77 @@ public class TestVariables extends TestCase
         listenerSet = new SupportUpdateListener();
     }
 
+    public void testVariablesEventTyped() {
+        epService.getEPAdministrator().getConfiguration().addEventType("S0Type", SupportBean_S0.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        // assign to properties of a variable
+        // assign: configuration runtime + config static
+        // SODA
+        epService.getEPAdministrator().createEPL("create variable Object varobject = null");
+        epService.getEPAdministrator().createEPL("create variable " + SupportBean_A.class.getName() + " varbean = null");
+        epService.getEPAdministrator().createEPL("create variable S0Type vartype = null");
+
+        String[] fields = "varobject,varbean,varbean.id,vartype,vartype.id".split(",");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select varobject, varbean, varbean.id, vartype, vartype.id from SupportBean");
+        stmt.addListener(listener);
+
+        // test null
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null});
+
+        // test objects
+        SupportBean_A a1objectOne = new SupportBean_A("A1");
+        SupportBean_S0 s0objectOne = new SupportBean_S0(1);
+        epService.getEPRuntime().setVariableValue("varobject", "abc");
+        epService.getEPRuntime().setVariableValue("varbean", a1objectOne);
+        epService.getEPRuntime().setVariableValue("vartype", s0objectOne);
+
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"abc", a1objectOne, a1objectOne.getId(), s0objectOne, s0objectOne.getId()});
+        
+        // test on-set for Object and EventType
+        String[] fieldsTop = "varobject,vartype,varbean".split(",");
+        EPStatement stmtSet = epService.getEPAdministrator().createEPL("on S0Type(p00='X') arrival set varobject=1, vartype=arrival, varbean=null");
+        stmtSet.addListener(listener);
+        
+        SupportBean_S0 s0objectTwo = new SupportBean_S0(2, "X");
+        epService.getEPRuntime().sendEvent(s0objectTwo);
+        assertEquals(1, epService.getEPRuntime().getVariableValue("varobject"));
+        assertEquals(s0objectTwo, epService.getEPRuntime().getVariableValue("vartype"));
+        assertEquals(s0objectTwo, epService.getEPRuntime().getVariableValue(Collections.singleton("vartype")).get("vartype"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsTop, new Object[] {1, s0objectTwo, null});
+        ArrayAssertionUtil.assertProps(stmtSet.iterator().next(), fieldsTop, new Object[] {1, s0objectTwo, null});
+
+        // set via API to null
+        Map<String,Object> newValues = new HashMap<String, Object>();
+        newValues.put("varobject", null);
+        newValues.put("vartype", null);
+        newValues.put("varbean", null);
+        epService.getEPRuntime().setVariableValue(newValues);
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null});
+
+        // set via API to values
+        newValues.put("varobject", 10L);
+        newValues.put("vartype", s0objectTwo);
+        newValues.put("varbean", a1objectOne);
+        epService.getEPRuntime().setVariableValue(newValues);
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {10L, a1objectOne, a1objectOne.getId(), s0objectTwo, s0objectTwo.getId()});
+
+        // test on-set for Bean class
+        stmtSet = epService.getEPAdministrator().createEPL("on " + SupportBean_A.class.getName() + "(id='Y') arrival set varobject=null, vartype=null, varbean=arrival");
+        stmtSet.addListener(listener);
+        SupportBean_A a1objectTwo = new SupportBean_A("Y");
+        epService.getEPRuntime().sendEvent(new SupportBean_A("Y"));
+        assertEquals(null, epService.getEPRuntime().getVariableValue("varobject"));
+        assertEquals(null, epService.getEPRuntime().getVariableValue("vartype"));
+        assertEquals(a1objectTwo, epService.getEPRuntime().getVariableValue(Collections.singleton("varbean")).get("varbean"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsTop, new Object[] {null, null, a1objectTwo});
+        ArrayAssertionUtil.assertProps(stmtSet.iterator().next(), fieldsTop, new Object[] {null, null, a1objectTwo});
+    }
+
     public void testVariableEPRuntime() throws Exception
     {
         epService.getEPAdministrator().getConfiguration().addVariable("var1", int.class, -1);
@@ -702,9 +773,6 @@ public class TestVariables extends TestCase
 
         tryInvalid(Integer.class, new Double(11.1),
                 "Error creating variable: Variable 'var1' of declared type 'java.lang.Integer' cannot be initialized by a value of type 'java.lang.Double'");
-
-        tryInvalid(Math.class, "abcdef",
-                "Error creating variable: Invalid variable type for variable 'var1' as type 'java.lang.Math', only Java primitive, boxed or String types are allowed");
 
         tryInvalid(int.class, new Double(11.1), null);
         tryInvalid(String.class, true, null);

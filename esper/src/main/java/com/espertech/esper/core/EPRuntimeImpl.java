@@ -1117,7 +1117,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             throw new VariableNotFoundException("Variable by name '" + variableName + "' has not been declared");
         }
-        return reader.getValue();
+        Object value = reader.getValue();
+        if (value == null || reader.getEventType() == null) {
+            return value;
+        }
+        return ((EventBean) value).getUnderlying();
     }
 
     public Map<String, Object> getVariableValue(Set<String> variableNames) throws EPException
@@ -1133,6 +1137,9 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             }
 
             Object value = reader.getValue();
+            if (value != null && reader.getEventType() != null) {
+                value = ((EventBean) value).getUnderlying();
+            }
             values.put(variableName, value);
         }
         return values;

@@ -11,6 +11,7 @@ import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.window.LengthWindowViewFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
@@ -357,9 +358,9 @@ public class SupportExprNodeFactory
         }
         ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, SupportStatementContextFactory.makeContext());
 
-        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceImpl()), null);
-        variableService.createNewVariable("intPrimitive", Integer.class, 10, null);
-        variableService.createNewVariable("var1", String.class, "my_variable_value", null);
+        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.getService(), null);
+        variableService.createNewVariable("intPrimitive", Integer.class, null, 10, null);
+        variableService.createNewVariable("var1", String.class, null, "my_variable_value", null);
 
         topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(new EngineImportServiceImpl(true), null, true), viewResources, null, variableService, null);
     }
