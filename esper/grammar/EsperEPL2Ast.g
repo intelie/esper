@@ -119,7 +119,7 @@ onUpdateExpr
 	;
 
 onSetAssignment
-	:	^(ON_SET_EXPR_ITEM IDENT valueExpr)
+	:	^(ON_SET_EXPR_ITEM eventPropertyExpr[false] valueExpr)
 	;
 	
 onExprFrom

@@ -682,8 +682,8 @@ onSetExpr
 	;
 	
 onSetAssignment
-	:	i=IDENT EQUALS expression
-		-> ^(ON_SET_EXPR_ITEM $i expression)
+	:	eventProperty EQUALS expression
+		-> ^(ON_SET_EXPR_ITEM eventProperty expression)
 	;
 		
 onExprFrom

@@ -34,7 +34,38 @@ public class TestVariables extends TestCase
         listenerSet = new SupportUpdateListener();
     }
 
-    public void testVariablesEventTyped() {
+    // TODO
+    // assign to properties of a variable
+    // assign: configuration runtime + config static
+    // SODA
+    public void testEventTypedSetProp() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("S0", SupportBean_S0.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("A", SupportBean_A.class);
+        epService.getEPAdministrator().createEPL("create variable SupportBean varbean");
+
+        String[] fields = "varbean.string,varbean.intPrimitive".split(",");
+        EPStatement stmtSelect = epService.getEPAdministrator().createEPL("select varbean.string,varbean.intPrimitive from S0");
+        stmtSelect.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null});
+
+        EPStatement stmtSet = epService.getEPAdministrator().createEPL("on A set varbean.string = 'A', varbean.int = 1");
+        epService.getEPRuntime().sendEvent(new SupportBean_A("E1"));
+
+        
+        //stmtSet.addListener(listener);
+        //SupportBean_A a1objectTwo = new SupportBean_A("Y");
+        //epService.getEPRuntime().sendEvent(new SupportBean_A("Y"));
+        //assertEquals(null, epService.getEPRuntime().getVariableValue("varobject"));
+        //assertEquals(null, epService.getEPRuntime().getVariableValue("vartype"));
+        //assertEquals(a1objectTwo, epService.getEPRuntime().getVariableValue(Collections.singleton("varbean")).get("varbean"));
+        //ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsTop, new Object[] {null, null, a1objectTwo});
+        //ArrayAssertionUtil.assertProps(stmtSet.iterator().next(), fieldsTop, new Object[] {null, null, a1objectTwo});
+    }
+
+    public void testEventTyped() {
         epService.getEPAdministrator().getConfiguration().addEventType("S0Type", SupportBean_S0.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 

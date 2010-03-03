@@ -781,15 +781,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 continue;
             }
 
-            Tree child = node.getChild(i);
-            if (child.getChild(0).getType() != IDENT)
-            {
-                throw new IllegalStateException("Expected identifier but received type '" + child.getType() + "'");
-            }
-
-            String variableName = child.getChild(0).getText();
-            ExprNode childEvalNode = astExprNodeMap.get(child.getChild(1));
-            astExprNodeMap.remove(child.getChild(1));
+            Tree childNode = node.getChild(i);
+            String variableName = ASTFilterSpecHelper.getPropertyName(childNode.getChild(0), 0);
+            ExprNode childEvalNode = astExprNodeMap.get(childNode.getChild(1));
+            astExprNodeMap.remove(childNode.getChild(1));
             assignments.add(new OnTriggerSetAssignment(variableName, childEvalNode));
         }
         return assignments;
