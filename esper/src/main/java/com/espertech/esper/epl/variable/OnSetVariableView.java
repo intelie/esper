@@ -106,21 +106,7 @@ public class OnSetVariableView extends ViewSupport
 
     public Iterator<EventBean> iterator()
     {
-        Map<String, Object> values = new HashMap<String, Object>();
-
-        int count = 0;
-        for (OnTriggerSetAssignment assignment : desc.getAssignments())
-        {
-            Object value = variableReadWritePackage.getReaders()[count].getValue();
-            if (value instanceof EventBean) {
-                values.put(assignment.getVariableName(), ((EventBean) value).getUnderlying());
-            }
-            else {
-                values.put(assignment.getVariableName(), value);
-            }
-            count++;
-        }
-
+        Map<String, Object> values = variableReadWritePackage.iterate();
         EventBean event = eventAdapterService.adaptorForTypedMap(values, eventType);
         return new SingleEventIterator(event);
     }

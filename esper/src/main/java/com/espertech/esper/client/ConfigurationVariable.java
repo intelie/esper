@@ -15,28 +15,16 @@ import java.io.Serializable;
  */
 public class ConfigurationVariable implements Serializable
 {
-    private Class type;
+    private String type;
     private Object initializationValue;
     private static final long serialVersionUID = 4273849084807284503L;
 
-    /**
-     * Returns the variable type.
-     * <p>
-     * Variables are scalar values and primitive or boxed Java builtin types are accepted.
-     * @return variable type
-     */
-    public Class getType()
+    public String getType()
     {
         return type;
     }
 
-    /**
-     * Sets the variable type.
-     * <p>
-     * Variables are scalar values and primitive or boxed Java builtin types are accepted.
-     * @param type variable type
-     */
-    public void setType(Class type)
+    public void setType(String type)
     {
         this.type = type;
     }

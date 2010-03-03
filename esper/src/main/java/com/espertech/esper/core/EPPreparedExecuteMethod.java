@@ -94,16 +94,20 @@ public class EPPreparedExecuteMethod
         if (statementSpec.getFilterRootNode() != null) {
             LinkedHashMap<String, Pair<EventType, String>> tagged = new LinkedHashMap<String, Pair<EventType, String>>();
             for (int i = 0; i < numStreams; i++) {
-                // TODO - exception handling
-                StreamTypeServiceImpl types = new StreamTypeServiceImpl(typesPerStream, namesPerStream, new boolean[numStreams], services.getEngineURI());
-                filters[i] = FilterSpecCompiler.makeFilterSpec(typesPerStream[i], namesPerStream[i],
-                        Collections.singletonList(statementSpec.getFilterRootNode()), null,
-                        tagged, tagged, types,
-                        statementContext.getMethodResolutionService(),
-                        statementContext.getTimeProvider(),
-                        statementContext.getVariableService(),
-                        statementContext.getEventAdapterService(),
-                        services.getEngineURI(), null, statementContext);
+                try {
+                    StreamTypeServiceImpl types = new StreamTypeServiceImpl(typesPerStream, namesPerStream, new boolean[numStreams], services.getEngineURI());
+                    filters[i] = FilterSpecCompiler.makeFilterSpec(typesPerStream[i], namesPerStream[i],
+                            Collections.singletonList(statementSpec.getFilterRootNode()), null,
+                            tagged, tagged, types,
+                            statementContext.getMethodResolutionService(),
+                            statementContext.getTimeProvider(),
+                            statementContext.getVariableService(),
+                            statementContext.getEventAdapterService(),
+                            services.getEngineURI(), null, statementContext);
+                }
+                catch (Exception ex) {
+                    log.warn("Unexpected exception analyzing filter paths: " + ex.getMessage(), ex);
+                }
             }
         }
 

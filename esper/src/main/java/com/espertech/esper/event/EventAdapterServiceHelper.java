@@ -81,6 +81,9 @@ public class EventAdapterServiceHelper
 
     public static EventBean adapterForType(Object event, EventType eventType, EventAdapterService eventAdapterService)
     {
+        if (event == null) {
+            return null;
+        }
         if (eventType instanceof BeanEventType)
         {
             return eventAdapterService.adapterForTypedBean(event, (BeanEventType) eventType);

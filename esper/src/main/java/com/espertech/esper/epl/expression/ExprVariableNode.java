@@ -31,20 +31,27 @@ public class ExprVariableNode extends ExprNode
     private boolean isPrimitive;
     private transient VariableReader reader;
     private transient EventPropertyGetter eventTypeGetter;
-    private transient BeanEventPropertyGetter beanTypeGetter;
 
     /**
      * Ctor.
      * @param variableName is the name of the variable
      */
-    public ExprVariableNode(String variableName, String optSubPropName)
+    public ExprVariableNode(String variableName)
     {
         if (variableName == null)
         {
             throw new IllegalArgumentException("Variables name is null");
         }
-        this.variableName = variableName;
-        this.optSubPropName = optSubPropName;
+
+        int indexOfDot = variableName.indexOf('.');
+        if (indexOfDot != -1) {
+            this.optSubPropName = variableName.substring(indexOfDot + 1, variableName.length());
+            this.variableName = variableName.substring(0, indexOfDot);
+        }
+        else {
+            this.variableName = variableName;
+            this.optSubPropName = null;
+        }
     }
 
     /**
@@ -104,6 +111,7 @@ public class ExprVariableNode extends ExprNode
             if (eventTypeGetter == null) {
                 throw new ExprValidationException("Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");
             }
+            variableType = reader.getEventType().getPropertyType(optSubPropName);
         }
     }
 
@@ -139,7 +147,7 @@ public class ExprVariableNode extends ExprNode
         if (optSubPropName == null) {
             return event.getUnderlying();
         }
-        return eventTypeGetter.get((EventBean) value);
+        return eventTypeGetter.get(event);
     }
 
     public String toExpressionString()

@@ -1,26 +1,25 @@
 package com.espertech.esper.support.epl;
 
-import com.espertech.esper.epl.expression.*;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.*;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableServiceImpl;
-import com.espertech.esper.type.MathArithTypeEnum;
-import com.espertech.esper.type.RelationalOpEnum;
-import com.espertech.esper.view.ViewFactoryChain;
-import com.espertech.esper.view.ViewFactory;
-import com.espertech.esper.view.window.LengthWindowViewFactory;
-import com.espertech.esper.support.view.SupportStatementContextFactory;
-import com.espertech.esper.support.event.SupportEventTypeFactory;
-import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.schedule.SchedulingServiceImpl;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.schedule.SchedulingServiceImpl;
-import com.espertech.esper.timer.TimeSourceService;
+import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.support.event.SupportEventTypeFactory;
+import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.timer.TimeSourceServiceImpl;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.type.MathArithTypeEnum;
+import com.espertech.esper.type.RelationalOpEnum;
+import com.espertech.esper.view.ViewFactory;
+import com.espertech.esper.view.ViewFactoryChain;
+import com.espertech.esper.view.window.LengthWindowViewFactory;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 public class SupportExprNodeFactory
 {
@@ -359,8 +358,8 @@ public class SupportExprNodeFactory
         ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, SupportStatementContextFactory.makeContext());
 
         VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.getService(), null);
-        variableService.createNewVariable("intPrimitive", Integer.class, null, 10, null);
-        variableService.createNewVariable("var1", String.class, null, "my_variable_value", null);
+        variableService.createNewVariable("intPrimitive", Integer.class.getName(), 10, null);
+        variableService.createNewVariable("var1", String.class.getName(), "my_variable_value", null);
 
         topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(new EngineImportServiceImpl(true), null, true), viewResources, null, variableService, null);
     }

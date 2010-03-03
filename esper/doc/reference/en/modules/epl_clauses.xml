@@ -4364,13 +4364,17 @@ can be used to assign a stream name. Patterns and named windows can also be spec
 		<indexterm><primary>EPL</primary><secondary>variable</secondary></indexterm>
 
 		<para>
-			A <emphasis>variable</emphasis> is a scalar value that is available for use in all statements including patterns. Variables can be used in an expression anywhere in a statement as well as in the <literal>output</literal> clause for output rate limiting.
+			A <emphasis>variable</emphasis> is a scalar, object or event value that is available for use in all statements including patterns. Variables can be used in an expression anywhere in a statement as well as in the <literal>output</literal> clause for output rate limiting.
 		</para>
 			
 		<para>
-			Variables must first be declared or configured before use, by defining each variable's type and name. Variables can be created via the <literal>create variable</literal> syntax or declared by configuration. Variables can be assigned new values by using the <literal>on set</literal> syntax or via the <literal>setVariableValue</literal> methods on <literal>EPRuntime</literal>. The <literal>EPRuntime</literal> also provides method to read variable values.
+			Variables must first be declared or configured before use, by defining each variable's type and name. Variables can be created via the <literal>create variable</literal> syntax or declared by runtime or static configuration. Variables can be assigned new values by using the <literal>on set</literal> syntax or via the <literal>setVariableValue</literal> methods on <literal>EPRuntime</literal>. The <literal>EPRuntime</literal> also provides method to read variable values.
 		</para>
 			
+		<para>
+			When declaring a class-type or an event type variable you may read or set individual properties within the same variable.
+		</para>
+
 		<para>
 			 The engine guarantees consistency and atomicity of variable reads and writes on a statement-level (this is a soft guarantee, see below). Variables are optimized for fast read access and are also multithread-safe.
 		</para>		
@@ -4406,8 +4410,15 @@ can be used to assign a stream name. Patterns and named windows can also be spec
 	|  integer 
 	|  long 
 	|  double
-	|  float</synopsis>
+	|  float
+	|  object
+	|  <emphasis>class_name</emphasis>
+	|  <emphasis>event_type_name</emphasis></synopsis>
 				
+			<para>
+				All variable types accept null values. The <literal>object</literal> type is for an untyped variable that can be assigned any value. You can provide a fully-qualified class name to declare a variable of that Java class type. You can also supply the name of an event type to declare a variable that holds an event of that type.
+			</para>
+
 			<para>
 				The <emphasis>variable_name</emphasis> is an identifier that names the variable. The variable name should not already be in use by another variable.
 			</para>
@@ -4532,6 +4543,52 @@ having sum(price) > var_threshold]]></programlisting>
 				The length of the time interval that variable values are held stable for the duration of execution of a given statement is by default 15 seconds, but can be configured via engine default settings.
 			</para>
 		</sect2>
+
+		<sect2 id="variable_object" revision="1">
+			<title>Object-Type Variables</title>
+
+			<para>
+				A variable of type <literal>object</literal> (or <literal>java.lang.Object</literal> via the API) can be assigned any value including null. When using an object-type variable in an expression, your statement may need to cast the
+				value to the desired type.
+			</para>
+			
+			<para>
+			  The following sample EPL creates a variable by name <literal>varobj</literal> of type object:
+			</para>		
+			<programlisting><![CDATA[create variable object varobj]]></programlisting>
+		</sect2>
+
+		<sect2 id="variable_eventtype" revision="1">
+			<title>Class and Event-Type Variables</title>
+
+			<para>
+				The <literal>create variable</literal> syntax and the API accept a fully-qualified class name or alternatively the name of an event type. This is useful when you want a single variable to have multiple property values to read or set.
+			</para>
+
+			<para>
+			  The next statement assumes that the event type <literal>PageHitEvent</literal> is declared:
+			</para>		
+			<programlisting><![CDATA[create variable PageHitEvent varPageHitZero]]></programlisting>
+
+			<para>
+			  These example statements show two ways of assigning to the variable:
+			</para>		
+			<programlisting><![CDATA[// You may assign the complete event
+on PageHitEvent(ip='0.0.0.0') pagehit set varPageHitZero = pagehit
+
+// Or assign individual properties of the event
+on PageHitEvent(ip='0.0.0.0') pagehit set varPageHitZero.userId = pagehit.userId]]></programlisting>
+
+			<para>
+			  Similarly statements may use properties of class or event-type variables as this example shows:
+			</para>		
+			<programlisting><![CDATA[select * from FirewallEvent(userId=varPageHitZero.userId)]]></programlisting>
+
+			<para>
+				When using class or event-type variables, in order for the engine to assign property values,  the underlying event type must allow writing property values. If using JavaBean event classes the class must have setter methods and a default constructor.
+			</para>			
+		</sect2>
+
 	</sect1>		
 
 	<sect1 id="epl-containedeventselect">

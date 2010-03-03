@@ -11,6 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.VariableValueException;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
@@ -322,7 +323,12 @@ public class EPStatementStartMethod
                 assignment.setExpression(validated);
             }
 
-            onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService(), statementContext);
+            try {
+                onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService(), statementContext);
+            }
+            catch (VariableValueException ex) {
+                throw new ExprValidationException("Error in variable assignment: " + ex.getMessage(), ex);
+            }
             eventStreamParentViewable.addView(onExprView);
         }
         // split-stream use case
@@ -621,34 +627,6 @@ public class EPStatementStartMethod
     {
         final CreateVariableDesc createDesc = statementSpec.getCreateVariableDesc();
 
-        // Determime the variable type
-        Class type = null;
-        EventType eventType = null;
-        try
-        {
-            type = JavaClassHelper.getClassForSimpleName(createDesc.getVariableType());
-        }
-        catch (Throwable t)
-        {
-            if (createDesc.getVariableType().toLowerCase().equals("object")) {
-                type = Object.class;
-            }
-            if (type == null) {
-                eventType = services.getEventAdapterService().getExistsTypeByName(createDesc.getVariableType());
-                if (eventType != null) {
-                    type = eventType.getUnderlyingType();
-                }
-            }
-            if (type == null) {
-                throw new ExprValidationException("Cannot create variable '" + createDesc.getVariableName() + "', type '" +
-                    createDesc.getVariableType() + "' is not a recognized type");
-            }
-        }
-
-        if ((eventType == null) && (!JavaClassHelper.isJavaBuiltinDataType(type)) && (type != Object.class)) {
-            eventType = services.getEventAdapterService().addBeanType(type.getName(), type, false);
-        }
-
         // Get assignment value
         Object value = null;
         if (createDesc.getAssignment() != null)
@@ -662,18 +640,12 @@ public class EPStatementStartMethod
         // Create variable
         try
         {
-            services.getVariableService().createNewVariable(createDesc.getVariableName(), type, eventType, value, statementContext.getExtensionServicesContext());
+            services.getVariableService().createNewVariable(createDesc.getVariableName(), createDesc.getVariableType(), value, statementContext.getExtensionServicesContext());
         }
         catch (VariableExistsException ex)
         {
             // for new statement we don't allow creating the same variable
             if (isNewStatement)
-            {
-                throw new ExprValidationException("Cannot create variable: " + ex.getMessage());
-            }
-
-            // compare the type
-            if (services.getVariableService().getReader(createDesc.getVariableName()).getType() != type)
             {
                 throw new ExprValidationException("Cannot create variable: " + ex.getMessage());
             }

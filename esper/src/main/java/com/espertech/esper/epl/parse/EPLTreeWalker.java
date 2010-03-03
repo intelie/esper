@@ -1602,7 +1602,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
             if (variableService.getReader(leadingIdentifier) != null)
             {
-                exprNode = new ExprVariableNode(leadingIdentifier, propertyName);
+                exprNode = new ExprVariableNode(leadingIdentifier + "." + propertyName);
                 statementSpec.setHasVariables(true);
                 addVariable(statementSpec, propertyName);
             }
@@ -1613,7 +1613,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         if (variableService.getReader(propertyName) != null)
         {
-            exprNode = new ExprVariableNode(propertyName, null);
+            exprNode = new ExprVariableNode(propertyName);
             statementSpec.setHasVariables(true);
             addVariable(statementSpec, propertyName);
         }

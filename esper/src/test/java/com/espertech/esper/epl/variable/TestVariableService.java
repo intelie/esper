@@ -56,7 +56,7 @@ public class TestVariableService extends TestCase
             char c = 'A';
             c+=i;
             variables[i] = Character.toString(c);
-            service.createNewVariable(variables[i], Integer.class, null, 0, null);
+            service.createNewVariable(variables[i], Integer.class.getName(), 0, null);
         }
 
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
@@ -90,7 +90,7 @@ public class TestVariableService extends TestCase
     {
         assertNull(service.getReader("a"));
 
-        service.createNewVariable("a", Long.class, null, 100L, null);
+        service.createNewVariable("a", Long.class.getName(), 100L, null);
         VariableReader reader = service.getReader("a");
         assertEquals(Long.class, reader.getType());
         assertEquals(100L, reader.getValue());
@@ -116,7 +116,7 @@ public class TestVariableService extends TestCase
         VariableReader readers[] = new VariableReader[variables.length];
         for (int i = 0; i < variables.length; i++)
         {
-            service.createNewVariable(variables[i], Long.class, null, 100L, null);
+            service.createNewVariable(variables[i], Long.class.getName(), 100L, null);
             readers[i] = service.getReader(variables[i]);
         }
 
@@ -142,12 +142,12 @@ public class TestVariableService extends TestCase
 
     public void testInvalid() throws Exception
     {
-        service.createNewVariable("a", Long.class, null, null, null);
+        service.createNewVariable("a", Long.class.getName(), null, null);
         assertNull(service.getReader("dummy"));
 
         try
         {
-            service.createNewVariable("a", Long.class, null, null, null);
+            service.createNewVariable("a", Long.class.getName(), null, null);
             fail();
         }
         catch (VariableExistsException e)

@@ -182,6 +182,8 @@ public interface ConfigurationOperations
      */
     public void addVariable(String variableName, Class type, Object initializationValue) throws ConfigurationException;
 
+    public void addVariable(String variableName, String type, Object initializationValue) throws ConfigurationException;
+
     /**
      * Adds an name for an event type that one of the plug-in event representations resolves to an event type.
      * <p>

@@ -253,7 +253,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            variableService.createNewVariable(variableName, type, null, initializationValue, null); // TODO
+            variableService.createNewVariable(variableName, type.getName(), initializationValue, null);
             statementVariableRef.addConfiguredVariable(variableName);
         }
         catch (VariableExistsException e)
@@ -266,6 +266,22 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
+    public void addVariable(String variableName, String eventTypeName, Object initializationValue) throws ConfigurationException
+    {
+        try
+        {
+            variableService.createNewVariable(variableName, eventTypeName, initializationValue, null);
+            statementVariableRef.addConfiguredVariable(variableName);
+        }
+        catch (VariableExistsException e)
+        {
+            throw new ConfigurationException("Error creating variable: " + e.getMessage(), e);
+        }
+        catch (VariableTypeException e)
+        {
+            throw new ConfigurationException("Error creating variable: " + e.getMessage(), e);
+        }
+    }
 
     public void addPlugInEventType(String eventTypeName, URI[] resolutionURIs, Serializable initializer)
     {

@@ -42,7 +42,7 @@ public interface VariableService
      * @throws VariableExistsException if the variable name is already in use
      * @throws VariableTypeException if the variable type cannot be recognized
      */
-    public void createNewVariable(String variableName, Class type, EventType eventType, Object value, StatementExtensionSvcContext extensionServicesContext)
+    public void createNewVariable(String variableName, String type, Object value, StatementExtensionSvcContext extensionServicesContext)
             throws VariableExistsException, VariableTypeException;
 
     /**

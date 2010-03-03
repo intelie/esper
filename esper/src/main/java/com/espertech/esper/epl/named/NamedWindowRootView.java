@@ -389,14 +389,14 @@ public class NamedWindowRootView extends ViewSupport
             tableFound = candidateTables.get(0);
         }
 
-        if (log.isInfoEnabled()) {
+        if (log.isDebugEnabled()) {
             String indexName = null;
             for (Map.Entry<String, PropertyIndexedEventTable> entry : explicitIndexes.entrySet()) {
                 if (entry.getValue() == tableFound) {
                     indexName = entry.getKey();
                 }
             }
-            log.info("Using index " + indexName + " for on-demand query");
+            log.debug("Using index " + indexName + " for on-demand query");
         }
 
         Object[] keyValues = new Object[tableFound.getPropertyNames().length];

@@ -339,10 +339,10 @@ public class TestConfigurationParser extends TestCase
         // variables
         assertEquals(2, config.getVariables().size());
         ConfigurationVariable variable = config.getVariables().get("var1");
-        assertEquals(Integer.class, variable.getType());
+        assertEquals(Integer.class.getName(), variable.getType());
         assertEquals("1", variable.getInitializationValue());
         variable = config.getVariables().get("var2");
-        assertEquals(String.class, variable.getType());
+        assertEquals(String.class.getName(), variable.getType());
         assertEquals(null, variable.getInitializationValue());
 
         // method references

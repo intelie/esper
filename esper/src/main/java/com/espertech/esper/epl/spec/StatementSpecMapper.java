@@ -982,7 +982,7 @@ public class StatementSpecMapper
             if (mapContext.getVariableService().getReader(prop.getPropertyName()) != null)
             {
                 mapContext.setHasVariables(true);
-                return new ExprVariableNode(prop.getPropertyName(), null); // TODO
+                return new ExprVariableNode(prop.getPropertyName()); // TODO
             }
             return new ExprIdentNode(prop.getPropertyName());
         }

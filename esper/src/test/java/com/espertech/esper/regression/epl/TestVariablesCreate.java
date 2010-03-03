@@ -200,7 +200,7 @@ public class TestVariablesCreate extends TestCase
     public void testInvalid()
     {
         String stmt = "create variable somedummy myvar = 10";
-        tryInvalid(stmt, "Error starting statement: Cannot create variable 'myvar', type 'somedummy' is not a recognized type [create variable somedummy myvar = 10]");
+        tryInvalid(stmt, "Error starting statement: Cannot create variable: Cannot create variable 'myvar', type 'somedummy' is not a recognized type [create variable somedummy myvar = 10]");
 
         stmt = "create variable string myvar = 5";
         tryInvalid(stmt, "Error starting statement: Cannot create variable: Variable 'myvar' of declared type 'java.lang.String' cannot be initialized by a value of type 'java.lang.Integer' [create variable string myvar = 5]");

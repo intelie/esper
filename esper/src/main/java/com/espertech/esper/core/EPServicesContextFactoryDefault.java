@@ -166,7 +166,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         {
             try
             {
-                variableService.createNewVariable(entry.getKey(), entry.getValue().getType(), null, entry.getValue().getInitializationValue(), null); // TODO
+                variableService.createNewVariable(entry.getKey(), entry.getValue().getType(), entry.getValue().getInitializationValue(), null);
             }
             catch (VariableExistsException e)
             {

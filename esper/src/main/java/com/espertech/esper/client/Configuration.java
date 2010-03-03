@@ -521,6 +521,14 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     public void addVariable(String variableName, Class type, Object initializationValue)
     {
         ConfigurationVariable configVar = new ConfigurationVariable();
+        configVar.setType(type.getName());
+        configVar.setInitializationValue(initializationValue);
+        variables.put(variableName, configVar);
+    }
+
+    public void addVariable(String variableName, String type, Object initializationValue) throws ConfigurationException
+    {
+        ConfigurationVariable configVar = new ConfigurationVariable();
         configVar.setType(type);
         configVar.setInitializationValue(initializationValue);
         variables.put(variableName, configVar);

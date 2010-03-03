@@ -15,9 +15,6 @@ public class TestNamedWindowIndex extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    // TODO : revision events
-    // TODO: variant streams
-
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();

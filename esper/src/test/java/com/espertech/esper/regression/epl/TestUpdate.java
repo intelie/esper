@@ -69,7 +69,7 @@ public class TestUpdate extends TestCase
         tryInvalid("update istream SupportBeanStream set intPrimitive=null",
                    "Error starting statement: Invalid assignment of column 'null' of null type to event property 'intPrimitive' typed as 'int', nullable type mismatch [update istream SupportBeanStream set intPrimitive=null]");
         tryInvalid("update istream SupportBeanStreamTwo set a.intPrimitive=10",
-                   "Incorrect syntax near '.' expecting an equals '=' but found a dot '.' at line 1 column 41 [update istream SupportBeanStreamTwo set a.intPrimitive=10]");
+                   "Error starting statement: Property 'a.intPrimitive' is not available for write access [update istream SupportBeanStreamTwo set a.intPrimitive=10]");
         tryInvalid("update istream SupportBeanStreamRO set side='a'",
                    "Error starting statement: Property 'side' is not available for write access [update istream SupportBeanStreamRO set side='a']");
         tryInvalid("update istream SupportBean set longPrimitive=sum(intPrimitive)",

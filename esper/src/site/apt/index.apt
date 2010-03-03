@@ -191,6 +191,8 @@ Core CEP Features
 
         * Guarantees of consistency and atomicity of variable updates
         
+        * Scalar, un-typed and event-typed variables with support for nested property read/write
+        
     * <<Variant event streams>> allows treating disparate types of events as the same type, such as when the event type can only be known at runtime, 
        when the event type is expected to vary, or when optional properties are desired.
  
