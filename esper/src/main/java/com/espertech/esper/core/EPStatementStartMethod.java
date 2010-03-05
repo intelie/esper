@@ -565,7 +565,10 @@ public class EPStatementStartMethod
         Viewable finalView = services.getViewService().createViews(rootView, unmaterializedViewChain.getViewFactoryChain(), statementContext);
 
         // Attach tail view
+        boolean isBatchView = finalView instanceof BatchingDataWindowView;
         NamedWindowTailView tailView = processor.getTailView();
+        tailView.setBatchView(isBatchView);
+        processor.getRootView().setBatchView(isBatchView);
         finalView.addView(tailView);
         finalView = tailView;
 

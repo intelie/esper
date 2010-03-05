@@ -287,7 +287,7 @@ public class TestGroupByEventPerGroup extends TestCase
         String fields[] = "symbol,price,mycount".split(",");
         String viewExpr = "select irstream symbol,price,count(price) as mycount " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
-                          "group by symbol, price";
+                          "group by symbol, price order by symbol asc";
 
         selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(listener);

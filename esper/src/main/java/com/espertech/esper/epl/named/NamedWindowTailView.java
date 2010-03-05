@@ -43,6 +43,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     private final boolean isPrioritized;
     private volatile long numberOfEvents;
     private final ExprEvaluatorContext exprEvaluatorContext;
+    private boolean isParentBatchWindow;
 
     /**
      * Ctor.
@@ -74,15 +75,15 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      */
     public boolean isParentBatchWindow()
     {
-        if (this.getParent() instanceof BatchingDataWindowView)
-        {
-            return true;
-        }
-        return false;
+        return isParentBatchWindow;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
+        if ((newData != null) && (!isParentBatchWindow)) {
+            namedWindowRootView.addNewData(newData);
+        }
+
         // Only old data (remove stream) needs to be removed from indexes (kept by root view), if any
         if (oldData != null)
         {
@@ -275,5 +276,9 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     public long getNumberOfEvents()
     {
         return numberOfEvents;
+    }
+
+    public void setBatchView(boolean batchView) {
+        isParentBatchWindow = batchView;
     }
 }

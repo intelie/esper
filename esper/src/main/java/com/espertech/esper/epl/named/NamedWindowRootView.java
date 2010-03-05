@@ -39,6 +39,7 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
 import com.espertech.esper.view.Viewable;
+import com.espertech.esper.view.BatchingDataWindowView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -60,6 +61,7 @@ public class NamedWindowRootView extends ViewSupport
     private final Map<LookupStrategy, PropertyIndexedEventTable> tablePerStrategy;
     private final ValueAddEventProcessor revisionProcessor;
     private final ConcurrentHashMap<String, PropertyIndexedEventTable> explicitIndexes;
+    private boolean isChildBatching;
 
     /**
      * Ctor.
@@ -97,6 +99,20 @@ public class NamedWindowRootView extends ViewSupport
             for (EventTable table : indexRepository.getTables())
             {
                 table.remove(oldData);
+            }
+        }
+    }
+
+    /**
+     * Called by tail view to indicate that the data window view has new events that must be added to index tables.
+     */
+    public void addNewData(EventBean[] newData)
+    {
+        if (revisionProcessor == null) {
+            // Update indexes for fast deletion, if there are any
+            for (EventTable table : indexRepository.getTables())
+            {
+                table.add(newData);
             }
         }
     }
@@ -144,7 +160,9 @@ public class NamedWindowRootView extends ViewSupport
             // Update indexes for fast deletion, if there are any
             for (EventTable table : indexRepository.getTables())
             {
-                table.add(newData);
+                if (isChildBatching) {
+                    table.add(newData);
+                }
                 table.remove(oldData);
             }
 
@@ -422,5 +440,9 @@ public class NamedWindowRootView extends ViewSupport
         if (table != null) {
             indexRepository.removeTableReference(table);
         }
+    }
+
+    public void setBatchView(boolean batchView) {
+        isChildBatching = batchView;
     }
 }
