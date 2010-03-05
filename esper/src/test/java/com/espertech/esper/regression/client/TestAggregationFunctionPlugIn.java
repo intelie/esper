@@ -167,11 +167,23 @@ public class TestAggregationFunctionPlugIn extends TestCase
     {
         epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("countboundary", SupportPluginAggregationMethodThree.class.getName());
 
-        String text = "select irstream countboundary(1,10,intPrimitive) as val from " + SupportBean.class.getName();
+        String text = "select irstream countboundary(1, 10, intPrimitive) as val from " + SupportBean.class.getName();
         EPStatement statement = epService.getEPAdministrator().createEPL(text);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
 
+        runAssertion(listener);
+        
+        statement.destroy();
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(text);
+        assertEquals(text, model.toEPL());
+        statement = epService.getEPAdministrator().create(model);
+        statement.addListener(listener);
+        
+        runAssertion(listener);
+    }
+
+    private void runAssertion(SupportUpdateListener listener) {
         ArrayAssertionUtil.assertEqualsExactOrder(SupportPluginAggregationMethodThree.getChildNodeType(), new Class[] {Integer.class, Integer.class, int.class});
         ArrayAssertionUtil.assertEqualsExactOrder(SupportPluginAggregationMethodThree.getConstantValue(), new Object[] {1, 10, null});
         ArrayAssertionUtil.assertEqualsExactOrder(SupportPluginAggregationMethodThree.getIsConstantValue(), new boolean[] {true, true, false});
@@ -187,18 +199,6 @@ public class TestAggregationFunctionPlugIn extends TestCase
         
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         listener.assertFieldEqualsAndReset("val", new Object[] {2}, new Object[] {1});
-    }
-
-    public void testObjectModelSupportForMultipleParams()
-    {
-        epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("countboundary", SupportPluginAggregationMethodThree.class.getName());
-
-        String text = "select irstream countboundary(1, 10, intPrimitive) as val from " + SupportBean.class.getName();
-        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(text);
-
-        //NOTE: A more robust assertion would be preferred. It might break if toEPL changes.
-        assertEquals(text, model.toEPL());
-
     }
 
     public void testNoSubnodesRuntimeAdd()

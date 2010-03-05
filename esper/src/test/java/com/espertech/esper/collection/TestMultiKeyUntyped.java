@@ -23,8 +23,7 @@ public class TestMultiKeyUntyped extends TestCase
 
     public void testHashCode()
     {
-        assertTrue(keys1.hashCode() == ("a".hashCode() ^ "b".hashCode()));
-        assertTrue(keys10.hashCode() == ("a".hashCode() ^ "b".hashCode() ^ "c".hashCode() ^ "d".hashCode()));
+        assertTrue(keys1.hashCode() == ("a".hashCode()*31 ^ "b".hashCode()));
         assertTrue(keys3.hashCode() == "a".hashCode());
         assertTrue(keys4.hashCode() == "b".hashCode());
         assertTrue(keys5.hashCode() == 0);

@@ -12,6 +12,9 @@ import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.VariableValueException;
+import com.espertech.esper.client.annotation.HookType;
+import com.espertech.esper.client.hook.SQLColumnTypeConversion;
+import com.espertech.esper.client.hook.SQLOutputRowConversion;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
@@ -715,6 +718,7 @@ public class EPStatementStartMethod
         Viewable[] eventStreamParentViewable = new Viewable[numStreams];
         ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
         String[] eventTypeNamees = new String[numStreams];
+        boolean[] isNamedWindow = new boolean[numStreams];
 
         // verify for joins that required views are present
         StreamJoinAnalysisResult joinAnalysisResult = verifyJoinViews(statementSpec.getStreamSpecs());
@@ -778,7 +782,9 @@ public class EPStatementStartMethod
                 }
 
                 DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
-                HistoricalEventViewable historicalEventViewable = DatabasePollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle());
+                SQLColumnTypeConversion typeConversionHook = (SQLColumnTypeConversion) JavaClassHelper.getAnnotationHook(statementSpec.getAnnotations(), HookType.SQLCOL, SQLColumnTypeConversion.class, statementContext.getMethodResolutionService());
+                SQLOutputRowConversion outputRowConversionHook = (SQLOutputRowConversion) JavaClassHelper.getAnnotationHook(statementSpec.getAnnotations(), HookType.SQLROW, SQLOutputRowConversion.class, statementContext.getMethodResolutionService());
+                HistoricalEventViewable historicalEventViewable = DatabasePollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle(), typeConversionHook, outputRowConversionHook);
                 unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.getEventType(), new LinkedList<ViewFactory>());
                 eventStreamParentViewable[i] = historicalEventViewable;
                 stopCallbacks.add(historicalEventViewable);
@@ -806,6 +812,7 @@ public class EPStatementStartMethod
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), namedSpec.getOptions(), statementContext);
                 joinAnalysisResult.setNamedWindow(i);
                 eventTypeNamees[i] = namedSpec.getWindowName();
+                isNamedWindow[i] = true;
 
                 // Consumers to named windows cannot declare a data window view onto the named window to avoid duplicate remove streams
                 ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
@@ -843,7 +850,7 @@ public class EPStatementStartMethod
         statementStreamSpecs.addAll(statementSpec.getStreamSpecs());
 
         // Construct type information per stream
-        StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames, getHasIStreamOnly(unmaterializedViewChain), services.getEngineURI());
+        StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames, getHasIStreamOnly(isNamedWindow, unmaterializedViewChain), services.getEngineURI());
         ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
 
         // boolean multiple expiry policy
@@ -993,10 +1000,13 @@ public class EPStatementStartMethod
         return new EPStatementStartResult(finalView, stopMethod);
     }
 
-    private boolean[] getHasIStreamOnly(ViewFactoryChain[] unmaterializedViewChain)
+    private boolean[] getHasIStreamOnly(boolean[] isNamedWindow, ViewFactoryChain[] unmaterializedViewChain)
     {
         boolean[] result = new boolean[unmaterializedViewChain.length];
         for (int i = 0; i < unmaterializedViewChain.length; i++) {
+            if (isNamedWindow[i]) {
+                continue;
+            }
             result[i] = unmaterializedViewChain[i].getDataWindowViewFactoryCount() == 0;
         }
         return result;

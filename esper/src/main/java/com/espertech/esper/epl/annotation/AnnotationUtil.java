@@ -3,9 +3,12 @@ package com.espertech.esper.epl.annotation;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.client.annotation.Hint;
 import com.espertech.esper.client.annotation.HintEnum;
+import com.espertech.esper.client.annotation.HookType;
+import com.espertech.esper.client.annotation.Hook;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.spec.AnnotationDesc;
 import com.espertech.esper.util.SimpleTypeCaster;
 import com.espertech.esper.util.SimpleTypeCasterFactory;
@@ -25,7 +28,7 @@ import java.util.*;
 public class AnnotationUtil
 {
     private static final Log log = LogFactory.getLog(AnnotationUtil.class);
-
+    
     /**
      * Compile annotation objects from descriptors.
      * @param annotationSpec spec for annotations

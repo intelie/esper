@@ -30,6 +30,26 @@ public class TestMinMaxCases extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("S0", SupportBean_S0.class);
     }
 
+    public void testMinMaxNamedWindow() {
+        String[] fields = "lower,upper".split(",");
+        epService.getEPAdministrator().createEPL("create window NamedWindow5m.win:length(2) as select * from SupportBean");
+        epService.getEPAdministrator().createEPL("insert into NamedWindow5m select * from SupportBean");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select min(intPrimitive) as lower, max(intPrimitive) as upper from NamedWindow5m");
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean(null, 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, 1});
+
+        epService.getEPRuntime().sendEvent(new SupportBean(null, 5));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, 5});
+
+        epService.getEPRuntime().sendEvent(new SupportBean(null, 3));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {3, 5});
+
+        epService.getEPRuntime().sendEvent(new SupportBean(null, 6));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {3, 6});
+    }
+
     public void testMinMaxNoDataWindowSubquery() {
 
         String[] fields = "maxi,mini,max0,min0".split(",");

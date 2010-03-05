@@ -176,6 +176,7 @@ public final class ScheduleSpec implements MetaDefItem, Serializable
         {
             if (entry.getValue() != null)
             {
+                hashCode *= 31;
                 hashCode ^= entry.getValue().iterator().next();
             }
         }

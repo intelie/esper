@@ -8,23 +8,21 @@
  **************************************************************************************/
 package com.espertech.esper.epl.db;
 
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.hook.*;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.util.DatabaseTypeBinding;
-
-import java.util.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
-
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.sql.*;
+import java.util.*;
+import java.util.Date;
 
 /**
  * Viewable providing historical data from a database.
@@ -37,28 +35,35 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
     private final Map<String, DBOutputTypeDesc> outputTypes;
     private final ConnectionCache connectionCache;
     private final EventType eventType;
+    private final SQLColumnTypeConversion columnTypeConversionHook;
+    private final SQLOutputRowConversion outputRowConversionHook;
 
     private Pair<Connection, PreparedStatement> resources;
 
     /**
      * Ctor.
      * @param eventAdapterService for generating event beans
-     * @param preparedStatementText is the SQL to use for polling
-     * @param outputTypes describe columns selected by the SQL
      * @param eventType is the event type that this poll generates
      * @param connectionCache caches Connection and PreparedStatement
+     * @param preparedStatementText is the SQL to use for polling
+     * @param outputTypes describe columns selected by the SQL
+     * @param outputRowConversionHook
      */
     public PollExecStrategyDBQuery(EventAdapterService eventAdapterService,
                                    EventType eventType,
                                    ConnectionCache connectionCache,
                                    String preparedStatementText,
-                                   Map<String, DBOutputTypeDesc> outputTypes)
+                                   Map<String, DBOutputTypeDesc> outputTypes,
+                                   SQLColumnTypeConversion columnTypeConversionHook,
+                                   SQLOutputRowConversion outputRowConversionHook)
     {
         this.eventAdapterService = eventAdapterService;
         this.eventType = eventType;
         this.connectionCache = connectionCache;
         this.preparedStatementText = preparedStatementText;
         this.outputTypes = outputTypes;
+        this.columnTypeConversionHook = columnTypeConversionHook;
+        this.outputRowConversionHook = outputRowConversionHook;
     }
 
     public void start()
@@ -101,6 +106,11 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
         }
 
         // set parameters
+        SQLInputParameterContext inputParameterContext = null;
+        if (columnTypeConversionHook != null) {
+            inputParameterContext = new SQLInputParameterContext();
+        }
+
         int count = 1;
         for (int i = 0; i < lookupValuePerStream.length; i++)
         {
@@ -112,7 +122,13 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
                     log.info(".execute Setting parameter " + count + " to " + parameter + " typed " + ((parameter == null)? "null" : parameter.getClass()));
                 }
 
-				setObject(preparedStatement, count, lookupValuePerStream[i]);
+                if (columnTypeConversionHook != null) {
+                    inputParameterContext.setParameterNumber(i + 1);
+                    inputParameterContext.setParameterValue(parameter);
+                    parameter = columnTypeConversionHook.getParameterValue(inputParameterContext);
+                }
+
+				setObject(preparedStatement, count, parameter);
             }
             catch (SQLException ex)
             {
@@ -137,8 +153,20 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
         List<EventBean> rows = new LinkedList<EventBean>();
         try
         {
+            SQLColumnValueContext valueContext = null;
+            if (columnTypeConversionHook != null) {
+                valueContext = new SQLColumnValueContext();
+            }
+
+            SQLOutputRowValueContext rowContext = null;
+            if (outputRowConversionHook != null) {
+                rowContext = new SQLOutputRowValueContext();
+            }
+
+            int rowNum = 0;
             while (resultSet.next())
             {
+                int colNum = 1;
                 Map<String, Object> row = new HashMap<String, Object>();
                 for (Map.Entry<String, DBOutputTypeDesc> entry : outputTypes.entrySet())
                 {
@@ -155,10 +183,34 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
                         value = resultSet.getObject(columnName);
                     }
 
+                    if (columnTypeConversionHook != null) {
+                        valueContext.setColumnName(columnName);
+                        valueContext.setColumnNumber(colNum);
+                        valueContext.setColumnValue(value);
+                        value = columnTypeConversionHook.getColumnValue(valueContext);
+                    }
+
                     row.put(columnName, value);
+                    colNum++;
                 }
-                EventBean eventBeanRow = eventAdapterService.adaptorForTypedMap(row, eventType);
-                rows.add(eventBeanRow);
+
+                EventBean eventBeanRow = null;
+                if (this.outputRowConversionHook == null) {
+                    eventBeanRow = eventAdapterService.adaptorForTypedMap(row, eventType);
+                }
+                else {
+                    rowContext.setValues(row);
+                    rowContext.setRowNum(rowNum);
+                    Object rowData = outputRowConversionHook.getOutputRow(rowContext);
+                    if (rowData != null) {
+                        eventBeanRow = eventAdapterService.adapterForTypedBean(rowData, (BeanEventType) eventType);
+                    }
+                }
+                
+                if (eventBeanRow != null) {
+                    rows.add(eventBeanRow);
+                    rowNum++;
+                }
             }
         }
         catch (SQLException ex)

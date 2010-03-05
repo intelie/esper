@@ -1,6 +1,8 @@
 package com.espertech.esper.regression.db;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.annotation.Hook;
+import com.espertech.esper.client.annotation.HookType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportDatabaseService;

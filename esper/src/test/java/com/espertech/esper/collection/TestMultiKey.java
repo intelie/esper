@@ -20,11 +20,16 @@ public class TestMultiKey extends TestCase
     MultiKey<String> keys8 = new MultiKey<String>(new String[] {"a", "b", null});
     MultiKey<String> keys9 = new MultiKey<String>(new String[] {"a", "b", "c", "d"});
     MultiKey<String> keys10 = new MultiKey<String>(new String[] {"a", "b", "c", "d"});
+    MultiKey<String> keys11 = new MultiKey<String>(new String[] {"espera", "esperb"});
+    MultiKey<String> keys12 = new MultiKey<String>(new String[] {"esperc", "esperd"});
+    MultiKey<String> keys13 = new MultiKey<String>(new String[] {"espere", "esperf"});
 
     public void testHashCode()
     {
-        assertTrue(keys1.hashCode() == ("a".hashCode() ^ "b".hashCode()));
-        assertTrue(keys10.hashCode() == ("a".hashCode() ^ "b".hashCode() ^ "c".hashCode() ^ "d".hashCode()));
+        assertTrue(keys11.hashCode() != keys12.hashCode());
+        assertTrue(keys12.hashCode() != keys13.hashCode());
+
+        assertTrue(keys1.hashCode() == ("a".hashCode()*31 ^ "b".hashCode()));
         assertTrue(keys3.hashCode() == "a".hashCode());
         assertTrue(keys4.hashCode() == "b".hashCode());
         assertTrue(keys5.hashCode() == 0);

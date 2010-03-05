@@ -11,6 +11,10 @@ package com.espertech.esper.epl.db;
 import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.client.ConfigurationDBRef;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.hook.SQLColumnTypeContext;
+import com.espertech.esper.client.hook.SQLColumnTypeConversion;
+import com.espertech.esper.client.hook.SQLOutputRowConversion;
+import com.espertech.esper.client.hook.SQLOutputRowTypeContext;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
@@ -51,7 +55,9 @@ public class DatabasePollingViewableFactory
                                                  DBStatementStreamSpec databaseStreamSpec,
                                                  DatabaseConfigService databaseConfigService,
                                                  EventAdapterService eventAdapterService,
-                                                 EPStatementHandle epStatementHandle)
+                                                 EPStatementHandle epStatementHandle,
+                                                 SQLColumnTypeConversion columnTypeConversionHook,
+                                                 SQLOutputRowConversion outputRowConversionHook)
             throws ExprValidationException
     {
         // Parse the SQL for placeholders and text fragments
@@ -190,6 +196,7 @@ public class DatabasePollingViewableFactory
         // Create event type
         // Construct an event type from SQL query result metadata
         Map<String, Object> eventTypeFields = new HashMap<String, Object>();
+        int columnNum = 1;
         for (Map.Entry<String, DBOutputTypeDesc> entry : queryMetaData.getOutputParameters().entrySet())
         {
             String name = entry.getKey();
@@ -204,9 +211,30 @@ public class DatabasePollingViewableFactory
             {
                 clazz = SQLTypeMapUtil.sqlTypeToClass(dbOutputDesc.getSqlType(), dbOutputDesc.getClassName());
             }
+
+            if (columnTypeConversionHook != null) {
+
+                Class newValue = columnTypeConversionHook.getColumnType(new SQLColumnTypeContext(databaseStreamSpec.getDatabaseName(), databaseStreamSpec.getSqlWithSubsParams(), name, clazz, dbOutputDesc.getSqlType(), columnNum));
+                if (newValue != null) {
+                    clazz = newValue;
+                }
+
+            }
             eventTypeFields.put(name, clazz);
+            columnNum++;
         }
-        EventType eventType = eventAdapterService.createAnonymousMapType(eventTypeFields);
+
+        EventType eventType;
+        if (outputRowConversionHook == null) {
+            eventType = eventAdapterService.createAnonymousMapType(eventTypeFields);
+        }
+        else {
+            Class carrierClass = outputRowConversionHook.getOutputRowType(new SQLOutputRowTypeContext(databaseStreamSpec.getDatabaseName(), databaseStreamSpec.getSqlWithSubsParams(), eventTypeFields));
+            if (carrierClass == null) {
+                throw new ExprValidationException("Output row conversion hook returned no type");
+            }
+            eventType = eventAdapterService.addBeanType(carrierClass.getName(), carrierClass, false);
+        }
 
         // Get a proper connection and data cache
         ConnectionCache connectionCache;
@@ -224,7 +252,7 @@ public class DatabasePollingViewableFactory
         }
 
         PollExecStrategyDBQuery dbPollStrategy = new PollExecStrategyDBQuery(eventAdapterService,
-                eventType, connectionCache, preparedStatementText, queryMetaData.getOutputParameters());
+                eventType, connectionCache, preparedStatementText, queryMetaData.getOutputParameters(), columnTypeConversionHook, outputRowConversionHook);
 
         return new DatabasePollingViewable(streamNumber, queryMetaData.getInputParameters(), dbPollStrategy, dataCache, eventType);
     }

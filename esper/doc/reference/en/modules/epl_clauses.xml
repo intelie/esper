@@ -545,6 +545,14 @@ is placed here.")]]></programlisting></entry>
 								</entry>
 								<entry><programlisting><![CDATA[@Hint('ITERATE_ONLY')]]></programlisting></entry>
 							</row>
+							<row>
+								<entry>Hook</entry>
+								<entry>
+									<para>Use this annotation to register one or more statement-specific hooks providing a hook type for each individual hook, such as for SQL parameter, column or row conversion.</para>
+									<para>Attributes are the hook <literal>type</literal> and the <literal>hook</literal> itself (usually a import or class name):</para>
+								</entry>
+								<entry><programlisting><![CDATA[@Hook(type=HookType.SQLCOL, hook=MyDBTypeConvertor)]]></programlisting></entry>
+							</row>
 						</tbody>
 					</tgroup>				
 				</table>
@@ -3201,6 +3209,56 @@ select orderId, orderAmount from
 			</para>
 		</sect2>
 
+		<sect2 id="histdata_convert_cols" revision="1">
+			<title>SQL Input Parameter and Column Output Conversion</title>
+
+			<para>
+			   As part of database access configuration you may optionally specify SQL type mappings. These mappings apply to all queries against the same database identified by name.
+			</para>
+			
+			<para>
+			  If your application must perform SQL-query-specific or EPL-statement-specific mapping or conversion between types, the facility to register a conversion callback exists as follows.
+			</para>
+
+			<para>
+			  Use the <literal>@Hook</literal> instruction and <literal>HookType.SQLCOL</literal> as part of your EPL statement text to register a statement SQL parameter or column conversion hook. 
+			  Implement the interface <literal>com.espertech.esper.client.hook.SQLColumnTypeConversion</literal> to perform the input parameter or column value conversion.
+			</para>
+			
+			<para>
+			  A sample statement with annotation is shown:
+			</para>
+			<programlisting><![CDATA[@Hook(type=HookType.SQLCOL, hook=MyDBTypeConvertor)
+select * from sql:MyDB ['select * from MyEventTable]]]></programlisting>
+
+			<para>
+			  The engine expects <literal>MyDBTypeConvertor</literal> to resolve to a class (considering engine imports) and instantiates one object for each statement.
+			</para>
+		</sect2>
+
+		<sect2 id="histdata_convert_row" revision="1">
+			<title>SQL Row POJO Conversion</title>
+
+			<para>
+			   Your application may also directly convert a SQL result row into a Java class which is an opportunity for your application to interrogate and transform the SQL row result data freely before packing the data into a 
+			   Java class. Your application can additionally indicate to skip SQL result rows.
+			</para>
+			
+			<para>
+			  Use the <literal>@Hook</literal> instruction and <literal>HookType.SQLROW</literal> as part of your EPL statement text to register a statement SQL output row conversion hook. 
+			  Implement the interface <literal>com.espertech.esper.client.hook.SQLOutputRowConversion</literal> to perform the output row conversion.
+			</para>
+			
+			<para>
+			  A sample statement with annotation is shown:
+			</para>
+			<programlisting><![CDATA[@Hook(type=HookType.SQLROW, hook=MyDBRowConvertor)
+select * from sql:MyDB ['select * from MyEventTable]]]></programlisting>
+
+			<para>
+			  The engine expects <literal>MyDBRowConvertor</literal> to resolve to a class (considering engine imports) and instantiates one object for each statement.
+			</para>
+		</sect2>
 	</sect1>
 	
 	<sect1 id="joining_method" revision="1">

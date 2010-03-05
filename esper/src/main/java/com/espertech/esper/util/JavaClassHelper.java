@@ -15,11 +15,14 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.client.annotation.HookType;
+import com.espertech.esper.client.annotation.Hook;
 
 import java.util.*;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.lang.reflect.*;
+import java.lang.annotation.Annotation;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -1345,6 +1348,58 @@ public class JavaClassHelper
             return Object.class;
         }
         return (Class) typeParam;
+    }
+
+    public static Object getAnnotationHook(Annotation[] annotations, HookType hookType, Class interfaceExpected, MethodResolutionService resolution)
+            throws ExprValidationException
+    {
+        if (annotations == null) {
+            return null;
+        }
+        String hookClass = null;
+        for (int i = 0; i < annotations.length; i++) {
+            if (!(annotations[i] instanceof Hook)) {
+                continue;
+            }
+            Hook hook = (Hook) annotations[i];
+            if (hook.type() != hookType) {
+                 continue;
+            }
+            hookClass = hook.hook();
+        }
+        if (hookClass == null) {
+            return null;
+        }
+
+        Class clazz;
+        try
+        {
+            clazz = resolution.resolveClass(hookClass);
+        }
+        catch (EngineImportException e)
+        {
+            throw new ExprValidationException("Failed to resolve hook provider of hook type '" + hookType +
+                    "' import '" + hookClass + "' :" + e.getMessage());
+        }
+
+        if (!JavaClassHelper.isImplementsInterface(clazz, interfaceExpected)) {
+            throw new ExprValidationException("Hook provider for hook type '" + hookType + "' " +
+                    "class '" + clazz.getName() + "' does not implement the required '" + interfaceExpected.getSimpleName() +
+                    "' interface");
+        }
+
+        Object hook;
+        try
+        {
+            hook = clazz.newInstance();
+        }
+        catch (Exception e)
+        {
+            throw new ExprValidationException("Failed to instantiate hook provider of hook type '" + hookType + "' " +
+                    "class '" + clazz.getName() + "' :" + e.getMessage());
+        }
+        
+        return hook;
     }
 
     /**
