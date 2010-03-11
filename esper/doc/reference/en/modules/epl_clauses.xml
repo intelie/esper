@@ -656,6 +656,17 @@ select * from SecurityFilter(ip="127.0.0.1")]]></programlisting>
 				<programlisting><![CDATA[@Hint('disable_reclaim_group') 
 select ipaddress, count(*) from SecurityFilter.win:time(60 sec) group by ipaddress]]></programlisting>
 			</sect3>
+
+			<sect3 id="epl-syntax-annotation-hook">
+				<title>@Hook</title>
+				<para>
+					A hook is for attaching a callback to a statement.
+				</para>
+
+				<para>
+					The type value of a <literal>Hook</literal> annotation defines the type of hook and the <literal>hook</literal> value is an imported or fully-qualified class name providing the callback implementation.
+				</para>
+			</sect3>
 		</sect2>
     </sect1>
 
