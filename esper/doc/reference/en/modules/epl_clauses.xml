@@ -3243,7 +3243,7 @@ select orderId, orderAmount from
 select * from sql:MyDB ['select * from MyEventTable]]]></programlisting>
 
 			<para>
-			  The engine expects <literal>MyDBTypeConvertor</literal> to resolve to a class (considering engine imports) and instantiates one object for each statement.
+			  The engine expects <literal>MyDBTypeConvertor</literal> to resolve to a class (considering engine imports) and instantiates one instance of MyDBTypeConvertor for each statement.
 			</para>
 		</sect2>
 
@@ -3267,7 +3267,7 @@ select * from sql:MyDB ['select * from MyEventTable]]]></programlisting>
 select * from sql:MyDB ['select * from MyEventTable]]]></programlisting>
 
 			<para>
-			  The engine expects <literal>MyDBRowConvertor</literal> to resolve to a class (considering engine imports) and instantiates one object for each statement.
+			  The engine expects <literal>MyDBRowConvertor</literal> to resolve to a class (considering engine imports) and instantiates one MyDBRowConvertor instance for each statement.
 			</para>
 		</sect2>
 	</sect1>
