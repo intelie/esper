@@ -14,6 +14,7 @@ import com.espertech.esper.support.bean.SupportBean_N;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.SupportSubscriber;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
@@ -32,6 +33,41 @@ public class TestDistinct extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_N", SupportBean_N.class);
+    }
+
+    public void testWildcardJoinPattern() {
+        String epl = "select distinct * from " +
+                "SupportBean(intPrimitive=0) as fooB unidirectional " +
+                "inner join " +
+                "pattern [" +
+                "every-distinct(fooA.string) fooA=SupportBean(intPrimitive=1)" +
+                "->" +
+                "every-distinct(wooA.string) wooA=SupportBean(intPrimitive=2)" +
+                " where timer:within(1 hour)" +
+                "].win:time(1 hour) as fooWooPair " +
+                "on fooB.longPrimitive = fooWooPair.fooA.longPrimitive";
+
+        SupportSubscriber subs = new SupportSubscriber();
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        sendEvent("E1", 1, 10L);
+        sendEvent("E1", 2, 10L);
+
+        sendEvent("E2", 1, 10L);
+        sendEvent("E2", 2, 10L);
+
+        sendEvent("E3", 1, 10L);
+        sendEvent("E3", 2, 10L);
+
+        sendEvent("Query", 0, 10L);
+        assertTrue(listener.isInvoked());
+    }
+
+    private void sendEvent(String string, int intPrimitive, long longPrimitive) {
+        SupportBean bean = new SupportBean(string, intPrimitive);
+        bean.setLongPrimitive(longPrimitive);
+        epService.getEPRuntime().sendEvent(bean);
     }
 
     public void testOnDemandAndOnSelect()

@@ -456,12 +456,28 @@ public class EventBeanUtility
      */
     public static EventBean[] getDistinctByProp(ArrayDequeJDK6Backport<EventBean> events, EventBeanReader reader)
     {
-        Set<MultiKeyUntypedEventPair> set = new LinkedHashSet<MultiKeyUntypedEventPair>();
-        for (EventBean event : events)
+        if ((events == null) || (events.size() < 2))
         {
-            Object[] keys = reader.read(event);
-            MultiKeyUntypedEventPair pair = new MultiKeyUntypedEventPair(keys, event);
-            set.add(pair);
+            return events.toArray(new EventBean[events.size()]);
+        }
+
+        Set<MultiKeyUntypedEventPair> set = new LinkedHashSet<MultiKeyUntypedEventPair>();
+        if (events.getFirst() instanceof NaturalEventBean) {
+            for (EventBean event : events)
+            {
+                EventBean inner = ((NaturalEventBean) event).getOptionalSynthetic();
+                Object[] keys = reader.read(inner);
+                MultiKeyUntypedEventPair pair = new MultiKeyUntypedEventPair(keys, event);
+                set.add(pair);
+            }
+        }
+        else {
+            for (EventBean event : events)
+            {
+                Object[] keys = reader.read(event);
+                MultiKeyUntypedEventPair pair = new MultiKeyUntypedEventPair(keys, event);
+                set.add(pair);
+            }
         }
 
         EventBean[] result = new EventBean[set.size()];
@@ -485,13 +501,24 @@ public class EventBeanUtility
         {
             return events;
         }
-        
+
         Set<MultiKeyUntypedEventPair> set = new LinkedHashSet<MultiKeyUntypedEventPair>();
-        for (EventBean event : events)
-        {
-            Object[] keys = reader.read(event);
-            MultiKeyUntypedEventPair pair = new MultiKeyUntypedEventPair(keys, event);
-            set.add(pair);
+        if (events[0] instanceof NaturalEventBean) {
+            for (EventBean event : events)
+            {
+                EventBean inner = ((NaturalEventBean) event).getOptionalSynthetic();
+                Object[] keys = reader.read(inner);
+                MultiKeyUntypedEventPair pair = new MultiKeyUntypedEventPair(keys, event);
+                set.add(pair);
+            }
+        }
+        else {
+            for (EventBean event : events)
+            {
+                Object[] keys = reader.read(event);
+                MultiKeyUntypedEventPair pair = new MultiKeyUntypedEventPair(keys, event);
+                set.add(pair);
+            }
         }
 
         EventBean[] result = new EventBean[set.size()];

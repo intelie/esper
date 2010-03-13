@@ -27,7 +27,7 @@ public interface StatementResultService
      * @param statementMetricHandle handle for metrics reporting
      */
     public void setContext(EPStatementSPI epStatement, EPServiceProviderSPI epServiceProvider,
-                           boolean isInsertInto, boolean isPattern, StatementMetricHandle statementMetricHandle);
+                           boolean isInsertInto, boolean isPattern, boolean isDistinct, StatementMetricHandle statementMetricHandle);
 
     /**
      * For initialize of the service providing select clause column types and names.

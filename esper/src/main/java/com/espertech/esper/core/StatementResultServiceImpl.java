@@ -49,6 +49,7 @@ public class StatementResultServiceImpl implements StatementResultService
     private EPServiceProviderSPI epServiceProvider;
     private boolean isInsertInto;
     private boolean isPattern;
+    private boolean isDistinct;
     private StatementMetricHandle statementMetricHandle;
 
     // For natural delivery derived out of select-clause expressions
@@ -98,13 +99,14 @@ public class StatementResultServiceImpl implements StatementResultService
     }
 
     public void setContext(EPStatementSPI epStatement, EPServiceProviderSPI epServiceProvider,
-                           boolean isInsertInto, boolean isPattern, StatementMetricHandle statementMetricHandle)
+                           boolean isInsertInto, boolean isPattern, boolean isDistinct, StatementMetricHandle statementMetricHandle)
     {
         this.epStatement = epStatement;
         this.epServiceProvider = epServiceProvider;
         this.isInsertInto = isInsertInto;
         this.isPattern = isPattern;
-        isMakeSynthetic = isInsertInto || isPattern;
+        this.isDistinct = isDistinct;
+        isMakeSynthetic = isInsertInto || isPattern || isDistinct;
         this.statementMetricHandle = statementMetricHandle;
     }
 
@@ -149,7 +151,7 @@ public class StatementResultServiceImpl implements StatementResultService
 
         isMakeNatural = statementListenerSet.getSubscriber() != null;
         isMakeSynthetic = !(statementListenerSet.getListeners().isEmpty() && statementListenerSet.getStmtAwareListeners().isEmpty())
-                || isPattern || isInsertInto;
+                || isPattern || isInsertInto || isDistinct;
 
         if (statementListenerSet.getSubscriber() == null)
         {
