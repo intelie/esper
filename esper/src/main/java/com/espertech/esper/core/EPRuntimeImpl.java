@@ -57,7 +57,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     private EventRenderer eventRenderer;
     private ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal;
     private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
-    private InternalEventRouterImpl internalEventRouterImpl;
+    private InternalEventRouter internalEventRouter;
     private ExprEvaluatorContext engineFilterAndDispatchTimeContext;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
@@ -155,11 +155,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
     /**
      * Sets the route for events to use
-     * @param internalEventRouterImpl router
+     * @param internalEventRouter router
      */
-    public void setInternalEventRouterImpl(InternalEventRouterImpl internalEventRouterImpl)
+    public void setInternalEventRouter(InternalEventRouter internalEventRouter)
     {
-        this.internalEventRouterImpl = internalEventRouterImpl;
+        this.internalEventRouter = internalEventRouter;
     }
 
     public long getRoutedInternal()
@@ -293,9 +293,9 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
         // Process event
         EventBean event = services.getEventAdapterService().adapterForMap(map, eventTypeName);
-        if (internalEventRouterImpl.isHasPreprocessing())
+        if (internalEventRouter.isHasPreprocessing())
         {
-            event = internalEventRouterImpl.preprocess(event,engineFilterAndDispatchTimeContext);
+            event = internalEventRouter.preprocess(event,engineFilterAndDispatchTimeContext);
             if (event == null)
             {
                 return;
@@ -324,10 +324,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     {
         routedExternal.incrementAndGet();
 
-        if (internalEventRouterImpl.isHasPreprocessing())
+        if (internalEventRouter.isHasPreprocessing())
         {
             EventBean eventBean = services.getEventAdapterService().adapterForBean(event);
-            event = internalEventRouterImpl.preprocess(eventBean,engineFilterAndDispatchTimeContext);
+            event = internalEventRouter.preprocess(eventBean,engineFilterAndDispatchTimeContext);
             if (event == null)
             {
                 return;
@@ -382,9 +382,9 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
     public void processWrappedEvent(EventBean eventBean)
     {
-        if (internalEventRouterImpl.isHasPreprocessing())
+        if (internalEventRouter.isHasPreprocessing())
         {
-            eventBean = internalEventRouterImpl.preprocess(eventBean, engineFilterAndDispatchTimeContext);
+            eventBean = internalEventRouter.preprocess(eventBean, engineFilterAndDispatchTimeContext);
             if (eventBean == null)
             {
                 return;

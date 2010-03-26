@@ -11,12 +11,12 @@ sh:
 
 VMOPT=-Xms 1024m -Xmx10240m
 OPT=-rate 4x10000 -mode STP
-java $VMOPT -classpath etc:build:lib/esper-3.4.0.jar:lib/antlr-runtime-3.1.1.jar:(add others) com.espertech.esper.example.benchmark.server.Server $OPT
+java $VMOPT -classpath etc:build:lib/esper-3.5.0.jar:lib/antlr-runtime-3.1.1.jar:(add others) com.espertech.esper.example.benchmark.server.Server $OPT
 
 cmd:
 
 set VMOPT=-Xms 1024m -Xmx10240m
 set OPT=-rate 4x10000 -mode STP
-java %VMOPT% -classpath etc;build:lib\esper-3.4.0.jar;lib\antlr-runtime-3.1.1.jar;(add others) com.espertech.esper.example.benchmark.server.Server %OPT%
+java %VMOPT% -classpath etc;build:lib\esper-3.5.0.jar;lib\antlr-runtime-3.1.1.jar;(add others) com.espertech.esper.example.benchmark.server.Server %OPT%
 
 For client the main class is com.espertech.esper.example.benchmark.client.Client

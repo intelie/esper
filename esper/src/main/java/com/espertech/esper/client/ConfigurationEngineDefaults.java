@@ -28,6 +28,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private Expression expression;
     private Execution execution;
     private ConfigurationMetricsReporting metricsReporting;
+    private AlternativeContext alternativeContext;
     private static final long serialVersionUID = -528835191586154300L;
 
     /**
@@ -46,6 +47,7 @@ public class ConfigurationEngineDefaults implements Serializable
         language = new Language();
         expression = new Expression();
         execution = new Execution();
+        alternativeContext = new AlternativeContext();
     }
 
     /**
@@ -146,6 +148,24 @@ public class ConfigurationEngineDefaults implements Serializable
     public Execution getExecution()
     {
         return execution;
+    }
+
+    /**
+     * For software-provider-interface use.
+     * @return alternative context
+     */
+    public AlternativeContext getAlternativeContext()
+    {
+        return alternativeContext;
+    }
+
+    /**
+     * For software-provider-interface use.
+     * @param alternativeContext alternative context
+     */
+    public void setAlternativeContext(AlternativeContext alternativeContext)
+    {
+        this.alternativeContext = alternativeContext;
     }
 
     /**
@@ -1130,5 +1150,19 @@ public class ConfigurationEngineDefaults implements Serializable
          * Nanosecond time source from a wallclock-adjusted System.nanoTime
          */
         NANO
+    }
+
+    public static class AlternativeContext implements Serializable {
+        private String runtime;
+
+        public String getRuntime()
+        {
+            return runtime;
+        }
+
+        public void setRuntime(String runtime)
+        {
+            this.runtime = runtime;
+        }
     }
 }

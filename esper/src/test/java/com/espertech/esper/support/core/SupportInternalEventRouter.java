@@ -43,4 +43,14 @@ public class SupportInternalEventRouter implements InternalEventRouter
     public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest)
     {
     }
+
+    public boolean isHasPreprocessing()
+    {
+        return false;
+    }
+
+    public EventBean preprocess(EventBean event, ExprEvaluatorContext engineFilterAndDispatchTimeContext)
+    {
+        return null;
+    }
 }

@@ -43,4 +43,6 @@ public interface EPRuntimeSPI extends EPRuntime
      * @return event count routed externally
      */
     public long getRoutedExternal();
+
+    public void destroy();
 }

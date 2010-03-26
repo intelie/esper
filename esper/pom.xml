@@ -17,7 +17,7 @@ mvn javadoc:javadoc
 	<name>Esper</name>
 	<groupId>com.espertech</groupId>
 	<artifactId>esper</artifactId>
-	<version>3.4.0</version>
+	<version>3.5.0</version>
 	<packaging>jar</packaging>
 	<inceptionYear>2005</inceptionYear>
 	<url>http://esper.codehaus.org</url>

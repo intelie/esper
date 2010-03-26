@@ -3,7 +3,7 @@
 	<name>Esper IO</name>
 	<groupId>com.espertech</groupId>
 	<artifactId>esperio-stax</artifactId>
-	<version>3.4.0</version>
+	<version>3.5.0</version>
 	<packaging>jar</packaging>
 	<description>Esper CEP engine for Java - Input Output Adapters</description>
 	<inceptionYear>2005</inceptionYear>
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>
-			<version>3.4.0</version>
+			<version>3.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>

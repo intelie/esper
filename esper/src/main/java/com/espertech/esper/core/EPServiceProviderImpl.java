@@ -25,6 +25,7 @@ import com.espertech.esper.schedule.SchedulingMgmtService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.timer.TimerService;
+import com.espertech.esper.timer.TimerCallback;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
 import org.apache.commons.logging.Log;
@@ -36,6 +37,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
@@ -355,7 +358,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             }
             catch (IllegalAccessException e)
             {
-                throw new ConfigurationException("Illegal access instantiating class '" + clazz);
+                throw new ConfigurationException("Illegal access instantiating class '"  + clazz + "'");
             }
 
             epServicesContextFactory = (EPServicesContextFactory) obj;
@@ -364,13 +367,68 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         EPServicesContext services = epServicesContextFactory.createServicesContext(this, configSnapshot);
 
         // New runtime
-        EPRuntimeImpl runtime = new EPRuntimeImpl(services);
+        EPRuntimeSPI runtimeSPI;
+        InternalEventRouteDest routeDest;
+        TimerCallback timerCallback;
+        String runtimeClassName = configSnapshot.getEngineDefaults().getAlternativeContext().getRuntime();
+        if (runtimeClassName == null)
+        {
+            // Check system properties
+            runtimeClassName = System.getProperty("ESPER_EPRUNTIME_CLASS");
+        }
+        if (runtimeClassName == null)
+        {
+            EPRuntimeImpl runtimeImpl = new EPRuntimeImpl(services);
+            runtimeSPI = runtimeImpl;
+            routeDest = runtimeImpl;
+            timerCallback = runtimeImpl;
+        }
+        else
+        {
+            Class clazz;
+            try
+            {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                clazz = Class.forName(runtimeClassName, true, cl);
+            }
+            catch (ClassNotFoundException e)
+            {
+                throw new ConfigurationException("Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
+            }
 
-        runtime.setInternalEventRouterImpl(services.getInternalEventRouter());
-        services.setInternalEventEngineRouteDest(runtime);
+            Object obj;
+            try
+            {
+                Constructor c = clazz.getConstructor(EPServicesContext.class);
+                obj = c.newInstance(services);
+            }
+            catch (NoSuchMethodException e)
+            {
+                throw new ConfigurationException("Class '" + clazz + "' cannot be instantiated, constructor accepting services was not found");
+            }
+            catch (InstantiationException e)
+            {
+                throw new ConfigurationException("Class '" + clazz + "' cannot be instantiated");
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new ConfigurationException("Illegal access instantiating class '" + clazz + "'");
+            }
+            catch (InvocationTargetException e)
+            {
+                throw new ConfigurationException("Exception invoking constructor of class '" + clazz + "'");
+            }
+
+            runtimeSPI = (EPRuntimeSPI) obj;
+            routeDest = (InternalEventRouteDest) obj;
+            timerCallback = (TimerCallback) obj;
+        }
+
+        routeDest.setInternalEventRouter(services.getInternalEventRouter());
+        services.setInternalEventEngineRouteDest(routeDest);
 
         // Configure services to use the new runtime
-        services.getTimerService().setCallback(runtime);
+        services.getTimerService().setCallback(timerCallback);
 
         // Statement lifycycle init
         services.getStatementLifecycleSvc().init();
@@ -397,7 +455,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         }
 
         // Save engine instance
-        engine = new EPServiceEngine(services, runtime, admin);
+        engine = new EPServiceEngine(services, runtimeSPI, admin);
 
         // Load and initialize adapter loader classes
         loadAdapters(services);
@@ -411,7 +469,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         // Start metrics reporting, if any
         if (configSnapshot.getEngineDefaults().getMetricsReporting().isEnableMetricsReporting())
         {
-            services.getMetricsReportingService().setContext(runtime, services);
+            services.getMetricsReportingService().setContext(runtimeSPI, services);
         }
 
         // call initialize listeners
@@ -490,13 +548,13 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     private static class EPServiceEngine
     {
         private EPServicesContext services;
-        private EPRuntimeImpl runtime;
+        private EPRuntimeSPI runtimeSPI;
         private EPAdministratorImpl admin;
 
-        public EPServiceEngine(EPServicesContext services, EPRuntimeImpl runtime, EPAdministratorImpl admin)
+        public EPServiceEngine(EPServicesContext services, EPRuntimeSPI runtimeSPI, EPAdministratorImpl admin)
         {
             this.services = services;
-            this.runtime = runtime;
+            this.runtimeSPI = runtimeSPI;
             this.admin = admin;
         }
 
@@ -505,9 +563,9 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             return services;
         }
 
-        public EPRuntimeImpl getRuntime()
+        public EPRuntimeSPI getRuntime()
         {
-            return runtime;
+            return runtimeSPI;
         }
 
         public EPAdministratorImpl getAdmin()

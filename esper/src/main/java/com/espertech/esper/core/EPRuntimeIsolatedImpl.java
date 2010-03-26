@@ -748,5 +748,10 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
         }
     }
 
+    public void setInternalEventRouter(InternalEventRouter internalEventRouter)
+    {
+        throw new UnsupportedOperationException("Isolated runtime does not route itself");
+    }
+
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);
 }

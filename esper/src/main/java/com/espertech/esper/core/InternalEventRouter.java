@@ -47,4 +47,8 @@ public interface InternalEventRouter
      * @param routeDest routing destination
      */
     public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext);
+
+    public boolean isHasPreprocessing();
+
+    public EventBean preprocess(EventBean event, ExprEvaluatorContext engineFilterAndDispatchTimeContext);
 }
