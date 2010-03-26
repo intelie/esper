@@ -188,6 +188,7 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
                         valueContext.setColumnName(columnName);
                         valueContext.setColumnNumber(colNum);
                         valueContext.setColumnValue(value);
+                        valueContext.setResultSet(resultSet);
                         value = columnTypeConversionHook.getColumnValue(valueContext);
                     }
 
@@ -202,6 +203,7 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
                 else {
                     rowContext.setValues(row);
                     rowContext.setRowNum(rowNum);
+                    rowContext.setResultSet(resultSet);
                     Object rowData = outputRowConversionHook.getOutputRow(rowContext);
                     if (rowData != null) {
                         eventBeanRow = eventAdapterService.adapterForTypedBean(rowData, (BeanEventType) eventType);
