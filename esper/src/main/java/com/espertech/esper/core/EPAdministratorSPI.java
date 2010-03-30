@@ -60,4 +60,6 @@ public interface EPAdministratorSPI extends EPAdministrator
      * @return model representation
      */
     public MatchRecognizeRegEx compileMatchRecognizePatternToSODA(String matchRecogPatternExpression);
+
+    public void destroy();
 }

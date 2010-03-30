@@ -436,7 +436,56 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         // New admin
         ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService(), services.getEngineImportService(), services.getVariableService(), services.getEngineSettingsService(), services.getValueAddEventService(), services.getMetricsReportingService(), services.getStatementEventTypeRefService(), services.getStatementVariableRefService());
         SelectClauseStreamSelectorEnum defaultStreamSelector = SelectClauseStreamSelectorEnum.mapFromSODA(configSnapshot.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
-        EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps, defaultStreamSelector);
+        EPAdministratorSPI adminSPI;
+        String adminClassName = configSnapshot.getEngineDefaults().getAlternativeContext().getAdmin();
+        EPAdministratorContext adminContext = new EPAdministratorContext(services, configOps, defaultStreamSelector);
+        if (adminClassName == null)
+        {
+            // Check system properties
+            adminClassName = System.getProperty("ESPER_EPADMIN_CLASS");
+        }
+        if (adminClassName == null)
+        {
+            adminSPI = new EPAdministratorImpl(adminContext);
+        }
+        else
+        {
+            Class clazz;
+            try
+            {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                clazz = Class.forName(adminClassName, true, cl);
+            }
+            catch (ClassNotFoundException e)
+            {
+                throw new ConfigurationException("Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
+            }
+
+            Object obj;
+            try
+            {
+                Constructor c = clazz.getConstructor(EPAdministratorContext.class);
+                obj = c.newInstance(adminContext);
+            }
+            catch (NoSuchMethodException e)
+            {
+                throw new ConfigurationException("Class '" + clazz + "' cannot be instantiated, constructor accepting context was not found");
+            }
+            catch (InstantiationException e)
+            {
+                throw new ConfigurationException("Class '" + clazz + "' cannot be instantiated");
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new ConfigurationException("Illegal access instantiating class '" + clazz + "'");
+            }
+            catch (InvocationTargetException e)
+            {
+                throw new ConfigurationException("Exception invoking constructor of class '" + clazz + "'");
+            }
+
+            adminSPI = (EPAdministratorSPI) obj;
+        }
 
         // Start clocking
         if (configSnapshot.getEngineDefaults().getThreading().isInternalTimerEnabled())
@@ -455,7 +504,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         }
 
         // Save engine instance
-        engine = new EPServiceEngine(services, runtimeSPI, admin);
+        engine = new EPServiceEngine(services, runtimeSPI, adminSPI);
 
         // Load and initialize adapter loader classes
         loadAdapters(services);
@@ -549,9 +598,9 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     {
         private EPServicesContext services;
         private EPRuntimeSPI runtimeSPI;
-        private EPAdministratorImpl admin;
+        private EPAdministratorSPI admin;
 
-        public EPServiceEngine(EPServicesContext services, EPRuntimeSPI runtimeSPI, EPAdministratorImpl admin)
+        public EPServiceEngine(EPServicesContext services, EPRuntimeSPI runtimeSPI, EPAdministratorSPI admin)
         {
             this.services = services;
             this.runtimeSPI = runtimeSPI;
@@ -568,7 +617,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             return runtimeSPI;
         }
 
-        public EPAdministratorImpl getAdmin()
+        public EPAdministratorSPI getAdmin()
         {
             return admin;
         }

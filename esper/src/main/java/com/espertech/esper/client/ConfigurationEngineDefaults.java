@@ -1154,6 +1154,7 @@ public class ConfigurationEngineDefaults implements Serializable
 
     public static class AlternativeContext implements Serializable {
         private String runtime;
+        private String admin;
 
         public String getRuntime()
         {
@@ -1163,6 +1164,16 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setRuntime(String runtime)
         {
             this.runtime = runtime;
+        }
+
+        public String getAdmin()
+        {
+            return admin;
+        }
+
+        public void setAdmin(String admin)
+        {
+            this.admin = admin;
         }
     }
 }

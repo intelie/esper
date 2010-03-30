@@ -8,17 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.epl.parse.*;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.pattern.EvalNode;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.CommonTreeNodeStream;
-import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,63 +21,19 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EPAdministratorImpl implements EPAdministratorSPI
 {
-    private static ParseRuleSelector patternParseRule;
-    private static ParseRuleSelector eplParseRule;
-    private static WalkRuleSelector patternWalkRule;
-    private static WalkRuleSelector eplWalkRule;
-
     private EPServicesContext services;
     private ConfigurationOperations configurationOperations;
     private SelectClauseStreamSelectorEnum defaultStreamSelector;
 
-    static
-    {
-        patternParseRule = new ParseRuleSelector()
-        {
-            public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException
-            {
-                EsperEPL2GrammarParser.startPatternExpressionRule_return r = parser.startPatternExpressionRule();
-                return (Tree) r.getTree();
-            }
-        };
-        patternWalkRule = new WalkRuleSelector()
-        {
-            public void invokeWalkRule(EPLTreeWalker walker) throws RecognitionException
-            {
-                walker.startPatternExpressionRule();
-            }
-        };
-
-        eplParseRule = new ParseRuleSelector()
-        {
-            public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException
-            {
-                EsperEPL2GrammarParser.startEPLExpressionRule_return r = parser.startEPLExpressionRule();
-                return (Tree) r.getTree();
-            }
-        };
-        eplWalkRule = new WalkRuleSelector()
-        {
-            public void invokeWalkRule(EPLTreeWalker walker) throws RecognitionException
-            {
-                walker.startEPLExpressionRule();
-            }
-        };
-    }
-
     /**
      * Constructor - takes the services context as argument.
-     * @param services - references to services
-     * @param configurationOperations - runtime configuration operations
-     * @param defaultStreamSelector - the configuration for which insert or remove streams (or both) to produce
+     * @param adminContext - administrative context
      */
-    public EPAdministratorImpl(EPServicesContext services,
-                               ConfigurationOperations configurationOperations,
-                               SelectClauseStreamSelectorEnum defaultStreamSelector)
+    public EPAdministratorImpl(EPAdministratorContext adminContext)
     {
-        this.services = services;
-        this.configurationOperations = configurationOperations;
-        this.defaultStreamSelector = defaultStreamSelector;
+        this.services = adminContext.getServices();
+        this.configurationOperations = adminContext.getConfigurationOperations();
+        this.defaultStreamSelector = adminContext.getDefaultStreamSelector();
     }
 
     public EPStatement createPattern(String onExpression) throws EPException
@@ -128,7 +78,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     private EPStatement createPatternStmt(String expression, String statementName, Object userObject) throws EPException
     {
-        StatementSpecRaw rawPattern = compilePattern(expression, expression, true);
+        StatementSpecRaw rawPattern = EPAdministratorHelper.compilePattern(expression, expression, true, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName, userObject, null);
 
         /**
@@ -141,7 +91,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     private EPStatement createEPLStmt(String eplStatement, String statementName, Object userObject) throws EPException
     {
-        StatementSpecRaw statementSpec = compileEPL(eplStatement, eplStatement, true, statementName, services, defaultStreamSelector);
+        StatementSpecRaw statementSpec = EPAdministratorHelper.compileEPL(eplStatement, eplStatement, true, statementName, services, defaultStreamSelector);
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
 
         log.debug(".createEPLStmt Statement created and started");
@@ -186,7 +136,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     public EPPreparedStatement prepareEPL(String eplExpression) throws EPException
     {
         // compile to specification
-        StatementSpecRaw statementSpec = compileEPL(eplExpression, eplExpression, true, null, services, defaultStreamSelector);
+        StatementSpecRaw statementSpec = EPAdministratorHelper.compileEPL(eplExpression, eplExpression, true, null, services, defaultStreamSelector);
 
         // map to object model thus finding all substitution parameters and their indexes
         StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
@@ -198,7 +148,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public EPPreparedStatement preparePattern(String patternExpression) throws EPException
     {
-        StatementSpecRaw rawPattern = compilePattern(patternExpression, patternExpression, true);
+        StatementSpecRaw rawPattern = EPAdministratorHelper.compilePattern(patternExpression, patternExpression, true, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
 
         // map to object model thus finding all substitution parameters and their indexes
         StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(rawPattern);
@@ -235,7 +185,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public EPStatementObjectModel compileEPL(String eplStatement) throws EPException
     {
-        StatementSpecRaw statementSpec = compileEPL(eplStatement, eplStatement, true, null, services, defaultStreamSelector);
+        StatementSpecRaw statementSpec = EPAdministratorHelper.compileEPL(eplStatement, eplStatement, true, null, services, defaultStreamSelector);
         StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
         if (unmapped.getIndexedParams().size() != 0)
         {
@@ -283,121 +233,16 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         configurationOperations = null;
     }
 
-    /**
-     * Compile the EPL.
-     * @param eplStatement expression to compile
-     * @param statementName is the name of the statement
-     * @param services is the context
-     * @param defaultStreamSelector - the configuration for which insert or remove streams (or both) to produce
-     * @param eplStatementForErrorMsg - use this text for the error message
-     * @param addPleaseCheck - indicator to add a "please check" wording for stack paraphrases
-     * @return statement specification
-     */
-    protected static StatementSpecRaw compileEPL(String eplStatement, String eplStatementForErrorMsg, boolean addPleaseCheck, String statementName, EPServicesContext services, SelectClauseStreamSelectorEnum defaultStreamSelector)
-    {
-        if (log.isDebugEnabled())
-        {
-            log.debug(".createEPLStmt statementName=" + statementName + " eplStatement=" + eplStatement);
-        }
-
-        ParseResult parseResult = ParseHelper.parse(eplStatement, eplStatementForErrorMsg, addPleaseCheck, eplParseRule);
-        Tree ast = parseResult.getTree();
-        CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
-
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI(), services.getConfigSnapshot());
-
-        try
-        {
-            ParseHelper.walk(ast, walker, eplWalkRule, eplStatement, eplStatementForErrorMsg);
-        }
-        catch (ASTWalkException ex)
-        {
-            log.error(".createEPL Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), eplStatementForErrorMsg);
-        }
-        catch (EPStatementSyntaxException ex)
-        {
-            throw ex;
-        }
-        catch (RuntimeException ex)
-        {
-            String message = "Error in expression";
-            log.debug(message, ex);
-            throw new EPStatementException(getNullableErrortext(message, ex.getMessage()), eplStatementForErrorMsg);
-        }
-
-        if (log.isDebugEnabled())
-        {
-            ASTUtil.dumpAST(ast);
-        }
-
-        StatementSpecRaw raw = walker.getStatementSpec();
-        raw.setExpressionNoAnnotations(parseResult.getExpressionWithoutAnnotations());
-        return raw;
-    }
-
-    private StatementSpecRaw compilePattern(String expression, String expressionForErrorMessage, boolean addPleaseCheck)
-    {
-        // Parse and walk
-        ParseResult parseResult = ParseHelper.parse(expression, expressionForErrorMessage, addPleaseCheck, patternParseRule);
-        Tree ast = parseResult.getTree();
-        CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI(), services.getConfigSnapshot());
-
-        try
-        {
-            ParseHelper.walk(ast, walker, patternWalkRule, expression, expressionForErrorMessage);
-        }
-        catch (ASTWalkException ex)
-        {
-            log.debug(".createPattern Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), expression);
-        }
-        catch (EPStatementSyntaxException ex)
-        {
-            throw ex;
-        }
-        catch (RuntimeException ex)
-        {
-            String message = "Error in expression";
-            log.debug(message, ex);
-            throw new EPStatementException(getNullableErrortext(message, ex.getMessage()), expression);
-        }
-
-        if (log.isDebugEnabled())
-        {
-            ASTUtil.dumpAST(ast);
-        }
-
-        if (walker.getStatementSpec().getStreamSpecs().size() > 1)
-        {
-            throw new IllegalStateException("Unexpected multiple stream specifications encountered");
-        }
-
-        // Get pattern specification
-        PatternStreamSpecRaw patternStreamSpec = (PatternStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);
-
-        // Create statement spec, set pattern stream, set wildcard select
-        StatementSpecRaw statementSpec = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
-        statementSpec.getStreamSpecs().add(patternStreamSpec);
-        statementSpec.getSelectClauseSpec().getSelectExprList().clear();
-        statementSpec.getSelectClauseSpec().getSelectExprList().add(new SelectClauseElementWildcard());
-        statementSpec.setAnnotations(walker.getStatementSpec().getAnnotations());
-        statementSpec.setExpressionNoAnnotations(parseResult.getExpressionWithoutAnnotations());
-
-        return statementSpec;
-    }
-
     public EvalNode compilePatternToNode(String pattern) throws EPException
     {
-        StatementSpecRaw raw = this.compilePattern(pattern, pattern, false);
+        StatementSpecRaw raw = EPAdministratorHelper.compilePattern(pattern, pattern, false, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         return ((PatternStreamSpecRaw) raw.getStreamSpecs().get(0)).getEvalNode();    
     }
 
     public ExprNode compileExpression(String expression) throws EPException
     {
         String toCompile = "select * from java.lang.Object.win:time(" + expression + ")";
-        StatementSpecRaw raw = compileEPL(toCompile, expression, false, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+        StatementSpecRaw raw = EPAdministratorHelper.compileEPL(toCompile, expression, false, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         return raw.getStreamSpecs().get(0).getViewSpecs().get(0).getObjectParameters().get(0);
     }
 
@@ -428,14 +273,14 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     public AnnotationPart compileAnnotationToSODA(String annotationExpression)
     {
         String toCompile = annotationExpression + " select * from java.lang.Object";
-        StatementSpecRaw raw = compileEPL(toCompile, annotationExpression, false, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+        StatementSpecRaw raw = EPAdministratorHelper.compileEPL(toCompile, annotationExpression, false, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         return StatementSpecMapper.unmap(raw.getAnnotations().get(0));
     }
 
     public MatchRecognizeRegEx compileMatchRecognizePatternToSODA(String matchRecogPatternExpression)
     {
         String toCompile = "select * from java.lang.Object match_recognize(measures a.b as c pattern (" + matchRecogPatternExpression + ") define A as true)";
-        StatementSpecRaw raw = compileEPL(toCompile, matchRecogPatternExpression, false, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+        StatementSpecRaw raw = EPAdministratorHelper.compileEPL(toCompile, matchRecogPatternExpression, false, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         return StatementSpecMapper.unmap(raw.getMatchRecognizeSpec().getPattern());
     }
 
