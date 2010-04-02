@@ -10,6 +10,7 @@ package com.espertech.esper.epl.parse;
 
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.client.EPException;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
@@ -383,6 +384,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case CREATE_INDEX_EXPR:
                 leaveCreateIndex(node);
                 break;
+            case CREATE_SCHEMA_EXPR:
+                leaveCreateSchema(node);
+                break;
             case CREATE_WINDOW_SELECT_EXPR:
                 leaveCreateWindowSelect(node);
                 break;
@@ -552,20 +556,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         StreamSpecOptions streamSpecOptions = new StreamSpecOptions(false,isRetainUnion,isRetainIntersection);
 
         // handle table-create clause, i.e. (col1 type, col2 type)
-        for (int nodeNum = 0; nodeNum < node.getChildCount(); nodeNum++) {
-            if (node.getChild(nodeNum).getType() == CREATE_WINDOW_COL_TYPE_LIST)
-            {
-                Tree parent = node.getChild(nodeNum);
-                for (int i = 0; i < parent.getChildCount(); i++)
-                {
-                    String name = parent.getChild(i).getChild(0).getText();
-                    String type = parent.getChild(i).getChild(1).getText();
-                    Class clazz = JavaClassHelper.getClassForSimpleName(type);
-                    SelectClauseExprRawSpec selectElement = new SelectClauseExprRawSpec(new ExprConstantNode(clazz), name);
-                    statementSpec.getSelectClauseSpec().add(selectElement);
-                }
-            }
-        }
+        statementSpec.getSelectClauseSpec().addAll(getColTypeList(node));
 
         boolean isInsert = false;
         ExprNode insertWhereExpr = null;
@@ -587,6 +578,29 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 
+    private List<SelectClauseElementRaw> getColTypeList(Tree node)
+    {
+        List<SelectClauseElementRaw> result = new ArrayList<SelectClauseElementRaw>();
+        for (int nodeNum = 0; nodeNum < node.getChildCount(); nodeNum++) {
+            if (node.getChild(nodeNum).getType() == CREATE_COL_TYPE_LIST)
+            {
+                Tree parent = node.getChild(nodeNum);
+                for (int i = 0; i < parent.getChildCount(); i++)
+                {
+                    String name = parent.getChild(i).getChild(0).getText();
+                    String type = parent.getChild(i).getChild(1).getText();
+                    Class clazz = JavaClassHelper.getClassForSimpleName(type);
+                    if (clazz == null) {
+                        throw new ASTWalkException("The type '" + type + "' is not a recognized type");
+                    }
+                    SelectClauseExprRawSpec selectElement = new SelectClauseExprRawSpec(new ExprConstantNode(clazz), name);
+                    result.add(selectElement);
+                }
+            }
+        }
+        return result;
+    }
+
     private void leaveCreateIndex(Tree node)
     {
         log.debug(".leaveCreateIndex");
@@ -606,6 +620,73 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         statementSpec.setCreateIndexDesc(new CreateIndexDesc(indexName, windowName, columns));
+    }
+
+    private void leaveCreateSchema(Tree node)
+    {
+        log.debug(".leaveCreateSchema");
+
+        String schemaName = node.getChild(0).getText();
+
+        List<ColumnDesc> columnTypes = new ArrayList<ColumnDesc>();
+        for (int nodeNum = 0; nodeNum < node.getChildCount(); nodeNum++) {
+            if (node.getChild(nodeNum).getType() == CREATE_COL_TYPE_LIST)
+            {
+                Tree parent = node.getChild(nodeNum);
+                for (int i = 0; i < parent.getChildCount(); i++)
+                {
+                    String name = parent.getChild(i).getChild(0).getText();
+                    String type = parent.getChild(i).getChild(1).getText();
+                    boolean isArray = false;
+                    if (parent.getChild(i).getChildCount() > 2) {
+                        isArray = true;
+                    }
+                    columnTypes.add(new ColumnDesc(name, type, isArray));
+                }
+            }
+        }
+
+        // get model-after types (could be multiple for variants)
+        Set<String> typeNames = new HashSet<String>();
+        for (int i = 0; i < node.getChildCount(); i++) {
+            if (node.getChild(i).getType() == VARIANT_LIST) {
+                for (int j = 0; j < node.getChild(i).getChildCount(); j++) {
+                    typeNames.add(node.getChild(i).getChild(j).getText());
+                }
+            }
+        }
+
+        // get inherited
+        Set<String> inherited = new LinkedHashSet<String>();
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Tree p = node.getChild(i);
+            if (p.getType() == CREATE_SCHEMA_EXPR_INH) {
+                if (!p.getChild(0).getText().toLowerCase().equals("inherits")) {
+                    throw new EPException("Expected 'inherits' keyword after create-schema clause but encountered '" + p.getChild(0).getText() + "'");
+                }
+                for (int j = 1; j < p.getChildCount(); j++) {
+                    if (p.getChild(j).getType() == EXPRCOL) {
+                        for (int k = 0; k < p.getChild(j).getChildCount(); k++) {
+                            inherited.add(p.getChild(j).getChild(k).getText());
+                        }
+                    }
+                }
+            }
+        }
+
+        // get qualifier
+        boolean variant = false;
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Tree p = node.getChild(i);
+            if (p.getType() == CREATE_SCHEMA_EXPR_QUAL) {
+                if (!p.getChild(0).getText().toLowerCase().equals("variant")) {
+                    throw new EPException("Expected 'variant' keyword after create-schema clause but encountered '" + p.getChild(0).getText() + "'");
+                }
+                variant = true;
+            }
+        }
+        statementSpec.getStreamSpecs().add(new FilterStreamSpecRaw(new FilterSpecRaw(Object.class.getName(), Collections.EMPTY_LIST, null), Collections.EMPTY_LIST, null, new StreamSpecOptions()));
+        statementSpec.setCreateSchemaDesc(new CreateSchemaDesc(schemaName, typeNames, columnTypes, inherited, variant));
     }
 
     private void leaveCreateVariable(Tree node)

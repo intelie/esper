@@ -420,6 +420,9 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             String property = (String) entry.getKey();
             String className = (String) entry.getValue();
             Class clazz = JavaClassHelper.getClassForSimpleName(className);
+            if (clazz == null) {
+                throw new ConfigurationException("The type '" + className + "' is not a recognized type");
+            }
             propertyTypes.put(property, clazz);
         }
         return propertyTypes;

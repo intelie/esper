@@ -1056,6 +1056,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getCreateWindowDesc(),
                 spec.getCreateIndexDesc(),
                 spec.getCreateVariableDesc(),
+                spec.getCreateSchemaDesc(),
                 spec.getInsertIntoDesc(),
                 spec.getSelectStreamSelectorEnum(),
                 selectClauseCompiled,

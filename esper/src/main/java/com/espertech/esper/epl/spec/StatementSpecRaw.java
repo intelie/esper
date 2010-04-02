@@ -27,6 +27,7 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     private CreateWindowDesc createWindowDesc;
     private CreateVariableDesc createVariableDesc;
     private CreateIndexDesc createIndexDesc;
+    private CreateSchemaDesc createSchemaDesc;
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private SelectClauseSpecRaw selectClauseSpec = new SelectClauseSpecRaw();
@@ -424,5 +425,15 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
      */
     public void setCreateIndexDesc(CreateIndexDesc createIndexDesc) {
         this.createIndexDesc = createIndexDesc;
+    }
+
+    public CreateSchemaDesc getCreateSchemaDesc()
+    {
+        return createSchemaDesc;
+    }
+
+    public void setCreateSchemaDesc(CreateSchemaDesc createSchemaDesc)
+    {
+        this.createSchemaDesc = createSchemaDesc;
     }
 }

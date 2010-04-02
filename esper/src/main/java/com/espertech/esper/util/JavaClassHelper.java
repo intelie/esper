@@ -871,7 +871,7 @@ public class JavaClassHelper
         }
         catch (ClassNotFoundException ex)
         {
-            throw new EventAdapterException("Unable to load class '" + boxedClassName + "', class not found", ex);
+            return null;
         }
     }
 

@@ -14,6 +14,7 @@ import com.espertech.esper.support.epl.SupportPluginAggregationMethodOne;
 import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.timer.TimeSourceServiceImpl;
 import com.espertech.esper.type.OuterJoinType;
 import junit.framework.TestCase;
@@ -29,6 +30,43 @@ public class TestEPLTreeWalker extends TestCase
     private static String EXPRESSION = "select * from " +
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
+
+    public void testWalkCreateSchema() throws Exception
+    {
+        String expression = "create schema MyName as com.company.SupportBean";
+        EPLTreeWalker walker = parseAndWalkEPL(expression);
+        CreateSchemaDesc schema = walker.getStatementSpec().getCreateSchemaDesc();
+        assertEquals("MyName", schema.getSchemaName());
+        ArrayAssertionUtil.assertEqualsExactOrder(schema.getTypes().toArray(), "com.company.SupportBean".split(","));
+        assertTrue(schema.getInherits().isEmpty());
+        assertTrue(schema.getColumns().isEmpty());
+        assertFalse(schema.isVariant());
+
+        expression = "create schema MyName (col1 string, col2 int, col3 Type[]) inherits InheritedType";
+        walker = parseAndWalkEPL(expression);
+        schema = walker.getStatementSpec().getCreateSchemaDesc();
+        assertEquals("MyName", schema.getSchemaName());
+        assertTrue(schema.getTypes().isEmpty());
+        ArrayAssertionUtil.assertEqualsExactOrder(schema.getInherits().toArray(), "InheritedType".split(","));
+        assertSchema(schema.getColumns().get(0), "col1", "string", false);
+        assertSchema(schema.getColumns().get(1), "col2", "int", false);
+        assertSchema(schema.getColumns().get(2), "col3", "Type", true);
+
+        expression = "create variant schema MyName as MyNameTwo,MyNameThree";
+        walker = parseAndWalkEPL(expression);
+        schema = walker.getStatementSpec().getCreateSchemaDesc();
+        assertEquals("MyName", schema.getSchemaName());
+        ArrayAssertionUtil.assertEqualsExactOrder(schema.getTypes().toArray(), "MyNameTwo,MyNameThree".split(","));
+        assertTrue(schema.getInherits().isEmpty());
+        assertTrue(schema.getColumns().isEmpty());
+        assertTrue(schema.isVariant());
+    }
+
+    private void assertSchema(ColumnDesc element, String name, String type, boolean isArray) {
+        assertEquals(name, element.getName());
+        assertEquals(type, element.getType());
+        assertEquals(isArray, element.isArray());
+    }
 
     public void testWalkCreateIndex() throws Exception
     {

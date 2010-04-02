@@ -206,14 +206,9 @@ public class VariableServiceImpl implements VariableService
     public void createNewVariable(String variableName, String variableType, Object value, StatementExtensionSvcContext extensionServicesContext) throws VariableExistsException, VariableTypeException
     {
         // Determime the variable type
-        Class type = null;
+        Class type = JavaClassHelper.getClassForSimpleName(variableType);
         EventType eventType = null;
-        try
-        {
-            type = JavaClassHelper.getClassForSimpleName(variableType);
-        }
-        catch (Throwable t)
-        {
+        if (type == null) {
             if (variableType.toLowerCase().equals("object")) {
                 type = Object.class;
             }

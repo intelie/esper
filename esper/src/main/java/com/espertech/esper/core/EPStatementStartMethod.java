@@ -8,14 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.client.EPStatementException;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.VariableValueException;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.annotation.HookType;
 import com.espertech.esper.client.hook.SQLColumnTypeConversion;
 import com.espertech.esper.client.hook.SQLOutputRowConversion;
-import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.agg.AggregationService;
@@ -44,6 +40,7 @@ import com.espertech.esper.epl.view.FilterExprView;
 import com.espertech.esper.epl.view.OutputConditionExpression;
 import com.espertech.esper.epl.view.OutputProcessView;
 import com.espertech.esper.epl.view.OutputProcessViewFactory;
+import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.pattern.EvalRootNode;
@@ -62,6 +59,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -121,6 +119,10 @@ public class EPStatementStartMethod
         {
             return startCreateIndex();
         }
+        else if (statementSpec.getCreateSchemaDesc() != null)
+        {
+            return startCreateSchema();
+        }
         else if (statementSpec.getCreateVariableDesc() != null)
         {
             return startCreateVariable(isNewStatement);
@@ -138,48 +140,94 @@ public class EPStatementStartMethod
         final NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(spec.getWindowName());
         processor.getRootView().addExplicitIndex(spec.getWindowName(), spec.getIndexName(), spec.getColumns());
 
-        Viewable viewable = new Viewable() {
-
-            public View addView(View view)
-            {
-                return null;
-            }
-
-            public List<View> getViews()
-            {
-                return null;
-            }
-
-            public boolean removeView(View view)
-            {
-                return false;
-            }
-
-            public void removeAllViews()
-            {
-            }
-
-            public boolean hasViews()
-            {
-                return false;
-            }
-
-            public EventType getEventType()
-            {
-                return processor.getNamedWindowType();
-            }
-
-            public Iterator<EventBean> iterator()
-            {
-                return new ArrayEventIterator(null);
-            }
-        };
         EPStatementStopMethod stopMethod = new EPStatementStopMethod() {
             public void stop()
             {
                 processor.getRootView().removeExplicitIndex(spec.getIndexName());
             }
         };
+        Viewable viewable = new ViewableDefaultImpl(processor.getNamedWindowType());
+        EPStatementStartResult result = new EPStatementStartResult(viewable, stopMethod, null);
+        return result;
+    }
+
+    private EPStatementStartResult startCreateSchema() throws ExprValidationException
+    {
+        final CreateSchemaDesc spec = statementSpec.getCreateSchemaDesc();
+        EventType eventType = null;
+
+        try {
+            if (!spec.isVariant()) {
+                if (spec.getTypes().isEmpty()) {
+                    Map<String, Object> typing = new HashMap<String, Object>();
+                    Set<String> columnNames = new HashSet<String>();
+                    for (ColumnDesc column : spec.getColumns()) {
+                        boolean added = columnNames.add(column.getName());
+                        if (!added) {
+                            throw new ExprValidationException("Duplicate column name '" + column.getName() + "'");
+                        }
+                        Class plain = JavaClassHelper.getClassForSimpleName(column.getType());
+                        if (plain != null) {
+                            if (column.isArray()) {
+                                plain = Array.newInstance(plain, 0).getClass();
+                            }
+                            typing.put(column.getName(), plain);
+                        }
+                        else {
+                            if (column.isArray()) {
+                                typing.put(column.getName(), column.getType() + "[]");
+                            }
+                            else {
+                                typing.put(column.getName(), column.getType());
+                            }
+                        }
+                    }
+                    eventType = services.getEventAdapterService().addNestableMapType(spec.getSchemaName(), typing, spec.getInherits(), false, false, false);
+                }
+                else {
+                    if (spec.getTypes().size() == 1) {
+                        eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), spec.getTypes().iterator().next(), false);
+                    }
+                }
+            }
+            else {
+                boolean isAny = false;
+                ConfigurationVariantStream config = new ConfigurationVariantStream();
+                for (String typeName : spec.getTypes()) {
+                    if (typeName.trim().equals("*")) {
+                        isAny = true;
+                        break;
+                    }
+                    config.addEventTypeName(typeName);
+                }
+                if (!isAny) {
+                    config.setTypeVariance(ConfigurationVariantStream.TypeVariance.PREDEFINED);
+                }
+                else {
+                    config.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
+                }
+                services.getValueAddEventService().addVariantStream(spec.getSchemaName(), config, services.getEventAdapterService());
+                eventType = services.getValueAddEventService().getValueAddProcessor(spec.getSchemaName()).getValueAddEventType();
+            }
+        }
+        catch (RuntimeException ex) {
+            throw new ExprValidationException(ex.getMessage(), ex);
+        }
+
+        // enter a reference
+        services.getStatementEventTypeRefService().addReferences(statementContext.getStatementName(), Collections.singleton(spec.getSchemaName()));
+
+        final EventType allocatedEventType = eventType;
+        EPStatementStopMethod stopMethod = new EPStatementStopMethod() {
+            public void stop()
+            {
+                services.getStatementEventTypeRefService().removeReferencesStatement(statementContext.getStatementName());
+                if (services.getStatementEventTypeRefService().getStatementNamesForType(spec.getSchemaName()).isEmpty()) {
+                    services.getEventAdapterService().removeType(allocatedEventType.getName());
+                }
+            }
+        };
+        Viewable viewable = new ViewableDefaultImpl(eventType);
         EPStatementStartResult result = new EPStatementStartResult(viewable, stopMethod, null);
         return result;
     }

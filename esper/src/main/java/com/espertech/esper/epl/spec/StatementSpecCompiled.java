@@ -26,6 +26,7 @@ public class StatementSpecCompiled
     private final CreateWindowDesc createWindowDesc;
     private final CreateIndexDesc createIndexDesc;
     private final CreateVariableDesc createVariableDesc;
+    private final CreateSchemaDesc createSchemaDesc;
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private SelectClauseSpecCompiled selectClauseSpec;
@@ -72,6 +73,7 @@ public class StatementSpecCompiled
                                  CreateWindowDesc createWindowDesc,
                                  CreateIndexDesc createIndexDesc,
                                  CreateVariableDesc createVariableDesc,
+                                 CreateSchemaDesc createSchemaDesc,
                                  InsertIntoDesc insertIntoDesc,
                                  SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum,
                                  SelectClauseSpecCompiled selectClauseSpec,
@@ -94,6 +96,7 @@ public class StatementSpecCompiled
         this.createWindowDesc = createWindowDesc;
         this.createIndexDesc = createIndexDesc;
         this.createVariableDesc = createVariableDesc;
+        this.createSchemaDesc = createSchemaDesc;
         this.insertIntoDesc = insertIntoDesc;
         this.selectStreamDirEnum = selectClauseStreamSelectorEnum;
         this.selectClauseSpec = selectClauseSpec;
@@ -122,6 +125,7 @@ public class StatementSpecCompiled
         createWindowDesc = null;
         createIndexDesc = null;
         createVariableDesc = null;
+        createSchemaDesc = null;
         insertIntoDesc = null;
         selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
         selectClauseSpec = new SelectClauseSpecCompiled(false);
@@ -369,5 +373,10 @@ public class StatementSpecCompiled
     public CreateIndexDesc getCreateIndexDesc()
     {
         return createIndexDesc;
+    }
+
+    public CreateSchemaDesc getCreateSchemaDesc()
+    {
+        return createSchemaDesc;
     }
 }

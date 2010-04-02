@@ -259,17 +259,12 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
                 castToType = castToType.replace("[]", "");
             }
 
-            try
-            {
-                castToTypeClass = JavaClassHelper.getClassForSimpleName(castToType);
-            }
-            catch (EventAdapterException ex)
-            {
-                throw new ConfigurationException("Invalid cast-to type for xpath expression named '" + name + "': " + ex.getMessage());
+            castToTypeClass = JavaClassHelper.getClassForSimpleName(castToType);
+            if (castToTypeClass == null) {
+                throw new ConfigurationException("Invalid cast-to type for xpath expression named '" + name + "', the type is not recognized");
             }
 
-            if (isArray)
-            {
+            if (isArray) {
                 castToTypeClass = Array.newInstance(castToTypeClass, 0).getClass();
             }
         }

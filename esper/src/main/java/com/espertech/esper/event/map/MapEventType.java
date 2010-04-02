@@ -113,7 +113,7 @@ public class MapEventType implements EventTypeSPI
 
     public String getName()
     {
-        return metadata.getPublicName();
+        return typeName;
     }
 
     public EventBeanReader getReader()

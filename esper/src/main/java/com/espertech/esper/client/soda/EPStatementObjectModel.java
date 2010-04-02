@@ -47,6 +47,7 @@ public class EPStatementObjectModel implements Serializable
     private CreateVariableClause createVariable;
     private CreateWindowClause createWindow;
     private CreateIndexClause createIndex;
+    private CreateSchemaClause createSchema;
     private OnClause onExpr;
     private InsertIntoClause insertInto;
     private SelectClause selectClause;
@@ -314,7 +315,12 @@ public class EPStatementObjectModel implements Serializable
             createIndex.toEPL(writer);
             return writer.toString();
         }
-        if (createWindow != null)
+        else if (createSchema != null)
+        {
+            createSchema.toEPL(writer);
+            return writer.toString();
+        }
+        else if (createWindow != null)
         {
             createWindow.toEPL(writer);
 
@@ -345,8 +351,7 @@ public class EPStatementObjectModel implements Serializable
             }
             return writer.toString();
         }
-
-        if (createVariable != null)
+        else if (createVariable != null)
         {
             createVariable.toEPL(writer);
             return writer.toString();
@@ -601,5 +606,15 @@ public class EPStatementObjectModel implements Serializable
      */
     public void setCreateIndex(CreateIndexClause createIndex) {
         this.createIndex = createIndex;
+    }
+
+    public CreateSchemaClause getCreateSchema()
+    {
+        return createSchema;
+    }
+
+    public void setCreateSchema(CreateSchemaClause createSchema)
+    {
+        this.createSchema = createSchema;
     }
 }

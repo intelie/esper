@@ -591,14 +591,9 @@ class ConfigurationParser {
         String variableName = element.getAttributes().getNamedItem("name").getTextContent();
         String type = element.getAttributes().getNamedItem("type").getTextContent();
 
-        Class variableType;
-        try
-        {
-            variableType = JavaClassHelper.getClassForSimpleName(type);
-        }
-        catch (EventAdapterException ex)
-        {
-            throw new ConfigurationException("Invalid variable type for variable '" + variableName + "': " + ex.getMessage());
+        Class variableType = JavaClassHelper.getClassForSimpleName(type);
+        if (variableType == null) {
+            throw new ConfigurationException("Invalid variable type for variable '" + variableName + "', the type is not recognized");
         }
 
         Node initValueNode = element.getAttributes().getNamedItem("initialization-value");

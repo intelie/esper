@@ -69,6 +69,7 @@ tokens
 	RSTREAM='rstream';
 	ISTREAM='istream';
 	IRSTREAM='irstream';
+	SCHEMA='schema';
 	UNIDIRECTIONAL='unidirectional';
 	RETAINUNION='retain-union';
 	RETAININTERSECTION='retain-intersection';
@@ -231,8 +232,8 @@ tokens
 	MATCH_UNTIL_RANGE_HALFCLOSED;
 	MATCH_UNTIL_RANGE_CLOSED;
 	MATCH_UNTIL_RANGE_BOUNDED;
-	CREATE_WINDOW_COL_TYPE_LIST;
-	CREATE_WINDOW_COL_TYPE;
+	CREATE_COL_TYPE_LIST;
+	CREATE_COL_TYPE;
 	NUMBERSETSTAR;
 	ANNOTATION;
 	ANNOTATION_ARRAY;
@@ -241,6 +242,10 @@ tokens
 	LAST_AGGREG;
 	UPDATE_EXPR;
 	ON_SET_EXPR_ITEM;
+	CREATE_SCHEMA_EXPR;
+	CREATE_SCHEMA_EXPR_QUAL;
+	CREATE_SCHEMA_EXPR_INH;
+	VARIANT_LIST;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -434,6 +439,7 @@ tokens
 	parserTokenParaphases.put(RSTREAM, "'rstream'");
 	parserTokenParaphases.put(ISTREAM, "'istream'");
 	parserTokenParaphases.put(IRSTREAM, "'irstream'");
+	parserTokenParaphases.put(SCHEMA, "'schema'");
 	parserTokenParaphases.put(UNIDIRECTIONAL, "'unidirectional'");
 	parserTokenParaphases.put(RETAINUNION, "'retain-union'");
 	parserTokenParaphases.put(RETAININTERSECTION, "'retain-intersection'");
@@ -592,6 +598,7 @@ eplExpression
 	|	createWindowExpr
 	|	createIndexExpr
 	|	createVariableExpr
+	|	createSchemaExpr
 	|	onExpr
 	|	updateExpr
 	;
@@ -695,12 +702,12 @@ createWindowExpr
 	:	CREATE WINDOW i=IDENT (DOT viewExpression (DOT viewExpression)*)? (ru=RETAINUNION|ri=RETAININTERSECTION)? AS? 
 		  (
 		  	createWindowExprModelAfter		  
-		  |   	LPAREN createWindowColumnList RPAREN
+		  |   	LPAREN createColumnList RPAREN
 		  )		
 		  (i1=INSERT (WHERE expression)? )?
-		-> {i1 != null}? ^(CREATE_WINDOW_EXPR $i viewExpression* $ru? $ri? createWindowExprModelAfter? createWindowColumnList? 
+		-> {i1 != null}? ^(CREATE_WINDOW_EXPR $i viewExpression* $ru? $ri? createWindowExprModelAfter? createColumnList? 
 				^(INSERT expression?))
-		-> ^(CREATE_WINDOW_EXPR $i viewExpression* $ru? $ri? createWindowExprModelAfter? createWindowColumnList?)
+		-> ^(CREATE_WINDOW_EXPR $i viewExpression* $ru? $ri? createWindowExprModelAfter? createColumnList?)
 	;
 
 createWindowExprModelAfter
@@ -708,7 +715,7 @@ createWindowExprModelAfter
 	;
 		
 createIndexExpr
-	:	CREATE INDEX n=IDENT ON w=IDENT (columnList)
+	:	CREATE INDEX n=IDENT ON w=IDENT LPAREN columnList RPAREN
 		-> ^(CREATE_INDEX_EXPR $n $w columnList)
 	;
 
@@ -717,16 +724,16 @@ createVariableExpr
 		-> ^(CREATE_VARIABLE_EXPR classIdentifier $n expression?)
 	;
 
-createWindowColumnList 	
-@init  { paraphrases.push("create window column list"); }
+createColumnList 	
+@init  { paraphrases.push("column list"); }
 @after { paraphrases.pop(); }
-	:	createWindowColumnListElement (COMMA createWindowColumnListElement)*
-		-> ^(CREATE_WINDOW_COL_TYPE_LIST createWindowColumnListElement+)
+	:	createColumnListElement (COMMA createColumnListElement)*
+		-> ^(CREATE_COL_TYPE_LIST createColumnListElement+)
 	;
 	
-createWindowColumnListElement
-	:   	name=IDENT type=IDENT
-		-> ^(CREATE_WINDOW_COL_TYPE $name $type)
+createColumnListElement
+	:   	name=IDENT (classIdentifier (b=LBRACK RBRACK)?)
+		-> ^(CREATE_COL_TYPE $name classIdentifier $b?)
 	;
 
 createSelectionList 	
@@ -745,15 +752,36 @@ createSelectionListElement
 		-> ^(SELECTION_ELEMENT_EXPR constant $i?)
 	;
 
+createSchemaExpr
+	:	CREATE keyword=IDENT? SCHEMA name=IDENT AS? 
+		  (
+			variantList
+		  |   	LPAREN createColumnList? RPAREN (inherits=IDENT columnList)?
+		  )		  
+		-> {$inherits != null}? ^(CREATE_SCHEMA_EXPR $name createColumnList? ^(CREATE_SCHEMA_EXPR_INH $inherits columnList))
+		-> {$keyword != null}? ^(CREATE_SCHEMA_EXPR $name variantList ^(CREATE_SCHEMA_EXPR_QUAL $keyword))
+		-> ^(CREATE_SCHEMA_EXPR $name variantList? createColumnList?)
+	;
+
+variantList 	
+	:	variantListElement (COMMA variantListElement)*
+		-> ^(VARIANT_LIST variantListElement+)
+	;
+
+variantListElement
+	:   	STAR^
+	|	classIdentifier
+	;
+
 insertIntoExpr
 @init  { paraphrases.push("insert-into clause"); }
 @after { paraphrases.pop(); }
-	:	(s=ISTREAM | s=RSTREAM)? INTO i=IDENT (columnList)?
+	:	(s=ISTREAM | s=RSTREAM)? INTO i=IDENT (LPAREN columnList RPAREN)?
 		-> ^(INSERTINTO_EXPR $s? $i columnList?)
 	;
 		
 columnList
-	: 	LPAREN IDENT (COMMA IDENT)* RPAREN
+	: 	IDENT (COMMA IDENT)* 
 		-> ^(EXPRCOL IDENT*)
 	;
 	

@@ -77,7 +77,7 @@ startEPLExpressionRule
 	;
 
 eplExpressionRule
-	:	(selectExpr | createWindowExpr | createIndexExpr | createVariableExpr | onExpr | updateExpr)		 
+	:	(selectExpr | createWindowExpr | createIndexExpr | createVariableExpr | createSchemaExpr | onExpr | updateExpr)		 
 	;
 
 onExpr 
@@ -150,11 +150,11 @@ createSelectionList
 	;
 	
 createColTypeList
-	:	^(CREATE_WINDOW_COL_TYPE_LIST createColTypeListElement (createColTypeListElement)*)
+	:	^(CREATE_COL_TYPE_LIST createColTypeListElement (createColTypeListElement)*)
 	;
 
 createColTypeListElement
-	:	^(CREATE_WINDOW_COL_TYPE IDENT IDENT)
+	:	^(CREATE_COL_TYPE IDENT CLASS_IDENT LBRACK?)
 	;
 
 createSelectionListElement
@@ -167,6 +167,16 @@ createSelectionListElement
 
 createVariableExpr
 	:	^(i=CREATE_VARIABLE_EXPR CLASS_IDENT IDENT (valueExpr)? { leaveNode($i); } )
+	;
+
+createSchemaExpr
+	:	^(s=CREATE_SCHEMA_EXPR IDENT (variantList|createColTypeList?) 
+				(^(CREATE_SCHEMA_EXPR_QUAL IDENT))?
+				(^(CREATE_SCHEMA_EXPR_INH IDENT exprCol))? { leaveNode($s); } )
+	;
+
+variantList 	
+	:	^(VARIANT_LIST (STAR|CLASS_IDENT)+)
 	;
 
 selectExpr

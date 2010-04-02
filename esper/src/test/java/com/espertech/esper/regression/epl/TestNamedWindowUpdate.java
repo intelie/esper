@@ -11,10 +11,6 @@ public class TestNamedWindowUpdate extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listenerWindow;
-    private SupportUpdateListener listenerUpdate;
-    private SupportUpdateListener listenerStmtTwo;
-    private SupportUpdateListener listenerStmtThree;
-    private SupportUpdateListener listenerStmtDelete;
 
     public void setUp()
     {
@@ -22,10 +18,6 @@ public class TestNamedWindowUpdate extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listenerWindow = new SupportUpdateListener();
-        listenerUpdate = new SupportUpdateListener();
-        listenerStmtTwo = new SupportUpdateListener();
-        listenerStmtThree = new SupportUpdateListener();
-        listenerStmtDelete = new SupportUpdateListener();
     }
 
     public void testSubquery()

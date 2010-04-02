@@ -175,6 +175,7 @@ public class TestResultSetProcessorFactory extends TestCase
                 null,  // create win
                 null,  // create index 
                 null,  // create var
+                null,  // create schema
                 insertIntoDesc,
                 SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
                 selectClauseSpec,

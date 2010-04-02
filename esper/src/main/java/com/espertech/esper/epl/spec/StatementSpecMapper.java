@@ -100,6 +100,7 @@ public class StatementSpecMapper
         mapCreateWindow(sodaStatement.getCreateWindow(), raw, mapContext);
         mapCreateIndex(sodaStatement.getCreateIndex(), raw, mapContext);
         mapCreateVariable(sodaStatement.getCreateVariable(), raw, mapContext);
+        mapCreateSchema(sodaStatement.getCreateSchema(), raw, mapContext);
         mapOnTrigger(sodaStatement.getOnExpr(), raw, mapContext);
         InsertIntoDesc desc = mapInsertInto(sodaStatement.getInsertInto());
         raw.setInsertIntoDesc(desc);
@@ -130,6 +131,7 @@ public class StatementSpecMapper
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model, unmapContext);
         unmapCreateIndex(statementSpec.getCreateIndexDesc(), model, unmapContext);
         unmapCreateVariable(statementSpec.getCreateVariableDesc(), model, unmapContext);
+        unmapCreateSchema(statementSpec.getCreateSchemaDesc(), model, unmapContext);
         unmapUpdateClause(statementSpec.getStreamSpecs(), statementSpec.getUpdateDesc(), model, unmapContext);
         unmapOnClause(statementSpec.getOnTriggerDesc(), model, unmapContext);
         InsertIntoClause insertIntoClause = unmapInsertInto(statementSpec.getInsertIntoDesc());
@@ -266,6 +268,19 @@ public class StatementSpecMapper
             assignment = unmapExpressionDeep(createVariableDesc.getAssignment(), unmapContext);
         }
         model.setCreateVariable(new CreateVariableClause(createVariableDesc.getVariableType(), createVariableDesc.getVariableName(), assignment));
+    }
+
+    private static void unmapCreateSchema(CreateSchemaDesc desc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    {
+        if (desc == null)
+        {
+            return;
+        }
+        List<SchemaColumnDesc> columns = new ArrayList<SchemaColumnDesc>();
+        for (ColumnDesc col : desc.getColumns()) {
+            columns.add(new SchemaColumnDesc(col.getName(), col.getType(), col.isArray()));
+        }
+        model.setCreateSchema(new CreateSchemaClause(desc.getSchemaName(), desc.getTypes(), columns, desc.getInherits(), desc.isVariant()));
     }
 
     private static void unmapOrderBy(List<OrderByItem> orderByList, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -878,6 +893,19 @@ public class StatementSpecMapper
         }
 
         raw.setCreateVariableDesc(new CreateVariableDesc(createVariable.getVariableType(), createVariable.getVariableName(), assignment));
+    }
+
+    private static void mapCreateSchema(CreateSchemaClause clause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    {
+        if (clause == null)
+        {
+            return;
+        }
+        List<ColumnDesc> columns = new ArrayList<ColumnDesc>();
+        for (SchemaColumnDesc col : clause.getColumns()) {
+            columns.add(new ColumnDesc(col.getName(), col.getType(), col.isArray()));
+        }
+        raw.setCreateSchemaDesc(new CreateSchemaDesc(clause.getSchemaName(), clause.getTypes(), columns, clause.getInherits(), clause.isVariant()));
     }
 
     private static InsertIntoDesc mapInsertInto(InsertIntoClause insertInto)

@@ -12,6 +12,7 @@ import com.espertech.esper.util.MetaDefItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 import java.io.Serializable;
 
 /**
@@ -39,6 +40,15 @@ public class SelectClauseSpecRaw implements MetaDefItem, Serializable
     public void add(SelectClauseElementRaw element)
 	{
 		selectClauseElements.add(element);
+	}
+
+    /**
+     * Adds select expressions within the select clause.
+     * @param elements is the expressions to add
+     */
+    public void addAll(Collection<SelectClauseElementRaw> elements)
+	{
+		selectClauseElements.addAll(elements);
 	}
 
     /**
