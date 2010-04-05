@@ -5,6 +5,7 @@ public class SupportBeanReservedKeyword
     private int seconds;
     private int order;
     private Inner timestamp;
+    private int[] group;
     public SupportBeanReservedKeyword innerbean;
 
     public SupportBeanReservedKeyword(int seconds, int order)
@@ -21,6 +22,14 @@ public class SupportBeanReservedKeyword
     public void setSeconds(int seconds)
     {
         this.seconds = seconds;
+    }
+
+    public int[] getGroup() {
+        return group;
+    }
+
+    public void setGroup(int[] group) {
+        this.group = group;
     }
 
     public int getOrder()

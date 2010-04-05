@@ -34,9 +34,6 @@ public class TestInvalidView extends TestCase
         String exceptionText = getSyntaxExceptionProperty("", event);
         assertEquals("Unexpected end of input []", exceptionText);
 
-        exceptionText = getSyntaxExceptionProperty("inner", event);
-        assertEquals("Incorrect syntax near 'inner' (a reserved keyword) [inner]", exceptionText);
-
         exceptionText = getSyntaxExceptionProperty("-", event);
         assertEquals("Incorrect syntax near '-' [-]", exceptionText);
 
