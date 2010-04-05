@@ -5,8 +5,20 @@
 		This section outlines the different means to model and represent events.
     </para>
 
+	<para>
+		Esper uses the term <emphasis>event type</emphasis> to describe the type information available for an event representation.
+	</para>
+	
+	<para>
+	    Your application may configure predefined event types at startup time or dynamically add event types at runtime via API or EPL syntax. See <xref linkend="configuration-items"/> for startup-time configuration and <xref linkend="api-admin-runtime-config"/> for the runtime configuration API.
+	</para>
+
+	<para>
+	    The EPL <literal>create schema</literal> syntax allows declaring an event type at runtime using EPL, see <xref linkend="epl_createschema"/>.
+	</para>
+
     <para>
-		Please see the <xref linkend="api-event"/> section for APIs.
+		In <xref linkend="api-event"/> we explain how an event type becomes visible in EPL statements and output events delivered by the engine.
     </para>
 
     <sect1 id="eventrep_intro">

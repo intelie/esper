@@ -44,7 +44,15 @@
 		</orderedlist>
 
         <para>
-			EPL provides the concept of <emphasis>named window</emphasis>. Named windows are data windows that can be inserted-into and deleted-from by one or more statements, and that can queried by one or more statements. Named windows have a global character, being visible and shared across an engine instance beyond a single statement. Use the <literal>CREATE WINDOW</literal> clause to create named windows. Use the <literal>INSERT INTO</literal> clause to insert data into a named window, the <literal>ON DELETE</literal> clause to remove events from a named window, and the <literal>ON SELECT</literal> clause to perform a non-continuous fire-once query on a named window. Finally, the name of the named window can occur in a statement's <literal>FROM</literal> clause to query a named window or include the named window in a join or subquery.
+			EPL provides the concept of <emphasis>named window</emphasis>. Named windows are data windows that can be inserted-into and deleted-from by one or more statements, and that can queried by one or more statements. Named windows have a global character, being visible and shared across an engine instance beyond a single statement. Use the <literal>CREATE WINDOW</literal> clause to create named windows. Use the <literal>INSERT INTO</literal> clause to insert data into a named window, the <literal>ON DELETE</literal> clause to remove events from a named window, the <literal>ON UPDATE</literal> clause to update events held by a named window and the <literal>ON SELECT</literal> clause to perform a query triggered by a pattern or arriving event on a named window. Finally, the name of the named window can occur in a statement's <literal>FROM</literal> clause to query a named window or include the named window in a join or subquery.
+        </para>
+
+        <para>
+			EPL allows execution of on-demand (fire-and-forget, non-continuous, triggered by API) queries against named windows through the runtime API. The query engine automatically indexes named window data for fast access by <literal>ON SELECT/UPDATE/INSERT/DELETE</literal> without the need to create an index explicitly. For fast on-demand query execution via runtime API use the <literal>CREATE INDEX</literal> syntax to create an explicit index.
+        </para>
+
+        <para>
+			Use <literal>CREATE SCHEMA</literal> to declare an event type.
         </para>
 
         <para>
@@ -2386,7 +2394,7 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 			</para>
 
 			<para>
-				Variant streams are predefined via runtime or initialization-time configuration as described in <xref linkend="config-variantstream"/>. Your application may predefine variant streams to carry events of a limited set of event types, or you may choose the variant stream to carry any and all types of events. This choice affects what event properties are available for consuming statements or patterns of the variant stream.
+				Variant streams can be declared by means of <literal>create variant schema</literal> or can be predefined via runtime or initialization-time configuration as described in <xref linkend="config-variantstream"/>. Your application may declare or predefine variant streams to carry events of a limited set of event types, or you may choose the variant stream to carry any and all types of events. This choice affects what event properties are available for consuming statements or patterns of the variant stream.
 			</para>
 				
 			<para>
@@ -4343,6 +4351,136 @@ prepared.execute();	// execute a second time]]></programlisting>
 		</sect2>
 	</sect1>
 	
+    <sect1 id="epl_createschema">
+        <title>Declaring an Event Type: <emphasis>Create Schema</emphasis></title>
+
+		<indexterm><primary>create schema</primary></indexterm>
+		<indexterm><primary>event type</primary><secondary>declaring</secondary></indexterm>
+		<para>
+			EPL allows declaring an event type via the <literal>create schema</literal> clause and also by means of the static or runtime configuration API <literal>addEventType</literal> functions. The term schema and event type has the same meaning in EPL.
+		</para>
+
+		<para>
+			Your application can declare an event type by providing the property names and types or by providing a class name. Your application may also declare a variant stream schema.
+		</para>
+
+		<para>
+			When using the <literal>create schema</literal> syntax to declare an event type, the engine automatically removes the event type when there are no started statements referencing the event type, including the statement that declared the event type. When using
+			the configuration API, the event type stays cached even if there are no statements that refer to the event type and until explicitly removed via the runtime configuration API.
+		</para>
+
+		<sect2 id="epl_createschema_properties" revision="1">
+			<title>Declare an Event Type by Providing Names and Types</title>
+
+			<para>
+				The synopsis of the <literal>create schema</literal> syntax providing property names and types is:
+			</para>
+			<synopsis>create schema <emphasis>schema_name</emphasis> [as] (<emphasis>property_name</emphasis> <emphasis>property_type</emphasis> [,<emphasis>property_name</emphasis> <emphasis>property_type</emphasis> [,...])
+  [inherits <emphasis>inherited_event_type</emphasis>[, <emphasis>inherited_event_type</emphasis>] [,...]]</synopsis>
+
+			<para>				
+				The <emphasis>property_name</emphasis> is an identifier providing the event property name. The <emphasis>property_type</emphasis> is also required for each property. Valid property types are listed in <xref linkend="variable_create"/>
+				and in addition include:
+			</para>
+	
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						 Any Java class name, fully-qualified or the simple class name if imports are configured.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						 Add left and right square brackets <literal>[]</literal> to any type to denote an array-type event property.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Use an event type name as a property type.
+					</para>
+				</listitem>
+			</orderedlist>
+
+			<para>
+				The optional <literal>inherits</literal> keywords may be used to provide a list of event types that are supertypes to the declared type.
+			</para>
+			
+			<para>
+				A few example event type declarations follow:
+			</para>
+			<programlisting><![CDATA[// Declare type SecurityEvent
+create schema SecurityEvent as (ipAddress string, userId String, numAttempts int)
+			
+// Declare type AuthorizationEvent with the roles property being an array of String 
+// and the hostinfo property being a POJO object
+create schema AuthorizationEvent(group String, roles String[], hostinfo com.mycompany.HostNameInfo)
+
+// Declare type CompositeEvent in which the innerEvents property is an array of SecurityEvent
+create schema CompositeEvent(group String, innerEvents SecurityEvent[])
+
+// Declare type WebPageVisitEvent that inherits all properties from PageHitEvent
+create schema WebPageVisitEvent(userId String) inherits PageHitEvent]]></programlisting>	
+		</sect2>
+
+		<sect2 id="epl_createschema_class" revision="1">
+			<title>Declare an Event Type by Providing a Class Name</title>
+
+			<para>
+				When using Java classes as the underlying event representation your application may simply provide the class name:
+			</para>
+			<synopsis>create schema <emphasis>schema_name</emphasis> [as] <emphasis>class_name</emphasis></synopsis>
+
+			<para>				
+				The <emphasis>class_name</emphasis> must be a fully-qualified class name (including the package name) if imports are not configured. If you application configures imports then the simple class name suffices without package name.
+			</para>
+	
+			<para>
+				The next example statements declare an event type based on a class:
+			</para>
+			<programlisting><![CDATA[// Shows the use of a fully-qualified class name to declare the LoginEvent event type
+create schema LoginEvent as com.mycompany.LoginValue
+
+// When the configuration includes imports, the declaration does not need a package name
+create schema LogoutEvent as SignoffValue]]></programlisting>	
+		</sect2>
+
+		<sect2 id="epl_createschema_variant" revision="1">
+			<title>Declare a Variant Stream</title>
+
+			<para>
+				A variant stream is a predefined stream into which events of multiple disparate event types can be inserted.
+				Please see <xref linkend="insert-into-merging-types"/> for rules regarding property visibility and additional information.
+			</para>
+			
+			<para>
+				The synopsis is:
+			</para>
+			<synopsis>create variant schema <emphasis>schema_name</emphasis> [as] <emphasis>eventtype_name|*</emphasis> [, <emphasis>eventtype_name|*</emphasis>] [,...]</synopsis>
+
+			<para>
+				Provide the <literal>variant</literal> keyword to declare a variant stream.
+			</para>
+
+			<para>				
+				The '<literal>*</literal>' wildcard character declares a variant stream that accepts any type of event inserted into the variant stream.
+			</para>
+
+			<para>				
+				Provide <emphasis>eventtype_name</emphasis> if the variant stream should hold events of the given type only. When using <literal>insert into</literal> to 
+				insert into the variant stream the engine checks to ensure the inserted event type or its supertypes match the required event type.
+			</para>
+	
+			<para>
+				A few examples are shown below:
+			</para>
+			<programlisting><![CDATA[// Create a variant stream that accepts only LoginEvent and LogoutEvent event types
+create variant schema SecurityVariant as LoginEvent, LogoutEvent
+
+// Create a variant stream that accepts any event type
+create variant schema AnyEvent as *]]></programlisting>	
+		</sect2>
+	</sect1>
+
 	<sect1 id="split_overview" revision="1">
 		<title>Splitting and Duplicating Streams</title>
 		
