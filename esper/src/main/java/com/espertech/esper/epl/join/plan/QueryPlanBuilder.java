@@ -14,6 +14,7 @@ import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.type.OuterJoinType;
+import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,7 +45,7 @@ public class QueryPlanBuilder
                                     String[] streamNames,
                                     boolean hasHistorical,
                                     boolean[] isHistorical,
-                                    HistoricalDependencyGraph dependencyGraph,
+                                    DependencyGraph dependencyGraph,
                                     HistoricalStreamIndexList[] historicalStreamIndexLists,
                                     ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException

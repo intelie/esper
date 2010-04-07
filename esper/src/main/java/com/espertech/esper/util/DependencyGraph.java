@@ -6,7 +6,7 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package com.espertech.esper.epl.join.plan;
+package com.espertech.esper.util;
 
 import java.util.*;
 import java.io.StringWriter;
@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 /**
  * Model of dependency of lookup, in which one stream supplies values for lookup in another stream.
  */
-public class HistoricalDependencyGraph
+public class DependencyGraph
 {
     private final int numStreams;
     private final Map<Integer, SortedSet<Integer>> dependencies;
@@ -24,7 +24,7 @@ public class HistoricalDependencyGraph
      * Ctor.
      * @param numStreams - number of streams
      */
-    public HistoricalDependencyGraph(int numStreams)
+    public DependencyGraph(int numStreams)
     {
         this.numStreams = numStreams;
         dependencies = new HashMap<Integer, SortedSet<Integer>>();
@@ -154,6 +154,36 @@ public class HistoricalDependencyGraph
                 {
                     found = true;
                     break;
+                }
+            }
+
+            if (!found)
+            {
+                rootNodes.add(i);
+            }
+        }
+
+        return rootNodes;
+    }
+
+    public Set<Integer> getRootNodes(Set<Integer> ignoreList)
+    {
+        Set<Integer> rootNodes = new HashSet<Integer>();
+
+        for (int i = 0; i < numStreams; i++)
+        {
+            if (ignoreList.contains(i)) {
+                continue;
+            }
+            boolean found = false;
+            for (Map.Entry<Integer, SortedSet<Integer>> entry : dependencies.entrySet())
+            {
+                if (entry.getValue().contains(i))
+                {
+                    if (!ignoreList.contains(entry.getKey())) {
+                        found = true;
+                        break;
+                    }
                 }
             }
 

@@ -17,6 +17,7 @@ import com.espertech.esper.epl.join.assemble.BaseAssemblyNode;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.type.OuterJoinType;
+import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -49,7 +50,7 @@ public class NStreamOuterQueryPlanBuilder
                                      EventType[] typesPerStream,
                                      boolean hasHistorical,
                                      boolean[] isHistorical,
-                                     HistoricalDependencyGraph dependencyGraph,
+                                     DependencyGraph dependencyGraph,
                                      HistoricalStreamIndexList[] historicalStreamIndexLists,
                                      ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
@@ -130,7 +131,7 @@ public class NStreamOuterQueryPlanBuilder
                                                QueryPlanIndex[] indexSpecs,
                                                EventType[] typesPerStream,
                                                boolean[] ishistorical,
-                                               HistoricalDependencyGraph dependencyGraph,
+                                               DependencyGraph dependencyGraph,
                                                HistoricalStreamIndexList[] historicalStreamIndexLists,
                                                ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
@@ -253,7 +254,7 @@ public class NStreamOuterQueryPlanBuilder
                                                 Set<Integer> completedStreams,
                                                 LinkedHashMap<Integer, int[]> substreamsPerStream,
                                                 boolean[] requiredPerStream,
-                                                HistoricalDependencyGraph dependencyGraph
+                                                DependencyGraph dependencyGraph
                                                 )
             throws ExprValidationException
     {

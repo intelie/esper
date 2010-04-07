@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -14,7 +15,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
     private EventType[] typesPerStream;
     private QueryGraph queryGraph;
     private boolean[] isHistorical;
-    private HistoricalDependencyGraph dependencyGraph;
+    private DependencyGraph dependencyGraph;
 
     public void setUp()
     {
@@ -33,7 +34,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
         queryGraph.add(4, "p41", 3, "p31");
         queryGraph.add(4, "p42", 2, "p21");
 
-        dependencyGraph = new HistoricalDependencyGraph(5);
+        dependencyGraph = new DependencyGraph(5);
         isHistorical = new boolean[5];
     }
 
@@ -127,7 +128,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
 
     public void testIsDependencySatisfied()
     {
-        HistoricalDependencyGraph graph = new HistoricalDependencyGraph(3);
+        DependencyGraph graph = new DependencyGraph(3);
         graph.addDependency(1, 0);
         graph.addDependency(2, 0);
 
@@ -135,7 +136,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
         assertFalse(NStreamQueryPlanBuilder.isDependencySatisfied(1, new int[] {0, 2}, graph));
         assertFalse(NStreamQueryPlanBuilder.isDependencySatisfied(2, new int[] {0, 1}, graph));
 
-        graph = new HistoricalDependencyGraph(5);
+        graph = new DependencyGraph(5);
         graph.addDependency(4, 1);
         graph.addDependency(4, 2);
         graph.addDependency(2, 0);

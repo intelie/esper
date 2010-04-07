@@ -275,6 +275,11 @@ public class SupportStaticMethodLib
         return value - 1;
     }
 
+    public static int plusOne(int value)
+    {
+        return value + 1;
+    }
+
     public static String appendPipe(String string, String value)
     {
         return string + "|" + value;

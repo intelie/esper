@@ -186,7 +186,21 @@ public class EPStatementStartMethod
                 }
                 else {
                     if (spec.getTypes().size() == 1) {
-                        eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), spec.getTypes().iterator().next(), false);
+                        String typeName = spec.getTypes().iterator().next();
+                        try {
+                            eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), spec.getTypes().iterator().next(), false);
+                        }
+                        catch (EventAdapterException ex) {
+                            Class clazz;
+                            try {
+                                clazz = services.getEngineImportService().resolveClass(typeName);
+                                eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), clazz, false);
+                            }
+                            catch (EngineImportException e) {
+                                log.debug("Engine import failed to resolve event type '" + typeName + "'");
+                                throw ex;
+                            }
+                        }
                     }
                 }
             }

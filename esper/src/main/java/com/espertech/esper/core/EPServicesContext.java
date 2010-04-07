@@ -9,13 +9,13 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.core.deploy.DeploymentStateService;
 import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.dispatch.DispatchServiceProvider;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineSettingsService;
 import com.espertech.esper.epl.db.DatabaseConfigService;
-import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.metric.MetricReportingServiceSPI;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
@@ -70,6 +70,7 @@ public final class EPServicesContext
     private InternalEventRouteDest internalEventEngineRouteDest;
     private StatementIsolationService statementIsolationService;
     private SchedulingMgmtService schedulingMgmtService;
+    private DeploymentStateService deploymentStateService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -137,7 +138,8 @@ public final class EPServicesContext
                              ThreadingService threadingServiceImpl,
                              InternalEventRouterImpl internalEventRouter,
                              StatementIsolationService statementIsolationService,
-                             SchedulingMgmtService schedulingMgmtService)
+                             SchedulingMgmtService schedulingMgmtService,
+                             DeploymentStateService deploymentStateService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -171,6 +173,7 @@ public final class EPServicesContext
         this.statementIsolationService = statementIsolationService;
         this.schedulingMgmtService = schedulingMgmtService;
         this.statementVariableRef = statementVariableRef;
+        this.deploymentStateService = deploymentStateService;
     }
 
     /**
@@ -407,6 +410,9 @@ public final class EPServicesContext
         {
             statementIsolationService.destroy();
         }
+        if (deploymentStateService != null) {
+            deploymentStateService.destroy();
+        }
     }
 
     /**
@@ -581,5 +587,10 @@ public final class EPServicesContext
     public void setStatementIsolationService(StatementIsolationService statementIsolationService)
     {
         this.statementIsolationService = statementIsolationService;
+    }
+
+    public DeploymentStateService getDeploymentStateService()
+    {
+        return deploymentStateService;
     }
 }

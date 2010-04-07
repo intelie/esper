@@ -5,6 +5,7 @@ import com.espertech.esper.support.epl.SupportOuterJoinDescFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.collection.InterchangeablePair;
+import com.espertech.esper.util.DependencyGraph;
 
 import java.util.*;
 
@@ -74,7 +75,7 @@ public class TestNStreamOuterQueryPlanBuilder extends TestCase
         Stack<Integer> streamStack = new Stack<Integer>();
 
         NStreamOuterQueryPlanBuilder.recursiveBuild(streamNum, streamStack, queryGraph, outerInnerGraph, innerJoins, completedStreams,
-                substreamsPerStream, requiredPerStream, new HistoricalDependencyGraph(6));
+                substreamsPerStream, requiredPerStream, new DependencyGraph(6));
 
         assertEquals(6, substreamsPerStream.size());
         ArrayAssertionUtil.assertEqualsExactOrder(new int[] {3, 1}, substreamsPerStream.get(2));

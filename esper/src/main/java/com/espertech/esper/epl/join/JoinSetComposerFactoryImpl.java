@@ -21,6 +21,7 @@ import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.DependencyGraph;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.Viewable;
 import com.espertech.esper.core.StreamJoinAnalysisResult;
@@ -58,7 +59,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             throws ExprValidationException
     {
         // Determine if there is a historical stream, and what dependencies exist
-        HistoricalDependencyGraph historicalDependencyGraph = new HistoricalDependencyGraph(streamTypes.length);
+        DependencyGraph historicalDependencyGraph = new DependencyGraph(streamTypes.length);
         boolean[] isHistorical = new boolean[streamViews.length];
         boolean hasHistorical = false;
         for (int i = 0; i < streamViews.length; i++)
@@ -218,7 +219,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         boolean isAllHistoricalNoSubordinate = false;
         if ((streamViews[0] instanceof HistoricalEventViewable) && (streamViews[1] instanceof HistoricalEventViewable))
         {
-            HistoricalDependencyGraph graph = new HistoricalDependencyGraph(2);
+            DependencyGraph graph = new DependencyGraph(2);
             graph.addDependency(0, ((HistoricalEventViewable) streamViews[0]).getRequiredStreams());
             graph.addDependency(1, ((HistoricalEventViewable) streamViews[1]).getRequiredStreams());
             if (graph.getFirstCircularDependency() != null)

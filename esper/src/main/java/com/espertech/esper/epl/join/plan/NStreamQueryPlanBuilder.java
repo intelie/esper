@@ -13,6 +13,7 @@ import com.espertech.esper.collection.NumberSetPermutationEnumeration;
 import com.espertech.esper.collection.NumberSetShiftGroupEnumeration;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -115,7 +116,7 @@ public class NStreamQueryPlanBuilder
     protected static QueryPlan build(QueryGraph queryGraph, EventType[] typesPerStream,
                                      boolean hasHistorical,
                                      boolean[] isHistorical,
-                                     HistoricalDependencyGraph dependencyGraph,
+                                     DependencyGraph dependencyGraph,
                                      HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         if (log.isDebugEnabled())
@@ -297,7 +298,7 @@ public class NStreamQueryPlanBuilder
      * @param dependencyGraph - dependencies between historical streams
      * @return chain and chain depth
      */
-    protected static BestChainResult computeBestPath(int lookupStream, QueryGraph queryGraph, HistoricalDependencyGraph dependencyGraph)
+    protected static BestChainResult computeBestPath(int lookupStream, QueryGraph queryGraph, DependencyGraph dependencyGraph)
     {
         int[] defNestingorder = buildDefaultNestingOrder(queryGraph.getNumStreams(), lookupStream);
         Enumeration<int[]> streamEnum;
@@ -349,7 +350,7 @@ public class NStreamQueryPlanBuilder
      * @param dependencyGraph dependencies
      * @return pass or fail indication
      */
-    protected static boolean isDependencySatisfied(int lookupStream, int[] permutation, HistoricalDependencyGraph dependencyGraph)
+    protected static boolean isDependencySatisfied(int lookupStream, int[] permutation, DependencyGraph dependencyGraph)
     {
         for (Map.Entry<Integer, SortedSet<Integer>> entry : dependencyGraph.getDependencies().entrySet())
         {

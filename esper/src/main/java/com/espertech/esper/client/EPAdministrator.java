@@ -9,12 +9,15 @@
 package com.espertech.esper.client;
 
 import com.espertech.esper.client.soda.EPStatementObjectModel;
+import com.espertech.esper.client.deploy.DeploymentAdmin;
 
 /**
  * Administrative interface to the event stream processing engine. Includes methods to create patterns and EPL statements.
  */
 public interface EPAdministrator
 {
+    public DeploymentAdmin getDeploymentAdmin();
+
     /**
      * Create and starts an event pattern statement for the expressing string passed.
      * <p>

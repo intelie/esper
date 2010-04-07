@@ -8,6 +8,7 @@ import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.epl.SupportOuterJoinDescFactory;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.type.OuterJoinType;
+import com.espertech.esper.util.DependencyGraph;
 import junit.framework.TestCase;
 
 import java.util.LinkedList;
@@ -17,7 +18,7 @@ public class TestQueryPlanBuilder extends TestCase
 {
     private EventType[] typesPerStream;
     private boolean[] isHistorical;
-    private HistoricalDependencyGraph dependencyGraph;
+    private DependencyGraph dependencyGraph;
 
     public void setUp()
     {
@@ -25,7 +26,7 @@ public class TestQueryPlanBuilder extends TestCase
                 SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class, true),
                 SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class, true)
         };
-        dependencyGraph = new HistoricalDependencyGraph(2);
+        dependencyGraph = new DependencyGraph(2);
         isHistorical = new boolean[2];
     }
 

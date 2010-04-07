@@ -24,18 +24,25 @@ public class TestSchema extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    // Test invalid:
+    // - invalid keyword between create and schema
+    // - no inherit type name
+    // - duplicate column name
+    // - invalid column type
+    // - no such bean
+    // - no such variant type
+    // - stop and type still in use
+    // Test Named Window support for nestable+array types
     public void testInvalid() {
         tryInvalid("create schema MyEventType as (col1 xxxx)",
                     "Error starting statement: Nestable map type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared Map type [create schema MyEventType as (col1 xxxx)]");
 
         tryInvalid("create schema MyEventType as (col1 int, col1 string)",
-                    "Error starting statement: Duplicate column name 'col1' [create schema MyEventType as (col1 int, col1 string)]");
-
-        tryInvalid("create variant schema MyEventType as AType",
-                    "Error starting statement: Event type by name 'AType' could not be found for use in variant stream configuration by name 'MyEventType' [create variant schema MyEventType as AType]");
-
-        tryInvalid("create xyz schema MyEventType as *",
-                    "Error in expression: Expected 'variant' keyword after create-schema clause but encountered 'xyz' [create xyz schema MyEventType as *]");
+                    "");
+        tryInvalid("create schema MyEventType as (col1 xxxx)",
+                    "");
+        tryInvalid("create schema MyEventType as (col1 xxxx)",
+                    "");
 
         epService.getEPAdministrator().createEPL("create schema MyEventType as (col1 string)");
         tryInvalid("create schema MyEventType as (col1 string, col2 string)",
