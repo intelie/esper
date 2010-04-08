@@ -51,4 +51,9 @@ public class DeploymentInformation
     {
         return statementNames;
     }
+
+    public String toString() {
+        return "id '" + deploymentId + "' " +
+               " deployed on " + deployedDate.getTime().toString(); 
+    }
 }

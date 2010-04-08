@@ -13,7 +13,6 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.deploy.*;
 import com.espertech.esper.core.EPAdministratorSPI;
 import com.espertech.esper.util.DependencyGraph;
-import com.espertech.esper.core.deploy.EPLModuleUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -51,9 +50,9 @@ public class DeploymentAdminImpl implements DeploymentAdmin
     }
 
     public Module read(URL url) throws IOException, ParseException {
-        if (log.isInfoEnabled())
+        if (log.isDebugEnabled())
         {
-            log.info( "Reading resource from url: " + url.toString() );
+            log.debug( "Reading resource from url: " + url.toString() );
         }
         return readInternal(url.openStream(), url.toString());
     }
@@ -163,11 +162,15 @@ public class DeploymentAdminImpl implements DeploymentAdmin
         if (options == null) {
             options = new DeploymentOptions();
         }
-        
-        log.info("Deploying module " + module);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Deploying module " + module);
+        }
         if (module.getImports() != null) {
             for (String imported : module.getImports()) {
-                log.debug("Adding import " + imported);
+                if (log.isDebugEnabled()) {
+                    log.debug("Adding import " + imported);
+                }
                 epService.getConfiguration().addImport(imported);
             }
         }
@@ -219,7 +222,7 @@ public class DeploymentAdminImpl implements DeploymentAdmin
                         stmt.destroy();
                     }
                     catch (Exception ex) {
-                        log.info("Failed to destroy created statement during rollback: " + ex.getMessage(), ex);
+                        log.debug("Failed to destroy created statement during rollback: " + ex.getMessage(), ex);
                     }
                 }
             }
@@ -231,7 +234,9 @@ public class DeploymentAdminImpl implements DeploymentAdmin
         DeploymentInformation desc = new DeploymentInformation(deploymentId, module.getName(), module.getUrl(), moduleUses, Calendar.getInstance(), statementNamesArr);
         deploymentStateService.addDeployment(desc);
 
-        log.info("Module " + module + " was successfully deployed.");
+        if (log.isDebugEnabled()) {
+            log.debug("Module " + module + " was successfully deployed.");
+        }
         return new DeploymentResult(desc.getDeploymentId(), Collections.unmodifiableList(statements));
     }
 
@@ -300,8 +305,16 @@ public class DeploymentAdminImpl implements DeploymentAdmin
         return deploymentStateService.getDeployment(deploymentId);
     }
 
+    public DeploymentInformation[] getDeploymentInformation()
+    {
+        return deploymentStateService.getAllDeployments();
+    }
+
     public DeploymentOrder getDeploymentOrder(Module[] modules, DeploymentOrderOptions options) throws DeploymentOrderException
     {
+        if (options == null) {
+            options = new DeploymentOrderOptions();
+        }
         String[] deployments = deploymentStateService.getDeployments();
 
         List<Module> proposedModules = new ArrayList<Module>();

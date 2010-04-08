@@ -2,6 +2,7 @@ package com.espertech.esper.client.deploy;
 
 import java.util.List;
 import java.io.StringWriter;
+import java.io.PrintWriter;
 
 public class DeploymentException extends Exception {
 
@@ -28,7 +29,8 @@ public class DeploymentException extends Exception {
             detail.write(Integer.toString(count));
             detail.write(" : ");
             detail.write(item.getInner().getMessage());
-            delimiter = newline;
+            //item.getInner().printStackTrace(new PrintWriter(detail));
+            delimiter = newline + newline;
             count++;
         }
         return detail.toString();

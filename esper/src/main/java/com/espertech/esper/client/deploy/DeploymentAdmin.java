@@ -20,4 +20,5 @@ public interface DeploymentAdmin
 
     public String[] getDeployments();
     public DeploymentInformation getDeployment(String deploymentId);
+    public DeploymentInformation[] getDeploymentInformation();
 }

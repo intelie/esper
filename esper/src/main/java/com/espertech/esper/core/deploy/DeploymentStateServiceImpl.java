@@ -11,8 +11,7 @@ package com.espertech.esper.core.deploy;
 import com.espertech.esper.client.deploy.DeploymentInformation;
 import com.espertech.esper.util.UuidGenerator;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DeploymentStateServiceImpl implements DeploymentStateService
@@ -29,28 +28,34 @@ public class DeploymentStateServiceImpl implements DeploymentStateService
         return UuidGenerator.generate();
     }
 
-    public void addDeployment(DeploymentInformation descriptor)
+    public synchronized DeploymentInformation[] getAllDeployments()
+    {
+        Collection<DeploymentInformation> dep = deployments.values();
+        return dep.toArray(new DeploymentInformation[dep.size()]);
+    }
+
+    public synchronized void addDeployment(DeploymentInformation descriptor)
     {
         deployments.put(descriptor.getDeploymentId(), descriptor);
     }
 
-    public void remove(String deploymentId)
+    public synchronized void remove(String deploymentId)
     {
         deployments.remove(deploymentId);
     }
 
-    public String[] getDeployments()
+    public synchronized String[] getDeployments()
     {
         Set<String> keys = deployments.keySet();
         return keys.toArray(new String[keys.size()]);
     }
 
-    public DeploymentInformation getDeployment(String deploymentId)
+    public synchronized DeploymentInformation getDeployment(String deploymentId)
     {
         return deployments.get(deploymentId);
     }
 
-    public void destroy()
+    public synchronized void destroy()
     {
         deployments.clear();
     }

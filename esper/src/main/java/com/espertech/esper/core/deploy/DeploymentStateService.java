@@ -13,9 +13,12 @@ import com.espertech.esper.client.deploy.*;
 public interface DeploymentStateService
 {
     public String nextDeploymentId();
+
     public String[] getDeployments();
-    public void addDeployment(DeploymentInformation descriptor);
     public DeploymentInformation getDeployment(String deploymentId);
+    public DeploymentInformation[] getAllDeployments();
+
+    public void addDeployment(DeploymentInformation descriptor);
     public void destroy();
-    public void remove(String deploymentId);
+    public void remove(String deploymentId);    
 }

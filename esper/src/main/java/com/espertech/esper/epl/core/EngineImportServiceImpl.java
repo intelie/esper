@@ -69,6 +69,9 @@ public class EngineImportServiceImpl implements EngineImportService
         {
             throw new EngineImportException("Invalid import name '" + importName + "'");
         }
+        if (log.isDebugEnabled()) {
+            log.debug("Adding import " + importName);
+        }
 
         imports.add(importName);
     }
@@ -232,7 +235,7 @@ public class EngineImportServiceImpl implements EngineImportService
         {
             if (log.isDebugEnabled())
             {
-                log.debug("Class not found for resolving from name as-is:" + className);
+                log.debug("Class not found for resolving from name as-is '" + className + "'");
             }
         }
 
@@ -262,7 +265,7 @@ public class EngineImportServiceImpl implements EngineImportService
 				catch(ClassNotFoundException e){
                     if (log.isDebugEnabled())
                     {
-                        log.debug("Class not found for resolving from name as-is:" + className);
+                        log.debug("Class not found for resolving from name '" + prefixedClassName + "'");
                     }
                 }
 			}
