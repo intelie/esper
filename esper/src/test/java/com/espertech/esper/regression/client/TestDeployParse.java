@@ -2,7 +2,7 @@ package com.espertech.esper.regression.client;
 
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.deploy.DeploymentAdmin;
+import com.espertech.esper.client.deploy.EPDeploymentAdmin;
 import com.espertech.esper.client.deploy.Module;
 import com.espertech.esper.client.deploy.ParseException;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -15,7 +15,7 @@ public class TestDeployParse extends TestCase
     private static String newline = System.getProperty("line.separator");
 
     private EPServiceProvider epService;
-    private DeploymentAdmin deploySvc;
+    private EPDeploymentAdmin deploySvc;
 
     public void setUp() {
         epService = EPServiceProviderManager.getDefaultProvider();

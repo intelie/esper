@@ -10,16 +10,16 @@ public class DeploymentInformation
     private String moduleURL;
     private Set<String> moduleUses;
     private Calendar deployedDate;
-    private String[] statementNames;
+    private DeploymentInformationItem[] items;
 
-    public DeploymentInformation(String deploymentId, String moduleName, String moduleURL, Set<String> moduleUses, Calendar deployedDate, String[] statementNames)
+    public DeploymentInformation(String deploymentId, String moduleName, String moduleURL, Set<String> moduleUses, Calendar deployedDate, DeploymentInformationItem[] items)
     {
         this.deploymentId = deploymentId;
         this.moduleName = moduleName;
         this.moduleURL = moduleURL;
         this.moduleUses = moduleUses;
         this.deployedDate = deployedDate;
-        this.statementNames = statementNames;
+        this.items = items;
     }
 
     public String getDeploymentId()
@@ -47,9 +47,8 @@ public class DeploymentInformation
         return deployedDate;
     }
 
-    public String[] getStatementNames()
-    {
-        return statementNames;
+    public DeploymentInformationItem[] getItems() {
+        return items;
     }
 
     public String toString() {

@@ -1,16 +1,17 @@
 package com.espertech.esper.client.deploy;
 
 import java.util.Set;
+import java.util.List;
 
 public class UndeploymentResult
 {
     private final String deploymentId;
-    private final Set<String> statementNames;
+    private final List<DeploymentInformationItem> statementInfo;
 
-    public UndeploymentResult(String deploymentId, Set<String> statementNames)
+    public UndeploymentResult(String deploymentId, List<DeploymentInformationItem> statementInfo)
     {
         this.deploymentId = deploymentId;
-        this.statementNames = statementNames;
+        this.statementInfo = statementInfo;
     }
 
     public String getDeploymentId()
@@ -18,8 +19,8 @@ public class UndeploymentResult
         return deploymentId;
     }
 
-    public Set<String> getStatementNames()
+    public List<DeploymentInformationItem> getStatementInfo()
     {
-        return statementNames;
+        return statementInfo;
     }
 }

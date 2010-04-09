@@ -20,15 +20,15 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 
-public class DeploymentAdminImpl implements DeploymentAdmin
+public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 {
     public static String newline = System.getProperty("line.separator");
-    private static Log log = LogFactory.getLog(DeploymentAdminImpl.class);
+    private static Log log = LogFactory.getLog(EPDeploymentAdminImpl.class);
 
     private final EPAdministratorSPI epService;
     private final DeploymentStateService deploymentStateService; 
 
-    public DeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService)
+    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService)
     {
         this.epService = epService;
         this.deploymentStateService = deploymentStateService;
@@ -69,10 +69,10 @@ public class DeploymentAdminImpl implements DeploymentAdmin
             stream = classLoader.getResourceAsStream( stripped );
         }
         if ( stream == null ) {
-            stream = DeploymentAdminImpl.class.getResourceAsStream( resource );
+            stream = EPDeploymentAdminImpl.class.getResourceAsStream( resource );
         }
         if ( stream == null ) {
-            stream = DeploymentAdminImpl.class.getClassLoader().getResourceAsStream( stripped );
+            stream = EPDeploymentAdminImpl.class.getClassLoader().getResourceAsStream( stripped );
         }
         if ( stream == null ) {
            throw new IOException("Failed to find resource '" + resource + "' in classpath");
@@ -198,12 +198,12 @@ public class DeploymentAdminImpl implements DeploymentAdmin
         }
 
         List<DeploymentItemException> exceptions = new ArrayList<DeploymentItemException>();
-        List<String> statementNames = new ArrayList<String>();
+        List<DeploymentInformationItem> statementNames = new ArrayList<DeploymentInformationItem>();
         List<EPStatement> statements = new ArrayList<EPStatement>();
         for (ModuleItem item : module.getItems()) {
             try {
                 EPStatement stmt = epService.createEPL(item.getExpression());
-                statementNames.add(stmt.getName());
+                statementNames.add(new DeploymentInformationItem(stmt.getName(), stmt.getText()));
                 statements.add(stmt);
             }
             catch (EPException ex) {
@@ -229,9 +229,9 @@ public class DeploymentAdminImpl implements DeploymentAdmin
             throw buildException("Deployment failed", module, exceptions);
         }
 
-        String[] statementNamesArr = statementNames.toArray(new String[statementNames.size()]);
+        DeploymentInformationItem[] deploymentInfoArr = statementNames.toArray(new DeploymentInformationItem[statementNames.size()]);
         Set<String> moduleUses = (module.getUses() == null ? Collections.EMPTY_SET : Collections.unmodifiableSet(module.getUses()));
-        DeploymentInformation desc = new DeploymentInformation(deploymentId, module.getName(), module.getUrl(), moduleUses, Calendar.getInstance(), statementNamesArr);
+        DeploymentInformation desc = new DeploymentInformation(deploymentId, module.getName(), module.getUrl(), moduleUses, Calendar.getInstance(), deploymentInfoArr);
         deploymentStateService.addDeployment(desc);
 
         if (log.isDebugEnabled()) {
@@ -267,16 +267,16 @@ public class DeploymentAdminImpl implements DeploymentAdmin
             return null;
         }
 
-        String[] reverted = new String[info.getStatementNames().length];
-        for (int i = 0; i < info.getStatementNames().length; i++) {
-            reverted[i] = info.getStatementNames()[info.getStatementNames().length - 1 - i];
+        DeploymentInformationItem[] reverted = new DeploymentInformationItem[info.getItems().length];
+        for (int i = 0; i < info.getItems().length; i++) {
+            reverted[i] = info.getItems()[info.getItems().length - 1 - i];
         }
 
-        Set<String> statementNames = new LinkedHashSet<String>();
-        for (String statementName : reverted) {
-            EPStatement statement = epService.getStatement(statementName);
+        List<DeploymentInformationItem> revertedStatements = new ArrayList<DeploymentInformationItem>();
+        for (DeploymentInformationItem item : reverted) {
+            EPStatement statement = epService.getStatement(item.getStatementName());
             if (statement == null) {
-                log.debug("Deployment id '" + deploymentId + "' statement name '" + statementName + "' not found");
+                log.debug("Deployment id '" + deploymentId + "' statement name '" + item + "' not found");
                 continue;
             }
             if (statement.isDestroyed()) {
@@ -288,11 +288,12 @@ public class DeploymentAdminImpl implements DeploymentAdmin
             catch (RuntimeException ex) {
                 log.warn("Unexpected exception destroying statement: " + ex.getMessage(), ex);
             }
-            statementNames.add(statementName);
+            revertedStatements.add(item);
         }
 
         deploymentStateService.remove(deploymentId);
-        return new UndeploymentResult(deploymentId, statementNames);
+        Collections.reverse(revertedStatements);
+        return new UndeploymentResult(deploymentId, revertedStatements);
     }
 
     public synchronized String[] getDeployments()
@@ -310,7 +311,7 @@ public class DeploymentAdminImpl implements DeploymentAdmin
         return deploymentStateService.getAllDeployments();
     }
 
-    public DeploymentOrder getDeploymentOrder(Module[] modules, DeploymentOrderOptions options) throws DeploymentOrderException
+    public DeploymentOrder getDeploymentOrder(Collection<Module> modules, DeploymentOrderOptions options) throws DeploymentOrderException
     {
         if (options == null) {
             options = new DeploymentOrderOptions();
@@ -318,7 +319,7 @@ public class DeploymentAdminImpl implements DeploymentAdmin
         String[] deployments = deploymentStateService.getDeployments();
 
         List<Module> proposedModules = new ArrayList<Module>();
-        proposedModules.addAll(Arrays.asList(modules));
+        proposedModules.addAll(modules);
 
         Set<String> availableModuleNames = new HashSet<String>();
         for (Module proposedModule : proposedModules) {

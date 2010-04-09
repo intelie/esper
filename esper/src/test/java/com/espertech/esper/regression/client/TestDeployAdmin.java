@@ -11,7 +11,6 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Collections;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -21,7 +20,7 @@ public class TestDeployAdmin extends TestCase
 	private static final Log log = LogFactory.getLog(TestDeployAdmin.class);
 
     private EPServiceProvider epService;
-    private DeploymentAdmin deploymentAdmin;
+    private EPDeploymentAdmin deploymentAdmin;
     private SupportUpdateListener listener;
 
     public void setUp() {
@@ -59,21 +58,41 @@ public class TestDeployAdmin extends TestCase
     }
 
     public void testDeployUndeploy() throws Exception {
-        Module moduleOne = makeModule("mymodule.one", "create schema MySchemaOne (col1 int)", "select * from MySchemaOne");
+        Module moduleOne = makeModule("mymodule.one", "@Name('A1') create schema MySchemaOne (col1 int)", "@Name('B1') select * from MySchemaOne");
         DeploymentResult resultOne = deploymentAdmin.deploy(moduleOne, new DeploymentOptions());
         assertEquals(2, resultOne.getStatements().size());
 
-        Module moduleTwo = makeModule("mymodule.two", "create schema MySchemaTwo (col1 int)", "select * from MySchemaTwo");
+        Module moduleTwo = makeModule("mymodule.two", "@Name('A2') create schema MySchemaTwo (col1 int)", "@Name('B2') select * from MySchemaTwo");
         DeploymentResult resultTwo = deploymentAdmin.deploy(moduleTwo, new DeploymentOptions());
         assertEquals(2, resultTwo.getStatements().size());
-
+        
+        DeploymentInformation[] info = epService.getEPAdministrator().getDeploymentAdmin().getDeploymentInformation();
+        assertEquals(2, info.length);
+        assertEquals(resultOne.getDeploymentId(), info[0].getDeploymentId());
+        assertNotNull(info[0].getDeployedDate());
+        assertEquals("mymodule.one", info[0].getModuleName());
+        assertEquals(null, info[0].getModuleURL());
+        assertEquals(0, info[0].getModuleUses().size());
+        assertEquals(resultTwo.getDeploymentId(), info[1].getDeploymentId());
+        assertEquals(2, info[1].getItems().length);
+        assertEquals("A2", info[1].getItems()[0].getStatementName());
+        assertEquals("@Name('A2') create schema MySchemaTwo (col1 int)", info[1].getItems()[0].getExpression());
+        assertEquals("B2", info[1].getItems()[1].getStatementName());
+        assertEquals("@Name('B2') select * from MySchemaTwo", info[1].getItems()[1].getExpression());
         assertEquals(4, epService.getEPAdministrator().getStatementNames().length);
         
-        deploymentAdmin.undeploy(resultTwo.getDeploymentId());
+        UndeploymentResult result = deploymentAdmin.undeploy(resultTwo.getDeploymentId());
         assertEquals(2, epService.getEPAdministrator().getStatementNames().length);
+        assertEquals(2, result.getStatementInfo().size());
+        assertEquals("A2", result.getStatementInfo().get(0).getStatementName());
+        assertEquals("@Name('A2') create schema MySchemaTwo (col1 int)", result.getStatementInfo().get(0).getExpression());
+        assertEquals("B2", result.getStatementInfo().get(1).getStatementName());
+        assertEquals("@Name('B2') select * from MySchemaTwo", result.getStatementInfo().get(1).getExpression());
 
-        deploymentAdmin.undeploy(resultOne.getDeploymentId());
+        result = deploymentAdmin.undeploy(resultOne.getDeploymentId());
         assertEquals(0, epService.getEPAdministrator().getStatementNames().length);
+        assertEquals(2, result.getStatementInfo().size());
+        assertEquals("A1", result.getStatementInfo().get(0).getStatementName());
     }
 
     public void testInvalidExceptionList() throws Exception {

@@ -1,7 +1,19 @@
 Esper Changelog
 ===================
 
-Changes in version 3.5.0
+Changes in version 3.4.0
+------------------------
+Major API changes
+  - None
+  
+New Features
+  - Support for EPL modules, deployment
+  - Support for create schema
+
+Minor changes  
+
+
+Changes in version 3.4.0
 ------------------------
 Major API changes
   - None

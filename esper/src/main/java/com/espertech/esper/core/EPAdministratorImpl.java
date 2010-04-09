@@ -9,9 +9,9 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.deploy.DeploymentAdmin;
+import com.espertech.esper.client.deploy.EPDeploymentAdmin;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.core.deploy.DeploymentAdminImpl;
+import com.espertech.esper.core.deploy.EPDeploymentAdminImpl;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.pattern.EvalNode;
@@ -26,7 +26,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     private EPServicesContext services;
     private ConfigurationOperations configurationOperations;
     private SelectClauseStreamSelectorEnum defaultStreamSelector;
-    private DeploymentAdmin deploymentAdminService;
+    private EPDeploymentAdmin deploymentAdminService;
 
     /**
      * Constructor - takes the services context as argument.
@@ -37,10 +37,10 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         this.services = adminContext.getServices();
         this.configurationOperations = adminContext.getConfigurationOperations();
         this.defaultStreamSelector = adminContext.getDefaultStreamSelector();
-        this.deploymentAdminService = new DeploymentAdminImpl(this, adminContext.getServices().getDeploymentStateService());
+        this.deploymentAdminService = new EPDeploymentAdminImpl(this, adminContext.getServices().getDeploymentStateService());
     }
 
-    public DeploymentAdmin getDeploymentAdmin()
+    public EPDeploymentAdmin getDeploymentAdmin()
     {
         return deploymentAdminService;
     }

@@ -18,7 +18,7 @@ public class TestDeployOrder extends TestCase
 	private static final Log log = LogFactory.getLog(TestDeployOrder.class);
 
     private EPServiceProvider epService;
-    private DeploymentAdmin deploymentAdmin;
+    private EPDeploymentAdmin deploymentAdmin;
 
     public void setUp() {
         epService = EPServiceProviderManager.getDefaultProvider();
@@ -40,31 +40,31 @@ public class TestDeployOrder extends TestCase
         moduleB = getModule("B", "A");
         moduleC = getModule("C", "A", "B", "D");
         moduleD = getModule("D", "A", "B");
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleC, moduleD, moduleB, moduleA}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleC, moduleD, moduleB, moduleA}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleA, moduleB, moduleD, moduleC}, order);
 
         // Zero items
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {}), new DeploymentOrderOptions());
         assertOrder(new Module[] {}, order);
 
         // 1 item
         moduleA = getModule("A");
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleA}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleA}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleA}, order);
 
         // 2 item
         moduleA = getModule("A", "B");
         moduleB = getModule("B");
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleB, moduleA}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleB, moduleA}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleB, moduleA}, order);
 
         // 3 item
         moduleB = getModule("B");
         moduleC = getModule("C", "B");
         moduleD = getModule("D");
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleB, moduleC, moduleD}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleB, moduleC, moduleD}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleB, moduleC, moduleD}, order);
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleD, moduleC, moduleB}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleD, moduleC, moduleB}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleB, moduleD, moduleC}, order);
 
         // 2 trees of 2 deep
@@ -72,7 +72,7 @@ public class TestDeployOrder extends TestCase
         moduleB = getModule("B");
         moduleC = getModule("C", "D");
         moduleD = getModule("D");
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleC, moduleB, moduleA, moduleD}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleC, moduleB, moduleA, moduleD}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleB, moduleD, moduleC, moduleA}, order);
 
         // Tree of 5 deep
@@ -81,11 +81,11 @@ public class TestDeployOrder extends TestCase
         moduleC = getModule("C", "B");
         moduleD = getModule("D", "C", "E");
         moduleE = getModule("E");
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleB, moduleC, moduleE, moduleA, moduleD}, order);
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleB, moduleE, moduleC, moduleA, moduleD}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleB, moduleE, moduleC, moduleA, moduleD}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleB, moduleE, moduleC, moduleA, moduleD}, order);
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleA, moduleD, moduleE, moduleC, moduleB}, new DeploymentOrderOptions());
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleA, moduleD, moduleE, moduleC, moduleB}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleB, moduleE, moduleC, moduleA, moduleD}, order);
 
         // Tree with null names
@@ -96,7 +96,7 @@ public class TestDeployOrder extends TestCase
         moduleE = getModule("C");
         DeploymentOrderOptions options = new DeploymentOrderOptions();
         options.setCheckUses(false);
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}, options);
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}), options);
         assertOrder(new Module[] {moduleC, moduleE, moduleD, moduleA, moduleB}, order);
 
         // Tree with duplicate names
@@ -105,7 +105,7 @@ public class TestDeployOrder extends TestCase
         moduleC = getModule("A", "B");
         moduleD = getModule("D", "A");
         moduleE = getModule("C");
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}, options);
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}), options);
         assertOrder(new Module[] {moduleE, moduleB, moduleA, moduleC, moduleD}, order);
     }
 
@@ -117,7 +117,7 @@ public class TestDeployOrder extends TestCase
         Module moduleD = getModule("D", "B");
         
         try {
-            deploymentAdmin.getDeploymentOrder(new Module[] {moduleC, moduleD, moduleB}, new DeploymentOrderOptions());
+            deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleC, moduleD, moduleB}), new DeploymentOrderOptions());
             fail();
         }
         catch (DeploymentOrderException ex) {
@@ -126,14 +126,14 @@ public class TestDeployOrder extends TestCase
 
         // Circular 1 - this is allowed
         moduleB = getModule("B", "B");
-        DeploymentOrder order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleC, moduleD, moduleB}, new DeploymentOrderOptions());
+        DeploymentOrder order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleC, moduleD, moduleB}), new DeploymentOrderOptions());
         assertOrder(new Module[] {moduleB, moduleD, moduleC, }, order);
 
         // Circular 2
         moduleB = getModule("B", "C");
         moduleC = getModule("C", "B");
         try {
-            deploymentAdmin.getDeploymentOrder(new Module[] {moduleC, moduleB}, new DeploymentOrderOptions());
+            deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleC, moduleB}), new DeploymentOrderOptions());
             fail();
         }
         catch (DeploymentOrderException ex) {
@@ -143,7 +143,7 @@ public class TestDeployOrder extends TestCase
         // turn off circular check
         DeploymentOrderOptions options = new DeploymentOrderOptions();
         options.setCheckCircularDependency(false);
-        order = deploymentAdmin.getDeploymentOrder(new Module[] {moduleC, moduleB}, options);
+        order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleC, moduleB}), options);
         assertOrder(new Module[] {moduleB, moduleC}, order);
     }
 
@@ -152,7 +152,7 @@ public class TestDeployOrder extends TestCase
         // Single module
         Module moduleB = getModule("B", "C");
         try {
-            deploymentAdmin.getDeploymentOrder(new Module[] {moduleB}, new DeploymentOrderOptions());
+            deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleB}), new DeploymentOrderOptions());
             fail();
         }
         catch (DeploymentOrderException ex) {
@@ -162,7 +162,7 @@ public class TestDeployOrder extends TestCase
         // multiple module
         Module[] modules = new Module[] {getModule("B", "C"), getModule("C", "D"), getModule("D", "x")};
         try {
-            deploymentAdmin.getDeploymentOrder(modules, new DeploymentOrderOptions());
+            deploymentAdmin.getDeploymentOrder(Arrays.asList(modules), new DeploymentOrderOptions());
             fail();
         }
         catch (DeploymentOrderException ex) {
@@ -172,7 +172,7 @@ public class TestDeployOrder extends TestCase
         // turn off uses-checks
         DeploymentOrderOptions options = new DeploymentOrderOptions();
         options.setCheckUses(false);
-        deploymentAdmin.getDeploymentOrder(modules, options);        
+        deploymentAdmin.getDeploymentOrder(Arrays.asList(modules), options);
     }
 
     private void assertOrder(Module[] ordered, DeploymentOrder order)
