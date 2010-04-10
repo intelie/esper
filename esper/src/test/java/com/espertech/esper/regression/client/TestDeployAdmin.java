@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
+import java.io.InputStream;
 
 public class TestDeployAdmin extends TestCase
 {
@@ -33,7 +34,9 @@ public class TestDeployAdmin extends TestCase
         Module module = makeModule("com.testit", "create schema S1 as SupportBean", "@Name('A') select SupportStaticMethodLib.plusOne(intPrimitive) as val from S1");
         module.getImports().add(SupportBean.class.getName());
         module.getImports().add(SupportStaticMethodLib.class.getPackage().getName() + ".*");
+        assertFalse(deploymentAdmin.isDeployed("com.testit"));
         deploymentAdmin.deploy(module, null);
+        assertTrue(deploymentAdmin.isDeployed("com.testit"));
         epService.getEPAdministrator().getStatement("A").addListener(listener);
         
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 4));
@@ -56,10 +59,47 @@ public class TestDeployAdmin extends TestCase
         assertEquals(result.getDeploymentId(), deploymentAdmin.getDeployments()[0]);
     }
 
+    public void testShortcutReadDeploy() throws Exception {
+
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("regression/test_module_12.epl");
+        assertNotNull(in);
+        DeploymentResult resultOne = deploymentAdmin.readDeploy(in, "uri1", "archive1", "obj1");
+        assertEquals("regression.test", deploymentAdmin.getDeployment(resultOne.getDeploymentId()).getModuleName());
+        assertEquals(2, resultOne.getStatements().size());
+        assertEquals("create schema MyType(col1 integer)", resultOne.getStatements().get(0).getText());
+        assertTrue(deploymentAdmin.isDeployed("regression.test"));
+
+        String moduleText = "module regression.test.two;" +
+                "uses regression.test;" +
+                "create schema MyTypeTwo(col1 integer);" +
+                "select * from MyTypeTwo;";
+        DeploymentResult resultTwo = deploymentAdmin.parseDeploy(moduleText, "uri2", "archive2", "obj2");
+        DeploymentInformation[] infos = deploymentAdmin.getDeploymentInformation();
+        assertEquals(2, infos.length);
+        
+        List<DeploymentInformation> infoList = new ArrayList<DeploymentInformation>(Arrays.asList(infos));
+        Collections.sort(infoList, new Comparator<DeploymentInformation>() {
+            public int compare(DeploymentInformation o1, DeploymentInformation o2) {
+                return o1.getModuleName().compareTo(o2.getModuleName());
+            }
+        });
+        DeploymentInformation infoOne = infoList.get(0);
+        DeploymentInformation infoTwo = infoList.get(1);
+        assertEquals("regression.test", infoOne.getModuleName());
+        assertEquals("uri1", infoOne.getModuleURI());
+        assertEquals("archive1", infoOne.getModuleArchiveName());
+        assertEquals("obj1", infoOne.getModuleUserObject());
+        assertEquals("regression.test.two", infoTwo.getModuleName());
+        assertEquals("uri2", infoTwo.getModuleURI());
+        assertEquals("archive2", infoTwo.getModuleArchiveName());
+        assertEquals("obj2", infoTwo.getModuleUserObject());
+    }
+
     public void testDeployUndeploy() throws Exception {
         Module moduleOne = makeModule("mymodule.one", "@Name('A1') create schema MySchemaOne (col1 int)", "@Name('B1') select * from MySchemaOne");
         DeploymentResult resultOne = deploymentAdmin.deploy(moduleOne, new DeploymentOptions());
         assertEquals(2, resultOne.getStatements().size());
+        assertTrue(deploymentAdmin.isDeployed("mymodule.one"));
 
         Module moduleTwo = makeModule("mymodule.two", "@Name('A2') create schema MySchemaTwo (col1 int)", "@Name('B2') select * from MySchemaTwo");
         moduleTwo.setUserObject(100L);

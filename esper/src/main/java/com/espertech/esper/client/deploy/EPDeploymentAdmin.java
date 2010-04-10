@@ -111,4 +111,48 @@ public interface EPDeploymentAdmin
      * @return deployment information.
      */
     public DeploymentInformation[] getDeploymentInformation();
+
+    /**
+     * Determine if a named module is already deployed, returns true if one or more modules of the same
+     * name are deployed or false when no module of that name is deployed.
+     * @param moduleName to look up
+     * @return indicator
+     */
+    public boolean isDeployed(String moduleName);
+
+    /**
+     * Shortcut method to read and deploy a single module from an input stream.
+     * <p>
+     * Uses default options for performing deployment dependency checking and deployment.
+     * <p>
+     * Leaves the stream unclosed.
+     * @param stream to read
+     * @param moduleURI uri of module to assign or null if not applicable
+     * @param moduleArchive archive name of module to assign or null if not applicable
+     * @param userObject user object to assign to module, passed along unused as part of deployment information, or null if not applicable
+     * @return deployment result object
+     * @throws IOException when the file could not be read
+     * @throws ParseException when parsing of the module failed
+     * @throws DeploymentOrderException when any module dependencies are not satisfied
+     * @throws DeploymentException when the deployment fails, contains a list of deployment failures
+     */
+    public DeploymentResult readDeploy(InputStream stream, String moduleURI, String moduleArchive, Object userObject)
+        throws IOException, ParseException, DeploymentOrderException, DeploymentException;
+
+    /**
+     * Shortcut method to parse and deploy a single module from a string text buffer.
+     * <p>
+     * Uses default options for performing deployment dependency checking and deployment.
+     * @param eplModuleText to parse
+     * @param moduleURI uri of module to assign or null if not applicable
+     * @param moduleArchive archive name of module to assign or null if not applicable
+     * @param userObject user object to assign to module, passed along unused as part of deployment information, or null if not applicable
+     * @return deployment result object
+     * @throws IOException when the file could not be read
+     * @throws ParseException when parsing of the module failed
+     * @throws DeploymentOrderException when any module dependencies are not satisfied
+     * @throws DeploymentException when the deployment fails, contains a list of deployment failures
+     */
+    public DeploymentResult parseDeploy(String eplModuleText, String moduleURI, String moduleArchive, Object userObject)
+        throws IOException, ParseException, DeploymentOrderException, DeploymentException;
 }

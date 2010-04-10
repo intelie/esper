@@ -98,6 +98,7 @@ public class TestDeployOrder extends TestCase
         options.setCheckUses(false);
         order = deploymentAdmin.getDeploymentOrder(Arrays.asList(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}), options);
         assertOrder(new Module[] {moduleC, moduleE, moduleD, moduleA, moduleB}, order);
+        assertFalse(deploymentAdmin.isDeployed("C"));
 
         // Tree with duplicate names
         moduleA = getModule("A", "C");

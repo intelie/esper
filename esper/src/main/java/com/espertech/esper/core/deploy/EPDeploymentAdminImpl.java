@@ -81,82 +81,6 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         return readInternal(stream, resource);
     }
 
-    private Module readInternal(InputStream stream, String resourceName) throws IOException, ParseException
-    {
-        BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-        StringWriter buffer = new StringWriter();
-        String strLine;
-        while ((strLine = br.readLine()) != null)   {
-            buffer.append(strLine);
-            buffer.append(newline);
-        }
-        stream.close();
-
-        return readInternal(buffer.toString(), resourceName);
-    }
-
-    private Module readInternal(String buffer, String resourceName) throws IOException, ParseException {
-
-        List<String> semicolonSegments = EPLModuleUtil.parse(buffer.toString());
-        List<ParseNode> nodes = new ArrayList<ParseNode>();
-        for (String segment : semicolonSegments) {
-            nodes.add(EPLModuleUtil.getModule(segment, resourceName));
-        }
-
-        String moduleName = null;
-        int count = 0;
-        for (ParseNode node : nodes) {
-            if (node instanceof ParseNodeComment) {
-                continue;
-            }
-            if (node instanceof ParseNodeModule) {
-                if (moduleName != null) {
-                    throw new ParseException("Duplicate use of the 'module' keyword for resource '" + resourceName + "'");
-                }
-                if (count > 0) {
-                    throw new ParseException("The 'module' keyword must be the first declaration in the module file for resource '" + resourceName + "'");
-                }
-                moduleName = ((ParseNodeModule) node).getModuleName();
-            }
-            count++;
-        }
-
-        Set<String> uses = new LinkedHashSet<String>();
-        Set<String> imports = new LinkedHashSet<String>();
-        count = 0;
-        for (ParseNode node : nodes) {
-            if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeModule)) {
-                continue;
-            }
-            String message = "The 'uses' and 'import' keywords must be the first declaration in the module file or follow the 'module' declaration";
-            if (node instanceof ParseNodeUses) {
-                if (count > 0) {
-                    throw new ParseException(message);
-                }
-                uses.add(((ParseNodeUses) node).getUses());
-                continue;
-            }
-            if (node instanceof ParseNodeImport) {
-                if (count > 0) {
-                    throw new ParseException(message);
-                }
-                imports.add(((ParseNodeImport) node).getImported());
-                continue;
-            }
-            count++;
-        }
-
-        List<ModuleItem> items = new ArrayList<ModuleItem>();
-        for (ParseNode node : nodes) {
-            if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeExpression)) {
-                boolean isComments = (node instanceof ParseNodeComment);
-                items.add(new ModuleItem(node.getText(), isComments));
-            }
-        }
-
-        return new Module(moduleName, resourceName, uses, imports, items);
-    }
-
     public synchronized DeploymentResult deploy(Module module, DeploymentOptions options) throws DeploymentException {
 
         if (options == null) {
@@ -257,10 +181,10 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 
     public Module parse(String eplModuleText) throws IOException, ParseException
     {
-        return readInternal(eplModuleText, null);
+        return parseInternal(eplModuleText, null);
     }
 
-    public UndeploymentResult undeploy(String deploymentId)
+    public synchronized UndeploymentResult undeploy(String deploymentId)
     {
         DeploymentInformation info = deploymentStateService.getDeployment(deploymentId);
         if (info == null) {
@@ -301,17 +225,17 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         return deploymentStateService.getDeployments();
     }
 
-    public DeploymentInformation getDeployment(String deploymentId)
+    public synchronized DeploymentInformation getDeployment(String deploymentId)
     {
         return deploymentStateService.getDeployment(deploymentId);
     }
 
-    public DeploymentInformation[] getDeploymentInformation()
+    public synchronized DeploymentInformation[] getDeploymentInformation()
     {
         return deploymentStateService.getAllDeployments();
     }
 
-    public DeploymentOrder getDeploymentOrder(Collection<Module> modules, DeploymentOrderOptions options) throws DeploymentOrderException
+    public synchronized DeploymentOrder getDeploymentOrder(Collection<Module> modules, DeploymentOrderOptions options) throws DeploymentOrderException
     {
         if (options == null) {
             options = new DeploymentOrderOptions();
@@ -354,6 +278,9 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 if (proposedModule.getUses() != null) {
                     for (String uses : proposedModule.getUses()) {
                         if (availableModuleNames.contains(uses)) {
+                            continue;
+                        }
+                        if (isDeployed(uses)) {
                             continue;
                         }
                         String message = "Module-dependency not found";
@@ -455,5 +382,110 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         
         Collections.reverse(reverseDeployList);
         return new DeploymentOrder(reverseDeployList);
+    }
+
+    public synchronized boolean isDeployed(String moduleName) {
+        DeploymentInformation[] infos = deploymentStateService.getAllDeployments();
+        if (infos == null) {
+            return false;
+        }
+        for (DeploymentInformation info : infos) {
+            if ((info.getModuleName() != null) && (info.getModuleName().equals(moduleName))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized DeploymentResult readDeploy(InputStream stream, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
+        Module module = readInternal(stream, moduleURI);
+        module.setArchiveName(moduleArchive);
+        module.setUserObject(userObject);
+        getDeploymentOrder(Collections.singletonList(module), null);
+        return deploy(module, null);
+    }
+
+    public synchronized DeploymentResult parseDeploy(String buffer, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
+        Module module = parseInternal(buffer, moduleURI);
+        module.setArchiveName(moduleArchive);
+        module.setUserObject(userObject);
+        getDeploymentOrder(Collections.singletonList(module), null);
+        return deploy(module, null);        
+    }
+
+    private Module readInternal(InputStream stream, String resourceName) throws IOException, ParseException
+    {
+        BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+        StringWriter buffer = new StringWriter();
+        String strLine;
+        while ((strLine = br.readLine()) != null)   {
+            buffer.append(strLine);
+            buffer.append(newline);
+        }
+        stream.close();
+
+        return parseInternal(buffer.toString(), resourceName);
+    }
+
+    private Module parseInternal(String buffer, String resourceName) throws IOException, ParseException {
+
+        List<String> semicolonSegments = EPLModuleUtil.parse(buffer.toString());
+        List<ParseNode> nodes = new ArrayList<ParseNode>();
+        for (String segment : semicolonSegments) {
+            nodes.add(EPLModuleUtil.getModule(segment, resourceName));
+        }
+
+        String moduleName = null;
+        int count = 0;
+        for (ParseNode node : nodes) {
+            if (node instanceof ParseNodeComment) {
+                continue;
+            }
+            if (node instanceof ParseNodeModule) {
+                if (moduleName != null) {
+                    throw new ParseException("Duplicate use of the 'module' keyword for resource '" + resourceName + "'");
+                }
+                if (count > 0) {
+                    throw new ParseException("The 'module' keyword must be the first declaration in the module file for resource '" + resourceName + "'");
+                }
+                moduleName = ((ParseNodeModule) node).getModuleName();
+            }
+            count++;
+        }
+
+        Set<String> uses = new LinkedHashSet<String>();
+        Set<String> imports = new LinkedHashSet<String>();
+        count = 0;
+        for (ParseNode node : nodes) {
+            if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeModule)) {
+                continue;
+            }
+            String message = "The 'uses' and 'import' keywords must be the first declaration in the module file or follow the 'module' declaration";
+            if (node instanceof ParseNodeUses) {
+                if (count > 0) {
+                    throw new ParseException(message);
+                }
+                uses.add(((ParseNodeUses) node).getUses());
+                continue;
+            }
+            if (node instanceof ParseNodeImport) {
+                if (count > 0) {
+                    throw new ParseException(message);
+                }
+                imports.add(((ParseNodeImport) node).getImported());
+                continue;
+            }
+            count++;
+        }
+
+        List<ModuleItem> items = new ArrayList<ModuleItem>();
+        for (ParseNode node : nodes) {
+            if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeExpression)) {
+                boolean isComments = (node instanceof ParseNodeComment);
+                items.add(new ModuleItem(node.getText(), isComments));
+            }
+        }
+
+        return new Module(moduleName, resourceName, uses, imports, items);
     }
 }
