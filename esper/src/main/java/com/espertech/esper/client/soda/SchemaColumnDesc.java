@@ -9,6 +9,9 @@ public class SchemaColumnDesc implements Serializable
     private String type;
     private boolean array;
 
+    public SchemaColumnDesc() {
+    }
+
     public SchemaColumnDesc(String name, String type, boolean array)
     {
         this.name = name;
