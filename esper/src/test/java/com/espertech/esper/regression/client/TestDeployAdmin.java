@@ -11,8 +11,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 public class TestDeployAdmin extends TestCase
 {
@@ -63,22 +62,32 @@ public class TestDeployAdmin extends TestCase
         assertEquals(2, resultOne.getStatements().size());
 
         Module moduleTwo = makeModule("mymodule.two", "@Name('A2') create schema MySchemaTwo (col1 int)", "@Name('B2') select * from MySchemaTwo");
+        moduleTwo.setUserObject(100L);
+        moduleTwo.setArchiveName("archive");
         DeploymentResult resultTwo = deploymentAdmin.deploy(moduleTwo, new DeploymentOptions());
         assertEquals(2, resultTwo.getStatements().size());
         
         DeploymentInformation[] info = epService.getEPAdministrator().getDeploymentAdmin().getDeploymentInformation();
+        List<DeploymentInformation> infoList = new ArrayList<DeploymentInformation>(Arrays.asList(info));
+        Collections.sort(infoList, new Comparator<DeploymentInformation>() {
+            public int compare(DeploymentInformation o1, DeploymentInformation o2) {
+                return o1.getModuleName().compareTo(o2.getModuleName());
+            }
+        });
         assertEquals(2, info.length);
-        assertEquals(resultOne.getDeploymentId(), info[0].getDeploymentId());
-        assertNotNull(info[0].getDeployedDate());
-        assertEquals("mymodule.one", info[0].getModuleName());
-        assertEquals(null, info[0].getModuleURL());
-        assertEquals(0, info[0].getModuleUses().size());
-        assertEquals(resultTwo.getDeploymentId(), info[1].getDeploymentId());
-        assertEquals(2, info[1].getItems().length);
-        assertEquals("A2", info[1].getItems()[0].getStatementName());
-        assertEquals("@Name('A2') create schema MySchemaTwo (col1 int)", info[1].getItems()[0].getExpression());
-        assertEquals("B2", info[1].getItems()[1].getStatementName());
-        assertEquals("@Name('B2') select * from MySchemaTwo", info[1].getItems()[1].getExpression());
+        assertEquals(resultOne.getDeploymentId(), infoList.get(0).getDeploymentId());
+        assertNotNull(infoList.get(0).getDeployedDate());
+        assertEquals("mymodule.one", infoList.get(0).getModuleName());
+        assertEquals(null, infoList.get(0).getModuleURI());
+        assertEquals(0, infoList.get(0).getModuleUses().size());
+        assertEquals(resultTwo.getDeploymentId(), infoList.get(1).getDeploymentId());
+        assertEquals(100L, infoList.get(1).getModuleUserObject());
+        assertEquals("archive", infoList.get(1).getModuleArchiveName());
+        assertEquals(2, infoList.get(1).getItems().length);
+        assertEquals("A2", infoList.get(1).getItems()[0].getStatementName());
+        assertEquals("@Name('A2') create schema MySchemaTwo (col1 int)", infoList.get(1).getItems()[0].getExpression());
+        assertEquals("B2", infoList.get(1).getItems()[1].getStatementName());
+        assertEquals("@Name('B2') select * from MySchemaTwo", infoList.get(1).getItems()[1].getExpression());
         assertEquals(4, epService.getEPAdministrator().getStatementNames().length);
         
         UndeploymentResult result = deploymentAdmin.undeploy(resultTwo.getDeploymentId());

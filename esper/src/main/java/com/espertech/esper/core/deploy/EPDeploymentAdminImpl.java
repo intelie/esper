@@ -231,7 +231,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 
         DeploymentInformationItem[] deploymentInfoArr = statementNames.toArray(new DeploymentInformationItem[statementNames.size()]);
         Set<String> moduleUses = (module.getUses() == null ? Collections.EMPTY_SET : Collections.unmodifiableSet(module.getUses()));
-        DeploymentInformation desc = new DeploymentInformation(deploymentId, module.getName(), module.getUrl(), moduleUses, Calendar.getInstance(), deploymentInfoArr);
+        DeploymentInformation desc = new DeploymentInformation(deploymentId, module.getName(), module.getUri(), module.getArchiveName(), module.getUserObject(), moduleUses, Calendar.getInstance(), deploymentInfoArr);
         deploymentStateService.addDeployment(desc);
 
         if (log.isDebugEnabled()) {
@@ -246,8 +246,8 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         if (module.getName() != null) {
             message += " in module '" + module.getName() + "'";
         }
-        if (module.getUrl() != null) {
-            message += " in module url '" + module.getUrl() + "'";
+        if (module.getUri() != null) {
+            message += " in module url '" + module.getUri() + "'";
         }
         if (exceptions.size() == 1) {
             message += " : " + exceptions.get(0).getMessage();
