@@ -61,9 +61,13 @@ public class TestDeployAdmin extends TestCase
 
     public void testShortcutReadDeploy() throws Exception {
 
-        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("regression/test_module_12.epl");
+        String resource = "regression/test_module_12.epl";
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
         assertNotNull(in);
-        DeploymentResult resultOne = deploymentAdmin.readDeploy(in, "uri1", "archive1", "obj1");
+        DeploymentResult resultOne = deploymentAdmin.readDeploy(in, null, null, null);
+        deploymentAdmin.undeploy(resultOne.getDeploymentId());
+
+        resultOne = deploymentAdmin.readDeploy(resource, "uri1", "archive1", "obj1");
         assertEquals("regression.test", deploymentAdmin.getDeployment(resultOne.getDeploymentId()).getModuleName());
         assertEquals(2, resultOne.getStatements().size());
         assertEquals("create schema MyType(col1 integer)", resultOne.getStatements().get(0).getText());

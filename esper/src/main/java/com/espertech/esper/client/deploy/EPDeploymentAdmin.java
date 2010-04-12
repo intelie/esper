@@ -121,6 +121,23 @@ public interface EPDeploymentAdmin
     public boolean isDeployed(String moduleName);
 
     /**
+     * Shortcut method to read and deploy a single module from a classpath resource.
+     * <p>
+     * Uses default options for performing deployment dependency checking and deployment.
+     * @param resources to read
+     * @param moduleURI uri of module to assign or null if not applicable
+     * @param moduleArchive archive name of module to assign or null if not applicable
+     * @param userObject user object to assign to module, passed along unused as part of deployment information, or null if not applicable
+     * @return deployment result object
+     * @throws IOException when the file could not be read
+     * @throws ParseException when parsing of the module failed
+     * @throws DeploymentOrderException when any module dependencies are not satisfied
+     * @throws DeploymentException when the deployment fails, contains a list of deployment failures
+     */
+    public DeploymentResult readDeploy(String resource, String moduleURI, String moduleArchive, Object userObject)
+        throws IOException, ParseException, DeploymentOrderException, DeploymentException;
+
+    /**
      * Shortcut method to read and deploy a single module from an input stream.
      * <p>
      * Uses default options for performing deployment dependency checking and deployment.

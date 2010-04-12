@@ -8,6 +8,11 @@ import java.io.StringWriter;
  * Represent a deployment unit consisting of deployment declarative information (module name, uses and imports)
  * as well as EPL statements represented by {@link ModuleItem}. May have an additional user object and archive name
  * and uri pointing to the module source attached.
+ * <p>
+ * The module URI gets initialized with the filename, resource or URL being read, however may be overridden
+ * and has not further meaning to the deployment.
+ * <p>
+ * The archive name and user object are opportunities to attach additional deployment information.
  */
 public class Module {
     private String name;

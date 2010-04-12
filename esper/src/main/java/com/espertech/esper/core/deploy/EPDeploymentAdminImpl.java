@@ -173,7 +173,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         if (module.getUri() != null) {
             message += " in module url '" + module.getUri() + "'";
         }
-        if (exceptions.size() == 1) {
+        if (exceptions.size() > 0) {
             message += " : " + exceptions.get(0).getMessage();
         }
         return new DeploymentException(message, exceptions);
@@ -399,18 +399,25 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 
     public synchronized DeploymentResult readDeploy(InputStream stream, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
         Module module = readInternal(stream, moduleURI);
-        module.setArchiveName(moduleArchive);
-        module.setUserObject(userObject);
-        getDeploymentOrder(Collections.singletonList(module), null);
-        return deploy(module, null);
+        return deployQuick(module, moduleURI, moduleArchive, userObject);
+    }
+
+    public synchronized DeploymentResult readDeploy(String resource, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
+        Module module = read(resource);
+        return deployQuick(module, moduleURI, moduleArchive, userObject);
     }
 
     public synchronized DeploymentResult parseDeploy(String buffer, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
         Module module = parseInternal(buffer, moduleURI);
+        return deployQuick(module, moduleURI, moduleArchive, userObject);
+    }
+
+    private DeploymentResult deployQuick(Module module, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
+        module.setUri(moduleURI);
         module.setArchiveName(moduleArchive);
         module.setUserObject(userObject);
         getDeploymentOrder(Collections.singletonList(module), null);
-        return deploy(module, null);        
+        return deploy(module, null);
     }
 
     private Module readInternal(InputStream stream, String resourceName) throws IOException, ParseException
