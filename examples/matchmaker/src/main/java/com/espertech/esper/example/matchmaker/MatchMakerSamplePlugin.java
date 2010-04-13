@@ -20,6 +20,7 @@ public class MatchMakerSamplePlugin implements PluginLoader
 
     private String engineURI;
     private MatchMakerMain matchMakerMain;
+    private Thread simulationThread;
 
     public void init(PluginLoaderInitContext context)
     {
@@ -38,8 +39,10 @@ public class MatchMakerSamplePlugin implements PluginLoader
         log.info("Starting MatchMaker-example for engine URI '" + engineURI + "'.");
 
         try {
-            matchMakerMain = new MatchMakerMain();
-            matchMakerMain.run(engineURI);
+            matchMakerMain = new MatchMakerMain(engineURI, true);
+            simulationThread = new Thread(matchMakerMain, this.getClass().getName() + "-simulator");
+            simulationThread.setDaemon(true);
+            simulationThread.start();
         }
         catch (Exception e) {
             log.error("Error starting MatchMaker example: " + e.getMessage());
@@ -53,6 +56,14 @@ public class MatchMakerSamplePlugin implements PluginLoader
         if (matchMakerMain != null) {
             EPServiceProviderManager.getProvider(engineURI).getEPAdministrator().destroyAllStatements();
         }
+        try {
+            simulationThread.interrupt();
+            simulationThread.join();
+        }
+        catch (InterruptedException e) {
+            log.info("Interrupted", e);
+        }
+        matchMakerMain = null;
         log.info("MatchMaker-example stopped.");
     }
 }

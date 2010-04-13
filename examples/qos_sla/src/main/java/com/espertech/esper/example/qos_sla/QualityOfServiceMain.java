@@ -11,16 +11,24 @@ import java.util.Random;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class QualityOfServiceMain
+public class QualityOfServiceMain implements Runnable
 {
     private static final Log log = LogFactory.getLog(QualityOfServiceMain.class);
 
+    private final String engineURI;
+    private final boolean continuousSimulation;
+    
     public static void main(String[] args)
     {
-        new QualityOfServiceMain().run("QualityOfService");
+        new QualityOfServiceMain("QualityOfService", false).run();
     }
 
-    public void run(String engineURI)
+    public QualityOfServiceMain(String engineURI, boolean continuousSimulation) {
+        this.engineURI = engineURI;
+        this.continuousSimulation = continuousSimulation;
+    }
+
+    public void run()
     {
         log.info("Setting up EPL");
         DynaLatencySpikeMonitor.start();
@@ -55,6 +63,18 @@ public class QualityOfServiceMain
                 OperationMeasurement measurement = new OperationMeasurement(services[index], customers[index],
                         9950 + delta, true);
                 runtime.sendEvent(measurement);
+
+                if (continuousSimulation) { // if running continously and not from command line simply send with delay
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        log.debug("Interrupted", e);
+                        break;
+                    }
+                }
+            }
+            if (Thread.interrupted()) {
+                break;
             }
         }
 

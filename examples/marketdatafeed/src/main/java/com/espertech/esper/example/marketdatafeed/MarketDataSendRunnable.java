@@ -18,14 +18,16 @@ public class MarketDataSendRunnable implements Runnable
 {
     private static final Log log = LogFactory.getLog(MarketDataSendRunnable.class);
     private final EPServiceProvider engine;
+    private final boolean continuousSimulation;
 
     private volatile FeedEnum rateDropOffFeed;
     private volatile boolean isShutdown;
     private Random random = new Random();
 
-    public MarketDataSendRunnable(EPServiceProvider engine)
+    public MarketDataSendRunnable(EPServiceProvider engine, boolean continuousSimulation)
     {
         this.engine = engine;
+        this.continuousSimulation = continuousSimulation;
     }
 
     public void run()
@@ -42,11 +44,18 @@ public class MarketDataSendRunnable implements Runnable
                 {
                     engine.getEPRuntime().sendEvent(new MarketDataEvent("SYM", feed));
                 }
+
+                if (continuousSimulation) {
+                    Thread.sleep(200);
+                }
             }
         }
         catch (RuntimeException ex)
         {
             log.error("Error in send loop", ex);
+        }
+        catch (InterruptedException e) {
+            log.debug("Interruped", e);
         }
 
         log.info(".call Thread " + Thread.currentThread() + " done");

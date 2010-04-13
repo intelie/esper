@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class FeedSimMain {
+public class FeedSimMain implements Runnable{
 
     private static final Log log = LogFactory.getLog(FeedSimMain.class);
 
@@ -63,7 +63,7 @@ public class FeedSimMain {
 
         // Run the sample
         System.out.println("Using " + numberOfThreads + " threads with a drop probability of " + dropProbability + "%, for " + numberOfSeconds + " seconds");
-        FeedSimMain feedSimMain = new FeedSimMain(numberOfThreads, dropProbability, numberOfSeconds, true, "FeedSimMain");
+        FeedSimMain feedSimMain = new FeedSimMain(numberOfThreads, dropProbability, numberOfSeconds, true, "FeedSimMain", false);
         feedSimMain.run();
     }
 
@@ -72,22 +72,28 @@ public class FeedSimMain {
     private int numSeconds;
     private boolean isWaitKeypress;
     private String engineURI;
+    private boolean continuousSimulation;
 
-    public FeedSimMain(int numberOfThreads, double dropProbability, int numSeconds, boolean isWaitKeypress, String engineURI)
+    public FeedSimMain(int numberOfThreads, double dropProbability, int numSeconds, boolean isWaitKeypress, String engineURI, boolean continuousSimulation)
     {
         this.numberOfThreads = numberOfThreads;
         this.dropProbability = dropProbability;
         this.numSeconds = numSeconds;
         this.isWaitKeypress = isWaitKeypress;
         this.engineURI = engineURI;
+        this.continuousSimulation = continuousSimulation;
     }
 
-    public void run() throws IOException, InterruptedException
+    public void run()
     {
         if (isWaitKeypress)
         {
             System.out.println("...press enter to start simulation...");
-            System.in.read();
+            try {
+                System.in.read();
+            } catch (IOException e) {
+                log.error("Exception reading keyboard input: " + e.getMessage(), e);
+            }
         }
 
         // Configure engine with event names to make the statements more readable.
@@ -105,48 +111,63 @@ public class FeedSimMain {
         TicksFalloffStatement falloffStmt = new TicksFalloffStatement(epService.getEPAdministrator());
         falloffStmt.addListener(new RateFalloffAlertListener());
 
-        // Send events
-        ExecutorService threadPool = Executors.newFixedThreadPool(numberOfThreads);
-        MarketDataSendRunnable runnables[] = new MarketDataSendRunnable[numberOfThreads];
-        for (int i = 0; i < numberOfThreads; i++)
-        {
-            runnables[i] = new MarketDataSendRunnable(epService);
-            threadPool.submit(runnables[i]);
+        // For continuous non-ending simulation
+        if (continuousSimulation) {
+            new MarketDataSendRunnable(epService, true).run();
         }
-
-        int seconds = 0;
-        Random random = new Random();
-        while(seconds < numSeconds) {
-            seconds++;
-            Thread.sleep(1000);
-
-            FeedEnum feedToDropOff;
-            if (random.nextDouble() * 100 < dropProbability)
+        else {
+            // Send events
+            ExecutorService threadPool = Executors.newFixedThreadPool(numberOfThreads);
+            MarketDataSendRunnable runnables[] = new MarketDataSendRunnable[numberOfThreads];
+            for (int i = 0; i < numberOfThreads; i++)
             {
-                feedToDropOff = FeedEnum.FEED_A;
-                if (random.nextBoolean())
-                {
-                    feedToDropOff = FeedEnum.FEED_B;
+                runnables[i] = new MarketDataSendRunnable(epService, false);
+                threadPool.submit(runnables[i]);
+            }
+
+            int seconds = 0;
+            Random random = new Random();
+            while(seconds < numSeconds) {
+                seconds++;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    log.info("Interrupted", e);
+                    break;
                 }
-                log.info("Setting drop-off for feed " + feedToDropOff);
 
+                FeedEnum feedToDropOff;
+                if (random.nextDouble() * 100 < dropProbability)
+                {
+                    feedToDropOff = FeedEnum.FEED_A;
+                    if (random.nextBoolean())
+                    {
+                        feedToDropOff = FeedEnum.FEED_B;
+                    }
+                    log.info("Setting drop-off for feed " + feedToDropOff);
+
+                }
+                else
+                {
+                    feedToDropOff = null;
+                }
+                for (int i = 0; i < runnables.length; i++)
+                {
+                    runnables[i].setRateDropOffFeed(feedToDropOff);
+                }
             }
-            else
-            {
-                feedToDropOff = null;
-            }
+
+            log.info("Shutting down threadpool");
             for (int i = 0; i < runnables.length; i++)
             {
-                runnables[i].setRateDropOffFeed(feedToDropOff);
+                runnables[i].setShutdown();
+            }
+            threadPool.shutdown();
+            try {
+                threadPool.awaitTermination(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                // no action
             }
         }
-
-        log.info("Shutting down threadpool");
-        for (int i = 0; i < runnables.length; i++)
-        {
-            runnables[i].setShutdown();
-        }
-        threadPool.shutdown();
-        threadPool.awaitTermination(10, TimeUnit.SECONDS);
     }
 }

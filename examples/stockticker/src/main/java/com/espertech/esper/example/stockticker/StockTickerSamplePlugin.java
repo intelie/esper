@@ -17,6 +17,7 @@ public class StockTickerSamplePlugin implements PluginLoader
 
     private String engineURI;
     private StockTickerMain main;
+    private Thread simulationThread;
 
     public void init(PluginLoaderInitContext context)
     {
@@ -35,8 +36,11 @@ public class StockTickerSamplePlugin implements PluginLoader
         log.info("Starting StockTicker-example for engine URI '" + engineURI + "'.");
 
         try {
-            main = new StockTickerMain();
-            main.run(engineURI);
+            main = new StockTickerMain(engineURI, true);
+            simulationThread = new Thread(main, this.getClass().getName() + "-simulator");
+            simulationThread.setDaemon(true);
+            simulationThread.start();
+            main.run();
         }
         catch (Exception e) {
             log.error("Error starting StockTicker example: " + e.getMessage());
@@ -50,6 +54,14 @@ public class StockTickerSamplePlugin implements PluginLoader
         if (main != null) {
             EPServiceProviderManager.getProvider(engineURI).getEPAdministrator().destroyAllStatements();
         }
+        try {
+            simulationThread.interrupt();
+            simulationThread.join();
+        }
+        catch (InterruptedException e) {
+            log.info("Interrupted", e);
+        }
+        main = null;
         log.info("StockTicker-example stopped.");
     }
 }

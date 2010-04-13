@@ -14,7 +14,7 @@ public class TestFeedSimMain extends TestCase
 {
     public void testRun() throws Exception
     {
-        FeedSimMain main = new FeedSimMain(100, 50, 5, false, "FeedSimMain");
+        FeedSimMain main = new FeedSimMain(100, 50, 5, false, "FeedSimMain", false);
         main.run();
     }
 }

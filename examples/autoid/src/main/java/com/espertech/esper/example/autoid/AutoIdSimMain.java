@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class AutoIdSimMain {
+public class AutoIdSimMain implements Runnable {
 
     private static Log log = LogFactory.getLog( AutoIdSimMain.class );
 
@@ -41,6 +41,7 @@ public class AutoIdSimMain {
 
     private final int numEvents;
     private final String engineURI;
+    private final boolean continuousSimulation;
     private final DocumentBuilder documentBuilder;
 
     public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
@@ -68,14 +69,15 @@ public class AutoIdSimMain {
         }
 
         // Run the sample
-        AutoIdSimMain autoIdSimMain = new AutoIdSimMain(events, "AutoIDSim");
+        AutoIdSimMain autoIdSimMain = new AutoIdSimMain(events, "AutoIDSim", false);
         autoIdSimMain.run();
     }
 
-    public AutoIdSimMain(int numEvents, String engineURI) throws ParserConfigurationException
+    public AutoIdSimMain(int numEvents, String engineURI, boolean continuousSimulation) throws ParserConfigurationException
     {
         this.numEvents = numEvents;
         this.engineURI = engineURI;
+        this.continuousSimulation = continuousSimulation;
 
         // set up DOM parser
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -83,7 +85,7 @@ public class AutoIdSimMain {
         documentBuilder = builderFactory.newDocumentBuilder();
     }
 
-    public void run() throws SAXException, IOException
+    public void run()
     {
         // load config - this defines the XML event types to be processed
         String configFile = "esper.examples.cfg.xml";
@@ -103,18 +105,35 @@ public class AutoIdSimMain {
         rfidStmt.addListener(new RFIDTagsPerSensorListener());
 
         // Send events
-        int eventCount = 0;
-        while(eventCount < numEvents) {
-            sendEvent(epService.getEPRuntime());
-            eventCount++;
+        if (!continuousSimulation) {
+            int eventCount = 0;
+            while(eventCount < numEvents) {
+                sendEvent(epService.getEPRuntime());
+                eventCount++;
+            }
+        }
+        else {
+            while(true) {
+                sendEvent(epService.getEPRuntime());
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
         }
     }
 
-    private void sendEvent(EPRuntime epRuntime) throws SAXException, IOException
+    private void sendEvent(EPRuntime epRuntime)
     {
-        String eventXMLText = generateEvent();
-        Document simpleDoc = documentBuilder.parse(new InputSource(new StringReader(eventXMLText)));
-        epRuntime.sendEvent(simpleDoc);
+        try {
+            String eventXMLText = generateEvent();
+            Document simpleDoc = documentBuilder.parse(new InputSource(new StringReader(eventXMLText)));
+            epRuntime.sendEvent(simpleDoc);
+        }
+        catch (Exception ex) {
+            throw new RuntimeException("Error sending event: " + ex.getMessage(), ex);
+        }
     }
 
     private String generateEvent()

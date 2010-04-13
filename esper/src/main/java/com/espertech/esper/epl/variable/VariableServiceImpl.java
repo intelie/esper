@@ -168,8 +168,8 @@ public class VariableServiceImpl implements VariableService
             return;
         }
 
-        if (log.isInfoEnabled()) {
-            log.info("Removing variable '" + name + "'");
+        if (log.isDebugEnabled()) {
+            log.debug("Removing variable '" + name + "'");
         }
         variables.remove(name);
 

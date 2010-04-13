@@ -16,6 +16,7 @@ public class AutoIdSamplePlugin implements PluginLoader
 
     private String engineURI;
     private AutoIdSimMain autoIdSimMain;
+    private Thread simulationThread;
 
     public void init(PluginLoaderInitContext context)
     {
@@ -34,8 +35,10 @@ public class AutoIdSamplePlugin implements PluginLoader
         log.info("Starting AutoID-example for engine URI '" + engineURI + "'.");
 
         try {
-            autoIdSimMain = new AutoIdSimMain(1000, engineURI);
-            autoIdSimMain.run();
+            autoIdSimMain = new AutoIdSimMain(1000, engineURI, true);
+            simulationThread = new Thread(autoIdSimMain, this.getClass().getName() + "-simulator");
+            simulationThread.setDaemon(true);
+            simulationThread.start();
         }
         catch (Exception e) {
             log.error("Error starting AutoID example: " + e.getMessage());
@@ -49,6 +52,14 @@ public class AutoIdSamplePlugin implements PluginLoader
         if (autoIdSimMain != null) {
             autoIdSimMain.destroy();
         }
+        try {
+            simulationThread.interrupt();
+            simulationThread.join();
+        }
+        catch (InterruptedException e) {
+            log.info("Interrupted", e);
+        }
+        autoIdSimMain = null;
         log.info("AutoID-example stopped.");
     }
 }

@@ -14,16 +14,24 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.Random;
 
-public class MatchMakerMain
+public class MatchMakerMain implements Runnable
 {
     private static final Log log = LogFactory.getLog(MatchMakerMain.class);
 
+    private final String engineURI;
+    private final boolean continuousSimulation;
+
     public static void main(String[] args)
     {
-        new MatchMakerMain().run("MatchMaker");
+        new MatchMakerMain("MatchMaker", false).run();
     }
 
-    public void run(String engineURI)
+    public MatchMakerMain(String engineURI, boolean continuousSimulation) {
+        this.engineURI = engineURI;
+        this.continuousSimulation = continuousSimulation;
+    }
+
+    public void run()
     {
         log.info("Setting up EPL");
         // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
@@ -85,15 +93,31 @@ public class MatchMakerMain
             }
         }
         
-        log.info("Sending 100k of random locations");
         Random random = new Random();
-        for (int i = 1; i < 100000; i++)
+        int maxEvents;
+        if (continuousSimulation) {
+            maxEvents = Integer.MAX_VALUE;
+        }
+        else {
+            maxEvents = 100000;
+            log.info("Sending 100k of random locations");
+        }
+
+        for (int i = 1; i < maxEvents; i++)
         {
             int x = 10 + random.nextInt(i) / 100000;
             int y = 10 + random.nextInt(i) / 100000;
 
             user_2.setLocation(x, y);
             epService.getEPRuntime().sendEvent(user_2);
+
+            if (continuousSimulation) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    log.debug("Interrupted", e);
+                }
+            }
         }        
 
         log.info("Done.");

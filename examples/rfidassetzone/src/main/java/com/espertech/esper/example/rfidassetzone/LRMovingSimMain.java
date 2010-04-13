@@ -61,7 +61,7 @@ import java.util.concurrent.*;
  * <LI> The main thread reconciles the events received by listeners with the asset groups that were split by any callables.
  * </OL>
  */
-public class LRMovingSimMain
+public class LRMovingSimMain implements Runnable
 {
     private static final Log log = LogFactory.getLog(LRMovingSimMain.class);
 
@@ -70,6 +70,7 @@ public class LRMovingSimMain
     private final int numberOfSeconds;
     private boolean isAssert;
     private String engineURI;
+    private boolean continuousSimulation;
 
     private EPServiceProvider epService;
     private Random random = new Random();
@@ -113,27 +114,27 @@ public class LRMovingSimMain
 
         // Run the sample
         System.out.println("Using " + numberOfThreads + " threads and " + numberOfAssetGroups + " asset groups, for " + numberOfSeconds + " seconds");
-        LRMovingSimMain simMain = new LRMovingSimMain(numberOfThreads, numberOfAssetGroups, numberOfSeconds, false, "LRMovingExampleURI");
+        LRMovingSimMain simMain = new LRMovingSimMain(numberOfThreads, numberOfAssetGroups, numberOfSeconds, false, "LRMovingExampleURI", false);
         simMain.run();
     }
 
-    public LRMovingSimMain(int numberOfThreads, int numberOfAssetGroups, int numberOfSeconds, boolean isAssert, String engineURI)
+    public LRMovingSimMain(int numberOfThreads, int numberOfAssetGroups, int numberOfSeconds, boolean isAssert, String engineURI, boolean continuousSimulation)
     {
         this.numberOfThreads = numberOfThreads;
         this.numberOfAssetGroups = numberOfAssetGroups;
         this.numberOfSeconds = numberOfSeconds;
         this.isAssert = isAssert;
         this.engineURI = engineURI;
-    }
 
-    public void run() throws Exception
-    {
         Configuration config = new Configuration();
         config.addEventType("LocationReport", LocationReport.class);
 
         epService = EPServiceProviderManager.getProvider(engineURI, config);
         epService.initialize();
+    }
 
+    public void run()
+    {
         // Number of seconds the total test runs
         int numSeconds = numberOfSeconds;    // usually 60
 
@@ -153,7 +154,6 @@ public class LRMovingSimMain
     }
 
     private void tryPerf(int numSeconds, int numAssetGroups, int numThreads, int ratioZoneMove, int ratioZoneSplit)
-            throws Exception
     {
         // Create Asset Ids and assign to a zone
         log.info(".tryPerf Creating asset ids");
@@ -212,13 +212,28 @@ public class LRMovingSimMain
         {
             listeners[i].reset();
         }
+        Integer[][] assetGroupsForThread = getGroupsPerThread(numAssetGroups, numThreads);
+
+        // For continuous simulation (ends when interrupted),
+        if (continuousSimulation) {
+            while(true) {
+                AssetEventGenCallable callable = new AssetEventGenCallable(epService, assetIds, zoneIds, assetGroupsForThread[0], ratioZoneMove, ratioZoneSplit);
+                try {
+                    callable.call();
+                }
+                catch (Exception ex) {
+                    log.warn("Exception simulating in continuous mode: " + ex.getMessage(), ex);
+                    break;
+                }
+            }
+            return;
+        }
 
         // Create threadpool
         log.info(".tryPerf Starting " + numThreads + " threads");
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
         Future future[] = new Future[numThreads];
         AssetEventGenCallable callables[] = new AssetEventGenCallable[numThreads];
-        Integer[][] assetGroupsForThread = getGroupsPerThread(numAssetGroups, numThreads);
 
         for (int i = 0; i < numThreads; i++)
         {
@@ -236,7 +251,12 @@ public class LRMovingSimMain
         do
         {
             // sleep
-            Thread.sleep(1000);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                log.debug("Interrupted", e);
+                break;
+            }
             currTime = System.currentTimeMillis();
             deltaSeconds = (currTime - startTime) / 1000.0;
 
@@ -282,7 +302,11 @@ public class LRMovingSimMain
             callables[i].setShutdown(true);
         }
         threadPool.shutdown();
-        threadPool.awaitTermination(10, TimeUnit.SECONDS);
+        try {
+            threadPool.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            log.debug("Interrupted", e);
+        }
 
         if (!isAssert)
         {
@@ -291,9 +315,14 @@ public class LRMovingSimMain
 
         for (int i = 0; i < numThreads; i++)
         {
-            if (!(Boolean) future[i].get())
-            {
-                throw new RuntimeException("Invalid result of callable");
+            try {
+                if (!(Boolean) future[i].get())
+                {
+                    throw new RuntimeException("Invalid result of callable");
+                }
+            }
+            catch (Exception e) {
+                log.error("Exception encountered sending events: " + e.getMessage(), e);
             }
         }
 

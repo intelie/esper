@@ -13,16 +13,24 @@ import java.util.LinkedList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class StockTickerMain
+public class StockTickerMain implements Runnable
 {
     private static final Log log = LogFactory.getLog(StockTickerMain.class);
 
+    private final String engineURI;
+    private final boolean continuousSimulation;
+
     public static void main(String[] args)
     {
-        new StockTickerMain().run("StockTicker");
+        new StockTickerMain("StockTicker", false).run();
     }
 
-    public void run(String engineURI) {
+    public StockTickerMain(String engineURI, boolean continuousSimulation) {
+        this.engineURI = engineURI;
+        this.continuousSimulation = continuousSimulation;
+    }
+
+    public void run() {
 
         Configuration configuration = new Configuration();
         configuration.addEventType("PriceLimit", PriceLimit.class.getName());
@@ -42,6 +50,16 @@ public class StockTickerMain
         for (Object event : stream)
         {
             epService.getEPRuntime().sendEvent(event);
+
+            if (continuousSimulation) {
+                try {
+                    Thread.sleep(200);
+                }
+                catch (InterruptedException e) {
+                    log.debug("Interrupted", e);
+                    break;
+                }
+            }
         }
 
         log.info("Done.");

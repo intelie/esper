@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
  * @author Hans Gilde
  *
  */
-public class TxnGenMain {
+public class TxnGenMain implements Runnable {
 
     private static Map<String,Integer> BUCKET_SIZES = new LinkedHashMap<String,Integer>();
 
@@ -72,22 +72,24 @@ public class TxnGenMain {
 
         // Run the sample
         System.out.println("Using bucket size of " + bucketSize + " with " + numTransactions + " transactions");
-        TxnGenMain txnGenMain = new TxnGenMain(bucketSize, numTransactions, "TransactionExample");
+        TxnGenMain txnGenMain = new TxnGenMain(bucketSize, numTransactions, "TransactionExample", false);
         txnGenMain.run();
     }
 
     private int bucketSize;
     private int numTransactions;
     private String engineURI;
+    private boolean continuousSimulation;
 
-    public TxnGenMain(int bucketSize, int numTransactions, String engineURI)
+    public TxnGenMain(int bucketSize, int numTransactions, String engineURI, boolean continuousSimulation)
     {
         this.bucketSize = bucketSize;
         this.numTransactions = numTransactions;
         this.engineURI = engineURI;
+        this.continuousSimulation = continuousSimulation;
     }
 
-    public void run() throws IOException
+    public void run()
     {
         // Configure engine with event names to make the statements more readable.
         // This could also be done in a configuration file.
@@ -125,6 +127,22 @@ public class TxnGenMain {
         ShuffledBucketOutput output = new ShuffledBucketOutput(source, feeder, bucketSize);
 
         // Feed events
-        output.output();
+        try {
+            if (continuousSimulation) {
+                while(true) {
+                    output.output();
+                    Thread.sleep(5000); // Send a batch every 5 seconds
+                }
+            }
+            else {
+                output.output();
+            }
+        }
+        catch(InterruptedException ex) {
+            // no action
+        }
+        catch(IOException ex) {
+            throw new RuntimeException("Error outputting events: " + ex.getMessage(), ex);
+        }
     }
 }

@@ -20,6 +20,7 @@ public class QualityOfServiceSamplePlugin implements PluginLoader
 
     private String engineURI;
     private QualityOfServiceMain main;
+    private Thread simulationThread;
 
     public void init(PluginLoaderInitContext context)
     {
@@ -38,8 +39,10 @@ public class QualityOfServiceSamplePlugin implements PluginLoader
         log.info("Starting QualityOfService-example for engine URI '" + engineURI + "'.");
 
         try {
-            main = new QualityOfServiceMain();
-            main.run(engineURI);
+            main = new QualityOfServiceMain(engineURI, true);
+            simulationThread = new Thread(main, this.getClass().getName() + "-simulator");
+            simulationThread.setDaemon(true);
+            simulationThread.start();
         }
         catch (Exception e) {
             log.error("Error starting QualityOfService example: " + e.getMessage());
@@ -53,6 +56,14 @@ public class QualityOfServiceSamplePlugin implements PluginLoader
         if (main != null) {
             EPServiceProviderManager.getProvider(engineURI).getEPAdministrator().destroyAllStatements();
         }
+        try {
+            simulationThread.interrupt();
+            simulationThread.join();
+        }
+        catch (InterruptedException e) {
+            log.info("Interrupted", e);
+        }
+        main = null;
         log.info("QualityOfService-example stopped.");
     }
 }

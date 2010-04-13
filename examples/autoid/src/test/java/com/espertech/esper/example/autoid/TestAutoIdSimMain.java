@@ -14,7 +14,7 @@ public class TestAutoIdSimMain extends TestCase
 {
     public void testRun() throws Exception
     {
-        AutoIdSimMain main = new AutoIdSimMain(10, "AutoIdSample");
+        AutoIdSimMain main = new AutoIdSimMain(10, "AutoIdSample", false);
         main.run();
     }
 }
