@@ -3,21 +3,18 @@ package com.espertech.esper.regression.client;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.deploy.*;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.SupportStaticMethodLib;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
 import java.io.InputStream;
+import java.util.*;
 
 public class TestDeployAdmin extends TestCase
 {
     private static String newline = System.getProperty("line.separator");
-	private static final Log log = LogFactory.getLog(TestDeployAdmin.class);
 
     private EPServiceProvider epService;
     private EPDeploymentAdmin deploymentAdmin;
@@ -28,6 +25,113 @@ public class TestDeployAdmin extends TestCase
         epService.initialize();
         deploymentAdmin = epService.getEPAdministrator().getDeploymentAdmin();
         listener = new SupportUpdateListener();
+    }
+
+    public void testTransition() throws Exception {
+
+        // add module
+        Module module = makeModule("com.testit", "create schema S1 as (col1 int)");
+        String deploymentId = deploymentAdmin.add(module);
+        DeploymentInformation originalInfo = deploymentAdmin.getDeployment(deploymentId);
+        Calendar addedDate = originalInfo.getAddedDate();
+        Calendar lastUpdDate = originalInfo.getLastUpdateDate();
+        assertEquals(DeploymentState.UNDEPLOYED, originalInfo.getState());
+        assertEquals("com.testit", originalInfo.getModule().getName());
+        assertEquals(0, originalInfo.getItems().length);
+
+        // deploy added module
+        DeploymentResult result = deploymentAdmin.deploy(deploymentId, null);
+        assertEquals(deploymentId, result.getDeploymentId());
+        DeploymentInformation info = deploymentAdmin.getDeployment(deploymentId);
+        assertEquals(DeploymentState.DEPLOYED, info.getState());
+        assertEquals("com.testit", info.getModule().getName());
+        assertEquals(addedDate, info.getAddedDate());
+        assertTrue(info.getLastUpdateDate().getTimeInMillis() - lastUpdDate.getTimeInMillis() < 5000);
+        assertEquals(DeploymentState.UNDEPLOYED, originalInfo.getState());
+
+        // undeploy module
+        deploymentAdmin.undeploy(deploymentId);
+        assertEquals(deploymentId, result.getDeploymentId());
+        info = deploymentAdmin.getDeployment(deploymentId);
+        assertEquals(DeploymentState.UNDEPLOYED, info.getState());
+        assertEquals("com.testit", info.getModule().getName());
+        assertEquals(addedDate, info.getAddedDate());
+        assertTrue(info.getLastUpdateDate().getTimeInMillis() - lastUpdDate.getTimeInMillis() < 5000);
+        assertEquals(DeploymentState.UNDEPLOYED, originalInfo.getState());
+
+        // remove module
+        deploymentAdmin.remove(deploymentId);
+        assertNull(deploymentAdmin.getDeployment(deploymentId));
+        assertEquals(DeploymentState.UNDEPLOYED, originalInfo.getState());
+    }
+
+    public void testTransitionInvalid() throws Exception {
+
+        // invalid from deployed state
+        Module module = makeModule("com.testit", "create schema S1 as (col1 int)");
+        DeploymentResult deploymentResult = deploymentAdmin.deploy(module, null);
+        try {
+            deploymentAdmin.deploy(deploymentResult.getDeploymentId(), null);
+            fail();
+        }
+        catch (DeploymentStateException ex) {
+            assertTrue(ex.getMessage().contains("is already in deployed state"));
+        }
+
+        try {
+            deploymentAdmin.remove(deploymentResult.getDeploymentId());
+            fail();
+        }
+        catch (DeploymentStateException ex) {
+            assertTrue(ex.getMessage().contains("is in deployed state, please undeploy first"));
+        }
+
+        // invalid from undeployed state
+        module = makeModule("com.testit", "create schema S1 as (col1 int)");
+        String deploymentId = deploymentAdmin.add(module);
+        try {
+            deploymentAdmin.undeploy(deploymentId);
+            fail();
+        }
+        catch (DeploymentStateException ex) {
+            assertTrue(ex.getMessage().contains("is already in undeployed state"));
+        }
+        deploymentAdmin.undeployRemove(deploymentId);
+        assertNull(deploymentAdmin.getDeployment(deploymentId));
+
+        // not found
+        assertNull(deploymentAdmin.getDeployment("123"));
+        try {
+            deploymentAdmin.deploy("123", null);
+            fail();
+        }
+        catch (DeploymentNotFoundException ex) {
+            assertEquals("Deployment by id '123' could not be found", ex.getMessage());
+        }
+
+        try {
+            deploymentAdmin.undeploy("123");
+            fail();
+        }
+        catch (DeploymentNotFoundException ex) {
+            assertEquals("Deployment by id '123' could not be found", ex.getMessage());
+        }
+
+        try {
+            deploymentAdmin.remove("123");
+            fail();
+        }
+        catch (DeploymentNotFoundException ex) {
+            assertEquals("Deployment by id '123' could not be found", ex.getMessage());
+        }
+
+        try {
+            deploymentAdmin.undeployRemove("123");
+            fail();
+        }
+        catch (DeploymentNotFoundException ex) {
+            assertEquals("Deployment by id '123' could not be found", ex.getMessage());
+        }
     }
 
     public void testDeployImports() throws Exception {
@@ -65,13 +169,17 @@ public class TestDeployAdmin extends TestCase
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
         assertNotNull(in);
         DeploymentResult resultOne = deploymentAdmin.readDeploy(in, null, null, null);
-        deploymentAdmin.undeploy(resultOne.getDeploymentId());
+        deploymentAdmin.undeployRemove(resultOne.getDeploymentId());
+        assertNull(deploymentAdmin.getDeployment(resultOne.getDeploymentId()));
 
         resultOne = deploymentAdmin.readDeploy(resource, "uri1", "archive1", "obj1");
-        assertEquals("regression.test", deploymentAdmin.getDeployment(resultOne.getDeploymentId()).getModuleName());
+        assertEquals("regression.test", deploymentAdmin.getDeployment(resultOne.getDeploymentId()).getModule().getName());
         assertEquals(2, resultOne.getStatements().size());
         assertEquals("create schema MyType(col1 integer)", resultOne.getStatements().get(0).getText());
         assertTrue(deploymentAdmin.isDeployed("regression.test"));
+        assertEquals("module regression.test;" + newline + newline +
+                "create schema MyType(col1 integer);" + newline +
+                "select * from MyType;" + newline, deploymentAdmin.getDeployment(resultOne.getDeploymentId()).getModule().getModuleText());
 
         String moduleText = "module regression.test.two;" +
                 "uses regression.test;" +
@@ -84,19 +192,25 @@ public class TestDeployAdmin extends TestCase
         List<DeploymentInformation> infoList = new ArrayList<DeploymentInformation>(Arrays.asList(infos));
         Collections.sort(infoList, new Comparator<DeploymentInformation>() {
             public int compare(DeploymentInformation o1, DeploymentInformation o2) {
-                return o1.getModuleName().compareTo(o2.getModuleName());
+                return o1.getModule().getName().compareTo(o2.getModule().getName());
             }
         });
         DeploymentInformation infoOne = infoList.get(0);
         DeploymentInformation infoTwo = infoList.get(1);
-        assertEquals("regression.test", infoOne.getModuleName());
-        assertEquals("uri1", infoOne.getModuleURI());
-        assertEquals("archive1", infoOne.getModuleArchiveName());
-        assertEquals("obj1", infoOne.getModuleUserObject());
-        assertEquals("regression.test.two", infoTwo.getModuleName());
-        assertEquals("uri2", infoTwo.getModuleURI());
-        assertEquals("archive2", infoTwo.getModuleArchiveName());
-        assertEquals("obj2", infoTwo.getModuleUserObject());
+        assertEquals("regression.test", infoOne.getModule().getName());
+        assertEquals("uri1", infoOne.getModule().getUri());
+        assertEquals("archive1", infoOne.getModule().getArchiveName());
+        assertEquals("obj1", infoOne.getModule().getUserObject());
+        assertNotNull(infoOne.getAddedDate());
+        assertNotNull(infoOne.getLastUpdateDate());
+        assertEquals(DeploymentState.DEPLOYED, infoOne.getState());
+        assertEquals("regression.test.two", infoTwo.getModule().getName());
+        assertEquals("uri2", infoTwo.getModule().getUri());
+        assertEquals("archive2", infoTwo.getModule().getArchiveName());
+        assertEquals("obj2", infoTwo.getModule().getUserObject());
+        assertNotNull(infoTwo.getAddedDate());
+        assertNotNull(infoTwo.getLastUpdateDate());
+        assertEquals(DeploymentState.DEPLOYED, infoTwo.getState());
     }
 
     public void testDeployUndeploy() throws Exception {
@@ -115,18 +229,18 @@ public class TestDeployAdmin extends TestCase
         List<DeploymentInformation> infoList = new ArrayList<DeploymentInformation>(Arrays.asList(info));
         Collections.sort(infoList, new Comparator<DeploymentInformation>() {
             public int compare(DeploymentInformation o1, DeploymentInformation o2) {
-                return o1.getModuleName().compareTo(o2.getModuleName());
+                return o1.getModule().getName().compareTo(o2.getModule().getName());
             }
         });
         assertEquals(2, info.length);
         assertEquals(resultOne.getDeploymentId(), infoList.get(0).getDeploymentId());
-        assertNotNull(infoList.get(0).getDeployedDate());
-        assertEquals("mymodule.one", infoList.get(0).getModuleName());
-        assertEquals(null, infoList.get(0).getModuleURI());
-        assertEquals(0, infoList.get(0).getModuleUses().size());
+        assertNotNull(infoList.get(0).getLastUpdateDate());
+        assertEquals("mymodule.one", infoList.get(0).getModule().getName());
+        assertEquals(null, infoList.get(0).getModule().getUri());
+        assertEquals(0, infoList.get(0).getModule().getUses().size());
         assertEquals(resultTwo.getDeploymentId(), infoList.get(1).getDeploymentId());
-        assertEquals(100L, infoList.get(1).getModuleUserObject());
-        assertEquals("archive", infoList.get(1).getModuleArchiveName());
+        assertEquals(100L, infoList.get(1).getModule().getUserObject());
+        assertEquals("archive", infoList.get(1).getModule().getArchiveName());
         assertEquals(2, infoList.get(1).getItems().length);
         assertEquals("A2", infoList.get(1).getItems()[0].getStatementName());
         assertEquals("@Name('A2') create schema MySchemaTwo (col1 int)", infoList.get(1).getItems()[0].getExpression());
@@ -134,7 +248,7 @@ public class TestDeployAdmin extends TestCase
         assertEquals("@Name('B2') select * from MySchemaTwo", infoList.get(1).getItems()[1].getExpression());
         assertEquals(4, epService.getEPAdministrator().getStatementNames().length);
         
-        UndeploymentResult result = deploymentAdmin.undeploy(resultTwo.getDeploymentId());
+        UndeploymentResult result = deploymentAdmin.undeployRemove(resultTwo.getDeploymentId());
         assertEquals(2, epService.getEPAdministrator().getStatementNames().length);
         assertEquals(2, result.getStatementInfo().size());
         assertEquals("A2", result.getStatementInfo().get(0).getStatementName());
@@ -142,7 +256,7 @@ public class TestDeployAdmin extends TestCase
         assertEquals("B2", result.getStatementInfo().get(1).getStatementName());
         assertEquals("@Name('B2') select * from MySchemaTwo", result.getStatementInfo().get(1).getExpression());
 
-        result = deploymentAdmin.undeploy(resultOne.getDeploymentId());
+        result = deploymentAdmin.undeployRemove(resultOne.getDeploymentId());
         assertEquals(0, epService.getEPAdministrator().getStatementNames().length);
         assertEquals(2, result.getStatementInfo().size());
         assertEquals("A1", result.getStatementInfo().get(0).getStatementName());
@@ -156,8 +270,8 @@ public class TestDeployAdmin extends TestCase
             deploymentAdmin.deploy(moduleOne, options);
             fail();
         }
-        catch (DeploymentException ex) {
-            assertEquals("Deployment failed in module 'mymodule.one'", ex.getMessage());
+        catch (DeploymentActionException ex) {
+            assertEquals("Deployment failed in module 'mymodule.one' : Error starting statement: Nestable map type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared Map type [create schema MySchemaOne (col1 Wrong)]", ex.getMessage());
             assertEquals(2,  ex.getExceptions().size());
             assertEquals("create schema MySchemaOne (col1 Wrong)", ex.getExceptions().get(0).getExpression());
             assertEquals("Error starting statement: Nestable map type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared Map type [create schema MySchemaOne (col1 Wrong)]", ex.getExceptions().get(0).getInner().getMessage());
@@ -179,7 +293,7 @@ public class TestDeployAdmin extends TestCase
             deploymentAdmin.deploy(module, options);
             fail();
         }
-        catch (DeploymentException ex) {
+        catch (DeploymentActionException ex) {
             assertEquals(1, ex.getExceptions().size());
             DeploymentItemException first = ex.getExceptions().get(0);
             assertEquals(textTwo, first.getExpression());
@@ -193,7 +307,7 @@ public class TestDeployAdmin extends TestCase
             deploymentAdmin.deploy(module, options);
             fail();
         }
-        catch (DeploymentException ex) {
+        catch (DeploymentActionException ex) {
             assertEquals(1, ex.getExceptions().size());
             DeploymentItemException first = ex.getExceptions().get(0);
             assertEquals(textTwo, first.getExpression());
@@ -209,7 +323,7 @@ public class TestDeployAdmin extends TestCase
             deploymentAdmin.deploy(module, options);
             fail();
         }
-        catch (DeploymentException ex) {
+        catch (DeploymentActionException ex) {
             assertEquals(1, ex.getExceptions().size());
             DeploymentItemException first = ex.getExceptions().get(0);
             assertEquals(textTwo, first.getExpression());
@@ -226,7 +340,7 @@ public class TestDeployAdmin extends TestCase
             deploymentAdmin.deploy(makeModule("test", text), null);
             fail();
         }
-        catch (DeploymentException ex) {
+        catch (DeploymentActionException ex) {
             assertEquals(1, ex.getExceptions().size());
             DeploymentItemException first = ex.getExceptions().get(0);
             assertEquals(error, first.getInner().getMessage());
@@ -243,6 +357,6 @@ public class TestDeployAdmin extends TestCase
         for (int i = 0; i < statements.length; i++) {
             items[i] = new ModuleItem(statements[i], false);
         }
-        return new Module(name, null, new HashSet<String>(), new HashSet<String>(), Arrays.asList(items));
+        return new Module(name, null, new HashSet<String>(), new HashSet<String>(), Arrays.asList(items), null);
     }
 }

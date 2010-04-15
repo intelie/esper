@@ -1,7 +1,6 @@
 package com.espertech.esper.client.deploy;
 
 import java.util.Calendar;
-import java.util.Set;
 
 /**
  * Available information about deployment made.
@@ -9,43 +8,27 @@ import java.util.Set;
 public class DeploymentInformation
 {
     private String deploymentId;
-    private String moduleName;
-    private String moduleURI;
-    private String moduleArchiveName;
-    private Object moduleUserObject;
-    private Set<String> moduleUses;
-    private Calendar deployedDate;
+    private Module module;
+    private Calendar addedDate;
+    private Calendar lastUpdateDate;
     private DeploymentInformationItem[] items;
+    private DeploymentState state;
 
     /**
      * Ctor.
      * @param deploymentId deployment id
-     * @param moduleName module name
-     * @param moduleURI module URI
-     * @param moduleArchiveName archive name
-     * @param moduleUses uses-declarations of module
-     * @param deployedDate deployed date
+     * @param lastUpdateDate date of last update to state
      * @param items module statement-level details
-     * @param moduleUserObject optional user object
+     * @param module the module
      */
-    public DeploymentInformation(String deploymentId, String moduleName, String moduleURI, String moduleArchiveName, Object moduleUserObject, Set<String> moduleUses, Calendar deployedDate, DeploymentInformationItem[] items)
+    public DeploymentInformation(String deploymentId, Module module, Calendar addedDate, Calendar lastUpdateDate, DeploymentInformationItem[] items, DeploymentState state)
     {
         this.deploymentId = deploymentId;
-        this.moduleName = moduleName;
-        this.moduleURI = moduleURI;
-        this.moduleArchiveName = moduleArchiveName;
-        this.moduleUserObject = moduleUserObject;
-        this.moduleUses = moduleUses;
-        this.deployedDate = deployedDate;
+        this.module = module;
+        this.lastUpdateDate = lastUpdateDate;
+        this.addedDate = addedDate;
         this.items = items;
-    }
-
-    /**
-     * The user object attached to the module if one was provided.
-     * @return user object
-     */
-    public Object getModuleUserObject() {
-        return moduleUserObject;
+        this.state = state;
     }
 
     /**
@@ -57,60 +40,42 @@ public class DeploymentInformation
         return deploymentId;
     }
 
+
     /**
-     * Returns the module name.
-     * @return module name
+     * Returns the last update date, i.e. date the information was last updated with new state.
+     * @return last update date
      */
-    public String getModuleName()
+    public Calendar getLastUpdateDate()
     {
-        return moduleName;
+        return lastUpdateDate;
     }
 
     /**
-     * Returns the module URI.
-     * @return uri
-     */
-    public String getModuleURI()
-    {
-        return moduleURI;
-    }
-
-    /**
-     * Returns the module archive name if one was provided.
-     * @return archive name
-     */
-    public String getModuleArchiveName() {
-        return moduleArchiveName;
-    }
-
-    /**
-     * Returns the names of modules that the module depends on.
-     * @return uses-dependencies
-     */
-    public Set<String> getModuleUses()
-    {
-        return moduleUses;
-    }
-
-    /**
-     * Returns the deployment date.
-     * @return deployment date
-     */
-    public Calendar getDeployedDate()
-    {
-        return deployedDate;
-    }
-
-    /**
-     * Returns deployment statement-level details.
-     * @return statement details
+     * Returns deployment statement-level details: Note that for an newly-added undeployed modules
+     * not all statement-level information is available and therefore returns an empty array.
+     * @return statement details or empty array for newly added deployments
      */
     public DeploymentInformationItem[] getItems() {
         return items;
     }
 
+    public DeploymentState getState()
+    {
+        return state;
+    }
+
+    public Calendar getAddedDate()
+    {
+        return addedDate;
+    }
+
+    public Module getModule()
+    {
+        return module;
+    }
+
     public String toString() {
         return "id '" + deploymentId + "' " +
-               " deployed on " + deployedDate.getTime().toString(); 
+               " added on " + addedDate.getTime().toString();
     }
 }

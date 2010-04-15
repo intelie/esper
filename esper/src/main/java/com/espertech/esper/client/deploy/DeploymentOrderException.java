@@ -3,7 +3,7 @@ package com.espertech.esper.client.deploy;
 /**
  * Exception indicates a problem when determining delpoyment order and uses-dependency checking.
  */
-public class DeploymentOrderException extends Exception {
+public class DeploymentOrderException extends DeploymentException {
 
     /**
      * Ctor.

@@ -34,7 +34,7 @@ public class DeploymentStateServiceImpl implements DeploymentStateService
         return dep.toArray(new DeploymentInformation[dep.size()]);
     }
 
-    public synchronized void addDeployment(DeploymentInformation descriptor)
+    public synchronized void addUpdateDeployment(DeploymentInformation descriptor)
     {
         deployments.put(descriptor.getDeploymentId(), descriptor);
     }
@@ -52,6 +52,9 @@ public class DeploymentStateServiceImpl implements DeploymentStateService
 
     public synchronized DeploymentInformation getDeployment(String deploymentId)
     {
+        if (deploymentId == null) {
+            return null;
+        }
         return deployments.get(deploymentId);
     }
 

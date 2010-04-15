@@ -184,6 +184,6 @@ public class TestDeployOrder extends TestCase
     private Module getModule(String name, String... uses) {
         Set<String> usesSet = new HashSet<String>();
         usesSet.addAll(Arrays.asList(uses));
-        return new Module(name, null, usesSet, Collections.EMPTY_SET, Collections.EMPTY_LIST);
+        return new Module(name, null, usesSet, Collections.EMPTY_SET, Collections.EMPTY_LIST,  null);
     }
 }

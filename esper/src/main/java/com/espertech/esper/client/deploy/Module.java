@@ -22,6 +22,7 @@ public class Module {
     private List<ModuleItem> items;
     private String archiveName;
     private Object userObject;
+    private String moduleText;
 
     /**
      * Ctor.
@@ -31,12 +32,13 @@ public class Module {
      * @param imports the Java class imports
      * @param items EPL statements
      */
-    public Module(String name, String uri, Set<String> uses, Set<String> imports, List<ModuleItem> items) {
+    public Module(String name, String uri, Set<String> uses, Set<String> imports, List<ModuleItem> items, String moduleText) {
         this.name = name;
         this.uri = uri;
         this.uses = uses;
         this.imports = imports;
         this.items = items;
+        this.moduleText = moduleText;
     }
 
     /**
@@ -153,6 +155,16 @@ public class Module {
     public void setImports(Set<String> imports)
     {
         this.imports = imports;
+    }
+
+    public String getModuleText()
+    {
+        return moduleText;
+    }
+
+    public void setModuleText(String moduleText)
+    {
+        this.moduleText = moduleText;
     }
 
     public String toString() {

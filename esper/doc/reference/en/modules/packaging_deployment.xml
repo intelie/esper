@@ -15,7 +15,7 @@
 		<itemizedlist>
 			<listitem>
 				<para>
-                    EPL modules to build a cohesive deployment unit out of related statements as described in <xref linkend="deploy-eplmodule"/>.
+                    EPL modules to build a cohesive, easily-externalizable deployment unit out of related statements as described in <xref linkend="deploy-eplmodule"/>.
                 </para>
 			</listitem>
 			<listitem>
@@ -39,7 +39,7 @@
 		<indexterm><primary>deployment</primary><secondary>EPL module</secondary></indexterm>
 		
 		<para>
-			An EPL module file is a plain text file in which EPL statements appear separated by the semicolon (;) character. It bundles EPL statements with optional deployment instructions. A service provider instance keeps track of the deployed EPL modules and makes it easy to deploy and undeploy EPL modules.
+			An EPL module file is a plain text file in which EPL statements appear separated by the semicolon (;) character. It bundles EPL statements with optional deployment instructions. A service provider instance keeps track of the known and/or deployed EPL modules and makes it easy to add, remove, deploy and undeploy EPL modules.
 		</para>
 
 		<para>
@@ -119,9 +119,27 @@ select id, count(*) from MyOffOnStream.win:time(1 hour) group by id;]]></program
 			The <literal>com.espertech.esper.client.deploy.EPDeploymentAdmin</literal> service available from the <literal>EPAdministrator</literal> interface by method <literal>getDeploymentAdmin</literal> provides the functionality available to manage packaging and deployment.
 			Please consult the JavaDoc documentation for more information.
 		</para>
+
+		<para>
+		  The deployment API allows to read resources and parse text strings to obtain an object representation of the EPL module, the <literal>Module</literal>. A <literal>Module</literal> object can also be simply constructed.
+		</para>
 		
 		<para>
-		  We provide additional sample code to read and deploy modules as part of the J2EE considerations below.
+		  After your application obtains a <literal>Module</literal> instance it may either use <literal>deploy</literal> to deploy the module directly, starting all statements of the module. Alternatively your application
+		  may add a module, making it known without starting statements for later deployment. In each case the module is assigned a deployment id, which acts as a unique primary key for all known modules. 
+		</para>
+
+		<para>
+		  A module may be in two states: undeployed or deployed. When calling <literal>add</literal> to add a module, it starts life in the undeployed state. When calling <literal>deploy</literal> to deploy a module, it starts life in the deployed state. 
+		  A module may be transitioned by providing the deployment id and by calling the <literal>deploy</literal> or <literal>undeploy</literal> methods.
+		</para>
+
+		<para>
+		  Your code can remove a module in undeployed state using the <literal>remove</literal> method or the <literal>undeployRemove</literal> method. If the module is in deployed state, use <literal>undeployRemove</literal> to undeploy and remove the module.
+		</para>
+
+		<para>
+		  We also provide additional sample code to read and deploy modules as part of the J2EE considerations below.
 		</para>
 
 		<sect2 id="deploy-admin-readparse">
@@ -158,33 +176,66 @@ DeploymentOrder order = deployAdmin.getDeploymentOrder(mymodules, new Deployment
 		<sect2 id="deploy-admin-deploy-undeploy">
         <title>Deploying and Undeploying</title>
 			<para>
-				The deployment interface returns a deployment id for each deployed module. To undeploy the module your application must provide the deployment id.
+				The deployment interface returns a deployment id for each module made known by adding a module or by deploying a module. To undeploy the module your application must provide the deployment id.
 			</para>
 			
 			<para>
-				The next code snippet deploys a module:
+				The <literal>undeploy</literal> operation removes all named windows, variables, event types or any other information associated to the statements within the module to be undeployed.
+			</para>
+			
+			<para>
+				The next code snippet deploys modules, starting each modulle's EPL statements:
 			</para>
 			<programlisting><![CDATA[for (Module mymodule : order.getOrdered()) {
   DeploymentResult deployResult = deployAdmin.deploy(mymodule, new DeploymentOptions());
 }]]></programlisting>
 			
 			<para>
-				To undeploy the module pass the deployment id:
+				Undeploying a module destroys all started statements associated to the module.
 			</para>
-			<programlisting><![CDATA[deployAdmin.undeploy(deployResult.getDeploymentId());]]></programlisting>
+
+			<para>
+				To undeploy and at the same time remove the module from the list of known modules use the <literal>undeployRemove</literal> method and pass the deployment id:
+			</para>
+			<programlisting><![CDATA[deployAdmin.undeployRemove(deployResult.getDeploymentId());]]></programlisting>
 	  </sect2>
 	  
 	   <sect2 id="deploy-admin-list">
         <title>Listing Deployments</title>
 			<para>
-				The deployment interface returns deployed module information that allows your application to determine which modules are currently deployed. 
+				The deployment interface returns all module information that allows your application to determine which modules are known and their current state. 
 			</para>
 			
 			<para>
-				To obtain a list of all deployed modules, the call is:
+				To obtain a list of all known modules or information for a specific module, the calls are:
 			</para>
-			<programlisting><![CDATA[DeploymentInformation[] info = deployAdmin.getDeploymentInformation();]]></programlisting>			
+			<programlisting><![CDATA[DeploymentInformation[] info = deployAdmin.getDeploymentInformation();
+			
+// Given a deployment id, return the deployment information
+DeploymentInformation infoModule = deployAdmin.getDeploymen(deploymentId);]]></programlisting>			
 	  </sect2>
+
+	   <sect2 id="deploy-admin-transition">
+        <title>State Transitioning a Module</title>
+			
+			<para>
+				The following sample code adds a module, transitions the module to deployed, then undeploys and removes the module entirely;
+			</para>
+			<programlisting><![CDATA[// This sample uses the parse method to obtain a module
+Module module = deployAdmin.parse("create schema MySchema (col1 int)";
+
+// Make the module know; It now shows up in undeployed state
+String moduleDeploymentId = deployAdmin.add(module);
+
+// Start all statements, passing a null options object for default options
+deployAdmin.deploy(moduleDeploymentId, null);
+
+// Undeploy module, destroying all statements
+deployAdmin.undeploy(moduleDeploymentId);
+
+// Remove module; It will no longer be known
+deployAdmin.remove(moduleDeploymentId);]]></programlisting>				  
+		</sect2>
 	</sect1>
 
     <sect1 id="deploy-j2ee">
@@ -297,7 +348,7 @@ DeploymentOrder order = deployAdmin.getDeploymentOrder(mymodules, new Deployment
   public void contextDestroyed(ServletContextEvent servletContextEvent) {
     EPServiceProvider epServiceProvider = EPServiceProviderManager.getDefaultProvider();
     for (String deploymentId : deploymentIds) {
-       epServiceProvider.getEPAdministrator().getDeploymentAdmin().undeploy(deploymentId);
+       epServiceProvider.getEPAdministrator().getDeploymentAdmin().undeployRemove(deploymentId);
     }
   }
 }]]></programlisting>			

@@ -18,7 +18,7 @@ public interface DeploymentStateService
     public DeploymentInformation getDeployment(String deploymentId);
     public DeploymentInformation[] getAllDeployments();
 
-    public void addDeployment(DeploymentInformation descriptor);
+    public void addUpdateDeployment(DeploymentInformation descriptor);
     public void destroy();
-    public void remove(String deploymentId);    
+    public void remove(String deploymentId);
 }

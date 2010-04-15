@@ -117,7 +117,23 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
             mapLock.releaseReadLock();
         }
     }
-    
+
+    public Set<String> getTypesForStatementName(String statementName)
+    {
+        mapLock.acquireReadLock();
+        try {
+            Set<String> types = stmtToType.get(statementName);
+            if (types == null)
+            {
+                return Collections.EMPTY_SET;
+            }
+            return Collections.unmodifiableSet(types);
+        }
+        finally {
+            mapLock.releaseReadLock();
+        }
+    }
+
     private void addReference(String statementName, String eventTypeName)
     {
         // add to types

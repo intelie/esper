@@ -15,6 +15,13 @@ public interface StatementEventTypeRef
     public boolean isInUse(String eventTypeName);
 
     /**
+     * Returns the set of event types that are use by a given statement name.
+     * @param statementName name
+     * @return set of event types or empty set if none found
+     */
+    public Set<String> getTypesForStatementName(String statementName);
+
+    /**
      * Returns the set of statement names that use a given event type name.
      * @param eventTypeName name
      * @return set of statements or null if none found

@@ -5,49 +5,22 @@ import java.io.StringWriter;
 import java.io.PrintWriter;
 
 /**
- * Exception list populated in a deployment operation.
+ * Base deployment exception.
  */
 public class DeploymentException extends Exception {
 
-    private static String newline = System.getProperty("line.separator");
-
-    private List<DeploymentItemException> exceptions;
-
-    /**
-     * Ctor.
-     * @param message deployment error message
-     * @param exceptions that occured deploying
-     */
-    public DeploymentException(String message, List<DeploymentItemException> exceptions) {
+    public DeploymentException(String message)
+    {
         super(message);
-        this.exceptions = exceptions;
     }
 
-    /**
-     * Returns the exception list.
-     * @return exceptions
-     */
-    public List<DeploymentItemException> getExceptions() {
-        return exceptions;
+    public DeploymentException(String message, Throwable cause)
+    {
+        super(message, cause);
     }
 
-    /**
-     * Returns a detail print of all exceptions and messages line-separated.
-     * @return exception list
-     */
-    public String getDetail() {
-        StringWriter detail = new StringWriter();
-        int count = 0;
-        String delimiter = "";
-        for (DeploymentItemException item : exceptions) {
-            detail.write(delimiter);
-            detail.write("Exception #");
-            detail.write(Integer.toString(count));
-            detail.write(" : ");
-            detail.write(item.getInner().getMessage());
-            delimiter = newline + newline;
-            count++;
-        }
-        return detail.toString();
+    public DeploymentException(Throwable cause)
+    {
+        super(cause);
     }
 }

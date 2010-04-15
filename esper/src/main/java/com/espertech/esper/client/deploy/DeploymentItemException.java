@@ -3,9 +3,9 @@ package com.espertech.esper.client.deploy;
 import com.espertech.esper.client.EPException;
 
 /**
- * Inner exception to {@link DeploymentException} available on statement level.
+ * Inner exception to {@link DeploymentActionException} available on statement level.
  */
-public class DeploymentItemException extends Exception {
+public class DeploymentItemException extends DeploymentException {
 
     private String expression;
     private EPException inner;

@@ -70,7 +70,7 @@ public interface EPDeploymentAdmin
      * @return ordered modules
      * @throws DeploymentOrderException when any module dependencies are not satisfied
      */
-    public DeploymentOrder getDeploymentOrder(Collection<Module> modules, DeploymentOrderOptions options) throws DeploymentOrderException;
+    public DeploymentOrder getDeploymentOrder(Collection<Module> modules, DeploymentOrderOptions options) throws DeploymentException;
 
     /**
      * Deploy a single module returning a deployment id to use when undeploying statements as well as
@@ -82,19 +82,23 @@ public interface EPDeploymentAdmin
      * @param module to deploy
      * @param options operation options or null for default options
      * @return deployment id in a result object with statement detail
-     * @throws DeploymentException when the deployment fails, contains a list of deployment failures
+     * @throws DeploymentActionException when the deployment fails, contains a list of deployment failures
      */
     public DeploymentResult deploy(Module module, DeploymentOptions options) throws DeploymentException;
 
     /**
-     * Undeploy a single module, this operation destroys all statements previously associated to a deployed module.
+     * Undeploy a single module, if its in deployed state, and removes it from the known modules.
+     * <p>
+     * This operation destroys all statements previously associated to the deployed module
+     * and also removes this module from the list deployments list.
      * @param deploymentId of the deployment to undeploy.
      * @return result object with statement-level detail
+     * @throws DeploymentNotFoundException when the deployment id could not be resolved to a deployment
      */
-    public UndeploymentResult undeploy(String deploymentId);
+    public UndeploymentResult undeployRemove(String deploymentId) throws DeploymentNotFoundException;
 
     /**
-     * Return deployment ids of all currently deployed modules.
+     * Return deployment ids of all currently known modules.
      * @return array of deployment ids
      */
     public String[] getDeployments();
@@ -107,13 +111,13 @@ public interface EPDeploymentAdmin
     public DeploymentInformation getDeployment(String deploymentId);
 
     /**
-     * Returns deployment information for all deployed modules.
+     * Returns deployment information for all known modules.
      * @return deployment information.
      */
     public DeploymentInformation[] getDeploymentInformation();
 
     /**
-     * Determine if a named module is already deployed, returns true if one or more modules of the same
+     * Determine if a named module is already deployed (in deployed state), returns true if one or more modules of the same
      * name are deployed or false when no module of that name is deployed.
      * @param moduleName to look up
      * @return indicator
@@ -124,7 +128,7 @@ public interface EPDeploymentAdmin
      * Shortcut method to read and deploy a single module from a classpath resource.
      * <p>
      * Uses default options for performing deployment dependency checking and deployment.
-     * @param resources to read
+     * @param resource to read
      * @param moduleURI uri of module to assign or null if not applicable
      * @param moduleArchive archive name of module to assign or null if not applicable
      * @param userObject user object to assign to module, passed along unused as part of deployment information, or null if not applicable
@@ -132,10 +136,10 @@ public interface EPDeploymentAdmin
      * @throws IOException when the file could not be read
      * @throws ParseException when parsing of the module failed
      * @throws DeploymentOrderException when any module dependencies are not satisfied
-     * @throws DeploymentException when the deployment fails, contains a list of deployment failures
+     * @throws DeploymentActionException when the deployment fails, contains a list of deployment failures
      */
     public DeploymentResult readDeploy(String resource, String moduleURI, String moduleArchive, Object userObject)
-        throws IOException, ParseException, DeploymentOrderException, DeploymentException;
+        throws IOException, ParseException, DeploymentException;
 
     /**
      * Shortcut method to read and deploy a single module from an input stream.
@@ -151,10 +155,10 @@ public interface EPDeploymentAdmin
      * @throws IOException when the file could not be read
      * @throws ParseException when parsing of the module failed
      * @throws DeploymentOrderException when any module dependencies are not satisfied
-     * @throws DeploymentException when the deployment fails, contains a list of deployment failures
+     * @throws DeploymentActionException when the deployment fails, contains a list of deployment failures
      */
     public DeploymentResult readDeploy(InputStream stream, String moduleURI, String moduleArchive, Object userObject)
-        throws IOException, ParseException, DeploymentOrderException, DeploymentException;
+        throws IOException, ParseException, DeploymentException;
 
     /**
      * Shortcut method to parse and deploy a single module from a string text buffer.
@@ -168,8 +172,46 @@ public interface EPDeploymentAdmin
      * @throws IOException when the file could not be read
      * @throws ParseException when parsing of the module failed
      * @throws DeploymentOrderException when any module dependencies are not satisfied
-     * @throws DeploymentException when the deployment fails, contains a list of deployment failures
+     * @throws DeploymentActionException when the deployment fails, contains a list of deployment failures
      */
     public DeploymentResult parseDeploy(String eplModuleText, String moduleURI, String moduleArchive, Object userObject)
-        throws IOException, ParseException, DeploymentOrderException, DeploymentException;
+        throws IOException, ParseException, DeploymentException;
+
+    /**
+     * Adds a module in undeployed state, returning the deployment id of the module.
+     * @param module to add
+     * @return The deployment id assigned to the module
+     */
+    public String add(Module module);
+
+    /**
+     * Remove a module that is currently in undeployed state.
+     * <p>
+     * This call may only be used on undeployed modules.
+     * @param deploymentId of the module to remove
+     * @throws DeploymentStateException when attempting to remove a module that does not exist or a module that is not in undeployed state
+     * @throws DeploymentNotFoundException if no such deployment id is known
+     */
+    public void remove(String deploymentId) throws DeploymentException;
+
+    /**
+     * Deploy a previously undeployed module.
+     * @param deploymentId of the module to deploy
+     * @param options deployment options
+     * @return deployment result
+     * @throws DeploymentStateException when attempting to deploy a module that does not exist is already deployed
+     * @throws DeploymentOrderException when deployment dependencies are not satisfied
+     * @throws DeploymentActionException when the deployment failed
+     * @throws DeploymentNotFoundException if no such deployment id is known
+     */
+    public DeploymentResult deploy(String deploymentId, DeploymentOptions options) throws DeploymentException;
+
+    /**
+     * Undeploy a previously deployed module.
+     * @param deploymentId of the module to undeploy
+     * @return undeployment result
+     * @throws DeploymentStateException when attempting to undeploy a module that does not exist is already undeployed
+     * @throws DeploymentNotFoundException when the deployment id could not be resolved 
+     */
+    public UndeploymentResult undeploy(String deploymentId) throws DeploymentException;
 }

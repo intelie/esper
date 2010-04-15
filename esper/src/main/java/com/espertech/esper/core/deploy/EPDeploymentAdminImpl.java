@@ -12,6 +12,8 @@ import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.deploy.*;
 import com.espertech.esper.core.EPAdministratorSPI;
+import com.espertech.esper.core.StatementEventTypeRef;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,12 +28,16 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
     private static Log log = LogFactory.getLog(EPDeploymentAdminImpl.class);
 
     private final EPAdministratorSPI epService;
-    private final DeploymentStateService deploymentStateService; 
+    private final DeploymentStateService deploymentStateService;
+    private final StatementEventTypeRef statementEventTypeRef;
+    private final EventAdapterService eventAdapterService;
 
-    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService)
+    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService)
     {
         this.epService = epService;
         this.deploymentStateService = deploymentStateService;
+        this.statementEventTypeRef = statementEventTypeRef;
+        this.eventAdapterService = eventAdapterService;
     }
 
     public Module read(InputStream stream, String uri) throws IOException, ParseException
@@ -81,8 +87,14 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         return readInternal(stream, resource);
     }
 
-    public synchronized DeploymentResult deploy(Module module, DeploymentOptions options) throws DeploymentException {
+    public synchronized DeploymentResult deploy(Module module, DeploymentOptions options) throws DeploymentActionException
+    {
+        String deploymentId = deploymentStateService.nextDeploymentId();
+        return deployInternal(module, options, deploymentId, Calendar.getInstance());
+    }
 
+    private DeploymentResult deployInternal(Module module, DeploymentOptions options, String deploymentId, Calendar addedDate) throws DeploymentActionException
+    {
         if (options == null) {
             options = new DeploymentOptions();
         }
@@ -98,8 +110,6 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 epService.getConfiguration().addImport(imported);
             }
         }
-
-        String deploymentId = deploymentStateService.nextDeploymentId();
 
         if (options.isCompile()) {
             List<DeploymentItemException> exceptions = new ArrayList<DeploymentItemException>();
@@ -124,11 +134,18 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         List<DeploymentItemException> exceptions = new ArrayList<DeploymentItemException>();
         List<DeploymentInformationItem> statementNames = new ArrayList<DeploymentInformationItem>();
         List<EPStatement> statements = new ArrayList<EPStatement>();
+        Set<String> eventTypesReferenced = new HashSet<String>();
+
         for (ModuleItem item : module.getItems()) {
             try {
                 EPStatement stmt = epService.createEPL(item.getExpression());
                 statementNames.add(new DeploymentInformationItem(stmt.getName(), stmt.getText()));
                 statements.add(stmt);
+
+                Set<String> types = statementEventTypeRef.getTypesForStatementName(stmt.getName());
+                if (types != null) {
+                    eventTypesReferenced.addAll(types);
+                }
             }
             catch (EPException ex) {
                 exceptions.add(new DeploymentItemException(ex.getMessage(), item.getExpression(), ex));
@@ -149,14 +166,14 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                         log.debug("Failed to destroy created statement during rollback: " + ex.getMessage(), ex);
                     }
                 }
+                undeployTypes(eventTypesReferenced);
             }
             throw buildException("Deployment failed", module, exceptions);
         }
 
         DeploymentInformationItem[] deploymentInfoArr = statementNames.toArray(new DeploymentInformationItem[statementNames.size()]);
-        Set<String> moduleUses = (module.getUses() == null ? Collections.EMPTY_SET : Collections.unmodifiableSet(module.getUses()));
-        DeploymentInformation desc = new DeploymentInformation(deploymentId, module.getName(), module.getUri(), module.getArchiveName(), module.getUserObject(), moduleUses, Calendar.getInstance(), deploymentInfoArr);
-        deploymentStateService.addDeployment(desc);
+        DeploymentInformation desc = new DeploymentInformation(deploymentId, module, addedDate, Calendar.getInstance(), deploymentInfoArr, DeploymentState.DEPLOYED);
+        deploymentStateService.addUpdateDeployment(desc);
 
         if (log.isDebugEnabled()) {
             log.debug("Module " + module + " was successfully deployed.");
@@ -164,7 +181,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         return new DeploymentResult(desc.getDeploymentId(), Collections.unmodifiableList(statements));
     }
 
-    private DeploymentException buildException(String msg, Module module, List<DeploymentItemException> exceptions)
+    private DeploymentActionException buildException(String msg, Module module, List<DeploymentItemException> exceptions)
     {
         String message = msg;
         if (module.getName() != null) {
@@ -176,7 +193,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         if (exceptions.size() > 0) {
             message += " : " + exceptions.get(0).getMessage();
         }
-        return new DeploymentException(message, exceptions);
+        return new DeploymentActionException(message, exceptions);
     }
 
     public Module parse(String eplModuleText) throws IOException, ParseException
@@ -184,23 +201,52 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         return parseInternal(eplModuleText, null);
     }
 
-    public synchronized UndeploymentResult undeploy(String deploymentId)
+    public synchronized UndeploymentResult undeployRemove(String deploymentId) throws DeploymentNotFoundException {
+        DeploymentInformation info = deploymentStateService.getDeployment(deploymentId);
+        if (info == null) {
+            throw new DeploymentNotFoundException("Deployment by id '" + deploymentId + "' could not be found");
+        }
+
+        UndeploymentResult result;
+        if (info.getState() == DeploymentState.DEPLOYED) {
+            result = undeployRemoveInternal(info);
+        }
+        else {
+            result = new UndeploymentResult(deploymentId, Collections.<DeploymentInformationItem>emptyList());
+        }
+        deploymentStateService.remove(deploymentId);
+        return result;
+    }
+
+    public synchronized UndeploymentResult undeploy(String deploymentId) throws DeploymentStateException, DeploymentNotFoundException
     {
         DeploymentInformation info = deploymentStateService.getDeployment(deploymentId);
         if (info == null) {
-            return null;
+            throw new DeploymentNotFoundException("Deployment by id '" + deploymentId + "' could not be found");
         }
+        if (info.getState() == DeploymentState.UNDEPLOYED) {
+            throw new DeploymentStateException("Deployment by id '" + deploymentId + "' is already in undeployed state");
+        }
+        UndeploymentResult result = undeployRemoveInternal(info);
+        DeploymentInformation updated = new DeploymentInformation(deploymentId, info.getModule(), info.getAddedDate(), Calendar.getInstance(), new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
+        deploymentStateService.addUpdateDeployment(updated);
+        return result;
+    }
 
+    private UndeploymentResult undeployRemoveInternal(DeploymentInformation info)
+    {
         DeploymentInformationItem[] reverted = new DeploymentInformationItem[info.getItems().length];
         for (int i = 0; i < info.getItems().length; i++) {
             reverted[i] = info.getItems()[info.getItems().length - 1 - i];
         }
 
         List<DeploymentInformationItem> revertedStatements = new ArrayList<DeploymentInformationItem>();
+        Set<String> referencedTypes = new HashSet<String>();
         for (DeploymentInformationItem item : reverted) {
             EPStatement statement = epService.getStatement(item.getStatementName());
+            referencedTypes.addAll(statementEventTypeRef.getTypesForStatementName(statement.getName()));
             if (statement == null) {
-                log.debug("Deployment id '" + deploymentId + "' statement name '" + item + "' not found");
+                log.debug("Deployment id '" + info.getDeploymentId() + "' statement name '" + item + "' not found");
                 continue;
             }
             if (statement.isDestroyed()) {
@@ -214,10 +260,10 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             }
             revertedStatements.add(item);
         }
+        undeployTypes(referencedTypes);
 
-        deploymentStateService.remove(deploymentId);
         Collections.reverse(revertedStatements);
-        return new UndeploymentResult(deploymentId, revertedStatements);
+        return new UndeploymentResult(info.getDeploymentId(), revertedStatements);
     }
 
     public synchronized String[] getDeployments()
@@ -259,15 +305,15 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             if (info == null) {
                 continue;
             }
-            if ((info.getModuleName() == null) || (info.getModuleUses() == null)) {
+            if ((info.getModule().getName() == null) || (info.getModule().getUses() == null)) {
                 continue;
             }
-            Set<String> usesSet = usesPerModuleName.get(info.getModuleName());
+            Set<String> usesSet = usesPerModuleName.get(info.getModule().getName());
             if (usesSet == null) {
                 usesSet = new HashSet<String>();
-                usesPerModuleName.put(info.getModuleName(), usesSet);
+                usesPerModuleName.put(info.getModule().getName(), usesSet);
             }
-            usesSet.addAll(info.getModuleUses());
+            usesSet.addAll(info.getModule().getUses());
         }
 
         // Collect uses-dependencies of proposed modules
@@ -390,29 +436,66 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             return false;
         }
         for (DeploymentInformation info : infos) {
-            if ((info.getModuleName() != null) && (info.getModuleName().equals(moduleName))) {
-                return true;
+            if ((info.getModule().getName() != null) && (info.getModule().getName().equals(moduleName))) {
+                return info.getState() == DeploymentState.DEPLOYED;
             }
         }
         return false;
     }
 
-    public synchronized DeploymentResult readDeploy(InputStream stream, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
+    public synchronized DeploymentResult readDeploy(InputStream stream, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentActionException
+    {
         Module module = readInternal(stream, moduleURI);
         return deployQuick(module, moduleURI, moduleArchive, userObject);
     }
 
-    public synchronized DeploymentResult readDeploy(String resource, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
+    public synchronized DeploymentResult readDeploy(String resource, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentActionException
+    {
         Module module = read(resource);
         return deployQuick(module, moduleURI, moduleArchive, userObject);
     }
 
-    public synchronized DeploymentResult parseDeploy(String buffer, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
+    public synchronized DeploymentResult parseDeploy(String buffer, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentActionException
+    {
         Module module = parseInternal(buffer, moduleURI);
         return deployQuick(module, moduleURI, moduleArchive, userObject);
     }
 
-    private DeploymentResult deployQuick(Module module, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentException {
+    public synchronized String add(Module module)
+    {
+        String deploymentId = deploymentStateService.nextDeploymentId();
+        DeploymentInformation desc = new DeploymentInformation(deploymentId, module, Calendar.getInstance(), Calendar.getInstance(), new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
+        deploymentStateService.addUpdateDeployment(desc);
+        return deploymentId;
+    }
+
+    public synchronized DeploymentResult deploy(String deploymentId, DeploymentOptions options) throws DeploymentNotFoundException, DeploymentStateException, DeploymentOrderException, DeploymentActionException
+    {
+        DeploymentInformation info = deploymentStateService.getDeployment(deploymentId);
+        if (info == null) {
+            throw new DeploymentNotFoundException("Deployment by id '" + deploymentId + "' could not be found");
+        }
+        if (info.getState() == DeploymentState.DEPLOYED) {
+            throw new DeploymentStateException("Module by deployment id '" + deploymentId + "' is already in deployed state");
+        }
+        getDeploymentOrder(Collections.singletonList(info.getModule()), null);
+        return deployInternal(info.getModule(), options, deploymentId, info.getAddedDate());
+    }
+
+    public synchronized void remove(String deploymentId) throws DeploymentStateException, DeploymentNotFoundException
+    {
+        DeploymentInformation info = deploymentStateService.getDeployment(deploymentId);
+        if (info == null) {
+            throw new DeploymentNotFoundException("Deployment by id '" + deploymentId + "' could not be found");
+        }
+        if (info.getState() == DeploymentState.DEPLOYED) {
+            throw new DeploymentStateException("Deployment by id '" + deploymentId + "' is in deployed state, please undeploy first");
+        }
+        deploymentStateService.remove(deploymentId);
+    }
+
+    private DeploymentResult deployQuick(Module module, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentActionException
+    {
         module.setUri(moduleURI);
         module.setArchiveName(moduleArchive);
         module.setUserObject(userObject);
@@ -493,6 +576,25 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             }
         }
 
-        return new Module(moduleName, resourceName, uses, imports, items);
+        return new Module(moduleName, resourceName, uses, imports, items, buffer);
+    }
+
+    private void undeployTypes(Set<String> referencedTypes)
+    {
+        for (String typeName : referencedTypes) {
+
+            boolean typeInUse = statementEventTypeRef.isInUse(typeName);
+            if (typeInUse) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Event type '" + typeName + "' is in use, not removing type");
+                }
+                continue;
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("Event type '" + typeName + "' is no longer in use, removing type");
+            }
+            eventAdapterService.removeType(typeName);
+        }
     }
 }
