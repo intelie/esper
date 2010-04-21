@@ -4,9 +4,9 @@ public class ParseNodeUses extends ParseNode
 {
     private String uses;
 
-    public ParseNodeUses(String text, String uses)
+    public ParseNodeUses(String text, int lineNum, String uses)
     {
-        super(text);
+        super(text, lineNum);
         this.uses = uses;
     }
 

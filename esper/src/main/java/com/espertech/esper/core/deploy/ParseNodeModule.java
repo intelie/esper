@@ -4,9 +4,9 @@ public class ParseNodeModule extends ParseNode
 {
     private String moduleName;
 
-    public ParseNodeModule(String text, String moduleName)
+    public ParseNodeModule(String text, int lineNum, String moduleName)
     {
-        super(text);
+        super(text, lineNum);
         this.moduleName = moduleName;
     }
 

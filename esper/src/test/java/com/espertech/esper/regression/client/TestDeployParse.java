@@ -54,7 +54,7 @@ public class TestDeployParse extends TestCase
         assertModule(module, null, "abd", null, new String[] {
                 "select * from ABC",
                 "/* Final comment */"
-            }, new boolean[] {false, true}
+            }, new boolean[] {false, true}, new int[] {3, 8}
         );
 
         module = deploySvc.read("regression/test_module_5.epl");
@@ -137,10 +137,10 @@ public class TestDeployParse extends TestCase
     }
 
     private void assertModule(Module module, String name, String usesCSV, String importsCSV, String[] statements) {
-        assertModule(module, name, usesCSV, importsCSV, statements, new boolean[statements.length]);
+        assertModule(module, name, usesCSV, importsCSV, statements, new boolean[statements.length], new int[statements.length]);
     }
 
-    private void assertModule(Module module, String name, String usesCSV, String importsCSV, String[] statementsExpected, boolean[] commentsExpected) {
+    private void assertModule(Module module, String name, String usesCSV, String importsCSV, String[] statementsExpected, boolean[] commentsExpected, int[] lineNumsExpected) {
         assertEquals(name, module.getName());
 
         String[] expectedUses = usesCSV == null ? new String[0] : usesCSV.split(",");
@@ -151,12 +151,25 @@ public class TestDeployParse extends TestCase
 
         String[] stmtsFound = new String[module.getItems().size()];
         boolean[] comments = new boolean[module.getItems().size()];
+        int[] lineNumsFound = new int[module.getItems().size()];
 
         for (int i = 0; i < module.getItems().size(); i++) {
             stmtsFound[i] = module.getItems().get(i).getExpression();
             comments[i] = module.getItems().get(i).isCommentOnly();
+            lineNumsFound[i] = module.getItems().get(i).getLineNumber();
         }
+                
         ArrayAssertionUtil.assertEqualsExactOrder(stmtsFound, statementsExpected);
         ArrayAssertionUtil.assertEqualsExactOrder(comments, commentsExpected);
+
+        boolean isCompareLineNums = false;
+        for (int l : lineNumsExpected) {
+            if (l > 0) {
+                isCompareLineNums = true;
+            }
+        }
+        if (isCompareLineNums) {
+            ArrayAssertionUtil.assertEqualsExactOrder(lineNumsFound, lineNumsExpected);
+        }
     }
 }

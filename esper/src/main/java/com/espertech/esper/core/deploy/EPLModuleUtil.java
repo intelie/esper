@@ -4,6 +4,7 @@ import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.client.deploy.ParseException;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
+import com.espertech.esper.collection.Pair;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
@@ -20,7 +21,7 @@ public class EPLModuleUtil
 {
     private static Log log = LogFactory.getLog(EPLModuleUtil.class);
 
-    public static ParseNode getModule(String segment, String resourceName) throws ParseException, IOException {
+    public static ParseNode getModule(String segment, int lineNum, String resourceName) throws ParseException, IOException {
         CharStream input = new NoCaseSensitiveStream(new StringReader(segment));
 
         EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
@@ -61,10 +62,10 @@ public class EPLModuleUtil
         }
 
         if (isExpression) {
-            return new ParseNodeExpression(segment);
+            return new ParseNodeExpression(segment, lineNum);
         }
         if (!isMeta) {
-            return new ParseNodeComment(segment);
+            return new ParseNodeComment(segment, lineNum);
         }
 
         // check meta tag (module, uses, import)
@@ -86,12 +87,12 @@ public class EPLModuleUtil
         }
 
         if (isModule) {
-            return new ParseNodeModule(segment, result);
+            return new ParseNodeModule(segment, lineNum, result);
         }
         else if (isUses) {
-            return new ParseNodeUses(segment, result);
+            return new ParseNodeUses(segment, lineNum, result);
         }
-        return new ParseNodeImport(segment, result);
+        return new ParseNodeImport(segment, lineNum, result);
     }
 
     private static ParseException getMessage(boolean module, boolean uses, String resourceName)
@@ -110,7 +111,7 @@ public class EPLModuleUtil
         return new ParseException(message);
     }
 
-    public static List<String> parse(String module) {
+    public static List<Pair<String, Integer>> parse(String module) {
 
         CharStream input;
         try
@@ -126,24 +127,29 @@ public class EPLModuleUtil
         EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
-        List<String> statements = new ArrayList<String>();
+        List<Pair<String, Integer>> statements = new ArrayList<Pair<String, Integer>>();
         StringWriter current = new StringWriter();
+        Integer lineNum = null;
         for (Object token : tokens.getTokens()) // Call getTokens first before invoking tokens.size! ANTLR problem
         {
             Token t = (Token) token;
             if (t.getType() == EsperEPL2GrammarParser.SEMI) {
                 if (current.toString().trim().length() > 0) {
-                    statements.add(current.toString().trim());
+                    statements.add(new Pair<String, Integer>(current.toString().trim(), lineNum == null ? 0 : lineNum));
+                    lineNum = null;
                 }
                 current = new StringWriter();
             }
             else {
+                if ((lineNum == null) && (t.getType() != EsperEPL2GrammarParser.WS)) {
+                    lineNum = t.getLine();
+                }
                 current.append(t.getText());
             }
         }
 
         if (current.toString().trim().length() > 0) {
-            statements.add(current.toString().trim());
+            statements.add(new Pair<String, Integer>(current.toString().trim(), lineNum == null ? 0 : lineNum));
         }
         return statements;
     }

@@ -15,6 +15,7 @@ import com.espertech.esper.core.EPAdministratorSPI;
 import com.espertech.esper.core.StatementEventTypeRef;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.DependencyGraph;
+import com.espertech.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -519,10 +520,10 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 
     private Module parseInternal(String buffer, String resourceName) throws IOException, ParseException {
 
-        List<String> semicolonSegments = EPLModuleUtil.parse(buffer.toString());
+        List<Pair<String, Integer>> semicolonSegments = EPLModuleUtil.parse(buffer.toString());
         List<ParseNode> nodes = new ArrayList<ParseNode>();
-        for (String segment : semicolonSegments) {
-            nodes.add(EPLModuleUtil.getModule(segment, resourceName));
+        for (Pair<String, Integer> segment : semicolonSegments) {
+            nodes.add(EPLModuleUtil.getModule(segment.getFirst(), segment.getSecond(), resourceName));
         }
 
         String moduleName = null;
@@ -572,7 +573,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         for (ParseNode node : nodes) {
             if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeExpression)) {
                 boolean isComments = (node instanceof ParseNodeComment);
-                items.add(new ModuleItem(node.getText(), isComments));
+                items.add(new ModuleItem(node.getText(), isComments, node.getLineNum()));
             }
         }
 

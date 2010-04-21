@@ -9,15 +9,17 @@ import java.util.List;
 public class ModuleItem {
     private String expression;
     private boolean commentOnly;
+    private int lineNumber;
 
     /**
      * Ctor.
      * @param expression EPL
      * @param commentOnly true if the statement consists only of comments or whitespace
      */
-    public ModuleItem(String expression, boolean commentOnly) {
+    public ModuleItem(String expression, boolean commentOnly, int lineNumber) {
         this.expression = expression;
         this.commentOnly = commentOnly;
+        this.lineNumber = lineNumber;
     }
 
     /**
@@ -50,5 +52,15 @@ public class ModuleItem {
      */
     public void setCommentOnly(boolean commentOnly) {
         this.commentOnly = commentOnly;
+    }
+
+    public int getLineNumber()
+    {
+        return lineNumber;
+    }
+
+    public void setLineNumber(int lineNumber)
+    {
+        this.lineNumber = lineNumber;
     }
 }
