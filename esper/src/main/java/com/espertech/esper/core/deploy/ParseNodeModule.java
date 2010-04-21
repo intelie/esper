@@ -4,9 +4,9 @@ public class ParseNodeModule extends ParseNode
 {
     private String moduleName;
 
-    public ParseNodeModule(String text, int lineNum, String moduleName)
+    public ParseNodeModule(EPLModuleParseItem item, String moduleName)
     {
-        super(text, lineNum);
+        super(item);
         this.moduleName = moduleName;
     }
 

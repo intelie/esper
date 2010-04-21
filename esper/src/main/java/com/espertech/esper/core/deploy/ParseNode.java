@@ -2,22 +2,15 @@ package com.espertech.esper.core.deploy;
 
 public abstract class ParseNode
 {
-    private String text;
-    private int lineNum;
+    private EPLModuleParseItem item;
 
-    protected ParseNode(String text, int lineNum)
+    protected ParseNode(EPLModuleParseItem item)
     {
-        this.text = text;
-        this.lineNum = lineNum;
+        this.item = item;
     }
 
-    public String getText()
+    public EPLModuleParseItem getItem()
     {
-        return text;
-    }
-
-    public int getLineNum()
-    {
-        return lineNum;
+        return item;
     }
 }

@@ -2,8 +2,8 @@ package com.espertech.esper.core.deploy;
 
 public class ParseNodeComment extends ParseNode
 {
-    public ParseNodeComment(String text, int lineNum)
+    public ParseNodeComment(EPLModuleParseItem item)
     {
-        super(text, lineNum);
+        super(item);
     }
 }

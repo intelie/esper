@@ -5,21 +5,31 @@ import java.util.List;
 
 /**
  * Represents an EPL statement as part of a {@link Module}.
+ * <p>
+ * Character position start and end are only available for non-comment only.
  */
 public class ModuleItem {
     private String expression;
     private boolean commentOnly;
     private int lineNumber;
+    private int charPosStart;
+    private int charPosEnd;
 
     /**
      * Ctor.
      * @param expression EPL
      * @param commentOnly true if the statement consists only of comments or whitespace
+     * @param lineNumber line number
+     * @param charPosStart character position of start of segment
+     * @param charPosEnd character position of end of segment
      */
-    public ModuleItem(String expression, boolean commentOnly, int lineNumber) {
+    public ModuleItem(String expression, boolean commentOnly, int lineNumber, int charPosStart, int charPosEnd)
+    {
         this.expression = expression;
         this.commentOnly = commentOnly;
         this.lineNumber = lineNumber;
+        this.charPosStart = charPosStart;
+        this.charPosEnd = charPosEnd;
     }
 
     /**
@@ -62,5 +72,25 @@ public class ModuleItem {
     public void setLineNumber(int lineNumber)
     {
         this.lineNumber = lineNumber;
+    }
+
+    public int getCharPosStart()
+    {
+        return charPosStart;
+    }
+
+    public void setCharPosStart(int charPosStart)
+    {
+        this.charPosStart = charPosStart;
+    }
+
+    public int getCharPosEnd()
+    {
+        return charPosEnd;
+    }
+
+    public void setCharPosEnd(int charPosEnd)
+    {
+        this.charPosEnd = charPosEnd;
     }
 }

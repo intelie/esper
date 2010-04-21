@@ -4,7 +4,6 @@ import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.client.deploy.ParseException;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.collection.Pair;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
@@ -21,8 +20,8 @@ public class EPLModuleUtil
 {
     private static Log log = LogFactory.getLog(EPLModuleUtil.class);
 
-    public static ParseNode getModule(String segment, int lineNum, String resourceName) throws ParseException, IOException {
-        CharStream input = new NoCaseSensitiveStream(new StringReader(segment));
+    public static ParseNode getModule(EPLModuleParseItem item, String resourceName) throws ParseException, IOException {
+        CharStream input = new NoCaseSensitiveStream(new StringReader(item.getExpression()));
 
         EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
         CommonTokenStream tokenStream = new CommonTokenStream(lex);
@@ -62,10 +61,10 @@ public class EPLModuleUtil
         }
 
         if (isExpression) {
-            return new ParseNodeExpression(segment, lineNum);
+            return new ParseNodeExpression(item);
         }
         if (!isMeta) {
-            return new ParseNodeComment(segment, lineNum);
+            return new ParseNodeComment(item);
         }
 
         // check meta tag (module, uses, import)
@@ -87,12 +86,12 @@ public class EPLModuleUtil
         }
 
         if (isModule) {
-            return new ParseNodeModule(segment, lineNum, result);
+            return new ParseNodeModule(item, result);
         }
         else if (isUses) {
-            return new ParseNodeUses(segment, lineNum, result);
+            return new ParseNodeUses(item, result);
         }
-        return new ParseNodeImport(segment, lineNum, result);
+        return new ParseNodeImport(item, result);
     }
 
     private static ParseException getMessage(boolean module, boolean uses, String resourceName)
@@ -111,7 +110,7 @@ public class EPLModuleUtil
         return new ParseException(message);
     }
 
-    public static List<Pair<String, Integer>> parse(String module) {
+    public static List<EPLModuleParseItem> parse(String module) {
 
         CharStream input;
         try
@@ -127,15 +126,17 @@ public class EPLModuleUtil
         EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
-        List<Pair<String, Integer>> statements = new ArrayList<Pair<String, Integer>>();
+        List<EPLModuleParseItem> statements = new ArrayList<EPLModuleParseItem>();
         StringWriter current = new StringWriter();
         Integer lineNum = null;
+        int charPosStart = 0;
+        int charPos = 0;
         for (Object token : tokens.getTokens()) // Call getTokens first before invoking tokens.size! ANTLR problem
         {
             Token t = (Token) token;
             if (t.getType() == EsperEPL2GrammarParser.SEMI) {
                 if (current.toString().trim().length() > 0) {
-                    statements.add(new Pair<String, Integer>(current.toString().trim(), lineNum == null ? 0 : lineNum));
+                    statements.add(new EPLModuleParseItem(current.toString().trim(), lineNum == null ? 0 : lineNum, charPosStart, charPos));
                     lineNum = null;
                 }
                 current = new StringWriter();
@@ -143,13 +144,15 @@ public class EPLModuleUtil
             else {
                 if ((lineNum == null) && (t.getType() != EsperEPL2GrammarParser.WS)) {
                     lineNum = t.getLine();
+                    charPosStart = charPos;
                 }
                 current.append(t.getText());
+                charPos += t.getText().length();
             }
         }
 
         if (current.toString().trim().length() > 0) {
-            statements.add(new Pair<String, Integer>(current.toString().trim(), lineNum == null ? 0 : lineNum));
+            statements.add(new EPLModuleParseItem(current.toString().trim(), lineNum == null ? 0 : lineNum, 0, 0));
         }
         return statements;
     }

@@ -24,7 +24,17 @@ public class TestDeployParse extends TestCase
     }
 
     public void testParse() throws Exception {
-        Module module = deploySvc.read("regression/test_module_1.epl");
+        Module module = deploySvc.read("regression/test_module_4.epl");
+        assertModule(module, null, "abd", null, new String[] {
+                "select * from ABC",
+                "/* Final comment */"
+            }, new boolean[] {false, true},
+                new int[] {3, 8},
+                new int[] {12, 0},
+                new int[] {37, 0}
+        );
+
+        module = deploySvc.read("regression/test_module_1.epl");
         assertModule(module, "abc", "def,jlk", null, new String[] {
                 "select * from A",
                 "select * from B" + newline +
@@ -48,13 +58,6 @@ public class TestDeployParse extends TestCase
                 "create window ABC",
                 "select * from ABC"
             }
-        );
-
-        module = deploySvc.read("regression/test_module_4.epl");
-        assertModule(module, null, "abd", null, new String[] {
-                "select * from ABC",
-                "/* Final comment */"
-            }, new boolean[] {false, true}, new int[] {3, 8}
         );
 
         module = deploySvc.read("regression/test_module_5.epl");
@@ -137,10 +140,14 @@ public class TestDeployParse extends TestCase
     }
 
     private void assertModule(Module module, String name, String usesCSV, String importsCSV, String[] statements) {
-        assertModule(module, name, usesCSV, importsCSV, statements, new boolean[statements.length], new int[statements.length]);
+        assertModule(module, name, usesCSV, importsCSV, statements, new boolean[statements.length], new int[statements.length], new int[statements.length], new int[statements.length]);
     }
 
-    private void assertModule(Module module, String name, String usesCSV, String importsCSV, String[] statementsExpected, boolean[] commentsExpected, int[] lineNumsExpected) {
+    private void assertModule(Module module, String name, String usesCSV, String importsCSV, String[] statementsExpected,
+                              boolean[] commentsExpected,
+                              int[] lineNumsExpected,
+                              int[] charStartsExpected,
+                              int[] charEndsExpected) {
         assertEquals(name, module.getName());
 
         String[] expectedUses = usesCSV == null ? new String[0] : usesCSV.split(",");
@@ -152,11 +159,15 @@ public class TestDeployParse extends TestCase
         String[] stmtsFound = new String[module.getItems().size()];
         boolean[] comments = new boolean[module.getItems().size()];
         int[] lineNumsFound = new int[module.getItems().size()];
+        int[] charStartsFound = new int[module.getItems().size()];
+        int[] charEndsFound = new int[module.getItems().size()];
 
         for (int i = 0; i < module.getItems().size(); i++) {
             stmtsFound[i] = module.getItems().get(i).getExpression();
             comments[i] = module.getItems().get(i).isCommentOnly();
             lineNumsFound[i] = module.getItems().get(i).getLineNumber();
+            charStartsFound[i] = module.getItems().get(i).getCharPosStart();
+            charEndsFound[i] = module.getItems().get(i).getCharPosEnd();
         }
                 
         ArrayAssertionUtil.assertEqualsExactOrder(stmtsFound, statementsExpected);
@@ -170,6 +181,8 @@ public class TestDeployParse extends TestCase
         }
         if (isCompareLineNums) {
             ArrayAssertionUtil.assertEqualsExactOrder(lineNumsFound, lineNumsExpected);
+            ArrayAssertionUtil.assertEqualsExactOrder(charStartsFound, charStartsExpected);
+            ArrayAssertionUtil.assertEqualsExactOrder(charEndsFound, charEndsExpected);
         }
     }
 }

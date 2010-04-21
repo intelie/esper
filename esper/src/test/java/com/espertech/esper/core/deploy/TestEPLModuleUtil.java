@@ -17,36 +17,32 @@ public class TestEPLModuleUtil extends TestCase
         Object[][] testdata = new Object[][] {
                 {"/* Comment One */ select * from A;\n" +
                  "/* Comment Two */  select   *  from  B ;\n",
-                 new String[] {"/* Comment One */ select * from A",
-                               "/* Comment Two */  select   *  from  B"},
-                 new int[] {1, 2}
+                 new EPLModuleParseItem[] {
+                    new EPLModuleParseItem("/* Comment One */ select * from A", 1, 0, 33),
+                    new EPLModuleParseItem("/* Comment Two */  select   *  from  B", 2, 34, 73)},
                 },
-
+                
                 {"select /* Comment One\n\r; */ *, ';', \";\" from A order by x;; ;\n\n \n;\n" +
                  "/* Comment Two */  select   *  from  B ;\n",
-
-                 new String[] {"select /* Comment One\n\r; */ *, ';', \";\" from A order by x",
-                               "/* Comment Two */  select   *  from  B"},
-                 new int[] {1, 6}
-                },
+                new EPLModuleParseItem[] {
+                   new EPLModuleParseItem("select /* Comment One\n\r; */ *, ';', \";\" from A order by x", 1, 0, 57),
+                   new EPLModuleParseItem("/* Comment Two */  select   *  from  B", 6, 63, 102)},
+                }
         };
 
         for (int i = 0; i < testdata.length; i++) {
             String input = (String) testdata[i][0];
-            String[] expectedBuf = (String[]) testdata[i][1];
-            int[] expectedLine = (int[]) testdata[i][2];
+            EPLModuleParseItem[] expected = (EPLModuleParseItem[]) testdata[i][1];
+            List<EPLModuleParseItem> result = EPLModuleUtil.parse(input);
 
-            List<Pair<String, Integer>> result = EPLModuleUtil.parse(input);
-
-            String[] receivedBuf = new String[result.size()];
-            int[] receivedLine = new int[result.size()];
-            for (int j = 0; j < result.size(); j++) {
-                receivedBuf[j] = result.get(j).getFirst();
-                receivedLine[j] = result.get(j).getSecond();
+            assertEquals(expected.length, result.size());
+            for (int j = 0; j < expected.length; j++) {
+                String message = "failed at item " + i + " and segment " + j;
+                assertEquals(message, expected[j].getExpression(), result.get(j).getExpression());
+                assertEquals(message, expected[j].getLineNum(), result.get(j).getLineNum());
+                assertEquals(message, expected[j].getStartChar(), result.get(j).getStartChar());
+                assertEquals(message, expected[j].getEndChar(), result.get(j).getEndChar());
             }
-
-            ArrayAssertionUtil.assertEqualsExactOrder(receivedBuf, expectedBuf);
-            ArrayAssertionUtil.assertEqualsExactOrder(receivedLine, expectedLine);
         }
     }
 }

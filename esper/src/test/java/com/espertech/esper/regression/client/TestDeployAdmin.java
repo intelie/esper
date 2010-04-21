@@ -355,7 +355,7 @@ public class TestDeployAdmin extends TestCase
 
         ModuleItem[] items = new ModuleItem[statements.length];
         for (int i = 0; i < statements.length; i++) {
-            items[i] = new ModuleItem(statements[i], false, 0);
+            items[i] = new ModuleItem(statements[i], false, 0, 0, 0);
         }
         return new Module(name, null, new HashSet<String>(), new HashSet<String>(), Arrays.asList(items), null);
     }

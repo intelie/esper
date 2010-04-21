@@ -4,9 +4,9 @@ public class ParseNodeUses extends ParseNode
 {
     private String uses;
 
-    public ParseNodeUses(String text, int lineNum, String uses)
+    public ParseNodeUses(EPLModuleParseItem item, String uses)
     {
-        super(text, lineNum);
+        super(item);
         this.uses = uses;
     }
 
