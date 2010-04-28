@@ -9,6 +9,8 @@ public class DeploymentOptions {
     private boolean compileOnly = false;
     private boolean rollbackOnFail = true;
     private boolean failFast = true;
+    private String isolatedServiceProvider = null;
+    private boolean validateOnly = false;
 
     /**
      * Returns true (the default) to indicate that the deploy operation first performs a compile step for
@@ -90,5 +92,25 @@ public class DeploymentOptions {
     public void setCompileOnly(boolean compileOnly)
     {
         this.compileOnly = compileOnly;
+    }
+
+    public String getIsolatedServiceProvider()
+    {
+        return isolatedServiceProvider;
+    }
+
+    public void setIsolatedServiceProvider(String isolatedServiceProvider)
+    {
+        this.isolatedServiceProvider = isolatedServiceProvider;
+    }
+
+    public boolean isValidateOnly()
+    {
+        return validateOnly;
+    }
+
+    public void setValidateOnly(boolean validateOnly)
+    {
+        this.validateOnly = validateOnly;
     }
 }

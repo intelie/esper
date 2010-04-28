@@ -14,7 +14,7 @@ public interface StatementIsolationService
      * @param optionalUnitId the unique id assigned to the isolation unit
      * @return isolated service provider
      */
-    public  EPServiceProviderIsolated getIsolationUnit(String name, Integer optionalUnitId);
+    public EPServiceProviderIsolated getIsolationUnit(String name, Integer optionalUnitId);
 
     /**
      * Destroys the servce.

@@ -9,6 +9,7 @@ public class DeploymentItemException extends DeploymentException {
 
     private String expression;
     private EPException inner;
+    private int lineNumber;
 
     /**
      * Ctor.
@@ -16,10 +17,11 @@ public class DeploymentItemException extends DeploymentException {
      * @param expression EPL
      * @param inner compile or start exception
      */
-    public DeploymentItemException(String message, String expression, EPException inner) {
+    public DeploymentItemException(String message, String expression, EPException inner, int lineNumber) {
         super(message);
         this.expression = expression;
         this.inner = inner;
+        this.lineNumber = lineNumber;
     }
 
     /**
@@ -36,5 +38,10 @@ public class DeploymentItemException extends DeploymentException {
      */
     public EPException getInner() {
         return inner;
+    }
+
+    public int getLineNumber()
+    {
+        return lineNumber;
     }
 }

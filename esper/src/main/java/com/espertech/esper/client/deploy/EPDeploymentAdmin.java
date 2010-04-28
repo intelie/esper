@@ -78,10 +78,13 @@ public interface EPDeploymentAdmin
      * <p>
      * Pass in @{link DeploymentOptions} to customize the behavior. When passing no options or passing default options,
      * the operation first compiles all EPL statements before starting each statement, fails-fast on the first statement that fails to start
-     * and rolls back (destroys) any started statement on a failure. 
+     * and rolls back (destroys) any started statement on a failure.
+     * <p>
+     * When setting validate-only in the deployment options, the method returns a null-value
+     * on success.
      * @param module to deploy
      * @param options operation options or null for default options
-     * @return deployment id in a result object with statement detail
+     * @return deployment id in a result object with statement detail, or null for pass on validate-only
      * @throws DeploymentActionException when the deployment fails, contains a list of deployment failures
      */
     public DeploymentResult deploy(Module module, DeploymentOptions options) throws DeploymentException;

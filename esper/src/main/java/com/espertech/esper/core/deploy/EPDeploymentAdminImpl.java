@@ -10,9 +10,11 @@ package com.espertech.esper.core.deploy;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.EPServiceProviderIsolated;
 import com.espertech.esper.client.deploy.*;
 import com.espertech.esper.core.EPAdministratorSPI;
 import com.espertech.esper.core.StatementEventTypeRef;
+import com.espertech.esper.core.StatementIsolationService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
@@ -31,13 +33,15 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
     private final DeploymentStateService deploymentStateService;
     private final StatementEventTypeRef statementEventTypeRef;
     private final EventAdapterService eventAdapterService;
+    private final StatementIsolationService statementIsolationService;
 
-    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService)
+    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService, StatementIsolationService statementIsolationService)
     {
         this.epService = epService;
         this.deploymentStateService = deploymentStateService;
         this.statementEventTypeRef = statementEventTypeRef;
         this.eventAdapterService = eventAdapterService;
+        this.statementIsolationService = statementIsolationService;
     }
 
     public Module read(InputStream stream, String uri) throws IOException, ParseException
@@ -118,7 +122,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                     epService.compileEPL(item.getExpression());
                 }
                 catch (EPException ex) {
-                    exceptions.add(new DeploymentItemException(ex.getMessage(), item.getExpression(), ex));
+                    exceptions.add(new DeploymentItemException(ex.getMessage(), item.getExpression(), ex, item.getLineNumber()));
                 }
             }
 
@@ -138,7 +142,15 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 
         for (ModuleItem item : module.getItems()) {
             try {
-                EPStatement stmt = epService.createEPL(item.getExpression());
+
+                EPStatement stmt;
+                if (options.getIsolatedServiceProvider() == null) {
+                    stmt = epService.createEPL(item.getExpression());
+                }
+                else {
+                    EPServiceProviderIsolated unit = statementIsolationService.getIsolationUnit(options.getIsolatedServiceProvider(), -1);
+                    stmt = unit.getEPAdministrator().createEPL(item.getExpression(), null, null);
+                }
                 statementNames.add(new DeploymentInformationItem(stmt.getName(), stmt.getText()));
                 statements.add(stmt);
 
@@ -148,7 +160,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 }
             }
             catch (EPException ex) {
-                exceptions.add(new DeploymentItemException(ex.getMessage(), item.getExpression(), ex));
+                exceptions.add(new DeploymentItemException(ex.getMessage(), item.getExpression(), ex, item.getLineNumber()));
                 if (options.isFailFast()) {
                     break;                        
                 }
@@ -169,6 +181,20 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 undeployTypes(eventTypesReferenced);
             }
             throw buildException("Deployment failed", module, exceptions);
+        }
+
+        if (options.isValidateOnly()) {
+            log.debug("Rolling back created statements for validate-only");
+            for (EPStatement stmt : statements) {
+                try {
+                    stmt.destroy();
+                }
+                catch (Exception ex) {
+                    log.debug("Failed to destroy created statement during rollback: " + ex.getMessage(), ex);
+                }
+            }
+            undeployTypes(eventTypesReferenced);
+            return null;
         }
 
         DeploymentInformationItem[] deploymentInfoArr = statementNames.toArray(new DeploymentInformationItem[statementNames.size()]);

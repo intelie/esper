@@ -351,6 +351,34 @@ public class TestDeployAdmin extends TestCase
         assertNull(deploymentAdmin.deploy(makeModule("test", text), options));
     }
 
+    public void testFlagValidateOnly() throws Exception {
+
+        String textOne = "@Name('A') create schema MySchemaTwo (col1 int)";
+        String textTwo = "@Name('B') select * from MySchemaTwo";
+        Module module = makeModule("mymodule.two", textOne, textTwo);
+
+        DeploymentOptions options = new DeploymentOptions();
+        options.setValidateOnly(true);
+        DeploymentResult result = deploymentAdmin.deploy(module, options);
+        assertNull(result);
+        assertEquals(0, epService.getEPAdministrator().getStatementNames().length);
+    }
+
+    public void testFlagIsolated() throws Exception {
+
+        String textOne = "@Name('A') create schema MySchemaTwo (col1 int)";
+        String textTwo = "@Name('B') select * from MySchemaTwo";
+        Module module = makeModule("mymodule.two", textOne, textTwo);
+
+        DeploymentOptions options = new DeploymentOptions();
+        options.setIsolatedServiceProvider("iso1");
+        DeploymentResult result = deploymentAdmin.deploy(module, options);
+        assertNotNull(result);
+        assertEquals(2, epService.getEPAdministrator().getStatementNames().length);
+        assertEquals("iso1", epService.getEPAdministrator().getStatement("A").getServiceIsolated());
+        assertEquals("iso1", epService.getEPAdministrator().getStatement("B").getServiceIsolated());
+    }
+
     private Module makeModule(String name, String... statements) {
 
         ModuleItem[] items = new ModuleItem[statements.length];
