@@ -163,6 +163,16 @@ public class TestDeployAdmin extends TestCase
         assertEquals(result.getDeploymentId(), deploymentAdmin.getDeployments()[0]);
     }
 
+    public void testLineNumber() throws Exception {
+        String moduleText = newline + newline + "select * from ABC;" +
+                            newline + "select * from DEF";
+        
+        Module module = deploymentAdmin.parse(moduleText);
+        assertEquals(2, module.getItems().size());
+        assertEquals(3, module.getItems().get(0).getLineNumber());
+        assertEquals(4, module.getItems().get(1).getLineNumber());
+    }
+
     public void testShortcutReadDeploy() throws Exception {
 
         String resource = "regression/test_module_12.epl";

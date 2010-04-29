@@ -180,7 +180,11 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 }
                 undeployTypes(eventTypesReferenced);
             }
-            throw buildException("Deployment failed", module, exceptions);
+            String text = "Deployment failed";
+            if (options.isValidateOnly()) {
+                text = "Validation failed";
+            }
+            throw buildException(text, module, exceptions);
         }
 
         if (options.isValidateOnly()) {

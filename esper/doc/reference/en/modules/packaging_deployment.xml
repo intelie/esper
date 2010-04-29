@@ -138,6 +138,8 @@ select id, count(*) from MyOffOnStream.win:time(1 hour) group by id;]]></program
 		  Your code can remove a module in undeployed state using the <literal>remove</literal> method or the <literal>undeployRemove</literal> method. If the module is in deployed state, use <literal>undeployRemove</literal> to undeploy and remove the module.
 		</para>
 
+		<para>The <literal>DeploymentOptions</literal> instance that can be passed to the <literal>deploy</literal> method when validating or deploying modules controls validation, fail-fast, rollback and the isolated service provider, if any, for the deployment.</para>
+
 		<para>
 		  We also provide additional sample code to read and deploy modules as part of the J2EE considerations below.
 		</para>
@@ -236,6 +238,27 @@ deployAdmin.undeploy(moduleDeploymentId);
 // Remove module; It will no longer be known
 deployAdmin.remove(moduleDeploymentId);]]></programlisting>				  
 		</sect2>
+
+	   <sect2 id="deploy-admin-bestpractices">
+        <title>Best Practices</title>			
+			<para>
+				Use the <literal>@Name</literal> annotation to assign a name to each statement that your application would like to attach a listener or subscriber, or look up the statement for iteration or management by the administrative API.
+			</para>
+			<para>
+				Use the <literal>create schema</literal> syntax and the <literal>import</literal> keyword to define event types. When sharing event types, named windows or variables between modules use the <literal>uses</literal> keyword to 
+				declare a separate module that holds the shared definitions.
+			</para>
+			<para>
+				To validate whether a set of statements is complete and can start without issues, set the following flags on a <literal>DeploymentOptions</literal> instance passed to the <literal>deploy</literal> method as the code snippet below shows:
+			</para>			
+			<programlisting><![CDATA[DeploymentOptions options = new DeploymentOptions();
+options.setIsolatedServiceProvider("validation");	// we isolate any statements 
+options.setValidateOnly(true);	// validate leaving no started statements
+options.setFailFast(false); // do not fail on first error
+epService.getEPAdministrator().getDeploymentAdmin()
+  .deploy(module, options);]]></programlisting>
+		</sect2>
+
 	</sect1>
 
     <sect1 id="deploy-j2ee">

@@ -204,7 +204,7 @@ public interface EPDeploymentAdmin
      * @return deployment result
      * @throws DeploymentStateException when attempting to deploy a module that does not exist is already deployed
      * @throws DeploymentOrderException when deployment dependencies are not satisfied
-     * @throws DeploymentActionException when the deployment failed
+     * @throws DeploymentActionException when the deployment (or validation when setting validate-only) failed
      * @throws DeploymentNotFoundException if no such deployment id is known
      */
     public DeploymentResult deploy(String deploymentId, DeploymentOptions options) throws DeploymentException;
