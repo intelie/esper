@@ -77,7 +77,7 @@ startEPLExpressionRule
 	;
 
 eplExpressionRule
-	:	(selectExpr | createWindowExpr | createIndexExpr | createVariableExpr | createSchemaExpr | onExpr | updateExpr)		 
+	:	(selectExpr | createWindowExpr | createIndexExpr | createVariableExpr | createSchemaExpr | onExpr | updateExpr) forExpr?		 
 	;
 
 onExpr 
@@ -206,6 +206,10 @@ selectClause
 
 fromClause
 	:	streamExpression (streamExpression (outerJoin)* )*
+	;
+	
+forExpr
+	:	^(f=FOR IDENT valueExpr* { leaveNode($f); })
 	;
 	
 matchRecogClause

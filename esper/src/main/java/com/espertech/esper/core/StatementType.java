@@ -31,6 +31,16 @@ public enum StatementType
     CREATE_VARIABLE,
 
     /**
+     * Create-schema statement.
+     */
+    CREATE_SCHEMA,
+
+    /**
+     * Create-index statement.
+     */
+    CREATE_INDEX,
+
+    /**
      * On-delete statement.
      */
     ON_DELETE,
@@ -54,4 +64,9 @@ public enum StatementType
      * On-update statement.
      */
     ON_UPDATE,
+
+    /**
+     * Update statement.
+     */
+    UPDATE;
 }

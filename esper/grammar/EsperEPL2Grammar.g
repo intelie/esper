@@ -115,6 +115,7 @@ tokens
 	PARTITION='partition';
 	MATCHES='matches';
 	AFTER='after';	
+	FOR='for';	
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -486,6 +487,7 @@ tokens
 	parserTokenParaphases.put(PARTITION, "'partition'");
 	parserTokenParaphases.put(MATCHES, "'matches'");
 	parserTokenParaphases.put(AFTER, "'after';");
+	parserTokenParaphases.put(FOR, "'for';");
 
 	parserKeywordSet = new java.util.TreeSet<String>(parserTokenParaphases.values());
     }
@@ -594,13 +596,13 @@ elementValueArrayEnum
 // EPL expression
 //----------------------------------------------------------------------------
 eplExpression 
-	:	selectExpr
+	:	(selectExpr
 	|	createWindowExpr
 	|	createIndexExpr
 	|	createVariableExpr
 	|	createSchemaExpr
 	|	onExpr
-	|	updateExpr
+	|	updateExpr) forExpr?
 	;
 	
 selectExpr
@@ -860,7 +862,13 @@ streamExpression
 		-> ^(STREAM_EXPR eventFilterExpression? patternInclusionExpression? databaseJoinExpression? methodJoinExpression?
 		viewExpression* $i? $u? $ru? $ri?)
 	;
-	
+		
+forExpr
+	:	FOR i=IDENT (LPAREN expressionList? RPAREN)?
+		-> ^(FOR $i expressionList?)
+	;
+
+
 // Start match recognize
 //
 // Lowest precedence is listed first, order is (highest to lowest):  

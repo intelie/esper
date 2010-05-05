@@ -12,24 +12,25 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
+import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.thread.OutboundUnitRunnable;
 import com.espertech.esper.core.thread.ThreadingOption;
 import com.espertech.esper.core.thread.ThreadingService;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.metric.MetricReportingServiceSPI;
 import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.AuditPath;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashSet;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implements tracking of statement listeners and subscribers for a given statement
@@ -51,6 +52,9 @@ public class StatementResultServiceImpl implements StatementResultService
     private boolean isPattern;
     private boolean isDistinct;
     private StatementMetricHandle statementMetricHandle;
+
+    private ExprNode[] groupDeliveryExpressions;
+    private ExprEvaluatorContext exprEvaluatorContext;
 
     // For natural delivery derived out of select-clause expressions
     private Class[] selectClauseTypes;
@@ -99,7 +103,10 @@ public class StatementResultServiceImpl implements StatementResultService
     }
 
     public void setContext(EPStatementSPI epStatement, EPServiceProviderSPI epServiceProvider,
-                           boolean isInsertInto, boolean isPattern, boolean isDistinct, StatementMetricHandle statementMetricHandle)
+                           boolean isInsertInto,
+                           boolean isPattern,
+                           boolean isDistinct,
+                           StatementMetricHandle statementMetricHandle)
     {
         this.epStatement = epStatement;
         this.epServiceProvider = epServiceProvider;
@@ -110,7 +117,8 @@ public class StatementResultServiceImpl implements StatementResultService
         this.statementMetricHandle = statementMetricHandle;
     }
 
-    public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames)
+    public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames,
+                                ExprNode[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((selectClauseTypes == null) || (selectClauseTypes.length == 0))
         {
@@ -122,6 +130,8 @@ public class StatementResultServiceImpl implements StatementResultService
         }
         this.selectClauseTypes = selectClauseTypes;
         this.selectClauseColumnNames = selectClauseColumnNames;
+        this.exprEvaluatorContext = exprEvaluatorContext;
+        this.groupDeliveryExpressions = groupDeliveryExpressions;
     }
 
     public boolean isMakeSynthetic()
@@ -222,6 +232,83 @@ public class StatementResultServiceImpl implements StatementResultService
      */
     public void processDispatch(UniformPair<EventBean[]> events)
     {
+        if (groupDeliveryExpressions == null) {
+            dispatchInternal(events);
+            return;
+        }
+
+        // Form groups to determine individual dispatches
+        Map<MultiKeyUntyped, UniformPair<EventBean[]>> groups;
+        try {
+            groups = getGroupedResults(events);
+        }
+        catch (RuntimeException ex) {
+            log.error("Unexpected exception evaluating grouped-delivery expressions: " + ex.getMessage() + ", delivering ungrouped", ex);
+            dispatchInternal(events);
+            return;
+        }
+
+        // Deliver each group separately
+        for (Map.Entry<MultiKeyUntyped, UniformPair<EventBean[]>> group : groups.entrySet()) {
+            dispatchInternal(group.getValue());
+        }
+    }
+
+    private Map<MultiKeyUntyped, UniformPair<EventBean[]>> getGroupedResults(UniformPair<EventBean[]> events)
+    {
+        Map<MultiKeyUntyped, UniformPair<EventBean[]>> groups = new LinkedHashMap<MultiKeyUntyped, UniformPair<EventBean[]>>();
+        EventBean[] eventsPerStream = new EventBean[1];
+        getGroupedResults(groups, events.getFirst(), true, eventsPerStream);
+        getGroupedResults(groups, events.getSecond(), false, eventsPerStream);
+        return groups;
+    }
+
+    private void getGroupedResults(Map<MultiKeyUntyped, UniformPair<EventBean[]>> groups, EventBean[] events, boolean insertStream, EventBean[] eventsPerStream)
+    {
+        if (events == null) {
+            return;
+        }
+        
+        for (EventBean event : events) {
+            Object[] keys = new Object[groupDeliveryExpressions.length];
+            for (int i = 0; i < groupDeliveryExpressions.length; i++) {
+                eventsPerStream[0] = event;
+                keys[i] = groupDeliveryExpressions[i].evaluate(eventsPerStream, true, exprEvaluatorContext);
+            }
+            MultiKeyUntyped key = new MultiKeyUntyped(keys);
+
+            UniformPair<EventBean[]> groupEntry = groups.get(key);
+            if (groupEntry == null) {
+                if (insertStream) {
+                    groupEntry = new UniformPair<EventBean[]>(new EventBean[] {event}, null);
+                }
+                else {
+                    groupEntry = new UniformPair<EventBean[]>(null, new EventBean[] {event});
+                }
+                groups.put(key, groupEntry);
+            }
+            else {
+                if (insertStream) {
+                    if (groupEntry.getFirst() == null) {
+                        groupEntry.setFirst(new EventBean[] {event});
+                    }
+                    else {
+                        groupEntry.setFirst(EventBeanUtility.addToArray(groupEntry.getFirst(), event));
+                    }
+                }
+                else {
+                    if (groupEntry.getSecond() == null) {
+                        groupEntry.setSecond(new EventBean[] {event});
+                    }
+                    else {
+                        groupEntry.setSecond(EventBeanUtility.addToArray(groupEntry.getSecond(), event));
+                    }
+                }
+            }
+        }
+    }
+
+    private void dispatchInternal(UniformPair<EventBean[]> events) {
         if (statementResultNaturalStrategy != null)
         {
             statementResultNaturalStrategy.execute(events);

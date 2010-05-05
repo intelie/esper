@@ -11,9 +11,12 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.spec.*;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
+import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,13 +50,17 @@ public class SelectExprProcessorFactory
     public static SelectExprProcessor getProcessor(List<SelectClauseElementCompiled> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
+                                                   ForClauseSpec forClauseSpec,
                                                    StreamTypeService typeService, 
                                                    EventAdapterService eventAdapterService,
                                                    StatementResultService statementResultService,
                                                    ValueAddEventService valueAddEventService,
                                                    SelectExprEventTypeRegistry selectExprEventTypeRegistry,
                                                    MethodResolutionService methodResolutionService,
-                                                   ExprEvaluatorContext exprEvaluatorContext)
+                                                   ExprEvaluatorContext exprEvaluatorContext,
+                                                   VariableService variableService,
+                                                   TimeProvider timeProvider,
+                                                   String engineURI)
         throws ExprValidationException
     {
         SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
@@ -61,8 +68,19 @@ public class SelectExprProcessorFactory
         // Handle binding as an optional service
         if (statementResultService != null)
         {
+            // Handle with-delivery group
+            // TODO reject if invalid keyword
+            ExprNode[] groupedDeliveryExpr = null;
+            for (ForClauseItemSpec item : forClauseSpec.getClauses()) {
+                StreamTypeService type = new StreamTypeServiceImpl(synthetic.getResultEventType(), null, false, engineURI);
+                groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
+                for (int i = 0; i < item.getExpressions().size(); i++) {
+                    groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+                }
+            }
+
             BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());
-            statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned());
+            statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned(), groupedDeliveryExpr, exprEvaluatorContext);
             return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor, exprEvaluatorContext);
         }
 

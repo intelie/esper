@@ -44,6 +44,7 @@ public class StatementSpecCompiled
     private final Annotation[] annotations;
     private final UpdateDesc updateSpec;
     private final MatchRecognizeSpec matchRecognizeSpec;
+    private final ForClauseSpec forClauseSpec;
 
     /**
      * Ctor.
@@ -90,7 +91,8 @@ public class StatementSpecCompiled
                                  Set<String> eventTypeReferences,
                                  Annotation[] annotations,
                                  UpdateDesc updateSpec,
-                                 MatchRecognizeSpec matchRecognizeSpec)
+                                 MatchRecognizeSpec matchRecognizeSpec,
+                                 ForClauseSpec forClauseSpec)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -114,6 +116,7 @@ public class StatementSpecCompiled
         this.annotations = annotations;
         this.updateSpec = updateSpec;
         this.matchRecognizeSpec = matchRecognizeSpec;
+        this.forClauseSpec = forClauseSpec;
     }
 
     /**
@@ -143,6 +146,7 @@ public class StatementSpecCompiled
         annotations = new Annotation[0];
         updateSpec = null;
         matchRecognizeSpec = null;
+        forClauseSpec = null;
     }
 
     /**
@@ -378,5 +382,10 @@ public class StatementSpecCompiled
     public CreateSchemaDesc getCreateSchemaDesc()
     {
         return createSchemaDesc;
+    }
+
+    public ForClauseSpec getForClauseSpec()
+    {
+        return forClauseSpec;
     }
 }

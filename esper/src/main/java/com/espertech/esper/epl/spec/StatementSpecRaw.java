@@ -45,6 +45,7 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     private String expressionNoAnnotations;
     private MatchRecognizeSpec matchRecognizeSpec;
     private Set<String> referencedVariables;
+    private ForClauseSpec forClauseSpec;
     private static final long serialVersionUID = 5390766716794133693L;
 
     /**
@@ -435,5 +436,15 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     public void setCreateSchemaDesc(CreateSchemaDesc createSchemaDesc)
     {
         this.createSchemaDesc = createSchemaDesc;
+    }
+
+    public ForClauseSpec getForClauseSpec()
+    {
+        return forClauseSpec;
+    }
+
+    public void setForClauseSpec(ForClauseSpec forClauseSpec)
+    {
+        this.forClauseSpec = forClauseSpec;
     }
 }

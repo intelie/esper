@@ -463,6 +463,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case ON_STREAM:
                 leaveOnStream(node);
                 break;
+            case FOR:
+                leaveForClause(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -824,6 +827,18 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         statementSpec.getStreamSpecs().add(streamSpec);
+    }
+
+    private void leaveForClause(Tree node)
+    {
+        log.debug(".leaveForClause");
+
+        if (statementSpec.getForClauseSpec() == null) {
+            statementSpec.setForClauseSpec(new ForClauseSpec());
+        }
+        String ident = node.getChild(0).getText();
+        List<ExprNode> expressions = getExprNodes(node, 1);
+        statementSpec.getForClauseSpec().getClauses().add(new ForClauseItemSpec(ident, expressions));
     }
 
     private void leaveUpdateExpr(Tree node)

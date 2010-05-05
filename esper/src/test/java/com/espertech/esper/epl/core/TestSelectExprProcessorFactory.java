@@ -3,13 +3,13 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.client.ConfigurationEngineDefaults;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.core.StatementResultServiceImpl;
+import com.espertech.esper.core.thread.ThreadingServiceImpl;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.SelectClauseElementCompiled;
 import com.espertech.esper.epl.spec.SelectClauseElementWildcard;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.epl.spec.SelectClauseStreamCompiledSpec;
-import com.espertech.esper.core.thread.ThreadingServiceImpl;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.epl.SupportStreamTypeSvc3Stream;
 import com.espertech.esper.support.event.SupportEventAdapterService;
@@ -36,8 +36,8 @@ public class TestSelectExprProcessorFactory extends TestCase
 
         try
         {
-            SelectExprProcessorFactory.getProcessor(selectionList, false, null,
-                    new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null);
+            SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
+                    new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -50,8 +50,8 @@ public class TestSelectExprProcessorFactory extends TestCase
     {
         List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
         selectionList.add(new SelectClauseElementWildcard());
-        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null,
-                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService, null, selectExprEventTypeRegistry, null, null);
+        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService, null, selectExprEventTypeRegistry, null, null, null, null, null);
         assertTrue(processor instanceof SelectExprResultProcessor);
     }
 
@@ -60,8 +60,8 @@ public class TestSelectExprProcessorFactory extends TestCase
         List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         selectionList.add(new SelectClauseExprCompiledSpec(identNode, "result"));
-        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null,
-                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService, null,selectExprEventTypeRegistry, null, null);
+        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService, null,selectExprEventTypeRegistry, null, null, null, null, null);
         assertTrue(processor != null);
     }
 

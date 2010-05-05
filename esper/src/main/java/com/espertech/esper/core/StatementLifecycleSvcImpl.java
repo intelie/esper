@@ -9,8 +9,8 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.annotation.Name;
 import com.espertech.esper.client.annotation.Hint;
+import com.espertech.esper.client.annotation.Name;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.annotation.AnnotationUtil;
 import com.espertech.esper.epl.core.StreamTypeService;
@@ -267,6 +267,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
         else if (isPattern) {
             statementType = StatementType.PATTERN;
+        }
+        else if (statementSpec.getUpdateDesc() != null) {
+            statementType = StatementType.UPDATE;
+        }
+        else if (statementSpec.getCreateIndexDesc() != null) {
+            statementType = StatementType.CREATE_INDEX;
+        }
+        else if (statementSpec.getCreateSchemaDesc() != null) {
+            statementType = StatementType.CREATE_SCHEMA;
         }
         if (statementType == null) {
             statementType = StatementType.SELECT;
@@ -1073,7 +1082,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 eventTypeReferences,
                 annotations,
                 spec.getUpdateDesc(),
-                spec.getMatchRecognizeSpec()
+                spec.getMatchRecognizeSpec(),
+                spec.getForClauseSpec()
                 );
     }
 
