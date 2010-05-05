@@ -53,6 +53,7 @@ public class StatementResultServiceImpl implements StatementResultService
     private boolean isDistinct;
     private StatementMetricHandle statementMetricHandle;
 
+    private boolean forClauseDelivery= false;
     private ExprNode[] groupDeliveryExpressions;
     private ExprEvaluatorContext exprEvaluatorContext;
 
@@ -118,7 +119,7 @@ public class StatementResultServiceImpl implements StatementResultService
     }
 
     public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames,
-                                ExprNode[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext)
+                                boolean forClauseDelivery, ExprNode[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((selectClauseTypes == null) || (selectClauseTypes.length == 0))
         {
@@ -130,6 +131,7 @@ public class StatementResultServiceImpl implements StatementResultService
         }
         this.selectClauseTypes = selectClauseTypes;
         this.selectClauseColumnNames = selectClauseColumnNames;
+        this.forClauseDelivery = forClauseDelivery;
         this.exprEvaluatorContext = exprEvaluatorContext;
         this.groupDeliveryExpressions = groupDeliveryExpressions;
     }
@@ -232,12 +234,32 @@ public class StatementResultServiceImpl implements StatementResultService
      */
     public void processDispatch(UniformPair<EventBean[]> events)
     {
-        if (groupDeliveryExpressions == null) {
+        // Plain all-events delivery
+        if (!forClauseDelivery) {
             dispatchInternal(events);
             return;
         }
 
-        // Form groups to determine individual dispatches
+        // Discrete delivery
+        if ((groupDeliveryExpressions == null) || (groupDeliveryExpressions.length == 0)){
+            UniformPair<EventBean[]> todeliver = new UniformPair<EventBean[]>(null, null);
+            if (events.getFirst() != null) {
+                for (EventBean event : events.getFirst()) {
+                    todeliver.setFirst(new EventBean[] {event});
+                    dispatchInternal(todeliver);
+                }
+            }
+            todeliver.setFirst(null);
+            if (events.getSecond() != null) {
+                for (EventBean event : events.getSecond()) {
+                    todeliver.setSecond(new EventBean[] {event});
+                    dispatchInternal(todeliver);
+                }
+            }
+            return;
+        }
+
+        // Grouped delivery
         Map<MultiKeyUntyped, UniformPair<EventBean[]>> groups;
         try {
             groups = getGroupedResults(events);

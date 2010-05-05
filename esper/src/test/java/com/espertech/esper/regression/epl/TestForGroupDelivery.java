@@ -9,7 +9,7 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 
-public class TestWithDeliveryGroup extends TestCase
+public class TestForGroupDelivery extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
@@ -24,9 +24,29 @@ public class TestWithDeliveryGroup extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    // TODO: split keywords? "for grouped delivery"
+    // TODO: test pattern as per doc
+    // TODO: test subscriber+listener; subscriber alone
+    // TODO: test remove stream
     // TODO : test SODA
-    // TODO : test invalid keyword; invalid criteria not in select clause
+    // TODO : test invalid keyword; invalid criteria not in select clause, missing expression, invalid expression
     // TODO : add to GUI
+
+    public void testDiscreteDelivery()
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean.win:time_batch(1) for discrete_delivery");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 1));
+        sendTimer(1000);
+        assertEquals(3, listener.getNewDataList().size());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getNewDataList().get(0), "string,intPrimitive".split(","), new Object[][] {{"E1", 1}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getNewDataList().get(1), "string,intPrimitive".split(","), new Object[][] {{"E2", 2}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getNewDataList().get(2), "string,intPrimitive".split(","), new Object[][] {{"E3", 1}});
+    }
 
     public void testGroupDelivery()
     {

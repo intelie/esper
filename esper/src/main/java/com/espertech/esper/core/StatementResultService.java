@@ -38,7 +38,7 @@ public interface StatementResultService
      * @param selectClauseColumnNames column names
      */
     public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames,
-                                ExprNode[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext);
+                                boolean forClauseDelivery, ExprNode[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * Returns true to indicate that synthetic events should be produced, for

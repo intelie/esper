@@ -5339,4 +5339,115 @@ update istream DoubleWithdrawalStream set minimum = 1000 where account in (10002
 			</para>			
 		</sect2>
 	</sect1>
+	
+	<sect1 id="epl-grouped-delivery" revision="1">
+		<title>Controlling Event Delivery : The <literal>For</literal> Clause</title>
+		
+		<para>
+			The engine delivers all result events of a given statement to the statement's listeners and subscriber (if any) in a single invocation of each listener and subscriber's <literal>update</literal> method passing an array of result events. For example, a statement using a time-batch view may provide many result events after a time period passes, a pattern may provide multiple matching events or in a join the join cardinality could be multiple rows.
+		</para>
+		
+		<para>
+			For statements that typically post multiple result events to listeners the <literal>for</literal> keyword controls the number of invocations of the engine to listeners and subscribers and the subset of all result events delivered by each invocation. 
+			This can be useful when your application listener or subscriber code expects multiple invocations or expects that invocations only receive events that belong together by some additional criteria.
+		</para>
+
+		<para>
+			The <literal>for</literal> keyword is a reserved keyword. It is followed by either the <literal>grouped_delivery</literal> keyword for grouped delivery or the <literal>discrete_delivery</literal> keyword for discrete delivery. The <literal>for</literal> clause is valid after any EPL select statement.
+		</para>
+
+		<para>
+			The synopsis for grouped delivery is as follows:
+		</para>
+		<synopsis>... for grouped_delivery (<emphasis>group_expression</emphasis> [, <emphasis>group_expression</emphasis>] [,...])</synopsis>
+		
+		<para>
+			The <emphasis>group_expression</emphasis> expression list provides one or more expressions to apply to result events. The engine invokes listeners and subscribers once for each distinct set of values returned by <emphasis>group_expression</emphasis> expressions passing only the events for that group.
+		</para>
+
+		<para>
+			The synopsis for discrete delivery is as follows:
+		</para>
+		<synopsis>... for discrete_delivery</synopsis>
+
+		<para>
+			With discrete delivery the engine invokes listeners and subscribers once for each result event passing a single result event in each invocation.
+		</para>
+
+		<para>
+			Consider the following example without <literal>for</literal>-clause. The time batch data view collects RFIDEvent events for 10 seconds and posts an array of result events:
+		</para>
+		<programlisting><![CDATA[select * from RFIDEvent.win:time_batch(10 sec)]]></programlisting>
+		
+		<para>
+			Let's consider an example event sequence as follows:
+		</para>
+		<table frame="topbot">
+			<title>Sample Sequence of Events for <literal>For</literal> Keyword</title>
+			<tgroup cols="1">
+				<colspec colwidth="1*"/>
+				<thead>
+					<row>
+						<entry>Event</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>RFIDEvent(id:1, zone:'A')</entry>
+					</row>
+					<row>
+						<entry>RFIDEvent(id:2, zone:'B')</entry>
+					</row>
+					<row>
+						<entry>RFIDEvent(id:3, zone:'A')</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table> 
+		
+		<para>
+			Without <literal>for</literal>-clause and after the 10-second time period passes, the engine delivers an array of 3 events in a single invocation to listeners and the subscriber.
+		</para>
+
+		<para>
+			The next example specifies the <literal>for</literal>-clause and grouped delivery by zone:
+		</para>
+		<programlisting><![CDATA[select * from RFIDEvent.win:time_batch(10 sec) for grouped_delivery (zone)]]></programlisting>
+
+		<para>
+			With grouped delivery and after the 10-second time period passes, the above statement delivers result events in two invocations to listeners and the subscriber: The first invocation delivers an array of two events that contains zone A events with id 1 and 3. The second invocation delivers an array of 1 event that contains a zone B event with id 2.
+		</para>
+		
+		<para>
+			The next example specifies the <literal>for</literal>-clause and discrete delivery:
+		</para>
+		<programlisting><![CDATA[select * from RFIDEvent.win:time_batch(10 sec) for discrete_delivery]]></programlisting>
+
+		<para>
+			With discrete delivery and after the 10-second time period passes, the above statement delivers result events in three invocations to listeners and the subscriber: The first invocation delivers an array of 1 event that contains the event with id 1, the second invocation delivers an array of 1 event that contains the event with id 2 and the third invocation delivers an array of 1 event that contains the event with id 3.
+		</para>
+
+		<para>
+		  Remove stream events are also delivered in multiple invocations, one for each group, if your statement selects remove stream events explicitly via <literal>irstream</literal> or <literal>rstream</literal> keywords.
+		</para>
+
+		<para>
+		  The <literal>insert into</literal> for inserting events into a stream is not affected by the <literal>for</literal>-clause.
+		</para>
+
+		<para>
+		  The delivery order respects the natural sort order or the explicit sort order as provided by the <literal>order by</literal> clause, if present.
+		</para>
+
+		<para>
+			The following are known limitations:
+		</para>
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					The engine validates <emphasis>group_expression</emphasis> expressions against the output event type, therefore all properties specified in <emphasis>group_expression</emphasis> expressions must occur in the <literal>select</literal> clause.
+				</para>
+			</listitem>
+		</orderedlist>			
+	</sect1>
 </chapter>

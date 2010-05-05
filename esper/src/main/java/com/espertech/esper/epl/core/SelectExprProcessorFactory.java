@@ -71,16 +71,18 @@ public class SelectExprProcessorFactory
             // Handle with-delivery group
             // TODO reject if invalid keyword
             ExprNode[] groupedDeliveryExpr = null;
+            boolean forDelivery = false;
             for (ForClauseItemSpec item : forClauseSpec.getClauses()) {
                 StreamTypeService type = new StreamTypeServiceImpl(synthetic.getResultEventType(), null, false, engineURI);
                 groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
                 for (int i = 0; i < item.getExpressions().size(); i++) {
                     groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
                 }
+                forDelivery = true;
             }
 
             BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());
-            statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned(), groupedDeliveryExpr, exprEvaluatorContext);
+            statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned(), forDelivery, groupedDeliveryExpr, exprEvaluatorContext);
             return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor, exprEvaluatorContext);
         }
 
