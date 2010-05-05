@@ -24,6 +24,7 @@ import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.metric.MetricReportingServiceSPI;
 import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.event.NaturalEventBean;
 import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.ViewSupport;
@@ -51,6 +52,7 @@ public class StatementResultServiceImpl implements StatementResultService
     private boolean isInsertInto;
     private boolean isPattern;
     private boolean isDistinct;
+    private boolean isForClause;
     private StatementMetricHandle statementMetricHandle;
 
     private boolean forClauseDelivery= false;
@@ -107,6 +109,7 @@ public class StatementResultServiceImpl implements StatementResultService
                            boolean isInsertInto,
                            boolean isPattern,
                            boolean isDistinct,
+                           boolean isForClause,
                            StatementMetricHandle statementMetricHandle)
     {
         this.epStatement = epStatement;
@@ -114,7 +117,8 @@ public class StatementResultServiceImpl implements StatementResultService
         this.isInsertInto = isInsertInto;
         this.isPattern = isPattern;
         this.isDistinct = isDistinct;
-        isMakeSynthetic = isInsertInto || isPattern || isDistinct;
+        this.isForClause = isForClause;
+        isMakeSynthetic = isInsertInto || isPattern || isDistinct || isForClause;
         this.statementMetricHandle = statementMetricHandle;
     }
 
@@ -163,7 +167,7 @@ public class StatementResultServiceImpl implements StatementResultService
 
         isMakeNatural = statementListenerSet.getSubscriber() != null;
         isMakeSynthetic = !(statementListenerSet.getListeners().isEmpty() && statementListenerSet.getStmtAwareListeners().isEmpty())
-                || isPattern || isInsertInto || isDistinct;
+                || isPattern || isInsertInto || isDistinct | isForClause;
 
         if (statementListenerSet.getSubscriber() == null)
         {
@@ -292,9 +296,15 @@ public class StatementResultServiceImpl implements StatementResultService
         }
         
         for (EventBean event : events) {
+
+            EventBean evalEvent = event;
+            if (evalEvent instanceof NaturalEventBean) {
+                evalEvent = ((NaturalEventBean) evalEvent).getOptionalSynthetic();
+            }
+
             Object[] keys = new Object[groupDeliveryExpressions.length];
             for (int i = 0; i < groupDeliveryExpressions.length; i++) {
-                eventsPerStream[0] = event;
+                eventsPerStream[0] = evalEvent;
                 keys[i] = groupDeliveryExpressions[i].evaluate(eventsPerStream, true, exprEvaluatorContext);
             }
             MultiKeyUntyped key = new MultiKeyUntyped(keys);

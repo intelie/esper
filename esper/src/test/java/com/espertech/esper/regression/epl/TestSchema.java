@@ -38,11 +38,7 @@ public class TestSchema extends TestCase
                     "Error starting statement: Nestable map type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared Map type [create schema MyEventType as (col1 xxxx)]");
 
         tryInvalid("create schema MyEventType as (col1 int, col1 string)",
-                    "");
-        tryInvalid("create schema MyEventType as (col1 xxxx)",
-                    "");
-        tryInvalid("create schema MyEventType as (col1 xxxx)",
-                    "");
+                    "Error starting statement: Duplicate column name 'col1' [create schema MyEventType as (col1 int, col1 string)]");
 
         epService.getEPAdministrator().createEPL("create schema MyEventType as (col1 string)");
         tryInvalid("create schema MyEventType as (col1 string, col2 string)",

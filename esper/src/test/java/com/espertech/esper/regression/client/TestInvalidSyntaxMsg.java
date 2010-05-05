@@ -20,7 +20,7 @@ public class TestInvalidSyntaxMsg extends TestCase
     public void testInvalidSyntax()
     {
         tryCompile("insert into 7event select * from " + SupportBeanReservedKeyword.class.getName(),
-                   "Incorrect syntax near ' ' at line 1 column 11 unexpected character 'v', check for an invalid identifier [insert into 7event select * from com.espertech.esper.support.bean.SupportBeanReservedKeyword]");
+                   "Incorrect syntax near ' ' ('into' is a reserved keyword) at line 1 column 11 unexpected character 'v', check for an invalid identifier [insert into 7event select * from com.espertech.esper.support.bean.SupportBeanReservedKeyword]");
 
         tryCompile("select foo, create from " + SupportBeanReservedKeyword.class.getName(),
                    "Incorrect syntax near 'create' (a reserved keyword) at line 1 column 12, please check the select clause [select foo, create from com.espertech.esper.support.bean.SupportBeanReservedKeyword]");

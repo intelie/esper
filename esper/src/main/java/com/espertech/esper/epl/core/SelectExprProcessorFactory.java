@@ -17,13 +17,11 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.client.soda.ForClauseKeyword;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Factory for select expression processors.
@@ -68,17 +66,37 @@ public class SelectExprProcessorFactory
         // Handle binding as an optional service
         if (statementResultService != null)
         {
-            // Handle with-delivery group
-            // TODO reject if invalid keyword
+            // Handle for-clause delivery contract checking
             ExprNode[] groupedDeliveryExpr = null;
             boolean forDelivery = false;
-            for (ForClauseItemSpec item : forClauseSpec.getClauses()) {
-                StreamTypeService type = new StreamTypeServiceImpl(synthetic.getResultEventType(), null, false, engineURI);
-                groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
-                for (int i = 0; i < item.getExpressions().size(); i++) {
-                    groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+            if (forClauseSpec != null) {
+                for (ForClauseItemSpec item : forClauseSpec.getClauses()) {
+                    if (item.getKeyword() == null) {
+                        throw new ExprValidationException("Expected any of the " + Arrays.toString(ForClauseKeyword.values()).toLowerCase() + " for-clause keywords after reserved keyword 'for'");
+                    }
+                    try {
+                        ForClauseKeyword keyword = ForClauseKeyword.valueOf(item.getKeyword().toUpperCase());
+                        if ((keyword == ForClauseKeyword.GROUPED_DELIVERY) && (item.getExpressions().isEmpty())) {
+                            throw new ExprValidationException("The for-clause with the " + ForClauseKeyword.GROUPED_DELIVERY.getName() + " keyword requires one or more grouping expressions");
+                        }
+                        if ((keyword == ForClauseKeyword.DISCRETE_DELIVERY) && (!item.getExpressions().isEmpty())) {
+                            throw new ExprValidationException("The for-clause with the " + ForClauseKeyword.DISCRETE_DELIVERY.getName() + " keyword does not allow grouping expressions");
+                        }
+                        if (forDelivery) {
+                            throw new ExprValidationException("The for-clause with delivery keywords may only occur once in a statement");
+                        }
+                    }
+                    catch (RuntimeException ex) {
+                        throw new ExprValidationException("Expected any of the " + Arrays.toString(ForClauseKeyword.values()).toLowerCase() + " for-clause keywords after reserved keyword 'for'");
+                    }
+
+                    StreamTypeService type = new StreamTypeServiceImpl(synthetic.getResultEventType(), null, false, engineURI);
+                    groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
+                    for (int i = 0; i < item.getExpressions().size(); i++) {
+                        groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+                    }
+                    forDelivery = true;
                 }
-                forDelivery = true;
             }
 
             BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());

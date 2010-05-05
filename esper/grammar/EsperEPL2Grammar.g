@@ -486,8 +486,8 @@ tokens
 	parserTokenParaphases.put(DEFINE, "'define'");
 	parserTokenParaphases.put(PARTITION, "'partition'");
 	parserTokenParaphases.put(MATCHES, "'matches'");
-	parserTokenParaphases.put(AFTER, "'after';");
-	parserTokenParaphases.put(FOR, "'for';");
+	parserTokenParaphases.put(AFTER, "'after'");
+	parserTokenParaphases.put(FOR, "'for'");
 
 	parserKeywordSet = new java.util.TreeSet<String>(parserTokenParaphases.values());
     }

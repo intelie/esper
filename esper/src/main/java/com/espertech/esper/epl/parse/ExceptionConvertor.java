@@ -76,6 +76,9 @@ public class ExceptionConvertor
         }
         else
         {
+            if (parser.getTokenStream().size() >= 2) {
+                tBefore = parser.getTokenStream().get(parser.getTokenStream().size() - 2);
+            }
             t = parser.getTokenStream().get(parser.getTokenStream().size() - 1);
         }
         String positionInfo = getPositionInfo(t);

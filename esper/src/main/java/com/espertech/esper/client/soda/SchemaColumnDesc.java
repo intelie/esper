@@ -5,6 +5,8 @@ import java.io.StringWriter;
 
 public class SchemaColumnDesc implements Serializable
 {
+    private static final long serialVersionUID = 5068685531968720148L;
+
     private String name;
     private String type;
     private boolean array;

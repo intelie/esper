@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 EsperEPL2Grammar.g 2010-05-04 11:18:12
+// $ANTLR 3.1.1 EsperEPL2Grammar.g 2010-05-05 15:37:57
 
   package com.espertech.esper.epl.generated;
 
@@ -547,8 +547,8 @@ public class EsperEPL2GrammarParser extends Parser {
     	parserTokenParaphases.put(DEFINE, "'define'");
     	parserTokenParaphases.put(PARTITION, "'partition'");
     	parserTokenParaphases.put(MATCHES, "'matches'");
-    	parserTokenParaphases.put(AFTER, "'after';");
-    	parserTokenParaphases.put(FOR, "'for';");
+    	parserTokenParaphases.put(AFTER, "'after'");
+    	parserTokenParaphases.put(FOR, "'for'");
 
     	parserKeywordSet = new java.util.TreeSet<String>(parserTokenParaphases.values());
         }
@@ -17295,7 +17295,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: viewExpression, ru, ri, i, eventFilterExpression
+            // elements: i, eventFilterExpression, ri, ru, viewExpression
             // token labels: ri, ru, i
             // rule labels: retval
             // token list labels: 
@@ -18585,7 +18585,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: expression, d
+            // elements: d, expression
             // token labels: d
             // rule labels: retval
             // token list labels: 
@@ -18723,7 +18723,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: expression, d
+            // elements: d, expression
             // token labels: d
             // rule labels: retval
             // token list labels: 
@@ -19120,7 +19120,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: funcIdent, classIdentifierNonGreedy, libFunctionArgs
+            // elements: libFunctionArgs, classIdentifierNonGreedy, funcIdent
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -19746,7 +19746,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: andExpression, OR_EXPR, andExpression
+            // elements: OR_EXPR, andExpression, andExpression
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -19871,7 +19871,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: matchUntilExpression, matchUntilExpression, AND_EXPR
+            // elements: AND_EXPR, matchUntilExpression, matchUntilExpression
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -20015,7 +20015,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: qualifyExpression, qualifyExpression, matchUntilRange, qualifyExpression, qualifyExpression, matchUntilRange
+            // elements: qualifyExpression, matchUntilRange, matchUntilRange, qualifyExpression, qualifyExpression, qualifyExpression
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -20255,7 +20255,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: EVERY_DISTINCT_EXPR, EVERY_EXPR, guardPostFix, distinctExpressionList, guardPostFix, matchUntilRange, distinctExpressionList, guardPostFix, guardPostFix, guardPostFix, matchUntilRange, EVERY_DISTINCT_EXPR, matchUntilRange, guardPostFix, EVERY_EXPR, guardPostFix
+            // elements: distinctExpressionList, guardPostFix, EVERY_DISTINCT_EXPR, guardPostFix, EVERY_EXPR, guardPostFix, matchUntilRange, guardPostFix, EVERY_DISTINCT_EXPR, guardPostFix, distinctExpressionList, guardPostFix, EVERY_EXPR, guardPostFix, matchUntilRange, matchUntilRange
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -20697,7 +20697,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: atomicExpression, guardExpression, patternExpression, atomicExpression, patternExpression
+            // elements: patternExpression, atomicExpression, guardExpression, patternExpression, atomicExpression
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -20985,7 +20985,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: IDENT, ns, ns, nm, expressionWithTimeList, expressionWithTimeList
+            // elements: expressionWithTimeList, IDENT, nm, expressionWithTimeList, ns, ns
             // token labels: ns, nm
             // rule labels: retval
             // token list labels: 
@@ -21426,7 +21426,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: l, db, l, db2, l, db, r, db, l, r, r, db, r, db3
+            // elements: r, db2, r, db3, l, r, l, db, db, db, l, db, l, r
             // token labels: db, r, l, db2, db3
             // rule labels: retval
             // token list labels: 
@@ -21742,7 +21742,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: classIdentifier, propertyExpression, expressionList, i
+            // elements: propertyExpression, i, expressionList, classIdentifier
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -22064,7 +22064,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: IDENT, propertySelectionList, eventProperty, expression
+            // elements: expression, eventProperty, IDENT, propertySelectionList
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -22773,7 +22773,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: expressionList, i, propertyExpression, classIdentifier
+            // elements: classIdentifier, i, expressionList, propertyExpression
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -24952,7 +24952,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: a, expression, expression, expression, d
+            // elements: d, a, expression, expression, expression
             // token labels: d, a
             // rule labels: retval
             // token list labels: 
@@ -25314,7 +25314,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: number, i, substitution
+            // elements: substitution, i, number
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -25574,7 +25574,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: substitution, number, number, number, substitution, i2, i1, substitution, i2, i1
+            // elements: i1, number, substitution, substitution, substitution, i2, number, number, i1, i2
             // token labels: i2, i1
             // rule labels: retval
             // token list labels: 
@@ -25862,7 +25862,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: substitution, i, number
+            // elements: i, number, substitution
             // token labels: i
             // rule labels: retval
             // token list labels: 
@@ -26770,7 +26770,7 @@ public class EsperEPL2GrammarParser extends Parser {
 
 
             // AST REWRITE
-            // elements: s, ni, eventPropertyIdent, eventPropertyIdent, s, eventPropertyIdent, eventPropertyIdent, ni, eventPropertyIdent, eventPropertyIdent
+            // elements: eventPropertyIdent, eventPropertyIdent, s, eventPropertyIdent, s, eventPropertyIdent, ni, eventPropertyIdent, eventPropertyIdent, ni
             // token labels: s, ni
             // rule labels: retval
             // token list labels: 

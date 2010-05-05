@@ -295,8 +295,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
             boolean isInsertInto = statementSpec.getInsertIntoDesc() != null;
             boolean isDistinct = statementSpec.getSelectClauseSpec().isDistinct();
+            boolean isForClause = statementSpec.getForClauseSpec() != null;
             statementContext.getStatementResultService().setContext(statement, epServiceProvider,
-                    isInsertInto, isPattern, isDistinct, statementContext.getEpStatementHandle().getMetricsHandle());
+                    isInsertInto, isPattern, isDistinct, isForClause, statementContext.getEpStatementHandle().getMetricsHandle());
 
             // create start method
             startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);

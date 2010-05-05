@@ -113,6 +113,7 @@ public class StatementSpecMapper
         mapOrderBy(sodaStatement.getOrderByClause(), raw, mapContext);
         mapRowLimit(sodaStatement.getRowLimitClause(), raw, mapContext);
         mapMatchRecognize(sodaStatement.getMatchRecognizeClause(), raw, mapContext);
+        mapForClause(sodaStatement.getForClause(), raw, mapContext);
         return raw;
     }
 
@@ -146,6 +147,7 @@ public class StatementSpecMapper
         unmapOrderBy(statementSpec.getOrderByList(), model, unmapContext);
         unmapRowLimit(statementSpec.getRowLimitSpec(), model, unmapContext);
         unmapMatchRecognize(statementSpec.getMatchRecognizeSpec(), model, unmapContext);
+        unmapForClause(statementSpec.getForClauseSpec(), model, unmapContext);
 
         return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
     }
@@ -390,6 +392,21 @@ public class StatementSpecMapper
         model.setRowLimitClause(spec);
     }
 
+    private static void unmapForClause(ForClauseSpec spec, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    {
+        if ((spec == null) || (spec.getClauses() == null) || (spec.getClauses().size() == 0))
+        {
+            return;
+        }
+        ForClause clause = new ForClause();
+        for (ForClauseItemSpec itemSpec : spec.getClauses()) {
+            ForClauseItem item = new ForClauseItem(ForClauseKeyword.valueOf(itemSpec.getKeyword().toUpperCase()));
+            item.setExpressions(unmapExpressionDeep(itemSpec.getExpressions(), unmapContext));
+            clause.getItems().add(item);
+        }
+        model.setForClause(clause);
+    }
+
     private static void unmapMatchRecognize(MatchRecognizeSpec spec, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
         if (spec == null) {
@@ -596,6 +613,19 @@ public class StatementSpecMapper
         }
         raw.setRowLimitSpec(new RowLimitSpec(rowLimitClause.getNumRows(), rowLimitClause.getOptionalOffsetRows(),
                 rowLimitClause.getNumRowsVariable(), rowLimitClause.getOptionalOffsetRowsVariable()));
+    }
+
+    private static void mapForClause(ForClause clause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    {
+        if ((clause == null) || (clause.getItems().size() == 0))
+        {
+            return;
+        }
+        raw.setForClauseSpec(new ForClauseSpec());
+        for (ForClauseItem item : clause.getItems()) {
+            ForClauseItemSpec specItem = new ForClauseItemSpec(item.getKeyword().getName(), mapExpressionDeep(item.getExpressions(), mapContext));
+            raw.getForClauseSpec().getClauses().add(specItem);
+        }
     }
 
     private static void mapMatchRecognize(MatchRecognizeClause clause, StatementSpecRaw raw, StatementSpecMapContext mapContext) {

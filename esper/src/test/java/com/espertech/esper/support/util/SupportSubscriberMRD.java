@@ -35,6 +35,8 @@ public class SupportSubscriberMRD
     public void reset()
     {
         isInvoked = false;
+        insertStreamList.clear();
+        removeStreamList.clear();
     }
 
     public boolean isInvoked()
