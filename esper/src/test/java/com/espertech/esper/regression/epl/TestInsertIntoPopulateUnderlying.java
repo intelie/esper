@@ -297,6 +297,21 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
         SupportBeanArrayCollMap eventFour = (SupportBeanArrayCollMap) listener.assertOneGetNewAndReset().getUnderlying();
         assertEquals("nestedValue", ((SupportBeanComplexProps.SupportBeanSpecialGetterNested) eventFour.getAnyObject()).getNestedValue());
+
+        // test null value
+        String stmtTextThree = "insert into SupportBean select 'B' as string, intBoxed as intPrimitive from SupportBean(string='A')";
+        EPStatement stmtThree = epService.getEPAdministrator().createEPL(stmtTextThree);
+        stmtThree.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 0));
+        SupportBean received = (SupportBean) listener.assertOneGetNewAndReset().getUnderlying();
+        assertEquals(0, received.getIntPrimitive());
+
+        SupportBean bean = new SupportBean("A", 1);
+        bean.setIntBoxed(20);
+        epService.getEPRuntime().sendEvent(bean);
+        received = (SupportBean) listener.assertOneGetNewAndReset().getUnderlying();
+        assertEquals(20, received.getIntPrimitive());
     }
 
     public void testPopulateMap()

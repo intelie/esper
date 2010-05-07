@@ -174,6 +174,13 @@ public class TestUpdate extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E10", 2});
         ArrayAssertionUtil.assertProps(listenerInsert.assertOneGetNewAndReset(), fields, new Object[] {"E10", 2});
         assertFalse(listenerUpdate.isInvoked());
+
+        EPStatement stmtUpdThree = epService.getEPAdministrator().createEPL("update istream MyStream set intPrimitive=intBoxed");
+        stmtUpdThree.addListener(listenerUpdate);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E11", 2));
+        ArrayAssertionUtil.assertProps(listenerUpdate.assertOneGetNew(), fields, new Object[] {"E11", 2});
+        listenerUpdate.reset();
     }
 
     public void testInsertIntoWMapNoWhere() throws Exception

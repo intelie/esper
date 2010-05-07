@@ -27,6 +27,8 @@ public class EventBeanManufacturerBean implements EventBeanManufacturer
     private final EventAdapterService service;
     private final FastMethod[] writeMethods;
     private final FastMethod factoryMethod;
+    private final boolean hasPrimitiveTypes;
+    private final boolean[] primitiveType;
 
     /**
      * Ctor.
@@ -74,10 +76,15 @@ public class EventBeanManufacturerBean implements EventBeanManufacturer
         }
 
         writeMethods = new FastMethod[properties.length];
+        boolean primitiveTypeCheck = false;
+        primitiveType = new boolean[properties.length];
         for (int i = 0; i < properties.length; i++)
         {
             writeMethods[i] = fastClass.getMethod(properties[i].getWriteMethod());
+            primitiveType[i] = properties[i].getType().isPrimitive();
+            primitiveTypeCheck = primitiveTypeCheck | primitiveType[i];
         }
+        hasPrimitiveTypes = primitiveTypeCheck;
     }
 
     public EventBean make(Object[] propertyValues)
@@ -110,21 +117,47 @@ public class EventBeanManufacturerBean implements EventBeanManufacturer
             }
         }
 
-        Object[] params = new Object[1];
-        for (int i = 0; i < writeMethods.length; i++)
-        {
-            params[0] = propertyValues[i];
-            try
+        if (!hasPrimitiveTypes) {
+            Object[] params = new Object[1];
+            for (int i = 0; i < writeMethods.length; i++)
             {
-                writeMethods[i].invoke(out, params);
-            }
-            catch (InvocationTargetException e)
-            {
-                String message = "Unexpected exception encountered invoking setter-method '" + writeMethods[i] + "' on class '" +
-                        fastClass.getJavaClass().getName() + "' : " + e.getTargetException().getMessage();
-                log.error(message, e);
+                params[0] = propertyValues[i];
+                try
+                {
+                    writeMethods[i].invoke(out, params);
+                }
+                catch (InvocationTargetException e)
+                {
+                    String message = "Unexpected exception encountered invoking setter-method '" + writeMethods[i] + "' on class '" +
+                            fastClass.getJavaClass().getName() + "' : " + e.getTargetException().getMessage();
+                    log.error(message, e);
+                }
             }
         }
+        else
+        {
+            Object[] params = new Object[1];
+            for (int i = 0; i < writeMethods.length; i++)
+            {
+                if (primitiveType[i]) {
+                    if (propertyValues[i] == null) {
+                        continue;
+                    }
+                }
+                params[0] = propertyValues[i];
+                try
+                {
+                    writeMethods[i].invoke(out, params);
+                }
+                catch (InvocationTargetException e)
+                {
+                    String message = "Unexpected exception encountered invoking setter-method '" + writeMethods[i] + "' on class '" +
+                            fastClass.getJavaClass().getName() + "' : " + e.getTargetException().getMessage();
+                    log.error(message, e);
+                }
+            }
+        }
+
 
         return service.adapterForTypedBean(out, beanEventType);
     }
