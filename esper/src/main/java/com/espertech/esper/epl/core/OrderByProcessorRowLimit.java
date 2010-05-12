@@ -127,6 +127,9 @@ public class OrderByProcessorRowLimit implements OrderByProcessor {
      */
     protected EventBean[] applyLimit(EventBean[] outgoingEvents)
     {
+        if (outgoingEvents == null) {
+            return null;
+        }
         if (numRowsVariableReader != null)
         {
             Number varValue = (Number) numRowsVariableReader.getValue();

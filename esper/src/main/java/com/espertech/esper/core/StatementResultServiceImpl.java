@@ -282,6 +282,9 @@ public class StatementResultServiceImpl implements StatementResultService
 
     private Map<MultiKeyUntyped, UniformPair<EventBean[]>> getGroupedResults(UniformPair<EventBean[]> events)
     {
+        if (events == null) {
+            return Collections.emptyMap();
+        }
         Map<MultiKeyUntyped, UniformPair<EventBean[]>> groups = new LinkedHashMap<MultiKeyUntyped, UniformPair<EventBean[]>>();
         EventBean[] eventsPerStream = new EventBean[1];
         getGroupedResults(groups, events.getFirst(), true, eventsPerStream);

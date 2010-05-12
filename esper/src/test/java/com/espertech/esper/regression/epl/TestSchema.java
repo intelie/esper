@@ -6,6 +6,8 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
@@ -97,6 +99,13 @@ public class TestSchema extends TestCase
         data.put("col6", 1);
         epService.getEPRuntime().sendEvent(data, "MyEventType");
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "col5,col6".split(","), new Object[] {"abc", 1});
+        
+        // assert type information
+        EventTypeSPI typeSPI = (EventTypeSPI) stmtSelect.getEventType();
+        assertEquals(EventTypeMetadata.TypeClass.APPLICATION, typeSPI.getMetadata().getTypeClass());
+        assertEquals(typeSPI.getName(), typeSPI.getMetadata().getPublicName());
+        assertTrue(typeSPI.getMetadata().isApplicationConfigured());
+        assertEquals(typeSPI.getName(), typeSPI.getMetadata().getPrimaryName());
     }
 
     public void testModelPOJO() throws Exception
@@ -117,6 +126,13 @@ public class TestSchema extends TestCase
         
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 2));
         ArrayAssertionUtil.assertPropsPerRow(listener.getNewDataListFlattened(), "string,intPrimitive".split(","), new Object[][] {{"E1", 2}, {"E1", 2}});
+
+        // assert type information
+        EventTypeSPI typeSPI = (EventTypeSPI) stmtSelectOne.getEventType();
+        assertEquals(EventTypeMetadata.TypeClass.APPLICATION, typeSPI.getMetadata().getTypeClass());
+        assertEquals(typeSPI.getName(), typeSPI.getMetadata().getPublicName());
+        assertTrue(typeSPI.getMetadata().isApplicationConfigured());
+        assertEquals(typeSPI.getName(), typeSPI.getMetadata().getPrimaryName());
     }
 
     public void testNestableMapArray() throws Exception
