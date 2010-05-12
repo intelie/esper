@@ -13,6 +13,11 @@
         An application can supply configuration at the time of engine allocation using the <literal>Configuration</literal> class, and can also use XML files to hold configuration. Configuration can be changed at runtime
         via the <literal>ConfigurationOperations</literal> interface available from <literal>EPAdministrator</literal> via the <literal>getConfiguration</literal> method.
     </para>
+    
+    <para>
+		The difference between using a <literal>Configuration</literal> object and the <literal>ConfigurationOperations</literal> interface is that for the latter, all configuration including event types added through that interface are considered runtime configurations. 
+		This means they will be discarded when calling the <literal>initialize</literal> method on an <literal>EPServiceProvider</literal> instance.
+    </para>
 
     <sect1 id="configuration-programmatic" revision="1">
         <title>Programmatic Configuration</title>
