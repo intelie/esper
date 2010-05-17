@@ -20,14 +20,18 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Parser for property names that can be simple, nested, mapped or a combination of these.
@@ -36,6 +40,8 @@ import java.util.List;
 public class PropertyParser
 {
     private static final Log log = LogFactory.getLog(PropertyParser.class);
+
+    private static Set<String> keywordCache;
 
     /**
      * Parse the given property name returning a Property instance for the property.
@@ -118,10 +124,66 @@ public class PropertyParser
         }
         catch (RecognitionException e)
         {
+            // Check for keywords and escape each, parse again
+            String escapedPropertyName = escapeKeywords(tokens);
+
+            CharStream inputEscaped;
+            try
+            {
+                inputEscaped = new NoCaseSensitiveStream(new StringReader(escapedPropertyName));
+            }
+            catch (IOException ex)
+            {
+                throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
+            }
+
+            EsperEPL2GrammarLexer lexEscaped = new EsperEPL2GrammarLexer(inputEscaped);
+            CommonTokenStream tokensEscaped = new CommonTokenStream(lexEscaped);
+            EsperEPL2GrammarParser gEscaped = new EsperEPL2GrammarParser(tokensEscaped);
+            EsperEPL2GrammarParser.startEventPropertyRule_return rEscaped;
+
+            try
+            {
+                rEscaped = gEscaped.startEventPropertyRule();
+                return (Tree) rEscaped.getTree(); 
+            }
+            catch (Exception eEscaped)
+            {
+            }
+
             throw ExceptionConvertor.convertProperty(e, propertyName, true, g);
         }
 
         return (Tree) r.getTree();
+    }
+
+    private synchronized static String escapeKeywords(CommonTokenStream tokens) {
+
+        if (keywordCache == null) {
+            keywordCache = new HashSet<String>();
+            Set<String> keywords = new EsperEPL2GrammarParser(tokens).getKeywords();
+            for (String keyword : keywords) {
+                if (keyword.charAt(0) == '\'' && keyword.charAt(keyword.length() - 1) == '\'') {
+                    keywordCache.add(keyword.substring(1, keyword.length() - 1));
+                }
+            }
+        }
+
+        StringWriter writer = new StringWriter();
+        for (Object token : tokens.getTokens()) // Call getTokens first before invoking tokens.size! ANTLR problem
+        {
+            Token t = (Token) token;
+            boolean isKeyword = keywordCache.contains(t.getText().toLowerCase());
+            if (isKeyword) {
+                writer.append('`');
+                writer.append(t.getText());
+                writer.append('`');
+            }
+            else {
+                writer.append(t.getText());
+            }
+        }
+        return writer.toString();
     }
 
     /**

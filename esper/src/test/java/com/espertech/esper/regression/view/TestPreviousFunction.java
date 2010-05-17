@@ -8,6 +8,7 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 
 public class TestPreviousFunction extends TestCase
@@ -116,6 +117,38 @@ public class TestPreviousFunction extends TestCase
 
         sendMarketEvent("IBM", 83);
         assertCountAndPrice(listener.assertOneGetNewAndReset(), 1L, 83D);
+    }
+
+    public void testPerGroupTwoCriteria()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("MDBean", SupportMarketDataBean.class);
+        String viewExpr = "select symbol, feed, prev(1, price) as prevPrice " +
+                          "from MDBean.std:groupby(symbol, feed).win:length(2)";
+
+        EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
+        selectTestView.addListener(listener);
+        String[] fields = "symbol,feed,prevPrice".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 10, 0L, "F1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"IBM", "F1", null});
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 11, 0L, "F1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"IBM", "F1", 10d});
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("MSFT", 100, 0L, "F2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"MSFT", "F2", null});
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 12, 0L, "F2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"IBM", "F2", null});
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 13, 0L, "F1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"IBM", "F1", 11d});
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("MSFT", 101, 0L, "F2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"MSFT", "F2", 100d});
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 17, 0L, "F2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"IBM", "F2", 12d});
     }
 
     public void testSortWindowPerGroup()

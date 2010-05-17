@@ -1,7 +1,10 @@
 package com.espertech.esper.client.hook;
 
+import java.sql.ResultSet;
+
 /**
- * For use with {@link SQLColumnTypeConversion}, context of column conversion.
+ * For use with {@link SQLColumnTypeConversion}, context of column conversion. Contains the columns information
+ * as well as the column result value after reading the value and the result set itself for direct access, if required.
  * <p>
  * Applications should not retain instances of this class as the engine may change and reuse values here.
  */
@@ -10,6 +13,7 @@ public class SQLColumnValueContext
     private String columnName;
     private int columnNumber;
     private Object columnValue;
+    private ResultSet resultSet;
 
     /**
      * Ctor.
@@ -70,5 +74,21 @@ public class SQLColumnValueContext
     public void setColumnValue(Object columnValue)
     {
         this.columnValue = columnValue;
+    }
+
+    /**
+     * Sets the result set.
+     * @param resultSet to set
+     */
+    public void setResultSet(ResultSet resultSet) {
+        this.resultSet = resultSet;
+    }
+
+    /**
+     * Returns the result set.
+     * @return result set
+     */
+    public ResultSet getResultSet() {
+        return resultSet;
     }
 }

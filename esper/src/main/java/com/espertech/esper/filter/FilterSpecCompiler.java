@@ -581,6 +581,15 @@ public final class FilterSpecCompiler
                 {
                     ExprConstantNode constantNode = (ExprConstantNode) subNode;
                     Object constant = constantNode.evaluate(null, true, exprEvaluatorContext);
+                    if (constant instanceof Collection) {
+                        return null;
+                    }
+                    if (constant instanceof Map) {
+                        return null;
+                    }
+                    if ((constant != null) && (constant.getClass().isArray())) {
+                        return null;
+                    }
                     constant = handleConstantsCoercion(identNodeInSet, constant);
                     listofValues.add(new InSetOfValuesConstant(constant));
                 }

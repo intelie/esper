@@ -1,15 +1,16 @@
 package com.espertech.esper.regression.view;
 
 import junit.framework.TestCase;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanNumeric;
 import com.espertech.esper.support.bean.SupportBean_S0;
+import com.espertech.esper.support.bean.SupportEnum;
 import com.espertech.esper.support.client.SupportConfigFactory;
+
+import java.util.Set;
+import java.util.HashSet;
 
 public class TestFilterInAndBetween extends TestCase
 {
@@ -57,7 +58,7 @@ public class TestFilterInAndBetween extends TestCase
         assertFalse(testListener.getAndClearIsInvoked());
     }
 
-    public void testSimpleInt()
+    public void testSimpleIntAndEnumWrite()
     {
         String expr = "select * from " + SupportBean.class.getName() + "(intPrimitive in (1, 10))";
         EPStatement stmt = epService.getEPAdministrator().createEPL(expr);
@@ -69,6 +70,22 @@ public class TestFilterInAndBetween extends TestCase
         assertFalse(testListener.getAndClearIsInvoked());
         sendBeanInt(1);
         assertTrue(testListener.getAndClearIsInvoked());
+        stmt.destroy();
+
+        // try enum - ESPER-459
+        Set<SupportEnum> types = new HashSet<SupportEnum>();
+        types.add(SupportEnum.ENUM_VALUE_2);
+        EPPreparedStatement inPstmt = epService.getEPAdministrator().prepareEPL("select * from " + SupportBean.class.getName() + " ev " +"where ev.enumValue in (?)");
+        inPstmt.setObject( 1, types );
+
+        EPStatement inStmt = epService.getEPAdministrator().create( inPstmt );
+        inStmt.addListener(testListener);
+
+        SupportBean event = new SupportBean();
+        event.setEnumValue(SupportEnum.ENUM_VALUE_2);
+        epService.getEPRuntime().sendEvent(event);
+        
+        assertTrue(testListener.isInvoked());
     }
 
     public void testInvalid()
