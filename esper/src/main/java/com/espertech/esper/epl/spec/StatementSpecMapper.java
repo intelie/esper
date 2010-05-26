@@ -117,7 +117,7 @@ public class StatementSpecMapper
         mapRowLimit(sodaStatement.getRowLimitClause(), raw, mapContext);
         mapMatchRecognize(sodaStatement.getMatchRecognizeClause(), raw, mapContext);
         mapForClause(sodaStatement.getForClause(), raw, mapContext);
-        mapSQLParameters(sodaStatement.getFromClause().getStreams(), raw, mapContext);
+        mapSQLParameters(sodaStatement.getFromClause(), raw, mapContext);
         return raw;
     }
 
@@ -2198,10 +2198,13 @@ public class StatementSpecMapper
         return new AnnotationDesc(part.getName(), attributes);
     }
 
-    private static void mapSQLParameters(List<Stream> streams, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    private static void mapSQLParameters(FromClause fromClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
+        if ((fromClause == null) || (fromClause.getStreams() == null)) {
+            return;
+        }
         int streamNum = -1;
-        for (Stream stream : streams) {
+        for (Stream stream : fromClause.getStreams()) {
             if (!(stream instanceof SQLStream)) {
                 continue;
             }

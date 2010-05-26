@@ -394,7 +394,7 @@ public class TestEPLTreeWalker extends TestCase
         String expression = "select * from " + CLASSNAME + "(string=?, value=?)";
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         StatementSpecRaw raw = walker.getStatementSpec();
-        assertEquals(2, raw.getSubstitutionParameters());
+        assertEquals(2, raw.getSubstitutionParameters().size());
 
         FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
         ExprEqualsNode equalsFilter = (ExprEqualsNode) streamSpec.getRawFilterSpec().getFilterExpressions().get(0);
@@ -406,7 +406,7 @@ public class TestEPLTreeWalker extends TestCase
         expression = CLASSNAME + "(string=?, value=?)";
         walker = parseAndWalkPattern(expression);
         raw = walker.getStatementSpec();
-        assertEquals(2, raw.getSubstitutionParameters());
+        assertEquals(2, raw.getSubstitutionParameters().size());
     }
 
     public void testWalkPatternMatchUntil() throws Exception
