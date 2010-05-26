@@ -234,7 +234,21 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting statement: Property 's1.xxx[0]' failed to resolve, reason: Property named 'xxx[0]' is not valid in stream 's1' [select myvarchar from  sql:MyDB ['select mychar from mytesttable where ${s1.xxx[0]} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
+            assertEquals("Error starting statement: Failed to resolve property 's1.xxx[0]' to a stream or nested property in a stream [select myvarchar from  sql:MyDB ['select mychar from mytesttable where ${s1.xxx[0]} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
+        }
+
+        stmtText = "select myvarchar from " +
+                " sql:MyDB ['select mychar from mytesttable where ${} = mytesttable.mybigint'] as s0," +
+                SupportBeanComplexProps.class.getName() + " as s1";
+
+        try
+        {
+            epService.getEPAdministrator().createEPL(stmtText);
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error starting statement: Missing expression withing ${...} in SQL statement [select myvarchar from  sql:MyDB ['select mychar from mytesttable where ${} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
         }
     }
 
@@ -251,7 +265,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting statement: Invalid property 'myvarchar' resolves to the historical data itself [select myvarchar from  sql:MyDB ['select myvarchar from mytesttable where ${myvarchar} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
+            assertEquals("Error starting statement: Invalid expression 'myvarchar' resolves to the historical data itself [select myvarchar from  sql:MyDB ['select myvarchar from mytesttable where ${myvarchar} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
         }
     }
 
@@ -267,7 +281,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting statement: Invalid property 'mybigint' resolves to the historical data itself [select myvarchar as s0Name from sql:MyDB ['select myvarchar, mybigint from mytesttable where ${mybigint} = myint'] as s0]", ex.getMessage());
+            assertEquals("Error starting statement: Invalid expression 'mybigint' resolves to the historical data itself [select myvarchar as s0Name from sql:MyDB ['select myvarchar, mybigint from mytesttable where ${mybigint} = myint'] as s0]", ex.getMessage());
         }
     }
 

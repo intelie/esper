@@ -11,12 +11,16 @@ package com.espertech.esper.core;
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.client.EPStatementSyntaxException;
+import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.parse.*;
 import com.espertech.esper.epl.spec.PatternStreamSpecRaw;
 import com.espertech.esper.epl.spec.SelectClauseElementWildcard;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
+import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.schedule.SchedulingService;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.Tree;
@@ -65,6 +69,11 @@ public class EPAdministratorHelper
         };
     }
 
+    public static StatementSpecRaw compileEPL(String eplStatement, String eplStatementForErrorMsg, boolean addPleaseCheck, String statementName, EPServicesContext services, SelectClauseStreamSelectorEnum defaultStreamSelector) {
+        return compileEPL(eplStatement, eplStatementForErrorMsg, addPleaseCheck, statementName, defaultStreamSelector,
+                services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), services.getEngineURI(), services.getConfigSnapshot());
+    }
+
     /**
      * Compile the EPL.
      * @param eplStatement expression to compile
@@ -75,7 +84,12 @@ public class EPAdministratorHelper
      * @param addPleaseCheck - indicator to add a "please check" wording for stack paraphrases
      * @return statement specification
      */
-    public static StatementSpecRaw compileEPL(String eplStatement, String eplStatementForErrorMsg, boolean addPleaseCheck, String statementName, EPServicesContext services, SelectClauseStreamSelectorEnum defaultStreamSelector)
+    public static StatementSpecRaw compileEPL(String eplStatement, String eplStatementForErrorMsg, boolean addPleaseCheck, String statementName, SelectClauseStreamSelectorEnum defaultStreamSelector,
+                                              EngineImportService engineImportService,
+                                              VariableService variableService,
+                                              SchedulingService schedulingService,
+                                              String engineURI,
+                                              ConfigurationInformation configSnapshot)
     {
         if (log.isDebugEnabled())
         {
@@ -86,7 +100,7 @@ public class EPAdministratorHelper
         Tree ast = parseResult.getTree();
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
 
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI(), services.getConfigSnapshot());
+        EPLTreeWalker walker = new EPLTreeWalker(nodes, engineImportService, variableService, schedulingService, defaultStreamSelector, engineURI, configSnapshot);
 
         try
         {

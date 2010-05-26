@@ -34,6 +34,45 @@ public class TestDatabaseNoJoinIterate extends TestCase
         epService.initialize();
     }
 
+    public void testExpressionPoll()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("create variable boolean queryvar_bool");
+        epService.getEPAdministrator().createEPL("create variable int queryvar_int");
+        epService.getEPAdministrator().createEPL("create variable int lower");
+        epService.getEPAdministrator().createEPL("create variable int upper");
+        epService.getEPAdministrator().createEPL("on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed");
+
+        // Test int and singlerow
+        String stmtText = "select myint from sql:MyDB ['select myint from mytesttable where ${queryvar_int -2} = mytesttable.mybigint']";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"myint"}, null);
+
+        sendSupportBeanEvent(5);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"myint"}, new Object[][] {{30}});
+
+        stmt.destroy();
+        assertFalse(listener.isInvoked());
+
+        // Test multi-parameter and multi-row
+        stmtText = "select myint from sql:MyDB ['select myint from mytesttable where mytesttable.mybigint between ${queryvar_int-2} and ${queryvar_int+2}'] order by myint";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"myint"}, new Object[][] {{30}, {40}, {50}, {60}, {70}});
+        stmt.destroy();
+
+        // Test substitution parameters
+        stmtText = "select myint from sql:MyDB ['select myint from mytesttable where mytesttable.mybigint between ${?} and ${queryvar_int+?}'] order by myint";
+        EPPreparedStatement prepared = epService.getEPAdministrator().prepareEPL(stmtText);
+        prepared.setObject(1, 3);
+        prepared.setObject(2, 2);
+        stmt = epService.getEPAdministrator().create(prepared);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"myint"}, new Object[][] {{30}, {40}, {50}, {60}, {70}});
+        stmt.destroy();
+    }
+
     public void testVariablesPoll()
     {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);

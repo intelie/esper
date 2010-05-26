@@ -969,10 +969,12 @@ public class EPStatementStartMethod
             if (viewable instanceof ValidatedView)
             {
                 ValidatedView validatedView = (ValidatedView) viewable;
-                validatedView.validate(typeService,
+                validatedView.validate(services.getEngineImportService(), 
+                        typeService,
                         statementContext.getMethodResolutionService(),
-                        statementContext.getSchedulingService(),
-                        statementContext.getVariableService(), statementContext);
+                        statementContext.getTimeProvider(),
+                        statementContext.getVariableService(), statementContext,
+                        services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI());
             }
             if (viewable instanceof HistoricalEventViewable)
             {

@@ -11,6 +11,7 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.collection.IterablesArrayIterator;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.db.DataCache;
@@ -25,6 +26,7 @@ import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.epl.spec.MethodStreamSpec;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.View;
 import com.espertech.esper.util.JavaClassHelper;
@@ -98,12 +100,9 @@ public class MethodPollingViewable implements HistoricalEventViewable
         return dataCacheThreadLocal;
     }
 
-    public void validate(StreamTypeService streamTypeService,
-                         MethodResolutionService methodResolutionService,
-                         TimeProvider timeProvider,
-                         VariableService variableService,
-                         ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
-    {
+    public void validate(EngineImportService engineImportService, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider,
+                         VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot,
+                         SchedulingService schedulingService, String engineURI) throws ExprValidationException {
         Class[] paramTypes = new Class[inputParameters.size()];
         int count = 0;
         validatedExprNodes = new ExprNode[inputParameters.size()];

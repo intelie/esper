@@ -2978,7 +2978,7 @@ select * from pattern [
 		</para>
 		
 		<para>
-			Esper does not parse of otherwise inspect your SQL query. Therefore your SQL can make use of any database-specific SQL language extensions or features that your database provides.
+			Esper does not parse or otherwise inspect your SQL query. Therefore your SQL can make use of any database-specific SQL language extensions or features that your database provides.
 		</para>
 
 		<para>
@@ -2987,7 +2987,7 @@ select * from pattern [
 			
 		<para>
 			Also if you have enabled query result caching in your Esper database configuration and provide EPL <literal>where</literal> clause and/or <literal>on</literal> clause (outer join) expressions, then 
-			Esper builds indexes on the SQL query results to enable fast lookup. This is especially useful if your queries return a large number of rows. For building the proper indexes, Esper inspects the expression found in your EPL query <literal>where</literal> clause, if present. For outer joins, Esper also inspects your EPL query <literal>on</literal> clause. Esper analyzes the EPL <literal>on</literal> clause and <literal>where</literal> clause expressions, if present, looking for property comparison with or without logical AND-relationships between properties. When a SQL query returns rows for caching, Esper builds the appropriate index and lookup strategies for fast row matching against indexes.
+			Esper builds indexes on the SQL query results to enable fast lookup. This is especially useful if your queries return a large number of rows. For building the proper indexes, Esper inspects the expression found in your EPL query <literal>where</literal> clause, if present. For outer joins, Esper also inspects your EPL query <literal>on</literal> clause. Esper analyzes the EPL <literal>on</literal> clause and <literal>where</literal> clause expressions, if present, looking for property comparison with or without logical AND-relationships between properties. When a SQL query returns rows for caching, Esper builds and caches the appropriate index and lookup strategies for fast row matching against indexes.
 		</para>
 
 		<para>
