@@ -12,10 +12,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprSubselectNode;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Specification object representing a complete EPL statement including all EPL constructs.
@@ -45,6 +42,7 @@ public class StatementSpecCompiled
     private final UpdateDesc updateSpec;
     private final MatchRecognizeSpec matchRecognizeSpec;
     private final ForClauseSpec forClauseSpec;
+    private final Map<Integer, List<ExprNode>> sqlParameters;
 
     /**
      * Ctor.
@@ -92,7 +90,8 @@ public class StatementSpecCompiled
                                  Annotation[] annotations,
                                  UpdateDesc updateSpec,
                                  MatchRecognizeSpec matchRecognizeSpec,
-                                 ForClauseSpec forClauseSpec)
+                                 ForClauseSpec forClauseSpec,
+                                 Map<Integer, List<ExprNode>> sqlParameters)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -117,6 +116,7 @@ public class StatementSpecCompiled
         this.updateSpec = updateSpec;
         this.matchRecognizeSpec = matchRecognizeSpec;
         this.forClauseSpec = forClauseSpec;
+        this.sqlParameters = sqlParameters;
     }
 
     /**
@@ -147,6 +147,7 @@ public class StatementSpecCompiled
         updateSpec = null;
         matchRecognizeSpec = null;
         forClauseSpec = null;
+        sqlParameters = null;
     }
 
     /**
@@ -387,5 +388,10 @@ public class StatementSpecCompiled
     public ForClauseSpec getForClauseSpec()
     {
         return forClauseSpec;
+    }
+
+    public Map<Integer, List<ExprNode>> getSqlParameters()
+    {
+        return sqlParameters;
     }
 }

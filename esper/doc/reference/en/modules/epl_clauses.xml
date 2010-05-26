@@ -3038,7 +3038,7 @@ select * from pattern [
 			</para>
 
 			<para>
-				Substitution parameters in the SQL query string take the form <literal>${</literal><emphasis>event_property_name</emphasis><literal>}</literal>. The engine resolves <emphasis>event_property_name</emphasis> at statement execution time to the actual event property value supplied by the events in the joined event stream.
+				Substitution parameters in the SQL query string take the form <literal>${</literal><emphasis>expression</emphasis><literal>}</literal>. The engine resolves <emphasis>expression</emphasis> at statement execution time to the actual expression result by evaluating the events in the joined event stream or current variable values, if any event property references or variables occur in the expression. An <emphasis>expression</emphasis> may not contain EPL substitution parameters.
 			</para>
 
 			<para>
@@ -3074,6 +3074,20 @@ select * from pattern [
 				Any window, such as the time window, generates insert stream (istream) events as events enter the window, and remove stream (rstream) events as events leave the window. The engine executes the given SQL query for each <literal>CustomerCallEvent</literal> in both the insert stream and the remove stream. As a performance optimization, the <literal>istream</literal> or <literal>rstream</literal> keywords in the <literal>select</literal> clause can be used to instruct the engine to only join insert stream or remove stream events, reducing the number of SQL query executions.
 			</para>
 			
+			<para>
+				Since any expression may be placed within the <literal>${...}</literal> syntax, you may use variables or user-defined functions as well.
+			</para>
+
+			<para>
+				The next example assumes that a variable by name <literal>varLowerLimit</literal> is defined and that a user-defined function <literal>getLimit</literal> exists on the <literal>MyLib</literal> imported class that takes a <literal>LimitEvent</literal> as a parameter:
+			</para>
+			<programlisting><![CDATA[select * from LimitEvent le, 
+  sql:MyCustomerDB [' select cust_name from Customer where 
+      amount > ${max(varLowerLimit, MyLib.getLimit(le))} ']]]></programlisting>
+
+			<para>
+				The example above takes the higher of the current variable value or the value returned by the user-defined function to return only those customer names where the amount exceeds the computed limit.
+			</para>
 		</sect2>
 
 		<sect2 id="histdata_join_where" revision="1">

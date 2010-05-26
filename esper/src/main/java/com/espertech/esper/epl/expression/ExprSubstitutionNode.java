@@ -23,7 +23,7 @@ import com.espertech.esper.schedule.TimeProvider;
 public class ExprSubstitutionNode extends ExprNode
 {
     private static final String ERROR_MSG = "Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters";
-    private final int index;
+    private int index;
     private static final long serialVersionUID = -4238446583735045135L;
 
     /**
@@ -47,6 +47,11 @@ public class ExprSubstitutionNode extends ExprNode
     public int getIndex()
     {
         return index;
+    }
+
+    public void setIndex(int index)
+    {
+        this.index = index;
     }
 
     public boolean isConstantResult()

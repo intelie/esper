@@ -13,6 +13,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
@@ -106,6 +107,12 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      * @return metrics reporting
      */
     public MetricReportingService getMetricReportingService();
+
+    /**
+     * Returns variable services.
+     * @return services
+     */
+    public VariableService getVariableService();
 
     /**
      * Returns value-added type service.

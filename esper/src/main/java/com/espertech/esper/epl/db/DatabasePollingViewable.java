@@ -8,23 +8,23 @@
  **************************************************************************************/
 package com.espertech.esper.epl.db;
 
-import com.espertech.esper.view.View;
-import com.espertech.esper.view.HistoricalEventViewable;
-import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.epl.core.*;
+import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.IterablesArrayIterator;
+import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.*;
+import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTableList;
-import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.epl.spec.StatementSpecRaw;
-import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
-import com.espertech.esper.client.*;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.schedule.SchedulingService;
-import com.espertech.esper.collection.IterablesArrayIterator;
-import com.espertech.esper.core.EPAdministratorHelper;
+import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.view.HistoricalEventViewable;
+import com.espertech.esper.view.View;
 
 import java.util.*;
 
@@ -92,7 +92,8 @@ public class DatabasePollingViewable implements HistoricalEventViewable
                          ExprEvaluatorContext exprEvaluatorContext,
                          ConfigurationInformation configSnapshot,
                          SchedulingService schedulingService,
-                         String engineURI) throws ExprValidationException
+                         String engineURI,
+                         Map<Integer, List<ExprNode>> sqlParameters) throws ExprValidationException
     {
         evaluators = new ExprNode[inputParameters.size()];
         subordinateStreams = new TreeSet<Integer>();
@@ -101,13 +102,11 @@ public class DatabasePollingViewable implements HistoricalEventViewable
         int count = 0;
         for (String inputParam : inputParameters)
         {
-            if (inputParam.trim().length() == 0) {
-                throw new ExprValidationException("Missing expression withing ${...} in SQL statement");
+            ExprNode raw = findSQLExpressionNode(myStreamNumber, count, sqlParameters);
+            if (raw == null) {
+                throw new ExprValidationException("Internal error find expression for historical stream parameter " + count + " stream " + myStreamNumber);
             }
-            String toCompile = "select * from java.lang.Object where " + inputParam;
-            StatementSpecRaw raw = EPAdministratorHelper.compileEPL(toCompile, inputParam, false, null, SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
-                    engineImportService, variableService, schedulingService, engineURI, configSnapshot);
-            ExprNode evaluator = raw.getFilterRootNode().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+            ExprNode evaluator = raw.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
             evaluators[count++] = evaluator;
 
             ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
@@ -260,5 +259,17 @@ public class DatabasePollingViewable implements HistoricalEventViewable
     public void removeAllViews()
     {
         throw new UnsupportedOperationException("Subviews not supported");
+    }
+
+    private static ExprNode findSQLExpressionNode(int myStreamNumber, int count, Map<Integer, List<ExprNode>> sqlParameters)
+    {
+        if ((sqlParameters == null) || (sqlParameters.isEmpty())) {
+            return null;
+        }
+        List<ExprNode> params = sqlParameters.get(myStreamNumber);
+        if ((params == null) || (params.isEmpty()) || (params.size() < (count + 1))) {
+            return null;
+        }
+        return params.get(count);
     }
 }

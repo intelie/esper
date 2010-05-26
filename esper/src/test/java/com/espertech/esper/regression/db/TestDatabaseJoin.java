@@ -248,7 +248,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting statement: Missing expression withing ${...} in SQL statement [select myvarchar from  sql:MyDB ['select mychar from mytesttable where ${} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
+            assertEquals("Missing expression within ${...} in SQL statement [select myvarchar from  sql:MyDB ['select mychar from mytesttable where ${} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
         }
     }
 

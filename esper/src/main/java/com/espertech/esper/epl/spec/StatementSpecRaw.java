@@ -9,12 +9,10 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprSubstitutionNode;
 import com.espertech.esper.util.MetaDefItem;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 import java.io.Serializable;
 
 /**
@@ -39,13 +37,15 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     private OutputLimitSpec outputLimitSpec;
     private RowLimitSpec rowLimitSpec;
     private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
-    private boolean existsSubstitutionParameters;
     private boolean hasVariables;
     private List<AnnotationDesc> annotations = new ArrayList<AnnotationDesc>();
     private String expressionNoAnnotations;
     private MatchRecognizeSpec matchRecognizeSpec;
     private Set<String> referencedVariables;
     private ForClauseSpec forClauseSpec;
+    private Map<Integer, List<ExprNode>> sqlParameters;
+    private List<ExprSubstitutionNode> substitutionParameters;
+
     private static final long serialVersionUID = 5390766716794133693L;
 
     /**
@@ -198,24 +198,6 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     public void setSelectClauseSpec(SelectClauseSpecRaw selectClauseSpec)
     {
         this.selectClauseSpec = selectClauseSpec;
-    }
-
-    /**
-     * Returns true if there are one or more substitution parameters in the statement of contained-within lookup statements
-     * @return true if parameters exists
-     */
-    public boolean isExistsSubstitutionParameters()
-    {
-        return existsSubstitutionParameters;
-    }
-
-    /**
-     * Sets the substitution parameters.
-     * @param existsSubstitutionParameters true to indicate there are parameters
-     */
-    public void setExistsSubstitutionParameters(boolean existsSubstitutionParameters)
-    {
-        this.existsSubstitutionParameters = existsSubstitutionParameters;
     }
 
     /**
@@ -446,5 +428,25 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     public void setForClauseSpec(ForClauseSpec forClauseSpec)
     {
         this.forClauseSpec = forClauseSpec;
+    }
+
+    public Map<Integer, List<ExprNode>> getSqlParameters()
+    {
+        return sqlParameters;
+    }
+
+    public void setSqlParameters(Map<Integer, List<ExprNode>> sqlParameters)
+    {
+        this.sqlParameters = sqlParameters;
+    }
+
+    public List<ExprSubstitutionNode> getSubstitutionParameters()
+    {
+        return substitutionParameters;
+    }
+
+    public void setSubstitutionParameters(List<ExprSubstitutionNode> substitutionParameters)
+    {
+        this.substitutionParameters = substitutionParameters;
     }
 }

@@ -1084,7 +1084,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 annotations,
                 spec.getUpdateDesc(),
                 spec.getMatchRecognizeSpec(),
-                spec.getForClauseSpec()
+                spec.getForClauseSpec(),
+                spec.getSqlParameters()
                 );
     }
 

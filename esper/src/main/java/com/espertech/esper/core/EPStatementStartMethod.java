@@ -974,7 +974,8 @@ public class EPStatementStartMethod
                         statementContext.getMethodResolutionService(),
                         statementContext.getTimeProvider(),
                         statementContext.getVariableService(), statementContext,
-                        services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI());
+                        services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(),
+                        statementSpec.getSqlParameters());
             }
             if (viewable instanceof HistoricalEventViewable)
             {

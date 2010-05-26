@@ -64,13 +64,14 @@ public class TestDatabaseNoJoinIterate extends TestCase
         stmt.destroy();
 
         // Test substitution parameters
-        stmtText = "select myint from sql:MyDB ['select myint from mytesttable where mytesttable.mybigint between ${?} and ${queryvar_int+?}'] order by myint";
-        EPPreparedStatement prepared = epService.getEPAdministrator().prepareEPL(stmtText);
-        prepared.setObject(1, 3);
-        prepared.setObject(2, 2);
-        stmt = epService.getEPAdministrator().create(prepared);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"myint"}, new Object[][] {{30}, {40}, {50}, {60}, {70}});
-        stmt.destroy();
+        try {
+            stmtText = "select myint from sql:MyDB ['select myint from mytesttable where mytesttable.mybigint between ${?} and ${queryvar_int+?}'] order by myint";
+            epService.getEPAdministrator().prepareEPL(stmtText);
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals("EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead [select myint from sql:MyDB ['select myint from mytesttable where mytesttable.mybigint between ${?} and ${queryvar_int+?}'] order by myint]", ex.getMessage());
+        }
     }
 
     public void testVariablesPoll()

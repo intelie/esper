@@ -11,6 +11,7 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.schedule.SchedulingService;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -24,6 +25,8 @@ public class StatementSpecMapContext
     private final EngineImportService engineImportService;
     private final VariableService variableService;
     private final ConfigurationInformation configuration;
+    private final SchedulingService schedulingService;
+    private final String engineURI;
 
     private boolean hasVariables;
     private Set<String> variableNames;
@@ -34,12 +37,14 @@ public class StatementSpecMapContext
      * @param variableService variable names
      * @param configuration the configuration
      */
-    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration)
+    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, String engineURI)
     {
         this.engineImportService = engineImportService;
         this.variableService = variableService;
         this.configuration = configuration;
         this.variableNames = new HashSet<String>();
+        this.schedulingService = schedulingService;
+        this.engineURI = engineURI;
     }
 
     /**
@@ -93,5 +98,15 @@ public class StatementSpecMapContext
      */
     public Set<String> getVariableNames() {
         return variableNames;
+    }
+
+    public SchedulingService getSchedulingService()
+    {
+        return schedulingService;
+    }
+
+    public String getEngineURI()
+    {
+        return engineURI;
     }
 }

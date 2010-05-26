@@ -39,7 +39,7 @@ import java.util.*;
  */
 public class DatabasePollingViewableFactory
 {
-    private static final String SAMPLE_WHERECLAUSE_PLACEHOLDER = "$ESPER-SAMPLE-WHERE";
+    public static final String SAMPLE_WHERECLAUSE_PLACEHOLDER = "$ESPER-SAMPLE-WHERE";
 
     /**
      * Creates the viewable for polling via database SQL query.

@@ -102,7 +102,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
 
     public void validate(EngineImportService engineImportService, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider,
                          VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot,
-                         SchedulingService schedulingService, String engineURI) throws ExprValidationException {
+                         SchedulingService schedulingService, String engineURI, Map<Integer, List<ExprNode>> sqlParameters) throws ExprValidationException {
         Class[] paramTypes = new Class[inputParameters.size()];
         int count = 0;
         validatedExprNodes = new ExprNode[inputParameters.size()];

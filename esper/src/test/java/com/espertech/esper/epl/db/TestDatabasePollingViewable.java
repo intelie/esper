@@ -35,7 +35,7 @@ public class TestDatabasePollingViewable extends TestCase
 
         pollingViewable = new DatabasePollingViewable(1, inputProperties, supportPollingStrategy, dataCache, resultEventType);
 
-        pollingViewable.validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null);
+        pollingViewable.validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null);
 
         indexingStrategy = new PollResultIndexingStrategy()
         {

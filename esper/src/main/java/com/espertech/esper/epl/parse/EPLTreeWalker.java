@@ -12,6 +12,7 @@ import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.core.EPAdministratorHelper;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
@@ -21,8 +22,10 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.rowregex.*;
+import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.*;
 import com.espertech.esper.util.JavaClassHelper;
@@ -67,13 +70,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private final SelectClauseStreamSelectorEnum defaultStreamSelector;
     private final String engineURI;
     private final ConfigurationInformation configurationInformation;
+    private final SchedulingService schedulingService;
 
     /**
      * Ctor.
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
      * @param variableService for variable access
      * @param input is the tree nodes to walk
-     * @param timeProvider providing the current engine time
      * @param defaultStreamSelector - the configuration for which insert or remove streams (or both) to produce
      * @param engineURI engine URI
      * @param configurationInformation configuration info
@@ -81,7 +84,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     public EPLTreeWalker(TreeNodeStream input,
                          EngineImportService engineImportService,
                          VariableService variableService,
-                         final TimeProvider timeProvider,
+                         SchedulingService schedulingService,
                          SelectClauseStreamSelectorEnum defaultStreamSelector,
                          String engineURI,
                          ConfigurationInformation configurationInformation)
@@ -90,7 +93,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         this.engineImportService = engineImportService;
         this.variableService = variableService;
         this.defaultStreamSelector = defaultStreamSelector;
-        this.timeProvider = timeProvider;
+        this.timeProvider = schedulingService;
         exprEvaluatorContext = new ExprEvaluatorContext()
         {
             public TimeProvider getTimeProvider()
@@ -100,6 +103,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         };
         this.engineURI = engineURI;
         this.configurationInformation = configurationInformation;
+        this.schedulingService = schedulingService;
 
         if (defaultStreamSelector == null)
         {
@@ -1169,7 +1173,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new LinkedList<ViewSpec>(), null, new StreamSpecOptions());
         statementSpec.getStreamSpecs().add(streamSpec);
-        statementSpec.setExistsSubstitutionParameters(substitutionParamNodes.size() > 0);
+        statementSpec.setSubstitutionParameters(substitutionParamNodes);
 
         astPatternNodeMap.clear();
     }
@@ -1193,7 +1197,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     " not all pattern nodes have been removed from AST-to-pattern nodes map");
         }
 
-        statementSpec.setExistsSubstitutionParameters(substitutionParamNodes.size() > 0);
+        statementSpec.setSubstitutionParameters(substitutionParamNodes);
     }
 
     private void leaveSelectionElement(Tree node) throws ASTWalkException
@@ -1612,16 +1616,46 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 sqlFragments = PlaceholderParser.parsePlaceholder(sqlWithParams);
                 for (PlaceholderParser.Fragment fragment : sqlFragments)
                 {
-                    if (variableService.getReader(fragment.getValue()) != null)
-                    {
-                        statementSpec.setHasVariables(true);
-                        addVariable(statementSpec, fragment.getValue());
+                    if (!(fragment instanceof PlaceholderParser.ParameterFragment)) {
+                        continue;
                     }
+
+                    // Parse expression, store for substitution parameters
+                    String expression = fragment.getValue();
+                    if (expression.toUpperCase().equals(DatabasePollingViewableFactory.SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
+                        continue;
+                    }
+                    
+                    if (expression.trim().length() == 0) {
+                        throw new ASTWalkException("Missing expression within ${...} in SQL statement");
+                    }
+                    String toCompile = "select * from java.lang.Object where " + expression;
+                    StatementSpecRaw raw = EPAdministratorHelper.compileEPL(toCompile, expression, false, null, SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
+                            engineImportService, variableService, schedulingService, engineURI, configurationInformation);
+
+                    if ((raw.getSubstitutionParameters() != null) && (raw.getSubstitutionParameters().size() > 0)) {
+                        throw new ASTWalkException("EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead");
+                    }
+
+                    if (raw.isHasVariables()) {
+                        statementSpec.setHasVariables(true);
+                    }
+                    
+                    // add expression
+                    if (statementSpec.getSqlParameters() == null) {
+                        statementSpec.setSqlParameters(new HashMap<Integer, List<ExprNode>>());
+                    }
+                    List<ExprNode> listExp = statementSpec.getSqlParameters().get(statementSpec.getStreamSpecs().size());
+                    if (listExp == null) {
+                        listExp = new ArrayList<ExprNode>();
+                        statementSpec.getSqlParameters().put(statementSpec.getStreamSpecs().size(), listExp);
+                    }
+                    listExp.add(raw.getFilterRootNode());
                 }
             }
             catch (PlaceholderParseException ex)
             {
-                log.warn("Failed to parse SQL text for parameter and variable use '" + sqlWithParams + "' :" + ex.getMessage());
+                log.warn("Failed to parse SQL text '" + sqlWithParams + "' :" + ex.getMessage());
                 // Let the view construction handle the validation
             }
 

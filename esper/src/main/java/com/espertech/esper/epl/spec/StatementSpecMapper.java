@@ -12,22 +12,25 @@ import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.core.EPAdministratorHelper;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.epl.parse.ASTWalkException;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.rowregex.*;
+import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.type.CronOperatorEnum;
 import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.type.MinMaxTypeEnum;
 import com.espertech.esper.type.RelationalOpEnum;
+import com.espertech.esper.util.PlaceholderParseException;
+import com.espertech.esper.util.PlaceholderParser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Helper for mapping internal representations of a statement to the SODA object model for statements.
@@ -79,9 +82,9 @@ public class StatementSpecMapper
      * @param configuration supplies config values
      * @return statement specification, and internal representation of a statement
      */
-    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration)
+    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, String engineURI)
     {
-        StatementSpecMapContext mapContext = new StatementSpecMapContext(engineImportService, variableService, configuration);
+        StatementSpecMapContext mapContext = new StatementSpecMapContext(engineImportService, variableService, configuration, schedulingService, engineURI);
 
         StatementSpecRaw raw = map(sodaStatement, mapContext);
         if (mapContext.isHasVariables())
@@ -114,6 +117,7 @@ public class StatementSpecMapper
         mapRowLimit(sodaStatement.getRowLimitClause(), raw, mapContext);
         mapMatchRecognize(sodaStatement.getMatchRecognizeClause(), raw, mapContext);
         mapForClause(sodaStatement.getForClause(), raw, mapContext);
+        mapSQLParameters(sodaStatement.getFromClause().getStreams(), raw, mapContext);
         return raw;
     }
 
@@ -148,8 +152,22 @@ public class StatementSpecMapper
         unmapRowLimit(statementSpec.getRowLimitSpec(), model, unmapContext);
         unmapMatchRecognize(statementSpec.getMatchRecognizeSpec(), model, unmapContext);
         unmapForClause(statementSpec.getForClauseSpec(), model, unmapContext);
+        unmapSQLParameters(statementSpec.getSqlParameters(), unmapContext);
 
         return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
+    }
+
+    // Collect substitution parameters
+    private static void unmapSQLParameters(Map<Integer, List<ExprNode>> sqlParameters, StatementSpecUnMapContext unmapContext)
+    {
+        if (sqlParameters == null) {
+            return;
+        }
+        for (Map.Entry<Integer, List<ExprNode>> pair : sqlParameters.entrySet()) {
+            for (ExprNode node : pair.getValue()) {
+                unmapExpressionDeep(node, unmapContext);
+            }
+        }
     }
 
     private static void unmapOnClause(OnTriggerDesc onTriggerDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -2178,5 +2196,66 @@ public class StatementSpecMapper
             }
         }
         return new AnnotationDesc(part.getName(), attributes);
+    }
+
+    private static void mapSQLParameters(List<Stream> streams, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    {
+        int streamNum = -1;
+        for (Stream stream : streams) {
+            if (!(stream instanceof SQLStream)) {
+                continue;
+            }
+            streamNum++;
+            SQLStream sqlStream = (SQLStream) stream;
+
+            List<PlaceholderParser.Fragment> sqlFragments = null;
+            try
+            {
+                sqlFragments = PlaceholderParser.parsePlaceholder(sqlStream.getSqlWithSubsParams());
+            }
+            catch (PlaceholderParseException e)
+            {
+                throw new RuntimeException("Error parsing SQL placeholder expression '" + sqlStream.getSqlWithSubsParams() + "': ");
+            }
+
+            for (PlaceholderParser.Fragment fragment : sqlFragments)
+            {
+                if (!(fragment instanceof PlaceholderParser.ParameterFragment)) {
+                    continue;
+                }
+
+                // Parse expression, store for substitution parameters
+                String expression = fragment.getValue();
+                if (expression.toUpperCase().equals(DatabasePollingViewableFactory.SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
+                    continue;
+                }
+
+                if (expression.trim().length() == 0) {
+                    throw new ASTWalkException("Missing expression within ${...} in SQL statement");
+                }
+                String toCompile = "select * from java.lang.Object where " + expression;
+                StatementSpecRaw rawSqlExpr = EPAdministratorHelper.compileEPL(toCompile, expression, false, null, SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
+                        mapContext.getEngineImportService(), mapContext.getVariableService(), mapContext.getSchedulingService(), mapContext.getEngineURI(), mapContext.getConfiguration());
+
+                if ((rawSqlExpr.getSubstitutionParameters() != null) && (rawSqlExpr.getSubstitutionParameters().size() > 0)) {
+                    throw new ASTWalkException("EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead");
+                }
+
+                if (rawSqlExpr.isHasVariables()) {
+                    mapContext.setHasVariables(true);
+                }
+
+                // add expression
+                if (raw.getSqlParameters() == null) {
+                    raw.setSqlParameters(new HashMap<Integer, List<ExprNode>>());
+                }
+                List<ExprNode> listExp = raw.getSqlParameters().get(streamNum);
+                if (listExp == null) {
+                    listExp = new ArrayList<ExprNode>();
+                    raw.getSqlParameters().put(streamNum, listExp);
+                }
+                listExp.add(rawSqlExpr.getFilterRootNode());
+            }
+        }
     }
 }

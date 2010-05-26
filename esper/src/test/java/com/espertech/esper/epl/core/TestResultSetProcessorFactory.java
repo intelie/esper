@@ -193,6 +193,7 @@ public class TestResultSetProcessorFactory extends TestCase
                 new Annotation[0],
                 null,
                 null,
+                null,
                 null);
     }
 }

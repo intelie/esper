@@ -16,6 +16,7 @@ import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
@@ -701,5 +702,10 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
 
     public TimeProvider getTimeProvider() {
         return engine.getServices().getSchedulingService();
+    }
+
+    public VariableService getVariableService()
+    {
+        return engine.getServices().getVariableService();
     }
 }
