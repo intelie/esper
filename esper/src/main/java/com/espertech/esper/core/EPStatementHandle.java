@@ -25,6 +25,7 @@ public class EPStatementHandle implements MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 0L;
 
+    private final String statementName;
     private final String statementId;
     private transient ManagedLock statementLock;
     private final int hashCode;
@@ -50,8 +51,9 @@ public class EPStatementHandle implements MetaDefItem, Serializable
      * @param preemptive true for drop after done
      * @param statementFilterVersion filter version
      */
-    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive, StatementFilterVersion statementFilterVersion)
+    public EPStatementHandle(String statementName, String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive, StatementFilterVersion statementFilterVersion)
     {
+        this.statementName = statementName;
         this.statementId = statementId;
         this.statementLock = statementLock;
         this.hasVariables = hasVariables;
@@ -223,5 +225,9 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     public EPStatementDispatch getOptionalDispatchable()
     {
         return optionalDispatchable;
+    }
+
+    public String getStatementName() {
+        return statementName;
     }
 }

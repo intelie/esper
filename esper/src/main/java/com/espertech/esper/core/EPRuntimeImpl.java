@@ -883,6 +883,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             // internal join processing, if applicable
             handle.internalDispatch(exprEvaluatorContext);
         }
+        catch (RuntimeException ex) {
+            log.error("Exception encountered processing statement '" + handle.getStatementName() + "': " + ex.getMessage(), ex);
+            throw ex;
+        }
         finally
         {
             handle.getStatementLock().releaseLock(services.getStatementLockFactory());
@@ -909,6 +913,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             handle.getScheduleCallback().scheduledTrigger(services.getExtensionServicesContext());
 
             handle.getEpStatementHandle().internalDispatch(exprEvaluatorContext);
+        }
+        catch (RuntimeException ex) {
+            log.error("Exception encountered processing statement '" + handle.getEpStatementHandle().getStatementName() + "': " + ex.getMessage(), ex);
+            throw ex;
         }
         finally
         {
@@ -984,6 +992,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             // internal join processing, if applicable
             handle.internalDispatch(this.engineFilterAndDispatchTimeContext);
         }
+        catch (RuntimeException ex) {
+            log.error("Exception encountered processing statement '" + handle.getStatementName() + "': " + ex.getMessage(), ex);
+            throw ex;
+        }
         finally
         {
             handle.getStatementLock().releaseLock(services.getStatementLockFactory());
@@ -1026,6 +1038,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
             // internal join processing, if applicable
             handle.internalDispatch(engineFilterAndDispatchTimeContext);
+        }
+        catch (RuntimeException ex) {
+            log.error("Exception encountered processing statement '" + handle.getStatementName() + "': " + ex.getMessage(), ex);
+            throw ex;
         }
         finally
         {
