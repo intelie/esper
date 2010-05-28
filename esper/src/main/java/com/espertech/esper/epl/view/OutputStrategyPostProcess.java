@@ -29,6 +29,7 @@ public class OutputStrategyPostProcess implements OutputStrategy
     private final InternalEventRouter internalEventRouter;
     private final EPStatementHandle epStatementHandle;
     private final StatementContext statementContext;
+    private final boolean addToFront;
 
     /**
      * Ctor.
@@ -39,7 +40,7 @@ public class OutputStrategyPostProcess implements OutputStrategy
      * @param statementContext for statement-level services
      * @param epStatementHandle for use in routing to determine which statement routed
      */
-    public OutputStrategyPostProcess(boolean route, boolean routeRStream, SelectClauseStreamSelectorEnum selectStreamDirEnum, InternalEventRouter internalEventRouter, EPStatementHandle epStatementHandle, StatementContext statementContext)
+    public OutputStrategyPostProcess(boolean route, boolean routeRStream, SelectClauseStreamSelectorEnum selectStreamDirEnum, InternalEventRouter internalEventRouter, EPStatementHandle epStatementHandle, StatementContext statementContext, boolean addToFront)
     {
         isRoute = route;
         isRouteRStream = routeRStream;
@@ -47,6 +48,7 @@ public class OutputStrategyPostProcess implements OutputStrategy
         this.internalEventRouter = internalEventRouter;
         this.epStatementHandle = epStatementHandle;
         this.statementContext = statementContext;
+        this.addToFront = addToFront;
     }
 
     public void output(boolean forceUpdate, UniformPair<EventBean[]> result, UpdateDispatchView finalView)
@@ -95,9 +97,9 @@ public class OutputStrategyPostProcess implements OutputStrategy
         for (EventBean routed : events) {
             if (routed instanceof NaturalEventBean) {
                 NaturalEventBean natural = (NaturalEventBean) routed;
-                internalEventRouter.route(natural.getOptionalSynthetic(), epStatementHandle, statementContext.getInternalEventEngineRouteDest(), exprEvaluatorContext);
+                internalEventRouter.route(natural.getOptionalSynthetic(), epStatementHandle, statementContext.getInternalEventEngineRouteDest(), exprEvaluatorContext, addToFront);
             } else {
-                internalEventRouter.route(routed, epStatementHandle, statementContext.getInternalEventEngineRouteDest(), exprEvaluatorContext);
+                internalEventRouter.route(routed, epStatementHandle, statementContext.getInternalEventEngineRouteDest(), exprEvaluatorContext, addToFront);
             }
         }
     }

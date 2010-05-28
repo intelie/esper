@@ -51,10 +51,10 @@ public class EPStatementHandle implements MetaDefItem, Serializable
      * @param preemptive true for drop after done
      * @param statementFilterVersion filter version
      */
-    public EPStatementHandle(String statementName, String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive, StatementFilterVersion statementFilterVersion)
+    public EPStatementHandle(String statementId, String statementName, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive, StatementFilterVersion statementFilterVersion)
     {
-        this.statementName = statementName;
         this.statementId = statementId;
+        this.statementName = statementName;
         this.statementLock = statementLock;
         this.hasVariables = hasVariables;
         this.metricsHandle = metricsHandle;

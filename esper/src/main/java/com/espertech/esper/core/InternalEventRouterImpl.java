@@ -63,18 +63,18 @@ public class InternalEventRouterImpl implements InternalEventRouter
         return getPreprocessedEvent(eventBean, exprEvaluatorContext);
     }
 
-    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext)
+    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext, boolean addToFront)
     {
         if (!hasPreprocessing)
         {
-            routeDest.route(event, statementHandle);
+            routeDest.route(event, statementHandle, addToFront);
             return;
         }
 
         EventBean preprocessed = getPreprocessedEvent(event, exprEvaluatorContext);
         if (preprocessed != null)
         {
-            routeDest.route(preprocessed, statementHandle);
+            routeDest.route(preprocessed, statementHandle, addToFront);
         }
     }
 

@@ -15,6 +15,7 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 public class RouteResultViewHandlerFirst implements RouteResultViewHandler
 {
     private final InternalEventRouter internalEventRouter;
+    private final boolean[] isNamedWindowInsert;
     private final EPStatementHandle epStatementHandle;
     private final ResultSetProcessor[] processors;
     private final ExprNode[] whereClauses;
@@ -29,9 +30,10 @@ public class RouteResultViewHandlerFirst implements RouteResultViewHandler
      * @param whereClauses where clauses
      * @param statementContext statement services
      */
-    public RouteResultViewHandlerFirst(EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, ResultSetProcessor[] processors, ExprNode[] whereClauses, StatementContext statementContext)
+    public RouteResultViewHandlerFirst(EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, boolean[] isNamedWindowInsert, ResultSetProcessor[] processors, ExprNode[] whereClauses, StatementContext statementContext)
     {
         this.internalEventRouter = internalEventRouter;
+        this.isNamedWindowInsert = isNamedWindowInsert;
         this.epStatementHandle = epStatementHandle;
         this.processors = processors;
         this.whereClauses = whereClauses;
@@ -64,7 +66,7 @@ public class RouteResultViewHandlerFirst implements RouteResultViewHandler
             UniformPair<EventBean[]> result = processors[index].processViewResult(eventsPerStream, null, false);
             if ((result != null) && (result.getFirst() != null) && (result.getFirst().length > 0))
             {
-                internalEventRouter.route(result.getFirst()[0], epStatementHandle, statementContext.getInternalEventEngineRouteDest(), statementContext);
+                internalEventRouter.route(result.getFirst()[0], epStatementHandle, statementContext.getInternalEventEngineRouteDest(), statementContext, isNamedWindowInsert[index]);
             }
         }
         

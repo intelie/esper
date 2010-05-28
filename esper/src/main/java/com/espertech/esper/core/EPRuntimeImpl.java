@@ -338,7 +338,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     }
 
     // Internal route of events via insert-into, holds a statement lock
-    public void route(EventBean event, EPStatementHandle epStatementHandle)
+    public void route(EventBean event, EPStatementHandle epStatementHandle, boolean addToFront)
     {
         routedInternal.incrementAndGet();
 
@@ -346,11 +346,21 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             InsertIntoLatchFactory insertIntoLatchFactory = epStatementHandle.getInsertIntoLatchFactory();
             Object latch = insertIntoLatchFactory.newLatch(event);
-            ThreadWorkQueue.add(latch);
+            if (addToFront) {
+                ThreadWorkQueue.addFront(latch);
+            }
+            else {
+                ThreadWorkQueue.add(latch);
+            }
         }
         else
         {
-            ThreadWorkQueue.add(event);
+            if (addToFront) {
+                ThreadWorkQueue.addFront(event);
+            }
+            else {
+                ThreadWorkQueue.add(event);
+            }
         }
     }
 
@@ -623,8 +633,19 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      */
     public void processThreadWorkQueue()
     {
+        ArrayDequeJDK6Backport<Object> queue = ThreadWorkQueue.getThreadQueue();
+        if (queue.isEmpty()) {
+            boolean haveDispatched = services.getNamedWindowService().dispatch(engineFilterAndDispatchTimeContext);
+            if (haveDispatched)
+            {
+                // Dispatch results to listeners
+                dispatch();
+            }
+            return;
+        }
+
         Object item;
-        while ( (item = ThreadWorkQueue.next()) != null)
+        while ( (item = queue.poll()) != null)
         {
             if (item instanceof InsertIntoLatchSpin)
             {
@@ -638,17 +659,15 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             {
                 processThreadWorkQueueUnlatched(item);
             }
+
+            boolean haveDispatched = services.getNamedWindowService().dispatch(engineFilterAndDispatchTimeContext);
+            if (haveDispatched)
+            {
+                dispatch();
+            }
         }
 
-        // Process named window deltas
-        boolean haveDispatched = services.getNamedWindowService().dispatch(engineFilterAndDispatchTimeContext);
-        if (haveDispatched)
-        {
-            // Dispatch results to listeners
-            dispatch();
-        }
-
-        if (!(ThreadWorkQueue.isEmpty()))
+        if (!(queue.isEmpty()))
         {
             processThreadWorkQueue();
         }

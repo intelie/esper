@@ -5,13 +5,15 @@ public class BookDesc
     private final String bookId;
     private final String title;
     private final String author;
+    private final double price;
     private final Review[] reviews;
 
-    public BookDesc(String bookId, String title, String author, Review[] reviews)
+    public BookDesc(String bookId, String title, String author, double price, Review[] reviews)
     {
         this.author = author;
         this.bookId = bookId;
         this.title = title;
+        this.price = price;
         this.reviews = reviews;
     }
 
@@ -33,5 +35,9 @@ public class BookDesc
     public Review[] getReviews()
     {
         return reviews;
+    }
+
+    public double getPrice() {
+        return price;
     }
 }

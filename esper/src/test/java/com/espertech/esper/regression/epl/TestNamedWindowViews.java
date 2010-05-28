@@ -7,6 +7,8 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportVariableSetEvent;
+import com.espertech.esper.support.bean.bookexample.OrderBean;
+import com.espertech.esper.support.bean.bookexample.BookDesc;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -39,6 +41,33 @@ public class TestNamedWindowViews extends TestCase
         listenerStmtTwo = new SupportUpdateListener();
         listenerStmtThree = new SupportUpdateListener();
         listenerStmtDelete = new SupportUpdateListener();
+    }
+
+    // Assert the named window is updated at the time that a subsequent event queries the named window
+    public void testOnInsertPremptiveTwoWindow()
+    {
+        epService.getEPAdministrator().createEPL("create schema TypeOne(col1 int)");
+        epService.getEPAdministrator().createEPL("create schema TypeTwo(col2 int)");
+        epService.getEPAdministrator().createEPL("create schema TypeTrigger(trigger int)");
+        epService.getEPAdministrator().createEPL("create schema SupportBean as " + SupportBean.class.getName());
+
+        epService.getEPAdministrator().createEPL("create window WinOne.win:keepall() as TypeOne");
+        epService.getEPAdministrator().createEPL("create window WinTwo.win:keepall() as TypeTwo");
+
+        epService.getEPAdministrator().createEPL("insert into WinOne(col1) select intPrimitive from SupportBean");
+
+        epService.getEPAdministrator().createEPL("on TypeTrigger insert into OtherStream select col1 from WinOne");
+        epService.getEPAdministrator().createEPL("on TypeTrigger insert into WinTwo(col2) select col1 from WinOne");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("on OtherStream select col2 from WinTwo");
+        stmt.addListener(listenerStmtOne);
+
+        // populate WinOne
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 9));
+
+        // fire trigger
+        epService.getEPRuntime().getEventSender("TypeTrigger").sendEvent(new HashMap());
+        
+        assertEquals(9, listenerStmtOne.assertOneGetNewAndReset().get("col2"));
     }
 
     public void testWithDeleteUseAs()
@@ -1186,11 +1215,10 @@ public class TestNamedWindowViews extends TestCase
 
         sendSupportBean("E1", 10L);
         assertEquals(2, listenerWindow.getNewDataList().size());    // listener to window gets 2 individual events
-        assertEquals(1, listenerStmtOne.getNewDataList().size());   // listener to statement gets 1 individual event
+        assertEquals(2, listenerStmtOne.getNewDataList().size());   // listener to statement gets 1 individual event
         assertEquals(2, listenerWindow.getNewDataListFlattened().length);
         assertEquals(2, listenerStmtOne.getNewDataListFlattened().length);
-        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[0], fields, new Object[] {"E1", 11L});
-        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[1], fields, new Object[] {"E1", 12L});
+        ArrayAssertionUtil.assertPropsPerRow(listenerStmtOne.getNewDataListFlattened(), fields, new Object[][] {{"E1", 12L}, {"E1", 11L}});
         listenerStmtOne.reset();
     }
 

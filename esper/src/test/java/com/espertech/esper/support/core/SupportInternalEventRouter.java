@@ -18,11 +18,6 @@ public class SupportInternalEventRouter implements InternalEventRouter
 {
     private List<EventBean> routed  = new LinkedList<EventBean>();
 
-    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext)
-    {
-        routed.add(event);
-    }
-
     public List<EventBean> getRouted()
     {
         return routed;
@@ -40,8 +35,8 @@ public class SupportInternalEventRouter implements InternalEventRouter
     {
     }
 
-    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest)
-    {
+    public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext, boolean addToFront) {
+        routed.add(event);
     }
 
     public boolean isHasPreprocessing()

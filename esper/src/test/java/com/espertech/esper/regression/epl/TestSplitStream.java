@@ -8,6 +8,8 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
+import java.util.HashMap;
+
 public class TestSplitStream extends TestCase
 {
     private EPServiceProvider epService;
@@ -52,6 +54,30 @@ public class TestSplitStream extends TestCase
         {
             assertEquals(message, ex.getMessage());
         }
+    }
+
+    public void testSplitPremptiveNamedWindow()
+    {
+        epService.getEPAdministrator().createEPL("create schema TypeTwo(col2 int)");
+        epService.getEPAdministrator().createEPL("create schema TypeTrigger(trigger int)");
+        epService.getEPAdministrator().createEPL("create window WinTwo.win:keepall() as TypeTwo");
+
+        String stmtOrigText = "on TypeTrigger " +
+                    "insert into OtherStream select 1 " +
+                    "insert into WinTwo(col2) select 2 " +
+                    "output all";
+        epService.getEPAdministrator().createEPL(stmtOrigText);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("on OtherStream select col2 from WinTwo");
+        stmt.addListener(listener);
+        
+        // populate WinOne
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 2));
+
+        // fire trigger
+        epService.getEPRuntime().getEventSender("TypeTrigger").sendEvent(new HashMap());
+
+        assertEquals(2, listener.assertOneGetNewAndReset().get("col2"));
     }
 
     public void test1SplitDefault()

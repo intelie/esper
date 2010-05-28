@@ -194,7 +194,7 @@ public class NamedWindowRootView extends ViewSupport
      * @return base view for on-trigger expression
      * @throws com.espertech.esper.epl.expression.ExprValidationException when expression validation fails
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, boolean addToFront, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)
             throws ExprValidationException
     {
         // Determine strategy for deletion and index table to use (if any)
@@ -212,7 +212,7 @@ public class NamedWindowRootView extends ViewSupport
         }
         else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SELECT)
         {
-            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, resultSetProcessor, statementHandle, statementResultService, statementContext, isDistinct);
+            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, addToFront, resultSetProcessor, statementHandle, statementResultService, statementContext, isDistinct);
         }
         else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_UPDATE)
         {

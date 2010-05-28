@@ -33,7 +33,7 @@ public class RouteResultView extends ViewSupport
      * @param whereClauses where expressions
      * @param statementContext statement context
      */
-    public RouteResultView(boolean isFirst, EventType eventType, EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, ResultSetProcessor[] processors, ExprNode[] whereClauses, StatementContext statementContext)
+    public RouteResultView(boolean isFirst, EventType eventType, EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, boolean[] isNamedWindowInsert, ResultSetProcessor[] processors, ExprNode[] whereClauses, StatementContext statementContext)
     {
         if (whereClauses.length != processors.length)
         {
@@ -44,11 +44,11 @@ public class RouteResultView extends ViewSupport
         this.eventType = eventType;
         if (isFirst)
         {
-            handler = new RouteResultViewHandlerFirst(epStatementHandle, internalEventRouter, processors, whereClauses, statementContext);
+            handler = new RouteResultViewHandlerFirst(epStatementHandle, internalEventRouter, isNamedWindowInsert, processors, whereClauses, statementContext);
         }
         else
         {
-            handler = new RouteResultViewHandlerAll(epStatementHandle, internalEventRouter, processors, whereClauses, statementContext);
+            handler = new RouteResultViewHandlerAll(epStatementHandle, internalEventRouter, isNamedWindowInsert, processors, whereClauses, statementContext);
         }
     }
 

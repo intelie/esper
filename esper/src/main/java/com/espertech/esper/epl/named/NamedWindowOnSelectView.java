@@ -38,6 +38,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
     private static final Log log = LogFactory.getLog(NamedWindowOnSelectView.class);
 
     private final InternalEventRouter internalEventRouter;
+    private final boolean addToFront;
     private final ResultSetProcessor resultSetProcessor;
     private final EPStatementHandle statementHandle;
     private final StatementResultService statementResultService;
@@ -63,6 +64,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
                                    LookupStrategy lookupStrategy,
                                    NamedWindowRootView rootView,
                                    InternalEventRouter internalEventRouter,
+                                   boolean addToFront,
                                    ResultSetProcessor resultSetProcessor,
                                    EPStatementHandle statementHandle,
                                    StatementResultService statementResultService,
@@ -71,6 +73,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
     {
         super(statementStopService, lookupStrategy, rootView, statementContext);
         this.internalEventRouter = internalEventRouter;
+        this.addToFront = addToFront;
         this.resultSetProcessor = resultSetProcessor;
         this.statementHandle = statementHandle;
         this.statementResultService = statementResultService;
@@ -129,7 +132,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
             {
                 for (int i = 0; i < newData.length; i++)
                 {
-                    internalEventRouter.route(newData[i], statementHandle, statementContext.getInternalEventEngineRouteDest(), statementContext);
+                    internalEventRouter.route(newData[i], statementHandle, statementContext.getInternalEventEngineRouteDest(), statementContext, addToFront);
                 }
             }
         }

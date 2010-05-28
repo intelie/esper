@@ -369,8 +369,13 @@ public class EPStatementStartMethod
             resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                     statementSpec, statementContext, typeService, null, new boolean[0], true);
 
-            InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
-            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext, statementSpec.getSelectClauseSpec().isDistinct());
+            InternalEventRouter routerService = null;
+            boolean addToFront = false;
+            if (statementSpec.getInsertIntoDesc() != null) {
+                routerService = services.getInternalEventRouter();
+                addToFront = statementContext.getNamedWindowService().isNamedWindow(statementSpec.getInsertIntoDesc().getEventTypeName());
+            }
+            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, addToFront, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext, statementSpec.getSelectClauseSpec().isDistinct());
             eventStreamParentViewable.addView(onExprView);
         }
         // variable assignments
@@ -425,6 +430,8 @@ public class EPStatementStartMethod
             processors[0] = ResultSetProcessorFactory.getProcessor(
                     statementSpec, statementContext, typeService, null, new boolean[0], false);
             whereClauses[0] = statementSpec.getFilterRootNode();
+            boolean[] isNamedWindowInsert = new boolean[desc.getSplitStreams().size() + 1];
+            isNamedWindowInsert[0] = false;
 
             int index = 1;
             for (OnTriggerSplitStream splits : desc.getSplitStreams())
@@ -438,11 +445,12 @@ public class EPStatementStartMethod
                 processors[index] = ResultSetProcessorFactory.getProcessor(
                     splitSpec, statementContext, typeService, null, new boolean[0], false);
                 whereClauses[index] = splitSpec.getFilterRootNode();
+                isNamedWindowInsert[index] = statementContext.getNamedWindowService().isNamedWindow(splits.getInsertInto().getEventTypeName());
 
                 index++;
             }
 
-            onExprView = new RouteResultView(desc.isFirst(), streamEventType, statementContext.getEpStatementHandle(), services.getInternalEventRouter(), processors, whereClauses, statementContext);
+            onExprView = new RouteResultView(desc.isFirst(), streamEventType, statementContext.getEpStatementHandle(), services.getInternalEventRouter(), isNamedWindowInsert, processors, whereClauses, statementContext);
             eventStreamParentViewable.addView(onExprView);
         }
 

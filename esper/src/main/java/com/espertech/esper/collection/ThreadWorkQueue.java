@@ -36,7 +36,7 @@ public class ThreadWorkQueue
      * Adds event to the front of the queue.
      * @param event to add
      */
-    protected static void addFront(Object event)
+    public static void addFront(Object event)
     {
         ArrayDequeJDK6Backport<Object> queue = threadQueue.get();
         queue.addFirst(event);
@@ -60,5 +60,9 @@ public class ThreadWorkQueue
     {
         ArrayDequeJDK6Backport<Object> queue = threadQueue.get();
         return queue.isEmpty();
+    }
+
+    public static ArrayDequeJDK6Backport<Object> getThreadQueue() {
+        return threadQueue.get();
     }
 }

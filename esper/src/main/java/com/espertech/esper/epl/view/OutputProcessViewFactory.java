@@ -35,9 +35,11 @@ public class OutputProcessViewFactory
             throws ExprValidationException
     {
         boolean isRouted = false;
+        boolean routeToFront = false;
         if (statementSpec.getInsertIntoDesc() != null)
         {
             isRouted = true;
+            routeToFront = statementContext.getNamedWindowService().isNamedWindow(statementSpec.getInsertIntoDesc().getEventTypeName());
         }
 
         OutputStrategy outputStrategy;
@@ -49,7 +51,7 @@ public class OutputProcessViewFactory
                 isRouteRStream = !statementSpec.getInsertIntoDesc().isIStream();
             }
 
-            outputStrategy = new OutputStrategyPostProcess(isRouted, isRouteRStream, statementSpec.getSelectStreamSelectorEnum(), internalEventRouter, statementContext.getEpStatementHandle(), statementContext);
+            outputStrategy = new OutputStrategyPostProcess(isRouted, isRouteRStream, statementSpec.getSelectStreamSelectorEnum(), internalEventRouter, statementContext.getEpStatementHandle(), statementContext, routeToFront);
         }
         else
         {
