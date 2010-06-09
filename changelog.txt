@@ -12,6 +12,7 @@ New Features
   - Support for expressions in SQL statements
   - Support for "for delivery" option  
   - Preemptive processing of events inserted into named windows makes order of processing more intuitive especially when used with contained-events
+  - Support for timer:withinmax
 
 Minor changes  
 

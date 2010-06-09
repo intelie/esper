@@ -223,6 +223,18 @@ public class Patterns
     }
 
     /**
+     * Timer-within-max guard expression.
+     * @param seconds is the number of seconds for the guard
+     * @param max the maximum number of invocations for the guard
+     * @param guarded is the sub-expression to guard
+     * @return pattern guard
+     */
+    public static PatternGuardExpr timerWithinMax(double seconds, int max, PatternExpr guarded)
+    {
+        return new PatternGuardExpr("timer", "withinmax", new Expression[] {Expressions.constant(seconds), Expressions.constant(max)}, guarded);
+    }
+
+    /**
      * Timer-interval observer expression.
      * @param seconds is the number of seconds in the interval
      * @return pattern observer
