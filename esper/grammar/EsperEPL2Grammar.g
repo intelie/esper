@@ -1375,6 +1375,7 @@ observerExpression
 
 guardExpression
 	:	IDENT COLON! IDENT LPAREN! (expressionWithTimeList)? RPAREN!
+	|	LPAREN! expression RPAREN!
 	;
 	
 // syntax is [a..b]  or [..b]  or  [a..] or [a:b]   wherein a and b may be recognized as double

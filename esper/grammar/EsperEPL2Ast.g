@@ -570,7 +570,7 @@ exprChoice
 	| 	^( a=EVERY_EXPR exprChoice { leaveNode($a); } )
 	| 	^( a=EVERY_DISTINCT_EXPR distinctExpressions exprChoice { leaveNode($a); } )
 	| 	^( n=PATTERN_NOT_EXPR exprChoice { leaveNode($n); } )
-	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT valueExprWithTime* { leaveNode($g); } )
+	| 	^( g=GUARD_EXPR exprChoice (IDENT IDENT valueExprWithTime* | valueExpr) { leaveNode($g); } )
 	|	^( m=MATCH_UNTIL_EXPR matchUntilRange? exprChoice exprChoice? { leaveNode($m); } )
 	;
 	

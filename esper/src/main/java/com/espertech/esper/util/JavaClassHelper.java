@@ -1195,6 +1195,18 @@ public class JavaClassHelper
         {
             return false;
         }
+        if (propertyType == java.sql.Date.class)
+        {
+            return false;
+        }
+        if (propertyType == java.sql.Time.class)
+        {
+            return false;
+        }
+        if (propertyType == java.sql.Timestamp.class)
+        {
+            return false;
+        }
         return true;
     }
 

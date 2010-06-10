@@ -17,7 +17,8 @@ public enum GuardEnum
      * Timer guard.
      */
     TIMER_WITHIN("timer", "within", TimerWithinGuardFactory.class),
-    TIMER_WITHINMAX("timer", "withinmax", TimerWithinOrMaxCountGuardFactory.class);
+    TIMER_WITHINMAX("timer", "withinmax", TimerWithinOrMaxCountGuardFactory.class),
+    EXP_ANY("esper", "internal", ExpressionGuardFactory.class);
 
     private final String namespace;
     private final String name;

@@ -24,6 +24,7 @@ import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.pattern.*;
+import com.espertech.esper.pattern.guard.GuardEnum;
 import com.espertech.esper.rowregex.*;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.TimeProvider;
@@ -2482,12 +2483,19 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveGuard(Tree node) throws ASTWalkException
     {
         log.debug(".leaveGuard");
-
-        // Get the object information from AST
-        Tree startGuard = node.getChild(1);
-        String objectNamespace = startGuard.getText();
-        String objectName = node.getChild(2).getText();
-        List<ExprNode> obsParameters = getExprNodes(node, 3);
+        String objectNamespace;
+        String objectName;
+        List<ExprNode> obsParameters;
+        if (node.getChild(1).getType() == IDENT && node.getChild(2).getType() == IDENT) {
+            objectNamespace = node.getChild(1).getText();
+            objectName = node.getChild(2).getText();
+            obsParameters = getExprNodes(node, 3);
+        }
+        else {
+            objectNamespace = GuardEnum.EXP_ANY.getNamespace();
+            objectName = GuardEnum.EXP_ANY.getName();
+            obsParameters = getExprNodes(node, 1);
+        }
 
         PatternGuardSpec guardSpec = new PatternGuardSpec(objectNamespace, objectName, obsParameters);
         EvalGuardNode guardNode = new EvalGuardNode(guardSpec);

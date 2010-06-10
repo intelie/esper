@@ -1,8 +1,6 @@
 package com.espertech.esper.regression.event;
 
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.util.XMLRenderingOptions;
 import com.espertech.esper.event.util.OutputValueRendererXMLString;
 import com.espertech.esper.support.bean.SupportBean;
@@ -150,6 +148,24 @@ public class TestEventRendererXML extends TestCase
                 "  <innerarray/>\n" +
                 "  <prop0 id=\"A1\"/>\n" +
                 "</outerMap>";
+        assertEquals(removeNewline(expected), removeNewline(result));
+    }
+
+    public void testSQLDate() {
+        // ESPER-469
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        EPStatement statement = epService.getEPAdministrator().createEPL("select java.sql.Date.valueOf(\"2010-01-31\") as mySqlDate from SupportBean");
+        epService.getEPRuntime().sendEvent(new SupportBean());
+
+        EventBean event = statement.iterator().next();
+        assertEquals(java.sql.Date.valueOf("2010-01-31"), event.get("mySqlDate"));
+        EventPropertyGetter getter = statement.getEventType().getGetter("mySqlDate");
+        assertEquals(java.sql.Date.valueOf("2010-01-31"), getter.get(event));
+        
+        String result = epService.getEPRuntime().getEventRenderer().renderXML("testsqldate", event);
+
+        // System.out.println(result);
+        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <testsqldate> <mySqlDate>2010-01-31</mySqlDate> </testsqldate>";
         assertEquals(removeNewline(expected), removeNewline(result));
     }
 
