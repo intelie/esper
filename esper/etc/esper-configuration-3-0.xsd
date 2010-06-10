@@ -433,7 +433,8 @@
 	</xs:element>
 	<xs:element name="class-property-resolution">
 		<xs:complexType>
-			<xs:attribute name="style" type="esper:propertyResolutionStyleEnum" use="required"/>
+			<xs:attribute name="style" type="esper:propertyResolutionStyleEnum" use="optional"/>
+			<xs:attribute name="accessor-style" type="esper:accessorStyleEnum" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="view-resources">

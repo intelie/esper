@@ -2,18 +2,15 @@ package com.espertech.esper.regression.pattern;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanConstants;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.bean.SupportRFIDEvent;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
 import junit.framework.TestCase;
 
-public class TestExpressionGuard extends TestCase implements SupportBeanConstants
+public class TestWhileGuard extends TestCase implements SupportBeanConstants
 {
     public void testOp() throws Exception
     {
@@ -21,21 +18,35 @@ public class TestExpressionGuard extends TestCase implements SupportBeanConstant
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
 
-        testCase = new EventExpressionCase("a=A -> (every b=B) where(b.id != 'B2')");
+        testCase = new EventExpressionCase("a=A -> (every b=B) while(b.id != 'B2')");
         testCase.add("B1", "a", events.getEvent("A1"), "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("a=A -> (every b=B) where(b.id != 'B3')");
+        testCase = new EventExpressionCase("a=A -> (every b=B) while(b.id != 'B3')");
         testCase.add("B1", "a", events.getEvent("A1"), "b", events.getEvent("B1"));
         testCase.add("B2", "a", events.getEvent("A1"), "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("(every b=B) where(b.id != 'B3')");
+        testCase = new EventExpressionCase("(every b=B) while(b.id != 'B3')");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("(every b=B) where(b.id != 'B1')");
+        String text = "select * from pattern [(every b=" + EVENT_B_CLASS + ") while (b.id != \"B3\")]";
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard());
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
+        Expression guardExpr = Expressions.neq("b.id", "B3");
+        PatternExpr every = Patterns.every(Patterns.filter(Filter.create(EVENT_B_CLASS), "b"));
+        PatternExpr patternGuarded = Patterns.whileGuard(every, guardExpr);
+        model.setFromClause(FromClause.create(PatternStream.create(patternGuarded)));
+        assertEquals(text, model.toEPL());
+        testCase = new EventExpressionCase(model);
+        testCase.add("B1", "b", events.getEvent("B1"));
+        testCase.add("B2", "b", events.getEvent("B2"));
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("(every b=B) while(b.id != 'B1')");
         testCaseList.addTest(testCase);
 
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
@@ -50,7 +61,7 @@ public class TestExpressionGuard extends TestCase implements SupportBeanConstant
         epService.getEPAdministrator().getConfiguration().addVariable("myVariable", "boolean", true);
 
         String expression =
-            "select * from pattern [every a=SupportBean(string like 'A%') -> (every b=SupportBean(string like 'B%')) where (myVariable)]";
+            "select * from pattern [every a=SupportBean(string like 'A%') -> (every b=SupportBean(string like 'B%')) while (myVariable)]";
 
         EPStatement statement = epService.getEPAdministrator().createEPL(expression);
         SupportUpdateListener listener = new SupportUpdateListener();
@@ -74,10 +85,10 @@ public class TestExpressionGuard extends TestCase implements SupportBeanConstant
         epService.initialize();
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
-        tryInvalid(epService, "select * from pattern [every SupportBean where ('abc')]",
-                "Invalid parameter for pattern guard: Expression pattern guard requires a single expression as a parameter returning a true or false (boolean) value [select * from pattern [every SupportBean where ('abc')]]");
-        tryInvalid(epService, "select * from pattern [every SupportBean where (abc)]",
-                "Property named 'abc' is not valid in any stream [select * from pattern [every SupportBean where (abc)]]");
+        tryInvalid(epService, "select * from pattern [every SupportBean while ('abc')]",
+                "Invalid parameter for pattern guard: Expression pattern guard requires a single expression as a parameter returning a true or false (boolean) value [select * from pattern [every SupportBean while ('abc')]]");
+        tryInvalid(epService, "select * from pattern [every SupportBean while (abc)]",
+                "Property named 'abc' is not valid in any stream [select * from pattern [every SupportBean while (abc)]]");
     }
 
     private void tryInvalid(EPServiceProvider epService, String epl, String message) {

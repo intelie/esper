@@ -31,6 +31,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
 
     private Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
     private Configuration.PropertyResolutionStyle defaultPropertyResolutionStyle;
+    private ConfigurationEventTypeLegacy.AccessorStyle defaultAccessorStyle = ConfigurationEventTypeLegacy.AccessorStyle.JAVABEAN;
 
     /**
      * Ctor.
@@ -45,6 +46,11 @@ public class BeanEventAdapter implements BeanEventTypeFactory
         classToLegacyConfigs = new HashMap<String, ConfigurationEventTypeLegacy>();
         this.defaultPropertyResolutionStyle = Configuration.PropertyResolutionStyle.getDefault();
         this.eventAdapterService = eventAdapterService;
+    }
+
+    public void setDefaultAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle defaultAccessorStyle)
+    {
+        this.defaultAccessorStyle = defaultAccessorStyle;
     }
 
     /**
@@ -112,6 +118,10 @@ public class BeanEventAdapter implements BeanEventTypeFactory
 
             // Check if we have a legacy type definition for this class
             ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(clazz.getName());
+            if ((legacyDef == null) && (defaultAccessorStyle != ConfigurationEventTypeLegacy.AccessorStyle.JAVABEAN)) {
+                legacyDef = new ConfigurationEventTypeLegacy();
+                legacyDef.setAccessorStyle(defaultAccessorStyle);
+            }
 
             EventTypeMetadata metadata = EventTypeMetadata.createBeanType(name, clazz, isConfigured);
             eventType = new BeanEventType(metadata, clazz, eventAdapterService, legacyDef);

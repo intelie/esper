@@ -288,6 +288,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
         beanEventAdapter.setDefaultPropertyResolutionStyle(defaultPropertyResolutionStyle);
     }
 
+    public void setDefaultAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle defaultAccessorStyle)
+    {
+        beanEventAdapter.setDefaultAccessorStyle(defaultAccessorStyle);
+    }
+
     public EventType getExistsTypeByName(String eventTypeName)
     {
         if (eventTypeName == null)

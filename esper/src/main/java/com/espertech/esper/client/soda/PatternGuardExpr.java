@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
+import com.espertech.esper.pattern.guard.GuardEnum;
+
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,8 +116,15 @@ public class PatternGuardExpr extends EPBaseNamedObject implements PatternExpr
      */
     public void toPrecedenceFreeEPL(StringWriter writer) {
         guarded.get(0).toEPL(writer, getPrecedence());
-        writer.write(" where ");
-        super.toEPL(writer);
+        if (GuardEnum.isWhile(this.getNamespace(), this.getName())) {
+            writer.write(" while (");
+            this.getParameters().get(0).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            writer.write(")");
+        }
+        else {
+            writer.write(" where ");
+            super.toEPL(writer);
+        }
     }
 
     public void setChildren(List<PatternExpr> children) {

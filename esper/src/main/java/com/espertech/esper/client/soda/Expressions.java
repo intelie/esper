@@ -741,6 +741,18 @@ public class Expressions implements Serializable
     }
 
     /**
+     * Not-Equals between a property and a constant.
+     * @param propertyName the name of the property providing left hand side values
+     * @param value is the constant to compare
+     * @return expression
+     */
+    public static RelationalOpExpression neq(String propertyName, Object value)
+    {
+        return new RelationalOpExpression(getPropExpr(propertyName)
+                , "!=", new ConstantExpression(value));
+    }
+
+    /**
      * Equals between properties.
      * @param propertyLeft the name of the property providing left hand side values
      * @param propertyRight the name of the property providing right hand side values
@@ -753,6 +765,18 @@ public class Expressions implements Serializable
     }
 
     /**
+     * Not-Equals between properties.
+     * @param propertyLeft the name of the property providing left hand side values
+     * @param propertyRight the name of the property providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression neqProperty(String propertyLeft, String propertyRight)
+    {
+        return new RelationalOpExpression(getPropExpr(propertyLeft)
+                , "!=", new PropertyValueExpression(propertyRight));
+    }
+
+    /**
      * Equals between expression results.
      * @param left the expression providing left hand side values
      * @param right the expression providing right hand side values
@@ -761,6 +785,17 @@ public class Expressions implements Serializable
     public static RelationalOpExpression eq(Expression left, Expression right)
     {
         return new RelationalOpExpression(left, "=", right);
+    }
+
+    /**
+     * Not-Equals between expression results.
+     * @param left the expression providing left hand side values
+     * @param right the expression providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression neq(Expression left, Expression right)
+    {
+        return new RelationalOpExpression(left, "!=", right);
     }
 
     /**

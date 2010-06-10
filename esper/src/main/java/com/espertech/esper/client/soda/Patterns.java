@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
+import com.espertech.esper.pattern.guard.GuardEnum;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,6 +222,17 @@ public class Patterns
     public static PatternGuardExpr timerWithin(double seconds, PatternExpr guarded)
     {
         return new PatternGuardExpr("timer", "within", new Expression[] {Expressions.constant(seconds)}, guarded);
+    }
+
+    /**
+     * While-guard expression.
+     * @param expression expression to evaluate against matches
+     * @param guarded is the sub-expression to guard
+     * @return pattern guard
+     */
+    public static PatternGuardExpr whileGuard(PatternExpr guarded, Expression expression)
+    {
+        return new PatternGuardExpr(GuardEnum.WHILE_GUARD.getNamespace(), GuardEnum.WHILE_GUARD.getName(), new Expression[] {expression}, guarded);
     }
 
     /**

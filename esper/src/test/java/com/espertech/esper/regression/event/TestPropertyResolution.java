@@ -125,6 +125,23 @@ public class TestPropertyResolution extends TestCase
         assertEquals(1, event.get("val4"));
     }
 
+    public void testAccessorStyleGlobalPublic() {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getEventMeta().setDefaultAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);
+        configuration.addEventType("SupportLegacyBean", SupportLegacyBean.class);
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select fieldLegacyVal from SupportLegacyBean");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        SupportLegacyBean event = new SupportLegacyBean("E1");
+        event.fieldLegacyVal = "val1";
+        epService.getEPRuntime().sendEvent(event);
+        assertEquals("val1", listener.assertOneGetNewAndReset().get("fieldLegacyVal"));
+    }
+
     public void testCaseDistinctInsensitive()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();

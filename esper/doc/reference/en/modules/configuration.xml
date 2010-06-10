@@ -1387,10 +1387,19 @@ config.getEngineDefaults().getThreading().setThreadPoolInboundNumThreads(2);]]><
 			<title>Engine Settings related to Event Metadata</title>
 			
 			<sect3 id="config-engine-eventmeta-propertyreso" revision="1">
-				<title>Java Class Property Names and Case Sensitivity</title>
+				<title>Java Class Property Names, Case Sensitivity and Accessor Style</title>
 
 				<para>
-				  As discussed in <xref linkend="config-java-property-case-sensitivity"/> this setting controls case sensitivity for Java event class properties of all Java classes as a default, rather then at a class level.
+					The engine-wide settings discussed here are used when you want to control case sensitivity or accessor style for all event classes as a default. The two settings are found under <literal>class-property-resolution</literal> under <literal>event-meta</literal> in the XML configuration.
+				</para>
+				
+				<para>
+				  To control the case sensitivity as discussed in <xref linkend="config-java-property-case-sensitivity"/>, add the <literal>style</literal> attribute in the XML configuration to set a default case sensitivity applicable to all event classes unless specifically overridden by class-specific configuration. 
+				  The default case sensitivity is <literal>case_sensitive</literal> (case sensitivity turned on).
+				</para>
+
+				<para>
+				  To control the accessor style as discussed in <xref linkend="config-java-legacy"/>, add the <literal>accessor-style</literal> attribute in the XML configuration to set a default accessor style applicable to all event classes unless specifically overridden by class-specific configuration. The default accessor style is <literal>javabean</literal> JavaBean accessor style.
 				</para>
 
 				<para>
@@ -1398,7 +1407,9 @@ config.getEngineDefaults().getThreading().setThreadPoolInboundNumThreads(2);]]><
 				</para>
 				<programlisting><![CDATA[Configuration config = new Configuration();
 config.getEngineDefaults().getEventMeta().setClassPropertyResolutionStyle(
-    Configuration.PropertyResolutionStyle.CASE_INSENSITIVE);]]></programlisting>
+    Configuration.PropertyResolutionStyle.CASE_INSENSITIVE);
+config.getEngineDefaults().getEventMeta().setDefaultAccessorStyle(
+    ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);]]></programlisting>
 			</sect3>
 		</sect2>
 

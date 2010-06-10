@@ -699,8 +699,10 @@ public class ConfigurationEngineDefaults implements Serializable
      */
     public static class EventMeta implements Serializable
     {
-        private Configuration.PropertyResolutionStyle classPropertyResolutionStyle;
         private static final long serialVersionUID = -6091772368103140370L;
+
+        private Configuration.PropertyResolutionStyle classPropertyResolutionStyle;
+        private ConfigurationEventTypeLegacy.AccessorStyle defaultAccessorStyle;
 
         /**
          * Ctor.
@@ -708,6 +710,17 @@ public class ConfigurationEngineDefaults implements Serializable
         public EventMeta()
         {
             this.classPropertyResolutionStyle = Configuration.PropertyResolutionStyle.getDefault();
+            this.defaultAccessorStyle = ConfigurationEventTypeLegacy.AccessorStyle.JAVABEAN;
+        }
+
+        public ConfigurationEventTypeLegacy.AccessorStyle getDefaultAccessorStyle()
+        {
+            return defaultAccessorStyle;
+        }
+
+        public void setDefaultAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle defaultAccessorStyle)
+        {
+            this.defaultAccessorStyle = defaultAccessorStyle;
         }
 
         /**

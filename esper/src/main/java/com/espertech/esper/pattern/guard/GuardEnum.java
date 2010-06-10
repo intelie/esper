@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.guard;
 
+import java.io.StringWriter;
+
 /**
  * Enum for all build-in guards.
  */
@@ -18,7 +20,7 @@ public enum GuardEnum
      */
     TIMER_WITHIN("timer", "within", TimerWithinGuardFactory.class),
     TIMER_WITHINMAX("timer", "withinmax", TimerWithinOrMaxCountGuardFactory.class),
-    EXP_ANY("esper", "internal", ExpressionGuardFactory.class);
+    WHILE_GUARD("internal", "while", ExpressionGuardFactory.class);
 
     private final String namespace;
     private final String name;
@@ -75,5 +77,10 @@ public enum GuardEnum
         }
 
         return null;
+    }
+
+    public static boolean isWhile(String namespace, String name)
+    {
+        return namespace.equals(WHILE_GUARD.getNamespace()) && (name.equals(WHILE_GUARD.getName()));
     }
 }

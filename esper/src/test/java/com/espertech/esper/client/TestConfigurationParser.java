@@ -59,6 +59,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(null, config.getEngineDefaults().getThreading().getThreadPoolTimerExecCapacity());
 
         assertEquals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
+        assertEquals(ConfigurationEventTypeLegacy.AccessorStyle.JAVABEAN, config.getEngineDefaults().getEventMeta().getDefaultAccessorStyle());
 
         assertTrue(config.getEngineDefaults().getViewResources().isShareViews());
         assertFalse(config.getEngineDefaults().getViewResources().isAllowMultipleExpiryPolicies());
@@ -298,6 +299,7 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getViewResources().isShareViews());
         assertTrue(config.getEngineDefaults().getViewResources().isAllowMultipleExpiryPolicies());
         assertEquals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
+        assertEquals(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC, config.getEngineDefaults().getEventMeta().getDefaultAccessorStyle());
         assertTrue(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
         assertFalse(config.getEngineDefaults().getLogging().isEnableTimerDebug());
         assertEquals(30000, config.getEngineDefaults().getVariables().getMsecVersionRelease());

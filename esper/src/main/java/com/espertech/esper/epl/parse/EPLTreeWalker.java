@@ -2492,8 +2492,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
             obsParameters = getExprNodes(node, 3);
         }
         else {
-            objectNamespace = GuardEnum.EXP_ANY.getNamespace();
-            objectName = GuardEnum.EXP_ANY.getName();
+            objectNamespace = GuardEnum.WHILE_GUARD.getNamespace();
+            objectName = GuardEnum.WHILE_GUARD.getName();
             obsParameters = getExprNodes(node, 1);
         }
 

@@ -273,6 +273,9 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
             });
         testCaseList.addTest(testCase);
 
+        testCase = new EventExpressionCase("B until not B");
+        testCaseList.addTest(testCase);
+
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
         util.runTest();
     }

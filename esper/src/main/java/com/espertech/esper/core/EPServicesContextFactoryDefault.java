@@ -209,6 +209,8 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         eventAdapterService.setClassLegacyConfigs(classLegacyInfo);
         eventAdapterService.setDefaultPropertyResolutionStyle(configSnapshot.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
+        eventAdapterService.setDefaultAccessorStyle(configSnapshot.getEngineDefaults().getEventMeta().getDefaultAccessorStyle());
+
         for (String javaPackage : configSnapshot.getEventTypeAutoNamePackages())
         {
             eventAdapterService.addAutoNamePackage(javaPackage);

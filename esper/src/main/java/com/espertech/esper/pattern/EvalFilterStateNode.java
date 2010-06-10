@@ -184,7 +184,9 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     private void stopFiltering()
     {
-        context.getFilterService().remove(handle);
+        if (handle != null) {
+            context.getFilterService().remove(handle);
+        }
         handle = null;
         isStarted = false;
         long filtersVersion = context.getFilterService().getFiltersVersion();

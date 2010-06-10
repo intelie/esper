@@ -116,6 +116,7 @@ tokens
 	MATCHES='matches';
 	AFTER='after';	
 	FOR='for';	
+	WHILE='while';	
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -488,6 +489,7 @@ tokens
 	parserTokenParaphases.put(MATCHES, "'matches'");
 	parserTokenParaphases.put(AFTER, "'after'");
 	parserTokenParaphases.put(FOR, "'for'");
+	parserTokenParaphases.put(WHILE, "'while'");
 
 	parserKeywordSet = new java.util.TreeSet<String>(parserTokenParaphases.values());
     }
@@ -1358,8 +1360,9 @@ distinctExpressionAtom
    	;
 
 guardPostFix
-	:	(atomicExpression | l=LPAREN patternExpression RPAREN) (w=WHERE guardExpression)?
-		-> {$w != null}? ^(GUARD_EXPR atomicExpression? patternExpression? guardExpression) 
+	:	(atomicExpression | l=LPAREN patternExpression RPAREN) ((wh=WHERE guardWhereExpression) | (wi=WHILE guardWhileExpression))?
+		-> {$wh != null}? ^(GUARD_EXPR atomicExpression? patternExpression? guardWhereExpression) 
+		-> {$wi != null}? ^(GUARD_EXPR atomicExpression? patternExpression? guardWhileExpression) 
 		-> atomicExpression? patternExpression?
 	;
 
@@ -1373,11 +1376,14 @@ observerExpression
 		-> ^(OBSERVER_EXPR $ns $nm expressionWithTimeList?)
 	;
 
-guardExpression
+guardWhereExpression
 	:	IDENT COLON! IDENT LPAREN! (expressionWithTimeList)? RPAREN!
-	|	LPAREN! expression RPAREN!
 	;
 	
+guardWhileExpression
+	:	LPAREN! expression RPAREN!
+	;
+
 // syntax is [a..b]  or [..b]  or  [a..] or [a:b]   wherein a and b may be recognized as double
 matchUntilRange
 	:	LBRACK (
@@ -1606,6 +1612,7 @@ keywordAllowedIdent returns [String result]
 		|EVENTS { $result = "events"; }
 		|FIRST { $result = "first"; }
 		|LAST { $result = "last"; }
+		|WHILE { $result = "while"; }
 		|UNIDIRECTIONAL { $result = "unidirectional"; }
 		|RETAINUNION { $result = "retain-union"; }
 		|RETAININTERSECTION { $result = "retain-intersection"; }

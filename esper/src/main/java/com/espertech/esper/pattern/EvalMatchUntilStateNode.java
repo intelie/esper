@@ -85,7 +85,9 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
             stateUntil.start();
         }
 
-        stateMatcher.start();
+        if (stateMatcher != null) {
+            stateMatcher.start();
+        }
     }
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)

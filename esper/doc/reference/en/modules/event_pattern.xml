@@ -84,7 +84,7 @@
 			</listitem>
 			<listitem>
 				<para>
-					Guards are where-conditions that control the lifecycle of subexpressions. Examples are <literal>timer:within</literal> and <literal>timer:withinmax</literal>. Custom plug-in guards may also be used.
+					Guards are where-conditions that control the lifecycle of subexpressions. Examples are <literal>timer:within</literal>, <literal>timer:withinmax</literal> and <literal>while</literal>-expression. Custom plug-in guards may also be used.
 				</para>
 			</listitem>
 		</orderedlist>
@@ -163,7 +163,7 @@ EPStatement myTrigger = admin.createEPL("select * from pattern [" +
 			</para>
 
 			<para>
-				This example statement demonstrates the idea by selecting a total price per customer over pairs of events (ServiceOrder followed by a ProductOrder event for the same customer id within 1 minute), occuring in the last 2 hours, in which the sum of price is greater then 100, and using a <literal>where</literal> clause to filter on name:
+				This example statement demonstrates the idea by selecting a total price per customer over pairs of events (ServiceOrder followed by a ProductOrder event for the same customer id within 1 minute), occuring in the last 2 hours, in which the sum of price is greater than 100, and using a <literal>where</literal> clause to filter on name:
 			</para>
 			<programlisting><![CDATA[select a.custId, sum(a.price + b.price)
 from pattern [every a=ServiceOrder -> 
@@ -272,8 +272,10 @@ timer:interval(5 min) and not MyEvent]]></programlisting></entry>
 					<row>
 						<entry>2</entry>
 						<entry>guard postfix</entry>
-						<entry><literal>where timer:within</literal> (incl. withinmax and plug-in pattern guard)</entry>
-						<entry><programlisting><![CDATA[MyEvent where timer:within(1 sec)]]></programlisting></entry>
+						<entry><literal>where timer:within</literal> and <literal>while (expression)</literal> (incl. withinmax and plug-in pattern guard)</entry>
+						<entry><para><programlisting><![CDATA[MyEvent where timer:within(1 sec)]]></programlisting></para>
+									<para><programlisting><![CDATA[a=MyEvent while (a.price between 1 and 10)]]></programlisting></para>
+						</entry>
 					</row>
 					<row>
 						<entry>3</entry>
@@ -1368,7 +1370,7 @@ a=A -> (B(id = a.id) and C(id = a.id))]]></programlisting>
 			</para>
 			<programlisting><![CDATA[every ( (A and B) where timer.within(10 sec) )]]></programlisting>
 
-			<sect3 id="pattern-timer-within" >
+			<sect3 id="pattern-guards-timerwithin" >
 			   <title>The <literal>timer:within</literal> Pattern Guard</title>
 			   
 				<indexterm><primary><literal>timer-within</literal> pattern guard</primary></indexterm>
@@ -1416,7 +1418,7 @@ timer:within(125 sec)
 timer:within(125)</programlisting>				
 			</sect3>
 
-			<sect3 id="pattern-timer-withinmax" >
+			<sect3 id="pattern-guards-timerwithinmax" >
 			   <title>The <literal>timer:withinmax</literal> Pattern Guard</title>
 			   
 				<indexterm><primary><literal>timer-withinmax</literal> pattern guard</primary></indexterm>
@@ -1466,7 +1468,39 @@ timer:within(125)</programlisting>
 				<programlisting><![CDATA[every A -> (every B) where timer:withinmax (5 seconds, X)]]></programlisting>
 			</sect3>
 
-			<sect3 id="pattern-timer-within-parameterized" >
+			<sect3 id="pattern-guards-while" >
+			   <title>The <literal>while</literal> Pattern Guard</title>
+			   
+				<indexterm><primary><literal>while</literal> pattern guard</primary></indexterm>
+				<indexterm><primary>pattern guard</primary><secondary>while</secondary></indexterm>
+				<para>
+					The <literal>while</literal> guard is followed by an expression that the engine evaluates for every match reported by the guard pattern subexpression. When the expression returns false the pattern sub-expression ends.
+				</para>
+				
+				<para>
+					The synopsis for <literal>while</literal> is as follows:
+				</para>
+				<synopsis>while (<emphasis>guard_expression</emphasis>)</synopsis>
+				
+				<para>
+					The <emphasis>guard_expression</emphasis> is any expression that returns a boolean true or false. The expression may contain references to properties of prior events in the same pattern as well as variables and substitution parameters.
+				</para>
+
+				<para>
+					Each time the subexpression indicates a match, the engine evaluates <emphasis>guard_expression</emphasis> and if true, passes the match and when false, ends the subexpression.
+				</para>
+
+				<para>
+					This pattern fires for every A event until an A event arrives that has a value of zero or less for its <literal>size</literal> property (assuming A events have an integer <literal>size</literal> property).
+				</para>
+				<programlisting><![CDATA[(every a=A) while (a.size > 0)]]></programlisting>
+				
+				<para>
+					Note the parenthesis around the <literal>every</literal> subexpression. They ensure that, following precedence rules, the guard applies to the <literal>every</literal> operator as well.
+				</para>
+			</sect3>
+
+			<sect3 id="pattern-guards-timeparameters" >
 			   <title>Guard Time Interval Expressions</title>
 				<para>
 					The <literal>timer:within</literal> and <literal>timer:withinmax</literal> guards may be parameterized by an expression that contains one or more references to properties of prior events in the same pattern.
@@ -1490,6 +1524,18 @@ timer:within(125)</programlisting>
 				<para>
 					The above pattern matches after 2 A events arrive followed by a B event within a time interval after the A event that is defined by the sum of the <literal>delta</literal> properties of both A events.
 				</para>
+			</sect3>
+
+			<sect3 id="pattern-guards-combining" >
+			   <title>Combining Guard Expressions</title>
+				<para>
+					You can combine guard expression by using parenthesis around each subexpression.
+				</para>
+				
+				<para>
+					The below pattern matches for each A event while A events of size greater then zero arrive and only within the first 20 seconds:
+				</para>
+				<programlisting><![CDATA[((every a=A) while (a.size > 0)) where timer:within(20)]]></programlisting>
 			</sect3>
 	   </sect2>	
     </sect1>
