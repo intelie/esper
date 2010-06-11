@@ -16,6 +16,7 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -40,6 +41,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private boolean isUsingWildcard;
     private boolean singleStreamWrapper;
     private boolean singleColumnCoercion;
+    private boolean remapInsertion;
     private SelectExprJoinWildcardProcessor joinWildcardProcessor;
     private boolean isRevisionEvent;
     private ValueAddEventProcessor vaeProcessor;
@@ -308,6 +310,10 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                             resultEventType = existingType;
                             isPopulateUnderlying = true;
                         }
+                        else if (existingType != null && selPropertyTypes.isEmpty() && existingType instanceof MapEventType) {
+                            resultEventType = existingType;
+                            remapInsertion = true;
+                        }
                         else
                         {
                             resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeName(), eventType, selPropertyTypes, false, true);
@@ -403,6 +409,10 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         if (isPopulateUnderlying)
         {
             return selectExprInsertEventBean.manufacture(eventsPerStream, isNewData, exprEvaluatorContext);
+        }
+        if (remapInsertion) {
+            MappedEventBean event = (MappedEventBean) eventsPerStream[0];
+            return eventAdapterService.adaptorForTypedMap(event.getProperties(), resultEventType);
         }
 
         // Evaluate all expressions and build a map of name-value pairs

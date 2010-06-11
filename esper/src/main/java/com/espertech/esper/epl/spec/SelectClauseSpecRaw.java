@@ -60,6 +60,10 @@ public class SelectClauseSpecRaw implements MetaDefItem, Serializable
 		return selectClauseElements;
 	}
 
+    public boolean isOnlyWildcard() {
+        return (selectClauseElements.size() == 1) && (selectClauseElements.get(0) instanceof SelectClauseElementWildcard);         
+    }
+
     /**
      * Returns true if the select clause contains at least one wildcard.
      * @return true if clause contains wildcard, false if not

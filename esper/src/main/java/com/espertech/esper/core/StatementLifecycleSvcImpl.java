@@ -1168,19 +1168,20 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
         // Create Map or Wrapper event type from the select clause of the window.
         // If no columns selected, simply create a wrapper type
+        boolean isOnlyWildcard = spec.getSelectClauseSpec().isOnlyWildcard();
         boolean isWildcard = spec.getSelectClauseSpec().isUsingWildcard();
         if (statementContext.getValueAddEventService().isRevisionTypeName(selectFromTypeName))
         {
             targetType = statementContext.getValueAddEventService().createRevisionType(typeName, selectFromTypeName, statementContext.getStatementStopService(), statementContext.getEventAdapterService());
         }
-        else if (isWildcard)
+        else if (isWildcard && !isOnlyWildcard)
         {
             targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties, true, false);
         }
         else
         {
             // Some columns selected, use the types of the columns
-            if (spec.getSelectClauseSpec().getSelectExprList().size() > 0)
+            if (spec.getSelectClauseSpec().getSelectExprList().size() > 0 && !isOnlyWildcard)
             {
                 targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, properties, null, false, true, false);
             }

@@ -1,5 +1,8 @@
 package com.espertech.esper.regression.epl;
 
+import com.espertech.esper.event.MappedEventBean;
+import com.espertech.esper.event.map.MapEventBean;
+import com.espertech.esper.event.map.MapEventType;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
@@ -276,7 +279,8 @@ public class TestNamedWindowTypes extends TestCase
     {
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() select * from MyMap";
-        epService.getEPAdministrator().createEPL(stmtTextCreate);
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        assertTrue(stmtCreate.getEventType() instanceof MapEventType);
 
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select * from MyMap";
@@ -284,7 +288,9 @@ public class TestNamedWindowTypes extends TestCase
         stmt.addListener(listenerWindow);
 
         sendMap("k1", 100L, 200L);
-        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), "key,primitive".split(","), new Object[] {"k1", 100L});
+        EventBean event = listenerWindow.assertOneGetNewAndReset();
+        assertTrue(event instanceof MappedEventBean);
+        ArrayAssertionUtil.assertProps(event, "key,primitive".split(","), new Object[] {"k1", 100L});
     }
 
     public void testWildcardInheritance()

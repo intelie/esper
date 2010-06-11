@@ -6,6 +6,9 @@ import com.espertech.esper.client.deploy.DeploymentResult;
 import com.espertech.esper.client.deploy.EPDeploymentAdmin;
 import junit.framework.TestCase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TestDeployRedefinition extends TestCase
 {
     private EPServiceProvider epService;
@@ -15,6 +18,29 @@ public class TestDeployRedefinition extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
         deploySvc = epService.getEPAdministrator().getDeploymentAdmin();
+    }
+
+    // Test EPL keyword in import and uses or module text
+
+    public void testCreateSchemaNamedWindowInsert() throws Exception {
+
+        String text = "module test.test1;\n" +
+                "create schema MyTypeOne(col1 string, col2 int);" +
+                "create window MyWindowOne.win:keepall() as select * from MyTypeOne;" +
+                "insert into MyWindowOne select * from MyTypeOne;";
+
+        DeploymentResult resultOne = deploySvc.parseDeploy(text, "uri1", "arch1", null);
+        deploySvc.undeployRemove(resultOne.getDeploymentId());
+
+        DeploymentResult resultTwo = deploySvc.parseDeploy(text, "uri2", "arch2", null);
+        deploySvc.undeployRemove(resultTwo.getDeploymentId());
+        text = "module test.test1;\n" +
+                "create schema MyTypeOne(col1 string, col2 int, col3 long);" +
+                "create window MyWindowOne.win:keepall() as select * from MyTypeOne;" +
+                "insert into MyWindowOne select * from MyTypeOne;";
+
+        DeploymentResult resultThree = deploySvc.parseDeploy(text, "uri1", "arch1", null);
+        deploySvc.undeployRemove(resultThree.getDeploymentId());
     }
 
     public void testNamedWindow() throws Exception {

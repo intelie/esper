@@ -20,7 +20,7 @@ public class NamedWindowQueryMain
         }
         catch (Exception ex)
         {
-            log.error("Unexpected error occured running example:" + ex.getMessage());
+            log.error("Unexpected error occured running example:" + ex.getMessage(), ex);
         }
     }
 
