@@ -24,8 +24,9 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
     public void setUp() throws Exception
     {
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
-        SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"),
+        SelectExprEvalProcessor factory = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"),
         		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null, null);
+        SelectExprProcessor selectProcessor = factory.getEvaluator();
         supportAggregationService = new SupportAggregationService();
 
         List<ExprNode> groupKeyNodes = new LinkedList<ExprNode>();

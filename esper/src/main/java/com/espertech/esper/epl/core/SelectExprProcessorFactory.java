@@ -15,6 +15,8 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.client.soda.ForClauseKeyword;
@@ -153,7 +155,14 @@ public class SelectExprProcessorFactory
         if (streamWildcards.size() == 0)
         {
             // This one only deals with wildcards and expressions in the selection
-            return new SelectExprEvalProcessor(expressionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
+            SelectExprEvalProcessor factory = new SelectExprEvalProcessor(expressionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
+            SelectExprProcessor processor = factory.getEvaluator();
+            // add reference to the type obtained
+            EventTypeSPI type = (EventTypeSPI) processor.getResultEventType();
+            if (type.getMetadata().getTypeClass() != EventTypeMetadata.TypeClass.ANONYMOUS) {
+                selectExprEventTypeRegistry.add(processor.getResultEventType());
+            }
+            return processor;
         }
         else
         {
