@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
+import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,7 +23,7 @@ public class InsertIntoLatchWait
     // The earlier latch is the latch generated before this latch
     private InsertIntoLatchWait earlier;
     private long msecTimeout;
-    private Object payload;
+    private EventBean payload;
 
     // The later latch is the latch generated after this latch
     private InsertIntoLatchWait later;
@@ -34,7 +35,7 @@ public class InsertIntoLatchWait
      * @param msecTimeout the timeout after which delivery occurs
      * @param payload the payload is an event to deliver
      */
-    public InsertIntoLatchWait(InsertIntoLatchWait earlier, long msecTimeout, Object payload)
+    public InsertIntoLatchWait(InsertIntoLatchWait earlier, long msecTimeout, EventBean payload)
     {
         this.earlier = earlier;
         this.msecTimeout = msecTimeout;
@@ -73,7 +74,7 @@ public class InsertIntoLatchWait
      * Blcking call that returns only when the earlier latch completed.
      * @return payload of the latch
      */
-    public Object await()
+    public EventBean await()
     {
         if (!earlier.isCompleted)
         {

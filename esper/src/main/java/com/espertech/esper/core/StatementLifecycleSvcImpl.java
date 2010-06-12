@@ -217,11 +217,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         if (statementSpec.getInsertIntoDesc() != null)
         {
             String insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeName();
-            String latchFactoryName = "insert_stream_" + insertIntoStreamName + "_" + statementId;
+            String latchFactoryNameBack = "insert_stream_B_" + insertIntoStreamName + "_" + statementId;
+            String latchFactoryNameFront = "insert_stream_F_" + insertIntoStreamName + "_" + statementId;
             long msecTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getInsertIntoDispatchTimeout();
             ConfigurationEngineDefaults.Threading.Locking locking = services.getEngineSettingsService().getEngineSettings().getThreading().getInsertIntoDispatchLocking();
-            InsertIntoLatchFactory latchFactory = new InsertIntoLatchFactory(latchFactoryName, msecTimeout, locking, services.getTimeSource());
-            statementContext.getEpStatementHandle().setInsertIntoLatchFactory(latchFactory);
+            InsertIntoLatchFactory latchFactoryFront = new InsertIntoLatchFactory(latchFactoryNameFront, msecTimeout, locking, services.getTimeSource());
+            InsertIntoLatchFactory latchFactoryBack = new InsertIntoLatchFactory(latchFactoryNameBack, msecTimeout, locking, services.getTimeSource());
+            statementContext.getEpStatementHandle().setInsertIntoFrontLatchFactory(latchFactoryFront);
+            statementContext.getEpStatementHandle().setInsertIntoBackLatchFactory(latchFactoryBack);
         }
 
         // In a join statements if the same event type or it's deep super types are used in the join more then once,

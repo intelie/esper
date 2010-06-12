@@ -36,7 +36,8 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     private boolean hasVariables;
     private final int priority;
     private final boolean preemptive;
-    private transient InsertIntoLatchFactory insertIntoLatchFactory;
+    private transient InsertIntoLatchFactory insertIntoFrontLatchFactory;
+    private transient InsertIntoLatchFactory insertIntoBackLatchFactory;
     private transient StatementMetricHandle metricsHandle;
     private final StatementFilterVersion statementFilterVersion;
 
@@ -95,20 +96,28 @@ public class EPStatementHandle implements MetaDefItem, Serializable
 
     /**
      * Sets the factory for latches in insert-into guaranteed order of delivery.
-     * @param insertIntoLatchFactory latch factory for the statement if it performs insert-into (route) of events
+     * @param insertIntoFrontLatchFactory latch factory for the statement if it performs insert-into (route) of events
      */
-    public void setInsertIntoLatchFactory(InsertIntoLatchFactory insertIntoLatchFactory)
+    public void setInsertIntoFrontLatchFactory(InsertIntoLatchFactory insertIntoFrontLatchFactory)
     {
-        this.insertIntoLatchFactory = insertIntoLatchFactory;
+        this.insertIntoFrontLatchFactory = insertIntoFrontLatchFactory;
+    }
+
+    public void setInsertIntoBackLatchFactory(InsertIntoLatchFactory insertIntoBackLatchFactory) {
+        this.insertIntoBackLatchFactory = insertIntoBackLatchFactory;
     }
 
     /**
      * Returns the factory for latches in insert-into guaranteed order of delivery.
      * @return latch factory for the statement if it performs insert-into (route) of events
      */
-    public InsertIntoLatchFactory getInsertIntoLatchFactory()
+    public InsertIntoLatchFactory getInsertIntoFrontLatchFactory()
     {
-        return insertIntoLatchFactory;
+        return insertIntoFrontLatchFactory;
+    }
+
+    public InsertIntoLatchFactory getInsertIntoBackLatchFactory() {
+        return insertIntoBackLatchFactory;
     }
 
     /**

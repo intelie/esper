@@ -15,6 +15,7 @@ import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.client.util.EventRenderer;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
+import com.espertech.esper.collection.DualWorkQueue;
 import com.espertech.esper.collection.ThreadWorkQueue;
 import com.espertech.esper.core.thread.*;
 import com.espertech.esper.epl.annotation.AnnotationUtil;
@@ -252,7 +253,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
         // Get it wrapped up, process event
         EventBean eventBean = services.getEventAdapterService().adapterForDOM(document);
-        ThreadWorkQueue.add(eventBean);
+        ThreadWorkQueue.addBack(eventBean);
     }
 
     public void sendEvent(Map map, String eventTypeName) throws EPException
@@ -301,7 +302,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 return;
             }
         }
-        ThreadWorkQueue.add(event);
+        ThreadWorkQueue.addBack(event);
     }
 
     public long getNumEventsEvaluated()
@@ -317,7 +318,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
     public void routeEventBean(EventBean event)
     {
-        ThreadWorkQueue.add(event);
+        ThreadWorkQueue.addBack(event);
     }
 
     public void route(Object event)
@@ -334,7 +335,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             }
         }
                 
-        ThreadWorkQueue.add(event);
+        ThreadWorkQueue.addBack(event);
     }
 
     // Internal route of events via insert-into, holds a statement lock
@@ -344,13 +345,13 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
         if (isLatchStatementInsertStream)
         {
-            InsertIntoLatchFactory insertIntoLatchFactory = epStatementHandle.getInsertIntoLatchFactory();
-            Object latch = insertIntoLatchFactory.newLatch(event);
             if (addToFront) {
+                Object latch = epStatementHandle.getInsertIntoFrontLatchFactory().newLatch(event);
                 ThreadWorkQueue.addFront(latch);
             }
             else {
-                ThreadWorkQueue.add(latch);
+                Object latch = epStatementHandle.getInsertIntoBackLatchFactory().newLatch(event);
+                ThreadWorkQueue.addBack(latch);
             }
         }
         else
@@ -359,7 +360,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 ThreadWorkQueue.addFront(event);
             }
             else {
-                ThreadWorkQueue.add(event);
+                ThreadWorkQueue.addBack(event);
             }
         }
     }
@@ -633,19 +634,43 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      */
     public void processThreadWorkQueue()
     {
-        ArrayDequeJDK6Backport<Object> queue = ThreadWorkQueue.getThreadQueue();
-        if (queue.isEmpty()) {
+        DualWorkQueue queues = ThreadWorkQueue.getThreadQueue();
+
+        if (queues.getFrontQueue().isEmpty()) {
             boolean haveDispatched = services.getNamedWindowService().dispatch(engineFilterAndDispatchTimeContext);
             if (haveDispatched)
             {
                 // Dispatch results to listeners
                 dispatch();
             }
-            return;
+        }
+        else {
+            Object item;
+            while ( (item = queues.getFrontQueue().poll()) != null)
+            {
+                if (item instanceof InsertIntoLatchSpin)
+                {
+                    processThreadWorkQueueLatchedSpin((InsertIntoLatchSpin) item);
+                }
+                else if (item instanceof InsertIntoLatchWait)
+                {
+                    processThreadWorkQueueLatchedWait((InsertIntoLatchWait) item);
+                }
+                else
+                {
+                    processThreadWorkQueueUnlatched(item);
+                }
+
+                boolean haveDispatched = services.getNamedWindowService().dispatch(engineFilterAndDispatchTimeContext);
+                if (haveDispatched)
+                {
+                    dispatch();
+                }
+            }
         }
 
         Object item;
-        while ( (item = queue.poll()) != null)
+        while ( (item = queues.getBackQueue().poll()) != null)
         {
             if (item instanceof InsertIntoLatchSpin)
             {
@@ -660,33 +685,16 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 processThreadWorkQueueUnlatched(item);
             }
 
-            boolean haveDispatched = services.getNamedWindowService().dispatch(engineFilterAndDispatchTimeContext);
-            if (haveDispatched)
-            {
-                dispatch();
+            if (!queues.getFrontQueue().isEmpty()) {
+                processThreadWorkQueue();
             }
-        }
-
-        if (!(queue.isEmpty()))
-        {
-            processThreadWorkQueue();
         }
     }
 
     private void processThreadWorkQueueLatchedWait(InsertIntoLatchWait insertIntoLatch)
     {
         // wait for the latch to complete
-        Object item = insertIntoLatch.await();
-
-        EventBean eventBean;
-        if (item instanceof EventBean)
-        {
-            eventBean = (EventBean) item;
-        }
-        else
-        {
-            eventBean = services.getEventAdapterService().adapterForBean(item);
-        }
+        EventBean eventBean = insertIntoLatch.await();
 
         services.getEventProcessingRWLock().acquireReadLock();
         try
@@ -705,17 +713,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     private void processThreadWorkQueueLatchedSpin(InsertIntoLatchSpin insertIntoLatch)
     {
         // wait for the latch to complete
-        Object item = insertIntoLatch.await();
-
-        EventBean eventBean;
-        if (item instanceof EventBean)
-        {
-            eventBean = (EventBean) item;
-        }
-        else
-        {
-            eventBean = services.getEventAdapterService().adapterForBean(item);
-        }
+        EventBean eventBean = insertIntoLatch.await();
 
         services.getEventProcessingRWLock().acquireReadLock();
         try

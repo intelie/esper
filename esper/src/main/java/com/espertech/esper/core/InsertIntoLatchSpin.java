@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
+import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.espertech.esper.timer.TimeSourceService;
@@ -23,7 +24,7 @@ public class InsertIntoLatchSpin
     // The earlier latch is the latch generated before this latch
     private InsertIntoLatchSpin earlier;
     private long msecTimeout;
-    private Object payload;
+    private EventBean payload;
     private TimeSourceService timeSourceService;
 
     private volatile boolean isCompleted;
@@ -35,7 +36,7 @@ public class InsertIntoLatchSpin
      * @param payload the payload is an event to deliver
      * @param timeSourceService time source provider
      */
-    public InsertIntoLatchSpin(InsertIntoLatchSpin earlier, long msecTimeout, Object payload, TimeSourceService timeSourceService)
+    public InsertIntoLatchSpin(InsertIntoLatchSpin earlier, long msecTimeout, EventBean payload, TimeSourceService timeSourceService)
     {
         this.earlier = earlier;
         this.msecTimeout = msecTimeout;
@@ -67,7 +68,7 @@ public class InsertIntoLatchSpin
      * Blocking call that returns only when the earlier latch completed.
      * @return payload of the latch
      */
-    public Object await()
+    public EventBean await()
     {
         if (!earlier.isCompleted)
         {
@@ -80,7 +81,7 @@ public class InsertIntoLatchSpin
                 long spinDelta = timeSourceService.getTimeMillis() - spinStartTime;
                 if (spinDelta > msecTimeout)
                 {
-                    log.info("Spin wait timeout exceeded in insert-into dispatch");
+                    log.info("Spin wait timeout exceeded in insert-into dispatch at " + msecTimeout + "ms, consider disabling insert-into between-statement latching for better performance");
                     break;
                 }
             }

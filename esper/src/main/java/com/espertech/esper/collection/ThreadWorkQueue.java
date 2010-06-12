@@ -14,55 +14,35 @@ package com.espertech.esper.collection;
  */
 public class ThreadWorkQueue
 {
-    private static final ThreadLocal<ArrayDequeJDK6Backport<Object>> threadQueue = new ThreadLocal<ArrayDequeJDK6Backport<Object>>()
+    private static final ThreadLocal<DualWorkQueue> threadQueue = new ThreadLocal<DualWorkQueue>()
     {
-        protected synchronized ArrayDequeJDK6Backport<Object> initialValue()
+        protected synchronized DualWorkQueue initialValue()
         {
-            return new ArrayDequeJDK6Backport<Object>();
+            return new DualWorkQueue();
         }
     };
 
     /**
-     * Adds event to the end of the event queue.
+     * Adds event to the back queue.
      * @param event to add
      */
-    public static void add(Object event)
+    public static void addBack(Object event)
     {
-        ArrayDequeJDK6Backport<Object> queue = threadQueue.get();
-        queue.addLast(event);
+        DualWorkQueue queue = threadQueue.get();
+        queue.getBackQueue().addLast(event);
     }
 
     /**
-     * Adds event to the front of the queue.
+     * Adds event to the front queue.
      * @param event to add
      */
     public static void addFront(Object event)
     {
-        ArrayDequeJDK6Backport<Object> queue = threadQueue.get();
-        queue.addFirst(event);
+        DualWorkQueue queue = threadQueue.get();
+        queue.getFrontQueue().addLast(event);
     }
 
-    /**
-     * Returns the next event to getSelectListEvents, or null if there are no more events.
-     * @return next event to getSelectListEvents
-     */
-    public static Object next()
-    {
-        ArrayDequeJDK6Backport<Object> queue = threadQueue.get();
-        return queue.poll();
-    }
-
-    /**
-     * Returns an indicator whether the queue is empty.
-     * @return true for empty, false for not empty
-     */
-    public static boolean isEmpty()
-    {
-        ArrayDequeJDK6Backport<Object> queue = threadQueue.get();
-        return queue.isEmpty();
-    }
-
-    public static ArrayDequeJDK6Backport<Object> getThreadQueue() {
+    public static DualWorkQueue getThreadQueue() {
         return threadQueue.get();
     }
 }

@@ -9,6 +9,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.ConfigurationEngineDefaults;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.timer.TimeSourceService;
 
 /**
@@ -57,7 +58,7 @@ public class InsertIntoLatchFactory
      * @param payload is the object returned by the await.
      * @return latch
      */
-    public Object newLatch(Object payload)
+    public Object newLatch(EventBean payload)
     {
         if (useSpin)
         {

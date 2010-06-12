@@ -1218,7 +1218,7 @@ public class TestNamedWindowViews extends TestCase
         assertEquals(2, listenerStmtOne.getNewDataList().size());   // listener to statement gets 1 individual event
         assertEquals(2, listenerWindow.getNewDataListFlattened().length);
         assertEquals(2, listenerStmtOne.getNewDataListFlattened().length);
-        ArrayAssertionUtil.assertPropsPerRow(listenerStmtOne.getNewDataListFlattened(), fields, new Object[][] {{"E1", 12L}, {"E1", 11L}});
+        ArrayAssertionUtil.assertPropsPerRow(listenerStmtOne.getNewDataListFlattened(), fields, new Object[][] {{"E1", 11L}, {"E1", 12L}});
         listenerStmtOne.reset();
     }
 
