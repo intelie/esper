@@ -3,6 +3,7 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.spec.SelectClauseStreamCompiledSpec;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.SupportAggregationService;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
@@ -12,6 +13,7 @@ import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import junit.framework.TestCase;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashSet;
@@ -24,8 +26,8 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
     public void setUp() throws Exception
     {
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
-        SelectExprEvalProcessor factory = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"),
-        		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null, null);
+        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"),
+        		Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null, null);
         SelectExprProcessor selectProcessor = factory.getEvaluator();
         supportAggregationService = new SupportAggregationService();
 

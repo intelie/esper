@@ -149,26 +149,18 @@ public class SelectExprProcessorFactory
         verifyNameUniqueness(selectionList);
 
         // Construct processor
-        log.debug(".getProcessor Using SelectExprEvalProcessor");
         List<SelectClauseExprCompiledSpec> expressionList = getExpressions(selectionList);
         List<SelectClauseStreamCompiledSpec> streamWildcards = getStreamWildcards(selectionList);
-        if (streamWildcards.size() == 0)
-        {
-            // This one only deals with wildcards and expressions in the selection
-            SelectExprEvalProcessor factory = new SelectExprEvalProcessor(expressionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
-            SelectExprProcessor processor = factory.getEvaluator();
-            // add reference to the type obtained
-            EventTypeSPI type = (EventTypeSPI) processor.getResultEventType();
-            if (type.getMetadata().getTypeClass() != EventTypeMetadata.TypeClass.ANONYMOUS) {
-                selectExprEventTypeRegistry.add(processor.getResultEventType());
-            }
-            return processor;
+
+        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
+        SelectExprProcessor processor = factory.getEvaluator();
+
+        // add reference to the type obtained
+        EventTypeSPI type = (EventTypeSPI) processor.getResultEventType();
+        if (type.getMetadata().getTypeClass() != EventTypeMetadata.TypeClass.ANONYMOUS) {
+            selectExprEventTypeRegistry.add(processor.getResultEventType());
         }
-        else
-        {
-            // This one also deals with stream selectors (e.g. select *, p1, s0.* from S0 as s0)
-            return new SelectExprEvalProcessorStreams(expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, selectExprEventTypeRegistry, exprEvaluatorContext);
-        }
+        return processor;
     }
 
     /**

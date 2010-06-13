@@ -1,8 +1,10 @@
 package com.espertech.esper.epl.core;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.HashSet;
 
+import com.espertech.esper.epl.spec.SelectClauseStreamCompiledSpec;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
@@ -19,8 +21,8 @@ import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 
 public class TestSelectExprEvalProcessor extends TestCase
 {
-    private SelectExprEvalProcessor methodOne;
-    private SelectExprEvalProcessor methodTwo;
+    private SelectExprProcessorHelper methodOne;
+    private SelectExprProcessorHelper methodTwo;
 
     public void setUp() throws Exception
     {
@@ -29,13 +31,13 @@ public class TestSelectExprEvalProcessor extends TestCase
         SupportValueAddEventService vaeService = new SupportValueAddEventService();
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
 
-        methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null, null);
+        methodOne = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null, null);
 
         InsertIntoDesc insertIntoDesc = new InsertIntoDesc(true, "Hello");
         insertIntoDesc.add("a");
         insertIntoDesc.add("b");
 
-        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null, null);
+        methodTwo = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null, null);
     }
 
     public void testGetResultEventType() throws Exception

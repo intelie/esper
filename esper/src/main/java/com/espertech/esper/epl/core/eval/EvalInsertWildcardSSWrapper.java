@@ -2,11 +2,8 @@ package com.espertech.esper.epl.core.eval;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.SelectExprJoinWildcardProcessor;
 import com.espertech.esper.epl.core.SelectExprProcessor;
 import com.espertech.esper.event.DecoratingEventBean;
-import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,11 +26,6 @@ public class EvalInsertWildcardSSWrapper extends EvalBase implements SelectExprP
         if(wrapper != null)
         {
             Map<String, Object> map = wrapper.getDecoratingProperties();
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".process additional properties=" + map);
-            }
-
             if ((super.getExprNodes().length == 0) && (!map.isEmpty()))
             {
                 props = new HashMap<String, Object>(map);
