@@ -47,16 +47,17 @@ public class SpringJMSTemplateInputAdapter extends JMSInputAdapter
     {
         try
         {
-            message.acknowledge();
-
             if (stateManager.getState() == AdapterState.DESTROYED)
             {
+                log.warn(".onMessage Event message not sent to engine, state of adapter is destroyed, message ack'd");
+                message.acknowledge();
                 return;
             }
 
             if (epServiceProviderSPI == null)
             {
                 log.warn(".onMessage Event message not sent to engine, service provider not set yet, message ack'd");
+                message.acknowledge();
                 return;
             }
 
@@ -75,6 +76,8 @@ public class SpringJMSTemplateInputAdapter extends JMSInputAdapter
                         log.warn(".onMessage Event object not sent to engine: " + message.getJMSMessageID());
                     }
                 }
+
+                message.acknowledge();
             }
         }
         catch (JMSException ex)

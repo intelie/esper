@@ -802,14 +802,13 @@ public class EventRowRegexNFAView extends ViewSupport
 
                 // save state for each next state
                 boolean copy = nextStatesFromHere.size() > 1;
-                boolean first = false;
                 for (RegexNFAState next : nextStatesFromHere)
                 {
                     EventBean[] eventsForState = eventsPerStream;
                     MultimatchState[] multimatches = currentState.getOptionalMultiMatches();
                     int[] greedyCounts = currentState.getGreedycountPerState();
 
-                    if (copy && !first)
+                    if (copy)
                     {
                         eventsForState = new EventBean[eventsForState.length];
                         System.arraycopy(eventsPerStream, 0, eventsForState, 0, eventsForState.length);
@@ -822,8 +821,7 @@ public class EventRowRegexNFAView extends ViewSupport
                             multimatches = deepCopy(multimatches);
                         }
                     }
-                    first = false;
-                    
+
                     if ((isSelectAsksMultimatches) && (currentState.getState().isMultiple()))
                     {
                         multimatches = addTag(currentState.getState().getStreamNum(), event, multimatches);
