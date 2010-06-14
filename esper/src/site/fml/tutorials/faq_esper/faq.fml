@@ -431,30 +431,6 @@ variable factor in the statements?</i>".
 		</p>
       </answer>  
     </faq>
-    <faq id="order_of_execution">
-      <question>Is there a predictable order of execution of statements?</question>
-      <answer>
-        <p>
-	    We would recommend an application does not rely on the order of execution of statements by the engine, since that best shields 
-	    the behavior of an application from changes in the order that statements may get created by your application or by threading configurations
-	    that your application may change at will, for example.
-	</p>
-        <p>
-	    If needed, the @Priority EPL syntax can make the order of execution between statements well-defined 
-	    (requires that you set the prioritized-execution configuration setting). 
-	    And the @Drop can make a statement preempt all other lowered priority ones that then won't get executed for any matching events.
-	</p>
-        <p>
-	    The behavior of insert-into in regards to the order of execution is that the events of the insert-into stream are processed
-	    after the delivery of events of triggering events (default threading model).
-	</p>
-        <p>
-	    For example, assume three statements (1) select * from MyEvent and (2) insert into ABCStream select * from MyEvent. (3) select * from ABCStream.
-	    When a MyEvent event arrives then the listeners to statements (1) and (2) execute first (default threading model). 
-	    Listeners to statement (3) which receive the inserted-into stream events are always executed after deliver of the triggering event.
-	</p>	
-      </answer>  
-    </faq>
     <faq id="event_no_interest">
       <question>What happens if I send events to which no query is created yet? Can a time-to-live be specified to retry matching an event?</question>
       <answer>
