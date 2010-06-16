@@ -4,6 +4,7 @@ import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPRuntimeIsolated;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
@@ -266,6 +267,14 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
 
     private void processTimeEvent(TimerEvent event)
     {
+        if (event instanceof TimerControlEvent) {
+            TimerControlEvent tce = (TimerControlEvent) event;
+            if (tce.getClockType() == TimerControlEvent.ClockType.CLOCK_INTERNAL) {
+                log.warn("Timer control events are not processed by the isolated runtime as the setting is always external timer.");                
+            }
+            return;
+        }
+
         // Evaluation of all time events is protected from statement management
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
         {

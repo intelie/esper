@@ -2,6 +2,7 @@ package com.espertech.esper.regression.client;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -33,6 +34,8 @@ public class TestIsolationUnit extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEPL("@Name('A') select * from SupportBean");
         EPServiceProviderIsolated unitOne = epService.getEPServiceIsolated("i1");
         EPServiceProviderIsolated unitTwo = epService.getEPServiceIsolated("i2");
+        unitOne.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_INTERNAL));
+        unitOne.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         unitOne.getEPAdministrator().addStatement(stmt);
         try
