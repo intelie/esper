@@ -12,6 +12,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.adapter.AdapterState;
 import org.apache.commons.logging.*;
 import org.springframework.jms.core.*;
+import org.w3c.dom.Node;
 
 import javax.jms.*;
 
@@ -67,7 +68,12 @@ public class SpringJMSTemplateInputAdapter extends JMSInputAdapter
 
                 if (event != null)
                 {
-                    epServiceProviderSPI.getEPRuntime().sendEvent(event);
+                    if (event instanceof Node) {
+                        epServiceProviderSPI.getEPRuntime().sendEvent((Node)event);
+                    }
+                    else {
+                        epServiceProviderSPI.getEPRuntime().sendEvent(event);
+                    }
                 }
                 else
                 {
