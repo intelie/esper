@@ -642,8 +642,9 @@ public class EventAdapterServiceImpl implements EventAdapterService
         {
             return "Type '" + existingType.getName() + "' is not compatible";
         }
-        for (EventType superUnderlying : underlyingType.getSuperTypes())
+        for (Iterator<EventType> it = underlyingType.getDeepSuperTypes(); it.hasNext();)
         {
+            EventType superUnderlying = it.next();
             if (superUnderlying == existingUnderlyingType)
             {
                 return null;

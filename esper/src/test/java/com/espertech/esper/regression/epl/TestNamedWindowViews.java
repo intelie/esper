@@ -1,12 +1,10 @@
 package com.espertech.esper.regression.epl;
 
+import com.espertech.esper.support.bean.*;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.bean.SupportVariableSetEvent;
 import com.espertech.esper.support.bean.bookexample.OrderBean;
 import com.espertech.esper.support.bean.bookexample.BookDesc;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -41,6 +39,16 @@ public class TestNamedWindowViews extends TestCase
         listenerStmtTwo = new SupportUpdateListener();
         listenerStmtThree = new SupportUpdateListener();
         listenerStmtDelete = new SupportUpdateListener();
+    }
+
+    public void testDeepSupertypeInsert() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportOverrideOneA", SupportOverrideOneA.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportOverrideOne", SupportOverrideOne.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportOverrideBase", SupportOverrideBase.class);
+        EPStatement stmt = epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as select * from SupportOverrideBase");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportOverrideOneA");
+        epService.getEPRuntime().sendEvent(new SupportOverrideOneA("1a", "1", "base"));
+        assertEquals("1a", stmt.iterator().next().get("val"));
     }
 
     // Assert the named window is updated at the time that a subsequent event queries the named window
