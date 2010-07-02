@@ -63,7 +63,7 @@ public final class CorrelationView extends BaseBivariateStatisticsView implement
      */
     protected static EventType createEventType(StatementContext statementContext)
     {
-        return statementContext.getEventAdapterService().addBeanType(CorrelationBean.class.getName(), CorrelationBean.class, false);
+        return statementContext.getEventAdapterService().addBeanType(CorrelationBean.class.getName(), CorrelationBean.class, false, false, false);
     }
 }
 

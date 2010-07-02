@@ -309,7 +309,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
      * @return event type
      * @throws EventAdapterException to indicate an error constructing the type
      */
-    public synchronized EventType addBeanType(String eventTypeName, Class clazz, boolean isConfigured) throws EventAdapterException
+    public synchronized EventType addBeanType(String eventTypeName, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured) throws EventAdapterException
     {
         if (log.isDebugEnabled())
         {
@@ -329,7 +329,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     " versus " + clazz.getName());
         }
 
-        EventType eventType = beanEventAdapter.createBeanType(eventTypeName, clazz, isConfigured);
+        EventType eventType = beanEventAdapter.createBeanType(eventTypeName, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured);
         nameToTypeMap.put(eventTypeName, eventType);
 
         return eventType;
@@ -346,7 +346,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         if (eventType == null)
         {
             // This will update the typesPerJavaBean mapping
-            eventType = beanEventAdapter.createBeanType(event.getClass().getName(), event.getClass(), false);
+            eventType = beanEventAdapter.createBeanType(event.getClass().getName(), event.getClass(), false, false, false);
         }
         return new BeanEventBean(event, eventType);
     }
@@ -358,7 +358,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
      * @return event type
      * @throws EventAdapterException if the Class name cannot resolve or other error occured
      */
-    public synchronized EventType addBeanType(String eventTypeName, String fullyQualClassName, boolean considerAutoName) throws EventAdapterException
+    public synchronized EventType addBeanType(String eventTypeName, String fullyQualClassName, boolean considerAutoName, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured) throws EventAdapterException
     {
         if (log.isDebugEnabled())
         {
@@ -423,16 +423,16 @@ public class EventAdapterServiceImpl implements EventAdapterService
             }
         }
 
-        EventType eventType = beanEventAdapter.createBeanType(eventTypeName, clazz, true);
+        EventType eventType = beanEventAdapter.createBeanType(eventTypeName, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured);
         nameToTypeMap.put(eventTypeName, eventType);
 
         return eventType;
     }
 
-    public synchronized EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSuperType, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException
+    public synchronized EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSuperType, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException
     {
         Pair<EventType[], Set<EventType>> mapSuperTypes = getMapSuperTypes(optionalSuperType);
-        EventTypeMetadata metadata = EventTypeMetadata.createMapType(eventTypeName, isConfigured, namedWindow, insertInto);
+        EventTypeMetadata metadata = EventTypeMetadata.createMapType(eventTypeName, isPreconfiguredStatic, isPreconfigured, isConfigured, namedWindow, insertInto);
         MapEventType newEventType = new MapEventType(metadata, eventTypeName, this, propertyTypes, mapSuperTypes.getFirst(), mapSuperTypes.getSecond());
 
         EventType existingType = nameToTypeMap.get(eventTypeName);
@@ -509,7 +509,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
      * @param configurationEventTypeXMLDOM configures the event type schema and namespace and XPath
      * property information.
      */
-    public synchronized EventType addXMLDOMType(String eventTypeName, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel)
+    public synchronized EventType addXMLDOMType(String eventTypeName, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel, boolean isPreconfiguredStatic)
     {
         if (configurationEventTypeXMLDOM.getRootElementName() == null)
         {
@@ -533,7 +533,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             return existingType;
         }
 
-        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(eventTypeName, configurationEventTypeXMLDOM.getSchemaResource() == null);
+        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(eventTypeName, isPreconfiguredStatic, configurationEventTypeXMLDOM.getSchemaResource() == null);
         EventType type;
         if (configurationEventTypeXMLDOM.getSchemaResource() == null)
         {

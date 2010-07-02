@@ -235,7 +235,7 @@ public class DatabasePollingViewableFactory
             if (carrierClass == null) {
                 throw new ExprValidationException("Output row conversion hook returned no type");
             }
-            eventType = eventAdapterService.addBeanType(carrierClass.getName(), carrierClass, false);
+            eventType = eventAdapterService.addBeanType(carrierClass.getName(), carrierClass, false, false, false);
         }
 
         // Get a proper connection and data cache

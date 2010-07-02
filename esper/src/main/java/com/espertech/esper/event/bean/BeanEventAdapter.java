@@ -88,7 +88,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      */
     public final BeanEventType createBeanTypeDefaultName(Class clazz)
     {
-        return createBeanType(clazz.getName(), clazz, false);
+        return createBeanType(clazz.getName(), clazz, false, false, false);
     }
 
     /**
@@ -97,7 +97,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      * @param clazz is the class of the Java bean.
      * @return EventType implementation for bean class
      */
-    public final BeanEventType createBeanType(String name, Class clazz, boolean isConfigured)
+    public final BeanEventType createBeanType(String name, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured)
     {
         if (clazz == null)
         {
@@ -123,7 +123,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
                 legacyDef.setAccessorStyle(defaultAccessorStyle);
             }
 
-            EventTypeMetadata metadata = EventTypeMetadata.createBeanType(name, clazz, isConfigured);
+            EventTypeMetadata metadata = EventTypeMetadata.createBeanType(name, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured);
             eventType = new BeanEventType(metadata, clazz, eventAdapterService, legacyDef);
             typesPerJavaBean.put(clazz, eventType);
         }

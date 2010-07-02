@@ -44,7 +44,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testGetType()
     {
-        adapterService.addBeanType("NAME", TestEventAdapterServiceImpl.class.getName(), false);
+        adapterService.addBeanType("NAME", TestEventAdapterServiceImpl.class.getName(), false, false, false, false);
 
         EventType type = adapterService.getExistsTypeByName("NAME");
         assertEquals(TestEventAdapterServiceImpl.class, type.getUnderlyingType());
@@ -59,7 +59,7 @@ public class TestEventAdapterServiceImpl extends TestCase
     {
         try
         {
-            adapterService.addBeanType("x", "xx", false);
+            adapterService.addBeanType("x", "xx", false, false, false, false);
             fail();
         }
         catch (EventAdapterException ex)
@@ -75,7 +75,7 @@ public class TestEventAdapterServiceImpl extends TestCase
         props.put("b", String.class);
 
         // check result type
-        EventType typeOne = adapterService.addNestableMapType("latencyEvent", props, null, true, false, false);
+        EventType typeOne = adapterService.addNestableMapType("latencyEvent", props, null, true, true, true, false, false);
         assertEquals(Long.class, typeOne.getPropertyType("a"));
         assertEquals(String.class, typeOne.getPropertyType("b"));
         assertEquals(2, typeOne.getPropertyNames().length);
@@ -83,14 +83,14 @@ public class TestEventAdapterServiceImpl extends TestCase
         assertSame(typeOne, adapterService.getExistsTypeByName("latencyEvent"));
 
         // add the same type with the same name, should succeed and return the same reference
-        EventType typeTwo = adapterService.addNestableMapType("latencyEvent", props, null, true, false, false);
+        EventType typeTwo = adapterService.addNestableMapType("latencyEvent", props, null, true, true, true, false, false);
         assertSame(typeOne, typeTwo);
 
         // add the same name with a different type, should fail
         props.put("b", boolean.class);
         try
         {
-            adapterService.addNestableMapType("latencyEvent", props, null, true, false, false);
+            adapterService.addNestableMapType("latencyEvent", props, null, true, true, true, false, false);
             fail();
         }
         catch (EventAdapterException ex)
@@ -101,7 +101,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAddWrapperType()
     {
-        EventType beanEventType = adapterService.addBeanType("mybean", SupportMarketDataBean.class, true);
+        EventType beanEventType = adapterService.addBeanType("mybean", SupportMarketDataBean.class, true, true, true);
         Map<String, Object> props = new HashMap<String, Object>();
         props.put("a", Long.class);
         props.put("b", String.class);
@@ -118,7 +118,7 @@ public class TestEventAdapterServiceImpl extends TestCase
         props.put("b", boolean.class);
         try
         {
-            EventType beanTwoEventType = adapterService.addBeanType("mybean", SupportBean.class, true);
+            EventType beanTwoEventType = adapterService.addBeanType("mybean", SupportBean.class, true, true, true);
             adapterService.addWrapperType("latencyEvent", beanTwoEventType, props, false, false);
             fail();
         }
@@ -130,17 +130,17 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAddClassName()
     {
-        EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class.getName(), true);
+        EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class.getName(), true, false, false, false);
         assertEquals(SupportBean.class, typeOne.getUnderlyingType());
 
         assertSame(typeOne, adapterService.getExistsTypeByName("latencyEvent"));
 
-        EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class.getName(), false);
+        EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class.getName(), false, false, false, false);
         assertSame(typeOne, typeTwo);
 
         try
         {
-            adapterService.addBeanType("latencyEvent", SupportBean_A.class.getName(), true);
+            adapterService.addBeanType("latencyEvent", SupportBean_A.class.getName(), true, false, false, false);
             fail();
         }
         catch (EventAdapterException ex)
@@ -151,17 +151,17 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAddClass()
     {
-        EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class, false);
+        EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class, false, false, false);
         assertEquals(SupportBean.class, typeOne.getUnderlyingType());
 
         assertSame(typeOne, adapterService.getExistsTypeByName("latencyEvent"));
 
-        EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class, false);
+        EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class, false, false, false);
         assertSame(typeOne, typeTwo);
 
         try
         {
-            adapterService.addBeanType("latencyEvent", SupportBean_A.class.getName(), false);
+            adapterService.addBeanType("latencyEvent", SupportBean_A.class.getName(), false, false, false, false);
             fail();
         }
         catch (EventAdapterException ex)
@@ -179,7 +179,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAddXMLDOMType() throws Exception
     {
-        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig(), null);
+        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig(), null, true);
         EventType eventType = adapterService.getExistsTypeByName("XMLDOMTypeOne");
         assertEquals(Node.class, eventType.getUnderlyingType());
 
@@ -187,7 +187,7 @@ public class TestEventAdapterServiceImpl extends TestCase
         
         try
         {
-            adapterService.addXMLDOMType("a", new ConfigurationEventTypeXMLDOM(), null);
+            adapterService.addXMLDOMType("a", new ConfigurationEventTypeXMLDOM(), null, true);
             fail();
         }
         catch (EventAdapterException ex)
@@ -198,7 +198,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAdapterForDOM() throws Exception
     {
-        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig(), null);
+        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig(), null, true);
 
         String xml =
                 "<simpleEvent>\n" +

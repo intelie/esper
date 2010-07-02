@@ -96,7 +96,7 @@ public interface EventAdapterService
      * @param insertInto if inserting into a stream
      * @throws EventAdapterException if name already exists and doesn't match property type info
      */
-    public EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSupertype, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException;
+    public EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSupertype, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException;
 
     /**
      * Add an event type with the given name and the given underlying event type,
@@ -150,7 +150,7 @@ public interface EventAdapterService
      * @return event type is the type added
      * @throws EventAdapterException if name already exists and doesn't match class names
      */
-    public EventType addBeanType(String eventTypeName, String fullyQualClassName, boolean considerAutoName) throws EventAdapterException;
+    public EventType addBeanType(String eventTypeName, String fullyQualClassName, boolean considerAutoName, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured) throws EventAdapterException;
 
     /**
      * Add an event type with the given name and Java class.
@@ -166,7 +166,7 @@ public interface EventAdapterService
      * @return event type is the type added
      * @throws EventAdapterException if name already exists and doesn't match class names
      */
-    public EventType addBeanType(String eventTypeName, Class clazz, boolean isConfigured) throws EventAdapterException;
+    public EventType addBeanType(String eventTypeName, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured) throws EventAdapterException;
 
     /**
      * Wrap the native event returning an {@link EventBean}.
@@ -234,7 +234,7 @@ public interface EventAdapterService
      * @param optionalSchemaModel is the object model of the schema, or null in none provided
      * @return event type
      */
-    public EventType addXMLDOMType(String eventTypeName, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel);
+    public EventType addXMLDOMType(String eventTypeName, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel, boolean isPreconfiguredStatic);
 
     /**
      * Sets the configured legacy Java class information.

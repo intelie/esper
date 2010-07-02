@@ -38,10 +38,10 @@ public class TestEventAdapterSvcMT extends TestCase
             {
                 public Object call() throws Exception
                 {
-                    EventType type = service.addBeanType("a", SupportMarketDataBean.class, true);
+                    EventType type = service.addBeanType("a", SupportMarketDataBean.class, true, true, true);
                     types.add(type);
 
-                    type = service.addBeanType("b", SupportMarketDataBean.class, true);
+                    type = service.addBeanType("b", SupportMarketDataBean.class, true, true, true);
                     types.add(type);
                     return true;
                 }
@@ -72,11 +72,11 @@ public class TestEventAdapterSvcMT extends TestCase
                     {
                         if (index == 0)
                         {
-                            return service.addNestableMapType("A", typeOne, null, true, false, false);
+                            return service.addNestableMapType("A", typeOne, null, true, true, true, false, false);
                         }
                         else
                         {
-                            return service.addNestableMapType("A", typeTwo, null, true, false, false);
+                            return service.addNestableMapType("A", typeTwo, null, true, true, true, false, false);
                         }
                     }
                     catch (EventAdapterException ex)
@@ -109,11 +109,11 @@ public class TestEventAdapterSvcMT extends TestCase
                     {
                         if (index == 0)
                         {
-                            return service.addBeanType("X", SupportBean_S1.class, true);
+                            return service.addBeanType("X", SupportBean_S1.class, true, true, true);
                         }
                         else
                         {
-                            return service.addBeanType("X", SupportBean_S0.class, true);
+                            return service.addBeanType("X", SupportBean_S0.class, true, true, true);
                         }
                     }
                     catch (EventAdapterException ex)

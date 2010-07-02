@@ -1,21 +1,20 @@
 package com.espertech.esper.regression.epl;
 
-import com.espertech.esper.event.MappedEventBean;
-import com.espertech.esper.event.map.MapEventBean;
-import com.espertech.esper.event.map.MapEventType;
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.MappedEventBean;
+import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.core.EPServiceProviderSPI;
+import junit.framework.TestCase;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TestNamedWindowTypes extends TestCase
 {
@@ -99,6 +98,8 @@ public class TestNamedWindowTypes extends TestCase
         assertEquals("MyWindow", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.NAMED_WINDOW, type.getMetadata().getTypeClass());
         assertEquals(false, type.getMetadata().isApplicationConfigured());
+        assertEquals(false, type.getMetadata().isApplicationPreConfigured());
+        assertEquals(false, type.getMetadata().isApplicationPreConfiguredStatic());
 
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
@@ -219,6 +220,8 @@ public class TestNamedWindowTypes extends TestCase
         assertEquals("MyWindow", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.NAMED_WINDOW, type.getMetadata().getTypeClass());
         assertEquals(false, type.getMetadata().isApplicationConfigured());
+        assertEquals(false, type.getMetadata().isApplicationPreConfigured());
+        assertEquals(false, type.getMetadata().isApplicationPreConfiguredStatic());
 
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select string as stringValOne, string as stringValTwo, cast(longPrimitive, int) as intVal, longBoxed as longVal from " + SupportBean.class.getName();

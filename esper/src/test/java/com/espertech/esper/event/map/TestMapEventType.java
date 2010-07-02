@@ -27,7 +27,7 @@ public class TestMapEventType extends TestCase
     {
         eventAdapterService = SupportEventAdapterService.getService();
 
-        EventTypeMetadata metadata = EventTypeMetadata.createMapType("typename", true, false, false);
+        EventTypeMetadata metadata = EventTypeMetadata.createMapType("typename", true, true, true, false, false);
         Map<String, Object> testTypesMap = new HashMap<String, Object>();
         testTypesMap.put("myInt", int.class);
         testTypesMap.put("myString", String.class);
@@ -142,7 +142,7 @@ public class TestMapEventType extends TestCase
 
     public void testEquals()
     {
-        EventTypeMetadata metadata = EventTypeMetadata.createMapType("", true, false, false);
+        EventTypeMetadata metadata = EventTypeMetadata.createMapType("", true, true, true, false, false);
 
         Map<String, Object> mapTwo = new LinkedHashMap<String, Object>();
         mapTwo.put("myInt", int.class);

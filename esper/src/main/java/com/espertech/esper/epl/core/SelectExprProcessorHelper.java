@@ -390,7 +390,7 @@ public class SelectExprProcessorHelper
                         }
 
                         // create or get an underlying type for that Class
-                        underlyingEventType = eventAdapterService.addBeanType(propertyType.getName(), propertyType, false);
+                        underlyingEventType = eventAdapterService.addBeanType(propertyType.getName(), propertyType, false, false, false);
                         selectExprEventTypeRegistry.add(underlyingEventType);
                         underlyingPropertyEventGetter = typeService.getEventTypes()[streamNumber].getGetter(propertyName);
                         if (underlyingPropertyEventGetter == null)
@@ -476,7 +476,7 @@ public class SelectExprProcessorHelper
                 }
                 else
                 {
-                    resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), selPropertyTypes, null, false, false, true);
+                    resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), selPropertyTypes, null, false, false, false, false, true);
                     return new EvalSelectStreamNoUnderlying(selectExprContext, resultEventType, namedStreams, isUsingWildcard);
                 }
             }
@@ -584,7 +584,7 @@ public class SelectExprProcessorHelper
                     }
                     else
                     {
-                        resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), selPropertyTypes, null, false, false, true);
+                        resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), selPropertyTypes, null, false, false, false, false, true);
                     }
                 }
             }

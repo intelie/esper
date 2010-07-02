@@ -1,7 +1,9 @@
 package com.espertech.esper.regression.epl;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.deploy.DeploymentResult;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -26,15 +28,40 @@ public class TestSchema extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    // Test invalid:
-    // - invalid keyword between create and schema
-    // - no inherit type name
-    // - duplicate column name
-    // - invalid column type
-    // - no such bean
-    // - no such variant type
-    // - stop and type still in use
-    // Test Named Window support for nestable+array types
+    public void testConfiguredNotRemoved() throws Exception {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MapType", new HashMap<String, Object>());
+        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootElementName("myevent");
+        epService.getEPAdministrator().getConfiguration().addEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
+
+        epService.getEPAdministrator().createEPL("create schema ABCType(col1 int, col2 int)");
+        assertTypeExists(epService, "ABCType", false);
+        
+        String moduleText = "select * from SupportBean;\n"+
+                            "select * from MapType;\n" +
+                            "select * from TestXMLNoSchemaType;\n";
+        DeploymentResult result = epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(moduleText, "uri", "arch", null);
+
+        assertTypeExists(epService, "SupportBean", true);
+        assertTypeExists(epService, "MapType", true);
+        assertTypeExists(epService, "TestXMLNoSchemaType", true);
+
+        epService.getEPAdministrator().getDeploymentAdmin().undeployRemove(result.getDeploymentId());
+
+        assertTypeExists(epService, "SupportBean", true);
+        assertTypeExists(epService, "MapType", true);
+        assertTypeExists(epService, "TestXMLNoSchemaType", true);
+    }
+
+    private void assertTypeExists(EPServiceProvider epService, String typeName, boolean isPreconfigured) {
+        EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
+        EventTypeSPI type = (EventTypeSPI) spi.getEventAdapterService().getExistsTypeByName(typeName);
+        assertTrue(type.getMetadata().isApplicationConfigured());
+        assertEquals(isPreconfigured, type.getMetadata().isApplicationPreConfigured());
+        assertFalse(type.getMetadata().isApplicationPreConfiguredStatic());
+    }
+
     public void testInvalid() {
         tryInvalid("create schema MyEventType as (col1 xxxx)",
                     "Error starting statement: Nestable map type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared Map type [create schema MyEventType as (col1 xxxx)]");
@@ -105,6 +132,8 @@ public class TestSchema extends TestCase
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, typeSPI.getMetadata().getTypeClass());
         assertEquals(typeSPI.getName(), typeSPI.getMetadata().getPublicName());
         assertTrue(typeSPI.getMetadata().isApplicationConfigured());
+        assertFalse(typeSPI.getMetadata().isApplicationPreConfigured());
+        assertFalse(typeSPI.getMetadata().isApplicationPreConfiguredStatic());
         assertEquals(typeSPI.getName(), typeSPI.getMetadata().getPrimaryName());
     }
 
@@ -132,6 +161,8 @@ public class TestSchema extends TestCase
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, typeSPI.getMetadata().getTypeClass());
         assertEquals(typeSPI.getName(), typeSPI.getMetadata().getPublicName());
         assertTrue(typeSPI.getMetadata().isApplicationConfigured());
+        assertFalse(typeSPI.getMetadata().isApplicationPreConfiguredStatic());
+        assertFalse(typeSPI.getMetadata().isApplicationPreConfigured());
         assertEquals(typeSPI.getName(), typeSPI.getMetadata().getPrimaryName());
     }
 

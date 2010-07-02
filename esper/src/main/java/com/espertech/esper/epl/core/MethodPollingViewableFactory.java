@@ -131,11 +131,11 @@ public class MethodPollingViewableFactory
         EventType eventType;
         if (mapType != null)
         {
-            eventType = eventAdapterService.addNestableMapType(mapTypeName, mapType, null, true, false, false);
+            eventType = eventAdapterService.addNestableMapType(mapTypeName, mapType, null, false, true, true, false, false);
         }
         else
         {
-            eventType = eventAdapterService.addBeanType(beanClass.getName(), beanClass, true);
+            eventType = eventAdapterService.addBeanType(beanClass.getName(), beanClass, false, true, true);
         }
 
         // Construct polling strategy as a method invocation

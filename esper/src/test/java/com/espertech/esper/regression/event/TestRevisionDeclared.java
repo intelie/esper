@@ -74,6 +74,8 @@ public class TestRevisionDeclared extends TestCase
         assertEquals("RevisableQuote", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.REVISION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
+        assertEquals(true, type.getMetadata().isApplicationPreConfigured());
+        assertEquals(true, type.getMetadata().isApplicationPreConfiguredStatic());
 
         EventType[] valueAddTypes = ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddedTypes();
         assertEquals(1, valueAddTypes.length);

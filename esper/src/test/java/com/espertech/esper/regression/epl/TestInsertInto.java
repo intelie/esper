@@ -232,6 +232,8 @@ public class TestInsertInto extends TestCase
         assertEquals("Event_1", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.STREAM, type.getMetadata().getTypeClass());
         assertEquals(false, type.getMetadata().isApplicationConfigured());
+        assertEquals(false, type.getMetadata().isApplicationPreConfigured());
+        assertEquals(false, type.getMetadata().isApplicationPreConfiguredStatic());
     }
 
     public void testVariantTwoJoinWildcard()

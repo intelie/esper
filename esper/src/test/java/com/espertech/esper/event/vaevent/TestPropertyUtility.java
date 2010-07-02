@@ -1,12 +1,10 @@
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.vaevent.PropertyUtility;
-import com.espertech.esper.event.vaevent.PropertyGroupDesc;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.bean.*;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
@@ -33,11 +31,11 @@ public class TestPropertyUtility extends TestCase
     public void setUp()
     {
         types = new EventType[5];
-        types[0] = eventSource.addBeanType("D1", SupportDeltaOne.class, false);
-        types[1] = eventSource.addBeanType("D2", SupportDeltaTwo.class, false);
-        types[2] = eventSource.addBeanType("D3", SupportDeltaThree.class, false);
-        types[3] = eventSource.addBeanType("D4", SupportDeltaFour.class, false);
-        types[4] = eventSource.addBeanType("D5", SupportDeltaFive.class, false);
+        types[0] = eventSource.addBeanType("D1", SupportDeltaOne.class, false, false, false);
+        types[1] = eventSource.addBeanType("D2", SupportDeltaTwo.class, false, false, false);
+        types[2] = eventSource.addBeanType("D3", SupportDeltaThree.class, false, false, false);
+        types[3] = eventSource.addBeanType("D4", SupportDeltaFour.class, false, false, false);
+        types[4] = eventSource.addBeanType("D5", SupportDeltaFive.class, false, false, false);
     }
 
     public void testAnalyze()

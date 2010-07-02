@@ -71,7 +71,7 @@ public class MapNestedPropertyGetter implements MapEventPropertyGetter
                 }
                 else
                 {
-                    BeanEventType type = eventAdaperService.getBeanEventTypeFactory().createBeanType(result.getClass().getName(), result.getClass(), false);
+                    BeanEventType type = eventAdaperService.getBeanEventTypeFactory().createBeanType(result.getClass().getName(), result.getClass(), false, false, false);
                     eventBean = eventAdaperService.adapterForTypedBean(result, type);
                 }
             }
@@ -105,7 +105,7 @@ public class MapNestedPropertyGetter implements MapEventPropertyGetter
                 }
                 else
                 {
-                    BeanEventType type = eventAdaperService.getBeanEventTypeFactory().createBeanType(result.getClass().getName(), result.getClass(), false);
+                    BeanEventType type = eventAdaperService.getBeanEventTypeFactory().createBeanType(result.getClass().getName(), result.getClass(), false, false, false);
                     eventBean = eventAdaperService.adapterForTypedBean(result, type);
                 }
             }

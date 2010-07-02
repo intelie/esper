@@ -224,7 +224,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             try
             {
                 String typeName = entry.getKey();
-                eventAdapterService.addBeanType(typeName, entry.getValue(), false);
+                eventAdapterService.addBeanType(typeName, entry.getValue(), false, true, true, true);
             }
             catch (EventAdapterException ex)
             {
@@ -252,7 +252,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             // Add XML DOM type
             try
             {
-                eventAdapterService.addXMLDOMType(entry.getKey(), entry.getValue(), schemaModel);
+                eventAdapterService.addXMLDOMType(entry.getKey(), entry.getValue(), schemaModel, true);
             }
             catch (EventAdapterException ex)
             {
@@ -284,13 +284,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 if (propertiesUnnested != null)
                 {
                     Map<String, Object> propertyTypes = createPropertyTypes(propertiesUnnested);
-                    eventAdapterService.addNestableMapType(mapName, propertyTypes, superTypes, true, false, false);
+                    eventAdapterService.addNestableMapType(mapName, propertyTypes, superTypes, true, true, true, false, false);
                 }
 
                 Map<String, Object> propertiesNestable = nestableMapNames.get(mapName);
                 if (propertiesNestable != null)
                 {
-                    eventAdapterService.addNestableMapType(mapName, propertiesNestable, superTypes, true, false, false);
+                    eventAdapterService.addNestableMapType(mapName, propertiesNestable, superTypes, true, true, true, false, false);
                 }
             }
         }

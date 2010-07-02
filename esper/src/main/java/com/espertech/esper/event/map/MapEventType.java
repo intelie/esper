@@ -259,7 +259,7 @@ public class MapEventType implements EventTypeSPI
                         return null;
                     }
                     Class componentType = ((Class) type).getComponentType();
-                    EventType nestedEventType = eventAdapterService.addBeanType(componentType.getName(), componentType, false);
+                    EventType nestedEventType = eventAdapterService.addBeanType(componentType.getName(), componentType, false, false, false);
                     return nestedEventType.getPropertyType(propertyNested);
                 }
             }
@@ -288,7 +288,7 @@ public class MapEventType implements EventTypeSPI
         else if (nestedType instanceof Class)
         {
             Class simpleClass = (Class) nestedType;
-            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false);
+            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false, false, false);
             return nestedEventType.getPropertyType(propertyNested);
         }
         else if (nestedType instanceof EventType)
@@ -503,7 +503,7 @@ public class MapEventType implements EventTypeSPI
                         return null;
                     }
                     Class componentType = ((Class) type).getComponentType();
-                    EventType nestedEventType = eventAdapterService.addBeanType(componentType.getName(), componentType, false);
+                    EventType nestedEventType = eventAdapterService.addBeanType(componentType.getName(), componentType, false, false, false);
 
                     final EventPropertyGetter nestedGetter = nestedEventType.getGetter(propertyNested);
                     if (nestedGetter == null)
@@ -557,7 +557,7 @@ public class MapEventType implements EventTypeSPI
         {
             // ask the nested class to resolve the property
             Class simpleClass = (Class) nestedType;
-            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false);
+            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false, false, false);
             final EventPropertyGetter nestedGetter = nestedEventType.getGetter(propertyNested);
             if (nestedGetter == null)
             {
@@ -662,7 +662,7 @@ public class MapEventType implements EventTypeSPI
         }
 
         // ask the nested class to resolve the property
-        EventType nestedType = eventAdapterService.addBeanType(result.getName(), result, false);
+        EventType nestedType = eventAdapterService.addBeanType(result.getName(), result, false, false, false);
         final EventPropertyGetter nestedGetter = nestedType.getGetter(propertyNested);
         if (nestedGetter == null)
         {

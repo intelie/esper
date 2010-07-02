@@ -22,7 +22,7 @@ public interface BeanEventTypeFactory
      * @param isConfigured if the class is a configuration value
      * @return is the event type for the class
      */
-    public BeanEventType createBeanType(String name, Class clazz, boolean isConfigured);
+    public BeanEventType createBeanType(String name, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured);
 
     /**
      * Returns the bean event type for a given class assigning the given name.

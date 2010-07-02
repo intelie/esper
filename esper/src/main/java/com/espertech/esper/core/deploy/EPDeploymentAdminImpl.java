@@ -11,11 +11,13 @@ package com.espertech.esper.core.deploy;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderIsolated;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.deploy.*;
 import com.espertech.esper.core.EPAdministratorSPI;
 import com.espertech.esper.core.StatementEventTypeRef;
 import com.espertech.esper.core.StatementIsolationService;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -644,7 +646,13 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             if (log.isDebugEnabled()) {
                 log.debug("Event type '" + typeName + "' is no longer in use, removing type");
             }
-            eventAdapterService.removeType(typeName);
+            EventType type = eventAdapterService.getExistsTypeByName(typeName);
+            if (type != null) {
+                EventTypeSPI spi = (EventTypeSPI) type;
+                if (!spi.getMetadata().isApplicationPreConfigured()) {
+                    eventAdapterService.removeType(typeName);
+                }
+            }
         }
     }
 }

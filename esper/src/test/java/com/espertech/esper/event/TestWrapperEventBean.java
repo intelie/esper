@@ -22,8 +22,8 @@ public class TestWrapperEventBean extends TestCase
 	protected void setUp()
 	{
 		eventService = SupportEventAdapterService.getService();
-		EventType underlyingEventTypeSimple = eventService.addBeanType("underlyingSimpleBean", SupportBeanSimple.class, true);
-		EventType underlyingEventTypeCombined = eventService.addBeanType("underlyingCombinedBean", SupportBeanCombinedProps.class,true);
+		EventType underlyingEventTypeSimple = eventService.addBeanType("underlyingSimpleBean", SupportBeanSimple.class, true, true, true);
+		EventType underlyingEventTypeCombined = eventService.addBeanType("underlyingCombinedBean", SupportBeanCombinedProps.class,true, true, true);
 		
 		Map<String, Object> typeMap = new HashMap<String, Object>();
 		typeMap.put("string", String.class);

@@ -176,6 +176,8 @@ public class TestLegacyBeanEvents extends TestCase
         assertEquals("MyLegacyEvent", type.getMetadata().getPublicName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
+        assertEquals(true, type.getMetadata().isApplicationPreConfigured());
+        assertEquals(true, type.getMetadata().isApplicationPreConfiguredStatic());
 
         String statementText = "select " +
                     "fieldLegacyVal as fieldSimple," +
@@ -258,6 +260,8 @@ public class TestLegacyBeanEvents extends TestCase
         assertNotNull(stmtType.getName());
         assertEquals(EventTypeMetadata.TypeClass.ANONYMOUS, stmtType.getMetadata().getTypeClass());
         assertEquals(false, stmtType.getMetadata().isApplicationConfigured());        
+        assertEquals(false, stmtType.getMetadata().isApplicationPreConfigured());
+        assertEquals(false, stmtType.getMetadata().isApplicationPreConfiguredStatic());
     }
 
     private void tryExplicitOnlyAccessors(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)

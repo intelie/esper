@@ -143,7 +143,7 @@ public class OHLCBarPlugInView extends ViewSupport implements CloneableView
 
     protected static EventType getEventType(EventAdapterService eventAdapterService)
     {
-        return eventAdapterService.addBeanType(OHLCBarValue.class.getName(), OHLCBarValue.class, false);
+        return eventAdapterService.addBeanType(OHLCBarValue.class.getName(), OHLCBarValue.class, false, false, false);
     }
 
     private static long removeSeconds(long timestamp)

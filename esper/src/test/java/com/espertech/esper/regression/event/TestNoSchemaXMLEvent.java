@@ -89,7 +89,9 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals("TestXMLNoSchemaType", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
-        
+        assertEquals(true, type.getMetadata().isApplicationPreConfigured());
+        assertEquals(true, type.getMetadata().isApplicationPreConfiguredStatic());
+
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
             new EventPropertyDescriptor("xpathElement1", String.class, null, false, false, false, false, false),
             new EventPropertyDescriptor("xpathCountE21", Double.class, null, false, false, false, false, false),

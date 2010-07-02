@@ -20,11 +20,11 @@ public class TestNStreamQueryPlanBuilder extends TestCase
     public void setUp()
     {
         typesPerStream = new EventType[] {
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class, true),
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class, true),
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S2.class.getName(), SupportBean_S2.class, true),
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S3.class.getName(), SupportBean_S3.class, true),
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S4.class.getName(), SupportBean_S4.class, true)
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class, true, true, true),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class, true, true, true),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S2.class.getName(), SupportBean_S2.class, true, true, true),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S3.class.getName(), SupportBean_S3.class, true, true, true),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S4.class.getName(), SupportBean_S4.class, true, true, true)
         };
 
         queryGraph = new QueryGraph(5);

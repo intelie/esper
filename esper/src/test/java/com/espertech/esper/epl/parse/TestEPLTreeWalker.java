@@ -1072,7 +1072,7 @@ public class TestEPLTreeWalker extends TestCase
 
     public void testWalkPatternNoPackage() throws Exception
     {
-        SupportEventAdapterService.getService().addBeanType("SupportBean_N", SupportBean_N.class, true);
+        SupportEventAdapterService.getService().addBeanType("SupportBean_N", SupportBean_N.class, true, true, true);
         String text = "na=SupportBean_N()";
         parseAndWalkPattern(text);
     }
@@ -1294,7 +1294,7 @@ public class TestEPLTreeWalker extends TestCase
         SupportParserHelper.displayAST(ast);
 
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
-        eventAdapterService.addBeanType("SupportBean_N", SupportBean_N.class, true);
+        eventAdapterService.addBeanType("SupportBean_N", SupportBean_N.class, true, true, true);
 
         EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast, engineImportService, variableService);
         walker.startEPLExpressionRule();

@@ -182,19 +182,19 @@ public class EPStatementStartMethod
                             }
                         }
                     }
-                    eventType = services.getEventAdapterService().addNestableMapType(spec.getSchemaName(), typing, spec.getInherits(), true, false, false);
+                    eventType = services.getEventAdapterService().addNestableMapType(spec.getSchemaName(), typing, spec.getInherits(), false, false, true, false, false);
                 }
                 else {
                     if (spec.getTypes().size() == 1) {
                         String typeName = spec.getTypes().iterator().next();
                         try {
-                            eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), spec.getTypes().iterator().next(), false);
+                            eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), spec.getTypes().iterator().next(), false, false, false, true);
                         }
                         catch (EventAdapterException ex) {
                             Class clazz;
                             try {
                                 clazz = services.getEngineImportService().resolveClass(typeName);
-                                eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), clazz, true);
+                                eventType = services.getEventAdapterService().addBeanType(spec.getSchemaName(), clazz, false, false, true);
                             }
                             catch (EngineImportException e) {
                                 log.debug("Engine import failed to resolve event type '" + typeName + "'");

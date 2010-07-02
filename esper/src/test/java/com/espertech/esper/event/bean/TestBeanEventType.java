@@ -115,7 +115,7 @@ public class TestBeanEventType extends TestCase
         try
         {
             // test mismatch between bean and object
-            EventType type = SupportEventAdapterService.getService().getBeanEventTypeFactory().createBeanType(Object.class.getName(), Object.class, false);
+            EventType type = SupportEventAdapterService.getService().getBeanEventTypeFactory().createBeanType(Object.class.getName(), Object.class, false, false, false);
             EventBean eventBean = new BeanEventBean(new Object(), type);
             getter.get(eventBean);
             fail();
@@ -213,11 +213,11 @@ public class TestBeanEventType extends TestCase
         ArrayAssertionUtil.assertEqualsAnyOrder(
                 deepSuperTypes.toArray(),
                 new EventType[] {
-                    beanEventTypeFactory.createBeanType("e1", ISupportAImplSuperG.class, false),
-                    beanEventTypeFactory.createBeanType("e2", ISupportBaseAB.class, false),
-                    beanEventTypeFactory.createBeanType("e3", ISupportA.class, false),
-                    beanEventTypeFactory.createBeanType("e4", ISupportB.class, false),
-                    beanEventTypeFactory.createBeanType("e5", ISupportC.class, false)
+                    beanEventTypeFactory.createBeanType("e1", ISupportAImplSuperG.class, false, false, false),
+                    beanEventTypeFactory.createBeanType("e2", ISupportBaseAB.class, false, false, false),
+                    beanEventTypeFactory.createBeanType("e3", ISupportA.class, false, false, false),
+                    beanEventTypeFactory.createBeanType("e4", ISupportB.class, false, false, false),
+                    beanEventTypeFactory.createBeanType("e5", ISupportC.class, false, false, false)
                 });
     }
 

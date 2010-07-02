@@ -12,6 +12,8 @@ public class EventTypeMetadata
     private final String primaryName;
     private final Set<String> optionalSecondaryNames;
     private final TypeClass typeClass;
+    private final boolean isApplicationPreConfiguredStatic;
+    private final boolean isApplicationPreConfigured;
     private final boolean isApplicationConfigured;
     private final ApplicationType optionalApplicationType;
     private final boolean isPropertyAgnostic;   // Type accepts any property name (i.e. no-schema XML type)
@@ -25,7 +27,7 @@ public class EventTypeMetadata
      * @param applicationType type of application class or null if not an application type
      * @param isPropertyAgnostic true for types that accept any property name as a valid property (unchecked type)
      */
-    protected EventTypeMetadata(String primaryName, Set<String> secondaryNames, TypeClass typeClass, boolean applicationConfigured, ApplicationType applicationType, boolean isPropertyAgnostic)
+    protected EventTypeMetadata(String primaryName, Set<String> secondaryNames, TypeClass typeClass, boolean isApplicationPreConfiguredStatic, boolean applicationPreConfigured, boolean applicationConfigured, ApplicationType applicationType, boolean isPropertyAgnostic)
     {
         if (typeClass.isPublic())
         {
@@ -38,7 +40,9 @@ public class EventTypeMetadata
         this.primaryName = primaryName;
         this.optionalSecondaryNames = secondaryNames;
         this.typeClass = typeClass;
-        isApplicationConfigured = applicationConfigured;
+        this.isApplicationConfigured = applicationConfigured;
+        this.isApplicationPreConfigured = applicationPreConfigured;
+        this.isApplicationPreConfiguredStatic = isApplicationPreConfiguredStatic;
         this.optionalApplicationType = applicationType;
         this.isPropertyAgnostic = isPropertyAgnostic;
     }
@@ -55,7 +59,7 @@ public class EventTypeMetadata
         {
             throw new IllegalArgumentException("Type class " + typeClass + " invalid");
         }
-        return new EventTypeMetadata(name, null, typeClass, true, null, false);
+        return new EventTypeMetadata(name, null, typeClass, true, true, true, null, false);
     }
 
     /**
@@ -65,7 +69,7 @@ public class EventTypeMetadata
      * @param isConfigured whether the class was made known or is discovered
      * @return instance
      */
-    public static EventTypeMetadata createBeanType(String name, Class clazz, boolean isConfigured)
+    public static EventTypeMetadata createBeanType(String name, Class clazz, boolean isPreConfiguredStatic, boolean isPreConfigured, boolean isConfigured)
     {
         Set<String> secondaryNames = null;
         if (name == null)
@@ -80,7 +84,7 @@ public class EventTypeMetadata
                 secondaryNames.add(clazz.getName());
             }
         }
-        return new EventTypeMetadata(name, secondaryNames, TypeClass.APPLICATION, isConfigured, ApplicationType.CLASS, false);
+        return new EventTypeMetadata(name, secondaryNames, TypeClass.APPLICATION, isPreConfiguredStatic, isPreConfigured, isConfigured, ApplicationType.CLASS, false);
     }
 
     /**
@@ -89,9 +93,9 @@ public class EventTypeMetadata
      * @param isPropertyAgnostic true for types that accept any property name as a valid property (unchecked type)
      * @return instance
      */
-    public static EventTypeMetadata createXMLType(String name, boolean isPropertyAgnostic)
+    public static EventTypeMetadata createXMLType(String name, boolean isPreconfiguredStatic, boolean isPropertyAgnostic)
     {
-        return new EventTypeMetadata(name, null, TypeClass.APPLICATION, true, ApplicationType.XML, isPropertyAgnostic);
+        return new EventTypeMetadata(name, null, TypeClass.APPLICATION, isPreconfiguredStatic, true, true, ApplicationType.XML, isPropertyAgnostic);
     }
 
     /**
@@ -101,7 +105,7 @@ public class EventTypeMetadata
      */
     public static EventTypeMetadata createAnonymous(String associationName)
     {
-        return new EventTypeMetadata(associationName, null, TypeClass.ANONYMOUS, false, null, false);
+        return new EventTypeMetadata(associationName, null, TypeClass.ANONYMOUS, false, false, false, null, false);
     }
 
     /**
@@ -127,7 +131,7 @@ public class EventTypeMetadata
         {
             throw new IllegalStateException("Unknown Wrapper type, cannot create metadata");
         }
-        return new EventTypeMetadata(eventTypeName, null, typeClass, false, null, isPropertyAgnostic);
+        return new EventTypeMetadata(eventTypeName, null, typeClass, false, false, false, null, isPropertyAgnostic);
     }
 
     /**
@@ -138,7 +142,7 @@ public class EventTypeMetadata
      * @param configured whether the made known or is discovered
      * @return instance
      */
-    public static EventTypeMetadata createMapType(String name, boolean configured, boolean namedWindow, boolean insertInto)
+    public static EventTypeMetadata createMapType(String name, boolean preconfiguredStatic, boolean preconfigured, boolean configured, boolean namedWindow, boolean insertInto)
     {
         TypeClass typeClass;
         ApplicationType applicationType = null;
@@ -159,7 +163,7 @@ public class EventTypeMetadata
         {
             typeClass = TypeClass.ANONYMOUS;
         }
-        return new EventTypeMetadata(name, null, typeClass, configured, applicationType, false);
+        return new EventTypeMetadata(name, null, typeClass, preconfiguredStatic, preconfigured, configured, applicationType, false);
     }
 
     /**
@@ -223,6 +227,22 @@ public class EventTypeMetadata
     public boolean isPropertyAgnostic()
     {
         return isPropertyAgnostic;
+    }
+
+    /**
+     * Returns true to indicate the type is pre-configured, i.e. added through static or runtime configuration.
+     * @return indicator
+     */
+    public boolean isApplicationPreConfigured() {
+        return isApplicationPreConfigured;
+    }
+
+    /**
+     * Returns true to indicate the type is pre-configured, i.e. added through static configuration but not runtime configuation.
+     * @return indicator
+     */
+    public boolean isApplicationPreConfiguredStatic() {
+        return isApplicationPreConfiguredStatic;
     }
 
     /**

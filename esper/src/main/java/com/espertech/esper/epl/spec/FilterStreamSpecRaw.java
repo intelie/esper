@@ -165,7 +165,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         String message = null;
         try
         {
-            eventType = eventAdapterService.addBeanType(eventName, eventName, true);
+            eventType = eventAdapterService.addBeanType(eventName, eventName, true, false, false, false);
         }
         catch (EventAdapterException ex)
         {

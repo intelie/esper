@@ -225,7 +225,7 @@ public class VariableServiceImpl implements VariableService
         }
 
         if ((eventType == null) && (!JavaClassHelper.isJavaBuiltinDataType(type)) && (type != Object.class)) {
-            eventType = eventAdapterService.addBeanType(type.getName(), type, false);
+            eventType = eventAdapterService.addBeanType(type.getName(), type, false, false, false);
         }
 
         createNewVariable(variableName, type, eventType, value, extensionServicesContext);

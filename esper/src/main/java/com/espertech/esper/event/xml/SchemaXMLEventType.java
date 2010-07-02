@@ -181,7 +181,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
         EventType newType;
         try
         {
-            newType = this.getEventAdapterService().addXMLDOMType(eventTypeName, xmlDom, schemaModel);
+            newType = this.getEventAdapterService().addXMLDOMType(eventTypeName, xmlDom, schemaModel, true);
         }
         catch (Exception ex)
         {

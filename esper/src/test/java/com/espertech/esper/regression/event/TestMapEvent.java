@@ -52,7 +52,9 @@ public class TestMapEvent extends TestCase
         assertEquals("myMapEvent", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
-        
+        assertEquals(true, type.getMetadata().isApplicationPreConfigured());
+        assertEquals(true, type.getMetadata().isApplicationPreConfiguredStatic());
+
         EventType[] types = ((EPServiceProviderSPI)epService).getEventAdapterService().getAllTypes();
         assertEquals(1, types.length);
 

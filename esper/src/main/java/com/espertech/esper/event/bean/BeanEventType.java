@@ -516,7 +516,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         deepSuperTypes = new HashSet<EventType>();
         for (Class superClass : supers)
         {
-            EventType superType = eventAdapterService.getBeanEventTypeFactory().createBeanType(superClass.getName(), superClass, isConfigured);
+            EventType superType = eventAdapterService.getBeanEventTypeFactory().createBeanType(superClass.getName(), superClass, false, false, isConfigured);
             deepSuperTypes.add(superType);
         }
     }
@@ -542,7 +542,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         {
             if (!superclass.getName().startsWith("java"))
             {
-                EventType superType = beanEventTypeFactory.createBeanType(superclass.getName(), superclass, false);
+                EventType superType = beanEventTypeFactory.createBeanType(superclass.getName(), superclass, false, false, false);
                 superTypes.add(superType);
             }
         }

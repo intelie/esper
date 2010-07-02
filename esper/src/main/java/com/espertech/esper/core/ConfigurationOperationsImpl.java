@@ -14,18 +14,17 @@ import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineSettingsService;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.variable.VariableExistsException;
+import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableTypeException;
-import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.xml.SchemaModel;
-import com.espertech.esper.event.xml.XSDSchemaMapper;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.VariantEventType;
+import com.espertech.esper.event.xml.SchemaModel;
+import com.espertech.esper.event.xml.XSDSchemaMapper;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.UuidGenerator;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -117,7 +116,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addBeanType(eventTypeName, javaEventClassName, false);
+            eventAdapterService.addBeanType(eventTypeName, javaEventClassName, false, false, true, true);
         }
         catch (EventAdapterException t)
         {
@@ -129,7 +128,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addBeanType(eventTypeName, javaEventClass, true);
+            eventAdapterService.addBeanType(eventTypeName, javaEventClass, false, true, true);
         }
         catch (EventAdapterException t)
         {
@@ -141,7 +140,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addBeanType(javaEventClass.getSimpleName(), javaEventClass, true);
+            eventAdapterService.addBeanType(javaEventClass.getSimpleName(), javaEventClass, false, true, true);
         }
         catch (EventAdapterException t)
         {
@@ -154,7 +153,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         Map<String, Object> types = createPropertyTypes(typeMap);
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeName, types, null, true, false, false);
+            eventAdapterService.addNestableMapType(eventTypeName, types, null, false, true, true, false, false);
         }
         catch (EventAdapterException t)
         {
@@ -166,7 +165,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeName, typeMap, null, true, false, false);
+            eventAdapterService.addNestableMapType(eventTypeName, typeMap, null, false, true, true, false, false);
         }
         catch (EventAdapterException t)
         {
@@ -184,7 +183,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeName, typeMap, superTypeNames, true, false, false);
+            eventAdapterService.addNestableMapType(eventTypeName, typeMap, superTypeNames, false, true, true, false, false);
         }
         catch (EventAdapterException t)
         {
@@ -210,7 +209,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
         try
         {
-            eventAdapterService.addXMLDOMType(eventTypeName, xmlDOMEventTypeDesc, schemaModel);
+            eventAdapterService.addXMLDOMType(eventTypeName, xmlDOMEventTypeDesc, schemaModel, false);
         }
         catch (EventAdapterException t)
         {
