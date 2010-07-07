@@ -37,6 +37,7 @@ import org.antlr.runtime.tree.TreeNodeStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -597,9 +598,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 {
                     String name = parent.getChild(i).getChild(0).getText();
                     String type = parent.getChild(i).getChild(1).getText();
+                    boolean array = parent.getChild(i).getChildCount() > 2;
                     Class clazz = JavaClassHelper.getClassForSimpleName(type);
                     if (clazz == null) {
                         throw new ASTWalkException("The type '" + type + "' is not a recognized type");
+                    }
+                    if (array) {
+                        clazz = Array.newInstance(clazz, 0).getClass();
                     }
                     SelectClauseExprRawSpec selectElement = new SelectClauseExprRawSpec(new ExprConstantNode(clazz), name);
                     result.add(selectElement);

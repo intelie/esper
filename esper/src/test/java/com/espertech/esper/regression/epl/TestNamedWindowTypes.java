@@ -204,6 +204,22 @@ public class TestNamedWindowTypes extends TestCase
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"S1", 99L, 99L});
     }
 
+    public void testCreateTableArray()
+    {
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() (myvalue string[])";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsertOne = "insert into MyWindow select {'a','b'} as myvalue from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsertOne);
+        
+        sendSupportBean("E1", 1L, 10L);
+        String[] values = (String[]) listenerWindow.assertOneGetNewAndReset().get("myvalue");
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"a","b"}, values);
+    }
+
     public void testCreateTableSyntax()
     {
         // create window
