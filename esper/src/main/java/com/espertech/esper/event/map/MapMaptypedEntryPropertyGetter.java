@@ -40,6 +40,9 @@ public class MapMaptypedEntryPropertyGetter implements MapEventPropertyGetter {
         }
         if (!(value instanceof Map))
         {
+            if (value instanceof EventBean) {
+                return eventBeanEntryGetter.get((EventBean) value);
+            }
             return null;
         }
 
@@ -93,6 +96,9 @@ public class MapMaptypedEntryPropertyGetter implements MapEventPropertyGetter {
         }
         if (!(value instanceof Map))
         {
+            if (value instanceof EventBean) {
+                return eventBeanEntryGetter.getFragment((EventBean) value);
+            }
             return null;
         }
 

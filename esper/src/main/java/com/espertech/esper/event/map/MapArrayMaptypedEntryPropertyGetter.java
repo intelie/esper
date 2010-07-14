@@ -54,6 +54,9 @@ public class MapArrayMaptypedEntryPropertyGetter implements MapEventPropertyGett
         Object valueMap = Array.get(value, index);
         if (!(valueMap instanceof Map))
         {
+            if (value instanceof EventBean) {
+                return eventBeanEntryGetter.get((EventBean) value);
+            }
             return null;
         }
 
@@ -116,6 +119,9 @@ public class MapArrayMaptypedEntryPropertyGetter implements MapEventPropertyGett
         Object valueMap = Array.get(value, index);
         if (!(valueMap instanceof Map))
         {
+            if (value instanceof EventBean) {
+                return eventBeanEntryGetter.getFragment((EventBean) value);
+            }
             return null;
         }
 

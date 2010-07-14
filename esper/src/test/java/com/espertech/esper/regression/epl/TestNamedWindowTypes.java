@@ -204,6 +204,21 @@ public class TestNamedWindowTypes extends TestCase
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"S1", 99L, 99L});
     }
 
+    public void testCreateSchemaModelAfter()
+    {
+        epService.getEPAdministrator().createEPL("create schema EventTypeOne (hsi int)");
+        epService.getEPAdministrator().createEPL("create schema EventTypeTwo (event EventTypeOne)");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("create window NamedWidnow.std:unique(event.hsi) as EventTypeTwo");
+        epService.getEPAdministrator().createEPL("on EventTypeOne as ev insert into NamedWidnow select ev as event");
+
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("hsi", 10);
+        epService.getEPRuntime().sendEvent(event, "EventTypeOne");
+        EventBean result = stmt.iterator().next();
+        EventPropertyGetter getter = result.getEventType().getGetter("event.hsi");
+        assertEquals(10, getter.get(result));
+    }
+
     public void testCreateTableArray()
     {
         // create window

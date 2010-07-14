@@ -909,6 +909,24 @@ public class MapEventType implements EventTypeSPI
                     return "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" + setOneEventType.getName() + "' but receives event type '" + setTwoEventType.getName() + "'";
                 }
             }
+            else if ((setTwoType instanceof String) && (setOneType instanceof EventType))
+            {
+                if (!((EventType) setOneType).getName().equals(setTwoType))
+                {
+                    EventType setOneEventType = (EventType) setOneType;
+                    String setTwoEventType = (String) setTwoType;
+                    return "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" + setOneEventType.getName() + "' but receives event type '" + setTwoEventType + "'";
+                }
+            }
+            else if ((setTwoType instanceof EventType) && (setOneType instanceof String))
+            {
+                if (!((EventType) setTwoType).getName().equals(setOneType))
+                {
+                    String setOneEventType = (String) setOneType;
+                    EventType setTwoEventType = (EventType) setTwoType;
+                    return "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" + setOneEventType + "' but receives event type '" + setTwoEventType.getName() + "'";
+                }
+            }
             else
             {
                 String typeOne = getTypeName(setOneType);
