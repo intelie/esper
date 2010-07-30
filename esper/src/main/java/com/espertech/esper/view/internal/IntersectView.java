@@ -61,12 +61,6 @@ public class IntersectView extends ViewSupport implements LastPostObserver, Clon
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        // The assumption is that either remove stream (named window deletes) or insert stream (new events) are indicated
-        if ((newData != null) && (oldData != null))
-        {
-            log.error("Intersection view received both insert and remove stream");
-        }
-
         if (newData != null)
         {
             // new events must go to all views

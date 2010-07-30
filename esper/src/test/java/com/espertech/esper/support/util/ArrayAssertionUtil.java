@@ -1010,4 +1010,20 @@ public class ArrayAssertionUtil
     }
 
     private static final Log log = LogFactory.getLog(ArrayAssertionUtil.class);
+
+    public static EventBean[] sort(Iterator<EventBean> oldevents, final String property) {
+        return sort(iteratorToArray(oldevents), property);
+    }
+
+    public static EventBean[] sort(EventBean[] oldevents, final String property) {
+        List<EventBean> list = Arrays.asList(oldevents);
+        Collections.sort(list, new Comparator<EventBean>() {
+            public int compare(EventBean o1, EventBean o2) {
+                Comparable val1 = (Comparable) o1.get(property);
+                Comparable val2 = (Comparable) o2.get(property);
+                return val1.compareTo(val2);
+            }
+        });
+        return list.toArray(new EventBean[list.size()]);
+    }
 }
