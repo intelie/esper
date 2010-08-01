@@ -14,7 +14,9 @@ public class SupportPluginLoader implements PluginLoader
     private static List<String> names = new LinkedList<String>();
     private static List<Properties> props = new LinkedList<Properties>();
     private static List<Date> postInitializes = new LinkedList<Date>();
-    private static List<Date> destroys = new LinkedList<Date>();
+    private static List<Properties> destroys = new LinkedList<Properties>();
+
+    private Properties properties;
 
     public static void reset()
     {
@@ -39,7 +41,7 @@ public class SupportPluginLoader implements PluginLoader
         return postInitializes;
     }
 
-    public static List<Date> getDestroys()
+    public static List<Properties> getDestroys()
     {
         return destroys;
     }
@@ -51,12 +53,13 @@ public class SupportPluginLoader implements PluginLoader
 
     public void destroy()
     {
-        destroys.add(new Date());
+        destroys.add(properties);
     }
 
     public void init(PluginLoaderInitContext context)
     {
         names.add(context.getName());
         props.add(context.getProperties());
+        properties = context.getProperties();
     }
 }

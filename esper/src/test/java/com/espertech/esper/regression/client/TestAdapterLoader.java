@@ -20,30 +20,41 @@ public class TestAdapterLoader extends TestCase
 
     public void testAdapterLoader() throws Exception
     {
+        // Assure destroy order ESPER-489
         Configuration config = SupportConfigFactory.getConfiguration();
 
         Properties props = new Properties();
         props.put("name", "val");
         config.addPluginLoader("MyLoader", SupportPluginLoader.class.getName(), props);
 
+        props = new Properties();
+        props.put("name2", "val2");
+        config.addPluginLoader("MyLoader2", SupportPluginLoader.class.getName(), props);
+
         EPServiceProvider service = EPServiceProviderManager.getProvider("TestAdapterLoader", config);
-        assertEquals(1, SupportPluginLoader.getNames().size());
-        assertEquals(1, SupportPluginLoader.getPostInitializes().size());
+        assertEquals(2, SupportPluginLoader.getNames().size());
+        assertEquals(2, SupportPluginLoader.getPostInitializes().size());
         assertEquals("MyLoader", SupportPluginLoader.getNames().get(0));
+        assertEquals("MyLoader2", SupportPluginLoader.getNames().get(1));
         assertEquals("val", SupportPluginLoader.getProps().get(0).get("name"));
+        assertEquals("val2", SupportPluginLoader.getProps().get(1).get("name2"));
 
         EPServiceProviderSPI spi = (EPServiceProviderSPI) service;
         Object loader = spi.getEngineEnvContext().getEnvironment().get("plugin-loader/MyLoader");
         assertTrue(loader instanceof SupportPluginLoader);
-                
+        loader = spi.getEngineEnvContext().getEnvironment().get("plugin-loader/MyLoader2");
+        assertTrue(loader instanceof SupportPluginLoader);
+
         SupportPluginLoader.getPostInitializes().clear();
         SupportPluginLoader.getNames().clear();
         service.initialize();
-        assertEquals(1, SupportPluginLoader.getPostInitializes().size());
-        assertEquals(1, SupportPluginLoader.getNames().size());
+        assertEquals(2, SupportPluginLoader.getPostInitializes().size());
+        assertEquals(2, SupportPluginLoader.getNames().size());
 
         service.destroy();
-        assertEquals(1, SupportPluginLoader.getDestroys().size());
+        assertEquals(2, SupportPluginLoader.getDestroys().size());
+        assertEquals("val2", SupportPluginLoader.getDestroys().get(0).get("name2"));
+        assertEquals("val", SupportPluginLoader.getDestroys().get(1).get("name"));
     }
 
     public void testDestroyObtainTwice() {

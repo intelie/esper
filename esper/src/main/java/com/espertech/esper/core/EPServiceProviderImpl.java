@@ -35,6 +35,8 @@ import org.apache.commons.logging.LogFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -254,16 +256,23 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
                 Thread.currentThread().interrupt();
             }
 
-            // plugin-loaders
+            // plugin-loaders - destroy in opposite order
             List<ConfigurationPluginLoader> pluginLoaders = engine.getServices().getConfigSnapshot().getPluginLoaders();
-            for (ConfigurationPluginLoader config : pluginLoaders) {
-                PluginLoader plugin;
-                try {
-                    plugin = (PluginLoader) engine.getServices().getEngineEnvContext().lookup("plugin-loader/" + config.getLoaderName());
-                    plugin.destroy();
-                }
-                catch (NamingException e) {
-                    // expected
+            if (!pluginLoaders.isEmpty()) {
+                List<ConfigurationPluginLoader> reversed = new ArrayList<ConfigurationPluginLoader>(pluginLoaders);
+                Collections.reverse(reversed);
+                for (ConfigurationPluginLoader config : reversed) {
+                    PluginLoader plugin;
+                    try {
+                        plugin = (PluginLoader) engine.getServices().getEngineEnvContext().lookup("plugin-loader/" + config.getLoaderName());
+                        plugin.destroy();
+                    }
+                    catch (NamingException e) {
+                        // expected
+                    }
+                    catch (RuntimeException e) {
+                        log.error("Error destroying plug-in loader: " + config.getLoaderName(), e);
+                    }
                 }
             }
             
