@@ -54,7 +54,7 @@ public class AxiomEventRepresentation implements PlugInEventRepresentation
             config = (ConfigurationEventTypeAxiom) eventTypeContext.getTypeInitializer();
         }
 
-        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(config.getRootElementName(), false);
+        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(config.getRootElementName(), true, false);
         AxiomXMLEventType eventType = new AxiomXMLEventType(metadata, config);
         types.put(config.getRootElementName(), eventType);  // keep a handle on the types created to allow dynamic event reflection via bean factory
         return new AxiomEventTypeHandler(eventType);

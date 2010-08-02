@@ -235,7 +235,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		propertyTypes = resolvePropertyTypes(givenPropertyTypes);
 		if(givenPropertyTypes == null)
 		{
-			spi.getEventAdapterService().addNestableMapType(eventTypeName, new HashMap<String, Object>(propertyTypes), null, true, false, false);
+			spi.getEventAdapterService().addNestableMapType(eventTypeName, new HashMap<String, Object>(propertyTypes), null, true, true, true, false, false);
 		}
 
 		coercer.setPropertyTypes(propertyTypes);
@@ -289,7 +289,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		{
 			if(propertyTypesGiven != null)
 			{
-				eventAdapterService.addNestableMapType(eventTypeName, new HashMap<String, Object>(propertyTypesGiven), null, true, false, false);
+				eventAdapterService.addNestableMapType(eventTypeName, new HashMap<String, Object>(propertyTypesGiven), null, true, true, true, false, false);
 			}
 			return propertyTypesGiven;
 		}
