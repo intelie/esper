@@ -63,12 +63,15 @@
       
         <para>
 			Since the <literal>getProvider</literal> methods return the same cached engine instance for each URI, there is no need to statically cache an engine instance in your application.
-			An existing Esper engine instance can be reset via the <literal>initialize</literal> method on the <literal>EPServiceProvider</literal> instance. This operation stops and removes all statements and 
-			resets the engine to the configuration provided when the engine instance was originally obtained. After an <literal>initialize</literal> the engine is ready for use.
         </para>
 
         <para>
-			An existing Esper engine instance can be reset via the <literal>initialize</literal> method on the <literal>EPServiceProvider</literal> instance. This operation stops and removes all statements in the Engine as well as restores the engine to the original configuration supplied when the engine instance for that URI was obtained. If no configuration is provided, an empty configuration applies.
+			An existing Esper engine instance can be reset via the <literal>initialize</literal> method on the <literal>EPServiceProvider</literal> instance. This operation stops and removes all statements and 
+			resets the engine to the configuration provided when the engine instance for that URI was obtained. If no configuration is provided, an empty (default) configuration applies.
+        </para>
+
+        <para>
+			After <literal>initialize</literal> your application must obtain new administrative and runtime services. Any administrative and runtime services obtained before the initialize are invalid and have undefined behavior.
         </para>
 
         <para>

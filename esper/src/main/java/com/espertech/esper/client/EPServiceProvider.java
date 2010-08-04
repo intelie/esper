@@ -40,6 +40,10 @@ public interface EPServiceProvider
      * Frees any resources associated with this engine instance, and leaves the engine instance
      * ready for further use.
      * <p>
+     * Do not use the {@link EPAdministrator} administrative and {@link EPRuntime} runtime instances obtained before the
+     * initialize (including related services such as configuration, module management, etc.).
+     * Your application must obtain new administrative and runtime instances.
+     * <p>
      * Retains the existing configuration of the engine instance but forgets any runtime configuration changes.
      * <p>
      * Stops and destroys any existing statement resources such as filters, patterns, expressions, views.
