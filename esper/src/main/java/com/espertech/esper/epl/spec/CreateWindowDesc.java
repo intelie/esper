@@ -25,6 +25,7 @@ public class CreateWindowDesc implements MetaDefItem, Serializable
     private String insertFromWindow;
     private ExprNode insertFilter;
     private StreamSpecOptions streamSpecOptions;
+    private List<ColumnDesc> columns;
     private static final long serialVersionUID = 3889989851649484639L;
 
     /**
@@ -35,13 +36,14 @@ public class CreateWindowDesc implements MetaDefItem, Serializable
      * @param insertFilter optional filter expression
      * @param streamSpecOptions options such as retain-union etc
      */
-    public CreateWindowDesc(String windowName, List<ViewSpec> viewSpecs, StreamSpecOptions streamSpecOptions, boolean insert, ExprNode insertFilter)
+    public CreateWindowDesc(String windowName, List<ViewSpec> viewSpecs, StreamSpecOptions streamSpecOptions, boolean insert, ExprNode insertFilter, List<ColumnDesc> columns)
     {
         this.windowName = windowName;
         this.viewSpecs = viewSpecs;
         this.isInsert = insert;
         this.insertFilter = insertFilter;
         this.streamSpecOptions = streamSpecOptions;
+        this.columns = columns;
     }
 
     /**
@@ -114,5 +116,10 @@ public class CreateWindowDesc implements MetaDefItem, Serializable
     public StreamSpecOptions getStreamSpecOptions()
     {
         return streamSpecOptions;
+    }
+
+    public List<ColumnDesc> getColumns()
+    {
+        return columns;
     }
 }

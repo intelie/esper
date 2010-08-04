@@ -1043,7 +1043,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                     // set the window to insert from
                     spec.getCreateWindowDesc().setInsertFromWindow(consumerStreamSpec.getWindowName());
                 }
-                Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeName, spec, eplStatement, statementContext);
+                Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeName, spec.getCreateWindowDesc().getColumns(), spec, eplStatement, statementContext);
                 eventTypeReferences.add(((EventTypeSPI)newFilter.getFirst().getFilterForEventType()).getMetadata().getPrimaryName());
 
                 // view must be non-empty list
@@ -1138,6 +1138,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     // It creates a new event type representing the window type and a sets the type selected on the filter stream spec.
     private static Pair<FilterSpecCompiled, SelectClauseSpecRaw> handleCreateWindow(EventType selectFromType,
                                            String selectFromTypeName,
+                                           List<ColumnDesc> columns,
                                            StatementSpecRaw spec,
                                            String eplStatement,
                                            StatementContext statementContext)
@@ -1153,20 +1154,29 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // If no columns selected, simply create a wrapper type
         // Build a list of properties
         SelectClauseSpecRaw newSelectClauseSpecRaw = new SelectClauseSpecRaw();
-        Map<String, Object> properties = new HashMap<String, Object>();
-        for (NamedWindowSelectedProps selectElement : select)
-        {
-            if (selectElement.getFragmentType() != null)
+        Map<String, Object> properties;
+        boolean hasProperties = false;
+        if ((columns != null) && (!columns.isEmpty())) {
+            properties = TypeBuilderUtil.buildType(columns);
+            hasProperties = true;
+        }
+        else {
+            properties = new HashMap<String, Object>();
+            for (NamedWindowSelectedProps selectElement : select)
             {
-                properties.put(selectElement.getAssignedName(), selectElement.getFragmentType());
-            }
-            else
-            {
-                properties.put(selectElement.getAssignedName(), selectElement.getSelectExpressionType());
-            }
+                if (selectElement.getFragmentType() != null)
+                {
+                    properties.put(selectElement.getAssignedName(), selectElement.getFragmentType());
+                }
+                else
+                {
+                    properties.put(selectElement.getAssignedName(), selectElement.getSelectExpressionType());
+                }
 
-            // Add any properties to the new select clause for use by consumers to the statement itself
-            newSelectClauseSpecRaw.add(new SelectClauseExprRawSpec(new ExprIdentNode(selectElement.getAssignedName()), null));
+                // Add any properties to the new select clause for use by consumers to the statement itself
+                newSelectClauseSpecRaw.add(new SelectClauseExprRawSpec(new ExprIdentNode(selectElement.getAssignedName()), null));
+                hasProperties = true;
+            }
         }
 
         // Create Map or Wrapper event type from the select clause of the window.
@@ -1184,7 +1194,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         else
         {
             // Some columns selected, use the types of the columns
-            if (spec.getSelectClauseSpec().getSelectExprList().size() > 0 && !isOnlyWildcard)
+            if (hasProperties && !isOnlyWildcard)
             {
                 targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, properties, null, false, true, false);
             }

@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.property.PropertyEvaluator;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements Str
 {
     private String windowName;
     private List<ExprNode> filterExpressions;
+    private PropertyEvaluator optPropertyEvaluator;
     private static final long serialVersionUID = -8549850729310756432L;
 
     /**
@@ -29,11 +31,12 @@ public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements Str
      * @param filterExpressions - the named window filters
      * @param streamSpecOptions - additional options such as unidirectional stream in a join
      */
-    public NamedWindowConsumerStreamSpec(String windowName, String optionalAsName, List<ViewSpec> viewSpecs, List<ExprNode> filterExpressions, StreamSpecOptions streamSpecOptions)
+    public NamedWindowConsumerStreamSpec(String windowName, String optionalAsName, List<ViewSpec> viewSpecs, List<ExprNode> filterExpressions, StreamSpecOptions streamSpecOptions, PropertyEvaluator optPropertyEvaluator)
     {
         super(optionalAsName, viewSpecs, streamSpecOptions);
         this.windowName = windowName;
         this.filterExpressions = filterExpressions;
+        this.optPropertyEvaluator = optPropertyEvaluator;
     }
 
     /**
@@ -52,5 +55,10 @@ public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements Str
     public List<ExprNode> getFilterExpressions()
     {
         return filterExpressions;
+    }
+
+    public PropertyEvaluator getOptPropertyEvaluator()
+    {
+        return optPropertyEvaluator;
     }
 }

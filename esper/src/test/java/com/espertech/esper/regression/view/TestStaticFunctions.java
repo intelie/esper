@@ -34,6 +34,20 @@ public class TestStaticFunctions extends TestCase
 	    stream = " from " + SupportMarketDataBean.class.getName() +".win:length(5) ";
 	}
 
+    public void testEscape() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addImport(SupportStaticMethodLib.class.getName());
+
+        statementText = "select SupportStaticMethodLib.`join`(abcstream) as value from SupportBean abcstream";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(statementText);
+        listener = new SupportUpdateListener();
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 99));
+
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), "value".split(","), new Object[] {"E1 99"});        
+    }
+
     public void testReturnsMapIndexProperty()
     {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);

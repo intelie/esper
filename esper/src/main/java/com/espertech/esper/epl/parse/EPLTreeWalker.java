@@ -18,18 +18,17 @@ import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportUndefinedException;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
+import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.pattern.guard.GuardEnum;
 import com.espertech.esper.rowregex.*;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.*;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.PlaceholderParseException;
 import com.espertech.esper.util.PlaceholderParser;
 import org.antlr.runtime.tree.Tree;
@@ -564,7 +563,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         StreamSpecOptions streamSpecOptions = new StreamSpecOptions(false,isRetainUnion,isRetainIntersection);
 
         // handle table-create clause, i.e. (col1 type, col2 type)
-        statementSpec.getSelectClauseSpec().addAll(getColTypeList(node));
+        List<ColumnDesc> colums = getColTypeList(node);
 
         boolean isInsert = false;
         ExprNode insertWhereExpr = null;
@@ -578,17 +577,18 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, streamSpecOptions, isInsert, insertWhereExpr);
+        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, streamSpecOptions, isInsert, insertWhereExpr, colums);
         statementSpec.setCreateWindowDesc(desc);
 
+        // this is good for indicating what is being selected from
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>(), null);
         FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, streamSpecOptions);
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 
-    private List<SelectClauseElementRaw> getColTypeList(Tree node)
+    private List<ColumnDesc> getColTypeList(Tree node)
     {
-        List<SelectClauseElementRaw> result = new ArrayList<SelectClauseElementRaw>();
+        List<ColumnDesc> result = new ArrayList<ColumnDesc>();
         for (int nodeNum = 0; nodeNum < node.getChildCount(); nodeNum++) {
             if (node.getChild(nodeNum).getType() == CREATE_COL_TYPE_LIST)
             {
@@ -597,12 +597,11 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 {
                     String name = parent.getChild(i).getChild(0).getText();
                     String type = parent.getChild(i).getChild(1).getText();
-                    Class clazz = JavaClassHelper.getClassForSimpleName(type);
-                    if (clazz == null) {
-                        throw new ASTWalkException("The type '" + type + "' is not a recognized type");
+                    boolean isArray = false;
+                    if (parent.getChild(i).getChildCount() > 2) {
+                        isArray = true;
                     }
-                    SelectClauseExprRawSpec selectElement = new SelectClauseExprRawSpec(new ExprConstantNode(clazz), name);
-                    result.add(selectElement);
+                    result.add(new ColumnDesc(name, type, isArray));
                 }
             }
         }
@@ -636,23 +635,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         String schemaName = node.getChild(0).getText();
 
-        List<ColumnDesc> columnTypes = new ArrayList<ColumnDesc>();
-        for (int nodeNum = 0; nodeNum < node.getChildCount(); nodeNum++) {
-            if (node.getChild(nodeNum).getType() == CREATE_COL_TYPE_LIST)
-            {
-                Tree parent = node.getChild(nodeNum);
-                for (int i = 0; i < parent.getChildCount(); i++)
-                {
-                    String name = parent.getChild(i).getChild(0).getText();
-                    String type = parent.getChild(i).getChild(1).getText();
-                    boolean isArray = false;
-                    if (parent.getChild(i).getChildCount() > 2) {
-                        isArray = true;
-                    }
-                    columnTypes.add(new ColumnDesc(name, type, isArray));
-                }
-            }
-        }
+        List<ColumnDesc> columnTypes = getColTypeList(node);
 
         // get model-after types (could be multiple for variants)
         Set<String> typeNames = new HashSet<String>();
@@ -1773,7 +1756,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         if (node.getChild(0).getType() == CLASS_IDENT)
         {
             String className = node.getChild(0).getText();
-            String methodName = node.getChild(1).getText();
+            String methodName = ASTConstantHelper.removeTicks(node.getChild(1).getText());
             astExprNodeMap.put(node, new ExprStaticMethodNode(className, methodName,  configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
             return;
         }

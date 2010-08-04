@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
+import com.espertech.esper.epl.property.PropertyEvaluator;
 import com.espertech.esper.epl.spec.OnTriggerDesc;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
@@ -125,9 +126,9 @@ public class NamedWindowProcessor
      * @param filterList is a list of filter expressions
      * @return consumer view
      */
-    public NamedWindowConsumerView addConsumer(List<ExprNode> filterList, EPStatementHandle statementHandle, StatementStopService statementStopService)
+    public NamedWindowConsumerView addConsumer(List<ExprNode> filterList, PropertyEvaluator optPropertyEvaluator, EPStatementHandle statementHandle, StatementStopService statementStopService)
     {
-        return tailView.addConsumer(filterList, statementHandle, statementStopService);
+        return tailView.addConsumer(filterList, optPropertyEvaluator, statementHandle, statementStopService);
     }
 
     /**

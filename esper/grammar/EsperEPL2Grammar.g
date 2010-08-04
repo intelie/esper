@@ -1287,7 +1287,7 @@ libFunction
 	;	
 	
 funcIdent
-	: IDENT
+	: escapableIdent
 	| max=MAX -> IDENT[$max]
 	| min=MIN -> IDENT[$min]
 	;
@@ -1467,19 +1467,19 @@ patternFilterExpression
 
 classIdentifier
   @init { String identifier = ""; }
-	:	i1=escapableIdent { identifier = $i1.result; }
+	:	i1=escapableStr { identifier = $i1.result; }
 	    ( 
-	    	 DOT i2=escapableIdent { identifier += "." + $i2.result; }
+	    	 DOT i2=escapableStr { identifier += "." + $i2.result; }
 	    )* 
 	    -> ^(CLASS_IDENT[identifier])
 	;
 	
 classIdentifierNonGreedy
   @init { String identifier = ""; } 
-	:	i1=escapableIdent { identifier = $i1.result; }
+	:	i1=escapableStr { identifier = $i1.result; }
 	    ( 
 	    	 options {greedy=false;} :
-	    	 DOT i2=escapableIdent { identifier += "." + $i2.result; }
+	    	 DOT i2=escapableStr { identifier += "." + $i2.result; }
 	    )* 
 	    -> ^(CLASS_IDENT[identifier])
 	;
@@ -1640,11 +1640,16 @@ keywordAllowedIdent returns [String result]
 		|MATCHES { $result = "matches"; }
 	;
 		
-escapableIdent returns [String result]
+escapableStr returns [String result]
 	:	i1=IDENT { $result = $i1.getText(); }
 		|i2=TICKED_STRING_LITERAL { $result = removeTicks($i2.getText()); }
 	;
 	
+escapableIdent
+	:	IDENT 
+		|t=TICKED_STRING_LITERAL -> IDENT[$t]
+	;
+
 timePeriod 	
 	:	
 	(	

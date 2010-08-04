@@ -27,6 +27,7 @@ public class CreateWindowClause implements Serializable
     private List<View> views;
     private boolean insert;
     private Expression insertWhereClause;
+    private List<SchemaColumnDesc> columns;
 
     /**
      * Ctor.
@@ -251,6 +252,16 @@ public class CreateWindowClause implements Serializable
         this.views = views;
     }
 
+    public List<SchemaColumnDesc> getColumns()
+    {
+        return columns;
+    }
+
+    public void setColumns(List<SchemaColumnDesc> columns)
+    {
+        this.columns = columns;
+    }
+
     /**
      * To-EPL for create-table syntax.
      * @param writer to use
@@ -258,33 +269,42 @@ public class CreateWindowClause implements Serializable
      */
     public void toEPLCreateTablePart(StringWriter writer, SelectClause selectClause)
     {
-        writer.write('(');
         String delimiter = "";
-        for (SelectClauseElement element : selectClause.getSelectList()) {
-            if (!(element instanceof SelectClauseExpression)) {
-                continue;
+        if (columns != null) {
+            writer.write('(');
+            for (SchemaColumnDesc col : columns) {
+                writer.append(delimiter);
+                col.toEPL(writer);
+                delimiter = ", ";
             }
-            SelectClauseExpression expr = (SelectClauseExpression) element;
-            if (!(expr.getExpression() instanceof ConstantExpression)) {
-                continue;
-            }
-            ConstantExpression constant = (ConstantExpression) expr.getExpression();
-            Class clazz;
-            try
-            {
-                clazz = JavaClassHelper.getClassForName(constant.getConstantType());
-            }
-            catch (ClassNotFoundException e)
-            {
-                continue;
-            }
-
-            writer.write(delimiter);
-            writer.append(expr.getAsName());
-            writer.write(' ');
-            writer.append(clazz.getSimpleName().toLowerCase());
-            delimiter = ", ";
+            writer.write(')');
         }
-        writer.write(')');
+        else {
+            for (SelectClauseElement element : selectClause.getSelectList()) {
+                if (!(element instanceof SelectClauseExpression)) {
+                    continue;
+                }
+                SelectClauseExpression expr = (SelectClauseExpression) element;
+                if (!(expr.getExpression() instanceof ConstantExpression)) {
+                    continue;
+                }
+                ConstantExpression constant = (ConstantExpression) expr.getExpression();
+                Class clazz;
+                try
+                {
+                    clazz = JavaClassHelper.getClassForName(constant.getConstantType());
+                }
+                catch (ClassNotFoundException e)
+                {
+                    continue;
+                }
+
+                writer.write(delimiter);
+                writer.append(expr.getAsName());
+                writer.write(' ');
+                writer.append(clazz.getSimpleName().toLowerCase());
+                delimiter = ", ";
+            }
+        }
     }
 }

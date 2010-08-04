@@ -24,6 +24,75 @@ public class TestFilterPropertyNested extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testNamedWindowFilter()
+    {
+        String[] fields = "reviewId".split(",");
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
+
+        epService.getEPAdministrator().createEPL("create window OrderWindow.std:lastevent() as OrderEvent");
+        epService.getEPAdministrator().createEPL("insert into OrderWindow select * from OrderEvent");
+
+        String stmtText = "select reviewId from OrderWindow[books][reviews] bookReviews order by reviewId asc";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventOne());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{1}, {2}, {10}});
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventFour());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{201}});
+        listener.reset();
+    }
+
+    public void testNamedWindowSubquery()
+    {
+        String[] fields = "string,totalPrice".split(",");
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        epService.getEPAdministrator().createEPL("create window OrderWindow.std:lastevent() as OrderEvent");
+        epService.getEPAdministrator().createEPL("insert into OrderWindow select * from OrderEvent");
+
+        String stmtText = "select *, (select sum(price) from OrderWindow[books]) as totalPrice from SupportBean";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventOne());
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"E1", 24d+35d+27d}});
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventFour());
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"E2", 15d+13d}});
+        listener.reset();
+    }
+
+    public void testNamedWindowOnTrigger()
+    {
+        String[] fields = "string,intPrimitive".split(",");
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        epService.getEPAdministrator().createEPL("create window SupportBeanWindow.std:lastevent() as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into SupportBeanWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("create window OrderWindow.std:lastevent() as OrderEvent");
+        epService.getEPAdministrator().createEPL("insert into OrderWindow select * from OrderEvent");
+
+        String stmtText = "on OrderWindow[books] owb select sbw.* from SupportBeanWindow sbw where string = title";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventFour());
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("Foundation 2", 2));
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventFour());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"Foundation 2", 2}});
+    }
+
     public void testSimple()
     {
         String[] fields = "reviewId".split(",");

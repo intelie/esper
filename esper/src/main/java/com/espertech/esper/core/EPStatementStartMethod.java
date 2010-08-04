@@ -159,29 +159,7 @@ public class EPStatementStartMethod
         try {
             if (!spec.isVariant()) {
                 if (spec.getTypes().isEmpty()) {
-                    Map<String, Object> typing = new HashMap<String, Object>();
-                    Set<String> columnNames = new HashSet<String>();
-                    for (ColumnDesc column : spec.getColumns()) {
-                        boolean added = columnNames.add(column.getName());
-                        if (!added) {
-                            throw new ExprValidationException("Duplicate column name '" + column.getName() + "'");
-                        }
-                        Class plain = JavaClassHelper.getClassForSimpleName(column.getType());
-                        if (plain != null) {
-                            if (column.isArray()) {
-                                plain = Array.newInstance(plain, 0).getClass();
-                            }
-                            typing.put(column.getName(), plain);
-                        }
-                        else {
-                            if (column.isArray()) {
-                                typing.put(column.getName(), column.getType() + "[]");
-                            }
-                            else {
-                                typing.put(column.getName(), column.getType());
-                            }
-                        }
-                    }
+                    Map<String, Object> typing = TypeBuilderUtil.buildType(spec.getColumns());
                     eventType = services.getEventAdapterService().addNestableMapType(spec.getSchemaName(), typing, spec.getInherits(), true, false, false);
                 }
                 else {
@@ -301,7 +279,7 @@ public class EPStatementStartMethod
         {
             NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
             NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
-            eventStreamParentViewable = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+            eventStreamParentViewable = processor.addConsumer(namedSpec.getFilterExpressions(), namedSpec.getOptPropertyEvaluator(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
             triggereventTypeName = namedSpec.getWindowName();
         }
         else
@@ -880,7 +858,7 @@ public class EPStatementStartMethod
             {
                 NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
                 NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
-                NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+                NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), namedSpec.getOptPropertyEvaluator(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 eventStreamParentViewable[i] = consumerView;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), namedSpec.getOptions(), statementContext);
                 joinAnalysisResult.setNamedWindow(i);
@@ -1558,7 +1536,7 @@ public class EPStatementStartMethod
             {
                 NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) statementSpec.getStreamSpecs().get(0);
                 NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
-                NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+                NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), namedSpec.getOptPropertyEvaluator(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(0, consumerView.getEventType(), namedSpec.getViewSpecs(), namedSpec.getOptions(), statementContext);
                 subselect.setRawEventType(viewFactoryChain.getEventType());
                 subSelectStreamDesc.add(subselect, subselectStreamNumber, consumerView, viewFactoryChain);

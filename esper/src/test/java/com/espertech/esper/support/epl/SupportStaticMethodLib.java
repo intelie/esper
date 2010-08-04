@@ -77,6 +77,10 @@ public class SupportStaticMethodLib
         return values;
     }
 
+    public static String join(SupportBean bean) {
+        return bean.getString() + " " + Integer.toString(bean.getIntPrimitive());
+    }
+
     public static Map[] fetchResult100()
     {
         Map[] result = new Map[100];

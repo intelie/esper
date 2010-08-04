@@ -14,6 +14,8 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.property.PropertyEvaluator;
+import com.espertech.esper.epl.property.PropertyEvaluatorFactory;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.client.EventType;
@@ -82,8 +84,12 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
             List<ExprNode> validatedNodes = FilterSpecCompiler.validateAllowSubquery(rawFilterSpec.getFilterExpressions(), streamTypeService, context, null, null);
 
+            PropertyEvaluator optionalPropertyEvaluator = null;
+            if (rawFilterSpec.getOptionalPropertyEvalSpec() != null) {
+                optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(rawFilterSpec.getOptionalPropertyEvalSpec(), namedWindowType, this.getOptionalStreamName(), context.getEventAdapterService(), context.getMethodResolutionService(), context.getTimeProvider(), context.getVariableService(), context.getEngineURI());
+            }
             eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryName());
-            return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.getOptions());
+            return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.getOptions(), optionalPropertyEvaluator);
         }
 
         EventType eventType = null;
@@ -122,7 +128,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
      * @return event type
      * @throws ExprValidationException if the info cannot be resolved
      */
-    protected static EventType resolveType(String engineURI, String eventName, EventAdapterService eventAdapterService, URI[] optionalResolutionURIs)
+    public static EventType resolveType(String engineURI, String eventName, EventAdapterService eventAdapterService, URI[] optionalResolutionURIs)
             throws ExprValidationException
     {
         EventType eventType = eventAdapterService.getExistsTypeByName(eventName);

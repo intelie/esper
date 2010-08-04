@@ -264,6 +264,7 @@ public class StatementSpecMapper
         CreateWindowClause clause = new CreateWindowClause(createWindowDesc.getWindowName(), unmapViews(createWindowDesc.getViewSpecs(), unmapContext));
         clause.setInsert(createWindowDesc.isInsert());
         clause.setInsertWhereClause(filter);
+        clause.setColumns(unmapColumns(createWindowDesc.getColumns()));
         model.setCreateWindow(clause);
     }
 
@@ -296,10 +297,7 @@ public class StatementSpecMapper
         {
             return;
         }
-        List<SchemaColumnDesc> columns = new ArrayList<SchemaColumnDesc>();
-        for (ColumnDesc col : desc.getColumns()) {
-            columns.add(new SchemaColumnDesc(col.getName(), col.getType(), col.isArray()));
-        }
+        List<SchemaColumnDesc> columns = unmapColumns(desc.getColumns());
         model.setCreateSchema(new CreateSchemaClause(desc.getSchemaName(), desc.getTypes(), columns, desc.getInherits(), desc.isVariant()));
     }
 
@@ -890,7 +888,8 @@ public class StatementSpecMapper
         {
             insertFromWhereExpr = mapExpressionDeep(createWindow.getInsertWhereClause(), mapContext);
         }
-        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews(), mapContext), new StreamSpecOptions(), createWindow.isInsert(), insertFromWhereExpr));
+        List<ColumnDesc> columns = mapColumns(createWindow.getColumns());
+        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews(), mapContext), new StreamSpecOptions(), createWindow.isInsert(), insertFromWhereExpr,  columns));
     }
 
     private static void mapCreateIndex(CreateIndexClause clause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
@@ -949,11 +948,30 @@ public class StatementSpecMapper
         {
             return;
         }
-        List<ColumnDesc> columns = new ArrayList<ColumnDesc>();
-        for (SchemaColumnDesc col : clause.getColumns()) {
-            columns.add(new ColumnDesc(col.getName(), col.getType(), col.isArray()));
-        }
+        List<ColumnDesc> columns = mapColumns(clause.getColumns());
         raw.setCreateSchemaDesc(new CreateSchemaDesc(clause.getSchemaName(), clause.getTypes(), columns, clause.getInherits(), clause.isVariant()));
+    }
+
+    private static List<ColumnDesc> mapColumns(List<SchemaColumnDesc> columns) {
+        if (columns == null) {
+            return null;
+        }
+        List<ColumnDesc> result = new ArrayList<ColumnDesc>();
+        for (SchemaColumnDesc col : columns) {
+            result.add(new ColumnDesc(col.getName(), col.getType(), col.isArray()));
+        }
+        return result;
+    }
+
+    private static List<SchemaColumnDesc> unmapColumns(List<ColumnDesc> columns) {
+        if (columns == null) {
+            return null;
+        }
+        List<SchemaColumnDesc> result = new ArrayList<SchemaColumnDesc>();
+        for (ColumnDesc col : columns) {
+            result.add(new SchemaColumnDesc(col.getName(), col.getType(), col.isArray()));
+        }
+        return result;
     }
 
     private static InsertIntoDesc mapInsertInto(InsertIntoClause insertInto)

@@ -8,11 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
+import com.espertech.esper.collection.ArrayDequeJDK6Backport;
+import com.espertech.esper.collection.FlushedEventBuffer;
 import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.property.PropertyEvaluator;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.StatementStopService;
@@ -35,7 +38,9 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
     private final EventType eventType;
     private final NamedWindowTailView tailView;
     private final ExprEvaluatorContext exprEvaluatorContext;
+    private final PropertyEvaluator optPropertyEvaluator;
     private EventBean[] eventPerStream = new EventBean[1];
+    private final FlushedEventBuffer optPropertyContainedBuffer;
 
     /**
      * Ctor.
@@ -46,12 +51,20 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
      * @param exprEvaluatorContext context for expression evalauation
      */
     public NamedWindowConsumerView(List<ExprNode> filterList,
+                                   PropertyEvaluator optPropertyEvaluator,
                                    EventType eventType,
                                    StatementStopService statementStopService,
                                    NamedWindowTailView tailView,
                                    ExprEvaluatorContext exprEvaluatorContext)
     {
         this.filterList = filterList;
+        this.optPropertyEvaluator = optPropertyEvaluator;
+        if (optPropertyEvaluator != null) {
+            optPropertyContainedBuffer = new FlushedEventBuffer();
+        }
+        else {
+            optPropertyContainedBuffer = null;
+        }
         this.eventType = eventType;
         this.tailView = tailView;
         this.exprEvaluatorContext = exprEvaluatorContext;
@@ -74,10 +87,31 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
             oldData = passFilter(oldData, false, exprEvaluatorContext);
         }
 
+        if (optPropertyEvaluator != null) {
+            newData = getUnpacked(newData);
+            oldData = getUnpacked(oldData);
+        }
+
         if ((newData != null) || (oldData != null))
         {
             updateChildren(newData, oldData);
         }
+    }
+
+    private EventBean[] getUnpacked(EventBean[] data)
+    {
+        if (data == null) {
+            return null;
+        }
+        if (data.length == 0) {
+            return data;
+        }
+
+        for (int i = 0; i < data.length; i++) {
+            EventBean[] unpacked = optPropertyEvaluator.getProperty(data[i], exprEvaluatorContext);
+            optPropertyContainedBuffer.add(unpacked);
+        }
+        return optPropertyContainedBuffer.getAndFlush();
     }
 
     private EventBean[] passFilter(EventBean[] eventData, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
@@ -121,6 +155,9 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
 
     public EventType getEventType()
     {
+        if (optPropertyEvaluator != null) {
+            return optPropertyEvaluator.getFragmentEventType();
+        }
         return eventType;
     }
 

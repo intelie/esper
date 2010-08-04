@@ -41,6 +41,19 @@ public class TestNamedWindowTypes extends TestCase
         listenerStmtDelete = new SupportUpdateListener();
     }
 
+    public void testEventTypeColumnDef() {
+        epService.getEPAdministrator().createEPL("create schema SchemaOne(col1 int, col2 int)");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("create window SchemaWindow.std:lastevent() as (s1 SchemaOne)");
+        stmt.addListener(listenerWindow);
+        epService.getEPAdministrator().createEPL("insert into SchemaWindow (s1) select sone from SchemaOne as sone");
+        
+        Map<String, Object> value = new HashMap<String, Object>();
+        value.put("col1", 10);
+        value.put("col2", 11);
+        epService.getEPRuntime().sendEvent(value, "SchemaOne");
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNew(), "s1.col1,s1.col2".split(","),new Object[] {10,11});
+    }
+
     public void testMapTranspose()
     {
         Map<String, Object> innerTypeOne = new HashMap<String, Object>();
