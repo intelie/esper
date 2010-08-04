@@ -613,6 +613,9 @@ public final class FilterSpecCompiler
                             }
                             isMustCoerce = true;
                         }
+                        else {
+                            break;  // assumed not compatible 
+                        }
                     }
 
                     FilterSpecParamInValue inValue;

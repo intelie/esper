@@ -8,14 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+import com.espertech.esper.client.soda.StreamSelector;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.type.StringPatternSet;
+import com.espertech.esper.type.StringPatternSetLike;
+import com.espertech.esper.type.StringPatternSetRegex;
 import com.espertech.esper.util.DOMElementIterator;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.event.EventAdapterException;
-import com.espertech.esper.client.soda.StreamSelector;
-import com.espertech.esper.type.StringPatternSet;
-import com.espertech.esper.type.StringPatternSetRegex;
-import com.espertech.esper.type.StringPatternSetLike;
-import com.espertech.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -28,17 +27,17 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * Parser for configuration XML.
@@ -182,7 +181,7 @@ class ConfigurationParser {
 
     private static void handleEventTypeAutoNames(Configuration configuration, Element element)
     {
-        String name = element.getAttributes().getNamedItem("package-name").getTextContent();
+        String name = getRequiredAttribute(element, "package-name");
         configuration.addEventTypeAutoName(name);
     }
 
@@ -240,8 +239,8 @@ class ConfigurationParser {
 		NodeList propertyList = eventTypeElement.getElementsByTagName("map-property");
 		for (int i = 0; i < propertyList.getLength(); i++)
 	    {
-	        String nameProperty = propertyList.item(i).getAttributes().getNamedItem("name").getTextContent();
-	        String clazz = propertyList.item(i).getAttributes().getNamedItem("class").getTextContent();
+	        String nameProperty = getRequiredAttribute(propertyList.item(i), "name");
+	        String clazz = getRequiredAttribute(propertyList.item(i), "class");
 	        propertyTypeNames.put(nameProperty, clazz);
 	    }
     	configuration.addEventType(name, propertyTypeNames);
@@ -249,7 +248,7 @@ class ConfigurationParser {
 
     private static void handleXMLDOM(String name, Configuration configuration, Element xmldomElement)
     {
-        String rootElementName = xmldomElement.getAttributes().getNamedItem("root-element-name").getTextContent();
+        String rootElementName = getRequiredAttribute(xmldomElement, "root-element-name");
         String rootElementNamespace = getOptionalAttribute(xmldomElement, "root-element-namespace");
         String schemaResource = getOptionalAttribute(xmldomElement, "schema-resource");
         String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
@@ -291,16 +290,15 @@ class ConfigurationParser {
             Element propertyElement = propertyNodeIterator.next();
             if (propertyElement.getNodeName().equals("namespace-prefix"))
             {
-                String prefix = propertyElement.getAttributes().getNamedItem("prefix").getTextContent();
-                String namespace = propertyElement.getAttributes().getNamedItem("namespace").getTextContent();
+                String prefix = getRequiredAttribute(propertyElement, "prefix");
+                String namespace = getRequiredAttribute(propertyElement, "namespace");
                 xmlDOMEventTypeDesc.addNamespacePrefix(prefix, namespace);
             }
             if (propertyElement.getNodeName().equals("xpath-property"))
             {
-                String propertyName = propertyElement.getAttributes().getNamedItem("property-name").getTextContent();
-                String xPath = propertyElement.getAttributes().getNamedItem("xpath").getTextContent();
-
-                String propertyType = propertyElement.getAttributes().getNamedItem("type").getTextContent();
+                String propertyName = getRequiredAttribute(propertyElement, "property-name");
+                String xPath = getRequiredAttribute(propertyElement, "xpath");
+                String propertyType = getRequiredAttribute(propertyElement, "type");
                 QName xpathConstantType;
                 if (propertyType.toUpperCase().equals("NUMBER"))
                 {
@@ -360,9 +358,9 @@ class ConfigurationParser {
             throw new ConfigurationException("Required class name not supplied for legacy type definition");
         }
 
-        String accessorStyle = xmldomElement.getAttributes().getNamedItem("accessor-style").getTextContent();
-        String codeGeneration = xmldomElement.getAttributes().getNamedItem("code-generation").getTextContent();
-        String propertyResolution = xmldomElement.getAttributes().getNamedItem("property-resolution-style").getTextContent();
+        String accessorStyle = getRequiredAttribute(xmldomElement, "accessor-style");
+        String codeGeneration = getRequiredAttribute(xmldomElement, "code-generation");
+        String propertyResolution = getRequiredAttribute(xmldomElement, "property-resolution-style");
         String factoryMethod = getOptionalAttribute(xmldomElement, "factory-method");
         String copyMethod = getOptionalAttribute(xmldomElement, "copy-method");
 
@@ -395,14 +393,14 @@ class ConfigurationParser {
             Element propertyElement = propertyNodeIterator.next();
             if (propertyElement.getNodeName().equals("method-property"))
             {
-                String nameProperty = propertyElement.getAttributes().getNamedItem("name").getTextContent();
-                String method = propertyElement.getAttributes().getNamedItem("accessor-method").getTextContent();
+                String nameProperty = getRequiredAttribute(propertyElement, "name");
+                String method = getRequiredAttribute(propertyElement, "accessor-method");
                 legacyDesc.addMethodProperty(nameProperty, method);
             }
             else if (propertyElement.getNodeName().equals("field-property"))
             {
-                String nameProperty = propertyElement.getAttributes().getNamedItem("name").getTextContent();
-                String field = propertyElement.getAttributes().getNamedItem("accessor-field").getTextContent();
+                String nameProperty = getRequiredAttribute(propertyElement, "name");
+                String field = getRequiredAttribute(propertyElement, "accessor-field");
                 legacyDesc.addFieldProperty(nameProperty, field);
             }
             else
@@ -415,13 +413,13 @@ class ConfigurationParser {
 
     private static void handleAutoImports(Configuration configuration, Element element)
     {
-        String name = element.getAttributes().getNamedItem("import-name").getTextContent();
+        String name = getRequiredAttribute(element, "import-name");
         configuration.addImport(name);
     }
 
     private static void handleDatabaseRefs(Configuration configuration, Element element)
     {
-        String name = element.getAttributes().getNamedItem("name").getTextContent();
+        String name = getRequiredAttribute(element, "name");
         ConfigurationDBRef configDBRef = new ConfigurationDBRef();
         configuration.addDatabaseReference(name, configDBRef);
 
@@ -431,28 +429,28 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("datasource-connection"))
             {
-                String lookup = subElement.getAttributes().getNamedItem("context-lookup-name").getTextContent();
+                String lookup = getRequiredAttribute(subElement, "context-lookup-name");
                 Properties properties = handleProperties(subElement, "env-property");
                 configDBRef.setDataSourceConnection(lookup, properties);
             }
             if (subElement.getNodeName().equals("datasourcefactory-connection"))
             {
-                String className = subElement.getAttributes().getNamedItem("class-name").getTextContent();
+                String className = getRequiredAttribute(subElement, "class-name");
                 Properties properties = handleProperties(subElement, "env-property");
                 configDBRef.setDataSourceFactory(properties, className);
             }
             else if (subElement.getNodeName().equals("drivermanager-connection"))
             {
-                String className = subElement.getAttributes().getNamedItem("class-name").getTextContent();
-                String url = subElement.getAttributes().getNamedItem("url").getTextContent();
-                String userName = subElement.getAttributes().getNamedItem("user").getTextContent();
-                String password = subElement.getAttributes().getNamedItem("password").getTextContent();
+                String className = getRequiredAttribute(subElement, "class-name");
+                String url = getRequiredAttribute(subElement, "url");
+                String userName = getRequiredAttribute(subElement, "user");
+                String password = getRequiredAttribute(subElement, "password");
                 Properties properties = handleProperties(subElement, "connection-arg");
                 configDBRef.setDriverManagerConnection(className, url, userName, password, properties);
             }
             else if (subElement.getNodeName().equals("connection-lifecycle"))
             {
-                String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String value = getRequiredAttribute(subElement, "value");
                 configDBRef.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.valueOf(value.toUpperCase()));
             }
             else if (subElement.getNodeName().equals("connection-settings"))
@@ -480,20 +478,20 @@ class ConfigurationParser {
             }
             else if (subElement.getNodeName().equals("column-change-case"))
             {
-                String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String value = getRequiredAttribute(subElement, "value");
                 ConfigurationDBRef.ColumnChangeCaseEnum parsed = ConfigurationDBRef.ColumnChangeCaseEnum.valueOf(value.toUpperCase());
                 configDBRef.setColumnChangeCase(parsed);
             }
             else if (subElement.getNodeName().equals("metadata-origin"))
             {
-                String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String value = getRequiredAttribute(subElement, "value");
                 ConfigurationDBRef.MetadataOriginEnum parsed = ConfigurationDBRef.MetadataOriginEnum.valueOf(value.toUpperCase());
                 configDBRef.setMetadataOrigin(parsed);
             }
             else if (subElement.getNodeName().equals("sql-types-mapping"))
             {
-                String sqlType = subElement.getAttributes().getNamedItem("sql-type").getTextContent();
-                String javaType = subElement.getAttributes().getNamedItem("java-type").getTextContent();
+                String sqlType = getRequiredAttribute(subElement, "sql-type");
+                String javaType = getRequiredAttribute(subElement, "java-type");
                 Integer sqlTypeInt;
                 try
                 {
@@ -507,8 +505,8 @@ class ConfigurationParser {
             }
             else if (subElement.getNodeName().equals("expiry-time-cache"))
             {
-                String maxAge = subElement.getAttributes().getNamedItem("max-age-seconds").getTextContent();
-                String purgeInterval = subElement.getAttributes().getNamedItem("purge-interval-seconds").getTextContent();
+                String maxAge = getRequiredAttribute(subElement, "max-age-seconds");
+                String purgeInterval = getRequiredAttribute(subElement, "purge-interval-seconds");
                 ConfigurationCacheReferenceType refTypeEnum = ConfigurationCacheReferenceType.getDefault();
                 if (subElement.getAttributes().getNamedItem("ref-type") != null)
                 {
@@ -519,7 +517,7 @@ class ConfigurationParser {
             }
             else if (subElement.getNodeName().equals("lru-cache"))
             {
-                String size = subElement.getAttributes().getNamedItem("size").getTextContent();
+                String size = getRequiredAttribute(subElement, "size");
                 configDBRef.setLRUCache(Integer.parseInt(size));
             }
         }
@@ -527,7 +525,7 @@ class ConfigurationParser {
 
     private static void handleMethodReference(Configuration configuration, Element element)
     {
-        String className = element.getAttributes().getNamedItem("class-name").getTextContent();
+        String className = getRequiredAttribute(element, "class-name");
         ConfigurationMethodRef configMethodRef = new ConfigurationMethodRef();
         configuration.addMethodRef(className, configMethodRef);
 
@@ -537,8 +535,8 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("expiry-time-cache"))
             {
-                String maxAge = subElement.getAttributes().getNamedItem("max-age-seconds").getTextContent();
-                String purgeInterval = subElement.getAttributes().getNamedItem("purge-interval-seconds").getTextContent();
+                String maxAge = getRequiredAttribute(subElement, "max-age-seconds");
+                String purgeInterval = getRequiredAttribute(subElement, "purge-interval-seconds");
                 ConfigurationCacheReferenceType refTypeEnum = ConfigurationCacheReferenceType.getDefault();
                 if (subElement.getAttributes().getNamedItem("ref-type") != null)
                 {
@@ -549,7 +547,7 @@ class ConfigurationParser {
             }
             else if (subElement.getNodeName().equals("lru-cache"))
             {
-                String size = subElement.getAttributes().getNamedItem("size").getTextContent();
+                String size = getRequiredAttribute(subElement, "size");
                 configMethodRef.setLRUCache(Integer.parseInt(size));
             }
         }
@@ -557,39 +555,39 @@ class ConfigurationParser {
 
     private static void handlePlugInView(Configuration configuration, Element element)
     {
-        String namespace = element.getAttributes().getNamedItem("namespace").getTextContent();
-        String name = element.getAttributes().getNamedItem("name").getTextContent();
-        String factoryClassName = element.getAttributes().getNamedItem("factory-class").getTextContent();
+        String namespace = getRequiredAttribute(element, "namespace");
+        String name = getRequiredAttribute(element, "name");
+        String factoryClassName = getRequiredAttribute(element, "factory-class");
         configuration.addPlugInView(namespace, name, factoryClassName);
     }
 
     private static void handlePlugInAggregation(Configuration configuration, Element element)
     {
-        String name = element.getAttributes().getNamedItem("name").getTextContent();
-        String functionClassName = element.getAttributes().getNamedItem("function-class").getTextContent();
+        String name = getRequiredAttribute(element,"name");
+        String functionClassName = getRequiredAttribute(element, "function-class");
         configuration.addPlugInAggregationFunction(name, functionClassName);
     }
 
     private static void handlePlugInPatternGuard(Configuration configuration, Element element)
     {
-        String namespace = element.getAttributes().getNamedItem("namespace").getTextContent();
-        String name = element.getAttributes().getNamedItem("name").getTextContent();
-        String factoryClassName = element.getAttributes().getNamedItem("factory-class").getTextContent();
+        String namespace = getRequiredAttribute(element,"namespace");
+        String name = getRequiredAttribute(element,"name");
+        String factoryClassName = getRequiredAttribute(element,"factory-class");
         configuration.addPlugInPatternGuard(namespace, name, factoryClassName);
     }
 
     private static void handlePlugInPatternObserver(Configuration configuration, Element element)
     {
-        String namespace = element.getAttributes().getNamedItem("namespace").getTextContent();
-        String name = element.getAttributes().getNamedItem("name").getTextContent();
-        String factoryClassName = element.getAttributes().getNamedItem("factory-class").getTextContent();
+        String namespace = getRequiredAttribute(element,"namespace");
+        String name = getRequiredAttribute(element,"name");
+        String factoryClassName = getRequiredAttribute(element,"factory-class");
         configuration.addPlugInPatternObserver(namespace, name, factoryClassName);
     }
 
     private static void handleVariable(Configuration configuration, Element element)
     {
-        String variableName = element.getAttributes().getNamedItem("name").getTextContent();
-        String type = element.getAttributes().getNamedItem("type").getTextContent();
+        String variableName = getRequiredAttribute(element,"name");
+        String type = getRequiredAttribute(element,"type");
 
         Class variableType = JavaClassHelper.getClassForSimpleName(type);
         if (variableType == null) {
@@ -608,8 +606,8 @@ class ConfigurationParser {
 
     private static void handlePluginLoaders(Configuration configuration, Element element)
     {
-        String loaderName = element.getAttributes().getNamedItem("name").getTextContent();
-        String className = element.getAttributes().getNamedItem("class-name").getTextContent();
+        String loaderName = getRequiredAttribute(element,"name");
+        String className = getRequiredAttribute(element,"class-name");
         Properties properties = new Properties();
         String configXML = null;
         DOMElementIterator nodeIterator = new DOMElementIterator(element.getChildNodes());
@@ -618,8 +616,8 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("init-arg"))
             {
-                String name = subElement.getAttributes().getNamedItem("name").getTextContent();
-                String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String name = getRequiredAttribute(subElement, "name");
+                String value = getRequiredAttribute(subElement, "value");
                 properties.put(name, value);
             }
             if (subElement.getNodeName().equals("config-xml"))
@@ -648,8 +646,8 @@ class ConfigurationParser {
     private static void handlePlugInEventRepresentation(Configuration configuration, Element element)
     {
         DOMElementIterator nodeIterator = new DOMElementIterator(element.getChildNodes());
-        String uri = element.getAttributes().getNamedItem("uri").getTextContent();
-        String className = element.getAttributes().getNamedItem("class-name").getTextContent();
+        String uri = getRequiredAttribute(element, "uri");
+        String className = getRequiredAttribute(element, "class-name");
         String initializer = null;
         while (nodeIterator.hasNext())
         {
@@ -691,14 +689,14 @@ class ConfigurationParser {
     {
         DOMElementIterator nodeIterator = new DOMElementIterator(element.getChildNodes());
         List<URI> uris = new ArrayList<URI>();
-        String name = element.getAttributes().getNamedItem("name").getTextContent();
+        String name = getRequiredAttribute(element, "name");
         String initializer = null;
         while (nodeIterator.hasNext())
         {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("resolution-uri"))
             {
-                String uriValue = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String uriValue = getRequiredAttribute(subElement, "value");
                 URI uri;
                 try
                 {
@@ -743,7 +741,7 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("resolution-uri"))
             {
-                String uriValue = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String uriValue = getRequiredAttribute(subElement, "value");
                 URI uri;
                 try
                 {
@@ -763,7 +761,7 @@ class ConfigurationParser {
     private static void handleRevisionEventType(Configuration configuration, Element element)
     {
         ConfigurationRevisionEventType revEventType = new ConfigurationRevisionEventType();
-        String revTypeName = element.getAttributes().getNamedItem("name").getTextContent();
+        String revTypeName = getRequiredAttribute(element, "name");
 
         if (element.getAttributes().getNamedItem("property-revision") != null)
         {
@@ -788,17 +786,17 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("base-event-type"))
             {
-                String name = subElement.getAttributes().getNamedItem("name").getTextContent();
+                String name = getRequiredAttribute(subElement, "name");
                 revEventType.addNameBaseEventType(name);
             }
             if (subElement.getNodeName().equals("delta-event-type"))
             {
-                String name = subElement.getAttributes().getNamedItem("name").getTextContent();
+                String name = getRequiredAttribute(subElement, "name");
                 revEventType.addNameDeltaEventType(name);
             }
             if (subElement.getNodeName().equals("key-property"))
             {
-                String name = subElement.getAttributes().getNamedItem("name").getTextContent();
+                String name = getRequiredAttribute(subElement, "name");
                 keyProperties.add(name);
             }
         }
@@ -812,7 +810,7 @@ class ConfigurationParser {
     private static void handleVariantStream(Configuration configuration, Element element)
     {
         ConfigurationVariantStream variantStream = new ConfigurationVariantStream();
-        String varianceName = element.getAttributes().getNamedItem("name").getTextContent();
+        String varianceName = getRequiredAttribute(element, "name");
 
         if (element.getAttributes().getNamedItem("type-variance") != null)
         {
@@ -917,7 +915,7 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("listener-dispatch"))
             {
-                String preserveOrderText = subElement.getAttributes().getNamedItem("preserve-order").getTextContent();
+                String preserveOrderText = getRequiredAttribute(subElement, "preserve-order");
                 Boolean preserveOrder = Boolean.parseBoolean(preserveOrderText);
                 configuration.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(preserveOrder);
 
@@ -937,7 +935,7 @@ class ConfigurationParser {
             }
             if (subElement.getNodeName().equals("insert-into-dispatch"))
             {
-                String preserveOrderText = subElement.getAttributes().getNamedItem("preserve-order").getTextContent();
+                String preserveOrderText = getRequiredAttribute(subElement, "preserve-order");
                 Boolean preserveOrder = Boolean.parseBoolean(preserveOrderText);
                 configuration.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(preserveOrder);
 
@@ -957,9 +955,9 @@ class ConfigurationParser {
             }
             if (subElement.getNodeName().equals("internal-timer"))
             {
-                String enabledText = subElement.getAttributes().getNamedItem("enabled").getTextContent();
+                String enabledText = getRequiredAttribute(subElement, "enabled");
                 Boolean enabled = Boolean.parseBoolean(enabledText);
-                String msecResolutionText = subElement.getAttributes().getNamedItem("msec-resolution").getTextContent();
+                String msecResolutionText = getRequiredAttribute(subElement, "msec-resolution");
                 Long msecResolution = Long.parseLong(msecResolutionText);
                 configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(enabled);
                 configuration.getEngineDefaults().getThreading().setInternalTimerMsecResolution(msecResolution);
@@ -1021,13 +1019,13 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("share-views"))
             {
-                String valueText = subElement.getAttributes().getNamedItem("enabled").getTextContent();
+                String valueText = getRequiredAttribute(subElement, "enabled");
                 Boolean value = Boolean.parseBoolean(valueText);
                 configuration.getEngineDefaults().getViewResources().setShareViews(value);
             }
             if (subElement.getNodeName().equals("allow-multiple-expiry-policy"))
             {
-                String valueText = subElement.getAttributes().getNamedItem("enabled").getTextContent();
+                String valueText = getRequiredAttribute(subElement, "enabled");
                 Boolean value = Boolean.parseBoolean(valueText);
                 configuration.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(value);
             }
@@ -1042,13 +1040,13 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("execution-path"))
             {
-                String valueText = subElement.getAttributes().getNamedItem("enabled").getTextContent();
+                String valueText = getRequiredAttribute(subElement, "enabled");
                 Boolean value = Boolean.parseBoolean(valueText);
                 configuration.getEngineDefaults().getLogging().setEnableExecutionDebug(value);
             }
             if (subElement.getNodeName().equals("timer-debug"))
             {
-                String valueText = subElement.getAttributes().getNamedItem("enabled").getTextContent();
+                String valueText = getRequiredAttribute(subElement, "enabled");
                 Boolean value = Boolean.parseBoolean(valueText);
                 configuration.getEngineDefaults().getLogging().setEnableTimerDebug(value);
             }
@@ -1063,7 +1061,7 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("msec-version-release"))
             {
-                String valueText = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String valueText = getRequiredAttribute(subElement, "value");
                 Long value = Long.parseLong(valueText);
                 configuration.getEngineDefaults().getVariables().setMsecVersionRelease(value);
             }
@@ -1078,7 +1076,7 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("stream-selector"))
             {
-                String valueText = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String valueText = getRequiredAttribute(subElement, "value");
                 if (valueText == null)
                 {
                     throw new ConfigurationException("No value attribute supplied for stream-selector element");
@@ -1114,7 +1112,7 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("time-source-type"))
             {
-                String valueText = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String valueText = getRequiredAttribute(subElement, "value");
                 if (valueText == null)
                 {
                     throw new ConfigurationException("No value attribute supplied for time-source element");
@@ -1315,8 +1313,8 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals(propElementName))
             {
-                String name = subElement.getAttributes().getNamedItem("name").getTextContent();
-                String value = subElement.getAttributes().getNamedItem("value").getTextContent();
+                String name = getRequiredAttribute(subElement, "name");
+                String value = getRequiredAttribute(subElement, "value");
                 properties.put(name, value);
             }
         }
@@ -1365,7 +1363,11 @@ class ConfigurationParser {
         Node valueNode = node.getAttributes().getNamedItem(key);
         if (valueNode == null)
         {
-            throw new ConfigurationException("Required attribute by name '" + key + "' not found");
+            String name = node.getLocalName();
+            if (name == null) {
+                name = node.getNodeName();
+            }
+            throw new ConfigurationException("Required attribute by name '" + key + "' not found for element '" + name + "'");
         }
         return valueNode.getTextContent();
     }

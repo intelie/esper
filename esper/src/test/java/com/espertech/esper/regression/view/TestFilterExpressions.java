@@ -7,6 +7,8 @@ import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
+import java.util.*;
+
 public class TestFilterExpressions extends TestCase
 {
     private EPServiceProvider epService;
@@ -22,6 +24,35 @@ public class TestFilterExpressions extends TestCase
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+    }
+
+    public void testInSet() {
+
+        // Esper-484
+        Map<String, Object> start_load_type = new HashMap<String, Object>();
+        start_load_type.put("versions", Set.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("StartLoad", start_load_type);
+
+        Map<String, Object> single_load_type = new HashMap<String, Object>();
+        single_load_type.put("ver", String.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SingleLoad", single_load_type);
+
+        epService.getEPAdministrator().createEPL(
+                "select * from \n" +
+                        "pattern [ \n" +
+                        " every start_load=StartLoad \n" +
+                        " -> \n" +
+                        " single_load=SingleLoad(ver in (start_load.versions)) \n" +
+                        "]"
+        ).addListener(listener);
+
+        HashSet<String> versions = new HashSet<String>();
+        versions.add("Version1");
+        versions.add("Version2");
+
+        epService.getEPRuntime().sendEvent(Collections.singletonMap("versions", versions), "StartLoad");
+        epService.getEPRuntime().sendEvent(Collections.singletonMap("ver", "Version1"), "SingleLoad");
+        assertTrue(listener.isInvoked());
     }
 
     public void testRewriteWhere() {
