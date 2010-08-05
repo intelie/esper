@@ -419,7 +419,7 @@ public class TestEPLTreeWalker extends TestCase
         assertTrue(matchNode.getChildNodes().get(0) instanceof EvalFilterNode);
         assertTrue(matchNode.getChildNodes().get(1) instanceof EvalOrNode);
 
-        EvalMatchUntilSpec spec = getMatchUntilSpec("A until (B or C)");
+        EvalMatchUntilNode spec = getMatchUntilSpec("A until (B or C)");
         assertNull(spec.getLowerBounds());
         assertNull(spec.getUpperBounds());
 
@@ -456,13 +456,12 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals(2, spec.getUpperBounds().evaluate(null, true, null));
     }
 
-    private EvalMatchUntilSpec getMatchUntilSpec(String text) throws Exception
+    private EvalMatchUntilNode getMatchUntilSpec(String text) throws Exception
     {
         EPLTreeWalker walker = parseAndWalkPattern(text);
         StatementSpecRaw raw = walker.getStatementSpec();
         PatternStreamSpecRaw a = (PatternStreamSpecRaw) raw.getStreamSpecs().get(0);
-        EvalMatchUntilNode matchNode = (EvalMatchUntilNode) a.getEvalNode();
-        return matchNode.getSpec();
+        return (EvalMatchUntilNode) a.getEvalNode();
     }
 
     public void testWalkSimpleWhere() throws Exception

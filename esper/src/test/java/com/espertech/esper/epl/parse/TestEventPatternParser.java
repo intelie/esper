@@ -370,12 +370,11 @@ public class TestEventPatternParser extends TestCase
         assertIsValid("B until C -> B until C -> B until C");
         assertIsValid("(B until B1) until (D until C) -> E");
         assertIsValid("[1] A until B");
-        assertIsValid("[1..] A until B");
-        assertIsValid("[1 ..] A until B");
-        assertIsValid("[..2] A until B");
-        assertIsValid("[.. 2] A until B");
-        assertIsValid("[0 .. 10] A until B");
-        assertIsValid("[0..10] A until B");
+        assertIsValid("[1:] A until B");
+        assertIsValid("[1 :] A until B");
+        assertIsValid("[:2] A until B");
+        assertIsValid("[: 2] A until B");
+        assertIsValid("[0 : 10] A until B");
         assertIsValid("[0:10] A until B");
         assertIsValid("[0 : 10] A until B");
         assertIsValid("[5] A");   // no until

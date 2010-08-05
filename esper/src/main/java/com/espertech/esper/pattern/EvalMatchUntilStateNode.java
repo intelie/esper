@@ -169,7 +169,7 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
             else
             {
                 // restart or keep started if not bounded, or not upper bounds, or upper bounds not reached
-                boolean restart = (!evalMatchUntilNode.getSpec().isBounded()) ||
+                boolean restart = (!isBounded()) ||
                                   (upperbounds == null) ||
                                   (upperbounds > numMatches);
                 if (stateMatcher == null)
@@ -298,5 +298,10 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
         return lowerbounds != null && upperbounds != null && upperbounds.equals(lowerbounds);
     }
 
+    private boolean isBounded() {
+        return lowerbounds != null || upperbounds != null;
+    }
+
     private static final Log log = LogFactory.getLog(EvalMatchUntilStateNode.class);
+
 }

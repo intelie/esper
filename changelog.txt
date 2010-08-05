@@ -1,6 +1,14 @@
 Esper Changelog
 ===================
 
+Changes in version 4.0.0
+------------------------
+Major API or EPL changes
+  - The bound-repeat syntax in the repeat-until pattern operator changed syntax:
+    The old syntax of separating range value by dots "[low .. high]" is no longer supported. Use the colon ":" character instead of "..".
+    With 4.0 the only support syntax uses a colon and is "[low : high]". This syntax had also been supported in 3.x.
+
+
 Changes in version 3.5.0
 ------------------------
 Major API changes

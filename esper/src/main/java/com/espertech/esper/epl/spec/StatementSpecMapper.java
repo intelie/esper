@@ -1981,7 +1981,7 @@ public class StatementSpecMapper
             PatternMatchUntilExpr until = (PatternMatchUntilExpr) eval;
             ExprNode low = until.getLow() != null ? mapExpressionDeep(until.getLow(), mapContext) : null;
             ExprNode high = until.getHigh() != null ? mapExpressionDeep(until.getHigh(), mapContext) : null;
-            return new EvalMatchUntilNode(new EvalMatchUntilSpec(low, high), null);
+            return new EvalMatchUntilNode(low, high, null);
         }
         else if (eval instanceof PatternEveryDistinctExpr)
         {
@@ -2037,8 +2037,8 @@ public class StatementSpecMapper
         else if (eval instanceof EvalMatchUntilNode)
         {
             EvalMatchUntilNode matchUntilNode = (EvalMatchUntilNode) eval;
-            Expression low = matchUntilNode.getSpec().getLowerBounds() != null ? unmapExpressionDeep(matchUntilNode.getSpec().getLowerBounds(), unmapContext) : null;
-            Expression high = matchUntilNode.getSpec().getUpperBounds() != null ? unmapExpressionDeep(matchUntilNode.getSpec().getUpperBounds(), unmapContext) : null;
+            Expression low = matchUntilNode.getLowerBounds() != null ? unmapExpressionDeep(matchUntilNode.getLowerBounds(), unmapContext) : null;
+            Expression high = matchUntilNode.getUpperBounds() != null ? unmapExpressionDeep(matchUntilNode.getUpperBounds(), unmapContext) : null;
             return new PatternMatchUntilExpr(low, high);
         }
         else if (eval instanceof EvalEveryDistinctNode)

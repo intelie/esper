@@ -2525,43 +2525,40 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         boolean hasRange = true;
         int type = node.getChild(0).getType();
-        EvalMatchUntilSpec spec;
-        boolean tightlyBound = false;
-        if (type == MATCH_UNTIL_RANGE_HALFOPEN)
+        ExprNode low = null;
+        ExprNode high = null;
+        boolean allowZeroLowerBounds = false;
+        if (type == MATCH_UNTIL_RANGE_HALFOPEN) // [expr:]
         {
-            ExprNode low = astExprNodeMap.remove(node.getChild(0).getChild(0));
-            spec = new EvalMatchUntilSpec(low, null);
+            low = astExprNodeMap.remove(node.getChild(0).getChild(0));
         }
-        else if (type == MATCH_UNTIL_RANGE_HALFCLOSED)
+        else if (type == MATCH_UNTIL_RANGE_HALFCLOSED) // [:expr]
         {
-            ExprNode high = astExprNodeMap.remove(node.getChild(0).getChild(0));
-            spec = new EvalMatchUntilSpec(null, high);
+            high = astExprNodeMap.remove(node.getChild(0).getChild(0));
         }
-        else if (type == MATCH_UNTIL_RANGE_BOUNDED)
+        else if (type == MATCH_UNTIL_RANGE_BOUNDED) // [expr]
         {
-            ExprNode value = astExprNodeMap.remove(node.getChild(0).getChild(0));
-            spec = new EvalMatchUntilSpec(value, value);
-            tightlyBound = true;
+            low = astExprNodeMap.remove(node.getChild(0).getChild(0));
+            high = low;
         }
-        else if (type == MATCH_UNTIL_RANGE_CLOSED)
+        else if (type == MATCH_UNTIL_RANGE_CLOSED) // [expr:expr]
         {
-            ExprNode low = astExprNodeMap.remove(node.getChild(0).getChild(0));
-            ExprNode high = astExprNodeMap.remove(node.getChild(0).getChild(1));
-            spec = new EvalMatchUntilSpec(low, high);
-            tightlyBound = true;
+            low = astExprNodeMap.remove(node.getChild(0).getChild(0));
+            high = astExprNodeMap.remove(node.getChild(0).getChild(1));
+            allowZeroLowerBounds = true;
         }
         else
         {
-            spec = new EvalMatchUntilSpec(null, null);
             hasRange = false;
         }
 
+        boolean tightlyBound = ASTMatchUntilHelper.validate(low, high, allowZeroLowerBounds);
         if ((node.getChildCount() == 2) && (hasRange) && (!tightlyBound))
         {
             throw new ASTWalkException("Variable bounds repeat operator requires an until-expression");            
         }
 
-        EvalMatchUntilNode fbNode = new EvalMatchUntilNode(spec, null);
+        EvalMatchUntilNode fbNode = new EvalMatchUntilNode(low, high, null);
         astPatternNodeMap.put(node, fbNode);
     }
 

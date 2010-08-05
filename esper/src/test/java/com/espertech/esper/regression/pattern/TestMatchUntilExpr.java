@@ -4,17 +4,15 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Array;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.Arrays;
 
 public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
 {
@@ -483,49 +481,101 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
     public void testExpressionBounds() {
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+        SupportUpdateListener listener = new SupportUpdateListener();
 
-        Map<String, Object> start_load_type = new HashMap<String, Object>();
-        start_load_type.put("total_count", int.class);
-        epService.getEPAdministrator().getConfiguration().addEventType("StartLoad", start_load_type);
+        epService.getEPAdministrator().getConfiguration().addVariable("lower", int.class, null);
+        epService.getEPAdministrator().getConfiguration().addVariable("upper", int.class, null);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_S0", SupportBean_S0.class);
 
-        Map<String, Object> single_load_type = new HashMap<String, Object>();
-        single_load_type.put("ver", String.class);
-        epService.getEPAdministrator().getConfiguration().addEventType("SingleLoad", single_load_type);
+        // test variables - closed bounds
+        epService.getEPRuntime().setVariableValue("lower",2);
+        epService.getEPRuntime().setVariableValue("upper",3);
+        String stmtOne = "[lower:upper] a=SupportBean (string = 'A') until b=SupportBean (string = 'B')";
+        validateStmt(epService, stmtOne, 0,  false, null);
+        validateStmt(epService, stmtOne, 1,  false, null);
+        validateStmt(epService, stmtOne, 2,  true, 2);
+        validateStmt(epService, stmtOne, 3,  true, 3);
+        validateStmt(epService, stmtOne, 4,  true, 3);
+        validateStmt(epService, stmtOne, 5,  true, 3);
 
-        Map<String, Object> end_load_type = new HashMap<String, Object>();
-        end_load_type.put("versions", Set.class);
-        epService.getEPAdministrator().getConfiguration().addEventType("EndLoad", end_load_type);
+        // test variables - half open
+        epService.getEPRuntime().setVariableValue("lower",3);
+        epService.getEPRuntime().setVariableValue("upper",null);
+        String stmtTwo = "[lower:] a=SupportBean (string = 'A') until b=SupportBean (string = 'B')";
+        validateStmt(epService, stmtTwo, 0,  false, null);
+        validateStmt(epService, stmtTwo, 1,  false, null);
+        validateStmt(epService, stmtTwo, 2,  false, null);
+        validateStmt(epService, stmtTwo, 3,  true, 3);
+        validateStmt(epService, stmtTwo, 4,  true, 4);
+        validateStmt(epService, stmtTwo, 5,  true, 5);
 
-        epService.getEPAdministrator().createEPL(
-                "select * from \n" +
-                        "pattern [ \n" +
-                        " every start_load=StartLoad \n" +
-                        " -> ( \n" +
-                        " [start_load.total_count] \n" +
-                        " single_load=SingleLoad(ver in (start_load.versions)) \n" +
-                        " until \n" +
-                        " end_load=EndLoad(versions = start_load.versions) \n" +
-                        " ) \n" +
-                        "]"
-        );
+        // test variables - half closed
+        epService.getEPRuntime().setVariableValue("lower",null);
+        epService.getEPRuntime().setVariableValue("upper",2);
+        String stmtThree = "[:upper] a=SupportBean (string = 'A') until b=SupportBean (string = 'B')";
+        validateStmt(epService, stmtThree, 0,  true, null);
+        validateStmt(epService, stmtThree, 1,  true, 1);
+        validateStmt(epService, stmtThree, 2,  true, 2);
+        validateStmt(epService, stmtThree, 3,  true, 2);
+        validateStmt(epService, stmtThree, 4,  true, 2);
+        validateStmt(epService, stmtThree, 5,  true, 2);
+
+        // test followed-by - bounded
+        epService.getEPAdministrator().createEPL("@Name('S1') select * from pattern [s0=SupportBean_S0 -> [s0.id] b=SupportBean]").addListener(listener);
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "b[0].string,b[1].string".split(","), new Object[] {"E1", "E2"});
+    }
+
+    private void validateStmt(EPServiceProvider engine, String stmtText, int numEventsA, boolean match, Integer matchCount)
+    {
+        SupportUpdateListener listener = new SupportUpdateListener();
+        EPStatement stmt = engine.getEPAdministrator().createPattern(stmtText);
+        stmt.addListener(listener);
+
+        for (int i = 0; i < numEventsA; i++) {
+            engine.getEPRuntime().sendEvent(new SupportBean("A", i));
+        }
+        assertFalse(listener.isInvoked());
+        engine.getEPRuntime().sendEvent(new SupportBean("B", -1));
+
+        assertEquals(match, listener.isInvoked());
+        if (!match) {
+            return;
+        }
+        Object valueATag = listener.assertOneGetNewAndReset().get("a");
+        if (matchCount == null) {
+            assertNull(valueATag);
+        }
+        else {
+            assertEquals((int)matchCount, Array.getLength(valueATag));
+        }
     }
 
     public void testInvalid()
     {
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
-        tryInvalid(epService, "every [2] (a=A() -> b=B(id=a[0].id))", "Property named 'a[0].id' is not valid in any stream [every [2] (a=A() -> b=B(id=a[0].id))]");
-        tryInvalid(epService, "[-1] A", "Incorrect syntax near '-' at line 1 column 1, please check the pattern expression [[-1] A]");
+        tryInvalid(epService, "[:0] A until B", "Incorrect range specification, a bounds value of zero or negative value is not allowed [[:0] A until B]");
         tryInvalid(epService, "[10:4] A", "Incorrect range specification, lower bounds value '10' is higher then higher bounds '4' [[10:4] A]");
+        tryInvalid(epService, "every [2] (a=A() -> b=B(id=a[0].id))", "Property named 'a[0].id' is not valid in any stream [every [2] (a=A() -> b=B(id=a[0].id))]");
+        tryInvalid(epService, "[-1] A", "Incorrect range specification, a bounds value of zero or negative value is not allowed [[-1] A]");
         tryInvalid(epService, "[4:6] A", "Variable bounds repeat operator requires an until-expression [[4:6] A]");
-        tryInvalid(epService, "[0:0] A", "Incorrect range specification, lower bounds and higher bounds values are zero [[0:0] A]");
-        tryInvalid(epService, "[0] A", "Incorrect range specification, a bounds of zero is not allowed [[0] A]");
-        tryInvalid(epService, "[:0] A until B", "Incorrect range specification, a high endpoint of zero is not allowed [[:0] A until B]");
+        tryInvalid(epService, "[0:0] A", "Incorrect range specification, a bounds value of zero or negative value is not allowed [[0:0] A]");
+        tryInvalid(epService, "[0] A", "Incorrect range specification, a bounds value of zero or negative value is not allowed [[0] A]");
         tryInvalid(epService, "[1] a=A(a[0].id='a')", "Property named 'a[0].id' is not valid in any stream [[1] a=A(a[0].id='a')]");
         tryInvalid(epService, "a=A -> B(a[0].id='a')", "Property named 'a[0].id' is not valid in any stream [a=A -> B(a[0].id='a')]");
         tryInvalid(epService, "(a=A until c=B) -> c=C", "Tag 'c' for event 'C' has already been declared for events of type com.espertech.esper.support.bean.SupportBean_B [(a=A until c=B) -> c=C]");
         tryInvalid(epService, "((a=A until b=B) until a=A)", "Tag 'a' for event 'A' used in the repeat-until operator cannot also appear in other filter expressions [((a=A until b=B) until a=A)]");
+        tryInvalid(epService, "a=SupportBean -> [a.string] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [a.string] b=SupportBean]");
+        tryInvalid(epService, "a=SupportBean -> [:a.string] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [:a.string] b=SupportBean]");
+        tryInvalid(epService, "a=SupportBean -> [a.string:1] b=SupportBean", "Match-until bounds value expressions must return a numeric value [a=SupportBean -> [a.string:1] b=SupportBean]");
     }
 
     private void tryInvalid(EPServiceProvider epService, String pattern, String message)

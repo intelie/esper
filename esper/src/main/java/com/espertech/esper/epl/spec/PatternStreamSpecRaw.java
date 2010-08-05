@@ -15,13 +15,13 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprValidationPropertyException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.epl.property.PropertyEvaluatorFactory;
 import com.espertech.esper.epl.property.PropertyEvaluator;
+import com.espertech.esper.epl.property.PropertyEvaluatorFactory;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.filter.FilterSpecCompiled;
@@ -32,6 +32,7 @@ import com.espertech.esper.pattern.guard.GuardParameterException;
 import com.espertech.esper.pattern.observer.ObserverFactory;
 import com.espertech.esper.pattern.observer.ObserverParameterException;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.UuidGenerator;
 
 import java.util.*;
@@ -267,24 +268,22 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             // compile bounds expressions, if any
             MatchEventSpec untilMatchEventSpec = new MatchEventSpec(tags.getTaggedEventTypes(), tags.getArrayEventTypes());
             StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), untilMatchEventSpec.getTaggedEventTypes(), untilMatchEventSpec.getArrayEventTypes());
-            List<ExprNode> validated;
-            try
-            {
-                if (matchUntilNode.getLowerBounds() != null) {
-                    validated = validateExpressions(Collections.singletonList(matchUntilNode.getLowerBounds()),
-                        streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
-                    matchUntilNode.setLowerBounds(validated.get(0));
-                }
 
-                if (matchUntilNode.getUpperBounds() != null) {
-                    validated = validateExpressions(Collections.singletonList(matchUntilNode.getUpperBounds()),
-                        streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
-                    matchUntilNode.setUpperBounds(validated.get(0));
+            String message = "Match-until bounds value expressions must return a numeric value";
+            if (matchUntilNode.getLowerBounds() != null) {
+                ExprNode validated = matchUntilNode.getLowerBounds().getValidatedSubtree(streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
+                matchUntilNode.setLowerBounds(validated);
+                if ((validated.getType() == null) || (!JavaClassHelper.isNumeric(validated.getType()))) {
+                    throw new ExprValidationException(message);
                 }
             }
-            catch (ExprValidationPropertyException ex)
-            {
-                throw ex;   // TODO
+
+            if (matchUntilNode.getUpperBounds() != null) {
+                ExprNode validated = matchUntilNode.getUpperBounds().getValidatedSubtree(streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
+                matchUntilNode.setUpperBounds(validated);
+                if ((validated.getType() == null) || (!JavaClassHelper.isNumeric(validated.getType()))) {
+                    throw new ExprValidationException(message);
+                }
             }
 
             MatchedEventConvertor convertor = new MatchedEventConvertorImpl(untilMatchEventSpec.getTaggedEventTypes(), untilMatchEventSpec.getArrayEventTypes(), context.getEventAdapterService());

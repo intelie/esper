@@ -1051,22 +1051,22 @@ a=A -> every-distinct(a.aprop) b=B]]></programlisting>
 			   <para>
 				   The synopsis for the optional <emphasis>range</emphasis> qualifier is:
 			   </para>
-			   <synopsis>[ [<emphasis>low_endpoint</emphasis>] .. [<emphasis>high_endpoint</emphasis>] ]</synopsis>
+			   <synopsis>[ [<emphasis>low_endpoint</emphasis>] : [<emphasis>high_endpoint</emphasis>] ]</synopsis>
 
 			   <para>
-				   <emphasis>low_endpoint</emphasis> is an optional number that appears on the left of two dots (..), after which follows an optional <emphasis>high_endpoint</emphasis> number.
+				   <emphasis>low_endpoint</emphasis> is an optional number that appears on the left of a colon (:), after which follows an optional <emphasis>high_endpoint</emphasis> number.
 			   </para>
 
 			   <para>
-				   A range thus consists of a <emphasis>low_endpoint</emphasis> and a <emphasis>high_endpoint</emphasis> in square brackets and separated by dot (.) characters. Both endpoint values are optional but either one or both must be supplied. The <emphasis>low_endpoint</emphasis> can be omitted to denote a range that starts at zero. The <emphasis>high_endpoint</emphasis> can be omitted to denote an open-ended range.
+				   A range thus consists of a <emphasis>low_endpoint</emphasis> and a <emphasis>high_endpoint</emphasis> in square brackets and separated by a colon (:) characters. Both endpoint values are optional but either one or both must be supplied. The <emphasis>low_endpoint</emphasis> can be omitted to denote a range that starts at zero. The <emphasis>high_endpoint</emphasis> can be omitted to denote an open-ended range.
 			   </para>
 
 			   <para>
 				   Some examples for valid ranges might be:
 			   </para>
-				<programlisting><![CDATA[[3..10]
-[..3]    // range starts at zero
-[2..]    // open-ended range]]></programlisting>
+				<programlisting><![CDATA[[3 : 10]
+[:3]    // range starts at zero
+[2:]    // open-ended range]]></programlisting>
 
 			   <para>
 				   The <emphasis>low_endpoint</emphasis>, if specified, defines the minimum number of times that the <emphasis>repeated_pattern_expr</emphasis> pattern subexpression must become true in order for the expression to become true.
@@ -1092,7 +1092,7 @@ a=A -> every-distinct(a.aprop) b=B]]></programlisting>
 			   <para>
 				   Consider the following pattern which requires at least three A events to match:
 			   </para>
-				<programlisting><![CDATA[[3..] A until B]]></programlisting>
+				<programlisting><![CDATA[[3:] A until B]]></programlisting>
 	
 			   <para>
 				   In the pattern above, if a B event arrives before 3 A events occurred, the expression ends and evaluates to false. 
@@ -1109,12 +1109,12 @@ a=A -> every-distinct(a.aprop) b=B]]></programlisting>
 			   <para>
 				   In this sample pattern the engine will be looking for a maximum of 3 A events. The expression turns true as soon as a single B event arrives regardless of the number of A events received:
 			   </para>
-				<programlisting><![CDATA[[..3] A until B]]></programlisting>
+				<programlisting><![CDATA[[:3] A until B]]></programlisting>
 
 			   <para>
 				   The next pattern matches when a C or D event arrives, regardless of the number of A or B events that occurred:
 			   </para>
-				<programlisting><![CDATA[[..3] (a=A or b=B) until (c=C or d=D)]]></programlisting>
+				<programlisting><![CDATA[[:3] (a=A or b=B) until (c=C or d=D)]]></programlisting>
 	
 			   <para>
 				   In the pattern above, if more then 3 A or B events arrive, the pattern stops looking for additional A or B events. The 'a' and 'b' tags retain only the first 3 (combined) matches among A and B events. The output event contains these tagged events as indexed properties.
@@ -1131,7 +1131,7 @@ a=A -> every-distinct(a.aprop) b=B]]></programlisting>
 			   <para>
 				   The next pattern matches after at least one A event arrives upon the arrival of a single B event:
 			   </para>
-				<programlisting><![CDATA[[1..3] a=A until B]]></programlisting>
+				<programlisting><![CDATA[[1:3] a=A until B]]></programlisting>
 	
 			   <para>
 				   If a B event arrives before the first A event, then the pattern does not match. Only the first 3 A events are returned by the pattern.
