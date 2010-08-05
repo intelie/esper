@@ -2526,54 +2526,29 @@ public class EPLTreeWalker extends EsperEPL2Ast
         boolean hasRange = true;
         int type = node.getChild(0).getType();
         EvalMatchUntilSpec spec;
+        boolean tightlyBound = false;
         if (type == MATCH_UNTIL_RANGE_HALFOPEN)
         {
-            Double low = DoubleValue.parseString(node.getChild(0).getChild(0).getText());
-            spec = new EvalMatchUntilSpec(low.intValue(), null);
+            ExprNode low = astExprNodeMap.remove(node.getChild(0).getChild(0));
+            spec = new EvalMatchUntilSpec(low, null);
         }
         else if (type == MATCH_UNTIL_RANGE_HALFCLOSED)
         {
-            String high = node.getChild(0).getChild(0).getText();
-            if (high.charAt(0) == '.')
-            {
-                high = high.substring(1);
-            }
-            Double highVal = DoubleValue.parseString(high);
-            if (highVal.intValue() == 0)
-            {
-                throw new ASTWalkException("Incorrect range specification, a high endpoint of zero is not allowed");
-            }
-            spec = new EvalMatchUntilSpec(null, highVal.intValue());
+            ExprNode high = astExprNodeMap.remove(node.getChild(0).getChild(0));
+            spec = new EvalMatchUntilSpec(null, high);
         }
         else if (type == MATCH_UNTIL_RANGE_BOUNDED)
         {
-            Double low = DoubleValue.parseString(node.getChild(0).getChild(0).getText());
-            if (low == 0)
-            {
-                throw new ASTWalkException("Incorrect range specification, a bounds of zero is not allowed");
-            }
-            spec = new EvalMatchUntilSpec(low.intValue(), low.intValue());
+            ExprNode value = astExprNodeMap.remove(node.getChild(0).getChild(0));
+            spec = new EvalMatchUntilSpec(value, value);
+            tightlyBound = true;
         }
         else if (type == MATCH_UNTIL_RANGE_CLOSED)
         {
-            Double low = DoubleValue.parseString(node.getChild(0).getChild(0).getText());
-            String high = node.getChild(0).getChild(1).getText();
-            if (high.charAt(0) == '.')
-            {
-                high = high.substring(1);
-            }
-            Double highVal = DoubleValue.parseString(high);
-
-            if (highVal < low)
-            {
-                throw new ASTWalkException("Incorrect range specification, lower bounds value '" + low.intValue() +
-                        "' is higher then higher bounds '" + highVal.intValue() + "'");
-            }
-            if ((highVal == 0) && (low == 0))
-            {
-                throw new ASTWalkException("Incorrect range specification, lower bounds and higher bounds values are zero");
-            }
-            spec = new EvalMatchUntilSpec(low.intValue(), highVal.intValue());
+            ExprNode low = astExprNodeMap.remove(node.getChild(0).getChild(0));
+            ExprNode high = astExprNodeMap.remove(node.getChild(0).getChild(1));
+            spec = new EvalMatchUntilSpec(low, high);
+            tightlyBound = true;
         }
         else
         {
@@ -2581,12 +2556,12 @@ public class EPLTreeWalker extends EsperEPL2Ast
             hasRange = false;
         }
 
-        if ((node.getChildCount() == 2) && (hasRange) && (!spec.isTightlyBound()))
+        if ((node.getChildCount() == 2) && (hasRange) && (!tightlyBound))
         {
             throw new ASTWalkException("Variable bounds repeat operator requires an until-expression");            
         }
 
-        EvalMatchUntilNode fbNode = new EvalMatchUntilNode(spec);
+        EvalMatchUntilNode fbNode = new EvalMatchUntilNode(spec, null);
         astPatternNodeMap.put(node, fbNode);
     }
 

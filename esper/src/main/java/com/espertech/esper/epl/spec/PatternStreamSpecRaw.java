@@ -263,6 +263,34 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         else if (evalNode instanceof EvalMatchUntilNode)
         {
             EvalMatchUntilNode matchUntilNode = (EvalMatchUntilNode) evalNode;
+
+            // compile bounds expressions, if any
+            MatchEventSpec untilMatchEventSpec = new MatchEventSpec(tags.getTaggedEventTypes(), tags.getArrayEventTypes());
+            StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), untilMatchEventSpec.getTaggedEventTypes(), untilMatchEventSpec.getArrayEventTypes());
+            List<ExprNode> validated;
+            try
+            {
+                if (matchUntilNode.getLowerBounds() != null) {
+                    validated = validateExpressions(Collections.singletonList(matchUntilNode.getLowerBounds()),
+                        streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
+                    matchUntilNode.setLowerBounds(validated.get(0));
+                }
+
+                if (matchUntilNode.getUpperBounds() != null) {
+                    validated = validateExpressions(Collections.singletonList(matchUntilNode.getUpperBounds()),
+                        streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
+                    matchUntilNode.setUpperBounds(validated.get(0));
+                }
+            }
+            catch (ExprValidationPropertyException ex)
+            {
+                throw ex;   // TODO
+            }
+
+            MatchedEventConvertor convertor = new MatchedEventConvertorImpl(untilMatchEventSpec.getTaggedEventTypes(), untilMatchEventSpec.getArrayEventTypes(), context.getEventAdapterService());
+            matchUntilNode.setConvertor(convertor);
+
+            // compile new tag lists
             Set<String> arrayTags = null;
             EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
             for (EvalFilterNode filterNode : matchUntilAnalysisResult.getFilterNodes())

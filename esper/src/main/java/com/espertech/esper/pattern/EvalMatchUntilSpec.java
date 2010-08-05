@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.io.Serializable;
@@ -17,10 +18,9 @@ import java.io.Serializable;
  */
 public class EvalMatchUntilSpec implements MetaDefItem, Serializable
 {
-    private final Integer lowerBounds;
-    private final Integer upperBounds;
+    private final ExprNode lowerBounds;
+    private final ExprNode upperBounds;
     private final boolean hasBounds;
-    private final boolean isTightlyBound;
     private static final long serialVersionUID = -78885747872100470L;
 
     /**
@@ -28,17 +28,8 @@ public class EvalMatchUntilSpec implements MetaDefItem, Serializable
      * @param lowerBounds is the lower bounds, or null if none supplied
      * @param upperBounds is the upper bounds, or null if none supplied
      */
-    public EvalMatchUntilSpec(Integer lowerBounds, Integer upperBounds)
+    public EvalMatchUntilSpec(ExprNode lowerBounds, ExprNode upperBounds)
     {
-        if ((lowerBounds != null) && (lowerBounds < 0))
-        {
-            throw new IllegalArgumentException("Lower bounds in match-until cannot be a negative value");
-        }
-        if ((upperBounds != null) && (upperBounds < 0))
-        {
-            throw new IllegalArgumentException("Upper bounds in match-until cannot be a negative value");
-        }
-
         this.lowerBounds = lowerBounds;
         this.upperBounds = upperBounds;
 
@@ -49,27 +40,6 @@ public class EvalMatchUntilSpec implements MetaDefItem, Serializable
         else
         {
             hasBounds = false;
-        }
-
-        if ((lowerBounds != null) && (upperBounds != null))
-        {
-            if (lowerBounds > upperBounds)
-            {
-                throw new IllegalArgumentException("Lower bounds in match-until cannot be greater then the upper bounds");
-            }
-
-            if (lowerBounds.equals(upperBounds))
-            {
-                isTightlyBound = true;
-            }
-            else
-            {
-                isTightlyBound = false;
-            }
-        }
-        else
-        {
-            isTightlyBound = false;
         }
     }
 
@@ -83,19 +53,10 @@ public class EvalMatchUntilSpec implements MetaDefItem, Serializable
     }
 
     /**
-     * Returns true if there is a tight bounds, that is low and high endpoints are both defined.
-     * @return true for tight endpoint.
-     */
-    public boolean isTightlyBound()
-    {
-        return isTightlyBound;
-    }
-
-    /**
      * Returns the lower endpoint or null if undefined.
      * @return lower endpoint
      */
-    public Integer getLowerBounds()
+    public ExprNode getLowerBounds()
     {
         return lowerBounds;
     }
@@ -104,7 +65,7 @@ public class EvalMatchUntilSpec implements MetaDefItem, Serializable
      * Returns the high endpoint or null if undefined.
      * @return high endpoint
      */
-    public Integer getUpperBounds()
+    public ExprNode getUpperBounds()
     {
         return upperBounds;
     }

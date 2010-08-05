@@ -15,8 +15,8 @@ import java.io.StringWriter;
  */
 public class PatternMatchUntilExpr extends PatternExprBase
 {
-    private Integer low;
-    private Integer high;
+    private Expression low;
+    private Expression high;
     private static final long serialVersionUID = -427123340111619016L;
 
     /**
@@ -31,7 +31,7 @@ public class PatternMatchUntilExpr extends PatternExprBase
      * @param low - low number of matches, or null if no lower boundary
      * @param high - high number of matches, or null if no high boundary
      */
-    public PatternMatchUntilExpr(Integer low, Integer high)
+    public PatternMatchUntilExpr(Expression low, Expression high)
     {
         this.low = low;
         this.high = high;
@@ -44,7 +44,7 @@ public class PatternMatchUntilExpr extends PatternExprBase
      * @param match - the pattern expression that is sought to match repeatedly
      * @param until - the pattern expression that ends matching (optional, can be null)
      */
-    public PatternMatchUntilExpr(Integer low, Integer high, PatternExpr match, PatternExpr until)
+    public PatternMatchUntilExpr(Expression low, Expression high, PatternExpr match, PatternExpr until)
     {
         this.low = low;
         this.high = high;
@@ -56,7 +56,7 @@ public class PatternMatchUntilExpr extends PatternExprBase
      * Returns the optional low endpoint for the repeat, or null if none supplied.
      * @return low endpoint
      */
-    public Integer getLow()
+    public Expression getLow()
     {
         return low;
     }
@@ -65,7 +65,7 @@ public class PatternMatchUntilExpr extends PatternExprBase
      * Sets the optional low endpoint for the repeat, or null if none supplied.
      * @param low - low endpoint to set
      */
-    public void setLow(Integer low)
+    public void setLow(Expression low)
     {
         this.low = low;
     }
@@ -74,7 +74,7 @@ public class PatternMatchUntilExpr extends PatternExprBase
      * Returns the optional high endpoint for the repeat, or null if none supplied.
      * @return high endpoint
      */
-    public Integer getHigh()
+    public Expression getHigh()
     {
         return high;
     }
@@ -83,7 +83,7 @@ public class PatternMatchUntilExpr extends PatternExprBase
      * Sets the optional high endpoint for the repeat, or null if none supplied.
      * @param high - high endpoint to set
      */
-    public void setHigh(Integer high)
+    public void setHigh(Expression high)
     {
         this.high = high;
     }
@@ -99,26 +99,26 @@ public class PatternMatchUntilExpr extends PatternExprBase
             writer.write("[");
             if ((low != null) && (high != null))
             {
-                if (low.equals(high))
+                if (low == high)
                 {
-                    writer.write(Integer.toString(low));
+                    low.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }
                 else
                 {
-                    writer.write(Integer.toString(low));
-                    writer.write("..");
-                    writer.write(Integer.toString(high));
+                    low.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                    writer.write(":");
+                    high.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }
             }
             else if (low != null)
             {
-                writer.write(Integer.toString(low));
-                writer.write("..");
+                low.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                writer.write(":");
             }
             else
             {
-                writer.write("..");
-                writer.write(Integer.toString(high));
+                writer.write(":");
+                high.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
             writer.write("] ");
         }

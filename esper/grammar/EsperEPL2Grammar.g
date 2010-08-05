@@ -1386,29 +1386,16 @@ guardWhileExpression
 
 // syntax is [a..b]  or [..b]  or  [a..] or [a:b]   wherein a and b may be recognized as double
 matchUntilRange
+  @init { Boolean isopen = true; } 
 	:	LBRACK (
-			l=NUM_INT (  (d1=DOT DOT r=NUM_INT?) 
-			           | (c1=COLON r=NUM_INT)
-				  )? 
-		   |	db=NUM_DOUBLE (
-		                        d1=DOT r=NUM_INT? 
-		                        |
-		                        db2=NUM_DOUBLE
-		                      )? 
-		   |	DOT DOT r=NUM_INT
-		   |	DOT db3=NUM_DOUBLE
+			expression (c1=COLON (expression { isopen = false; }) ? )? 
+		   |	c2=COLON expression
 		   )
 		RBRACK
-		-> {$l != null && d1 != null && r != null}? ^(MATCH_UNTIL_RANGE_CLOSED $l $r) 
-		-> {$l != null && d1 != null}? ^(MATCH_UNTIL_RANGE_HALFOPEN $l) 
-		-> {$l != null && c1 != null}? ^(MATCH_UNTIL_RANGE_CLOSED $l $r) 
-		-> {$l != null}? ^(MATCH_UNTIL_RANGE_BOUNDED $l) 
-		-> {$db != null && d1 != null && r != null}? ^(MATCH_UNTIL_RANGE_CLOSED $db $r) 
-		-> {$db != null && d1 != null}? ^(MATCH_UNTIL_RANGE_HALFOPEN $db) 
-		-> {$db != null && db2 != null}? ^(MATCH_UNTIL_RANGE_CLOSED $db $db2) 
-		-> {$db3 != null}? ^(MATCH_UNTIL_RANGE_HALFCLOSED $db3)
-		-> {$r != null}? ^(MATCH_UNTIL_RANGE_HALFCLOSED $r) 
-		-> ^(MATCH_UNTIL_RANGE_HALFCLOSED $db) 
+		-> {$c1 != null && !isopen}? ^(MATCH_UNTIL_RANGE_CLOSED expression expression) 
+		-> {$c1 != null && isopen}? ^(MATCH_UNTIL_RANGE_HALFOPEN expression) 
+		-> {$c2 != null}? ^(MATCH_UNTIL_RANGE_HALFCLOSED expression)
+		-> ^(MATCH_UNTIL_RANGE_BOUNDED expression) 
 	;
 	
 //----------------------------------------------------------------------------

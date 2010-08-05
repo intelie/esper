@@ -12,6 +12,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
 {
@@ -79,7 +82,7 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         testCase.add("A2", "a[0]", events.getEvent("A1"), "a[1]", events.getEvent("A2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[2..2] a=A");
+        testCase = new EventExpressionCase("[2:2] a=A");
         testCase.add("A2", "a[0]", events.getEvent("A1"), "a[1]", events.getEvent("A2"));
         testCaseList.addTest(testCase);
 
@@ -113,73 +116,73 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         testCase.add("B2", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[..4] b=B until g=G(id='G1')");
+        testCase = new EventExpressionCase("[:4] b=B until g=G(id='G1')");
         testCase.add("G1", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "b[2]", events.getEvent("B3"), "g", events.getEvent("G1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[..3] b=B until g=G(id='G1')");
+        testCase = new EventExpressionCase("[:3] b=B until g=G(id='G1')");
         testCase.add("G1", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "b[2]", events.getEvent("B3"), "g", events.getEvent("G1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[..2] b=B until g=G(id='G1')");
+        testCase = new EventExpressionCase("[:2] b=B until g=G(id='G1')");
         testCase.add("G1", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "g", events.getEvent("G1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[..1] b=B until g=G(id='G1')");
+        testCase = new EventExpressionCase("[:1] b=B until g=G(id='G1')");
         testCase.add("G1", "b[0]", events.getEvent("B1"), "g", events.getEvent("G1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[..1] b=B until a=A(id='A1')");
+        testCase = new EventExpressionCase("[:1] b=B until a=A(id='A1')");
         testCase.add("A1", "b[0]", null, "a", events.getEvent("A1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[1..] b=B until g=G(id='G1')");
+        testCase = new EventExpressionCase("[1:] b=B until g=G(id='G1')");
         testCase.add("G1", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "b[2]", events.getEvent("B3"), "g", events.getEvent("G1"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[1..] b=B until a=A");
+        testCase = new EventExpressionCase("[1:] b=B until a=A");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[2..] b=B until a=A(id='A2')");
+        testCase = new EventExpressionCase("[2:] b=B until a=A(id='A2')");
         testCase.add("A2", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "a", events.getEvent("A2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[2..] b=B until a=A(id='A2')");
+        testCase = new EventExpressionCase("[2:] b=B until a=A(id='A2')");
         testCase.add("A2", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "a", events.getEvent("A2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[2..] b=B until c=C");
+        testCase = new EventExpressionCase("[2:] b=B until c=C");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[2..] b=B until a=A(id='A2')");
+        testCase = new EventExpressionCase("[2:] b=B until a=A(id='A2')");
         testCase.add("A2", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "a", events.getEvent("A2"));
         testCaseList.addTest(testCase);
 
         // same event triggering both clauses, until always wins, match does not count
-        testCase = new EventExpressionCase("[2..] b=B until e=B(id='B2')");
+        testCase = new EventExpressionCase("[2:] b=B until e=B(id='B2')");
         testCaseList.addTest(testCase);
 
         // same event triggering both clauses, until always wins, match does not count
-        testCase = new EventExpressionCase("[1..] b=B until e=B(id='B1')");
+        testCase = new EventExpressionCase("[1:] b=B until e=B(id='B1')");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[1..2] b=B until a=A(id='A2')");
+        testCase = new EventExpressionCase("[1:2] b=B until a=A(id='A2')");
         testCase.add("A2", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "b[2]", null, "a", events.getEvent("A2"));
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[1..3] b=B until G");
+        testCase = new EventExpressionCase("[1:3] b=B until G");
         testCase.add("G1", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "b[2]", events.getEvent("B3"), "b[3]", null);
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[1..2] b=B until G");
+        testCase = new EventExpressionCase("[1:2] b=B until G");
         testCase.add("G1", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "b[2]", null);
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[1..10] b=B until F");
+        testCase = new EventExpressionCase("[1:10] b=B until F");
         testCase.add("F1", "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"), "b[2]", null);
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("[1..10] b=B until C");
+        testCase = new EventExpressionCase("[1:10] b=B until C");
         testCase.add("C1", "b[0]", events.getEvent("B1"), "b[1]", null);
         testCaseList.addTest(testCase);
 
@@ -463,7 +466,7 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
-        String stmt ="select SupportStaticMethodLib.arrayLength(a) as length, java.lang.reflect.Array.getLength(a) as l2 from pattern [[1..] a=A until B]";
+        String stmt ="select SupportStaticMethodLib.arrayLength(a) as length, java.lang.reflect.Array.getLength(a) as l2 from pattern [[1:] a=A until B]";
         SupportUpdateListener listener = new SupportUpdateListener();
         EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
         statement.addListener(listener);
@@ -477,6 +480,36 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         assertEquals(3, event.get("l2"));
     }
 
+    public void testExpressionBounds() {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        Map<String, Object> start_load_type = new HashMap<String, Object>();
+        start_load_type.put("total_count", int.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("StartLoad", start_load_type);
+
+        Map<String, Object> single_load_type = new HashMap<String, Object>();
+        single_load_type.put("ver", String.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SingleLoad", single_load_type);
+
+        Map<String, Object> end_load_type = new HashMap<String, Object>();
+        end_load_type.put("versions", Set.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("EndLoad", end_load_type);
+
+        epService.getEPAdministrator().createEPL(
+                "select * from \n" +
+                        "pattern [ \n" +
+                        " every start_load=StartLoad \n" +
+                        " -> ( \n" +
+                        " [start_load.total_count] \n" +
+                        " single_load=SingleLoad(ver in (start_load.versions)) \n" +
+                        " until \n" +
+                        " end_load=EndLoad(versions = start_load.versions) \n" +
+                        " ) \n" +
+                        "]"
+        );
+    }
+
     public void testInvalid()
     {
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -484,11 +517,11 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
 
         tryInvalid(epService, "every [2] (a=A() -> b=B(id=a[0].id))", "Property named 'a[0].id' is not valid in any stream [every [2] (a=A() -> b=B(id=a[0].id))]");
         tryInvalid(epService, "[-1] A", "Incorrect syntax near '-' at line 1 column 1, please check the pattern expression [[-1] A]");
-        tryInvalid(epService, "[10..4] A", "Incorrect range specification, lower bounds value '10' is higher then higher bounds '4' [[10..4] A]");
-        tryInvalid(epService, "[4..6] A", "Variable bounds repeat operator requires an until-expression [[4..6] A]");
-        tryInvalid(epService, "[0..0] A", "Incorrect range specification, lower bounds and higher bounds values are zero [[0..0] A]");
+        tryInvalid(epService, "[10:4] A", "Incorrect range specification, lower bounds value '10' is higher then higher bounds '4' [[10:4] A]");
+        tryInvalid(epService, "[4:6] A", "Variable bounds repeat operator requires an until-expression [[4:6] A]");
+        tryInvalid(epService, "[0:0] A", "Incorrect range specification, lower bounds and higher bounds values are zero [[0:0] A]");
         tryInvalid(epService, "[0] A", "Incorrect range specification, a bounds of zero is not allowed [[0] A]");
-        tryInvalid(epService, "[..0] A until B", "Incorrect range specification, a high endpoint of zero is not allowed [[..0] A until B]");
+        tryInvalid(epService, "[:0] A until B", "Incorrect range specification, a high endpoint of zero is not allowed [[:0] A until B]");
         tryInvalid(epService, "[1] a=A(a[0].id='a')", "Property named 'a[0].id' is not valid in any stream [[1] a=A(a[0].id='a')]");
         tryInvalid(epService, "a=A -> B(a[0].id='a')", "Property named 'a[0].id' is not valid in any stream [a=A -> B(a[0].id='a')]");
         tryInvalid(epService, "(a=A until c=B) -> c=C", "Tag 'c' for event 'C' has already been declared for events of type com.espertech.esper.support.bean.SupportBean_B [(a=A until c=B) -> c=C]");

@@ -27,10 +27,13 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
     private final EvalMatchUntilNode evalMatchUntilNode;
     private final MatchedEventMap beginState;
     private final ArrayList<EventBean>[] matchedEventArrays;
+    private final MatchedEventConvertor matchedEventConvertor;
 
     private EvalStateNode stateMatcher;
     private EvalStateNode stateUntil;
     private int numMatches;
+    private Integer lowerbounds;
+    private Integer upperbounds;
 
     /**
      * Constructor.
@@ -42,7 +45,8 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
     public EvalMatchUntilStateNode(Evaluator parentNode,
                                          EvalMatchUntilNode evalMatchUntilNode,
                                          MatchedEventMap beginState,
-                                         PatternContext context)
+                                         PatternContext context,
+                                         MatchedEventConvertor matchedEventConvertor)
     {
         super(evalMatchUntilNode, parentNode, null);
 
@@ -56,6 +60,7 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
         this.beginState = beginState;
         this.matchedEventArrays = (ArrayList<EventBean>[]) new ArrayList[evalMatchUntilNode.getTagsArrayed().length];
         this.evalMatchUntilNode = evalMatchUntilNode;
+        this.matchedEventConvertor = matchedEventConvertor;
 
         EvalNode childMatcher = evalMatchUntilNode.getChildNodes().get(0);
         stateMatcher = childMatcher.newState(this, beginState, context, null);
@@ -83,6 +88,21 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
                 log.debug(".start Starting match-until expression - until");
             }
             stateUntil.start();
+        }
+
+        EventBean[] eventsPerStream = matchedEventConvertor.convert(beginState);
+        if (evalMatchUntilNode.getLowerBounds() != null) {
+            lowerbounds = (Integer) evalMatchUntilNode.getLowerBounds().evaluate(eventsPerStream, true, context);
+        }
+        if (evalMatchUntilNode.getUpperBounds() != null) {
+            upperbounds = (Integer) evalMatchUntilNode.getUpperBounds().evaluate(eventsPerStream, true, context);
+        }
+        if (upperbounds != null && lowerbounds != null) {
+            if (upperbounds < lowerbounds) {
+                Integer lbounds =  lowerbounds;
+                lowerbounds = upperbounds;
+                upperbounds = lbounds;
+            }
         }
 
         if (stateMatcher != null) {
@@ -140,7 +160,7 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
         // handle matcher evaluating true
         if (isMatcher)
         {
-            if ((evalMatchUntilNode.getSpec().isTightlyBound()) && (numMatches == evalMatchUntilNode.getSpec().getLowerBounds()))
+            if ((isTightlyBound()) && (numMatches == lowerbounds))
             {
                 quit();
                 MatchedEventMap consolidated = consolidate(matchEvent, matchedEventArrays, evalMatchUntilNode.getTagsArrayed());
@@ -150,8 +170,8 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
             {
                 // restart or keep started if not bounded, or not upper bounds, or upper bounds not reached
                 boolean restart = (!evalMatchUntilNode.getSpec().isBounded()) ||
-                                  (evalMatchUntilNode.getSpec().getUpperBounds() == null) ||
-                                  (evalMatchUntilNode.getSpec().getUpperBounds() > numMatches);
+                                  (upperbounds == null) ||
+                                  (upperbounds > numMatches);
                 if (stateMatcher == null)
                 {
                     if (restart)
@@ -179,7 +199,7 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
             // consolidate multiple matched events into a single event
             MatchedEventMap consolidated = consolidate(matchEvent, matchedEventArrays, evalMatchUntilNode.getTagsArrayed());
 
-            if ((evalMatchUntilNode.getSpec().getLowerBounds() != null) && (numMatches < evalMatchUntilNode.getSpec().getLowerBounds()))
+            if ((lowerbounds != null) && (numMatches < lowerbounds))
             {
                 this.getParentEvaluator().evaluateFalse(this);
             }
@@ -272,6 +292,10 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
     public final String toString()
     {
         return "EvalMatchUntilStateNode nodes=" + nodes.size();
+    }
+
+    private boolean isTightlyBound() {
+        return lowerbounds != null && upperbounds != null && upperbounds.equals(lowerbounds);
     }
 
     private static final Log log = LogFactory.getLog(EvalMatchUntilStateNode.class);

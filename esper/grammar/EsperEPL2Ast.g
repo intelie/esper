@@ -595,15 +595,10 @@ patternFilterExpr
 	;
 
 matchUntilRange
-	:	^(MATCH_UNTIL_RANGE_CLOSED matchUntilRangeParam matchUntilRangeParam)
-	| 	^(MATCH_UNTIL_RANGE_BOUNDED matchUntilRangeParam)
-	| 	^(MATCH_UNTIL_RANGE_HALFCLOSED matchUntilRangeParam)
-	|	^(MATCH_UNTIL_RANGE_HALFOPEN matchUntilRangeParam)
-	;
-
-matchUntilRangeParam
-	:	NUM_DOUBLE
-	|	NUM_INT
+	:	^(MATCH_UNTIL_RANGE_CLOSED valueExpr valueExpr)
+	| 	^(MATCH_UNTIL_RANGE_BOUNDED valueExpr)
+	| 	^(MATCH_UNTIL_RANGE_HALFCLOSED valueExpr)
+	|	^(MATCH_UNTIL_RANGE_HALFOPEN valueExpr)
 	;
 
 filterParam

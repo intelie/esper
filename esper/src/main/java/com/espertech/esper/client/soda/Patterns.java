@@ -317,7 +317,7 @@ public class Patterns
      * @param until - the pattern expression that ends matching (optional, can be null)
      * @return pattern expression
      */
-    public static PatternMatchUntilExpr matchUntil(Integer low, Integer high, PatternExpr match, PatternExpr until)
+    public static PatternMatchUntilExpr matchUntil(Expression low, Expression high, PatternExpr match, PatternExpr until)
     {
         return new PatternMatchUntilExpr(low, high, match, until);
     }

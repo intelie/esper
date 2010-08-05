@@ -69,15 +69,6 @@ public final class EvalEveryDistinctNode extends EvalNode
     }
 
     /**
-     * Returns convertor for matching events to events-per-stream.
-     * @return convertor
-     */
-    public MatchedEventConvertor getConvertor()
-    {
-        return convertor;
-    }
-
-    /**
      * Sets the convertor for matching events to events-per-stream.
      * @param convertor convertor
      */

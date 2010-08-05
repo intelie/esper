@@ -56,9 +56,10 @@ public interface PatternStateFactory
      * @param evalMatchUntilNode is the factory node
      * @param beginState is the begin state
      * @param stateObjectId is the state node's object id
+     * @param convertor converts between match-event map and events-per-stream
      * @return state node
      */
-    public EvalStateNode makeMatchUntilState(Evaluator parentNode, EvalMatchUntilNode evalMatchUntilNode, MatchedEventMap beginState, Object stateObjectId);
+    public EvalStateNode makeMatchUntilState(Evaluator parentNode, EvalMatchUntilNode evalMatchUntilNode, MatchedEventMap beginState, Object stateObjectId, MatchedEventConvertor convertor);
 
     /**
      * Makes a followed-by state node.
