@@ -199,7 +199,6 @@ public class TestOutputLimitEventPerRow extends TestCase
 
     public void test17FirstNoHavingNoJoin()
     {
-        // TODO - test join
         String stmtText = "select symbol, volume, sum(price) " +
                             "from MarketData.win:time(5.5 sec) " +
                             "group by symbol " +
@@ -383,15 +382,49 @@ public class TestOutputLimitEventPerRow extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
+        // TODO        
         String fields[] = new String[] {"symbol", "volume", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsert(200, 1, new Object[][] {{"IBM", 100L, 25d}});
+        expected.addResultInsert(800, 1, new Object[][] {{"MSFT", 5000L, 9d}});
         expected.addResultInsert(1500, 1, new Object[][] {{"IBM", 150L, 49d}});
-        expected.addResultInsRem(3200, 0, null, null);
+        expected.addResultInsert(1500, 2, new Object[][] {{"YAH", 10000L, 1d}});
         expected.addResultInsert(3500, 1, new Object[][] {{"YAH", 11000L, 3d}});
         expected.addResultInsert(4300, 1, new Object[][] {{"IBM", 150L, 97d}});
-        expected.addResultRemove(5700, 0, new Object[][] {{"IBM", 100L, 72d}});
-        expected.addResultRemove(6300, 0, new Object[][] {{"MSFT", 5000L, null}});
+        expected.addResultInsert(4900, 1, new Object[][] {{"YAH", 11500L, 6d}});
+        expected.addResultInsert(5700, 0, new Object[][] {{"IBM", 100L, 72d}});
+        expected.addResultInsert(5900, 1, new Object[][] {{"YAH", 10500L, 7d}});
+        expected.addResultInsert(6300, 0, new Object[][] {{"MSFT", 5000L, null}});
+        expected.addResultInsert(7000, 0, new Object[][] {{"IBM", 150L, 48d}, {"YAH", 10000L, 6d}});
+
+        /** TODO
+        add(200, makeEvent("IBM", 100, 25), "Event E1 arrives");
+        add(800, makeEvent("MSFT", 5000, 9), "Event E2 arrives");
+        add(1000);
+        add(1200);
+        add(1500, makeEvent("IBM", 150, 24), "Event E3 arrives");
+        add(1500, makeEvent("YAH", 10000, 1), "Event E4 arrives");
+        add(2000);
+        add(2100, makeEvent("IBM", 155, 26), "Event E5 arrives");
+        add(2200);
+        add(2500);
+        add(3000);
+        add(3200);
+        add(3500, makeEvent("YAH", 11000, 2), "Event E6 arrives");
+        add(4000);
+        add(4200);
+        add(4300, makeEvent("IBM", 150, 22), "Event E7 arrives");
+        add(4900, makeEvent("YAH", 11500, 3), "Event E8 arrives");
+        add(5000);
+        add(5200);
+        add(5700, "Event E1 leaves the time window");
+        add(5900, makeEvent("YAH", 10500, 1), "Event E9 arrives");
+        add(6000);
+        add(6200);
+        add(6300, "Event E2 leaves the time window");
+        add(7000, "Event E3 and E4 leave the time window");
+        add(7200);
+         */
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();

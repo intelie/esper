@@ -425,6 +425,9 @@ public class TestOutputLimitEventPerGroup extends TestCase
         // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 event
         // TODO select symbol, sum(strike) from ABC group by symbol output first when a=1 then set a=0
         // TODO select symbol, sum(strike) from ABC group by symbol output first at (2,3, *, *, *)
+        // TODO test having
+        // TODO test order
+        // TODO test rstream
 
         sendTimer(0);
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
@@ -436,7 +439,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
         expected.addResultInsRem(800, 1, new Object[][] {{"MSFT", 9d}}, new Object[][] {{"MSFT", null}});
         expected.addResultInsRem(1500, 1, new Object[][] {{"IBM", 49d}}, new Object[][] {{"IBM", 25d}});
         expected.addResultInsRem(1500, 2, new Object[][] {{"YAH", 1d}}, new Object[][] {{"YAH", null}});
-        //expected.addResultInsRem(3200, 0, null, null); // TODO
         expected.addResultInsRem(3500, 1, new Object[][] {{"YAH", 3d}}, new Object[][] {{"YAH", 1d}});
         expected.addResultInsRem(4300, 1, new Object[][] {{"IBM", 97d}}, new Object[][] {{"IBM", 75d}});
         expected.addResultInsRem(4900, 1, new Object[][] {{"YAH", 6d}}, new Object[][] {{"YAH", 3d}});

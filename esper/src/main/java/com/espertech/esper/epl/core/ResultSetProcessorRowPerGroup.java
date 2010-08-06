@@ -1027,7 +1027,6 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         }
         else if (outputLimitLimitType == OutputLimitLimitType.FIRST)
         {
-            // TODO
             List<EventBean> newEvents = new LinkedList<EventBean>();
             List<EventBean> oldEvents = null;
             if (isSelectRStream)

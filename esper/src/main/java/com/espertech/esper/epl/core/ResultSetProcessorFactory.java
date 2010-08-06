@@ -436,7 +436,7 @@ public class ResultSetProcessorFactory
         // There is a group-by clause, and one or more event properties in the select clause that are not under an aggregation
         // function are not listed in the group-by clause (output one row per event, not one row per group)
         log.debug(".getProcessor Using ResultSetProcessorAggregateGrouped");
-        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream, isUnidirectional, stmtContext);
+        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream, isUnidirectional, stmtContext, outputLimitSpec);
     }
 
     private static void validateHaving(Set<Pair<Integer, String>> propertiesGroupedBy,
