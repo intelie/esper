@@ -27,6 +27,7 @@ public interface OutputConditionFactory
      */
 	public OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
 										   StatementContext statementContext,
-										   OutputCallback outputCallback)
+										   OutputCallback outputCallback,
+                                           boolean isGrouped)
             throws ExprValidationException;
 }

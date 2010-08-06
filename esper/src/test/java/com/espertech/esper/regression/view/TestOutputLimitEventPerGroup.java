@@ -416,6 +416,16 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     private void runAssertion17(String stmtText, String outputLimit)
     {
+        // TODO change here for 477
+        // TODO test number of events
+        // TODO "output first when ...."
+        // TODO test variables/expressions
+
+        // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 sec
+        // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 event
+        // TODO select symbol, sum(strike) from ABC group by symbol output first when a=1 then set a=0
+        // TODO select symbol, sum(strike) from ABC group by symbol output first at (2,3, *, *, *)
+
         sendTimer(0);
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
@@ -423,12 +433,17 @@ public class TestOutputLimitEventPerGroup extends TestCase
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(200, 1, new Object[][] {{"IBM", 25d}}, new Object[][] {{"IBM", null}});
+        expected.addResultInsRem(800, 1, new Object[][] {{"MSFT", 9d}}, new Object[][] {{"MSFT", null}});
         expected.addResultInsRem(1500, 1, new Object[][] {{"IBM", 49d}}, new Object[][] {{"IBM", 25d}});
-        expected.addResultInsRem(3200, 0, null, null);
+        expected.addResultInsRem(1500, 2, new Object[][] {{"YAH", 1d}}, new Object[][] {{"YAH", null}});
+        //expected.addResultInsRem(3200, 0, null, null); // TODO
         expected.addResultInsRem(3500, 1, new Object[][] {{"YAH", 3d}}, new Object[][] {{"YAH", 1d}});
         expected.addResultInsRem(4300, 1, new Object[][] {{"IBM", 97d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(4900, 1, new Object[][] {{"YAH", 6d}}, new Object[][] {{"YAH", 3d}});
         expected.addResultInsRem(5700, 0, new Object[][] {{"IBM", 72d}}, new Object[][] {{"IBM", 97d}});
+        expected.addResultInsRem(5900, 1, new Object[][] {{"YAH", 7d}}, new Object[][] {{"YAH", 6d}});
         expected.addResultInsRem(6300, 0, new Object[][] {{"MSFT", null}}, new Object[][] {{"MSFT", 9d}});
+        expected.addResultInsRem(7000, 0, new Object[][] {{"IBM", 48d}, {"YAH", 6d}}, new Object[][] {{"IBM", 72d}, {"YAH", 7d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();

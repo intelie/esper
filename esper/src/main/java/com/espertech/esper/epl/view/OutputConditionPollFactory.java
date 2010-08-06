@@ -8,44 +8,35 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.spec.OutputLimitRateType;
+import com.espertech.esper.epl.spec.OutputLimitSpec;
+import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.epl.spec.OutputLimitLimitType;
-import com.espertech.esper.epl.spec.OutputLimitRateType;
-import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.util.JavaClassHelper;
 
 /**
- * Factory for output condition instances.
+ * Factory for output condition instances that are polled/queried only.
  */
-public class OutputConditionFactoryDefault implements OutputConditionFactory
+public class OutputConditionPollFactory
 {
-	private static final Log log = LogFactory.getLog(OutputConditionFactoryDefault.class);
+	private static final Log log = LogFactory.getLog(OutputConditionPollFactory.class);
 
     /**
      * Creates an output condition instance.
      * @param outputLimitSpec specifies what kind of condition to create
      * @param statementContext supplies the services required such as for scheduling callbacks
-     * @param outputCallback is the method to invoke for output
-     * @return instance for performing output
+     * @return instance for handling output condition
      */
-	public OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
-										 	  	  StatementContext statementContext,
-										 	      OutputCallback outputCallback,
-                                                   boolean isGrouped)
+	public static OutputConditionPolled createCondition(OutputLimitSpec outputLimitSpec,
+										 	  	  StatementContext statementContext)
             throws ExprValidationException
     {
-		if(outputCallback ==  null)
-		{
-			throw new NullPointerException("Output condition by count requires a non-null callback");
-		}
-
 		if(outputLimitSpec == null)
 		{
-			return new OutputConditionNull(outputCallback);
+			throw new NullPointerException("Output condition by count requires a non-null callback");
 		}
 
         // Check if a variable is present
@@ -59,24 +50,21 @@ public class OutputConditionFactoryDefault implements OutputConditionFactory
             }
         }
 
-        if(outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.FIRST)
-		{
-            if (isGrouped) {
-                return new OutputConditionNull(outputCallback);
-            }
-			return new OutputConditionFirst(outputLimitSpec, statementContext, outputCallback, isGrouped);
-		}
-
         if(outputLimitSpec.getRateType() == OutputLimitRateType.CRONTAB)
         {
-            return new OutputConditionCrontab(outputLimitSpec.getCrontabAtSchedule(), statementContext, outputCallback);
+            //return new OutputConditionCrontab(outputLimitSpec.getCrontabAtSchedule(), statementContext, outputCallback);
+            return null;    // TODO
         }
         else if(outputLimitSpec.getRateType() == OutputLimitRateType.WHEN_EXPRESSION)
         {
-            return new OutputConditionExpression(outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getThenExpressions(), statementContext, outputCallback);
+            return null;
+            // TODO new OutputConditionExpression(outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getThenExpressions(), statementContext, outputCallback);
         }
         else if(outputLimitSpec.getRateType() == OutputLimitRateType.EVENTS)
 		{
+            return null;
+            /*
+            TODO
             if (log.isDebugEnabled())
             {
 			    log.debug(".createCondition creating OutputConditionCount with event rate " + outputLimitSpec);
@@ -93,19 +81,16 @@ public class OutputConditionFactoryDefault implements OutputConditionFactory
                 rate = outputLimitSpec.getRate().intValue();
             }
             return new OutputConditionCount(rate, reader, outputCallback);
+             */
 		}
 		else
 		{
-            if (log.isDebugEnabled())
-            {
-                log.debug(".createCondition creating OutputConditionTime with interval length " + outputLimitSpec.getRate());
-            }
             if ((reader != null) && (!JavaClassHelper.isNumeric(reader.getType())))
             {
                 throw new IllegalArgumentException("Variable named '" + outputLimitSpec.getVariableName() + "' must be of numeric type");
             }
 
-            return new OutputConditionTime(outputLimitSpec.getTimePeriodExpr(), statementContext, outputCallback);
+            return new OutputConditionTimePolled(outputLimitSpec.getTimePeriodExpr(), statementContext);
 		}
 	}
 }

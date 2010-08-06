@@ -199,6 +199,7 @@ public class TestOutputLimitEventPerRow extends TestCase
 
     public void test17FirstNoHavingNoJoin()
     {
+        // TODO - test join
         String stmtText = "select symbol, volume, sum(price) " +
                             "from MarketData.win:time(5.5 sec) " +
                             "group by symbol " +

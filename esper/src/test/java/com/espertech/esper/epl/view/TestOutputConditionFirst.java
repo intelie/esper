@@ -43,7 +43,7 @@ public class TestOutputConditionFirst extends TestCase
 		SupportSchedulingServiceImpl schedulingServiceStub = new SupportSchedulingServiceImpl();
 		StatementContext statementContext = SupportStatementContextFactory.makeContext(schedulingServiceStub);
 		
-		OutputCondition condition = new OutputConditionFirst(outputConditionSpec, statementContext, callback);
+		OutputCondition condition = new OutputConditionFirst(outputConditionSpec, statementContext, callback, false);
 
         long startTime = 0;
         schedulingServiceStub.setTime(startTime);
@@ -85,7 +85,7 @@ public class TestOutputConditionFirst extends TestCase
 		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.FIRST, null, null, null, null, null, null);
 		StatementContext statementContext = SupportStatementContextFactory.makeContext();
 		
-		OutputCondition condition = (new OutputConditionFactoryDefault()).createCondition(outputConditionSpec, statementContext, callback);
+		OutputCondition condition = (new OutputConditionFactoryDefault()).createCondition(outputConditionSpec, statementContext, callback, false);
 
 		// Send first event of the batch, callback should be made
 		condition.updateOutputCondition(1, 0);

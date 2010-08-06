@@ -8,17 +8,23 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.spec.OutputLimitSpec;
+import com.espertech.esper.epl.view.OutputConditionPollFactory;
+import com.espertech.esper.epl.view.OutputConditionPolled;
 import com.espertech.esper.view.Viewable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -33,6 +39,8 @@ import java.util.*;
  */
 public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 {
+    private static final Log log = LogFactory.getLog(ResultSetProcessorRowPerGroup.class);
+
     private final SelectExprProcessor selectExprProcessor;
     private final OrderByProcessor orderByProcessor;
     private final AggregationService aggregationService;
@@ -41,7 +49,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     private final boolean isSorting;
     private final boolean isSelectRStream;
     private final boolean isUnidirectional;
-    private final ExprEvaluatorContext exprEvaluatorContext;
+    private final StatementContext statementContext;
+    private final OutputLimitSpec outputLimitSpec;
 
     // For output rate limiting, keep a representative event for each group for
     // representing each group in an output limit clause
@@ -51,6 +60,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     // For sorting, keep the generating events for each outgoing event
     private final Map<MultiKeyUntyped, EventBean[]> newGenerators = new HashMap<MultiKeyUntyped, EventBean[]>();
     private final Map<MultiKeyUntyped, EventBean[]> oldGenerators = new HashMap<MultiKeyUntyped, EventBean[]>();
+
+    private final Map<MultiKeyUntyped, OutputConditionPolled> outputState = new HashMap<MultiKeyUntyped, OutputConditionPolled>();
 
     /**
      * Ctor.
@@ -62,7 +73,6 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
      * Aggregation functions in the having node must have been pointed to the AggregationService for evaluation.
      * @param isSelectRStream - true if remove stream events should be generated
      * @param isUnidirectional - true if unidirectional join
-     * @param exprEvaluatorContext context for expression evalauation
      */
     public ResultSetProcessorRowPerGroup(SelectExprProcessor selectExprProcessor,
                                          OrderByProcessor orderByProcessor,
@@ -71,7 +81,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                                          ExprNode optionalHavingNode,
                                          boolean isSelectRStream,
                                          boolean isUnidirectional,
-                                         ExprEvaluatorContext exprEvaluatorContext)
+                                         StatementContext statementContext,
+                                         OutputLimitSpec outputLimitSpec)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
@@ -81,7 +92,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         this.isSorting = orderByProcessor != null;
         this.isSelectRStream = isSelectRStream;
         this.isUnidirectional = isUnidirectional;
-        this.exprEvaluatorContext = exprEvaluatorContext;
+        this.statementContext = statementContext;
+        this.outputLimitSpec = outputLimitSpec;
     }
 
     public EventType getResultEventType()
@@ -115,7 +127,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             int count = 0;
             for (MultiKey<EventBean> eventsPerStream : newEvents)
             {
-                aggregationService.applyEnter(eventsPerStream.getArray(), newDataMultiKey[count], exprEvaluatorContext);
+                aggregationService.applyEnter(eventsPerStream.getArray(), newDataMultiKey[count], statementContext);
                 count++;
             }
         }
@@ -125,7 +137,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             int count = 0;
             for (MultiKey<EventBean> eventsPerStream : oldEvents)
             {
-                aggregationService.applyLeave(eventsPerStream.getArray(), oldDataMultiKey[count],exprEvaluatorContext);
+                aggregationService.applyLeave(eventsPerStream.getArray(), oldDataMultiKey[count], statementContext);
                 count++;
             }
         }
@@ -161,7 +173,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             for (int i = 0; i < newData.length; i++)
             {
                 eventsPerStream[0] = newData[i];
-                aggregationService.applyEnter(eventsPerStream, newDataMultiKey[i], exprEvaluatorContext);
+                aggregationService.applyEnter(eventsPerStream, newDataMultiKey[i], statementContext);
             }
         }
         if (oldData != null)
@@ -170,7 +182,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             for (int i = 0; i < oldData.length; i++)
             {
                 eventsPerStream[0] = oldData[i];
-                aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[i], exprEvaluatorContext);
+                aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[i], statementContext);
             }
         }
 
@@ -206,7 +218,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             // Filter the having clause
             if (optionalHavingNode != null)
             {
-                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, statementContext);
                 if ((result == null) || (!result))
                 {
                     continue;
@@ -250,13 +262,13 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
         if(isSorting)
         {
-            events =  orderByProcessor.sort(events, currentGenerators, keys, isNewData, exprEvaluatorContext);
+            events =  orderByProcessor.sort(events, currentGenerators, keys, isNewData, statementContext);
         }
 
         return events;
     }
 
-    private void generateOutputBatched(Map<MultiKeyUntyped, EventBean> keysAndEvents, boolean isNewData, boolean isSynthesize, List<EventBean> resultEvents, List<MultiKeyUntyped> optSortKeys, ExprEvaluatorContext exprEvaluatorContext)
+    private void generateOutputBatched(Map<MultiKeyUntyped, EventBean> keysAndEvents, boolean isNewData, boolean isSynthesize, List<EventBean> resultEvents, List<MultiKeyUntyped> optSortKeys, StatementContext statementContext)
     {
         EventBean[] eventsPerStream = new EventBean[1];
 
@@ -270,7 +282,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             // Filter the having clause
             if (optionalHavingNode != null)
             {
-                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, statementContext);
                 if ((result == null) || (!result))
                 {
                     continue;
@@ -281,7 +293,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
             if(isSorting)
             {
-                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
+                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, statementContext));
             }
         }
     }
@@ -298,7 +310,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             // Filter the having clause
             if (optionalHavingNode != null)
             {
-                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, statementContext);
                 if ((result == null) || (!result))
                 {
                     continue;
@@ -309,7 +321,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
             if(isSorting)
             {
-                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
+                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, statementContext));
             }
         }
     }
@@ -333,7 +345,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             // Filter the having clause
             if (optionalHavingNode != null)
             {
-                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, statementContext);
                 if ((result == null) || (!result))
                 {
                     continue;
@@ -376,7 +388,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
         if(isSorting)
         {
-            events =  orderByProcessor.sort(events, currentGenerators, keys, isNewData, exprEvaluatorContext);
+            events =  orderByProcessor.sort(events, currentGenerators, keys, isNewData, statementContext);
         }
 
         return events;
@@ -436,7 +448,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         int count = 0;
         for (ExprNode exprNode : groupKeyNodes)
         {
-            keys[count] = exprNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            keys[count] = exprNode.evaluate(eventsPerStream, isNewData, statementContext);
             count++;
         }
 
@@ -465,7 +477,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     {
         if (orderByProcessor == null)
         {
-            return new ResultSetRowPerGroupIterator(parent.iterator(), this, aggregationService, exprEvaluatorContext);
+            return new ResultSetRowPerGroupIterator(parent.iterator(), this, aggregationService, statementContext);
         }
 
         // Pull all parent events, generate order keys
@@ -484,7 +496,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             Boolean pass = true;
             if (optionalHavingNode != null)
             {
-                pass = (Boolean) optionalHavingNode.evaluate(eventsPerStream, true, exprEvaluatorContext);
+                pass = (Boolean) optionalHavingNode.evaluate(eventsPerStream, true, statementContext);
             }
             if ((pass == null) || (!pass))
             {
@@ -498,14 +510,14 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
             outgoingEvents.add(selectExprProcessor.process(eventsPerStream, true, true));
 
-            MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true, exprEvaluatorContext);
+            MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true, statementContext);
             orderKeys.add(orderKey);
         }
 
         // sort
         EventBean[] outgoingEventsArr = outgoingEvents.toArray(new EventBean[outgoingEvents.size()]);
         MultiKeyUntyped[] orderKeysArr = orderKeys.toArray(new MultiKeyUntyped[orderKeys.size()]);
-        EventBean[] orderedEvents = orderByProcessor.sort(outgoingEventsArr, orderKeysArr, exprEvaluatorContext);
+        EventBean[] orderedEvents = orderByProcessor.sort(outgoingEventsArr, orderKeysArr, statementContext);
 
         return new ArrayEventIterator(orderedEvents);
     }
@@ -572,7 +584,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                     int count = 0;
                     for (MultiKey<EventBean> aNewData : newData)
                     {
-                        aggregationService.applyEnter(aNewData.getArray(), newDataMultiKey[count], exprEvaluatorContext);
+                        aggregationService.applyEnter(aNewData.getArray(), newDataMultiKey[count], statementContext);
                         count++;
                     }
                 }
@@ -582,7 +594,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                     int count = 0;
                     for (MultiKey<EventBean> anOldData : oldData)
                     {
-                        aggregationService.applyLeave(anOldData.getArray(), oldDataMultiKey[count], exprEvaluatorContext);
+                        aggregationService.applyLeave(anOldData.getArray(), oldDataMultiKey[count], statementContext);
                         count++;
                     }
                 }
@@ -602,11 +614,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, exprEvaluatorContext);
+                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, statementContext);
                 if (isSelectRStream)
                 {
                     MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
-                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, exprEvaluatorContext);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, statementContext);
                 }
             }
 
@@ -668,7 +680,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                                 generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
-                        aggregationService.applyEnter(aNewData.getArray(), mk, exprEvaluatorContext);
+                        aggregationService.applyEnter(aNewData.getArray(), mk, statementContext);
                     }
                 }
                 if (oldData != null)
@@ -688,7 +700,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                             }
                         }
 
-                        aggregationService.applyLeave(anOldData.getArray(), mk, exprEvaluatorContext);
+                        aggregationService.applyLeave(anOldData.getArray(), mk, statementContext);
                     }
                 }
             }
@@ -705,11 +717,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, exprEvaluatorContext);
+                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, statementContext);
                 if (isSelectRStream)
                 {
                     MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
-                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, exprEvaluatorContext);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, statementContext);
                 }
             }
 
@@ -767,7 +779,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                                 generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
-                        aggregationService.applyEnter(aNewData.getArray(), mk, exprEvaluatorContext);
+                        aggregationService.applyEnter(aNewData.getArray(), mk, statementContext);
                     }
                 }
                 if (oldData != null)
@@ -787,7 +799,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                             }
                         }
 
-                        aggregationService.applyLeave(anOldData.getArray(), mk, exprEvaluatorContext);
+                        aggregationService.applyLeave(anOldData.getArray(), mk, statementContext);
                     }
                 }
             }
@@ -804,12 +816,12 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, exprEvaluatorContext);
+                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, statementContext);
 
                 if (isSelectRStream)
                 {
                     MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
-                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, exprEvaluatorContext);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, statementContext);
                 }
             }
 
@@ -855,7 +867,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
                 if (isSelectRStream)
                 {
-                    generateOutputBatched(keysAndEvents, false, generateSynthetic, oldEvents, oldEventsSortKey, exprEvaluatorContext);
+                    generateOutputBatched(keysAndEvents, false, generateSynthetic, oldEvents, oldEventsSortKey, statementContext);
                 }
 
                 EventBean[] eventsPerStream = new EventBean[1];
@@ -866,7 +878,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                     for (EventBean aNewData : newData)
                     {
                         eventsPerStream[0] = aNewData;
-                        aggregationService.applyEnter(eventsPerStream, newDataMultiKey[count], exprEvaluatorContext);
+                        aggregationService.applyEnter(eventsPerStream, newDataMultiKey[count], statementContext);
                         count++;
                     }
                 }
@@ -877,12 +889,12 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                     for (EventBean anOldData : oldData)
                     {
                         eventsPerStream[0] = anOldData;
-                        aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[count], exprEvaluatorContext);
+                        aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[count], statementContext);
                         count++;
                     }
                 }
 
-                generateOutputBatched(keysAndEvents, true, generateSynthetic, newEvents, newEventsSortKey, exprEvaluatorContext);
+                generateOutputBatched(keysAndEvents, true, generateSynthetic, newEvents, newEventsSortKey, statementContext);
 
                 keysAndEvents.clear();
             }
@@ -897,11 +909,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, exprEvaluatorContext);
+                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, statementContext);
                 if (isSelectRStream)
                 {
                     MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
-                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, exprEvaluatorContext);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, statementContext);
                 }
             }
 
@@ -961,7 +973,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                                 generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
-                        aggregationService.applyEnter(eventsPerStream, mk, exprEvaluatorContext);
+                        aggregationService.applyEnter(eventsPerStream, mk, statementContext);
                     }
                 }
                 if (oldData != null)
@@ -982,7 +994,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                             }
                         }
 
-                        aggregationService.applyLeave(eventsPerStream, mk, exprEvaluatorContext);
+                        aggregationService.applyLeave(eventsPerStream, mk, statementContext);
                     }
                 }
             }
@@ -999,11 +1011,134 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, exprEvaluatorContext);
+                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, statementContext);
                 if (isSelectRStream)
                 {
                     MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
-                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, exprEvaluatorContext);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, statementContext);
+                }
+            }
+
+            if ((newEventsArr == null) && (oldEventsArr == null))
+            {
+                return null;
+            }
+            return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
+        }
+        else if (outputLimitLimitType == OutputLimitLimitType.FIRST)
+        {
+            // TODO
+            List<EventBean> newEvents = new LinkedList<EventBean>();
+            List<EventBean> oldEvents = null;
+            if (isSelectRStream)
+            {
+                oldEvents = new LinkedList<EventBean>();
+            }
+
+            List<MultiKeyUntyped> newEventsSortKey = null;
+            List<MultiKeyUntyped> oldEventsSortKey = null;
+            if (orderByProcessor != null)
+            {
+                newEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                if (isSelectRStream)
+                {
+                    oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                }
+            }
+
+            groupRepsView.clear();
+            for (UniformPair<EventBean[]> pair : viewEventsList)
+            {
+                EventBean[] newData = pair.getFirst();
+                EventBean[] oldData = pair.getSecond();
+
+                if (newData != null)
+                {
+                    // apply new data to aggregates
+                    for (EventBean aNewData : newData)
+                    {
+                        EventBean[] eventsPerStream = new EventBean[] {aNewData};
+                        MultiKeyUntyped mk = generateGroupKey(eventsPerStream, true);
+
+                        OutputConditionPolled outputStateGroup = outputState.get(mk);
+                        if (outputStateGroup == null) {
+                            try {
+                                outputStateGroup = OutputConditionPollFactory.createCondition(outputLimitSpec, statementContext);
+                            }
+                            catch (ExprValidationException e) {
+                                log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                            }
+                            outputState.put(mk, outputStateGroup);
+                        }
+                        boolean pass = outputStateGroup.updateOutputCondition(1, 0);
+                        if (pass) {
+                            // if this is a newly encountered group, generate the remove stream event
+                            if (groupRepsView.put(mk, eventsPerStream) == null)
+                            {
+                                workCollection.clear();
+                                workCollection.put(mk, eventsPerStream);
+                                if (isSelectRStream)
+                                {
+                                    generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                }
+                            }
+                        }
+                        aggregationService.applyEnter(eventsPerStream, mk, statementContext);
+                    }
+                }
+                if (oldData != null)
+                {
+                    // apply old data to aggregates
+                    for (EventBean anOldData : oldData)
+                    {
+                        EventBean[] eventsPerStream = new EventBean[] {anOldData};
+                        MultiKeyUntyped mk = generateGroupKey(eventsPerStream, true);
+
+                        OutputConditionPolled outputStateGroup = outputState.get(mk);
+                        if (outputStateGroup == null) {
+                            try {
+                                outputStateGroup = OutputConditionPollFactory.createCondition(outputLimitSpec, statementContext);
+                            }
+                            catch (ExprValidationException e) {
+                                log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                            }
+                            outputState.put(mk, outputStateGroup);
+                        }
+                        boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                        if (pass) {
+                            if (groupRepsView.put(mk, eventsPerStream) == null)
+                            {
+                                workCollection.clear();
+                                workCollection.put(mk, eventsPerStream);
+                                if (isSelectRStream)
+                                {
+                                    generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                }
+                            }
+                        }
+
+                        aggregationService.applyLeave(eventsPerStream, mk, statementContext);
+                    }
+                }
+            }
+
+            generateOutputBatchedArr(groupRepsView, true, generateSynthetic, newEvents, newEventsSortKey);
+
+            EventBean[] newEventsArr = (newEvents.isEmpty()) ? null : newEvents.toArray(new EventBean[newEvents.size()]);
+            EventBean[] oldEventsArr = null;
+            if (isSelectRStream)
+            {
+                oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            }
+
+            if (orderByProcessor != null)
+            {
+                MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
+                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, statementContext);
+                if (isSelectRStream)
+                {
+                    MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, statementContext);
                 }
             }
 
@@ -1057,7 +1192,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                                 generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
-                        aggregationService.applyEnter(eventsPerStream, mk, exprEvaluatorContext);
+                        aggregationService.applyEnter(eventsPerStream, mk, statementContext);
                     }
                 }
                 if (oldData != null)
@@ -1078,7 +1213,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                             }
                         }
 
-                        aggregationService.applyLeave(eventsPerStream, mk, exprEvaluatorContext);
+                        aggregationService.applyLeave(eventsPerStream, mk, statementContext);
                     }
                 }
             }
@@ -1095,11 +1230,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, exprEvaluatorContext);
+                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, statementContext);
                 if (isSelectRStream)
                 {
                     MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
-                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, exprEvaluatorContext);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, statementContext);
                 }
             }
 
