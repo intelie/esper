@@ -204,7 +204,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
             if (AuditPath.isAuditEnabled) {
                 super.indicateEarlyReturn(newOldEvents);
             }
-            resetEventBatches();    // TODO
+            resetEventBatches();
             return;
         }
 
@@ -261,7 +261,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
             if (AuditPath.isAuditEnabled) {
                 super.indicateEarlyReturn(newOldEvents);
             }
-            resetEventBatches();    // TODO
+            resetEventBatches();
             return;
         }
 

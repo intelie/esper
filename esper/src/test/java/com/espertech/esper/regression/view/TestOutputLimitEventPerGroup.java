@@ -37,9 +37,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     // TODO test having row-per-event
     // TODO test row-per-event
-    // TODO change doc for output rate limiting
-    // TODO change appendix for output examples
-    // TODO change here for 477
 
     public void testOutputFirstHavingJoinNoJoin() {
 

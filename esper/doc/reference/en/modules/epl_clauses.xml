@@ -2072,7 +2072,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 group by symbol output last every 10 seconds</programlisting>
 
 				<para>
-				  This statement also outputs total price per symbol considering events in the last 3 minutes. The <literal>first</literal> keyword instructs the engine to output as soon as there is a new value for a group. After output for a given group the engine suppresses output for the same group for 10 seconds and does not suppress output for other groups. Output occurs again for that group when the group has new value(s):
+				  This statement also outputs total price per symbol considering events in the last 3 minutes. The <literal>first</literal> keyword instructs the engine to output as soon as there is a new value for a group. After output for a given group the engine suppresses output for the same group for 10 seconds and does not suppress output for other groups. Output occurs again for that group after the interval when the group has new value(s):
 				</para>
 				<programlisting>select symbol, sum(price) from StockTickEvent.win:time(3 min)
 group by symbol output first every 10 seconds</programlisting>
