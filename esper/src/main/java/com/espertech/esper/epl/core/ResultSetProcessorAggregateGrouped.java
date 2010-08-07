@@ -859,6 +859,12 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 }
             }
 
+            if (isSelectRStream)  // there is no remove stream currently for output first
+            {
+                generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
+            }
+            generateOutputBatchedArr(workCollection, false, generateSynthetic, resultNewEvents, resultNewSortKeys);
+
             EventBean[] newEventsArr = null;
             EventBean[] oldEventsArr = null;
             if (!resultNewEvents.isEmpty()) {
