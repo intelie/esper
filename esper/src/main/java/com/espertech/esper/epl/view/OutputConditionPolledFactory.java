@@ -20,9 +20,9 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Factory for output condition instances that are polled/queried only.
  */
-public class OutputConditionPollFactory
+public class OutputConditionPolledFactory
 {
-	private static final Log log = LogFactory.getLog(OutputConditionPollFactory.class);
+	private static final Log log = LogFactory.getLog(OutputConditionPolledFactory.class);
 
     /**
      * Creates an output condition instance.
@@ -62,9 +62,6 @@ public class OutputConditionPollFactory
         }
         else if(outputLimitSpec.getRateType() == OutputLimitRateType.EVENTS)
 		{
-            return null;
-            /*
-            TODO
             if (log.isDebugEnabled())
             {
 			    log.debug(".createCondition creating OutputConditionCount with event rate " + outputLimitSpec);
@@ -80,8 +77,7 @@ public class OutputConditionPollFactory
             {
                 rate = outputLimitSpec.getRate().intValue();
             }
-            return new OutputConditionCount(rate, reader, outputCallback);
-             */
+            return new OutputConditionPolledCount(rate, reader);
 		}
 		else
 		{
@@ -90,7 +86,7 @@ public class OutputConditionPollFactory
                 throw new IllegalArgumentException("Variable named '" + outputLimitSpec.getVariableName() + "' must be of numeric type");
             }
 
-            return new OutputConditionTimePolled(outputLimitSpec.getTimePeriodExpr(), statementContext);
+            return new OutputConditionPolledTime(outputLimitSpec.getTimePeriodExpr(), statementContext);
 		}
 	}
 }

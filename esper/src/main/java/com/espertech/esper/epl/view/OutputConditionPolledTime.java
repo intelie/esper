@@ -13,7 +13,7 @@ import com.espertech.esper.epl.expression.ExprTimePeriod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public final class OutputConditionTimePolled implements OutputConditionPolled
+public final class OutputConditionPolledTime implements OutputConditionPolled
 {
     private ExprTimePeriod timePeriod;
     private long msecIntervalSize;
@@ -25,7 +25,7 @@ public final class OutputConditionTimePolled implements OutputConditionPolled
      * @param timePeriod is the number of minutes or seconds to batch events for, may include variables
      * @param context is the view context for time scheduling
      */
-    public OutputConditionTimePolled(ExprTimePeriod timePeriod,
+    public OutputConditionPolledTime(ExprTimePeriod timePeriod,
                                StatementContext context)
     {
         if (context == null)
@@ -77,5 +77,5 @@ public final class OutputConditionTimePolled implements OutputConditionPolled
                 " msecIntervalSize=" + msecIntervalSize;
     }
 
-    private static final Log log = LogFactory.getLog(OutputConditionTimePolled.class);
+    private static final Log log = LogFactory.getLog(OutputConditionPolledTime.class);
 }

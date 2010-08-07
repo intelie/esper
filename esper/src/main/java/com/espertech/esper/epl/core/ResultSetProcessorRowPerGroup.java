@@ -20,7 +20,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.epl.view.OutputConditionPollFactory;
+import com.espertech.esper.epl.view.OutputConditionPolledFactory;
 import com.espertech.esper.epl.view.OutputConditionPolled;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
@@ -731,6 +731,126 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             }
             return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
         }
+        else if (outputLimitLimitType == OutputLimitLimitType.FIRST) {
+
+            List<EventBean> newEvents = new LinkedList<EventBean>();
+            List<EventBean> oldEvents = null;
+            if (isSelectRStream)
+            {
+                oldEvents = new LinkedList<EventBean>();
+            }
+
+            List<MultiKeyUntyped> newEventsSortKey = null;
+            List<MultiKeyUntyped> oldEventsSortKey = null;
+            if (orderByProcessor != null)
+            {
+                newEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                if (isSelectRStream)
+                {
+                    oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                }
+            }
+
+            groupRepsView.clear();
+            for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
+            {
+                Set<MultiKey<EventBean>> newData = pair.getFirst();
+                Set<MultiKey<EventBean>> oldData = pair.getSecond();
+
+                if (newData != null)
+                {
+                    // apply new data to aggregates
+                    for (MultiKey<EventBean> aNewData : newData)
+                    {
+                        MultiKeyUntyped mk = generateGroupKey(aNewData.getArray(), true);
+
+                        OutputConditionPolled outputStateGroup = outputState.get(mk);
+                        if (outputStateGroup == null) {
+                            try {
+                                outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                            }
+                            catch (ExprValidationException e) {
+                                log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                            }
+                            outputState.put(mk, outputStateGroup);
+                        }
+                        boolean pass = outputStateGroup.updateOutputCondition(1, 0);
+                        if (pass) {
+                            // if this is a newly encountered group, generate the remove stream event
+                            if (groupRepsView.put(mk, aNewData.getArray()) == null)
+                            {
+                                workCollection.clear();
+                                workCollection.put(mk, aNewData.getArray());
+                                if (isSelectRStream)
+                                {
+                                    generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                }
+                            }
+                        }
+                        aggregationService.applyEnter(aNewData.getArray(), mk, statementContext);
+                    }
+                }
+                if (oldData != null)
+                {
+                    // apply old data to aggregates
+                    for (MultiKey<EventBean> anOldData : oldData)
+                    {
+                        MultiKeyUntyped mk = generateGroupKey(anOldData.getArray(), true);
+
+                        OutputConditionPolled outputStateGroup = outputState.get(mk);
+                        if (outputStateGroup == null) {
+                            try {
+                                outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                            }
+                            catch (ExprValidationException e) {
+                                log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                            }
+                            outputState.put(mk, outputStateGroup);
+                        }
+                        boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                        if (pass) {
+                            if (groupRepsView.put(mk, anOldData.getArray()) == null)
+                            {
+                                workCollection.clear();
+                                workCollection.put(mk, anOldData.getArray());
+                                if (isSelectRStream)
+                                {
+                                    generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                }
+                            }
+                        }
+
+                        aggregationService.applyLeave(anOldData.getArray(), mk, statementContext);
+                    }
+                }
+            }
+
+            generateOutputBatchedArr(groupRepsView, true, generateSynthetic, newEvents, newEventsSortKey);
+
+            EventBean[] newEventsArr = (newEvents.isEmpty()) ? null : newEvents.toArray(new EventBean[newEvents.size()]);
+            EventBean[] oldEventsArr = null;
+            if (isSelectRStream)
+            {
+                oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            }
+
+            if (orderByProcessor != null)
+            {
+                MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
+                newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew, statementContext);
+                if (isSelectRStream)
+                {
+                    MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld, statementContext);
+                }
+            }
+
+            if ((newEventsArr == null) && (oldEventsArr == null))
+            {
+                return null;
+            }
+            return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
+        }
         else // (outputLimitLimitType == OutputLimitLimitType.LAST)
         {
             List<EventBean> newEvents = new LinkedList<EventBean>();
@@ -1062,7 +1182,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                         OutputConditionPolled outputStateGroup = outputState.get(mk);
                         if (outputStateGroup == null) {
                             try {
-                                outputStateGroup = OutputConditionPollFactory.createCondition(outputLimitSpec, statementContext);
+                                outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
                             }
                             catch (ExprValidationException e) {
                                 log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
@@ -1096,7 +1216,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                         OutputConditionPolled outputStateGroup = outputState.get(mk);
                         if (outputStateGroup == null) {
                             try {
-                                outputStateGroup = OutputConditionPollFactory.createCondition(outputLimitSpec, statementContext);
+                                outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
                             }
                             catch (ExprValidationException e) {
                                 log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");

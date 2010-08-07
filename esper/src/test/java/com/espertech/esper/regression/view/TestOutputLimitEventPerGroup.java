@@ -34,6 +34,35 @@ public class TestOutputLimitEventPerGroup extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    // TODO select symbol, sum(strike) from ABC group by symbol output first every variable sec
+    // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 sec
+    // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 event
+    // TODO select symbol, sum(strike) from ABC group by symbol output first when a=1 then set a=0
+    // TODO select symbol, sum(strike) from ABC group by symbol output first at (2,3, *, *, *)
+    // TODO test having
+    // TODO test order
+    // TODO test rstream
+    // TODO change doc for output rate limiting
+    // TODO change appendix for output examples
+    // TODO change here for 477
+
+
+    public void testOutputFirstEveryNEvents() {
+        String[] fields = "string,value".split(",");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select string, sum(intPrimitive) as value from SupportBean group by string output first every 3 events");
+        stmt.addListener(listener);
+
+        sendBeanEvent("E1", 10);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 10});
+
+        sendBeanEvent("E1", 12);
+        sendBeanEvent("E1", 11);
+        assertFalse(listener.isInvoked());
+        
+        //ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 11});
+
+    }
+
     public void testWildcardEventPerGroup() {
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean group by string output last every 3 events order by string asc");
@@ -242,10 +271,31 @@ public class TestOutputLimitEventPerGroup extends TestCase
         runAssertion17(stmtText, "first");
     }
 
+    public void test17FirstNoHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
+                            "group by symbol " +
+                            "output first every 1 seconds";
+        runAssertion17(stmtText, "first");
+    }
+
     public void test18SnapshotNoHavingNoJoin()
     {
         String stmtText = "select symbol, sum(price) " +
                             "from MarketData.win:time(5.5 sec) " +
+                            "group by symbol " +
+                            "output snapshot every 1 seconds " +
+                            "order by symbol";
+        runAssertion18(stmtText, "snapshot");
+    }
+
+    public void test18SnapshotNoHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
                             "group by symbol " +
                             "output snapshot every 1 seconds " +
                             "order by symbol";
@@ -416,19 +466,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     private void runAssertion17(String stmtText, String outputLimit)
     {
-        // TODO change here for 477
-        // TODO test number of events
-        // TODO "output first when ...."
-        // TODO test variables/expressions
-
-        // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 sec
-        // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 event
-        // TODO select symbol, sum(strike) from ABC group by symbol output first when a=1 then set a=0
-        // TODO select symbol, sum(strike) from ABC group by symbol output first at (2,3, *, *, *)
-        // TODO test having
-        // TODO test order
-        // TODO test rstream
-
         sendTimer(0);
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
@@ -919,6 +956,11 @@ public class TestOutputLimitEventPerGroup extends TestCase
 	{
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
 	    epService.getEPRuntime().sendEvent(bean);
+	}
+
+    private void sendBeanEvent(String string, int intPrimitive)
+	{
+	    epService.getEPRuntime().sendEvent(new SupportBean(string, intPrimitive));
 	}
 
     private void sendTimer(long timeInMSec)
