@@ -28,7 +28,7 @@
    </logger>
 
    <logger name="PREFORMATTED">
-      <level value="DEBUG"/>
+      <level value="INFO"/>
    </logger>
 
    <root>

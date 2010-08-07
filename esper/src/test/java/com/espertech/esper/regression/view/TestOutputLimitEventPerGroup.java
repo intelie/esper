@@ -35,9 +35,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    // TODO test having row-per-event
-    // TODO test row-per-event
-
     public void testOutputFirstHavingJoinNoJoin() {
 
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);

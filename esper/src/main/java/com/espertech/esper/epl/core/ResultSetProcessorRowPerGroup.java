@@ -61,7 +61,6 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     private final Map<MultiKeyUntyped, EventBean[]> oldGenerators = new HashMap<MultiKeyUntyped, EventBean[]>();
 
     private final Map<MultiKeyUntyped, OutputConditionPolled> outputState = new HashMap<MultiKeyUntyped, OutputConditionPolled>();
-    private final EventBean[] eventsPerStreamOneStream = new EventBean[1];
 
     /**
      * Ctor.
@@ -881,7 +880,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                             aggregationService.setCurrentRow(mk);
 
                             // Filter the having clause
-                            Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStreamOneStream, true, statementContext);
+                            Boolean result = (Boolean) optionalHavingNode.evaluate(aNewData.getArray(), true, statementContext);
                             if ((result == null) || (!result))
                             {
                                 count++;
@@ -1321,6 +1320,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                 }
             }
             else { // having clause present, having clause evaluates at the level of individual posts
+                EventBean[] eventsPerStreamOneStream = new EventBean[1];
                 groupRepsView.clear();
                 for (UniformPair<EventBean[]> pair : viewEventsList)
                 {

@@ -20,8 +20,8 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.epl.view.OutputConditionPolledFactory;
 import com.espertech.esper.epl.view.OutputConditionPolled;
+import com.espertech.esper.epl.view.OutputConditionPolledFactory;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
@@ -691,71 +691,172 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
 
             workCollection.clear();
-            for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
-            {
-                Set<MultiKey<EventBean>> newData = pair.getFirst();
-                Set<MultiKey<EventBean>> oldData = pair.getSecond();
 
-                MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
-                MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
-
-                if (newData != null)
+            if (this.optionalHavingNode == null) {
+                for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
                 {
-                    // apply new data to aggregates
-                    int count = 0;
-                    for (MultiKey<EventBean> aNewData : newData)
+                    Set<MultiKey<EventBean>> newData = pair.getFirst();
+                    Set<MultiKey<EventBean>> oldData = pair.getSecond();
+
+                    MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
+                    MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
+
+                    if (newData != null)
                     {
-                        MultiKeyUntyped mk = newDataMultiKey[count];
-                        OutputConditionPolled outputStateGroup = outputState.get(mk);
-                        if (outputStateGroup == null) {
-                            try {
-                                outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                        // apply new data to aggregates
+                        int count = 0;
+                        for (MultiKey<EventBean> aNewData : newData)
+                        {
+                            MultiKeyUntyped mk = newDataMultiKey[count];
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(newDataMultiKey[count], outputStateGroup);
                             }
-                            catch (ExprValidationException e) {
-                                log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                            boolean pass = outputStateGroup.updateOutputCondition(1, 0);
+                            if (pass) {
+                                workCollection.put(mk, aNewData.getArray());
                             }
-                            outputState.put(newDataMultiKey[count], outputStateGroup);
+                            aggregationService.applyEnter(aNewData.getArray(), mk, statementContext);
+                            count++;
                         }
-                        boolean pass = outputStateGroup.updateOutputCondition(1, 0);
-                        if (pass) {
-                            workCollection.put(mk, aNewData.getArray());
+                    }
+
+                    if (oldData != null)
+                    {
+                        // apply new data to aggregates
+                        int count = 0;
+                        for (MultiKey<EventBean> aOldData : oldData)
+                        {
+                            MultiKeyUntyped mk = oldDataMultiKey[count];
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(oldDataMultiKey[count], outputStateGroup);
+                            }
+                            boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                            if (pass) {
+                                workCollection.put(mk, aOldData.getArray());
+                            }
+                            aggregationService.applyLeave(aOldData.getArray(), mk, statementContext);
+                            count++;
                         }
-                        aggregationService.applyEnter(aNewData.getArray(), mk, statementContext);
-                        count++;
                     }
                 }
-
-                if (oldData != null)
+            }
+            else {// there is a having-clause, apply after aggregations
+                for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
                 {
-                    // apply new data to aggregates
-                    int count = 0;
-                    for (MultiKey<EventBean> aOldData : oldData)
+                    Set<MultiKey<EventBean>> newData = pair.getFirst();
+                    Set<MultiKey<EventBean>> oldData = pair.getSecond();
+
+                    MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
+                    MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
+
+                    if (newData != null)
                     {
-                        MultiKeyUntyped mk = oldDataMultiKey[count];
-                        OutputConditionPolled outputStateGroup = outputState.get(mk);
-                        if (outputStateGroup == null) {
-                            try {
-                                outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
-                            }
-                            catch (ExprValidationException e) {
-                                log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
-                            }
-                            outputState.put(oldDataMultiKey[count], outputStateGroup);
+                        // apply new data to aggregates
+                        int count = 0;
+                        for (MultiKey<EventBean> aNewData : newData)
+                        {
+                            MultiKeyUntyped mk = newDataMultiKey[count];
+                            aggregationService.applyEnter(aNewData.getArray(), mk, statementContext);
+                            count++;
                         }
-                        boolean pass = outputStateGroup.updateOutputCondition(0, 1);
-                        if (pass) {
-                            workCollection.put(mk, aOldData.getArray());
+                    }
+
+                    if (oldData != null)
+                    {
+                        // apply new data to aggregates
+                        int count = 0;
+                        for (MultiKey<EventBean> aOldData : oldData)
+                        {
+                            MultiKeyUntyped mk = oldDataMultiKey[count];
+                            aggregationService.applyLeave(aOldData.getArray(), mk, statementContext);
+                            count++;
                         }
-                        aggregationService.applyLeave(aOldData.getArray(), mk, statementContext);
-                        count++;
+                    }
+
+                    if (newData != null)
+                    {
+                        // apply new data to aggregates
+                        int count = 0;
+                        for (MultiKey<EventBean> aNewData : newData)
+                        {
+                            MultiKeyUntyped mk = newDataMultiKey[count];
+                            aggregationService.setCurrentRow(mk);
+
+                            // Filter the having clause
+                            Boolean result = (Boolean) optionalHavingNode.evaluate(aNewData.getArray(), true, statementContext);
+                            if ((result == null) || (!result))
+                            {
+                                count++;
+                                continue;
+                            }
+
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(mk, outputStateGroup);
+                            }
+                            boolean pass = outputStateGroup.updateOutputCondition(1, 0);
+                            if (pass) {
+                                workCollection.put(mk, aNewData.getArray());
+                            }
+                            count++;
+                        }
+                    }
+
+                    if (oldData != null)
+                    {
+                        // apply new data to aggregates
+                        int count = 0;
+                        for (MultiKey<EventBean> aOldData : oldData)
+                        {
+                            MultiKeyUntyped mk = oldDataMultiKey[count];
+                            aggregationService.setCurrentRow(mk);
+
+                            // Filter the having clause
+                            Boolean result = (Boolean) optionalHavingNode.evaluate(aOldData.getArray(), true, statementContext);
+                            if ((result == null) || (!result))
+                            {
+                                count++;
+                                continue;
+                            }
+
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(oldDataMultiKey[count], outputStateGroup);
+                            }
+                            boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                            if (pass) {
+                                workCollection.put(mk, aOldData.getArray());
+                            }
+                            count++;
+                        }
                     }
                 }
-
-                if (false)  // there is no remove stream currently for output first
-                {
-                    generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
-                }
-                generateOutputBatchedArr(workCollection, false, generateSynthetic, resultNewEvents, resultNewSortKeys);
             }
 
             EventBean[] newEventsArr = null;
@@ -1074,69 +1175,174 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
 
             workCollection.clear();
-            for (UniformPair<EventBean[]> pair : viewEventsList)
-            {
-                EventBean[] newData = pair.getFirst();
-                EventBean[] oldData = pair.getSecond();
-
-                MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
-                MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
-
-                if (newData != null)
+            if (this.optionalHavingNode == null) {
+                for (UniformPair<EventBean[]> pair : viewEventsList)
                 {
-                    // apply new data to aggregates
-                    for (int i = 0; i < newData.length; i++)
+                    EventBean[] newData = pair.getFirst();
+                    EventBean[] oldData = pair.getSecond();
+
+                    MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
+                    MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
+
+                    if (newData != null)
                     {
-                        eventsPerStreamOneStream[0] = newData[i];
-                        MultiKeyUntyped mk = newDataMultiKey[i];
-                        OutputConditionPolled outputStateGroup = outputState.get(mk);
-                        if (outputStateGroup == null) {
-                            try {
-                                outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                        // apply new data to aggregates
+                        for (int i = 0; i < newData.length; i++)
+                        {
+                            eventsPerStreamOneStream[0] = newData[i];
+                            MultiKeyUntyped mk = newDataMultiKey[i];
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(newDataMultiKey[i], outputStateGroup);
                             }
-                            catch (ExprValidationException e) {
-                                log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                            boolean pass = outputStateGroup.updateOutputCondition(1, 0);
+                            if (pass) {
+                                workCollection.put(mk, new EventBean[]{newData[i]});
                             }
-                            outputState.put(newDataMultiKey[i], outputStateGroup);
+                            aggregationService.applyEnter(eventsPerStreamOneStream, mk, statementContext);
                         }
-                        boolean pass = outputStateGroup.updateOutputCondition(1, 0);
-                        if (pass) {
-                            workCollection.put(mk, new EventBean[]{newData[i]});
-                        }
-                        aggregationService.applyEnter(eventsPerStreamOneStream, mk, statementContext);
                     }
-                }
 
-                if (oldData != null)
-                {
-                    // apply new data to aggregates
-                    for (int i = 0; i < oldData.length; i++)
+                    if (oldData != null)
                     {
-                        eventsPerStreamOneStream[0] = oldData[i];
-                        MultiKeyUntyped mk = oldDataMultiKey[i];
-                        OutputConditionPolled outputStateGroup = outputState.get(mk);
-                        if (outputStateGroup == null) {
-                            try {
-                                outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                        // apply new data to aggregates
+                        for (int i = 0; i < oldData.length; i++)
+                        {
+                            eventsPerStreamOneStream[0] = oldData[i];
+                            MultiKeyUntyped mk = oldDataMultiKey[i];
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(oldDataMultiKey[i], outputStateGroup);
                             }
-                            catch (ExprValidationException e) {
-                                log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                            boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                            if (pass) {
+                                workCollection.put(mk, new EventBean[]{oldData[i]});
                             }
-                            outputState.put(oldDataMultiKey[i], outputStateGroup);
+                            aggregationService.applyLeave(eventsPerStreamOneStream, mk, statementContext);
                         }
-                        boolean pass = outputStateGroup.updateOutputCondition(0, 1);
-                        if (pass) {
-                            workCollection.put(mk, new EventBean[]{oldData[i]});
-                        }
-                        aggregationService.applyLeave(eventsPerStreamOneStream, mk, statementContext);
                     }
-                }
 
-                if (false)  // there is no remove stream currently for output first
-                {
-                    generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
+                    if (this.isSelectRStream)  // there is no remove stream currently for output first
+                    {
+                        generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
+                    }
+                    generateOutputBatchedArr(workCollection, false, generateSynthetic, resultNewEvents, resultNewSortKeys);
                 }
-                generateOutputBatchedArr(workCollection, false, generateSynthetic, resultNewEvents, resultNewSortKeys);
+            }
+            else {  // has a having-clause
+                for (UniformPair<EventBean[]> pair : viewEventsList)
+                {
+                    EventBean[] newData = pair.getFirst();
+                    EventBean[] oldData = pair.getSecond();
+
+                    MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
+                    MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
+
+                    if (newData != null)
+                    {
+                        // apply new data to aggregates
+                        for (int i = 0; i < newData.length; i++)
+                        {
+                            eventsPerStreamOneStream[0] = newData[i];
+                            MultiKeyUntyped mk = newDataMultiKey[i];
+                            aggregationService.applyEnter(eventsPerStreamOneStream, mk, statementContext);
+                        }
+                    }
+
+                    if (oldData != null)
+                    {
+                        for (int i = 0; i < oldData.length; i++)
+                        {
+                            eventsPerStreamOneStream[0] = oldData[i];
+                            MultiKeyUntyped mk = oldDataMultiKey[i];
+                            aggregationService.applyLeave(eventsPerStreamOneStream, mk, statementContext);
+                        }
+                    }
+
+                    if (newData != null)
+                    {
+                        // check having clause and first-condition
+                        for (int i = 0; i < newData.length; i++)
+                        {
+                            eventsPerStreamOneStream[0] = newData[i];
+                            MultiKeyUntyped mk = newDataMultiKey[i];
+                            aggregationService.setCurrentRow(mk);
+
+                            // Filter the having clause
+                            Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStreamOneStream, true, statementContext);
+                            if ((result == null) || (!result))
+                            {
+                                continue;
+                            }
+
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(mk, outputStateGroup);
+                            }
+                            boolean pass = outputStateGroup.updateOutputCondition(1, 0);
+                            if (pass) {
+                                workCollection.put(mk, new EventBean[]{newData[i]});
+                            }
+                        }
+                    }
+
+                    if (oldData != null)
+                    {
+                        // apply new data to aggregates
+                        for (int i = 0; i < oldData.length; i++)
+                        {
+                            eventsPerStreamOneStream[0] = oldData[i];
+                            MultiKeyUntyped mk = oldDataMultiKey[i];
+                            aggregationService.setCurrentRow(mk);
+
+                            // Filter the having clause
+                            Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStreamOneStream, true, statementContext);
+                            if ((result == null) || (!result))
+                            {
+                                continue;
+                            }
+
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(oldDataMultiKey[i], outputStateGroup);
+                            }
+                            boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                            if (pass) {
+                                workCollection.put(mk, new EventBean[]{oldData[i]});
+                            }
+                        }
+                    }
+
+                    if (this.isSelectRStream)  // there is no remove stream currently for output first
+                    {
+                        generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
+                    }
+                    generateOutputBatchedArr(workCollection, false, generateSynthetic, resultNewEvents, resultNewSortKeys);
+                }
             }
 
             EventBean[] newEventsArr = null;
