@@ -41,6 +41,61 @@ public class TestOutputLimitEventPerGroup extends TestCase
     // TODO change appendix for output examples
     // TODO change here for 477
 
+    public void testOutputFirstHaving() {
+        sendTimer(0);
+        String[] fields = "string,value".split(",");
+        epService.getEPAdministrator().getConfiguration().addVariable("varout", boolean.class, false);
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select string, sum(intPrimitive) as value from MyWindow group by string having sum(intPrimitive) > 20 output first every 2 events");
+        stmt.addListener(listener);
+
+        sendBeanEvent("E1", 10);
+        sendBeanEvent("E2", 15);
+        sendBeanEvent("E3", 20);
+        sendBeanEvent("E1", 10);
+        sendBeanEvent("E2", 5);
+        assertFalse(listener.isInvoked());
+
+        sendBeanEvent("E2", 5);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 25});
+
+        sendBeanEvent("E2", -6);    // to 19, does not count toward condition
+        assertFalse(listener.isInvoked());
+        sendBeanEvent("E2", 2);    // to 21, counts toward condition
+        assertFalse(listener.isInvoked());
+        sendBeanEvent("E2", 1);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 22});
+
+        /*
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 10});
+
+        sendTimer(2 * 60 * 1000 - 1);
+        sendBeanEvent("E1", 11);
+        assertFalse(listener.isInvoked());
+
+        sendTimer(2 * 60 * 1000);
+        sendBeanEvent("E1", 12);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 33});
+
+        sendBeanEvent("E2", 20);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 20});
+
+        sendBeanEvent("E2", 21);
+        sendTimer(4 * 60 * 1000 - 1);
+        sendBeanEvent("E2", 22);
+        sendBeanEvent("E1", 13);
+        assertFalse(listener.isInvoked());
+
+        sendTimer(4 * 60 * 1000);
+        sendBeanEvent("E2", 23);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 86});
+        sendBeanEvent("E1", 14);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 60});
+        */
+    }
+
     public void testOutputFirstCrontab() {
         sendTimer(0);
         String[] fields = "string,value".split(",");

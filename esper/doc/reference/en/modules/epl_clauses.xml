@@ -1669,18 +1669,6 @@ group by symbol
 having sum(price) &gt; 1000 and avg(volume) &lt; 500</programlisting>			
 
 				<para>
-					Esper places the following restrictions on expressions in the <literal>having</literal> clause:
-				</para>
-	
-				<orderedlist spacing="compact">
-					<listitem>
-						<para>
-							Any expressions that contain aggregate functions must also occur in the <literal>select</literal> clause
-						</para>
-					</listitem>
-				</orderedlist>
-
-				<para>
 					A statement with the <literal>having</literal> clause should also have a <literal>group by</literal> clause. If you omit <literal>group-by</literal>, all the events not excluded
 					by the <literal>where</literal> clause return as a single group. In that case <literal>having</literal> acts like a <literal>where</literal> except that <literal>having</literal> can have aggregate functions. 
 				</para>

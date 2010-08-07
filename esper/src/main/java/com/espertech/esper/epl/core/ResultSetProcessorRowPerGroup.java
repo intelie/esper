@@ -20,8 +20,8 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.epl.view.OutputConditionPolledFactory;
 import com.espertech.esper.epl.view.OutputConditionPolled;
+import com.espertech.esper.epl.view.OutputConditionPolledFactory;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +55,6 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     // For output rate limiting, keep a representative event for each group for
     // representing each group in an output limit clause
     private final Map<MultiKeyUntyped, EventBean[]> groupRepsView = new LinkedHashMap<MultiKeyUntyped, EventBean[]>();
-    private final Map<MultiKeyUntyped, EventBean[]> workCollection = new LinkedHashMap<MultiKeyUntyped, EventBean[]>();
 
     // For sorting, keep the generating events for each outgoing event
     private final Map<MultiKeyUntyped, EventBean[]> newGenerators = new HashMap<MultiKeyUntyped, EventBean[]>();
@@ -302,27 +301,30 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     {
         for (Map.Entry<MultiKeyUntyped, EventBean[]> entry : keysAndEvents.entrySet())
         {
-            EventBean[] eventsPerStream = entry.getValue();
+            generateOutputBatched(entry.getKey(), entry.getValue(), isNewData, isSynthesize, resultEvents, optSortKeys);
+        }
+    }
 
-            // Set the current row of aggregation states
-            aggregationService.setCurrentRow(entry.getKey());
+    private void generateOutputBatched(MultiKeyUntyped mk, EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize, List<EventBean> resultEvents, List<MultiKeyUntyped> optSortKeys)
+    {
+        // Set the current row of aggregation states
+        aggregationService.setCurrentRow(mk);
 
-            // Filter the having clause
-            if (optionalHavingNode != null)
+        // Filter the having clause
+        if (optionalHavingNode != null)
+        {
+            Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, statementContext);
+            if ((result == null) || (!result))
             {
-                Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData, statementContext);
-                if ((result == null) || (!result))
-                {
-                    continue;
-                }
+                return;
             }
+        }
 
-            resultEvents.add(selectExprProcessor.process(eventsPerStream, isNewData, isSynthesize));
+        resultEvents.add(selectExprProcessor.process(eventsPerStream, isNewData, isSynthesize));
 
-            if(isSorting)
-            {
-                optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, statementContext));
-            }
+        if(isSorting)
+        {
+            optSortKeys.add(orderByProcessor.getSortKey(eventsPerStream, isNewData, statementContext));
         }
     }
 
@@ -673,11 +675,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                         // if this is a newly encountered group, generate the remove stream event
                         if (groupRepsView.put(mk, aNewData.getArray()) == null)
                         {
-                            workCollection.clear();
-                            workCollection.put(mk, aNewData.getArray());
                             if (isSelectRStream)
                             {
-                                generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                generateOutputBatched(mk, aNewData.getArray(), false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
                         aggregationService.applyEnter(aNewData.getArray(), mk, statementContext);
@@ -692,11 +692,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
                         if (groupRepsView.put(mk, anOldData.getArray()) == null)
                         {
-                            workCollection.clear();
-                            workCollection.put(mk, anOldData.getArray());
                             if (isSelectRStream)
                             {
-                                generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                generateOutputBatched(mk, anOldData.getArray(), false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
 
@@ -779,11 +777,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                             // if this is a newly encountered group, generate the remove stream event
                             if (groupRepsView.put(mk, aNewData.getArray()) == null)
                             {
-                                workCollection.clear();
-                                workCollection.put(mk, aNewData.getArray());
                                 if (isSelectRStream)
                                 {
-                                    generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    generateOutputBatched(mk, aNewData.getArray(), false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
                         }
@@ -811,11 +807,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                         if (pass) {
                             if (groupRepsView.put(mk, anOldData.getArray()) == null)
                             {
-                                workCollection.clear();
-                                workCollection.put(mk, anOldData.getArray());
                                 if (isSelectRStream)
                                 {
-                                    generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    generateOutputBatched(mk, anOldData.getArray(), false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
                         }
@@ -892,11 +886,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                         // if this is a newly encountered group, generate the remove stream event
                         if (groupRepsView.put(mk, aNewData.getArray()) == null)
                         {
-                            workCollection.clear();
-                            workCollection.put(mk, aNewData.getArray());
                             if (isSelectRStream)
                             {
-                                generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                generateOutputBatched(mk, aNewData.getArray(), false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
                         aggregationService.applyEnter(aNewData.getArray(), mk, statementContext);
@@ -911,11 +903,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
                         if (groupRepsView.put(mk, anOldData.getArray()) == null)
                         {
-                            workCollection.clear();
-                            workCollection.put(mk, anOldData.getArray());
                             if (isSelectRStream)
                             {
-                                generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                generateOutputBatched(mk, anOldData.getArray(), false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
 
@@ -1086,11 +1076,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                         // if this is a newly encountered group, generate the remove stream event
                         if (groupRepsView.put(mk, new EventBean[] {aNewData}) == null)
                         {
-                            workCollection.clear();
-                            workCollection.put(mk, eventsPerStream);
                             if (isSelectRStream)
                             {
-                                generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                generateOutputBatched(mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
                         aggregationService.applyEnter(eventsPerStream, mk, statementContext);
@@ -1106,11 +1094,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
                         if (groupRepsView.put(mk, new EventBean[] {anOldData}) == null)
                         {
-                            workCollection.clear();
-                            workCollection.put(mk, eventsPerStream);
                             if (isSelectRStream)
                             {
-                                generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                generateOutputBatched(mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
 
@@ -1194,11 +1180,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                             // if this is a newly encountered group, generate the remove stream event
                             if (groupRepsView.put(mk, eventsPerStream) == null)
                             {
-                                workCollection.clear();
-                                workCollection.put(mk, eventsPerStream);
                                 if (isSelectRStream)
                                 {
-                                    generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    generateOutputBatched(mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
                         }
@@ -1227,11 +1211,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                         if (pass) {
                             if (groupRepsView.put(mk, eventsPerStream) == null)
                             {
-                                workCollection.clear();
-                                workCollection.put(mk, eventsPerStream);
                                 if (isSelectRStream)
                                 {
-                                    generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    generateOutputBatched(mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
                         }
@@ -1304,11 +1286,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                         // if this is a newly encountered group, generate the remove stream event
                         if (groupRepsView.put(mk, eventsPerStream) == null)
                         {
-                            workCollection.clear();
-                            workCollection.put(mk, eventsPerStream);
                             if (isSelectRStream)
                             {
-                                generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                generateOutputBatched(mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
                         aggregationService.applyEnter(eventsPerStream, mk, statementContext);
@@ -1324,11 +1304,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
                         if (groupRepsView.put(mk, eventsPerStream) == null)
                         {
-                            workCollection.clear();
-                            workCollection.put(mk, eventsPerStream);
                             if (isSelectRStream)
                             {
-                                generateOutputBatchedArr(workCollection, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                generateOutputBatched(mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                             }
                         }
 
