@@ -52,13 +52,11 @@ public class OutputConditionPolledFactory
 
         if(outputLimitSpec.getRateType() == OutputLimitRateType.CRONTAB)
         {
-            //return new OutputConditionCrontab(outputLimitSpec.getCrontabAtSchedule(), statementContext, outputCallback);
-            return null;    // TODO
+            return new OutputConditionPolledCrontab(outputLimitSpec.getCrontabAtSchedule(), statementContext);
         }
         else if(outputLimitSpec.getRateType() == OutputLimitRateType.WHEN_EXPRESSION)
         {
-            return null;
-            // TODO new OutputConditionExpression(outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getThenExpressions(), statementContext, outputCallback);
+            return new OutputConditionPolledExpression(outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getThenExpressions(), statementContext);
         }
         else if(outputLimitSpec.getRateType() == OutputLimitRateType.EVENTS)
 		{

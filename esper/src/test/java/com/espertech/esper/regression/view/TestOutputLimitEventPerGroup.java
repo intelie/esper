@@ -34,22 +34,84 @@ public class TestOutputLimitEventPerGroup extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    // TODO select symbol, sum(strike) from ABC group by symbol output first every variable sec
-    // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 sec
-    // TODO select symbol, sum(strike) from ABC group by symbol output first every 1 event
-    // TODO select symbol, sum(strike) from ABC group by symbol output first when a=1 then set a=0
-    // TODO select symbol, sum(strike) from ABC group by symbol output first at (2,3, *, *, *)
-    // TODO test having
-    // TODO test order
-    // TODO test rstream
+    // TODO test having row-per-group and row-per-event
+    // TODO test order row-per-group and row-per-event
+    // TODO test rstream row-per-group
     // TODO change doc for output rate limiting
     // TODO change appendix for output examples
     // TODO change here for 477
 
+    public void testOutputFirstCrontab() {
+        sendTimer(0);
+        String[] fields = "string,value".split(",");
+        epService.getEPAdministrator().getConfiguration().addVariable("varout", boolean.class, false);
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select string, sum(intPrimitive) as value from MyWindow group by string output first at (*/2, *, *, *, *)");
+        stmt.addListener(listener);
+
+        sendBeanEvent("E1", 10);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 10});
+
+        sendTimer(2 * 60 * 1000 - 1);
+        sendBeanEvent("E1", 11);
+        assertFalse(listener.isInvoked());
+
+        sendTimer(2 * 60 * 1000);
+        sendBeanEvent("E1", 12);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 33});
+
+        sendBeanEvent("E2", 20);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 20});
+
+        sendBeanEvent("E2", 21);
+        sendTimer(4 * 60 * 1000 - 1);
+        sendBeanEvent("E2", 22);
+        sendBeanEvent("E1", 13);
+        assertFalse(listener.isInvoked());
+
+        sendTimer(4 * 60 * 1000);
+        sendBeanEvent("E2", 23);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 86});
+        sendBeanEvent("E1", 14);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 60});
+    }
+
+    public void testOutputFirstWhenThen() {
+        String[] fields = "string,value".split(",");
+        epService.getEPAdministrator().getConfiguration().addVariable("varout", boolean.class, false);
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select string, sum(intPrimitive) as value from MyWindow group by string output first when varout then set varout = false");
+        stmt.addListener(listener);
+
+        sendBeanEvent("E1", 10);
+        sendBeanEvent("E1", 11);
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().setVariableValue("varout", true);
+        sendBeanEvent("E1", 12);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 33});
+        assertEquals(false, epService.getEPRuntime().getVariableValue("varout"));
+
+        epService.getEPRuntime().setVariableValue("varout", true);
+        sendBeanEvent("E2", 20);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 20});
+        assertEquals(false, epService.getEPRuntime().getVariableValue("varout"));
+
+        sendBeanEvent("E1", 13);
+        sendBeanEvent("E2", 21);
+        assertFalse(listener.isInvoked());
+    }
 
     public void testOutputFirstEveryNEvents() {
         String[] fields = "string,value".split(",");
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select string, sum(intPrimitive) as value from SupportBean group by string output first every 3 events");
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select string, sum(intPrimitive) as value from MyWindow group by string output first every 3 events");
         stmt.addListener(listener);
 
         sendBeanEvent("E1", 10);
@@ -59,7 +121,32 @@ public class TestOutputLimitEventPerGroup extends TestCase
         sendBeanEvent("E1", 11);
         assertFalse(listener.isInvoked());
         
-        //ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 11});
+        sendBeanEvent("E1", 13);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 46});
+
+        this.sendMDEvent("S1", 12);
+        this.sendMDEvent("S1", 11);
+        assertFalse(listener.isInvoked());
+
+        this.sendMDEvent("S1", 10);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 13});
+
+        sendBeanEvent("E1", 14);
+        sendBeanEvent("E1", 15);
+        assertFalse(listener.isInvoked());
+
+        sendBeanEvent("E2", 20);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 20});
+
+        // test variable
+        epService.getEPAdministrator().createEPL("create variable int myvar = 1");
+        stmt.destroy();
+        stmt = epService.getEPAdministrator().createEPL("select string, sum(intPrimitive) as value from MyWindow group by string output first every myvar events");
+        stmt.addListener(listener);
+        
+        sendBeanEvent("E3", 10);
+        EventBean[] events = listener.getAndResetLastNewData();
+        ArrayAssertionUtil.assertPropsPerRow(events, fields, new Object[][] {{"E3", 10}});
 
     }
 
@@ -521,8 +608,8 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
         epService.getEPRuntime().sendEvent(new SupportBean("JOIN_KEY", -1));
 
-        sendEvent("JOIN_KEY", 1d);
-        sendEvent("JOIN_KEY", 2d);
+        sendMDEvent("JOIN_KEY", 1d);
+        sendMDEvent("JOIN_KEY", 2d);
         listener.reset();
 
         // moves all events out of the window,
@@ -542,11 +629,11 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(selectStmt);
         stmt.addListener(listener);
-        sendEvent("ABC", 20);
+        sendMDEvent("ABC", 20);
 
         sendTimer(500);
-        sendEvent("IBM", 16);
-        sendEvent("ABC", 14);
+        sendMDEvent("IBM", 16);
+        sendMDEvent("ABC", 14);
         assertFalse(listener.getAndClearIsInvoked());
 
         sendTimer(1000);
@@ -556,8 +643,8 @@ public class TestOutputLimitEventPerGroup extends TestCase
         listener.reset();
 
         sendTimer(1500);
-        sendEvent("IBM", 18);
-        sendEvent("MSFT", 30);
+        sendMDEvent("IBM", 18);
+        sendMDEvent("MSFT", 30);
 
         sendTimer(10000);
         ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"ABC", 14d}, {"IBM", 16d}, {"MSFT", 30d}});
@@ -592,11 +679,11 @@ public class TestOutputLimitEventPerGroup extends TestCase
             epService.getEPRuntime().sendEvent(new SupportBean(string, 1));
         }
 
-        sendEvent("ABC", 20);
+        sendMDEvent("ABC", 20);
 
         sendTimer(500);
-        sendEvent("IBM", 16);
-        sendEvent("ABC", 14);
+        sendMDEvent("IBM", 16);
+        sendMDEvent("ABC", 14);
         assertFalse(listener.getAndClearIsInvoked());
 
         sendTimer(1000);
@@ -606,8 +693,8 @@ public class TestOutputLimitEventPerGroup extends TestCase
         listener.reset();
 
         sendTimer(1500);
-        sendEvent("IBM", 18);
-        sendEvent("MSFT", 30);
+        sendMDEvent("IBM", 18);
+        sendMDEvent("MSFT", 30);
 
         sendTimer(10000);
         ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"ABC", 14d}, {"IBM", 16d}, {"MSFT", 30d}});
@@ -639,11 +726,11 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     	// send some events and check that only the most recent
     	// ones are kept
-    	sendEvent("IBM", 1D);
-    	sendEvent("IBM", 2D);
-    	sendEvent("HP", 1D);
-    	sendEvent("IBM", 3D);
-    	sendEvent("MAC", 1D);
+    	sendMDEvent("IBM", 1D);
+    	sendMDEvent("IBM", 2D);
+    	sendMDEvent("HP", 1D);
+    	sendMDEvent("IBM", 3D);
+    	sendMDEvent("MAC", 1D);
 
     	assertTrue(updateListener.getAndClearIsInvoked());
     	EventBean[] newData = updateListener.getLastNewData();
@@ -666,11 +753,11 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     	// send some events and check that only the most recent
     	// ones are kept
-    	sendEvent("IBM", 1D);
-    	sendEvent("IBM", 2D);
-    	sendEvent("HP", 1D);
-    	sendEvent("IBM", 3D);
-    	sendEvent("MAC", 1D);
+    	sendMDEvent("IBM", 1D);
+    	sendMDEvent("IBM", 2D);
+    	sendMDEvent("HP", 1D);
+    	sendMDEvent("IBM", 3D);
+    	sendMDEvent("MAC", 1D);
 
     	assertTrue(updateListener.getAndClearIsInvoked());
     	EventBean[] newData = updateListener.getLastNewData();
@@ -694,8 +781,8 @@ public class TestOutputLimitEventPerGroup extends TestCase
         selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(listener);
 
-        sendEvent("SYM1", 1d);
-        sendEvent("SYM1", 2d);
+        sendMDEvent("SYM1", 1d);
+        sendMDEvent("SYM1", 2d);
         listener.reset();
 
         // moves all events out of the window,
@@ -826,19 +913,19 @@ public class TestOutputLimitEventPerGroup extends TestCase
 	    assertEquals(Double.class, selectTestView.getEventType().getPropertyType("mySum"));
 	    assertEquals(Double.class, selectTestView.getEventType().getPropertyType("myAvg"));
 
-	    sendEvent(SYMBOL_DELL, 10);
+	    sendMDEvent(SYMBOL_DELL, 10);
 	    assertFalse(listener.isInvoked());
 
-	    sendEvent(SYMBOL_DELL, 20);
+	    sendMDEvent(SYMBOL_DELL, 20);
 	    assertEvent(SYMBOL_DELL,
 	            null, null,
 	            30d, 15d);
 	    listener.reset();
 
-	    sendEvent(SYMBOL_DELL, 100);
+	    sendMDEvent(SYMBOL_DELL, 100);
 	    assertFalse(listener.isInvoked());
 
-	    sendEvent(SYMBOL_DELL, 50);
+	    sendMDEvent(SYMBOL_DELL, 50);
 	    assertEvent(SYMBOL_DELL,
 	    		30d, 15d,
 	            170d, 170/3d);
@@ -851,13 +938,13 @@ public class TestOutputLimitEventPerGroup extends TestCase
 	    assertEquals(Double.class, selectTestView.getEventType().getPropertyType("mySum"));
 	    assertEquals(Double.class, selectTestView.getEventType().getPropertyType("myAvg"));
 
-	    sendEvent(SYMBOL_DELL, 10);
+	    sendMDEvent(SYMBOL_DELL, 10);
 	    assertTrue(listener.isInvoked());
 	    assertEvent(SYMBOL_DELL,
             	null, null,
             	10d, 10d);
 
-	    sendEvent(SYMBOL_IBM, 20);
+	    sendMDEvent(SYMBOL_IBM, 20);
 	    assertTrue(listener.isInvoked());
 	    assertEvent(SYMBOL_IBM,
 	            	null, null,
@@ -871,10 +958,10 @@ public class TestOutputLimitEventPerGroup extends TestCase
         assertEquals(Double.class, selectTestView.getEventType().getPropertyType("mySum"));
         assertEquals(Double.class, selectTestView.getEventType().getPropertyType("myAvg"));
 
-        sendEvent(SYMBOL_IBM, 70);
+        sendMDEvent(SYMBOL_IBM, 70);
         assertFalse(listener.isInvoked());
 
-        sendEvent(SYMBOL_DELL, 10);
+        sendMDEvent(SYMBOL_DELL, 10);
         assertEvents(SYMBOL_IBM,
         		null, null,
         		70d, 70d,
@@ -883,11 +970,11 @@ public class TestOutputLimitEventPerGroup extends TestCase
                 10d, 10d);
 	    listener.reset();
 
-        sendEvent(SYMBOL_DELL, 20);
+        sendMDEvent(SYMBOL_DELL, 20);
         assertFalse(listener.isInvoked());
 
 
-        sendEvent(SYMBOL_DELL, 100);
+        sendMDEvent(SYMBOL_DELL, 100);
         assertEvents(SYMBOL_IBM,
         		70d, 70d,
         		70d, 70d,
@@ -952,7 +1039,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         assertFalse(listener.isInvoked());
     }
 
-    private void sendEvent(String symbol, double price)
+    private void sendMDEvent(String symbol, double price)
 	{
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
 	    epService.getEPRuntime().sendEvent(bean);

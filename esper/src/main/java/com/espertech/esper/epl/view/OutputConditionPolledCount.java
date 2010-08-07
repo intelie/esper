@@ -24,6 +24,7 @@ public final class OutputConditionPolledCount implements OutputConditionPolled
     private int newEventsCount;
     private int oldEventsCount;
     private final VariableReader variableReader;
+    private boolean isFirst = true;
 
     /**
      * Constructor.
@@ -57,12 +58,13 @@ public final class OutputConditionPolledCount implements OutputConditionPolled
         this.newEventsCount += newDataCount;
         this.oldEventsCount += oldDataCount;
 
-        if (isSatisfied())
+        if (isSatisfied() || isFirst)
         {
         	if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
             {
                 log.debug(".updateOutputCondition() condition satisfied");
             }
+            this.isFirst = false;
             this.newEventsCount = 0;
             this.oldEventsCount = 0;
             return true;
