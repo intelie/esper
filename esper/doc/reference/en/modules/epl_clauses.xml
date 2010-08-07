@@ -1822,6 +1822,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 					The <literal>first</literal> keyword specifies that only the first event in an output batch is to be output.
 					Using the <literal>first</literal> keyword instructs the engine to output the first matching event as soon as it arrives, and then ignores matching events for the time interval or number of events specified. 
 					After the time interval elapsed, or the number of matching events has been reached, the next first matching event is output again and the following interval the engine again ignores matching events.
+					For statements that group via the <literal>group by</literal> clause, the <literal>first</literal> keywords provides special behavior as below.
 				</para>
 
 				<para>
@@ -2026,7 +2027,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				</para>
 				
 				<para>
-					Second, the <literal>last</literal> and <literal>all</literal> keywords have special meanings when used in a statement with aggregate functions and the <literal>group by</literal> clause:
+					Second, the <literal>last</literal>, <literal>all</literal> and <literal>first</literal> keywords have special meanings when used in a statement with aggregate functions and the <literal>group by</literal> clause:
 				</para>
 				<itemizedlist spacing="compact">
 					<listitem>
@@ -2044,6 +2045,11 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 							The <literal>last</literal> keyword specifies that only groups whose aggregate values have been updated with the most recent batch of events should be output.
 						</para>
 					</listitem>
+					<listitem>
+						<para>
+							The <literal>first</literal> keyword specifies that only groups whose aggregate values have been updated with the most recent batch of events should be output following the defined frequency, keeping frequency state for each group. 
+						</para>
+					</listitem>
 				</itemizedlist>
 
 				<para>
@@ -2051,7 +2057,16 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				</para>
 
 				<para>
-					By adding an output rate limiting clause to a statement that contains a <emphasis>group by</emphasis> clause we can control output of groups to obtain one row for each group, generating an event per group at the given output frequency:
+					By adding an output rate limiting clause to a statement that contains a <emphasis>group by</emphasis> clause we can control output of groups to obtain one row for each group, generating an event per group at the given output frequency.
+				</para>
+				
+				<para>
+				  The next statement outputs total price per symbol cumulatively, as no data window was specified, every 5 seconds. As it specifies the <literal>all</literal> keys, the statement outputs a current value for all groups regardless of whether the group was updated.
+				</para>
+				<programlisting>select symbol, sum(price) from StockTickEvent group by symbol output all every 5 seconds</programlisting>
+
+				<para>
+				  As an example of the <literal>last</literal> keyword for output rate limiting, this statement outputs total price per symbol considering events in the last 5 minutes, outputting only the last
 				</para>
 				<programlisting>select symbol, sum(price) from StockTickEvent group by symbol output all every 5 seconds</programlisting>
 
