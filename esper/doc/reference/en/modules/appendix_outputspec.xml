@@ -1444,17 +1444,17 @@ output first every 1 seconds
  Time Symbol  Volume   Price
   0.2                          
          IBM     100    25.0   Event E1 arrives
-                                                 [IBM, 25.0]                            
+                                                 [IBM, 25.0]        [IBM, null]         
   0.8                          
         MSFT    5000     9.0   Event E2 arrives
-                                                 [MSFT, 9.0]                            
+                                                 [MSFT, 9.0]        [MSFT, null]        
   1.0                          
   1.2                          
   1.5                          
          IBM     150    24.0   Event E3 arrives
-                                                 [IBM, 49.0]                            
+                                                 [IBM, 49.0]        [IBM, 25.0]         
          YAH   10000     1.0   Event E4 arrives
-                                                 [YAH, 1.0]                             
+                                                 [YAH, 1.0]         [YAH, null]         
   2.0                          
   2.1                          
          IBM     155    26.0   Event E5 arrives
@@ -1464,29 +1464,29 @@ output first every 1 seconds
   3.2                          
   3.5                          
          YAH   11000     2.0   Event E6 arrives
-                                                 [YAH, 3.0]                             
+                                                 [YAH, 3.0]         [YAH, 1.0]          
   4.0                          
   4.2                          
   4.3                          
          IBM     150    22.0   Event E7 arrives
-                                                 [IBM, 97.0]                            
+                                                 [IBM, 97.0]        [IBM, 75.0]         
   4.9                          
          YAH   11500     3.0   Event E8 arrives
-                                                 [YAH, 6.0]                             
+                                                 [YAH, 6.0]         [YAH, 3.0]          
   5.0                          
   5.2                          
   5.7                          Event E1 leaves the time window
-                                                 [IBM, 72.0]                            
+                                                 [IBM, 72.0]        [IBM, 97.0]         
   5.9                          
          YAH   10500     1.0   Event E9 arrives
-                                                 [YAH, 7.0]                             
+                                                 [YAH, 7.0]         [YAH, 6.0]          
   6.0                          
   6.2                          
   6.3                          Event E2 leaves the time window
-                                                 [MSFT, null]                           
+                                                 [MSFT, null]       [MSFT, 9.0]         
   7.0                          Event E3 and E4 leave the time window
-                                                 [IBM, 48.0]                            
-                                                 [YAH, 6.0]                           
+                                                 [IBM, 48.0]        [IBM, 72.0]         
+                                                 [YAH, 6.0]         [YAH, 7.0]          
   7.2                          ]]></programlisting>
 		</sect2>
 		
