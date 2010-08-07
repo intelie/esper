@@ -145,9 +145,24 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
         
         sendBeanEvent("E3", 10);
-        EventBean[] events = listener.getAndResetLastNewData();
-        ArrayAssertionUtil.assertPropsPerRow(events, fields, new Object[][] {{"E3", 10}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"E3", 10}});
 
+        sendBeanEvent("E1", 5);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"E1", 47}});
+
+        epService.getEPRuntime().setVariableValue("myvar", 2);
+
+        sendBeanEvent("E1", 6);
+        assertFalse(listener.isInvoked());
+
+        sendBeanEvent("E1", 7);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"E1", 60}});
+
+        sendBeanEvent("E1", 1);
+        assertFalse(listener.isInvoked());
+
+        sendBeanEvent("E1", 1);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"E1", 62}});
     }
 
     public void testWildcardEventPerGroup() {
