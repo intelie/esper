@@ -2061,14 +2061,21 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				</para>
 				
 				<para>
-				  The next statement outputs total price per symbol cumulatively, as no data window was specified, every 5 seconds. As it specifies the <literal>all</literal> keys, the statement outputs a current value for all groups regardless of whether the group was updated.
+				  The next statement outputs total price per symbol cumulatively (no data window was used here). As it specifies the <literal>all</literal> keyword, the statement outputs the current value for all groups seen so far, regardless of whether the group was updated in the last interval. Output occurs after an interval of 5 seconds passed and at the end of each subsequent interval:
 				</para>
 				<programlisting>select symbol, sum(price) from StockTickEvent group by symbol output all every 5 seconds</programlisting>
 
 				<para>
-				  As an example of the <literal>last</literal> keyword for output rate limiting, this statement outputs total price per symbol considering events in the last 5 minutes, outputting only the last
+				  The below statement outputs total price per symbol considering events in the last 3 minutes. When events leave the 3-minute data window output also occurs as new aggregation values are computed. The <literal>last</literal> keyword instructs the engine to output only those groups that had changes. Output occurs after an interval of 10 seconds passed and at the end of each subsequent interval:
 				</para>
-				<programlisting>select symbol, sum(price) from StockTickEvent group by symbol output all every 5 seconds</programlisting>
+				<programlisting>select symbol, sum(price) from StockTickEvent.win:time(3 min)
+group by symbol output last every 10 seconds</programlisting>
+
+				<para>
+				  This statement also outputs total price per symbol considering events in the last 3 minutes. The <literal>first</literal> keyword instructs the engine to output as soon as there is a new value for a group. After output for a given group the engine suppresses output for the same group for 10 seconds and does not suppress output for other groups. Output occurs again for that group when the group has new value(s):
+				</para>
+				<programlisting>select symbol, sum(price) from StockTickEvent.win:time(3 min)
+group by symbol output first every 10 seconds</programlisting>
 
 		</sect2>
 
