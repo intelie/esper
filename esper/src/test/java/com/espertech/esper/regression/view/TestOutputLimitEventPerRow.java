@@ -104,6 +104,21 @@ public class TestOutputLimitEventPerRow extends TestCase
         sendBeanEvent("E2", 119, 0);    // to 21
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 119L, 21});
 
+        // remove events
+        sendMDEvent("E2", 0);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 117L, 21});
+
+        // remove events
+        sendMDEvent("E2", -10);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 114L, 41});
+
+        // remove events
+        sendMDEvent("E2", -6);  // since there is 3*-10 we output the next one
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 106L, 47});
+
+        sendMDEvent("E2", 2);
+        assertFalse(listener.isInvoked());
+
         epService.getEPAdministrator().destroyAllStatements();
     }
 
@@ -464,7 +479,7 @@ public class TestOutputLimitEventPerRow extends TestCase
 
         String fields[] = new String[] {"symbol", "volume", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-        expected.addResultInsRem(200, 1, new Object[][] {{"IBM", 100L, 25d}}, new Object[][] {{"IBM", 100L, null}});
+        expected.addResultInsert(200, 1, new Object[][] {{"IBM", 100L, 25d}});
         expected.addResultInsert(800, 1, new Object[][] {{"MSFT", 5000L, 9d}});
         expected.addResultInsert(1500, 1, new Object[][] {{"IBM", 150L, 49d}});
         expected.addResultInsert(1500, 2, new Object[][] {{"YAH", 10000L, 1d}});
@@ -1027,6 +1042,12 @@ public class TestOutputLimitEventPerRow extends TestCase
         b.setLongPrimitive(longPrimitive);
         b.setIntPrimitive(intPrimitive);
 	    epService.getEPRuntime().sendEvent(b);
+	}
+
+    private void sendMDEvent(String symbol, double price)
+	{
+	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
+	    epService.getEPRuntime().sendEvent(bean);
 	}
 
     private static final Log log = LogFactory.getLog(TestOutputLimitEventPerRow.class);

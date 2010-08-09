@@ -537,7 +537,7 @@ public class ArrayAssertionUtil
             }
             else
             {
-                Assert.fail("No events expected by received one or more for stream " + streamName);
+                Assert.fail("No events expected but received one or more for stream " + streamName);
             }
         }
         if (received == null)

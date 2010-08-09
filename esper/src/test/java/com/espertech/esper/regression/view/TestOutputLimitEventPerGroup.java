@@ -100,6 +100,21 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         sendBeanEvent("E2", 0);    // to 21
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 21});
+        
+        // remove events
+        sendMDEvent("E2", 0);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 21});
+
+        // remove events
+        sendMDEvent("E2", -10);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 41});
+
+        // remove events
+        sendMDEvent("E2", -6);  // since there is 3*-10 we output the next one
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 47});
+
+        sendMDEvent("E2", 2);
+        assertFalse(listener.isInvoked());
 
         epService.getEPAdministrator().destroyAllStatements();
     }

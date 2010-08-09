@@ -859,7 +859,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 }
             }
 
-            if (isSelectRStream)  // there is no remove stream currently for output first
+            if (false)  // there is no remove stream currently for output first
             {
                 generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
             }
@@ -1240,7 +1240,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                         }
                     }
 
-                    if (this.isSelectRStream)  // there is no remove stream currently for output first
+                    if (false)  // there is no remove stream currently for output first
                     {
                         generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
                     }
@@ -1343,7 +1343,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                         }
                     }
 
-                    if (this.isSelectRStream)  // there is no remove stream currently for output first
+                    if (false)  // there is no remove stream currently for output first
                     {
                         generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
                     }

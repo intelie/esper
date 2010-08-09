@@ -897,13 +897,54 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                                 }
                                 outputState.put(mk, outputStateGroup);
                             }
-                            boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                            boolean pass = outputStateGroup.updateOutputCondition(1, 0);
                             if (pass) {
                                 if (groupRepsView.put(mk, aNewData.getArray()) == null)
                                 {
                                     if (isSelectRStream)
                                     {
                                         generateOutputBatched(mk, aNewData.getArray(), false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    }
+                                }
+                            }
+                            count++;
+                        }
+                    }
+
+                    // evaluate having-clause
+                    if (oldData != null)
+                    {
+                        int count = 0;
+                        for (MultiKey<EventBean> anOldData : oldData)
+                        {
+                            MultiKeyUntyped mk = oldDataMultiKey[count];
+                            aggregationService.setCurrentRow(mk);
+
+                            // Filter the having clause
+                            Boolean result = (Boolean) optionalHavingNode.evaluate(anOldData.getArray(), false, statementContext);
+                            if ((result == null) || (!result))
+                            {
+                                count++;
+                                continue;
+                            }
+
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(mk, outputStateGroup);
+                            }
+                            boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                            if (pass) {
+                                if (groupRepsView.put(mk, anOldData.getArray()) == null)
+                                {
+                                    if (isSelectRStream)
+                                    {
+                                        generateOutputBatched(mk, anOldData.getArray(), false, generateSynthetic, oldEvents, oldEventsSortKey);
                                     }
                                 }
                             }
@@ -1378,6 +1419,46 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                             boolean pass = outputStateGroup.updateOutputCondition(0, 1);
                             if (pass) {
                                 EventBean[] eventsPerStream = new EventBean[] {newData[i]};
+                                if (groupRepsView.put(mk, eventsPerStream) == null)
+                                {
+                                    if (isSelectRStream)
+                                    {
+                                        generateOutputBatched(mk, eventsPerStream, true, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // evaluate having-clause
+                    if (oldData != null)
+                    {
+                        for (int i = 0; i < oldData.length; i++)
+                        {
+                            MultiKeyUntyped mk = oldDataMultiKey[i];
+                            eventsPerStreamOneStream[0] = oldData[i];
+                            aggregationService.setCurrentRow(mk);
+
+                            // Filter the having clause
+                            Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStreamOneStream, false, statementContext);
+                            if ((result == null) || (!result))
+                            {
+                                continue;
+                            }
+
+                            OutputConditionPolled outputStateGroup = outputState.get(mk);
+                            if (outputStateGroup == null) {
+                                try {
+                                    outputStateGroup = OutputConditionPolledFactory.createCondition(outputLimitSpec, statementContext);
+                                }
+                                catch (ExprValidationException e) {
+                                    log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
+                                }
+                                outputState.put(mk, outputStateGroup);
+                            }
+                            boolean pass = outputStateGroup.updateOutputCondition(0, 1);
+                            if (pass) {
+                                EventBean[] eventsPerStream = new EventBean[] {oldData[i]};
                                 if (groupRepsView.put(mk, eventsPerStream) == null)
                                 {
                                     if (isSelectRStream)
