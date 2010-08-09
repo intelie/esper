@@ -59,6 +59,7 @@ public class TestOutputLimitEventPerRow extends TestCase
 
     private void tryOutputFirstHaving(String statementText) {
         String[] fields = "string,longPrimitive,value".split(",");
+        String[] fieldsLimited = "string,value".split(",");
         epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as SupportBean");
         epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
         epService.getEPAdministrator().createEPL("on MarketData md delete from MyWindow mw where mw.intPrimitive = md.price");
@@ -105,16 +106,16 @@ public class TestOutputLimitEventPerRow extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 119L, 21});
 
         // remove events
-        sendMDEvent("E2", 0);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 117L, 21});
+        sendMDEvent("E2", 0);   // remove 113, 117, 119 (any order of delete!)
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsLimited, new Object[] {"E2", 21});
 
         // remove events
-        sendMDEvent("E2", -10);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 114L, 41});
+        sendMDEvent("E2", -10); // remove 111, 114
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsLimited, new Object[] {"E2", 41});
 
         // remove events
-        sendMDEvent("E2", -6);  // since there is 3*-10 we output the next one
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 106L, 47});
+        sendMDEvent("E2", -6);  // since there is 3*0 we output the next one
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsLimited, new Object[] {"E2", 47});
 
         sendMDEvent("E2", 2);
         assertFalse(listener.isInvoked());

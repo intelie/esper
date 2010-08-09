@@ -752,6 +752,12 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                             count++;
                         }
                     }
+
+                    if (false)  // there is no remove stream currently for output first
+                    {
+                        generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
+                    }
+                    generateOutputBatchedArr(workCollection, false, generateSynthetic, resultNewEvents, resultNewSortKeys);
                 }
             }
             else {// there is a having-clause, apply after aggregations
@@ -777,7 +783,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 
                     if (oldData != null)
                     {
-                        // apply new data to aggregates
                         int count = 0;
                         for (MultiKey<EventBean> aOldData : oldData)
                         {
@@ -789,7 +794,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 
                     if (newData != null)
                     {
-                        // apply new data to aggregates
+                        // check having clause and first-condition
                         int count = 0;
                         for (MultiKey<EventBean> aNewData : newData)
                         {
@@ -847,23 +852,22 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                                 catch (ExprValidationException e) {
                                     log.error("Error starting output limit for group for statement '" + statementContext.getStatementName() + "'");
                                 }
-                                outputState.put(oldDataMultiKey[count], outputStateGroup);
+                                outputState.put(mk, outputStateGroup);
                             }
                             boolean pass = outputStateGroup.updateOutputCondition(0, 1);
                             if (pass) {
                                 workCollection.put(mk, aOldData.getArray());
                             }
-                            count++;
                         }
                     }
+
+                    if (false)  // there is no remove stream currently for output first
+                    {
+                        generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
+                    }
+                    generateOutputBatchedArr(workCollection, false, generateSynthetic, resultNewEvents, resultNewSortKeys);
                 }
             }
-
-            if (false)  // there is no remove stream currently for output first
-            {
-                generateOutputBatchedArr(workCollection, false, generateSynthetic, resultOldEvents, resultOldSortKeys);
-            }
-            generateOutputBatchedArr(workCollection, false, generateSynthetic, resultNewEvents, resultNewSortKeys);
 
             EventBean[] newEventsArr = null;
             EventBean[] oldEventsArr = null;
