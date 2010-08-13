@@ -71,14 +71,15 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
                     {
                         return new TreeMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(new Comparator<EPStatementHandle>()
                         {
-                            // sorted descending order
                             public int compare(EPStatementHandle o1, EPStatementHandle o2)
                             {
-                                if (o1.getPriority() == o2.getPriority())
-                                {
+                                if (o1 == o2) {
                                     return 0;
                                 }
-                                return o1.getPriority() > o2.getPriority() ? -1 : 1;
+                                if (o1.equals(o2)) {
+                                    return 0;
+                                }
+                                return o1.getPriority() >= o2.getPriority() ? -1 : 1;
                             }
                         });
                     }
@@ -97,14 +98,15 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
                     {
                         return new TreeMap<EPStatementHandle, Object>(new Comparator<EPStatementHandle>()
                         {
-                            // sorted descending order
                             public int compare(EPStatementHandle o1, EPStatementHandle o2)
                             {
-                                if (o1.getPriority() == o2.getPriority())
-                                {
+                                if (o1 == o2) {
                                     return 0;
                                 }
-                                return o1.getPriority() > o2.getPriority() ? -1 : 1;
+                                if (o1.equals(o2)) {
+                                    return 0;
+                                }
+                                return o1.getPriority() >= o2.getPriority() ? -1 : 1;
                             }
                         });
                     }
