@@ -64,4 +64,9 @@ public class SupportStreamTypeSvc3Stream implements StreamTypeService
     {
         return new boolean[10]; 
     }
+
+    public int getStreamNumForStreamName(String streamWildcard)
+    {
+        return -1;
+    }
 }

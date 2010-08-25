@@ -228,7 +228,7 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 			// Make a new multikey that contains the sort-by values.
 			if (needsGroupByKeys)
 			{
-				aggregationService.setCurrentRow(groupByKeys[count]);
+				aggregationService.setCurrentAccess(groupByKeys[count]);
 			}
 
 			Object[] values = new Object[orderByList.size()];

@@ -133,6 +133,35 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new NumIntegerSumAggregator();
     }
 
+    public Class getSumAggregatorType(Class type)
+    {
+        if (type == BigInteger.class)
+        {
+            return BigInteger.class;
+        }
+        if (type == BigDecimal.class)
+        {
+            return BigDecimal.class;
+        }
+        if ((type == Long.class) || (type == long.class))
+        {
+            return Long.class;
+        }
+        if ((type == Integer.class) || (type == int.class))
+        {
+            return Integer.class;
+        }
+        if ((type == Double.class) || (type == double.class))
+        {
+            return Double.class;
+        }
+        if ((type == Float.class) || (type == float.class))
+        {
+            return Float.class;
+        }
+        return Integer.class;
+    }
+
     public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod, Class childType)
     {
         return new DistinctValueAggregator(aggregationMethod, childType);
@@ -145,6 +174,15 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
             return new BigDecimalAvgAggregator();
         }
         return new AvgAggregator();
+    }
+
+    public Class getAvgAggregatorType(Class type)
+    {
+        if ((type == BigDecimal.class) || (type == BigInteger.class))
+        {
+            return BigDecimal.class;
+        }
+        return Double.class;
     }
 
     public AggregationMethod makeAvedevAggregator()
@@ -221,4 +259,9 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
     {
         // To be overridden by implementations that care when aggregators get removed
     }
+
+    public AggregationAccess makeAccessStreamId(int streamId, MultiKeyUntyped groupKey)
+    {
+        return new AggregationAccessImpl(streamId);
+    }    
 }

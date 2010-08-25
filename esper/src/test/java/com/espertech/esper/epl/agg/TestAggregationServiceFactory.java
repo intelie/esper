@@ -32,11 +32,11 @@ public class TestAggregationServiceFactory extends TestCase
         // Test with aggregates but no group by
         selectAggregateNodes.add(SupportExprNodeFactory.makeSumAggregateNode());
         AggregationService service = AggregationServiceFactory.getService(selectAggregateNodes, havingAggregateNodes, orderByAggregateNodes, false, methodResolutionService, null, null, null, null);
-        assertTrue(service instanceof AggregationServiceGroupAllImpl);
+        assertTrue(service instanceof AggSvcGroupAllNoAccessImpl);
 
         // Test with aggregates and group by
         service = AggregationServiceFactory.getService(selectAggregateNodes, havingAggregateNodes, orderByAggregateNodes, true, methodResolutionService, null, null, null, null);
-        assertTrue(service instanceof AggregationServiceGroupByRefcountedImpl);
+        assertTrue(service instanceof AggSvcGroupByRefcountedNoAccessImpl);
     }
 
     public void testGetNullService() throws Exception

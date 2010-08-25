@@ -17,6 +17,20 @@ import java.util.Set;
  */
 public class CollectionUtil<T>
 {
+    public static int[] intArray(Set<Integer> set)
+    {
+        if (set == null)
+        {
+            return new int[0];
+        }
+        int[] result = new int[set.size()];
+        int index = 0;
+        for (Integer value : set) {
+            result[index++] = value;
+        }
+        return result;
+    }
+
     /**
      * Returns a list of the elements invoking toString on non-null elements.
      * @param set to render

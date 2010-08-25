@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 import java.util.TimerTask;
 
-public class TestFirstLastAgg extends TestCase {
+public class TestFirstEverLastAgg extends TestCase {
 
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
@@ -27,8 +27,8 @@ public class TestFirstLastAgg extends TestCase {
 
     public void testFirstLast()
     {
-        String epl = "select first(string) as firststring, last(string) as laststring, " +
-                "first(intPrimitive) as firstint, last(intPrimitive) as lastint from SupportBean.win:length(2)";
+        String epl = "select firstever(string) as firsteverstring, last(string) as laststring, " +
+                "firstever(intPrimitive) as firsteverint, last(intPrimitive) as lastint from SupportBean.win:length(2)";
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
 
@@ -44,7 +44,7 @@ public class TestFirstLastAgg extends TestCase {
     }
 
     private void runAssertion() {
-        String[] fields = "firststring,firstint,laststring,lastint".split(",");
+        String[] fields = "firsteverstring,firsteverint,laststring,lastint".split(",");
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 10, "E1", 10});

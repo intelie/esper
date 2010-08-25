@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 public class TestAggregationServiceGroupByImpl extends TestCase
 {
-    private AggregationServiceGroupByImpl service;
+    private AggSvcGroupByNoAccessImpl service;
     private MultiKeyUntyped groupOneKey;
     private MultiKeyUntyped groupTwoKey;
     private MethodResolutionService methodResolutionService;
@@ -26,7 +26,7 @@ public class TestAggregationServiceGroupByImpl extends TestCase
         ExprEvaluator evaluators[] = new ExprEvaluator[] { new SupportExprNode(5), new SupportExprNode(2) };
         methodResolutionService = new MethodResolutionServiceImpl(null, null, true);
 
-        service = new AggregationServiceGroupByImpl(evaluators, aggregators, methodResolutionService);
+        service = new AggSvcGroupByNoAccessImpl(evaluators, aggregators, methodResolutionService);
 
         groupOneKey = new MultiKeyUntyped(new Object[] {"x", "y1"});
         groupTwoKey = new MultiKeyUntyped(new Object[] {"x", "y2"});
@@ -39,10 +39,10 @@ public class TestAggregationServiceGroupByImpl extends TestCase
         service.applyEnter(new EventBean[1], groupOneKey, null);
         service.applyEnter(new EventBean[1], groupTwoKey, null);
 
-        service.setCurrentRow(groupOneKey);
+        service.setCurrentAccess(groupOneKey);
         assertEquals(10, service.getValue(0));
         assertEquals(4, service.getValue(1));
-        service.setCurrentRow(groupTwoKey);
+        service.setCurrentAccess(groupTwoKey);
         assertEquals(5, service.getValue(0));
         assertEquals(2, service.getValue(1));
 
@@ -51,10 +51,10 @@ public class TestAggregationServiceGroupByImpl extends TestCase
         service.applyLeave(new EventBean[1], groupTwoKey, null);
         service.applyLeave(new EventBean[1], groupOneKey, null);
 
-        service.setCurrentRow(groupOneKey);
+        service.setCurrentAccess(groupOneKey);
         assertEquals(10 - 5, service.getValue(0));
         assertEquals(4 - 2, service.getValue(1));
-        service.setCurrentRow(groupTwoKey);
+        service.setCurrentAccess(groupTwoKey);
         assertEquals(5 - 15, service.getValue(0));
         assertEquals(2 - 6, service.getValue(1));
     }

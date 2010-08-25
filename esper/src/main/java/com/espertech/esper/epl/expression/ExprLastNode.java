@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 
@@ -28,13 +28,13 @@ public class ExprLastNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
         {
             throw new ExprValidationException("Last aggregation function must have 1 child node");
         }
-        return methodResolutionService.makeLastValueAggregator(this.getChildNodes().get(0).getType());
+        return new ExprLastNodeFactory(this.getChildNodes().get(0).getType());
     }
 
     protected String getAggregationFunctionName()
@@ -45,6 +45,5 @@ public class ExprLastNode extends ExprAggregateNode
     public final boolean equalsNodeAggregate(ExprAggregateNode node)
     {
         return node instanceof ExprLastNode;
-
     }
 }

@@ -22,6 +22,7 @@ import com.espertech.esper.schedule.TimeProvider;
 public class ExprStreamUnderlyingNode extends ExprNode
 {
     private final String streamName;
+    private final boolean isWildcard;
     private int streamNum = -1;
     private Class type;
     private static final long serialVersionUID = 6611578192872250478L;
@@ -30,13 +31,14 @@ public class ExprStreamUnderlyingNode extends ExprNode
      * Ctor.
      * @param streamName is the name of the stream for which to return the underlying event
      */
-    public ExprStreamUnderlyingNode(String streamName)
+    public ExprStreamUnderlyingNode(String streamName, boolean isWildcard)
     {
-        if (streamName == null)
+        if ((streamName == null) && (!isWildcard))
         {
             throw new IllegalArgumentException("Stream name is null");
         }
         this.streamName = streamName;
+        this.isWildcard = isWildcard;
     }
 
     /**
@@ -50,14 +52,14 @@ public class ExprStreamUnderlyingNode extends ExprNode
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        String[] streams = streamTypeService.getStreamNames();
-        for (int i = 0; i < streams.length; i++)
-        {
-            if ((streams[i] != null) && (streams[i].equals(streamName)))
-            {
-                streamNum = i;
-                break;
+        if (isWildcard) {
+            if (streamTypeService.getStreamNames().length > 1) {
+                throw new ExprValidationException("Wildcard must be stream wildcard if specifying multiple streams, use the 'streamname.*' syntax instead");
             }
+            streamNum = 0;
+        }
+        else {
+            streamNum = streamTypeService.getStreamNumForStreamName(streamName);
         }
 
         if (streamNum == -1)
@@ -127,7 +129,12 @@ public class ExprStreamUnderlyingNode extends ExprNode
         }
 
         ExprStreamUnderlyingNode other = (ExprStreamUnderlyingNode) node;
-
+        if (this.isWildcard != other.isWildcard) {
+            return false;
+        }
+        if (this.isWildcard) {
+            return true;
+        }
         return (this.streamName.equals(other.streamName));
     }
 }

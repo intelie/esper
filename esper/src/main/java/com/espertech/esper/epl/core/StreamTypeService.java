@@ -78,4 +78,6 @@ public interface StreamTypeService
      * @return true for non-windowed streams.
      */
     public boolean[] getIStreamOnly();
+
+    public int getStreamNumForStreamName(String streamWildcard);
 }

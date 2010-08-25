@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.util.JavaClassHelper;
@@ -29,7 +30,7 @@ public class ExprRateAggNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() == 0) {
             throw new ExprValidationException("The rate aggregation function minimally requires a numeric constant or expression as a parameter.");            
@@ -54,7 +55,7 @@ public class ExprRateAggNode extends ExprAggregateNode
                 throw new ExprValidationException(message);
             }
 
-            return methodResolutionService.makeRateEverAggregator(intervalMSec);
+            return new ExprRateAggNodeFactory(true, intervalMSec);
         }
         else {
             String message = "The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation";
@@ -77,7 +78,7 @@ public class ExprRateAggNode extends ExprAggregateNode
             if (!hasDataWindows) {
                 throw new ExprValidationException("The rate aggregation function in the timestamp-property notation requires data windows");
             }
-            return methodResolutionService.makeRateAggregator();
+            return new ExprRateAggNodeFactory(false, -1);
         }
     }
 

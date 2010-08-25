@@ -681,13 +681,13 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 				</thead>
 				<tbody>
 					<row>
-						<entry>first(<emphasis>expression</emphasis>)</entry>
+						<entry>firstever(<emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								The <literal>first</literal> aggregation function returns the very first value ever or per group if used with <literal>group by</literal>.
+								The <literal>firstever</literal> aggregation function returns the very first value ever. If used with <literal>group by</literal> it returns the first value ever for that group.
 							</para>				
 							<para>
-								If used with a data window, the result of the function does not change as data points leave a data window. Use the <literal>prev</literal> function to return values relative to a data window.
+								If used with a data window, the result of the function does not change as data points leave a data window. Use the <literal>first</literal> or <literal>prev</literal> function to return values relative to a data window.
 							</para>
 						</entry>
 					</row>

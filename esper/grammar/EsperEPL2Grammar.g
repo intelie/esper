@@ -242,6 +242,7 @@ tokens
 	ANNOTATION_VALUE;
 	FIRST_AGGREG;
 	LAST_AGGREG;
+	WINDOW_AGGREG;
 	UPDATE_EXPR;
 	ON_SET_EXPR_ITEM;
 	CREATE_SCHEMA_EXPR;
@@ -1251,6 +1252,7 @@ builtinFunc
 	| AVEDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
 	| firstAggregation
 	| lastAggregation
+	| windowAggregation
 	| COALESCE^ LPAREN! expression COMMA! expression (COMMA! expression)* RPAREN!
 	| PREVIOUS^ LPAREN! expression (COMMA! expression)? RPAREN!
 	| PRIOR^ LPAREN! NUM_INT COMMA! eventProperty RPAREN!
@@ -1263,14 +1265,26 @@ builtinFunc
 	;
 	
 firstAggregation
-	: FIRST LPAREN (a=ALL | d=DISTINCT)? expression RPAREN
-	  -> ^(FIRST_AGGREG $d? expression)
+	: FIRST LPAREN (a=ALL | d=DISTINCT)? accessAggExpr (COMMA expression)? RPAREN
+	  -> ^(FIRST_AGGREG $d? accessAggExpr expression?)
 	;
 
 lastAggregation
-	: LAST LPAREN (a=ALL | d=DISTINCT)? expression RPAREN
-	  -> ^(LAST_AGGREG $d? expression)
+	: LAST LPAREN (a=ALL | d=DISTINCT)? accessAggExpr (COMMA expression)? RPAREN
+	  -> ^(LAST_AGGREG $d? accessAggExpr expression?)
 	;
+	
+windowAggregation
+	: WINDOW LPAREN (a=ALL | d=DISTINCT)? accessAggExpr RPAREN
+	  -> ^(WINDOW_AGGREG $d? accessAggExpr)
+	;
+
+accessAggExpr
+   	:   	s=STAR -> PROPERTY_WILDCARD_SELECT[$s]
+	|	(propertyStreamSelector) => propertyStreamSelector
+	|	expression
+	;
+
 
 maxFunc
 	: (MAX^ | MIN^) LPAREN! expression (COMMA! expression (COMMA! expression)* )? RPAREN!

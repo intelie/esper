@@ -223,7 +223,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         int count = 0;
         for (int i = 0; i < outputEvents.length; i++)
         {
-            aggregationService.setCurrentRow(groupByKeys[count]);
+            aggregationService.setCurrentAccess(groupByKeys[count]);
             eventsPerStream[0] = outputEvents[count];
 
             // Filter the having clause
@@ -361,7 +361,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             {
                 this.clear();
             }
-            aggregationService.setCurrentRow(groupByKeys[count]);
+            aggregationService.setCurrentAccess(groupByKeys[count]);
 
             // Filter the having clause
             if (optionalHavingNode != null)
@@ -430,7 +430,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             eventsPerStream[0] = candidate;
 
             MultiKeyUntyped groupKey = generateGroupKey(eventsPerStream, true);
-            aggregationService.setCurrentRow(groupKey);
+            aggregationService.setCurrentAccess(groupKey);
 
             Boolean pass = true;
             if (optionalHavingNode != null) {
@@ -799,7 +799,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                         for (MultiKey<EventBean> aNewData : newData)
                         {
                             MultiKeyUntyped mk = newDataMultiKey[count];
-                            aggregationService.setCurrentRow(mk);
+                            aggregationService.setCurrentAccess(mk);
 
                             // Filter the having clause
                             Boolean result = (Boolean) optionalHavingNode.evaluate(aNewData.getArray(), true, statementContext);
@@ -834,7 +834,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                         for (MultiKey<EventBean> aOldData : oldData)
                         {
                             MultiKeyUntyped mk = oldDataMultiKey[count];
-                            aggregationService.setCurrentRow(mk);
+                            aggregationService.setCurrentAccess(mk);
 
                             // Filter the having clause
                             Boolean result = (Boolean) optionalHavingNode.evaluate(aOldData.getArray(), true, statementContext);
@@ -1288,7 +1288,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                         {
                             eventsPerStreamOneStream[0] = newData[i];
                             MultiKeyUntyped mk = newDataMultiKey[i];
-                            aggregationService.setCurrentRow(mk);
+                            aggregationService.setCurrentAccess(mk);
 
                             // Filter the having clause
                             Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStreamOneStream, true, statementContext);
@@ -1321,7 +1321,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                         {
                             eventsPerStreamOneStream[0] = oldData[i];
                             MultiKeyUntyped mk = oldDataMultiKey[i];
-                            aggregationService.setCurrentRow(mk);
+                            aggregationService.setCurrentAccess(mk);
 
                             // Filter the having clause
                             Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStreamOneStream, true, statementContext);
@@ -1473,7 +1473,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             EventBean[] eventsPerStream = entry.getValue();
 
             // Set the current row of aggregation states
-            aggregationService.setCurrentRow(entry.getKey());
+            aggregationService.setCurrentAccess(entry.getKey());
 
             // Filter the having clause
             if (optionalHavingNode != null)
@@ -1506,7 +1506,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         int count = 0;
         for (int i = 0; i < outputEvents.length; i++)
         {
-            aggregationService.setCurrentRow(groupByKeys[count]);
+            aggregationService.setCurrentAccess(groupByKeys[count]);
             eventsPerStream[0] = outputEvents[count];
 
             // Filter the having clause
@@ -1541,7 +1541,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         int count = 0;
         for (MultiKey<EventBean> row : outputEvents)
         {
-            aggregationService.setCurrentRow(groupByKeys[count]);
+            aggregationService.setCurrentAccess(groupByKeys[count]);
             eventsPerStream = row.getArray();
 
             // Filter the having clause
@@ -1577,7 +1577,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         for (int i = 0; i < outputEvents.length; i++)
         {
             MultiKeyUntyped groupKey = groupByKeys[count];
-            aggregationService.setCurrentRow(groupKey);
+            aggregationService.setCurrentAccess(groupKey);
             eventsPerStream[0] = outputEvents[count];
 
             // Filter the having clause
@@ -1611,7 +1611,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         for (MultiKey<EventBean> row : outputEvents)
         {
             MultiKeyUntyped groupKey = groupByKeys[count];
-            aggregationService.setCurrentRow(groupKey);
+            aggregationService.setCurrentAccess(groupKey);
 
             // Filter the having clause
             if (optionalHavingNode != null)

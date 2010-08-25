@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.type.MathArithTypeEnum;
@@ -75,11 +76,12 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
 
     public void testMakeAggregator() throws Exception
     {
-        assertTrue(makeNode(5, Integer.class).getPrototypeAggregator() instanceof IntegerSumAggregator);
-        assertTrue(makeNode(5, Float.class).getPrototypeAggregator() instanceof FloatSumAggregator);
-        assertTrue(makeNode(5, Double.class).getPrototypeAggregator() instanceof DoubleSumAggregator);
-        assertTrue(makeNode(5, Short.class).getPrototypeAggregator() instanceof NumIntegerSumAggregator);
-        assertTrue(makeNode(5, Long.class).getPrototypeAggregator() instanceof LongSumAggregator);
+        MethodResolutionService methodSvc = SupportExprNodeFactory.getMethodResService();
+        assertTrue(makeNode(5, Integer.class).getFactory().getPrototypeAggregator(methodSvc) instanceof IntegerSumAggregator);
+        assertTrue(makeNode(5, Float.class).getFactory().getPrototypeAggregator(methodSvc) instanceof FloatSumAggregator);
+        assertTrue(makeNode(5, Double.class).getFactory().getPrototypeAggregator(methodSvc) instanceof DoubleSumAggregator);
+        assertTrue(makeNode(5, Short.class).getFactory().getPrototypeAggregator(methodSvc) instanceof NumIntegerSumAggregator);
+        assertTrue(makeNode(5, Long.class).getFactory().getPrototypeAggregator(methodSvc) instanceof LongSumAggregator);
     }
 
     public void testEqualsNode() throws Exception

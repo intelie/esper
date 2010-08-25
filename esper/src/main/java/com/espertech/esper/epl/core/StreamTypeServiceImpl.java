@@ -118,6 +118,15 @@ public class StreamTypeServiceImpl implements StreamTypeService
         return isIStreamOnly;
     }
 
+    public int getStreamNumForStreamName(String streamWildcard) {
+        for (int i = 0; i < streamNames.length; i++) {
+            if (streamWildcard.equals(streamNames[i])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public PropertyResolutionDescriptor resolveByPropertyName(String propertyName)
         throws DuplicatePropertyException, PropertyNotFoundException
     {

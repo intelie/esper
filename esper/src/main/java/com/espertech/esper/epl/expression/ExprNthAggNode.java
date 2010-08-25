@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.util.JavaClassHelper;
@@ -29,7 +30,7 @@ public class ExprNthAggNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         String message = "The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant";
         if (this.getChildNodes().size() != 2) {
@@ -45,7 +46,7 @@ public class ExprNthAggNode extends ExprAggregateNode
         Number num = (Number) second.evaluate(null, true, exprEvaluatorContext);
         int size = num.intValue();
 
-        return methodResolutionService.makeNthAggregator(first.getType(), size);
+        return new ExprNthAggNodeFactory(first.getType(), size, super.isDistinct);
     }
 
     protected String getAggregationFunctionName()

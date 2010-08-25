@@ -16,7 +16,7 @@ public class TestExprStreamUnderlyingNode extends TestCase
 
     public void setUp()
     {
-        node = new ExprStreamUnderlyingNode("s0");
+        node = new ExprStreamUnderlyingNode("s0", false);
         streamTypeService = new SupportStreamTypeSvc3Stream();
     }
 
@@ -49,8 +49,8 @@ public class TestExprStreamUnderlyingNode extends TestCase
         assertEquals(0, node.getStreamId());
         assertEquals(SupportBean.class, node.getType());
 
-        tryInvalidValidate(new ExprStreamUnderlyingNode(""));
-        tryInvalidValidate(new ExprStreamUnderlyingNode("dummy"));
+        tryInvalidValidate(new ExprStreamUnderlyingNode("", false));
+        tryInvalidValidate(new ExprStreamUnderlyingNode("dummy", false));
     }
 
     public void testEvaluate() throws Exception
@@ -65,8 +65,8 @@ public class TestExprStreamUnderlyingNode extends TestCase
     public void testEqualsNode() throws Exception
     {
         node.validate(streamTypeService, null, null, null, null, null);
-        assertTrue(node.equalsNode(new ExprStreamUnderlyingNode("s0")));
-        assertFalse(node.equalsNode(new ExprStreamUnderlyingNode("xxx")));
+        assertTrue(node.equalsNode(new ExprStreamUnderlyingNode("s0", false)));
+        assertFalse(node.equalsNode(new ExprStreamUnderlyingNode("xxx", false)));
     }
 
     protected static EventBean makeEvent(int intPrimitive)

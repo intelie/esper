@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.type.MathArithTypeEnum;
@@ -78,7 +79,8 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
     public void testMakeAggregator() throws Exception
     {
         MinMaxTypeEnum type = MinMaxTypeEnum.MAX;
-        assertTrue(makeNode(type, 5, Integer.class).getPrototypeAggregator() instanceof MinMaxAggregator);
+        MethodResolutionService methodSvc = SupportExprNodeFactory.getMethodResService();
+        assertTrue(makeNode(type, 5, Integer.class).getFactory().getPrototypeAggregator(methodSvc) instanceof MinMaxAggregator);
     }
 
     public void testEqualsNode() throws Exception

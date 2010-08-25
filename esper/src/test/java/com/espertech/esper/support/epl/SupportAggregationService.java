@@ -34,7 +34,7 @@ public class SupportAggregationService implements AggregationService
         return enterList;
     }
 
-    public void setCurrentRow(MultiKeyUntyped groupKey)
+    public void setCurrentAccess(MultiKeyUntyped groupKey)
     {
     }
 

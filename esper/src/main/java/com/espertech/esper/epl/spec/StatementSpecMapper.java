@@ -1299,10 +1299,10 @@ public class StatementSpecMapper
             LastProjectionExpression node = (LastProjectionExpression) expr;
             return new ExprLastNode(node.isDistinct());
         }
-        else if (expr instanceof FirstProjectionExpression)
+        else if (expr instanceof FirstEverProjectionExpression)
         {
-            FirstProjectionExpression node = (FirstProjectionExpression) expr;
-            return new ExprFirstNode(node.isDistinct());
+            FirstEverProjectionExpression node = (FirstEverProjectionExpression) expr;
+            return new ExprFirstEverNode(node.isDistinct());
         }
         else if (expr instanceof InstanceOfExpression)
         {
@@ -1683,10 +1683,10 @@ public class StatementSpecMapper
             ExprLastNode last = (ExprLastNode) expr;
             return new LastProjectionExpression(last.isDistinct());
         }
-        else if (expr instanceof ExprFirstNode)
+        else if (expr instanceof ExprFirstEverNode)
         {
-            ExprFirstNode first = (ExprFirstNode) expr;
-            return new FirstProjectionExpression(first.isDistinct());
+            ExprFirstEverNode first = (ExprFirstEverNode) expr;
+            return new FirstEverProjectionExpression(first.isDistinct());
         }
         else if (expr instanceof ExprAvedevNode)
         {

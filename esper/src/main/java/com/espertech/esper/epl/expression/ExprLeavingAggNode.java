@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.util.JavaClassHelper;
@@ -29,14 +30,14 @@ public class ExprLeavingAggNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         String message = "The leaving aggregation function requires no parameters";
         if (this.getChildNodes().size() > 0) {
             throw new ExprValidationException(message);
         }
 
-        return methodResolutionService.makeLeavingAggregator();
+        return new ExprLeavingAddNodeFactory();
     }
 
     protected String getAggregationFunctionName()

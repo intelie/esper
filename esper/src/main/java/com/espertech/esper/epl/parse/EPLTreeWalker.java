@@ -13,6 +13,7 @@ import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPAdministratorHelper;
+import com.espertech.esper.epl.agg.AggregationAccessType;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
@@ -260,6 +261,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case AVEDEV:
             case FIRST_AGGREG:
             case LAST_AGGREG:
+            case WINDOW_AGGREG:
                 leaveAggregate(node);
                 break;
             case LIB_FUNCTION:
@@ -1995,10 +1997,36 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 aggregateNode = new ExprAvedevNode(isDistinct);
                 break;
             case FIRST_AGGREG:
-                aggregateNode = new ExprFirstNode(isDistinct);
-                break;
+            case WINDOW_AGGREG:
             case LAST_AGGREG:
-                aggregateNode = new ExprLastNode(isDistinct);
+                boolean isWildcard = ASTUtil.findFirstNode(node, PROPERTY_WILDCARD_SELECT) != null;
+                Tree streamWCNode = ASTUtil.findFirstNode(node, PROPERTY_SELECTION_STREAM);
+                String streamWildcard = null;
+                if (streamWCNode != null) {
+                    streamWildcard = streamWCNode.getChild(0).getText();
+                }
+
+                if (node.getType() == FIRST_AGGREG) {
+                    aggregateNode = new ExprAccessAggNode(AggregationAccessType.FIRST, isWildcard, streamWildcard);
+                }
+                else if (node.getType() == WINDOW_AGGREG) {
+                    aggregateNode = new ExprAccessAggNode(AggregationAccessType.ALL, isWildcard, streamWildcard);
+                }
+                else {
+                    if (node.getChildCount() > 1) {
+                        aggregateNode = new ExprAccessAggNode(AggregationAccessType.LAST, isWildcard, streamWildcard);
+                    }
+                    else {
+                        aggregateNode = new ExprLastNode(isDistinct);
+                        if (isWildcard) {
+                            aggregateNode.addChildNode(new ExprStreamUnderlyingNode(null, true));
+                        }
+                        else if (streamWildcard != null) {
+                            aggregateNode.addChildNode(new ExprStreamUnderlyingNode(streamWildcard, false));
+                        }
+
+                    }
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized aggregate node type");

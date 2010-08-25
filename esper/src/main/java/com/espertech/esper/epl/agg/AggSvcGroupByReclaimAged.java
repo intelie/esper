@@ -37,9 +37,9 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Implementation for handling aggregation with grouping by group-keys.
  */
-public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
+public class AggSvcGroupByReclaimAged extends AggregationServiceBase
 {
-    private static final Log log = LogFactory.getLog(AggregationServiceGroupByReclaimAged.class);
+    private static final Log log = LogFactory.getLog(AggSvcGroupByReclaimAged.class);
 
     private static final long DEFAULT_MAX_AGE_MSEC = 60000L;
 
@@ -71,13 +71,15 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
      * @param statementStopService stop svc
      * @throws com.espertech.esper.epl.expression.ExprValidationException when validation fails
      */
-    public AggregationServiceGroupByReclaimAged(ExprEvaluator evaluators[],
+    public AggSvcGroupByReclaimAged(ExprEvaluator evaluators[],
                                                 AggregationMethod prototypes[],
                                                 MethodResolutionService methodResolutionService,
                                                 Hint reclaimGroupAged,
                                                 Hint reclaimGroupFrequency,
                                                 final VariableService variableService,
-                                                StatementStopService statementStopService)
+                                                StatementStopService statementStopService,
+                                                AggregationAccessorSlotPair[] accessors,
+                                                int[] streams)
             throws ExprValidationException
     {
         super(evaluators, prototypes);
@@ -119,7 +121,7 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
             {
                 public void update(Object newValue, Object oldValue)
                 {
-                    AggregationServiceGroupByReclaimAged.this.nextSweepTime = null;
+                    AggSvcGroupByReclaimAged.this.nextSweepTime = null;
                 }
             };
             variableService.registerCallback(variableReader.getVariableNumber(), changeCallback);
@@ -281,7 +283,7 @@ public class AggregationServiceGroupByReclaimAged extends AggregationServiceBase
         }
     }
 
-    public void setCurrentRow(MultiKeyUntyped groupByKey)
+    public void setCurrentAccess(MultiKeyUntyped groupByKey)
     {
         AggregationMethodRowAged row = aggregatorsPerGroup.get(groupByKey);
 

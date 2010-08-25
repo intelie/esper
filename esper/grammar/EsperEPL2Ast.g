@@ -526,8 +526,9 @@ builtinFunc
 	|	^(f=MEDIAN (DISTINCT)? valueExpr) { leaveNode($f); }
 	|	^(f=STDDEV (DISTINCT)? valueExpr) { leaveNode($f); }
 	|	^(f=AVEDEV (DISTINCT)? valueExpr) { leaveNode($f); }
-	|	^(f=LAST_AGGREG (DISTINCT)? valueExpr) { leaveNode($f); }
-	|	^(f=FIRST_AGGREG (DISTINCT)? valueExpr) { leaveNode($f); }
+	|	^(f=LAST_AGGREG (DISTINCT)? accessValueExpr) { leaveNode($f); }
+	|	^(f=FIRST_AGGREG (DISTINCT)? accessValueExpr) { leaveNode($f); }
+	|	^(f=WINDOW_AGGREG (DISTINCT)? accessValueExpr) { leaveNode($f); }
 	| 	^(f=COALESCE valueExpr valueExpr (valueExpr)* ) { leaveNode($f); }
 	| 	^(f=PREVIOUS valueExpr valueExpr?) { leaveNode($f); }
 	| 	^(f=PRIOR c=NUM_INT eventPropertyExpr[true]) {leaveNode($c); leaveNode($f);}
@@ -536,6 +537,10 @@ builtinFunc
 	| 	^(f=EXISTS eventPropertyExpr[true]) { leaveNode($f); }
 	|	^(f=CURRENT_TIMESTAMP {}) { leaveNode($f); }
 	;
+
+accessValueExpr
+	: 	PROPERTY_WILDCARD_SELECT | ^(s=PROPERTY_SELECTION_STREAM IDENT IDENT?) | valueExpr
+	;		
 	
 arrayExpr
 	:	^(a=ARRAY_EXPR (valueExpr)*) { leaveNode($a); }

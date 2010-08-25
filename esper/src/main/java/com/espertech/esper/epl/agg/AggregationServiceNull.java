@@ -29,7 +29,7 @@ public class AggregationServiceNull implements AggregationService {
                            ExprEvaluatorContext exprEvaluatorContext) {
     }
 
-    public void setCurrentRow(MultiKeyUntyped groupKey) {
+    public void setCurrentAccess(MultiKeyUntyped groupKey) {
     }
 
     public Object getValue(int column) {

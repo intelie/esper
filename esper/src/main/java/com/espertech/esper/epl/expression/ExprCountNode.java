@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 
@@ -28,12 +29,12 @@ public class ExprCountNode extends ExprAggregateNode
         super(distinct);
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Empty child node list signals count(*), does not ignore nulls
         if (this.getChildNodes().isEmpty())
         {
-            return methodResolutionService.makeCountAggregator(false);
+            return new ExprCountNodeFactory(false, super.isDistinct);
         }
         else
         {
@@ -42,7 +43,7 @@ public class ExprCountNode extends ExprAggregateNode
             {
                 throw new ExprValidationException("Count node must have zero or 1 child nodes");
             }
-            return methodResolutionService.makeCountAggregator(true);
+            return new ExprCountNodeFactory(true, super.isDistinct);
         }
     }
 

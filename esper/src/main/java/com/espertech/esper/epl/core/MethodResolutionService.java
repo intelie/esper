@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.epl.agg.AggregationAccess;
 import com.espertech.esper.type.MinMaxTypeEnum;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.agg.AggregationMethod;
@@ -109,6 +110,8 @@ public interface MethodResolutionService
      */
     public AggregationMethod makeSumAggregator(Class type);
 
+    public Class getSumAggregatorType(Class inputValueType);
+
     /**
      * Makes a new distinct-value-aggregator.
      * @param aggregationMethod is the inner aggregation method
@@ -123,6 +126,7 @@ public interface MethodResolutionService
      * @return aggregator
      */
     public AggregationMethod makeAvgAggregator(Class type);
+    public Class getAvgAggregatorType(Class childType);
 
     /**
      * Makes a new avedev-aggregator.
@@ -204,4 +208,6 @@ public interface MethodResolutionService
      * @return row count
      */
     public long getCurrentRowCount(AggregationMethod[] aggregators);
+
+    public AggregationAccess makeAccessStreamId(int streamId, MultiKeyUntyped mk);
 }

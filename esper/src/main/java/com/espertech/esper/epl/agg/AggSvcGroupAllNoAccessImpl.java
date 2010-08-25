@@ -17,14 +17,14 @@ import com.espertech.esper.epl.agg.AggregationMethod;
 /**
  * Implementation for handling aggregation without any grouping (no group-by).
  */
-public class AggregationServiceGroupAllImpl extends AggregationServiceBase
+public class AggSvcGroupAllNoAccessImpl extends AggregationServiceBase
 {
     /**
      * Ctor.
      * @param evaluators - evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))
      * @param aggregators - collect the aggregation state that evaluators evaluate to
      */
-    public AggregationServiceGroupAllImpl(ExprEvaluator evaluators[], AggregationMethod aggregators[])
+    public AggSvcGroupAllNoAccessImpl(ExprEvaluator evaluators[], AggregationMethod aggregators[])
     {
         super(evaluators, aggregators);
     }
@@ -47,7 +47,7 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
         }
     }
 
-    public void setCurrentRow(MultiKeyUntyped groupKey)
+    public void setCurrentAccess(MultiKeyUntyped groupKey)
     {
         // no action needed - this implementation does not group and the current row is the single group
     }

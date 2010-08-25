@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.MethodResolutionService;
@@ -34,7 +35,7 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
         aggregationSupport.setFunctionName(functionName);
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() > 1)
         {
@@ -68,7 +69,7 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
             }
         }
 
-        return aggregationSupport;
+        return new ExprPlugInAggFunctionNodeFactory(aggregationSupport, super.isDistinct());
     }
 
     public String getAggregationFunctionName()

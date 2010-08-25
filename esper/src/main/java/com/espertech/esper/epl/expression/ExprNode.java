@@ -161,7 +161,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     private ExprNode resolveAsStreamName(ExprIdentNode identNode, StreamTypeService streamTypeService, ExprValidationException existingException, ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
-        ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNode(identNode.getUnresolvedPropertyName());
+        ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNode(identNode.getUnresolvedPropertyName(), false);
 
         try
         {

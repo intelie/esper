@@ -361,7 +361,7 @@ public class SupportExprNodeFactory
         variableService.createNewVariable("intPrimitive", Integer.class.getName(), 10, null);
         variableService.createNewVariable("var1", String.class.getName(), "my_variable_value", null);
 
-        topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(new EngineImportServiceImpl(true), null, true), viewResources, null, variableService, null);
+        topNode.getValidatedSubtree(streamTypeService, getMethodResService(), viewResources, null, variableService, null);
     }
 
     public static void validate1StreamBean(ExprNode topNode) throws Exception
@@ -376,5 +376,10 @@ public class SupportExprNodeFactory
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", false, "uri");
         topNode.getValidatedSubtree(streamTypeService, null, null, null, null, null);
+    }
+
+    public static MethodResolutionService getMethodResService()
+    {
+        return new MethodResolutionServiceImpl(new EngineImportServiceImpl(true), null, true);
     }
 }

@@ -9,11 +9,9 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.ConfigurationMethodRef;
+import com.espertech.esper.epl.agg.AggregationAccessType;
 import com.espertech.esper.epl.agg.AggregationSupport;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprRateAggNode;
-import com.espertech.esper.epl.expression.ExprNthAggNode;
-import com.espertech.esper.epl.expression.ExprLeavingAggNode;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MethodResolver;
 import org.apache.commons.logging.Log;
@@ -331,6 +329,10 @@ public class EngineImportServiceImpl implements EngineImportService
     public ExprNode resolveAggExtendedBuiltin(String name, boolean isDistinct) {
         if (!allowExtendedAggregationFunc) {
             return null;
+        }
+        if (name.toLowerCase().equals("firstever"))
+        {
+            return new ExprFirstEverNode(isDistinct);
         }
         if (name.toLowerCase().equals("rate"))
         {

@@ -20,7 +20,7 @@ import java.util.HashMap;
 /**
  * Implementation for handling aggregation with grouping by group-keys.
  */
-public class AggregationServiceGroupByImpl extends AggregationServiceBase
+public class AggSvcGroupByNoAccessImpl extends AggregationServiceBase
 {
     // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
     private Map<MultiKeyUntyped, AggregationMethod[]> aggregatorsPerGroup;
@@ -38,7 +38,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
      * aggregation states for each group
      * @param methodResolutionService - factory for creating additional aggregation method instances per group key
      */
-    public AggregationServiceGroupByImpl(ExprEvaluator evaluators[], AggregationMethod prototypes[], MethodResolutionService methodResolutionService)
+    public AggSvcGroupByNoAccessImpl(ExprEvaluator evaluators[], AggregationMethod prototypes[], MethodResolutionService methodResolutionService)
     {
         super(evaluators, prototypes);
         this.methodResolutionService = methodResolutionService;
@@ -90,7 +90,7 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         }
     }
 
-    public void setCurrentRow(MultiKeyUntyped groupByKey)
+    public void setCurrentAccess(MultiKeyUntyped groupByKey)
     {
         currentAggregatorRow = aggregatorsPerGroup.get(groupByKey);
 

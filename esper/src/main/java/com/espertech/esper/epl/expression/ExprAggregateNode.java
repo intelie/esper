@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.agg.AggregationMethod;
@@ -36,7 +37,7 @@ public abstract class ExprAggregateNode extends ExprNode
 {
 	private AggregationResultFuture aggregationResultFuture;
 	private int column;
-    private AggregationMethod aggregationMethod;
+    private AggregationMethodFactory aggregationMethodFactory;
 
     /**
      * Indicator for whether the aggregation is distinct - i.e. only unique values are considered.
@@ -62,10 +63,10 @@ public abstract class ExprAggregateNode extends ExprNode
      * @param streamTypeService is the types per stream
      * @param methodResolutionService used for resolving method and function names
      * @param exprEvaluatorContext context for expression evaluation
-     * @return aggregation function use
+     * @return aggregation function factory to use
      * @throws ExprValidationException when expression validation failed
      */
-    protected abstract AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext)
+    protected abstract AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext)
         throws ExprValidationException;
 
     /**
@@ -84,40 +85,29 @@ public abstract class ExprAggregateNode extends ExprNode
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        this.aggregationMethod = validateAggregationChild(streamTypeService, methodResolutionService, exprEvaluatorContext);
-
-        Class childType = null;
-        if (this.getChildNodes().size() > 0)
-        {
-            childType = this.getChildNodes().get(0).getType();
-        }
-
-        if (isDistinct)
-        {
-            aggregationMethod = methodResolutionService.makeDistinctAggregator(aggregationMethod, childType);
-        }
+        aggregationMethodFactory = validateAggregationChild(streamTypeService, methodResolutionService, exprEvaluatorContext);
     }
 
     public Class getType()
     {
-        if (aggregationMethod == null)
+        if (aggregationMethodFactory == null)
         {
             throw new IllegalStateException("Aggregation method has not been set");
         }
-        return aggregationMethod.getValueType();
+        return aggregationMethodFactory.getResultType();
     }
 
     /**
-     * Returns the aggregation state prototype for use in grouping aggregation states per group-by keys.
+     * Returns the aggregation state factory for use in grouping aggregation states per group-by keys.
      * @return prototype aggregation state as a factory for aggregation states per group-by key value
      */
-    public AggregationMethod getPrototypeAggregator()
+    public AggregationMethodFactory getFactory()
     {
-        if (aggregationMethod == null)
+        if (aggregationMethodFactory == null)
         {
             throw new IllegalStateException("Aggregation method has not been set");
         }
-        return aggregationMethod;
+        return aggregationMethodFactory;
     }
 
     /**

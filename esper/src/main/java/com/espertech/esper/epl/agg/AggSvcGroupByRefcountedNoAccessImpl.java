@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Implementation for handling aggregation with grouping by group-keys.
  */
-public class AggregationServiceGroupByRefcountedImpl extends AggregationServiceBase
+public class AggSvcGroupByRefcountedNoAccessImpl extends AggregationServiceBase
 {
     // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
     private Map<MultiKeyUntyped, AggregationMethodRow> aggregatorsPerGroup;
@@ -42,7 +42,9 @@ public class AggregationServiceGroupByRefcountedImpl extends AggregationServiceB
      * aggregation states for each group
      * @param methodResolutionService - factory for creating additional aggregation method instances per group key
      */
-    public AggregationServiceGroupByRefcountedImpl(ExprEvaluator evaluators[], AggregationMethod prototypes[], MethodResolutionService methodResolutionService)
+    public AggSvcGroupByRefcountedNoAccessImpl(ExprEvaluator evaluators[],
+                                       AggregationMethod prototypes[],
+                                       MethodResolutionService methodResolutionService)
     {
         super(evaluators, prototypes);
         this.methodResolutionService = methodResolutionService;
@@ -125,7 +127,7 @@ public class AggregationServiceGroupByRefcountedImpl extends AggregationServiceB
         }
     }
 
-    public void setCurrentRow(MultiKeyUntyped groupByKey)
+    public void setCurrentAccess(MultiKeyUntyped groupByKey)
     {
         AggregationMethodRow row = aggregatorsPerGroup.get(groupByKey);
 

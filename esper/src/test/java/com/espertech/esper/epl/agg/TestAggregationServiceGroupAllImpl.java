@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 
 public class TestAggregationServiceGroupAllImpl extends TestCase
 {
-    private AggregationServiceGroupAllImpl service;
+    private AggSvcGroupAllNoAccessImpl service;
 
     public void setUp()
     {
@@ -20,7 +20,7 @@ public class TestAggregationServiceGroupAllImpl extends TestCase
 
         ExprEvaluator evaluators[] = new ExprEvaluator[] { new SupportExprNode(5), new SupportExprNode(2) };
 
-        service = new AggregationServiceGroupAllImpl(evaluators, aggregators);
+        service = new AggSvcGroupAllNoAccessImpl(evaluators, aggregators);
     }
 
     public void testApplyEnter()

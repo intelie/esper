@@ -1075,7 +1075,7 @@ public class Expressions implements Serializable
     }
 
     /**
-     * First-value aggregation function.
+     * First-value (windowed) aggregation function.
      * @param propertyName name of the property providing the values to aggregate.
      * @return expression
      */
@@ -1085,13 +1085,33 @@ public class Expressions implements Serializable
     }
 
     /**
-     * Last-value aggregation function.
+     * First-value (ever) aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static FirstEverProjectionExpression firstEver(String propertyName)
+    {
+        return new FirstEverProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * First-value (in window) aggregation function.
      * @param expression provides the values to aggregate.
      * @return expression
      */
     public static FirstProjectionExpression first(Expression expression)
     {
         return new FirstProjectionExpression(expression, false);
+    }
+
+    /**
+     * First-value (ever) aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static FirstEverProjectionExpression firstEver(Expression expression)
+    {
+        return new FirstEverProjectionExpression(expression, false);
     }
 
     /**

@@ -9,11 +9,12 @@
 package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.annotation.HintEnum;
 import com.espertech.esper.client.annotation.Hint;
+import com.espertech.esper.client.annotation.HintEnum;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.util.CollectionUtil;
 import com.espertech.esper.view.StatementStopService;
 
 import java.lang.annotation.Annotation;
@@ -39,11 +40,11 @@ public class AggregationServiceFactory
                                                        MethodResolutionService methodResolutionService,
                                                        ExprEvaluatorContext exprEvaluatorContext)
     {
-        Map<Integer, Map<ExprAggregateNode, List<ExprAggregateNode>>> equivalencyListPerStream = new HashMap<Integer, Map<ExprAggregateNode, List<ExprAggregateNode>>>();
+        Map<Integer, List<ExprAggDesc>> equivalencyListPerStream = new HashMap<Integer, List<ExprAggDesc>>();
 
         for (Map.Entry<Integer, List<ExprAggregateNode>> entry : measureExprNodesPerStream.entrySet())
         {
-            Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList = new LinkedHashMap<ExprAggregateNode, List<ExprAggregateNode>>();
+            List<ExprAggDesc> equivalencyList = new ArrayList<ExprAggDesc>();
             equivalencyListPerStream.put(entry.getKey(), equivalencyList);
             for (ExprAggregateNode selectAggNode : entry.getValue())
             {
@@ -54,7 +55,7 @@ public class AggregationServiceFactory
         LinkedHashMap<Integer, AggregationMethod[]> aggregatorsPerStream = new LinkedHashMap<Integer, AggregationMethod[]>();
         Map<Integer, ExprEvaluator[]> evaluatorsPerStream = new HashMap<Integer, ExprEvaluator[]>();
 
-        for (Map.Entry<Integer, Map<ExprAggregateNode, List<ExprAggregateNode>>> equivalencyPerStream : equivalencyListPerStream.entrySet())
+        for (Map.Entry<Integer, List<ExprAggDesc>> equivalencyPerStream : equivalencyListPerStream.entrySet())
         {
             int index = 0;
             int stream = equivalencyPerStream.getKey();
@@ -65,8 +66,9 @@ public class AggregationServiceFactory
             ExprEvaluator[] evaluators = new ExprEvaluator[equivalencyPerStream.getValue().size()];
             evaluatorsPerStream.put(stream, evaluators);
 
-            for (ExprAggregateNode aggregateNode : equivalencyPerStream.getValue().keySet())
+            for (ExprAggDesc aggregation : equivalencyPerStream.getValue())
             {
+                ExprAggregateNode aggregateNode = aggregation.getAggregationNode();
                 if (aggregateNode.getChildNodes().size() > 1)
                 {
                     evaluators[index] = getMultiNodeEvaluator(aggregateNode.getChildNodes(), exprEvaluatorContext);
@@ -87,8 +89,18 @@ public class AggregationServiceFactory
                     };
                 }
 
-                aggregators[index] = aggregateNode.getPrototypeAggregator();
+                aggregators[index] = aggregateNode.getFactory().getPrototypeAggregator(methodResolutionService);
                 index++;
+            }
+        }
+
+        // Assign a column number to each aggregation node. The regular aggregation goes first followed by access-aggregation.
+        int columnNumber = 0;
+        for (Map.Entry<Integer, List<ExprAggDesc>> equivalencyPerStream : equivalencyListPerStream.entrySet())
+        {
+            for (ExprAggDesc entry : equivalencyPerStream.getValue())
+            {
+                entry.setColumnNum(columnNumber++);
             }
         }
 
@@ -97,24 +109,11 @@ public class AggregationServiceFactory
         // Hand a service reference to the aggregation nodes themselves.
         // Thus on expression evaluation time each aggregate node calls back to find out what the
         // group's state is (and thus does not evaluate by asking its child node for its result).
-        int column = 0; // absolute index for all agg functions
-        for (Map.Entry<Integer, Map<ExprAggregateNode, List<ExprAggregateNode>>> equivalencyPerStream : equivalencyListPerStream.entrySet())
+        for (Map.Entry<Integer, List<ExprAggDesc>> equivalencyPerStream : equivalencyListPerStream.entrySet())
         {
-            for (ExprAggregateNode aggregateNode : equivalencyPerStream.getValue().keySet())
+            for (ExprAggDesc aggregation : equivalencyPerStream.getValue())
             {
-                aggregateNode.setAggregationResultFuture(service, column);
-
-                // hand to all equivalent-to
-                List<ExprAggregateNode> equivalentAggregators = equivalencyPerStream.getValue().get(aggregateNode);
-                if (equivalentAggregators != null)
-                {
-                    for (ExprAggregateNode equivalentAggNode : equivalentAggregators)
-                    {
-                        equivalentAggNode.setAggregationResultFuture(service, column);
-                    }
-                }
-
-                column++;
+                aggregation.assignFuture(service);
             }
         }
 
@@ -156,96 +155,147 @@ public class AggregationServiceFactory
         // Compile a map of aggregation nodes and equivalent-to aggregation nodes.
         // Equivalent-to functions are for example "select sum(a*b), 5*sum(a*b)".
         // Reducing the total number of aggregation functions.
-        Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList = new LinkedHashMap<ExprAggregateNode, List<ExprAggregateNode>>();
+        List<ExprAggDesc> aggregations = new ArrayList<ExprAggDesc>();
         for (ExprAggregateNode selectAggNode : selectAggregateExprNodes)
         {
-            addEquivalent(selectAggNode, equivalencyList);
+            addEquivalent(selectAggNode, aggregations);
         }
         for (ExprAggregateNode havingAggNode : havingAggregateExprNodes)
         {
-            addEquivalent(havingAggNode, equivalencyList);
+            addEquivalent(havingAggNode, aggregations);
         }
         for (ExprAggregateNode orderByAggNode : orderByAggregateExprNodes)
         {
-            addEquivalent(orderByAggNode, equivalencyList);
+            addEquivalent(orderByAggNode, aggregations);
         }
 
-        // Construct a list of evaluation node for the aggregation function.
-        // For example "sum(2 * 3)" would make the sum an evaluation node.
-        AggregationMethod aggregators[] = new AggregationMethod[equivalencyList.size()];
-        ExprEvaluator[] evaluators = new ExprEvaluator[equivalencyList.size()];
-
-        int index = 0;
-        for (ExprAggregateNode aggregateNode : equivalencyList.keySet())
+        // Assign a column number to each aggregation node. The regular aggregation goes first followed by access-aggregation.
+        int columnNumber = 0;
+        for (ExprAggDesc entry : aggregations)
         {
-            if (aggregateNode.getChildNodes().size() > 1)
-            {
-                evaluators[index] = getMultiNodeEvaluator(aggregateNode.getChildNodes(), exprEvaluatorContext);
+            if (entry.getFactory().getSpec() == null) {
+                entry.setColumnNum(columnNumber++);
             }
-            else if (!aggregateNode.getChildNodes().isEmpty())
-            {
-                // Use the evaluation node under the aggregation node to obtain the aggregation value
-                evaluators[index] = aggregateNode.getChildNodes().get(0);
-            }
-            // For aggregation that doesn't evaluate any particular sub-expression, return null on evaluation
-            else
-            {
-                evaluators[index] = new ExprEvaluator() {
-                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
-                    {
-                        return null;
-                    }
-                };
-            }
-
-            aggregators[index] = aggregateNode.getPrototypeAggregator();
-            index++;
         }
+        for (ExprAggDesc entry : aggregations)
+        {
+            if (entry.getFactory().getSpec() != null) {
+                entry.setColumnNum(columnNumber++);
+            }
+        }
+
+        // handle regular aggregation (function provides value(s) to aggregate)
+        List<AggregationMethod> aggregators = new ArrayList<AggregationMethod>();
+        List<ExprEvaluator> evaluators = new ArrayList<ExprEvaluator>();
+
+        // handle accessor aggregation (direct data window by-group access to properties)
+        Map<Integer, Integer> streamSlots = new TreeMap<Integer, Integer>();
+        List<AggregationAccessorSlotPair> accessorPairs = new ArrayList<AggregationAccessorSlotPair>();
+
+        // Construct a list of evaluation node for the aggregation functions (regular agg).
+        // For example "sum(2 * 3)" would make the sum an evaluation node.
+        // Also determine all the streams that need direct access and compute a index (slot) for each (access agg).
+        int currentSlot = 0;
+        for (ExprAggDesc aggregation : aggregations)
+        {
+            ExprAggregateNode aggregateNode = aggregation.getAggregationNode();
+            if (aggregateNode.getFactory().getSpec() == null) {
+                ExprEvaluator evaluator;
+                if (aggregateNode.getChildNodes().size() > 1)
+                {
+                    evaluator = getMultiNodeEvaluator(aggregateNode.getChildNodes(), exprEvaluatorContext);
+                }
+                else if (!aggregateNode.getChildNodes().isEmpty())
+                {
+                    // Use the evaluation node under the aggregation node to obtain the aggregation value
+                    evaluator = aggregateNode.getChildNodes().get(0);
+                }
+                // For aggregation that doesn't evaluate any particular sub-expression, return null on evaluation
+                else
+                {
+                    evaluator = new ExprEvaluator() {
+                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                        {
+                            return null;
+                        }
+                    };
+                }
+                AggregationMethod aggregator = aggregateNode.getFactory().getPrototypeAggregator(methodResolutionService);
+
+                evaluators.add(evaluator);
+                aggregators.add(aggregator);
+            }
+            else {
+                AggregationSpec spec = aggregateNode.getFactory().getSpec();
+                AggregationAccessor accessor = aggregateNode.getFactory().getAccessor();
+
+                Integer slot = streamSlots.get(spec.getStreamNum());
+                if (slot == null) {
+                    streamSlots.put(spec.getStreamNum(), currentSlot);
+                    slot = currentSlot++;
+                }
+
+                accessorPairs.add(new AggregationAccessorSlotPair(slot, accessor));
+            }
+        }
+
+        // handle no group-by clause cases
+        ExprEvaluator[] evaluatorsArr = evaluators.toArray(new ExprEvaluator[evaluators.size()]);
+        AggregationMethod[] aggregatorsArr = aggregators.toArray(new AggregationMethod[aggregators.size()]);
+        AggregationAccessorSlotPair[] pairs = accessorPairs.toArray(new AggregationAccessorSlotPair[accessorPairs.size()]);
+        int[] accessedStreams = CollectionUtil.intArray(streamSlots.keySet());
 
         AggregationService service;
-        if (hasGroupByClause)
-        {
+
+        // Handle without a group-by clause: we group all into the same pot
+        if (!hasGroupByClause) {
+            if ((evaluatorsArr.length > 0) && (accessorPairs.isEmpty())) {
+                service = new AggSvcGroupAllNoAccessImpl(evaluatorsArr, aggregatorsArr);
+            }
+            else if ((evaluatorsArr.length == 0) && (!accessorPairs.isEmpty())) {
+                service = new AggSvcGroupAllAccessOnlyImpl(methodResolutionService, pairs, accessedStreams);
+            }
+            else {
+                service = new AggSvcGroupAllMixedAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams);
+            }
+        }
+        else {
             boolean hasNoReclaim = HintEnum.DISABLE_RECLAIM_GROUP.getHint(annotations) != null;
             Hint reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.getHint(annotations);
             Hint reclaimGroupFrequency = HintEnum.RECLAIM_GROUP_AGED.getHint(annotations);
             if (hasNoReclaim)
             {
-                service = new AggregationServiceGroupByImpl(evaluators, aggregators, methodResolutionService);
+                if ((evaluatorsArr.length > 0) && (accessorPairs.isEmpty())) {
+                    service = new AggSvcGroupByNoAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService);
+                }
+                else if ((evaluatorsArr.length == 0) && (!accessorPairs.isEmpty())) {
+                    service = new AggSvcGroupByAccessOnlyImpl(methodResolutionService, pairs, accessedStreams);
+                }
+                else {
+                    service = new AggSvcGroupByMixedAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams);
+                }
             }
             else if (reclaimGroupAged != null)
             {
-                service = new AggregationServiceGroupByReclaimAged(evaluators, aggregators, methodResolutionService, reclaimGroupAged, reclaimGroupFrequency, variableService, statementStopService);
+                service = new AggSvcGroupByReclaimAged(evaluatorsArr, aggregatorsArr, methodResolutionService, reclaimGroupAged, reclaimGroupFrequency, variableService, statementStopService, pairs, accessedStreams);
             }
             else
             {
-                service = new AggregationServiceGroupByRefcountedImpl(evaluators, aggregators, methodResolutionService);                
+                if ((evaluatorsArr.length > 0) && (accessorPairs.isEmpty())) {
+                    service = new AggSvcGroupByRefcountedNoAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService);
+                }
+                else {
+                    service = new AggSvcGroupByRefcountedWAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams);
+                }
             }
-        }
-        else
-        {
-            // Without a group-by clause we group all into the same pot, using one set of aggregators
-            service = new AggregationServiceGroupAllImpl(evaluators, aggregators);
         }
 
         // Hand a service reference to the aggregation nodes themselves.
         // Thus on expression evaluation time each aggregate node calls back to find out what the
         // group's state is (and thus does not evaluate by asking its child node for its result).
-        int column = 0;
-        for (ExprAggregateNode aggregateNode : equivalencyList.keySet())
+        for (ExprAggDesc aggregation : aggregations)
         {
-            aggregateNode.setAggregationResultFuture(service, column);
-
-            // hand to all equivalent-to
-            List<ExprAggregateNode> equivalentAggregators = equivalencyList.get(aggregateNode);
-            if (equivalentAggregators != null)
-            {
-                for (ExprAggregateNode equivalentAggNode : equivalentAggregators)
-                {
-                    equivalentAggNode.setAggregationResultFuture(service, column);
-                }
-            }
-
-            column++;
+            aggregation.assignFuture(service);
         }
 
         return service;
@@ -282,22 +332,16 @@ public class AggregationServiceFactory
         };
     }
 
-    private static void addEquivalent(ExprAggregateNode aggNodeToAdd, Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList)
+    private static void addEquivalent(ExprAggregateNode aggNodeToAdd, List<ExprAggDesc> equivalencyList)
     {
         // Check any same aggregation nodes among all aggregation clauses
         boolean foundEquivalent = false;
-        for (Map.Entry<ExprAggregateNode, List<ExprAggregateNode>> entry : equivalencyList.entrySet())
+        for (ExprAggDesc existing : equivalencyList)
         {
-            ExprAggregateNode aggNode = entry.getKey();
+            ExprAggregateNode aggNode = existing.getAggregationNode();
             if (ExprNodeUtility.deepEquals(aggNode, aggNodeToAdd))
             {
-                List<ExprAggregateNode> equivalentAggregators = entry.getValue();
-                if (equivalentAggregators == null)
-                {
-                    equivalentAggregators = new ArrayList<ExprAggregateNode>();
-                }
-                equivalentAggregators.add(aggNodeToAdd);
-                equivalencyList.put(aggNode, equivalentAggregators);
+                existing.addEquivalent(aggNodeToAdd);
                 foundEquivalent = true;
                 break;
             }
@@ -305,8 +349,66 @@ public class AggregationServiceFactory
 
         if (!foundEquivalent)
         {
-            equivalencyList.put(aggNodeToAdd, null);
+            equivalencyList.add(new ExprAggDesc(aggNodeToAdd, aggNodeToAdd.getFactory()));
         }
     }
 
+    public static class ExprAggDesc {
+        private ExprAggregateNode aggregationNode;
+        private AggregationMethodFactory factory;
+
+        private List<ExprAggregateNode> equivalentNodes;
+        private Integer columnNum;
+
+        public ExprAggDesc(ExprAggregateNode aggregationNode, AggregationMethodFactory factory)
+        {
+            this.aggregationNode = aggregationNode;
+            this.factory = factory;
+        }
+
+        public List<ExprAggregateNode> getEquivalentNodes()
+        {
+            return equivalentNodes;
+        }
+
+        public AggregationMethodFactory getFactory()
+        {
+            return factory;
+        }
+
+        public Integer getColumnNum()
+        {
+            return columnNum;
+        }
+
+        public void setColumnNum(Integer columnNum)
+        {
+            this.columnNum = columnNum;
+        }
+
+        public void addEquivalent(ExprAggregateNode aggNodeToAdd)
+        {
+            if (equivalentNodes == null) {
+                equivalentNodes = new ArrayList<ExprAggregateNode>();
+            }
+            equivalentNodes.add(aggNodeToAdd);
+        }
+
+        public ExprAggregateNode getAggregationNode()
+        {
+            return aggregationNode;
+        }
+
+        public void assignFuture(AggregationResultFuture service)
+        {
+            aggregationNode.setAggregationResultFuture(service, columnNum);
+            if (equivalentNodes == null) {
+                return;
+            }
+            for (ExprAggregateNode equivalentAggNode : equivalentNodes)
+            {
+                equivalentAggNode.setAggregationResultFuture(service, columnNum);
+            }
+        }
+    }
 }

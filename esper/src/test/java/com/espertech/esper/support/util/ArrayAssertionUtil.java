@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class ArrayAssertionUtil
@@ -554,7 +555,7 @@ public class ArrayAssertionUtil
                 String name = propertyNames[j];
                 Object value = propertiesThisRow[j];
                 Object eventProp = received[i].get(name);
-                Assert.assertEquals("Error asserting property named " + name + " for row " + i + " for " + streamName,value,eventProp);
+                assertProp("Error asserting property named " + name + " for row " + i + " for " + streamName, name, value,eventProp);
             }
         }
     }
@@ -575,8 +576,31 @@ public class ArrayAssertionUtil
             String name = propertyNames[j].trim();
             Object value = propertiesThisRow[j];
             Object eventProp = received.get(name);
-            Assert.assertEquals("Error asserting property named '" + name + "'",value,eventProp);
+            assertProp("Failed to assert property " + name, name, value, eventProp);
         }
+    }
+
+    private static void assertProp(String message, String name, Object expected, Object received) {
+        if ((expected != null) && (expected.getClass().isArray()) && (received != null) && (received.getClass().isArray())) {
+            Object[] valueArray = toObjectArray(expected);
+            Object[] eventPropArray = toObjectArray(received);
+            assertEqualsExactOrder(eventPropArray, valueArray);
+            return;
+        }
+        Assert.assertEquals("Error asserting property named '" + name + "'",expected,received);
+    }
+
+    private static Object[] toObjectArray(Object array)
+    {
+        if ((array == null) || (!array.getClass().isArray())) {
+            throw new IllegalArgumentException("Object not an array but type '" + array.getClass() + "'");
+        }
+        int size = Array.getLength(array);
+        Object[] val = new Object[size];
+        for (int i = 0; i < size; i++) {
+            val[i] = Array.get(array, i);
+        }
+        return val;
     }
 
     public static void assertAllProps(EventBean received, Object[] propertiesSortedByName)
