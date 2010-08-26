@@ -6,53 +6,37 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package com.espertech.esper.epl.agg;
+package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.*;
 import com.espertech.esper.epl.core.MethodResolutionService;
 
-/**
- * Aggregator for the very last value.
- */
-public class LastValueAggregator implements AggregationMethod
+public class ExprLastEverNodeFactory implements AggregationMethodFactory
 {
-    private final Class type;
-    private Object lastValue;
+    private final Class childType;
 
-    /**
-     * Ctor.
-     * @param type of result
-     */
-    public LastValueAggregator(Class type) {
-        this.type = type;
+    public ExprLastEverNodeFactory(Class childType)
+    {
+        this.childType = childType;
     }
 
-    public void clear()
+    public Class getResultType()
     {
-        lastValue = null;
+        return childType;
     }
 
-    public void enter(Object object)
+    public AggregationSpec getSpec()
     {
-        lastValue = object;
+        return null;
     }
 
-    public void leave(Object object)
+    public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
+        return methodResolutionService.makeLastEverValueAggregator(childType);
     }
 
-    public Object getValue()
+    public AggregationAccessor getAccessor()
     {
-        return lastValue;
-    }
-
-    public Class getValueType()
-    {
-        return type;
-    }
-
-    public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
-    {
-        return methodResolutionService.makeLastValueAggregator(type);
+        throw new UnsupportedOperationException();
     }
 }

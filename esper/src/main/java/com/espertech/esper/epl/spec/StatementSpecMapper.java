@@ -13,6 +13,7 @@ import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPAdministratorHelper;
+import com.espertech.esper.epl.agg.AggregationAccessType;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
@@ -1294,10 +1295,10 @@ public class StatementSpecMapper
             StddevProjectionExpression node = (StddevProjectionExpression) expr;
             return new ExprStddevNode(node.isDistinct());
         }
-        else if (expr instanceof LastProjectionExpression)
+        else if (expr instanceof LastEverProjectionExpression)
         {
-            LastProjectionExpression node = (LastProjectionExpression) expr;
-            return new ExprLastNode(node.isDistinct());
+            LastEverProjectionExpression node = (LastEverProjectionExpression) expr;
+            return new ExprLastEverNode(node.isDistinct());
         }
         else if (expr instanceof FirstEverProjectionExpression)
         {
@@ -1678,10 +1679,10 @@ public class StatementSpecMapper
             ExprMedianNode median = (ExprMedianNode) expr;
             return new MedianProjectionExpression(median.isDistinct());
         }
-        else if (expr instanceof ExprLastNode)
+        else if (expr instanceof ExprLastEverNode)
         {
-            ExprLastNode last = (ExprLastNode) expr;
-            return new LastProjectionExpression(last.isDistinct());
+            ExprLastEverNode last = (ExprLastEverNode) expr;
+            return new LastEverProjectionExpression(last.isDistinct());
         }
         else if (expr instanceof ExprFirstEverNode)
         {
@@ -1783,6 +1784,20 @@ public class StatementSpecMapper
             }
             else {
                 throw new IllegalArgumentException("Cron parameter not recognized: " + cronParam.getCronOperator());
+            }
+            return new CrontabParameterExpression(type);
+        }
+        else if (expr instanceof ExprAccessAggNode)
+        {
+            ExprAccessAggNode accessNode = (ExprAccessAggNode) expr;
+            if (accessNode.getAccessType() == AggregationAccessType.FIRST) {
+                return new FirstProjectionExpression();
+            }
+            else if (accessNode.getAccessType() == AggregationAccessType.WINDOW) {
+                return new WindowProjectionExpression();
+            }
+            if (accessNode.getAccessType() == AggregationAccessType.LAST) {
+                return new LastProjectionExpression();
             }
             return new CrontabParameterExpression(type);
         }

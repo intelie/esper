@@ -12,5 +12,5 @@ public enum AggregationAccessType
 {
     FIRST,
     LAST,
-    ALL
+    WINDOW
 }

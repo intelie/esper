@@ -12,14 +12,27 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.epl.core.StreamTypeService;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Utility functions around handling expressions.
  */
 public class ExprNodeUtility
 {
+    public static Set<Integer> getIdentStreamNumbers(ExprNode child) {
+
+        Set<Integer> streams = new HashSet<Integer>();
+        ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+        child.accept(visitor);
+        for (ExprIdentNode node : visitor.getExprProperties()) {
+            streams.add(node.getStreamId());
+        }
+        return streams;
+    }
+
     /**
      * Returns true if all properties within the expression are witin data window'd streams.
      * @param child expression to interrogate

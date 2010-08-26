@@ -26,6 +26,7 @@ public class AggSvcGroupByRefcountedWAccessImpl extends AggregationServiceBase
 {
     private final AggregationAccessorSlotPair[] accessors;
     private final int[] streams;
+    private final boolean isJoin;
 
     // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
     private Map<MultiKeyUntyped, AggregationMethodPairRow> aggregatorsPerGroup;
@@ -50,13 +51,15 @@ public class AggSvcGroupByRefcountedWAccessImpl extends AggregationServiceBase
                                        AggregationMethod prototypes[],
                                        MethodResolutionService methodResolutionService,
                                        AggregationAccessorSlotPair[] accessors,
-                                       int[] streams)
+                                       int[] streams,
+                                       boolean isJoin)
     {
         super(evaluators, prototypes);
         this.methodResolutionService = methodResolutionService;
         this.aggregatorsPerGroup = new HashMap<MultiKeyUntyped, AggregationMethodPairRow>();
         this.accessors = accessors;
         this.streams = streams;
+        this.isJoin = isJoin;
         removedKeys = new ArrayList<MultiKeyUntyped>();
     }
 
@@ -85,8 +88,8 @@ public class AggSvcGroupByRefcountedWAccessImpl extends AggregationServiceBase
         if (row == null)
         {
             groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
-            groupAccesses = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, groupByKey);
-            row = new AggregationMethodPairRow(methodResolutionService.getCurrentRowCount(aggregators) + 1, groupAggregators, groupAccesses);
+            groupAccesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupByKey);
+            row = new AggregationMethodPairRow(methodResolutionService.getCurrentRowCount(groupAggregators, groupAccesses) + 1, groupAggregators, groupAccesses);
             aggregatorsPerGroup.put(groupByKey, row);
         }
         else
@@ -125,8 +128,8 @@ public class AggSvcGroupByRefcountedWAccessImpl extends AggregationServiceBase
         else
         {
             groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
-            groupAccesses = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, groupByKey);
-            row = new AggregationMethodPairRow(methodResolutionService.getCurrentRowCount(aggregators) + 1, groupAggregators, groupAccesses);
+            groupAccesses = AggregationAccessUtil.getNewAccesses(isJoin,  streams, methodResolutionService, groupByKey);
+            row = new AggregationMethodPairRow(methodResolutionService.getCurrentRowCount(groupAggregators, groupAccesses) + 1, groupAggregators, groupAccesses);
             aggregatorsPerGroup.put(groupByKey, row);
         }
 
@@ -168,7 +171,7 @@ public class AggSvcGroupByRefcountedWAccessImpl extends AggregationServiceBase
         if (currentAggregatorMethods == null)
         {
             currentAggregatorMethods = methodResolutionService.newAggregators(aggregators, groupByKey);
-            currentAggregatorAccesses = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, groupByKey);
+            currentAggregatorAccesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupByKey);
         }
     }
 

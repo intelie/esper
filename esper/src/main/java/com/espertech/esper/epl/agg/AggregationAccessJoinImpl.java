@@ -12,15 +12,34 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
-public class AggregationAccessImpl implements AggregationAccess
+public class AggregationAccessJoinImpl implements AggregationAccess
 {
     private int streamId;
-    private ArrayDequeJDK6Backport<EventBean> events = new ArrayDequeJDK6Backport<EventBean>();
+    private LinkedHashMap<EventBean, Integer> refSet = new LinkedHashMap<EventBean, Integer>();
 
-    public AggregationAccessImpl(int streamId)
+    public AggregationAccessJoinImpl(int streamId)
     {
         this.streamId = streamId;
+    }
+
+    public void applyEnter(EventBean[] eventsPerStream)
+    {
+        EventBean event = eventsPerStream[streamId];
+        if (event ==null) {
+            return;
+        }
+        Integer value = refSet.get(event);
+        if (value == null)
+        {
+            refSet.put(event, 1);
+            return;
+        }
+
+        value++;
+        refSet.put(event, value);
     }
 
     public void applyLeave(EventBean[] eventsPerStream)
@@ -29,49 +48,56 @@ public class AggregationAccessImpl implements AggregationAccess
         if (event == null) {
             return;
         }
-        events.remove(event);
-    }
 
-    public void applyEnter(EventBean[] eventsPerStream)
-    {
-        EventBean event = eventsPerStream[streamId];
-        if (event == null) {
+        Integer value = refSet.get(event);
+        if (value == null)
+        {
             return;
         }
-        events.add(event);
+
+        if (value == 1)
+        {
+            refSet.remove(event);
+            return;
+        }
+
+        value--;
+        refSet.put(event, value);
     }
 
     public EventBean getNthPriorValue(int index)
     {
-        EventBean[] all = events.toArray(new EventBean[events.size()]);
-        if (all.length < index) {
-            return null;
-        }
-        return all[index];
+        Set<EventBean> events = refSet.keySet();
+        EventBean[] array = events.toArray(new EventBean[events.size()]);
+        return array[index];
     }
 
     public EventBean getFirstValue() {
-        if (events.isEmpty()) {
+        if (refSet.isEmpty()) {
             return null;
         }
-        return events.getFirst();
+        return refSet.entrySet().iterator().next().getKey();
     }
 
     public EventBean getLastValue()
     {
-        if (events.isEmpty()) {
+        if (refSet.isEmpty()) {
             return null;
         }
-        return events.getLast();
+        // TODO - more effective
+        Set<EventBean> events = refSet.keySet();
+        EventBean[] array = events.toArray(new EventBean[events.size()]);
+        return array[events.size() - 1];
     }
 
     public Iterator<EventBean> iterator()
     {
+        Set<EventBean> events = refSet.keySet();
         return events.iterator();
     }
 
     public int size()
     {
-        return events.size();
+        return refSet.size();
     }
 }

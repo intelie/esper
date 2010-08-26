@@ -13,11 +13,12 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 
 public class AggregationAccessUtil
 {
-    protected static AggregationAccess[] getNewAccesses(int[] streams, MethodResolutionService methodResolutionService, MultiKeyUntyped groupKey) {
+    protected static AggregationAccess[] getNewAccesses(boolean isJoin, int[] streams, MethodResolutionService methodResolutionService, MultiKeyUntyped groupKey) {
         AggregationAccess[] row = new AggregationAccess[streams.length];
         int i = 0;
         for (int stream : streams) {
-            row[i] = methodResolutionService.makeAccessStreamId(stream, groupKey);
+            row[i] = methodResolutionService.makeAccessStreamId(isJoin, stream, groupKey);
+            i++;
         }
         return row;
     }

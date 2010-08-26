@@ -334,6 +334,10 @@ public class EngineImportServiceImpl implements EngineImportService
         {
             return new ExprFirstEverNode(isDistinct);
         }
+        if (name.toLowerCase().equals("lastever"))
+        {
+            return new ExprLastEverNode(isDistinct);
+        }
         if (name.toLowerCase().equals("rate"))
         {
             return new ExprRateAggNode(isDistinct);

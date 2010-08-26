@@ -209,11 +209,11 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
     }
 
     public AggregationMethod makeFirstValueAggregator(Class type) {
-        return new FirstValueAggregator(type);
+        return new FirstEverValueAggregator(type);
     }
 
-    public AggregationMethod makeLastValueAggregator(Class type) {
-        return new LastValueAggregator(type);
+    public AggregationMethod makeLastEverValueAggregator(Class type) {
+        return new LastEverValueAggregator(type);
     }
 
     public AggregationMethod makeRateAggregator() {
@@ -250,7 +250,7 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return row;
     }
 
-    public long getCurrentRowCount(AggregationMethod[] aggregators)
+    public long getCurrentRowCount(AggregationMethod[] aggregators, AggregationAccess[] groupAccesses)
     {
         return 0;   // since the aggregators are always fresh ones 
     }
@@ -260,8 +260,13 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         // To be overridden by implementations that care when aggregators get removed
     }
 
-    public AggregationAccess makeAccessStreamId(int streamId, MultiKeyUntyped groupKey)
+    public AggregationAccess makeAccessStreamId(boolean isJoin, int streamId, MultiKeyUntyped groupKey)
     {
-        return new AggregationAccessImpl(streamId);
+        if (isJoin) {
+            return new AggregationAccessJoinImpl(streamId);
+        }
+        else {
+            return new AggregationAccessImpl(streamId);
+        }
     }    
 }

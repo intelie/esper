@@ -75,7 +75,7 @@ public class AggSvcGroupByRefcountedNoAccessImpl extends AggregationServiceBase
         if (row == null)
         {
             groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
-            row = new AggregationMethodRow(methodResolutionService.getCurrentRowCount(aggregators) + 1, groupAggregators);
+            row = new AggregationMethodRow(methodResolutionService.getCurrentRowCount(groupAggregators, null) + 1, groupAggregators);
             aggregatorsPerGroup.put(groupByKey, row);
         }
         else
@@ -107,7 +107,7 @@ public class AggSvcGroupByRefcountedNoAccessImpl extends AggregationServiceBase
         else
         {
             groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
-            row = new AggregationMethodRow(methodResolutionService.getCurrentRowCount(aggregators) + 1, groupAggregators);
+            row = new AggregationMethodRow(methodResolutionService.getCurrentRowCount(groupAggregators, null) + 1, groupAggregators);
             aggregatorsPerGroup.put(groupByKey, row);
         }
         currentAggregatorRow = groupAggregators;

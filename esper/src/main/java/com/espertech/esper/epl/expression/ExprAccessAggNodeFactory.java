@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.agg.*;
 import com.espertech.esper.epl.core.MethodResolutionService;
 
@@ -50,7 +49,7 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
         else if (accessType == AggregationAccessType.LAST) {
             return new AggregationAccessorLast(streamNum, childNode);
         }
-        else if (accessType == AggregationAccessType.ALL) {
+        else if (accessType == AggregationAccessType.WINDOW) {
             return new AggregationAccessorAll(streamNum, childNode);
         }
         throw new IllegalStateException("Access type is undefined or not known as code '" + accessType + "'");

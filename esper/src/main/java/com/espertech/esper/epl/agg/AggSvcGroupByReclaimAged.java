@@ -11,28 +11,27 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.annotation.Hint;
 import com.espertech.esper.client.annotation.HintEnum;
-import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
+import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.variable.VariableChangeCallback;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.type.DoubleValue;
-import com.espertech.esper.view.StatementStopService;
+import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.StatementStopCallback;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.espertech.esper.view.StatementStopService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation for handling aggregation with grouping by group-keys.
@@ -43,12 +42,17 @@ public class AggSvcGroupByReclaimAged extends AggregationServiceBase
 
     private static final long DEFAULT_MAX_AGE_MSEC = 60000L;
 
+    private final AggregationAccessorSlotPair[] accessors;
+    private final int[] streams;
+    private final boolean isJoin;
+
     // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
     private Map<MultiKeyUntyped, AggregationMethodRowAged> aggregatorsPerGroup;
 
     // maintain a current row for random access into the aggregator state table
     // (row=groups, columns=expression nodes that have aggregation functions)
-    private AggregationMethod[] currentAggregatorRow;
+    private AggregationMethod[] currentAggregatorMethods;
+    private AggregationAccess[] currentAggregatorAccesses;
 
     private MethodResolutionService methodResolutionService;
 
@@ -79,12 +83,16 @@ public class AggSvcGroupByReclaimAged extends AggregationServiceBase
                                                 final VariableService variableService,
                                                 StatementStopService statementStopService,
                                                 AggregationAccessorSlotPair[] accessors,
-                                                int[] streams)
+                                                int[] streams,
+                                                boolean isJoin)
             throws ExprValidationException
     {
         super(evaluators, prototypes);
         this.methodResolutionService = methodResolutionService;
         this.aggregatorsPerGroup = new HashMap<MultiKeyUntyped, AggregationMethodRowAged>();
+        this.accessors = accessors;
+        this.streams = streams;
+        this.isJoin = isJoin;
         removedKeys = new ArrayList<MultiKeyUntyped>();
 
         String hintValueMaxAge = HintEnum.RECLAIM_GROUP_AGED.getHintAssignedValue(reclaimGroupAged);
@@ -187,26 +195,33 @@ public class AggSvcGroupByReclaimAged extends AggregationServiceBase
 
         // The aggregators for this group do not exist, need to create them from the prototypes
         AggregationMethod[] groupAggregators;
+        AggregationAccess[] groupAccesses;
         if (row == null)
         {
             groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
-            row = new AggregationMethodRowAged(methodResolutionService.getCurrentRowCount(aggregators) + 1, currentTime, groupAggregators);
+            groupAccesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupByKey);
+            row = new AggregationMethodRowAged(methodResolutionService.getCurrentRowCount(groupAggregators, groupAccesses) + 1, currentTime, groupAggregators, groupAccesses);
             aggregatorsPerGroup.put(groupByKey, row);
         }
         else
         {
             groupAggregators = row.getMethods();
+            groupAccesses = row.getAccesses();
             row.increaseRefcount();
             row.setLastUpdateTime(currentTime);
         }
 
-        currentAggregatorRow = groupAggregators;
+        currentAggregatorMethods = groupAggregators;
+        currentAggregatorAccesses = groupAccesses;
 
         // For this row, evaluate sub-expressions, enter result
         for (int j = 0; j < evaluators.length; j++)
         {
             Object columnResult = evaluators[j].evaluate(eventsPerStream, true, exprEvaluatorContext);
             groupAggregators[j].enter(columnResult);
+        }
+        for (AggregationAccess access : currentAggregatorAccesses) {
+            access.applyEnter(eventsPerStream);
         }
     }
 
@@ -255,23 +270,31 @@ public class AggSvcGroupByReclaimAged extends AggregationServiceBase
 
         // The aggregators for this group do not exist, need to create them from the prototypes
         AggregationMethod[] groupAggregators;
+        AggregationAccess[] groupAccesses;
         if (row != null)
         {
             groupAggregators = row.getMethods();
+            groupAccesses = row.getAccesses();
         }
         else
         {
             groupAggregators = methodResolutionService.newAggregators(aggregators, groupByKey);
-            row = new AggregationMethodRowAged(methodResolutionService.getCurrentRowCount(aggregators) + 1, currentTime, groupAggregators);
+            groupAccesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupByKey);
+            row = new AggregationMethodRowAged(methodResolutionService.getCurrentRowCount(groupAggregators, groupAccesses) + 1, currentTime, groupAggregators, groupAccesses);
             aggregatorsPerGroup.put(groupByKey, row);
         }
-        currentAggregatorRow = groupAggregators;
+
+        currentAggregatorMethods = groupAggregators;
+        currentAggregatorAccesses = groupAccesses;
 
         // For this row, evaluate sub-expressions, enter result
         for (int j = 0; j < evaluators.length; j++)
         {
             Object columnResult = evaluators[j].evaluate(eventsPerStream, false, exprEvaluatorContext);
             groupAggregators[j].leave(columnResult);
+        }
+        for (AggregationAccess access : currentAggregatorAccesses) {
+            access.applyLeave(eventsPerStream);
         }
 
         row.decreaseRefcount();
@@ -289,22 +312,30 @@ public class AggSvcGroupByReclaimAged extends AggregationServiceBase
 
         if (row != null)
         {
-            currentAggregatorRow = row.getMethods();
+            currentAggregatorMethods = row.getMethods();
+            currentAggregatorAccesses = row.getAccesses();
         }
         else
         {
-            currentAggregatorRow = null;
+            currentAggregatorMethods = null;
         }
 
-        if (currentAggregatorRow == null)
+        if (currentAggregatorMethods == null)
         {
-            currentAggregatorRow = methodResolutionService.newAggregators(aggregators, groupByKey);
+            currentAggregatorMethods = methodResolutionService.newAggregators(aggregators, groupByKey);
+            currentAggregatorAccesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupByKey);
         }
     }
 
     public Object getValue(int column)
     {
-        return currentAggregatorRow[column].getValue();
+        if (column < aggregators.length) {
+            return currentAggregatorMethods[column].getValue();
+        }
+        else {
+            AggregationAccessorSlotPair pair = accessors[column - aggregators.length];
+            return pair.getAccessor().getValue(currentAggregatorAccesses[pair.getSlot()]);
+        }
     }
 
     private static interface EvaluationFunction

@@ -8,39 +8,32 @@
  **************************************************************************************/
 package com.espertech.esper.epl.agg;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.core.MethodResolutionService;
 
 /**
- * Aggregator for the very first value.
+ * Aggregator for the very last value.
  */
-public class FirstValueAggregator implements AggregationMethod
+public class LastEverValueAggregator implements AggregationMethod
 {
     private final Class type;
-    private boolean isSet;
-    private Object firstValue;
+    private Object lastValue;
 
     /**
      * Ctor.
-     * @param type type of value returned
+     * @param type of result
      */
-    public FirstValueAggregator(Class type) {
+    public LastEverValueAggregator(Class type) {
         this.type = type;
     }
 
     public void clear()
     {
-        firstValue = null;
-        isSet = false;
+        lastValue = null;
     }
 
     public void enter(Object object)
     {
-        if (!isSet)
-        {
-            isSet = true;
-            firstValue = object;
-        }
+        lastValue = object;
     }
 
     public void leave(Object object)
@@ -49,7 +42,7 @@ public class FirstValueAggregator implements AggregationMethod
 
     public Object getValue()
     {
-        return firstValue;
+        return lastValue;
     }
 
     public Class getValueType()
@@ -59,6 +52,6 @@ public class FirstValueAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeFirstValueAggregator(type);
+        return methodResolutionService.makeLastEverValueAggregator(type);
     }
 }

@@ -8,43 +8,42 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 
 /**
- * Represents the "first" aggregate function is an expression tree.
+ * Represents the "lastever" aggregate function is an expression tree.
  */
-public class ExprFirstNode extends ExprAggregateNode
+public class ExprLastEverNode extends ExprAggregateNode
 {
-    private static final long serialVersionUID = 1436994080693454617L;
+    private static final long serialVersionUID = -435756490067654566L;
 
     /**
      * Ctor.
      * @param distinct - flag indicating unique or non-unique value aggregation
      */
-    public ExprFirstNode(boolean distinct)
+    public ExprLastEverNode(boolean distinct)
     {
         super(distinct);
     }
 
-    public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
         {
-            throw new ExprValidationException("First aggregation node must have 1 child nodes");
+            throw new ExprValidationException("Last aggregation function must have 1 child node");
         }
-        return methodResolutionService.makeFirstValueAggregator(this.getChildNodes().get(0).getType());
+        return new ExprLastEverNodeFactory(this.getChildNodes().get(0).getType());
     }
 
     protected String getAggregationFunctionName()
     {
-        return "first";
+        return "lastever";
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)
     {
-        return node instanceof ExprFirstNode;
-
+        return node instanceof ExprLastEverNode;
     }
 }

@@ -101,7 +101,7 @@ public interface MethodResolutionService
      * @param type of value
      * @return aggregator
      */
-    public AggregationMethod makeLastValueAggregator(Class type);
+    public AggregationMethod makeLastEverValueAggregator(Class type);
 
     /**
      * Makes a new sum-aggregator.
@@ -207,7 +207,7 @@ public interface MethodResolutionService
      * @param aggregators aggregators
      * @return row count
      */
-    public long getCurrentRowCount(AggregationMethod[] aggregators);
+    public long getCurrentRowCount(AggregationMethod[] aggregators, AggregationAccess[] accesses);
 
-    public AggregationAccess makeAccessStreamId(int streamId, MultiKeyUntyped mk);
+    public AggregationAccess makeAccessStreamId(boolean isJoin, int streamId, MultiKeyUntyped mk);
 }

@@ -2010,22 +2010,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     aggregateNode = new ExprAccessAggNode(AggregationAccessType.FIRST, isWildcard, streamWildcard);
                 }
                 else if (node.getType() == WINDOW_AGGREG) {
-                    aggregateNode = new ExprAccessAggNode(AggregationAccessType.ALL, isWildcard, streamWildcard);
+                    aggregateNode = new ExprAccessAggNode(AggregationAccessType.WINDOW, isWildcard, streamWildcard);
                 }
                 else {
-                    if (node.getChildCount() > 1) {
-                        aggregateNode = new ExprAccessAggNode(AggregationAccessType.LAST, isWildcard, streamWildcard);
-                    }
-                    else {
-                        aggregateNode = new ExprLastNode(isDistinct);
-                        if (isWildcard) {
-                            aggregateNode.addChildNode(new ExprStreamUnderlyingNode(null, true));
-                        }
-                        else if (streamWildcard != null) {
-                            aggregateNode.addChildNode(new ExprStreamUnderlyingNode(streamWildcard, false));
-                        }
-
-                    }
+                    aggregateNode = new ExprAccessAggNode(AggregationAccessType.LAST, isWildcard, streamWildcard);
                 }
                 break;
             default:

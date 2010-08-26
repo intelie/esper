@@ -143,7 +143,8 @@ public class AggregationServiceFactory
                                                 ExprEvaluatorContext exprEvaluatorContext,
                                                 Annotation[] annotations,
                                                 VariableService variableService,
-                                                StatementStopService statementStopService)
+                                                StatementStopService statementStopService,
+                                                boolean isJoin)
             throws ExprValidationException
     {
         // No aggregates used, we do not need this service
@@ -253,10 +254,10 @@ public class AggregationServiceFactory
                 service = new AggSvcGroupAllNoAccessImpl(evaluatorsArr, aggregatorsArr);
             }
             else if ((evaluatorsArr.length == 0) && (!accessorPairs.isEmpty())) {
-                service = new AggSvcGroupAllAccessOnlyImpl(methodResolutionService, pairs, accessedStreams);
+                service = new AggSvcGroupAllAccessOnlyImpl(methodResolutionService, pairs, accessedStreams, isJoin);
             }
             else {
-                service = new AggSvcGroupAllMixedAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams);
+                service = new AggSvcGroupAllMixedAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams, isJoin);
             }
         }
         else {
@@ -269,15 +270,15 @@ public class AggregationServiceFactory
                     service = new AggSvcGroupByNoAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService);
                 }
                 else if ((evaluatorsArr.length == 0) && (!accessorPairs.isEmpty())) {
-                    service = new AggSvcGroupByAccessOnlyImpl(methodResolutionService, pairs, accessedStreams);
+                    service = new AggSvcGroupByAccessOnlyImpl(methodResolutionService, pairs, accessedStreams, isJoin);
                 }
                 else {
-                    service = new AggSvcGroupByMixedAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams);
+                    service = new AggSvcGroupByMixedAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams, isJoin);
                 }
             }
             else if (reclaimGroupAged != null)
             {
-                service = new AggSvcGroupByReclaimAged(evaluatorsArr, aggregatorsArr, methodResolutionService, reclaimGroupAged, reclaimGroupFrequency, variableService, statementStopService, pairs, accessedStreams);
+                service = new AggSvcGroupByReclaimAged(evaluatorsArr, aggregatorsArr, methodResolutionService, reclaimGroupAged, reclaimGroupFrequency, variableService, statementStopService, pairs, accessedStreams, isJoin);
             }
             else
             {
@@ -285,7 +286,7 @@ public class AggregationServiceFactory
                     service = new AggSvcGroupByRefcountedNoAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService);
                 }
                 else {
-                    service = new AggSvcGroupByRefcountedWAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams);
+                    service = new AggSvcGroupByRefcountedWAccessImpl(evaluatorsArr, aggregatorsArr, methodResolutionService, pairs, accessedStreams, isJoin);
                 }
             }
         }

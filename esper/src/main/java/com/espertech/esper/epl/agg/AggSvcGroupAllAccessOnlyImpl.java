@@ -8,14 +8,17 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 public class AggSvcGroupAllAccessOnlyImpl implements AggregationService, AggregationResultFuture
 {
     private final AggregationAccessorSlotPair[] accessors;
-    private AggregationAccess[] accesses;
+    private final AggregationAccess[] accesses;
+    private final boolean isJoin;
 
     public AggSvcGroupAllAccessOnlyImpl(MethodResolutionService methodResolutionService,
                                                    AggregationAccessorSlotPair[] accessors,
-                                                   int[] streams)
+                                                   int[] streams,
+                                                   boolean isJoin)
     {
         this.accessors = accessors;
-        accesses = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, null);
+        this.isJoin = isJoin;
+        accesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, null);
     }
 
     public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupKey, ExprEvaluatorContext exprEvaluatorContext)

@@ -24,6 +24,7 @@ public class AggSvcGroupByMixedAccessImpl extends AggregationServiceBase
 {
     private final AggregationAccessorSlotPair[] accessors;
     private final int[] streams;
+    private final boolean isJoin;
 
     // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
     private Map<MultiKeyUntyped, AggregationRowPair> aggregatorsPerGroup;
@@ -45,11 +46,13 @@ public class AggSvcGroupByMixedAccessImpl extends AggregationServiceBase
                                         AggregationMethod prototypes[],
                                         MethodResolutionService methodResolutionService,
                                         AggregationAccessorSlotPair[] accessors,
-                                        int[] streams)
+                                        int[] streams,
+                                        boolean isJoin)
     {
         super(evaluators, prototypes);
         this.accessors = accessors;
         this.streams = streams;
+        this.isJoin = isJoin;
         this.methodResolutionService = methodResolutionService;
         this.aggregatorsPerGroup = new HashMap<MultiKeyUntyped, AggregationRowPair>();
     }
@@ -67,7 +70,7 @@ public class AggSvcGroupByMixedAccessImpl extends AggregationServiceBase
         if (groupAggregators == null)
         {
             AggregationMethod[] methods = methodResolutionService.newAggregators(aggregators, groupByKey);
-            AggregationAccess[] accesses = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, groupByKey);
+            AggregationAccess[] accesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupByKey);
             groupAggregators = new AggregationRowPair(methods, accesses);
             aggregatorsPerGroup.put(groupByKey, groupAggregators);
         }
@@ -93,7 +96,7 @@ public class AggSvcGroupByMixedAccessImpl extends AggregationServiceBase
         if (groupAggregators == null)
         {
             AggregationMethod[] methods = methodResolutionService.newAggregators(aggregators, groupByKey);
-            AggregationAccess[] accesses = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, groupByKey);
+            AggregationAccess[] accesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupByKey);
             groupAggregators = new AggregationRowPair(methods, accesses);
             aggregatorsPerGroup.put(groupByKey, groupAggregators);
         }
@@ -118,7 +121,7 @@ public class AggSvcGroupByMixedAccessImpl extends AggregationServiceBase
         if (currentAggregatorRow == null)
         {
             AggregationMethod[] methods = methodResolutionService.newAggregators(aggregators, groupByKey);
-            AggregationAccess[] accesses = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, groupByKey);
+            AggregationAccess[] accesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupByKey);
             currentAggregatorRow = new AggregationRowPair(methods, accesses);
             aggregatorsPerGroup.put(groupByKey, currentAggregatorRow);
         }

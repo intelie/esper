@@ -11,24 +11,25 @@ package com.espertech.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Represents the "last" aggregation function.
+ * Represents the "lastever" aggregation function.
  */
-public class LastProjectionExpression extends ExpressionBase
+public class LastEverProjectionExpression extends ExpressionBase
 {
+    private static final long serialVersionUID = -7860591885055704438L;
+    
     private boolean distinct;
 
     /**
      * Ctor.
      */
-    public LastProjectionExpression() {
+    public LastEverProjectionExpression() {
     }
 
     /**
-
      * Ctor.
      * @param isDistinct true for distinct
      */
-    public LastProjectionExpression(boolean isDistinct)
+    public LastEverProjectionExpression(boolean isDistinct)
     {
         this.distinct = isDistinct;
     }
@@ -38,20 +39,18 @@ public class LastProjectionExpression extends ExpressionBase
      * @param expression to aggregate
      * @param isDistinct true for distinct
      */
-    public LastProjectionExpression(Expression expression, boolean isDistinct)
+    public LastEverProjectionExpression(Expression expression, boolean isDistinct)
     {
         this.distinct = isDistinct;
         this.getChildren().add(expression);
     }
 
-    public ExpressionPrecedenceEnum getPrecedence()
-    {
+    public ExpressionPrecedenceEnum getPrecedence() {
         return ExpressionPrecedenceEnum.UNARY;
     }
 
-    public void toPrecedenceFreeEPL(StringWriter writer)
-    {
-        writer.write("last");
+    public void toPrecedenceFreeEPL(StringWriter writer) {
+        writer.write("lastever");
         writer.write('(');
         if (distinct)
         {

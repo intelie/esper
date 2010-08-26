@@ -31,12 +31,13 @@ public class AggSvcGroupAllMixedAccessImpl extends AggregationServiceBase
                                          AggregationMethod aggregators[],
                                          MethodResolutionService methodResolutionService,
                                          AggregationAccessorSlotPair[] accessors,
-                                         int[] streams)
+                                         int[] streams,
+                                         boolean isJoin)
     {
         super(evaluators, aggregators);
 
         this.accessors = accessors;
-        accesses = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, null);
+        accesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, null);
     }
 
     public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext)

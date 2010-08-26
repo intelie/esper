@@ -1055,7 +1055,17 @@ public class Expressions implements Serializable
     }
 
     /**
-     * Last-value aggregation function.
+     * Lastever-value aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static LastEverProjectionExpression lastEver(String propertyName)
+    {
+        return new LastEverProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Lastever-value aggregation function.
      * @param propertyName name of the property providing the values to aggregate.
      * @return expression
      */
@@ -1065,7 +1075,17 @@ public class Expressions implements Serializable
     }
 
     /**
-     * Last-value aggregation function.
+     * Lastever-value aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static LastEverProjectionExpression lastEver(Expression expression)
+    {
+        return new LastEverProjectionExpression(expression, false);
+    }
+
+    /**
+     * Lastever-value aggregation function.
      * @param expression provides the values to aggregate.
      * @return expression
      */

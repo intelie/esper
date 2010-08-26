@@ -14,17 +14,20 @@ public class AggSvcGroupByAccessOnlyImpl implements AggregationService, Aggregat
     private final Map<MultiKeyUntyped, AggregationAccess[]> accessMap;
     private final AggregationAccessorSlotPair[] accessors;
     private final int[] streams;
+    private final boolean isJoin;
 
     private AggregationAccess[] currentAccess;
 
     public AggSvcGroupByAccessOnlyImpl(MethodResolutionService methodResolutionService,
                                                    AggregationAccessorSlotPair[] accessors,
-                                                   int[] streams)
+                                                   int[] streams,
+                                                   boolean isJoin)
     {
         this.methodResolutionService = methodResolutionService;
         this.accessMap = new HashMap<MultiKeyUntyped, AggregationAccess[]>();
         this.accessors = accessors;
         this.streams = streams;
+        this.isJoin = isJoin;
     }
 
     public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupKey, ExprEvaluatorContext exprEvaluatorContext)
@@ -65,7 +68,7 @@ public class AggSvcGroupByAccessOnlyImpl implements AggregationService, Aggregat
             return row;
         }
 
-        row = AggregationAccessUtil.getNewAccesses(streams, methodResolutionService, groupKey);
+        row = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, groupKey);
         accessMap.put(groupKey, row);
         return row;
     }

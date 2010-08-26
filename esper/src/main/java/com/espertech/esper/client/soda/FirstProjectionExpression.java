@@ -15,8 +15,6 @@ import java.io.StringWriter;
  */
 public class FirstProjectionExpression extends ExpressionBase
 {
-    private boolean distinct;
-
     /**
      * Ctor.
      */
@@ -24,23 +22,11 @@ public class FirstProjectionExpression extends ExpressionBase
     }
 
     /**
-
-     * Ctor.
-     * @param isDistinct true for distinct
-     */
-    public FirstProjectionExpression(boolean isDistinct)
-    {
-        this.distinct = isDistinct;
-    }
-
-    /**
      * Ctor.
      * @param expression to aggregate
-     * @param isDistinct true for distinct
      */
-    public FirstProjectionExpression(Expression expression, boolean isDistinct)
+    public FirstProjectionExpression(Expression expression)
     {
-        this.distinct = isDistinct;
         this.getChildren().add(expression);
     }
 
@@ -53,41 +39,10 @@ public class FirstProjectionExpression extends ExpressionBase
     {
         writer.write("first");
         writer.write('(');
-        if (distinct)
-        {
-            writer.write("distinct ");
-        }
         if (this.getChildren().size() > 0)
         {
             this.getChildren().get(0).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
         }
         writer.write(")");
-    }
-
-    /**
-     * Returns true for distinct.
-     * @return boolean indicating distinct or not
-     */
-    public boolean isDistinct()
-    {
-        return distinct;
-    }
-
-    /**
-     * Returns true for distinct.
-     * @return boolean indicating distinct or not
-     */
-    public boolean getDistinct()
-    {
-        return distinct;
-    }
-
-    /**
-     * Set to true for distinct.
-     * @param distinct indicating distinct or not
-     */
-    public void setDistinct(boolean distinct)
-    {
-        this.distinct = distinct;
     }
 }

@@ -15,6 +15,8 @@ import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 
+import java.util.Set;
+
 public class ExprAccessAggNode extends ExprAggregateNode
 {
     private final AggregationAccessType accessType;
@@ -34,15 +36,15 @@ public class ExprAccessAggNode extends ExprAggregateNode
 
     public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        // TODO find stream nums
-        int streamNum = 0;
-
+        int streamNum;
         Class resultType;
         ExprEvaluator evaluator;
+        
         if (isWildcard) {
             if (streamTypeService.getStreamNames().length > 1) {
                 throw new ExprValidationException("Aggregation function wildcard operator is not allowed when multiple streams are joined");
             }
+            streamNum = 0;
             resultType = streamTypeService.getEventTypes()[0].getUnderlyingType();
             evaluator = new ExprEvaluator() {
                 public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context)
@@ -73,6 +75,12 @@ public class ExprAccessAggNode extends ExprAggregateNode
             };
         }
         else {
+            ExprNode child = this.getChildNodes().get(0);
+            Set<Integer> streams = ExprNodeUtility.getIdentStreamNumbers(child);
+            if ((streams.isEmpty() || (streams.size() > ))) {
+                throw new ExprValidationException("Last/First/Window aggregation function may only access a single stream's properties");
+            }
+            streamNum = streams.iterator().next();            
             resultType = this.getChildNodes().get(0).getType();
             evaluator = this.getChildNodes().get(0);
         }
@@ -83,6 +91,21 @@ public class ExprAccessAggNode extends ExprAggregateNode
     {
         // TODO
         return "firstg";
+    }
+
+    public AggregationAccessType getAccessType()
+    {
+        return accessType;
+    }
+
+    public boolean isWildcard()
+    {
+        return isWildcard;
+    }
+
+    public String getStreamWildcard()
+    {
+        return streamWildcard;
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)

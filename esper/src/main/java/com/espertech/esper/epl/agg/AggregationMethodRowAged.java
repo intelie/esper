@@ -7,7 +7,8 @@ public class AggregationMethodRowAged
 {
     private long refcount;
     private long lastUpdateTime;
-    private AggregationMethod[] methods;
+    private final AggregationMethod[] methods;
+    private final AggregationAccess[] accesses;
 
     /**
      * Ctor.
@@ -15,11 +16,12 @@ public class AggregationMethodRowAged
      * @param refcount number of items in state
      * @param methods aggregations
      */
-    public AggregationMethodRowAged(long refcount, long lastUpdateTime, AggregationMethod[] methods)
+    public AggregationMethodRowAged(long refcount, long lastUpdateTime, AggregationMethod[] methods, AggregationAccess[] accesses)
     {
         this.refcount = refcount;
         this.lastUpdateTime = lastUpdateTime;
         this.methods = methods;
+        this.accesses = accesses;
     }
 
     /**
@@ -74,4 +76,8 @@ public class AggregationMethodRowAged
         refcount--;
     }
 
+    public AggregationAccess[] getAccesses()
+    {
+        return accesses;
+    }
 }
