@@ -4,6 +4,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
@@ -38,13 +39,8 @@ public class TestFirstLastAllAggregation extends TestCase {
     //  window(*/a.*/stream_expression)                          // all new,                                // always requires stream access instances
 
     // TODO - Testing - Positive
-    // TODO: test equalsNodeAggregate semantics i.e. node reuse, equivalency testing
     // TODO: test match recognize
-    // TODO: test having and order by
-    // TODO: test fully-grouped versus row-per-group and row-per-event
-    // TODO: test subquery
     // TODO: test cumulative and access-based together, @Hint
-    // TODO: test group by
     // TODO: test output rate limiting
 
     // TODO - Testing - Negative
@@ -53,6 +49,7 @@ public class TestFirstLastAllAggregation extends TestCase {
     // TODO: test invalid: prev not allowed, stream wildcard stream not matched, wildcard used on join, allow expressions as long as properties from same stream
     // TODO: test non-window
     // TODO: no (*, a.*) support for firstever and lastever
+    // TODO: subquery (*) must use stream op
 
     // TODO - Documentation
     // TODO: document performance risk: additional tracking of data window data; batch performance; remove performance when not rolling but ooo delete
@@ -64,13 +61,39 @@ public class TestFirstLastAllAggregation extends TestCase {
     // TODO - Consider
     // TODO: support previous version with prev(1, *)
 
-    public void testTypeAndName() {
+    public void testSubquery() {
+        String epl = "select id, (select window(sb.*) from SupportBean.win:length(2) as sb) as w from SupportBean_A";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        String[] fields = "id,w".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A1", new Object[0]});
+
+        SupportBean beanOne = sendEvent(epService, "E1", 0, 1);
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A2", new Object[] {beanOne}});
+
+        SupportBean beanTwo = sendEvent(epService, "E2", 0, 1);
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A3", new Object[] {beanOne, beanTwo}});
+
+        SupportBean beanThree = sendEvent(epService, "E2", 0, 1);
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A4", new Object[] {beanTwo, beanThree}});
+    }
+
+    public void testTypeAndColNameAndEquivalency() {
+        epService.getEPAdministrator().getConfiguration().addImport(SupportStaticMethodLib.class.getName());
+
         String epl = "select " +
                 "first(sa.doublePrimitive + sa.intPrimitive), " +
                 "first(sa.intPrimitive), " +
                 "window(sa.*), " +
                 "last(*) from SupportBean.win:length(2) as sa";
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
         Object[][] rows = new Object[][] {
                 {"first((sa.doublePrimitive+sa.intPrimitive))", Double.class},
                 {"first(sa.intPrimitive)", int.class},
@@ -81,7 +104,47 @@ public class TestFirstLastAllAggregation extends TestCase {
             EventPropertyDescriptor prop = stmt.getEventType().getPropertyDescriptors()[i];
             assertEquals(rows[i][0], prop.getPropertyName());
             assertEquals(rows[i][1], prop.getPropertyType());
-        }        
+        }
+
+        stmt.destroy();
+        epl = "select " +
+                "first(sa.doublePrimitive + sa.intPrimitive) as f1, " +
+                "first(sa.intPrimitive) as f2, " +
+                "window(sa.*) as w1, " +
+                "last(*) as l1 " +
+                "from SupportBean.win:length(2) as sa";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionType(false);
+
+        stmt.destroy();
+        epl = "select " +
+                "first(sa.doublePrimitive + sa.intPrimitive) as f1, " +
+                "first(sa.intPrimitive) as f2, " +
+                "window(sa.*) as w1, " +
+                "last(*) as l1 " +
+                "from SupportBean.win:length(2) as sa " +
+                "having SupportStaticMethodLib.alwaysTrue({first(sa.doublePrimitive + sa.intPrimitive), " +
+                "first(sa.intPrimitive), window(sa.*), last(*)})";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionType(true);
+    }
+
+    private void runAssertionType(boolean isCheckStatic) {
+        String[] fields = "f1,f2,w1,l1".split(",");
+
+        SupportBean beanOne = sendEvent(epService, "E1", 10d, 100);
+        EventBean event = listener.assertOneGetNewAndReset();
+        Object[] expected = new Object[] {110d, 100, new Object[] {beanOne}, beanOne};
+        ArrayAssertionUtil.assertProps(event, fields, expected);
+        if (isCheckStatic) {
+            Object[] params = SupportStaticMethodLib.getInvocations().get(0);
+            SupportStaticMethodLib.getInvocations().clear();
+            ArrayAssertionUtil.assertEqualsExactOrder(params, expected);
+        }
     }
 
     public void testJoin2Access() {
@@ -502,4 +565,12 @@ public class TestFirstLastAllAggregation extends TestCase {
         }
         return value;
     }
+
+    private SupportBean sendEvent(EPServiceProvider epService, String string, double doublePrimitive, int intPrimitive) {
+        SupportBean bean = new SupportBean(string, intPrimitive);
+        bean.setDoublePrimitive(doublePrimitive);
+        epService.getEPRuntime().sendEvent(bean);
+        return bean;
+    }
+
 }

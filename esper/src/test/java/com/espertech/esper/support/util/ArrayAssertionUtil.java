@@ -141,7 +141,9 @@ public class ArrayAssertionUtil
 
         for (int i = 0; i < expectedValues.length; i++)
         {
-            TestCase.assertEquals("at element " + i, expectedValues[i], data[i]);
+            Object value = data[i];
+            Object expected = expectedValues[i];
+            assertProp("Failed to assert at element " + i, "element " + i, expected, value);
         }
     }
 

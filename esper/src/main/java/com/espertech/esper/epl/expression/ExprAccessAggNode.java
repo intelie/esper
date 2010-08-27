@@ -130,14 +130,18 @@ public class ExprAccessAggNode extends ExprAggregateNode
         return streamWildcard;
     }
 
-    public final boolean equalsNodeAggregate(ExprAggregateNode node)
-    {
-        if (!(node instanceof ExprAccessAggNode))
-        {
-            return false;
-        }
+    @Override
+    protected boolean equalsNodeAggregate(ExprAggregateNode node) {
+        if (this == node) return true;
+        if (node == null || getClass() != node.getClass()) return false;
 
-        ExprAccessAggNode other = (ExprAccessAggNode) node;
-        return other.accessType.equals(accessType);
+        ExprAccessAggNode that = (ExprAccessAggNode) node;
+
+        if (isWildcard != that.isWildcard) return false;
+        if (accessType != that.accessType) return false;
+        if (streamWildcard != null ? !streamWildcard.equals(that.streamWildcard) : that.streamWildcard != null)
+            return false;
+
+        return true;
     }
 }
