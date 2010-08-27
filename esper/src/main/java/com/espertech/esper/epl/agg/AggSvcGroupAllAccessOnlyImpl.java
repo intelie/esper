@@ -9,7 +9,6 @@ public class AggSvcGroupAllAccessOnlyImpl implements AggregationService, Aggrega
 {
     private final AggregationAccessorSlotPair[] accessors;
     private final AggregationAccess[] accesses;
-    private final boolean isJoin;
 
     public AggSvcGroupAllAccessOnlyImpl(MethodResolutionService methodResolutionService,
                                                    AggregationAccessorSlotPair[] accessors,
@@ -17,7 +16,6 @@ public class AggSvcGroupAllAccessOnlyImpl implements AggregationService, Aggrega
                                                    boolean isJoin)
     {
         this.accessors = accessors;
-        this.isJoin = isJoin;
         accesses = AggregationAccessUtil.getNewAccesses(isJoin, streams, methodResolutionService, null);
     }
 
@@ -48,6 +46,8 @@ public class AggSvcGroupAllAccessOnlyImpl implements AggregationService, Aggrega
 
     public void clearResults()
     {
-        // TODO - test
+        for (AggregationAccess access : accesses) {
+            access.clear();
+        }
     }
 }

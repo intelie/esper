@@ -65,7 +65,6 @@ public class AggSvcGroupByRefcountedWAccessImpl extends AggregationServiceBase
 
     public void clearResults()
     {
-        // TODO
         aggregatorsPerGroup.clear();
     }
 

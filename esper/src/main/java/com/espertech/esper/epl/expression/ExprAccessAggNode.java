@@ -15,6 +15,7 @@ import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 
+import java.io.StringWriter;
 import java.util.Set;
 
 public class ExprAccessAggNode extends ExprAggregateNode
@@ -75,9 +76,12 @@ public class ExprAccessAggNode extends ExprAggregateNode
             };
         }
         else {
+            if (this.getChildNodes().isEmpty()) {
+                throw new ExprValidationException("The '" + accessType.toString().toLowerCase() + "' requires and expression to evaluate or '*' or 'stream.*'");
+            }
             ExprNode child = this.getChildNodes().get(0);
             Set<Integer> streams = ExprNodeUtility.getIdentStreamNumbers(child);
-            if ((streams.isEmpty() || (streams.size() > ))) {
+            if ((streams.isEmpty() || (streams.size() > 1))) {
                 throw new ExprValidationException("Last/First/Window aggregation function may only access a single stream's properties");
             }
             streamNum = streams.iterator().next();            
@@ -87,10 +91,28 @@ public class ExprAccessAggNode extends ExprAggregateNode
         return new ExprAccessAggNodeFactory(accessType, resultType, streamNum, evaluator);
     }
 
-    protected String getAggregationFunctionName()
+    @Override
+    protected String getAggregationFunctionName() {
+        return accessType.toString().toLowerCase();  
+    }
+
+    public String toExpressionString()
     {
-        // TODO
-        return "firstg";
+        StringWriter writer = new StringWriter();
+        writer.append(accessType.toString().toLowerCase());
+        writer.append('(');
+        if (isWildcard) {
+            writer.append('*');
+        }
+        else if (streamWildcard != null) {
+            writer.append(streamWildcard);
+            writer.append(".*");
+        }
+        else {
+            writer.append(this.getChildNodes().get(0).toExpressionString());
+        }
+        writer.append(')');
+        return writer.toString();
     }
 
     public AggregationAccessType getAccessType()

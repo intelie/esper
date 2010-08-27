@@ -9,7 +9,6 @@
 package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -23,6 +22,10 @@ public class AggregationAccessJoinImpl implements AggregationAccess
     public AggregationAccessJoinImpl(int streamId)
     {
         this.streamId = streamId;
+    }
+
+    public void clear() {
+        refSet.clear();
     }
 
     public void applyEnter(EventBean[] eventsPerStream)

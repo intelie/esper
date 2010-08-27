@@ -84,7 +84,9 @@ public class AggSvcGroupAllMixedAccessImpl extends AggregationServiceBase
 
     public void clearResults()
     {
-        //TODO
+        for (AggregationAccess access : accesses) {
+            access.clear();
+        }
         for (AggregationMethod aggregator : aggregators)
         {
             aggregator.clear();

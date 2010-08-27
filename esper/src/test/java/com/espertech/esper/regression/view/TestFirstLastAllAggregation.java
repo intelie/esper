@@ -39,19 +39,13 @@ public class TestFirstLastAllAggregation extends TestCase {
 
     // TODO - Testing - Positive
     // TODO: test equalsNodeAggregate semantics i.e. node reuse, equivalency testing
-    // TODO: clear result testing (on-demand queryes)
-    // TODO: init by late new named window data
-    // TODO: test automatic expression property name assignment
     // TODO: test match recognize
     // TODO: test having and order by
     // TODO: test fully-grouped versus row-per-group and row-per-event
-    // TODO: test join
     // TODO: test subquery
-    // TODO: test cumulative and access-based together
+    // TODO: test cumulative and access-based together, @Hint
     // TODO: test group by
     // TODO: test output rate limiting
-    // TODO: test outer join, i.e. null event
-    // TODO: test statement object model
 
     // TODO - Testing - Negative
     // TODO: distinct should not matter, invalid when distinct is used
@@ -69,6 +63,26 @@ public class TestFirstLastAllAggregation extends TestCase {
 
     // TODO - Consider
     // TODO: support previous version with prev(1, *)
+
+    public void testTypeAndName() {
+        String epl = "select " +
+                "first(sa.doublePrimitive + sa.intPrimitive), " +
+                "first(sa.intPrimitive), " +
+                "window(sa.*), " +
+                "last(*) from SupportBean.win:length(2) as sa";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        Object[][] rows = new Object[][] {
+                {"first((sa.doublePrimitive+sa.intPrimitive))", Double.class},
+                {"first(sa.intPrimitive)", int.class},
+                {"window(sa.*)", SupportBean.class},
+                {"last(*)", SupportBean.class},
+                };
+        for (int i = 0; i < rows.length; i++) {
+            EventPropertyDescriptor prop = stmt.getEventType().getPropertyDescriptors()[i];
+            assertEquals(rows[i][0], prop.getPropertyName());
+            assertEquals(rows[i][1], prop.getPropertyType());
+        }        
+    }
 
     public void testJoin2Access() {
         String epl = "select " +
@@ -237,6 +251,27 @@ public class TestFirstLastAllAggregation extends TestCase {
         });
     }
 
+    public void testLateInitialize()
+    {
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as select * from SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 20));
+
+        String[] fields = "firststring,windowstring,laststring".split(",");
+        String epl = "select " +
+                "first(string) as firststring, " +
+                "window(string) as windowstring, " +
+                "last(string) as laststring " +
+                "from MyWindow";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 30));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", split("E1,E2,E3"), "E3"});
+    }
+
     public void testOnDelete()
     {
         epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as select * from SupportBean");
@@ -283,6 +318,36 @@ public class TestFirstLastAllAggregation extends TestCase {
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E5", split("E5,E6"), "E6"});
     }
 
+    public void testOnDemandQuery()
+    {
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as select * from SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 20));
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 30));
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 31));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 11));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 12));
+
+        EPOnDemandPreparedQuery q = epService.getEPRuntime().prepareQuery("select first(intPrimitive) as f, window(intPrimitive) as w, last(intPrimitive) as l from MyWindow as s");
+        ArrayAssertionUtil.assertPropsPerRow(q.execute().getArray(), "f,w,l".split(","),
+                new Object[][] {{10, intArray(10, 20, 30, 31, 11, 12), 12}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 13));
+        ArrayAssertionUtil.assertPropsPerRow(q.execute().getArray(), "f,w,l".split(","),
+                new Object[][] {{10, intArray(10, 20, 30, 31, 11, 12, 13), 13}});
+
+        q = epService.getEPRuntime().prepareQuery("select string as s, first(intPrimitive) as f, window(intPrimitive) as w, last(intPrimitive) as l from MyWindow as s group by string order by string asc");
+        Object[][] expected = new Object[][] {
+                        {"E1", 10, intArray(10, 11, 12, 13), 13},
+                        {"E2", 20, intArray(20), 20},
+                        {"E3", 30, intArray(30, 31), 31}
+                };
+        ArrayAssertionUtil.assertPropsPerRow(q.execute().getArray(), "s,f,w,l".split(","), expected);
+        ArrayAssertionUtil.assertPropsPerRow(q.execute().getArray(), "s,f,w,l".split(","), expected);
+    }
+
     public void testStar()
     {
         String epl = "select " +
@@ -296,6 +361,18 @@ public class TestFirstLastAllAggregation extends TestCase {
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
 
+        runAssertionStar();
+        stmt.destroy();
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
+        stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+        assertEquals(epl, model.toEPL());
+
+        runAssertionStar();
+    }
+
+    private void runAssertionStar() {
         String[] fields = "firststar,firststarsb,laststar,laststarsb,windowstar,windowstarsb".split(",");
 
         Object beanE1 = new SupportBean("E1", 10);
@@ -347,23 +424,21 @@ public class TestFirstLastAllAggregation extends TestCase {
                 "first(intPrimitive) as firstint, " +
                 "last(intPrimitive) as lastint, " +
                 "window(intPrimitive) as allint " +
-                "from SupportBean.win:length(5)" +
-                "group by string order by string asc";
+                "from SupportBean.win:length(5) " +
+                "group by string order by string";
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
 
         runAssertionGrouped();
 
         stmt.destroy();
-        /**
-         * TODO
+
         EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
         stmt = epService.getEPAdministrator().create(model);
         stmt.addListener(listener);
         assertEquals(epl, model.toEPL());
 
-        runAssertion();
-         */
+        runAssertionGrouped();
     }
 
     private void runAssertionGrouped() {

@@ -1071,7 +1071,7 @@ public class Expressions implements Serializable
      */
     public static LastProjectionExpression last(String propertyName)
     {
-        return new LastProjectionExpression(getPropExpr(propertyName), false);
+        return new LastProjectionExpression(getPropExpr(propertyName));
     }
 
     /**
@@ -1091,7 +1091,7 @@ public class Expressions implements Serializable
      */
     public static LastProjectionExpression last(Expression expression)
     {
-        return new LastProjectionExpression(expression, false);
+        return new LastProjectionExpression(expression);
     }
 
     /**
@@ -1101,7 +1101,7 @@ public class Expressions implements Serializable
      */
     public static FirstProjectionExpression first(String propertyName)
     {
-        return new FirstProjectionExpression(getPropExpr(propertyName), false);
+        return new FirstProjectionExpression(getPropExpr(propertyName));
     }
 
     /**
@@ -1121,7 +1121,7 @@ public class Expressions implements Serializable
      */
     public static FirstProjectionExpression first(Expression expression)
     {
-        return new FirstProjectionExpression(expression, false);
+        return new FirstProjectionExpression(expression);
     }
 
     /**

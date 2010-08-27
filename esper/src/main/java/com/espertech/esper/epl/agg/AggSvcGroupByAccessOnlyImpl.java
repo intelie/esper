@@ -59,7 +59,7 @@ public class AggSvcGroupByAccessOnlyImpl implements AggregationService, Aggregat
 
     public void clearResults()
     {
-        // TODO - test
+        accessMap.clear();
     }
 
     private AggregationAccess[] getAssertRow(MultiKeyUntyped groupKey) {

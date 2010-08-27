@@ -23,6 +23,10 @@ public class AggregationAccessImpl implements AggregationAccess
         this.streamId = streamId;
     }
 
+    public void clear() {
+        events.clear();
+    }
+
     public void applyLeave(EventBean[] eventsPerStream)
     {
         EventBean event = eventsPerStream[streamId];

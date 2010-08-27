@@ -242,7 +242,7 @@ public abstract class ExprAggregateNode extends ExprNode
      * Renders the aggregation function expression.
      * @return expression string is the textual rendering of the aggregation function and it's sub-expression
      */
-    public final String toExpressionString()
+    public String toExpressionString()
     {
         StringBuilder buffer = new StringBuilder();
         buffer.append(getAggregationFunctionName());

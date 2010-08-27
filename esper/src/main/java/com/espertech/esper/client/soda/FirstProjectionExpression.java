@@ -8,12 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
-import java.io.StringWriter;
-
 /**
  * Represents the "first" aggregation function.
  */
-public class FirstProjectionExpression extends ExpressionBase
+public class FirstProjectionExpression extends AccessProjectionExpressionBase
 {
     /**
      * Ctor.
@@ -27,22 +25,11 @@ public class FirstProjectionExpression extends ExpressionBase
      */
     public FirstProjectionExpression(Expression expression)
     {
-        this.getChildren().add(expression);
+        super(expression);
     }
 
-    public ExpressionPrecedenceEnum getPrecedence()
-    {
-        return ExpressionPrecedenceEnum.UNARY;
-    }
-
-    public void toPrecedenceFreeEPL(StringWriter writer)
-    {
-        writer.write("first");
-        writer.write('(');
-        if (this.getChildren().size() > 0)
-        {
-            this.getChildren().get(0).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-        }
-        writer.write(")");
+    @Override
+    public String getAggregationFunctionName() {
+        return "first";
     }
 }

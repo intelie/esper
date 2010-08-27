@@ -1412,6 +1412,21 @@ public class StatementSpecMapper
             }
             return new ExprNumberSetCronParam(operator);
         }
+        else if (expr instanceof AccessProjectionExpressionBase) {
+            AccessProjectionExpressionBase base = (AccessProjectionExpressionBase) expr;
+            AggregationAccessType type;
+            if (expr instanceof FirstProjectionExpression) {
+                type = AggregationAccessType.FIRST;
+            }
+            else if (expr instanceof LastProjectionExpression) {
+                type = AggregationAccessType.LAST;
+            }
+            else {
+                type = AggregationAccessType.WINDOW;
+            }
+
+            return new ExprAccessAggNode(type, base.isWildcard(), base.getStreamWildcard());
+        }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
 
@@ -1790,16 +1805,19 @@ public class StatementSpecMapper
         else if (expr instanceof ExprAccessAggNode)
         {
             ExprAccessAggNode accessNode = (ExprAccessAggNode) expr;
+            AccessProjectionExpressionBase ape;
             if (accessNode.getAccessType() == AggregationAccessType.FIRST) {
-                return new FirstProjectionExpression();
+                ape = new FirstProjectionExpression();
             }
             else if (accessNode.getAccessType() == AggregationAccessType.WINDOW) {
-                return new WindowProjectionExpression();
+                ape = new WindowProjectionExpression();
             }
-            if (accessNode.getAccessType() == AggregationAccessType.LAST) {
-                return new LastProjectionExpression();
+            else {
+                ape = new LastProjectionExpression();
             }
-            return new CrontabParameterExpression(type);
+            ape.setWildcard(accessNode.isWildcard());
+            ape.setStreamWildcard(accessNode.getStreamWildcard());
+            return ape;
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
