@@ -80,4 +80,6 @@ public interface StreamTypeService
     public boolean[] getIStreamOnly();
 
     public int getStreamNumForStreamName(String streamWildcard);
+
+    public boolean isOnDemandStreams();
 }

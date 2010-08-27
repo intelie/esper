@@ -94,7 +94,7 @@ public interface MethodResolutionService
      * @param type of value
      * @return aggregator
      */
-    public AggregationMethod makeFirstValueAggregator(Class type);
+    public AggregationMethod makeFirstEverValueAggregator(Class type);
 
     /**
      * Makes a new last-value aggregator.

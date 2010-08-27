@@ -29,7 +29,7 @@ public class ExprNthAggNodeFactory implements AggregationMethodFactory
         return childType;
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;
     }

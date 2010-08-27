@@ -24,7 +24,7 @@ public class ExprSumNodeFactory implements AggregationMethodFactory
         this.resultType = methodResolutionService.getSumAggregatorType(inputValueType);
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;    // default spec
     }

@@ -18,16 +18,12 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.JoinSetComposer;
-import com.espertech.esper.epl.join.plan.FilterExprAnalyzer;
-import com.espertech.esper.epl.join.plan.QueryGraph;
 import com.espertech.esper.epl.named.NamedWindowProcessor;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.*;
 import com.espertech.esper.view.Viewable;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
-import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -95,7 +91,7 @@ public class EPPreparedExecuteMethod
             LinkedHashMap<String, Pair<EventType, String>> tagged = new LinkedHashMap<String, Pair<EventType, String>>();
             for (int i = 0; i < numStreams; i++) {
                 try {
-                    StreamTypeServiceImpl types = new StreamTypeServiceImpl(typesPerStream, namesPerStream, new boolean[numStreams], services.getEngineURI());
+                    StreamTypeServiceImpl types = new StreamTypeServiceImpl(typesPerStream, namesPerStream, new boolean[numStreams], services.getEngineURI(), false);
                     filters[i] = FilterSpecCompiler.makeFilterSpec(typesPerStream[i], namesPerStream[i],
                             Collections.singletonList(statementSpec.getFilterRootNode()), null,
                             tagged, tagged, types,
@@ -113,7 +109,7 @@ public class EPPreparedExecuteMethod
 
         boolean[] isIStreamOnly = new boolean[namesPerStream.length];
         Arrays.fill(isIStreamOnly, true);
-        StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, isIStreamOnly, services.getEngineURI());
+        StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, isIStreamOnly, services.getEngineURI(), true);
         EPStatementStartMethod.validateNodes(statementSpec, statementContext, typeService, null);
 
         resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null, new boolean[0], true);

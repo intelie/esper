@@ -14,7 +14,7 @@ public interface AggregationMethodFactory
 {
     public Class getResultType();
 
-    public AggregationSpec getSpec();
+    public AggregationSpec getSpec(boolean isMatchRecognize);
 
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService);
 

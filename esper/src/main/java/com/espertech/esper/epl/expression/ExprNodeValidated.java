@@ -48,6 +48,15 @@ public class ExprNodeValidated extends ExprNode
     {
     }
 
+    public void accept(ExprNodeVisitor visitor)
+    {
+        if (visitor.isVisit(this))
+        {
+            visitor.visit(this);
+            inner.accept(visitor);
+        }
+    }
+
     public Class getType()
     {
         return inner.getType();

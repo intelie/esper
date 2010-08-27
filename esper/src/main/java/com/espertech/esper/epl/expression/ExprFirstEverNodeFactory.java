@@ -25,14 +25,14 @@ public class ExprFirstEverNodeFactory implements AggregationMethodFactory
         return childType;
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;
     }
 
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeFirstValueAggregator(childType);
+        return methodResolutionService.makeFirstEverValueAggregator(childType);
     }
 
     public AggregationAccessor getAccessor()

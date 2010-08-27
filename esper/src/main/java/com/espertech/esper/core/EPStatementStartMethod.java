@@ -59,7 +59,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -318,7 +317,7 @@ public class EPStatementStartMethod
             // 1 - arriving stream
             startSubSelect(subSelectStreamDesc, new String[]{namedWindowName, streamSpec.getOptionalStreamName()}, new EventType[] {processor.getNamedWindowType(), streamEventType}, new String[]{namedWindowTypeName, triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
 
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowName, streamName}, new boolean[] {false, true}, services.getEngineURI());
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowName, streamName}, new boolean[] {false, true}, services.getEngineURI(), false);
             if (onTriggerDesc instanceof OnTriggerWindowUpdateDesc) {
                 OnTriggerWindowUpdateDesc updateDesc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
                 for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())
@@ -360,7 +359,7 @@ public class EPStatementStartMethod
         else if (statementSpec.getOnTriggerDesc() instanceof OnTriggerSetDesc)
         {
             OnTriggerSetDesc desc = (OnTriggerSetDesc) statementSpec.getOnTriggerDesc();
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, new boolean[] {true}, services.getEngineURI());
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, new boolean[] {true}, services.getEngineURI(), false);
 
             // Materialize sub-select views
             startSubSelect(subSelectStreamDesc, new String[]{streamSpec.getOptionalStreamName()}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
@@ -388,7 +387,7 @@ public class EPStatementStartMethod
             {
                 streamName = "stream_0";
             }
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamName}, new boolean[] {true}, services.getEngineURI());
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamName}, new boolean[] {true}, services.getEngineURI(), false);
             if (statementSpec.getInsertIntoDesc() == null)
             {
                 throw new ExprValidationException("Required insert-into clause is not provided, the clause is required for split-stream syntax");
@@ -459,7 +458,7 @@ public class EPStatementStartMethod
             StatementSpecCompiled defaultSelectAllSpec = new StatementSpecCompiled();
             defaultSelectAllSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
 
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"trigger_stream"}, new boolean[] {true}, services.getEngineURI());
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"trigger_stream"}, new boolean[] {true}, services.getEngineURI(), false);
             ResultSetProcessor outputResultSetProcessor = ResultSetProcessorFactory.getProcessor(
                     defaultSelectAllSpec, statementContext, streamTypeService, null, new boolean[0], true);
 
@@ -509,7 +508,7 @@ public class EPStatementStartMethod
         }
 
         final EventType streamEventType = services.getEventAdapterService().getExistsTypeByName(triggereventTypeName);
-        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamName}, new boolean[] {true}, services.getEngineURI());
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamName}, new boolean[] {true}, services.getEngineURI(), false);
 
         // determine subscriber result types
         statementContext.getStatementResultService().setSelectClause(new Class[] {streamEventType.getUnderlyingType()}, new String[] {"*"}, false, null, statementContext);
@@ -625,7 +624,7 @@ public class EPStatementStartMethod
         statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
         statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
 
-        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {windowType}, new String[] {windowName}, new boolean[] {true}, services.getEngineURI());
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {windowType}, new String[] {windowName}, new boolean[] {true}, services.getEngineURI(), false);
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                 statementSpec, statementContext, typeService, null, new boolean[0], true);
 
@@ -686,7 +685,7 @@ public class EPStatementStartMethod
         if (createDesc.getAssignment() != null)
         {
             // Evaluate assignment expression
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new String[0], new boolean[0], services.getEngineURI());
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new String[0], new boolean[0], services.getEngineURI(), false);
             ExprNode validated = createDesc.getAssignment().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
             value = validated.evaluate(null, true, statementContext);
         }
@@ -723,7 +722,7 @@ public class EPStatementStartMethod
         statementSpec.getSelectClauseSpec().getSelectExprList().clear();
         statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
         statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
-        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {createView.getEventType()}, new String[] {"create_variable"}, new boolean[] {true}, services.getEngineURI());
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {createView.getEventType()}, new String[] {"create_variable"}, new boolean[] {true}, services.getEngineURI(), false);
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                 statementSpec, statementContext, typeService, null, new boolean[0], true);
 
@@ -901,7 +900,7 @@ public class EPStatementStartMethod
         statementStreamSpecs.addAll(statementSpec.getStreamSpecs());
 
         // Construct type information per stream
-        StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames, getHasIStreamOnly(isNamedWindow, unmaterializedViewChain), services.getEngineURI());
+        StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames, getHasIStreamOnly(isNamedWindow, unmaterializedViewChain), services.getEngineURI(), false);
         ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
 
         // boolean multiple expiry policy
@@ -1336,7 +1335,7 @@ public class EPStatementStartMethod
             try
             {
                 EventType outputLimitType = OutputConditionExpression.getBuiltInEventType(statementContext.getEventAdapterService());
-                StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[] {outputLimitType}, new String[]{null}, new boolean[] {true}, statementContext.getEngineURI());
+                StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[] {outputLimitType}, new String[]{null}, new boolean[] {true}, statementContext.getEngineURI(), false);
                 outputLimitWhenNode = outputLimitWhenNode.getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                 statementSpec.getOutputLimitSpec().setWhenExpressionNode(outputLimitWhenNode);
 

@@ -17,13 +17,17 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
     private final Class resultType;
     private final int streamNum;
     private final ExprEvaluator childNode;
+    private final boolean istreamOnly;
+    private final boolean ondemandQuery;
 
-    public ExprAccessAggNodeFactory(AggregationAccessType accessType, Class resultType, int streamNum, ExprEvaluator childNode)
+    public ExprAccessAggNodeFactory(AggregationAccessType accessType, Class resultType, int streamNum, ExprEvaluator childNode, boolean istreamOnly, boolean ondemandQuery)
     {
         this.accessType = accessType;
         this.resultType = resultType;
         this.streamNum = streamNum;
         this.childNode = childNode;
+        this.istreamOnly = istreamOnly;
+        this.ondemandQuery = ondemandQuery;
     }
 
     public Class getResultType()
@@ -31,14 +35,34 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
         return resultType;
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
+        // For match-recognize we don't use the access functions
+        if (isMatchRecognize) {
+            return null;
+        }
+
+        // on-demand query allow window access type
+        if (ondemandQuery && accessType == AggregationAccessType.WINDOW) {
+            return new AggregationSpec(streamNum);
+        }
+
+        // no remove stream, use first-ever and last-ever functions
+        if (istreamOnly || ondemandQuery) {
+            return null;
+        }
         return new AggregationSpec(streamNum);
     }
 
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
-        throw new UnsupportedOperationException();
+        if (accessType == AggregationAccessType.FIRST) {
+            return methodResolutionService.makeFirstEverValueAggregator(resultType);
+        }
+        else if (accessType == AggregationAccessType.LAST) {
+            return methodResolutionService.makeLastEverValueAggregator(resultType);
+        }
+        throw new RuntimeException("Window aggregation function is not available");
     }
 
     public AggregationAccessor getAccessor()

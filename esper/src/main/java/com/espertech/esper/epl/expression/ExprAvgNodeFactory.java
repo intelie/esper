@@ -29,7 +29,7 @@ public class ExprAvgNodeFactory implements AggregationMethodFactory
         return resultType;
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;
     }

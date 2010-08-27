@@ -33,7 +33,7 @@ public class ExprMinMaxAggrNodeFactory implements AggregationMethodFactory
         return methodResolutionService.makeDistinctAggregator(method, Long.class);
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;  // defaults apply
     }

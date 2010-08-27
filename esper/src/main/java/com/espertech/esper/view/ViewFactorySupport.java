@@ -57,7 +57,7 @@ public abstract class ViewFactorySupport implements ViewFactory
     public static Object validateAndEvaluate(String viewName, StatementContext statementContext, ExprNode expression)
             throws ViewParameterException
     {
-        return validateAndEvaluateExpr(statementContext, expression, new StreamTypeServiceImpl(statementContext.getEngineURI()), 0);
+        return validateAndEvaluateExpr(statementContext, expression, new StreamTypeServiceImpl(statementContext.getEngineURI(), false), 0);
     }
 
     /**
@@ -73,7 +73,7 @@ public abstract class ViewFactorySupport implements ViewFactory
     {
         List<Object> results = new ArrayList<Object>();
         int expressionNumber = 0;
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(statementContext.getEngineURI());
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(statementContext.getEngineURI(), false);
         for (ExprNode expr : expressions)
         {
             Object result = validateAndEvaluateExpr(statementContext, expr, streamTypeService, expressionNumber);

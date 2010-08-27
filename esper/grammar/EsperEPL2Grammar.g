@@ -1265,18 +1265,18 @@ builtinFunc
 	;
 	
 firstAggregation
-	: FIRST LPAREN (a=ALL | d=DISTINCT)? accessAggExpr (COMMA expression)? RPAREN
-	  -> ^(FIRST_AGGREG $d? accessAggExpr expression?)
+	: FIRST LPAREN accessAggExpr (COMMA expression)? RPAREN
+	  -> ^(FIRST_AGGREG accessAggExpr expression?)
 	;
 
 lastAggregation
-	: LAST LPAREN (a=ALL | d=DISTINCT)? accessAggExpr (COMMA expression)? RPAREN
-	  -> ^(LAST_AGGREG $d? accessAggExpr expression?)
+	: LAST LPAREN accessAggExpr (COMMA expression)? RPAREN
+	  -> ^(LAST_AGGREG accessAggExpr expression?)
 	;
 	
 windowAggregation
-	: WINDOW LPAREN (a=ALL | d=DISTINCT)? accessAggExpr RPAREN
-	  -> ^(WINDOW_AGGREG $d? accessAggExpr)
+	: WINDOW LPAREN accessAggExpr RPAREN
+	  -> ^(WINDOW_AGGREG accessAggExpr)
 	;
 
 accessAggExpr

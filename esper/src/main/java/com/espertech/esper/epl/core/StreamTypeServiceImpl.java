@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyDescriptor;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
@@ -29,14 +29,16 @@ public class StreamTypeServiceImpl implements StreamTypeService
     private final String engineURIQualifier;
     private boolean isStreamZeroUnambigous;
     private boolean requireStreamNames;
+    private boolean isOnDemandStreams;
 
     /**
      * Ctor.
      * @param engineURI engine URI
+     * @param isOnDemandStreams
      */
-    public StreamTypeServiceImpl (String engineURI)
+    public StreamTypeServiceImpl(String engineURI, boolean isOnDemandStreams)
     {
-        this(new EventType[0], new String[0], new boolean[0], engineURI);
+        this(new EventType[0], new String[0], new boolean[0], engineURI, isOnDemandStreams);
     }
 
     /**
@@ -48,21 +50,23 @@ public class StreamTypeServiceImpl implements StreamTypeService
      */
     public StreamTypeServiceImpl (EventType eventType, String streamName, boolean isIStreamOnly, String engineURI)
     {
-        this(new EventType[] {eventType}, new String[] {streamName}, new boolean[] {isIStreamOnly}, engineURI);
+        this(new EventType[] {eventType}, new String[] {streamName}, new boolean[] {isIStreamOnly}, engineURI, false);
     }
 
     /**
      * Ctor.
      * @param eventTypes - array of event types, one for each stream
      * @param streamNames - array of stream names, one for each stream
-     * @param engineURI - engine URI
      * @param isIStreamOnly true for no datawindow for stream
+     * @param engineURI - engine URI
+     * @param isOnDemandStreams - true to indicate that all streams are on-demand pull-based
      */
-    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, boolean[] isIStreamOnly, String engineURI)
+    public StreamTypeServiceImpl(EventType[] eventTypes, String[] streamNames, boolean[] isIStreamOnly, String engineURI, boolean isOnDemandStreams)
     {
         this.eventTypes = eventTypes;
         this.streamNames = streamNames;
         this.isIStreamOnly = isIStreamOnly;
+        this.isOnDemandStreams = isOnDemandStreams;
 
         if (engineURI == null || EPServiceProviderSPI.DEFAULT_ENGINE_URI.equals(engineURI))
         {
@@ -102,6 +106,10 @@ public class StreamTypeServiceImpl implements StreamTypeService
             eventTypes[count] = entry.getValue().getFirst();
             count++;
         }
+    }
+
+    public boolean isOnDemandStreams() {
+        return isOnDemandStreams;
     }
 
     public EventType[] getEventTypes()

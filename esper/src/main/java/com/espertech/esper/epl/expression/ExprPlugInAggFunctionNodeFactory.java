@@ -19,7 +19,7 @@ public class ExprPlugInAggFunctionNodeFactory implements AggregationMethodFactor
         return aggregationSupport.getValueType();
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;  // defaults apply
     }

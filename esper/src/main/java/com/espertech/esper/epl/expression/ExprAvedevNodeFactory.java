@@ -25,7 +25,7 @@ public class ExprAvedevNodeFactory implements AggregationMethodFactory
         return Double.class;
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;
     }

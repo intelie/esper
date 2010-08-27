@@ -174,13 +174,13 @@ public class AggregationServiceFactory
         int columnNumber = 0;
         for (ExprAggDesc entry : aggregations)
         {
-            if (entry.getFactory().getSpec() == null) {
+            if (entry.getFactory().getSpec(false) == null) {
                 entry.setColumnNum(columnNumber++);
             }
         }
         for (ExprAggDesc entry : aggregations)
         {
-            if (entry.getFactory().getSpec() != null) {
+            if (entry.getFactory().getSpec(false) != null) {
                 entry.setColumnNum(columnNumber++);
             }
         }
@@ -200,7 +200,7 @@ public class AggregationServiceFactory
         for (ExprAggDesc aggregation : aggregations)
         {
             ExprAggregateNode aggregateNode = aggregation.getAggregationNode();
-            if (aggregateNode.getFactory().getSpec() == null) {
+            if (aggregateNode.getFactory().getSpec(false) == null) {
                 ExprEvaluator evaluator;
                 if (aggregateNode.getChildNodes().size() > 1)
                 {
@@ -227,7 +227,7 @@ public class AggregationServiceFactory
                 aggregators.add(aggregator);
             }
             else {
-                AggregationSpec spec = aggregateNode.getFactory().getSpec();
+                AggregationSpec spec = aggregateNode.getFactory().getSpec(false);
                 AggregationAccessor accessor = aggregateNode.getFactory().getAccessor();
 
                 Integer slot = streamSlots.get(spec.getStreamNum());

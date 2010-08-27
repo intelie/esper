@@ -27,7 +27,7 @@ public class ExprCountNodeFactory implements AggregationMethodFactory
         return Long.class;
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;
     }

@@ -40,10 +40,11 @@ public class ExprAccessAggNode extends ExprAggregateNode
         int streamNum;
         Class resultType;
         ExprEvaluator evaluator;
+        boolean istreamOnly = false;
         
         if (isWildcard) {
             if (streamTypeService.getStreamNames().length > 1) {
-                throw new ExprValidationException("Aggregation function wildcard operator is not allowed when multiple streams are joined");
+                throw new ExprValidationException(getErrorPrefix() + " requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
             }
             streamNum = 0;
             resultType = streamTypeService.getEventTypes()[0].getUnderlyingType();
@@ -56,13 +57,22 @@ public class ExprAccessAggNode extends ExprAggregateNode
                     return eventsPerStream[0].getUnderlying();
                 }
             };
+            istreamOnly = getIstreamOnly(streamTypeService, 0);
+            if ((accessType == AggregationAccessType.WINDOW) && istreamOnly && !streamTypeService.isOnDemandStreams()) {
+                throw new ExprValidationException(getErrorPrefix() + " requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead");
+            }
+            this.getChildNodes().add(new ExprStreamUnderlyingNode(null, true, streamNum, resultType));            
         }
         else if (streamWildcard != null) {
             streamNum = streamTypeService.getStreamNumForStreamName(streamWildcard);
-            EventType type = streamTypeService.getEventTypes()[streamNum];
-            if (type == null) {
-                throw new ExprValidationException("Stream wildcard not found in designated streams");
+            if (streamNum == -1) {
+                throw new ExprValidationException(getErrorPrefix() + " stream wildcard '" + streamWildcard + "' does not resolve to any stream");
             }
+            istreamOnly = getIstreamOnly(streamTypeService, streamNum);
+            if ((accessType == AggregationAccessType.WINDOW) && istreamOnly && !streamTypeService.isOnDemandStreams()) {
+                throw new ExprValidationException(getErrorPrefix() + " requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead");
+            }
+            EventType type = streamTypeService.getEventTypes()[streamNum];
             resultType = type.getUnderlyingType();
             final int streamNumUsed = streamNum;
             evaluator = new ExprEvaluator() {
@@ -74,21 +84,35 @@ public class ExprAccessAggNode extends ExprAggregateNode
                     return eventsPerStream[streamNumUsed].getUnderlying();
                 }
             };
+            this.getChildNodes().add(new ExprStreamUnderlyingNode(streamWildcard, false, streamNum, resultType));
         }
         else {
             if (this.getChildNodes().isEmpty()) {
-                throw new ExprValidationException("The '" + accessType.toString().toLowerCase() + "' requires and expression to evaluate or '*' or 'stream.*'");
+                throw new ExprValidationException(getErrorPrefix() + " requires a expression or wildcard (*) or stream wildcard (stream-alias.*)");
             }
             ExprNode child = this.getChildNodes().get(0);
             Set<Integer> streams = ExprNodeUtility.getIdentStreamNumbers(child);
             if ((streams.isEmpty() || (streams.size() > 1))) {
-                throw new ExprValidationException("Last/First/Window aggregation function may only access a single stream's properties");
+                throw new ExprValidationException(getErrorPrefix() + " requires that any child expressions evaluate properties of the same stream; Use 'firstever' or 'lastever' or 'nth' instead");
             }
             streamNum = streams.iterator().next();            
+            istreamOnly = getIstreamOnly(streamTypeService, streamNum);
+            if ((accessType == AggregationAccessType.WINDOW) && istreamOnly && !streamTypeService.isOnDemandStreams()) {
+                throw new ExprValidationException(getErrorPrefix() + " requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead");
+            }
             resultType = this.getChildNodes().get(0).getType();
             evaluator = this.getChildNodes().get(0);
         }
-        return new ExprAccessAggNodeFactory(accessType, resultType, streamNum, evaluator);
+
+        return new ExprAccessAggNodeFactory(accessType, resultType, streamNum, evaluator, istreamOnly, streamTypeService.isOnDemandStreams());
+    }
+
+    private boolean getIstreamOnly(StreamTypeService streamTypeService, int streamNum) {
+        if (streamNum < streamTypeService.getEventTypes().length) {
+            return streamTypeService.getIStreamOnly()[streamNum];
+        }
+        // this could happen for match-recognize which has different stream types for selection and for aggregation
+        return streamTypeService.getIStreamOnly()[0];
     }
 
     @Override
@@ -143,5 +167,9 @@ public class ExprAccessAggNode extends ExprAggregateNode
             return false;
 
         return true;
+    }
+
+    private String getErrorPrefix() {
+        return "The '" + accessType.toString().toLowerCase() + "' aggregation function";
     }
 }

@@ -208,7 +208,7 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new StddevAggregator();
     }
 
-    public AggregationMethod makeFirstValueAggregator(Class type) {
+    public AggregationMethod makeFirstEverValueAggregator(Class type) {
         return new FirstEverValueAggregator(type);
     }
 

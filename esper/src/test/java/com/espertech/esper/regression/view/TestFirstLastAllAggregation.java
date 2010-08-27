@@ -38,28 +38,46 @@ public class TestFirstLastAllAggregation extends TestCase {
     //  last(*/a.*/stream_expression, [index_expression])        // all new,                                // always requires stream access instances to guarantee remove stream correctness
     //  window(*/a.*/stream_expression)                          // all new,                                // always requires stream access instances
 
-    // TODO - Testing - Positive
-    // TODO: test match recognize
-    // TODO: test cumulative and access-based together, @Hint
-    // TODO: test output rate limiting
+    // TODO - support for index in first and last
 
     // TODO - Testing - Negative
-    // TODO: distinct should not matter, invalid when distinct is used
-    // TODO: must access properties of the same stream
-    // TODO: test invalid: prev not allowed, stream wildcard stream not matched, wildcard used on join, allow expressions as long as properties from same stream
-    // TODO: test non-window
-    // TODO: no (*, a.*) support for firstever and lastever
-    // TODO: subquery (*) must use stream op
+    // TODO: negative index
 
     // TODO - Documentation
     // TODO: document performance risk: additional tracking of data window data; batch performance; remove performance when not rolling but ooo delete
     // TODO: document cost only paid once regardless of number of aggregation functions as long as same stream
     // TODO: document comparison to prev: prev+aggregation, since prev is not an aggregation function, produces other results
     // TODO: document Nth index for nth function is an integer and must return a constant value
-    // TODO: document DISABLE_RECLAIM_GROUP as a performance tip
 
     // TODO - Consider
     // TODO: support previous version with prev(1, *)
+
+    public void testInvalid() {
+        tryInvalid("select window(distinct intPrimitive) from SupportBean",
+                   "Incorrect syntax near 'distinct' (a reserved keyword) at line 1 column 14, please check the select clause [select window(distinct intPrimitive) from SupportBean]");
+
+        tryInvalid("select window(sa.intPrimitive + sb.intPrimitive) from SupportBean.std:lastevent() sa, SupportBean.std:lastevent() sb",
+                   "Error starting statement: The 'window' aggregation function requires that any child expressions evaluate properties of the same stream; Use 'firstever' or 'lastever' or 'nth' instead [select window(sa.intPrimitive + sb.intPrimitive) from SupportBean.std:lastevent() sa, SupportBean.std:lastevent() sb]");
+
+        tryInvalid("select last(*) from SupportBean.std:lastevent() sa, SupportBean.std:lastevent() sb",
+                   "Error starting statement: The 'last' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select last(*) from SupportBean.std:lastevent() sa, SupportBean.std:lastevent() sb]");
+
+        tryInvalid("select string, (select first(*) from SupportBean.std:lastevent() sa) from SupportBean.std:lastevent() sb",
+                   "Error starting statement: The 'first' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select string, (select first(*) from SupportBean.std:lastevent() sa) from SupportBean.std:lastevent() sb]");
+
+        tryInvalid("select window(x.*) from SupportBean.std:lastevent()",
+                   "Error starting statement: The 'window' aggregation function stream wildcard 'x' does not resolve to any stream [select window(x.*) from SupportBean.std:lastevent()]");
+
+        tryInvalid("select window(*) from SupportBean x",
+                   "Error starting statement: The 'window' aggregation function requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(*) from SupportBean x]");
+        tryInvalid("select window(x.*) from SupportBean x",
+                   "Error starting statement: The 'window' aggregation function requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.*) from SupportBean x]");
+        tryInvalid("select window(x.intPrimitive) from SupportBean x",
+                   "Error starting statement: The 'window' aggregation function requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.intPrimitive) from SupportBean x]");
+
+        tryInvalid("select firstever(x.*) from SupportBean.std:lastevent() as x",
+                   "Incorrect syntax near '*' at line 1 column 19, please check the select clause [select firstever(x.*) from SupportBean.std:lastevent() as x]");
+    }
 
     public void testSubquery() {
         String epl = "select id, (select window(sb.*) from SupportBean.win:length(2) as sb) as w from SupportBean_A";
@@ -81,6 +99,60 @@ public class TestFirstLastAllAggregation extends TestCase {
         SupportBean beanThree = sendEvent(epService, "E2", 0, 1);
         epService.getEPRuntime().sendEvent(new SupportBean_A("A4"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A4", new Object[] {beanTwo, beanThree}});
+    }
+
+    public void testMethodAndAccessTogether() {
+        String epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean.win:length(2) as sa";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        String[] fields = "si,wi".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, intArray(1)});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {3, intArray(1, 2)});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 3));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {5, intArray(2, 3)});
+
+        stmt.destroy();
+        epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean.win:keepall() as sa group by string";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, intArray(1)});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {2, intArray(2)});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 3));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {5, intArray(2, 3)});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 4));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {5, intArray(1, 4)});
+    }
+
+    public void testOutputRateLimiting() {
+        String epl = "select sum(intPrimitive) as si, window(sa.intPrimitive) as wi from SupportBean.win:keepall() as sa output every 2 events";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        String[] fields = "si,wi".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {
+                {1, intArray(1)},
+                {3, intArray(1,2)},
+                });
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 3));
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 4));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {
+                {6, intArray(1,2,3)},
+                {10, intArray(1,2,3,4)},
+                });
     }
 
     public void testTypeAndColNameAndEquivalency() {
@@ -137,9 +209,8 @@ public class TestFirstLastAllAggregation extends TestCase {
         String[] fields = "f1,f2,w1,l1".split(",");
 
         SupportBean beanOne = sendEvent(epService, "E1", 10d, 100);
-        EventBean event = listener.assertOneGetNewAndReset();
         Object[] expected = new Object[] {110d, 100, new Object[] {beanOne}, beanOne};
-        ArrayAssertionUtil.assertProps(event, fields, expected);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, expected);
         if (isCheckStatic) {
             Object[] params = SupportStaticMethodLib.getInvocations().get(0);
             SupportStaticMethodLib.getInvocations().clear();
@@ -454,6 +525,31 @@ public class TestFirstLastAllAggregation extends TestCase {
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {beanE2, beanE2, beanE3, beanE3, window, window});
     }
 
+    public void testUnboundedStream()
+    {
+        String epl = "select " +
+                "first(string) as f1, " +
+                "first(sb.*) as f2, " +
+                "first(*) as f3, " +
+                "last(string) as l1, " +
+                "last(sb.*) as l2, " +
+                "last(*) as l3 " +
+                "from SupportBean as sb";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        String[] fields = "f1,f2,f3,l1,l2,l3".split(",");
+
+        SupportBean beanOne = sendEvent(epService, "E1", 1d, 1);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", beanOne, beanOne, "E1", beanOne, beanOne});
+
+        SupportBean beanTwo = sendEvent(epService, "E2", 2d, 2);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", beanOne, beanOne, "E2", beanTwo, beanTwo});
+
+        SupportBean beanThree = sendEvent(epService, "E3", 3d, 3);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", beanOne, beanOne, "E3", beanThree, beanThree});
+    }
+
     public void testWindowedUnGrouped()
     {
         String epl = "select " +
@@ -496,11 +592,26 @@ public class TestFirstLastAllAggregation extends TestCase {
 
         stmt.destroy();
 
+        // SODA
         EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
         stmt = epService.getEPAdministrator().create(model);
         stmt.addListener(listener);
         assertEquals(epl, model.toEPL());
 
+        runAssertionGrouped();
+
+        // test hints
+        stmt.destroy();
+        String newEPL = "@Hint('disable_reclaim_group') " + epl;
+        stmt = epService.getEPAdministrator().createEPL(newEPL);
+        stmt.addListener(listener);
+        runAssertionGrouped();
+
+        // test hints
+        stmt.destroy();
+        newEPL = "@Hint('reclaim_group_aged=10,reclaim_group_freq=5') " + epl;
+        stmt = epService.getEPAdministrator().createEPL(newEPL);
+        stmt.addListener(listener);
         runAssertionGrouped();
     }
 
@@ -573,4 +684,13 @@ public class TestFirstLastAllAggregation extends TestCase {
         return bean;
     }
 
+    private void tryInvalid(String epl, String message) {
+        try {
+            epService.getEPAdministrator().createEPL(epl);
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals(ex.getMessage(), message);
+        }
+    }
 }

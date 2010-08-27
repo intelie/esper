@@ -22,7 +22,7 @@ public class ExprLeavingAddNodeFactory implements AggregationMethodFactory
         return Boolean.class;
     }
 
-    public AggregationSpec getSpec()
+    public AggregationSpec getSpec(boolean isMatchRecognize)
     {
         return null;
     }

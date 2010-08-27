@@ -1,7 +1,6 @@
 package com.espertech.esper.rowregex;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.annotation.HintEnum;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
@@ -134,7 +133,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             streamNamesDefine[streamNumDefine] = defineItem.getIdentifier();
             typesDefine[streamNumDefine] = parentViewType;
 
-            StreamTypeService typeServiceDefines = new StreamTypeServiceImpl(typesDefine, streamNamesDefine, isIStreamOnly, statementContext.getEngineURI());
+            StreamTypeService typeServiceDefines = new StreamTypeServiceImpl(typesDefine, streamNamesDefine, isIStreamOnly, statementContext.getEngineURI(), false);
             ExprNode exprNodeResult = handlePreviousFunctions(defineItem.getExpression());
             ExprNode validated = exprNodeResult.getValidatedSubtree(typeServiceDefines, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
             defineItem.setExpression(validated);
@@ -170,7 +169,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         {
             boolean[] isIStreamOnly = new boolean[allStreamNames.length];
             Arrays.fill(isIStreamOnly, true);
-            StreamTypeServiceImpl typeServiceAggregateMeasure = new StreamTypeServiceImpl(allTypes, allStreamNames, isIStreamOnly, statementContext.getEngineURI());
+            StreamTypeServiceImpl typeServiceAggregateMeasure = new StreamTypeServiceImpl(allTypes, allStreamNames, isIStreamOnly, statementContext.getEngineURI(), false);
             Map<Integer, List<ExprAggregateNode>> measureExprAggNodesPerStream = new HashMap<Integer, List<ExprAggregateNode>>();
 
             for (ExprAggregateNode aggregateNode : measureAggregateExprNodes)

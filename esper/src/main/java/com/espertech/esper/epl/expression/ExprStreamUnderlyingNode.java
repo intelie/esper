@@ -41,6 +41,13 @@ public class ExprStreamUnderlyingNode extends ExprNode
         this.isWildcard = isWildcard;
     }
 
+    public ExprStreamUnderlyingNode(String streamName, boolean wildcard, int streamNum, Class type) {
+        this.streamName = streamName;
+        isWildcard = wildcard;
+        this.streamNum = streamNum;
+        this.type = type;
+    }
+
     /**
      * Returns the stream name.
      * @return stream name
