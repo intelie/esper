@@ -7,7 +7,10 @@ Major API or EPL changes
   - The bound-repeat syntax in the repeat-until pattern operator changed syntax:
     The old syntax of separating range value by dots "[low .. high]" is no longer supported. Use the colon ":" character instead of "..".
     With 4.0 the only support syntax uses a colon and is "[low : high]". This syntax had also been supported in 3.x.
-
+  - "nth" aggregator "nth(value, 0)" means current row, same as "prev" and "first"
+  - Renamed "first" to "firstever"
+  - Renamed "last" to "lastever" (this makes a difference as out-of-order deletes are handled by last only and not by lastever)
+  - Introduced new aggregation functions that track the data window : first, last and window with a convenient syntax for access to all attributes
 
 Changes in version 3.5.0
 ------------------------

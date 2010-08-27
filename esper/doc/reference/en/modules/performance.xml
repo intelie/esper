@@ -570,6 +570,30 @@ select a.symbol, avgA, avgB from StreamAvgA.std:lastevent() a, StreamAvgB.std:la
 			</para>
 		</sect2>
 
+		<sect2 id="perf-tips-16">
+			<title>Optimizing Stream Filter Expressions</title>
+
+			<para>
+				Assume your EPL statement invokes a static method in the stream filter as the below statement shows as an example:
+			</para>
+			<programlisting><![CDATA[select * from MyEvent(MyHelperLibrary.filter(field1, field2, field3, field4*field5))]]></programlisting>
+
+			<para>
+				As a result of starting above statement, the engine must evaluate each MyEvent event invoking the <literal>MyHelperLibrary.filter</literal> method and passing certain event properties. The same applies to pattern filters that 
+				specify functions to evaluate.
+			</para>
+			
+			<para>
+				If possible, consider moving some of the checking performed by the function back into the filter or consider spitting the function into a two parts separated by <literal>and</literal> conjuntion. The engine evaluates expressions left of the <literal>and</literal> first and can skip evaluation of the 
+				further expressions in the conjuntion in the case when the first expression returns false.
+			</para>
+
+			<para>
+				For example, the below statement could be faster to evaluate:
+			</para>
+			<programlisting><![CDATA[select * from MyEvent(field1="value" and MyHelperLibrary.filter(field1, field2, field3, field4*field5))]]></programlisting>
+		</sect2>
+
     </sect1>
 
     <sect1 id="performance-kit" revision="1">

@@ -19,9 +19,11 @@ public interface AggregationAccess
 
     public EventBean getFirstValue();
     public EventBean getLastValue();
+    public EventBean getFirstNthValue(int index);
+    public EventBean getLastNthValue(int index);
     public Iterator<EventBean> iterator();
     public int size();
-    public EventBean getNthPriorValue(int index);
 
     public void clear();
+
 }

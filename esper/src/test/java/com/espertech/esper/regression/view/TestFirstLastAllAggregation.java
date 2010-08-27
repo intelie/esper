@@ -29,7 +29,7 @@ public class TestFirstLastAllAggregation extends TestCase {
     // ==> Rename "first" to "firstever"
     // ==> Rename "last" to "lastever" (this makes a difference as out-of-order deletes are handled by last only and not by lastever)
     // ==> Add new aggregation function (window) and support for "*" and "a.*" and support for index
-    // ==> Leave "nth" as is, document its differences: any expression, always separately managed, circular buffer, out of order remove behavior, similar to last(expr, n_index), never uses stream access instance
+    // ==> Leave "nth" as is, document its differences: any expression, always separately managed, circular buffer, out of order remove behavior, similar to last(expr, n_index)
 
     // SYNTAX:
     //  firstever(expression)                                    // formerly "first", not windowed (ever)   // never uses stream access instance
@@ -38,19 +38,104 @@ public class TestFirstLastAllAggregation extends TestCase {
     //  last(*/a.*/stream_expression, [index_expression])        // all new,                                // always requires stream access instances to guarantee remove stream correctness
     //  window(*/a.*/stream_expression)                          // all new,                                // always requires stream access instances
 
-    // TODO - support for index in first and last
-
-    // TODO - Testing - Negative
-    // TODO: negative index
-
     // TODO - Documentation
     // TODO: document performance risk: additional tracking of data window data; batch performance; remove performance when not rolling but ooo delete
     // TODO: document cost only paid once regardless of number of aggregation functions as long as same stream
     // TODO: document comparison to prev: prev+aggregation, since prev is not an aggregation function, produces other results
     // TODO: document Nth index for nth function is an integer and must return a constant value
 
-    // TODO - Consider
-    // TODO: support previous version with prev(1, *)
+    public void testPrevNthIndexedFirstLast() {
+        String epl = "select " +
+                "prev(intPrimitive, 0) as p0, " +
+                "prev(intPrimitive, 1) as p1, " +
+                "prev(intPrimitive, 2) as p2, " +
+                "nth(intPrimitive, 0) as n0, " +
+                "nth(intPrimitive, 1) as n1, " +
+                "nth(intPrimitive, 2) as n2, " +
+                "last(intPrimitive, 0) as l1, " +
+                "last(intPrimitive, 1) as l2, " +
+                "last(intPrimitive, 2) as l3 " +
+                "from SupportBean.win:length(3)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        String[] fields = "p0,p1,p2,n0,n1,n2,l1,l2,l3".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {10, null, null, 10, null, null, 10, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 11));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {11, 10, null, 11, 10, null, 11, 10, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 12));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {12, 11, 10,  12, 11, 10,  12, 11, 10});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 13));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {13, 12, 11,  13, 12, 11,  13, 12, 11});
+    }
+
+    public void testFirstLastIndexed() {
+        String epl = "select " +
+                "first(intPrimitive, 0) as f0, " +
+                "first(intPrimitive, 1) as f1, " +
+                "first(intPrimitive, 2) as f2, " +
+                "first(intPrimitive, 3) as f3, " +
+                "last(intPrimitive, 0) as l0, " +
+                "last(intPrimitive, 1) as l1, " +
+                "last(intPrimitive, 2) as l2, " +
+                "last(intPrimitive, 3) as l3 " +
+                "from SupportBean.win:length(3)";
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionFirstLastIndexed();
+
+        // test join
+        stmt.destroy();
+        epl += ", SupportBean_A.std:lastevent()";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+
+        runAssertionFirstLastIndexed();
+
+        // test variable
+        stmt.destroy();
+        epService.getEPAdministrator().createEPL("create variable int indexvar = 2");
+        epl = "select " +
+                "first(intPrimitive, indexvar) as f0 " +
+                "from SupportBean.win:keepall()";
+
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        String[] fields = "f0".split(",");
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 11));
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 12));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {12});
+        
+        epService.getEPRuntime().setVariableValue("indexvar", 0);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 13));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {10});
+    }
+
+    private void runAssertionFirstLastIndexed() {
+        String[] fields = "f0,f1,f2,f3,l0,l1,l2,l3".split(",");
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {10, null, null, null, 10, null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 11));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {10, 11, null, null, 11, 10, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 12));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {10, 11, 12, null, 12, 11, 10, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 13));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {11, 12, 13, null, 13, 12, 11, null});
+    }
 
     public void testInvalid() {
         tryInvalid("select window(distinct intPrimitive) from SupportBean",
@@ -77,6 +162,11 @@ public class TestFirstLastAllAggregation extends TestCase {
 
         tryInvalid("select firstever(x.*) from SupportBean.std:lastevent() as x",
                    "Incorrect syntax near '*' at line 1 column 19, please check the select clause [select firstever(x.*) from SupportBean.std:lastevent() as x]");
+        tryInvalid("select window(x.intPrimitive, 10) from SupportBean x",
+                   "Incorrect syntax near 'x' at line 1 column 14, please check the select clause [select window(x.intPrimitive, 10) from SupportBean x]");
+
+        tryInvalid("select first(x.*, 10d) from SupportBean.std:lastevent() as x",
+                   "Error starting statement: The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean.std:lastevent() as x]");
     }
 
     public void testSubquery() {

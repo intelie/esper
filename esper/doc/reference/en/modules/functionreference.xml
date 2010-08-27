@@ -727,7 +727,7 @@ having leaving()</programlisting>
 						<entry>nth(<emphasis>expression</emphasis>, <emphasis>N_index</emphasis>)</entry>
 						<entry>
 							<para>
-								Returns the Nth oldest element; If N=1 returns the most recent value. If N is larger than the events held in the data window, returns null.
+								Returns the Nth oldest element; If N=0 returns the most recent value. If N=1 returns the value before the most recent value. If N is larger than the events held in the data window for this group, returns null.
 							</para>
 							<para>
 								A maximum N historical values are stored, so it can be safely used to compare
@@ -739,7 +739,7 @@ having leaving()</programlisting>
 							<para>
 								This statement outputs every 2 seconds the groups that have new data and their last price and the previous-to-last price:
 							</para>
-							<programlisting>select symbol, nth(price, 2), last(price) 
+							<programlisting>select symbol, nth(price, 1), last(price) 
 from StockTickEvent 
 group by symbol
 output last every 2 sec</programlisting>

@@ -526,8 +526,8 @@ builtinFunc
 	|	^(f=MEDIAN (DISTINCT)? valueExpr) { leaveNode($f); }
 	|	^(f=STDDEV (DISTINCT)? valueExpr) { leaveNode($f); }
 	|	^(f=AVEDEV (DISTINCT)? valueExpr) { leaveNode($f); }
-	|	^(f=LAST_AGGREG (DISTINCT)? accessValueExpr) { leaveNode($f); }
-	|	^(f=FIRST_AGGREG (DISTINCT)? accessValueExpr) { leaveNode($f); }
+	|	^(f=LAST_AGGREG (DISTINCT)? accessValueExpr valueExpr?) { leaveNode($f); }
+	|	^(f=FIRST_AGGREG (DISTINCT)? accessValueExpr valueExpr?) { leaveNode($f); }
 	|	^(f=WINDOW_AGGREG (DISTINCT)? accessValueExpr) { leaveNode($f); }
 	| 	^(f=COALESCE valueExpr valueExpr (valueExpr)* ) { leaveNode($f); }
 	| 	^(f=PREVIOUS valueExpr valueExpr?) { leaveNode($f); }

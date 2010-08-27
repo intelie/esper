@@ -17,15 +17,17 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
     private final Class resultType;
     private final int streamNum;
     private final ExprEvaluator childNode;
+    private final ExprNode indexEvalNode;
     private final boolean istreamOnly;
     private final boolean ondemandQuery;
 
-    public ExprAccessAggNodeFactory(AggregationAccessType accessType, Class resultType, int streamNum, ExprEvaluator childNode, boolean istreamOnly, boolean ondemandQuery)
+    public ExprAccessAggNodeFactory(AggregationAccessType accessType, Class resultType, int streamNum, ExprEvaluator childNode, ExprNode indexEvalNode, boolean istreamOnly, boolean ondemandQuery)
     {
         this.accessType = accessType;
         this.resultType = resultType;
         this.streamNum = streamNum;
         this.childNode = childNode;
+        this.indexEvalNode = indexEvalNode;
         this.istreamOnly = istreamOnly;
         this.ondemandQuery = ondemandQuery;
     }
@@ -67,14 +69,24 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
 
     public AggregationAccessor getAccessor()
     {
-        if (accessType == AggregationAccessType.FIRST) {
-            return new AggregationAccessorFirst(streamNum, childNode);
+        if (indexEvalNode != null) {
+            boolean isFirst = accessType == AggregationAccessType.FIRST;
+            int constant = -1;
+            if (indexEvalNode.isConstantResult()) {
+                constant = (Integer) indexEvalNode.evaluate(null, true, null);
+            }
+            return new AggregationAccessorFirstLastIndex(streamNum, childNode, indexEvalNode, constant, isFirst);
         }
-        else if (accessType == AggregationAccessType.LAST) {
-            return new AggregationAccessorLast(streamNum, childNode);
-        }
-        else if (accessType == AggregationAccessType.WINDOW) {
-            return new AggregationAccessorAll(streamNum, childNode);
+        else {
+            if (accessType == AggregationAccessType.FIRST) {
+                return new AggregationAccessorFirst(streamNum, childNode);
+            }
+            else if (accessType == AggregationAccessType.LAST) {
+                return new AggregationAccessorLast(streamNum, childNode);
+            }
+            else if (accessType == AggregationAccessType.WINDOW) {
+                return new AggregationAccessorAll(streamNum, childNode);
+            }
         }
         throw new IllegalStateException("Access type is undefined or not known as code '" + accessType + "'");
     }

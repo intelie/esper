@@ -40,7 +40,8 @@ public class ExprAccessAggNode extends ExprAggregateNode
         int streamNum;
         Class resultType;
         ExprEvaluator evaluator;
-        boolean istreamOnly = false;
+        ExprNode evaluatorIndex = null;
+        boolean istreamOnly;
         
         if (isWildcard) {
             if (streamTypeService.getStreamNames().length > 1) {
@@ -61,7 +62,7 @@ public class ExprAccessAggNode extends ExprAggregateNode
             if ((accessType == AggregationAccessType.WINDOW) && istreamOnly && !streamTypeService.isOnDemandStreams()) {
                 throw new ExprValidationException(getErrorPrefix() + " requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead");
             }
-            this.getChildNodes().add(new ExprStreamUnderlyingNode(null, true, streamNum, resultType));            
+            this.getChildNodes().add(0, new ExprStreamUnderlyingNode(null, true, streamNum, resultType));
         }
         else if (streamWildcard != null) {
             streamNum = streamTypeService.getStreamNumForStreamName(streamWildcard);
@@ -84,7 +85,7 @@ public class ExprAccessAggNode extends ExprAggregateNode
                     return eventsPerStream[streamNumUsed].getUnderlying();
                 }
             };
-            this.getChildNodes().add(new ExprStreamUnderlyingNode(streamWildcard, false, streamNum, resultType));
+            this.getChildNodes().add(0, new ExprStreamUnderlyingNode(streamWildcard, false, streamNum, resultType));
         }
         else {
             if (this.getChildNodes().isEmpty()) {
@@ -104,7 +105,17 @@ public class ExprAccessAggNode extends ExprAggregateNode
             evaluator = this.getChildNodes().get(0);
         }
 
-        return new ExprAccessAggNodeFactory(accessType, resultType, streamNum, evaluator, istreamOnly, streamTypeService.isOnDemandStreams());
+        if (this.getChildNodes().size() > 1) {
+            if (accessType == AggregationAccessType.WINDOW) {
+                throw new ExprValidationException(getErrorPrefix() + " does not accept an index expression; Use 'first' or 'last' instead");
+            }
+            evaluatorIndex = this.getChildNodes().get(1);
+            if (evaluatorIndex.getType() != Integer.class) {
+                throw new ExprValidationException(getErrorPrefix() + " requires an index expression that returns an integer value");
+            }
+        }
+
+        return new ExprAccessAggNodeFactory(accessType, resultType, streamNum, evaluator, evaluatorIndex, istreamOnly, streamTypeService.isOnDemandStreams());
     }
 
     private boolean getIstreamOnly(StreamTypeService streamTypeService, int streamNum) {

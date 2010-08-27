@@ -36,7 +36,7 @@ public class ExprNthAggNodeFactory implements AggregationMethodFactory
 
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
-        AggregationMethod method = methodResolutionService.makeNthAggregator(childType, size);
+        AggregationMethod method = methodResolutionService.makeNthAggregator(childType, size + 1);
         if (!isDistinct) {
             return method;
         }

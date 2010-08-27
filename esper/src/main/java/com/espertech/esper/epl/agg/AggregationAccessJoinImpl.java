@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.ArrayEventIterator;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -18,6 +19,7 @@ public class AggregationAccessJoinImpl implements AggregationAccess
 {
     private int streamId;
     private LinkedHashMap<EventBean, Integer> refSet = new LinkedHashMap<EventBean, Integer>();
+    private EventBean[] array;
 
     public AggregationAccessJoinImpl(int streamId)
     {
@@ -26,14 +28,16 @@ public class AggregationAccessJoinImpl implements AggregationAccess
 
     public void clear() {
         refSet.clear();
+        array = null;
     }
 
     public void applyEnter(EventBean[] eventsPerStream)
     {
         EventBean event = eventsPerStream[streamId];
-        if (event ==null) {
+        if (event == null) {
             return;
         }
+        array = null;
         Integer value = refSet.get(event);
         if (value == null)
         {
@@ -51,6 +55,7 @@ public class AggregationAccessJoinImpl implements AggregationAccess
         if (event == null) {
             return;
         }
+        array = null;
 
         Integer value = refSet.get(event);
         if (value == null)
@@ -68,11 +73,36 @@ public class AggregationAccessJoinImpl implements AggregationAccess
         refSet.put(event, value);
     }
 
-    public EventBean getNthPriorValue(int index)
-    {
-        Set<EventBean> events = refSet.keySet();
-        EventBean[] array = events.toArray(new EventBean[events.size()]);
+    public EventBean getFirstNthValue(int index) {
+        if (index < 0) {
+            return null;
+        }
+        if (refSet.isEmpty()) {
+            return null;
+        }
+        if (index >= refSet.size()) {
+            return null;
+        }
+        if (array == null) {
+            initArray();
+        }
         return array[index];
+    }
+
+    public EventBean getLastNthValue(int index) {
+        if (index < 0) {
+            return null;
+        }
+        if (refSet.isEmpty()) {
+            return null;
+        }
+        if (index >= refSet.size()) {
+            return null;
+        }
+        if (array == null) {
+            initArray();
+        }
+        return array[array.length - index - 1];
     }
 
     public EventBean getFirstValue() {
@@ -87,20 +117,27 @@ public class AggregationAccessJoinImpl implements AggregationAccess
         if (refSet.isEmpty()) {
             return null;
         }
-        // TODO - more effective
-        Set<EventBean> events = refSet.keySet();
-        EventBean[] array = events.toArray(new EventBean[events.size()]);
-        return array[events.size() - 1];
+        if (array == null) {
+            initArray();
+        }
+        return array[array.length - 1];
     }
 
     public Iterator<EventBean> iterator()
     {
-        Set<EventBean> events = refSet.keySet();
-        return events.iterator();
+        if (array == null) {
+            initArray();
+        }
+        return new ArrayEventIterator(array);
     }
 
     public int size()
     {
         return refSet.size();
+    }
+
+    private void initArray() {
+        Set<EventBean> events = refSet.keySet();
+        array = events.toArray(new EventBean[events.size()]);
     }
 }

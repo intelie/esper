@@ -11,12 +11,13 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class AggregationAccessImpl implements AggregationAccess
 {
     private int streamId;
-    private ArrayDequeJDK6Backport<EventBean> events = new ArrayDequeJDK6Backport<EventBean>();
+    private ArrayList<EventBean> events = new ArrayList<EventBean>();
 
     public AggregationAccessImpl(int streamId)
     {
@@ -45,20 +46,32 @@ public class AggregationAccessImpl implements AggregationAccess
         events.add(event);
     }
 
-    public EventBean getNthPriorValue(int index)
+    public EventBean getFirstNthValue(int index)
     {
-        EventBean[] all = events.toArray(new EventBean[events.size()]);
-        if (all.length < index) {
+        if (index < 0) {
             return null;
         }
-        return all[index];
+        if (index >= events.size()) {
+            return null;
+        }
+        return events.get(index);
+    }
+
+    public EventBean getLastNthValue(int index) {
+        if (index < 0) {
+            return null;
+        }
+        if (index >= events.size()) {
+            return null;
+        }
+        return events.get(events.size() - index - 1);
     }
 
     public EventBean getFirstValue() {
         if (events.isEmpty()) {
             return null;
         }
-        return events.getFirst();
+        return events.get(0);
     }
 
     public EventBean getLastValue()
@@ -66,7 +79,7 @@ public class AggregationAccessImpl implements AggregationAccess
         if (events.isEmpty()) {
             return null;
         }
-        return events.getLast();
+        return events.get(events.size() - 1);
     }
 
     public Iterator<EventBean> iterator()

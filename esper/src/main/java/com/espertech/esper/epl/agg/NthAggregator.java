@@ -47,11 +47,11 @@ public class NthAggregator implements AggregationMethod {
     }
 
     public void leave(Object value) {
-        numDataPoints--;
         if (sizeBuf > numDataPoints) {
             final int diff = sizeBuf - (int) numDataPoints;
             circularBuffer[(currentBufferElementPointer + diff - 1) % sizeBuf] = null;
         }
+        numDataPoints--;
     }
 
     public Class getValueType() {
