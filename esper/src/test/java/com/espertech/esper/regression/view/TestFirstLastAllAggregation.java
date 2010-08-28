@@ -25,25 +25,6 @@ public class TestFirstLastAllAggregation extends TestCase {
         epService.initialize();
     }
 
-    // SUMMARY
-    // ==> Rename "first" to "firstever"
-    // ==> Rename "last" to "lastever" (this makes a difference as out-of-order deletes are handled by last only and not by lastever)
-    // ==> Add new aggregation function (window) and support for "*" and "a.*" and support for index
-    // ==> Leave "nth" as is, document its differences: any expression, always separately managed, circular buffer, out of order remove behavior, similar to last(expr, n_index)
-
-    // SYNTAX:
-    //  firstever(expression)                                    // formerly "first", not windowed (ever)   // never uses stream access instance
-    //  lastever(expression)                                     // formerly "last", not windowed (ever)   // never uses stream access instance
-    //  first(*/a.*/stream_expression, [index_expression])       // (now its windowed and supports index)   // always requires stream access instances
-    //  last(*/a.*/stream_expression, [index_expression])        // all new,                                // always requires stream access instances to guarantee remove stream correctness
-    //  window(*/a.*/stream_expression)                          // all new,                                // always requires stream access instances
-
-    // TODO - Documentation
-    // TODO: document performance risk: additional tracking of data window data; batch performance; remove performance when not rolling but ooo delete
-    // TODO: document cost only paid once regardless of number of aggregation functions as long as same stream
-    // TODO: document comparison to prev: prev+aggregation, since prev is not an aggregation function, produces other results
-    // TODO: document Nth index for nth function is an integer and must return a constant value
-
     public void testPrevNthIndexedFirstLast() {
         String epl = "select " +
                 "prev(intPrimitive, 0) as p0, " +
@@ -176,7 +157,7 @@ public class TestFirstLastAllAggregation extends TestCase {
         String[] fields = "id,w".split(",");
 
         epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A1", new Object[0]});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"A1", null});
 
         SupportBean beanOne = sendEvent(epService, "E1", 0, 1);
         epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
@@ -383,7 +364,7 @@ public class TestFirstLastAllAggregation extends TestCase {
 
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields,
-                new Object[] {1, null, null, split(null), null});
+                new Object[] {1, null, null, null, null});
 
         epService.getEPRuntime().sendEvent(new SupportBean_S1(1, "A"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields,
@@ -418,7 +399,7 @@ public class TestFirstLastAllAggregation extends TestCase {
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 0));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {null, split(null), null});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {null, null, null});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E1", split("E1,E2"), "E2"});
         listener.reset();
 
@@ -470,8 +451,8 @@ public class TestFirstLastAllAggregation extends TestCase {
         EventBean[] result = listener.getAndResetLastNewData();
         ArrayAssertionUtil.assertPropsPerRow(result, fields, new Object[][] {
                 {"E1", 13, intArray(13,14,15,16,17,18), 18},
-                {"E2", null, intArray(null), null},
-                {"E3", null, intArray(null), null}
+                {"E2", null, null, null},
+                {"E3", null, null, null}
         });
     }
 
@@ -527,7 +508,7 @@ public class TestFirstLastAllAggregation extends TestCase {
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", split("E1"), "E1"});
 
         epService.getEPRuntime().sendEvent(new SupportBean_A("E1"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, split(null), null});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null});
 
         epService.getEPRuntime().sendEvent(new SupportBean("E4", 40));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4", split("E4"), "E4"});

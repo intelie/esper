@@ -19,6 +19,9 @@ public class AggregationAccessorAll implements AggregationAccessor
     }
 
     public Object getValue(AggregationAccess access) {
+        if (access.size() == 0) {
+            return null;
+        }
         Object[] result = new Object[access.size()];
         Iterator<EventBean> it = access.iterator();
         int count = 0;

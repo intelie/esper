@@ -563,247 +563,423 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 		<title>Aggregate Functions</title>
 
 		<indexterm><primary>aggregation functions</primary><secondary>overview</secondary></indexterm>
+		
 		<para>
-			The SQL-standard aggregation functions are shown in below table, additional built-in aggregation functions are listed in the next table.
-		</para>
-
-		<table frame="topbot" id="epl-grouping-aggregate-func-table-SQL" revision="2">
-			<title>Syntax and results of SQL-standard aggregation functions</title>
-			<tgroup cols="2">
-				<colspec colwidth="1*"/>
-				<colspec colwidth="2.0*"/>
-				<thead>
-					<row>
-						<entry>Aggregate Function</entry>
-						<entry>Result</entry>
-					</row>
-				</thead>
-				<tbody>
-					<row>
-						<entry>avedev([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Mean deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>avg([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Average of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>count([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Number of the (distinct) non-null values in the expression, returning a value of <literal>long</literal> type.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>count(*)</entry>
-						<entry>
-							<para>
-								Number of events, returning a value of <literal>long</literal> type.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>max([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Highest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>median([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Median (distinct) value in the expression, returning a value of <literal>double</literal> type. Double Not-a-Number (NaN) values are ignored in the median computation.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>min([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Lowest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>stddev([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Standard deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>sum([all|distinct] <emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Totals the (distinct) values in the expression, returning a value of <literal>long, double, float or integer</literal> type depending on the expression.
-							</para>
-						</entry>
-					</row>
-				</tbody>
-			</tgroup>
-		</table>
-
-		<para>
-			If your application provides double-type values to an aggregation function, avoid using Not-a-Number (NaN) and infinity. Aggregation functions are optimized to retain the minimal
-			information necessary to compute a result. Also when using double-type values, round-off errors (or rounding errors) may occur due to double-type precision. Consider rounding your result value to the desired precision.
+			Aggregation functions returns a single value from a collection of input values. The <literal>group by</literal> keywords are often used in conjunction with aggregation functions to group the result-set by one or more columns.
 		</para>
 
 		<para>
-			Your application may also add its own aggregation function as <xref linkend="custom-aggregation-function"/> describes.
+			The EPL language extends the standard SQL aggregation functions by useful aggregation functions that can track a data window or compute rates. Your application may also add its own aggregation function as <xref linkend="custom-aggregation-function"/> describes.
 		</para>
 		
 		<para>
-			Esper provides the following additional aggregation functions beyond those in the SQL standard:
+			Aggregation values are always computed incrementally: Insert and remove streams cause aggregation values to change. The exception are on-demand queries and joins when using the <literal>unidirectional</literal> keyword. Aggregation functions are optimized to retain the minimal
+				information necessary to compute the aggregated result. 
+		</para>
+		
+		<para>
+			Aggregation functions can also be used with unbound streams when no data window is specified.
 		</para>
 
-		<table frame="topbot" id="epl-grouping-aggregate-func-table-ext" revision="2">
-			<title>Syntax and results of EPL aggregation functions</title>
-			<tgroup cols="2">
-				<colspec colwidth="1*"/>
-				<colspec colwidth="2.0*"/>
-				<thead>
-					<row>
-						<entry>Aggregate Function</entry>
-						<entry>Result</entry>
-					</row>
-				</thead>
-				<tbody>
-					<row>
-						<entry>firstever(<emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								The <literal>firstever</literal> aggregation function returns the very first value ever. If used with <literal>group by</literal> it returns the first value ever for that group.
-							</para>				
-							<para>
-								If used with a data window, the result of the function does not change as data points leave a data window. Use the <literal>first</literal> or <literal>prev</literal> function to return values relative to a data window.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>last(<emphasis>expression</emphasis>)</entry>
-						<entry>
-							<para>
-								Returns the last value or last value per group, if used with <literal>group by</literal>.
-							</para>
-							<para>
-								This sample statement outputs the total price, the first price and the last price per symbol for the last 30 seconds of events and every 5 seconds:
-							</para>
-							<programlisting>select symbol, sum(price), last(price), first(price)
+		<sect2 id="epl-function-aggregation-std">
+			<title>SQL-Standard Functions</title>
+
+			<para>
+				The SQL-standard aggregation functions are shown in below table.
+			</para>
+	
+			<table frame="topbot" id="epl-grouping-aggregate-func-table-SQL" revision="2">
+				<title>Syntax and results of SQL-standard aggregation functions</title>
+				<tgroup cols="2">
+					<colspec colwidth="1*"/>
+					<colspec colwidth="2.0*"/>
+					<thead>
+						<row>
+							<entry>Aggregate Function</entry>
+							<entry>Result</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>avedev([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Mean deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>avg([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Average of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>count([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Number of the (distinct) non-null values in the expression, returning a value of <literal>long</literal> type.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>count(*)</entry>
+							<entry>
+								<para>
+									Number of events, returning a value of <literal>long</literal> type.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>max([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Highest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>median([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Median (distinct) value in the expression, returning a value of <literal>double</literal> type. Double Not-a-Number (NaN) values are ignored in the median computation.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>min([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Lowest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>stddev([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Standard deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>sum([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Totals the (distinct) values in the expression, returning a value of <literal>long, double, float or integer</literal> type depending on the expression.
+								</para>
+							</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+	
+			<para>
+				If your application provides double-type values to an aggregation function, avoid using Not-a-Number (NaN) and infinity. Also when using double-type values, round-off errors (or rounding errors) may occur due to double-type precision. Consider rounding your result value to the desired precision.
+			</para>
+		</sect2>
+	
+		<sect2 id="epl-function-aggregation-dwtrack">
+			<title>Data Window Aggregation Functions</title>
+
+			<para>
+				The <literal>first</literal>, <literal>last</literal> and <literal>window</literal> aggregation functions return event properties of events present in a stream's data window. The the functions alongside SQL aggregation functions or when information about data window contents is required.
+			</para>
+			
+			<para>
+				When comparing the <literal>last</literal> aggregation function to the <literal>prev</literal> function, the differences are as follows. The <literal>prev</literal> function is not an aggregation function and thereby not sensitive to the presence of <literal>group by</literal>. The <literal>prev</literal> function accesses data window contents directly and respects the sort order of the data window. The <literal>last</literal> aggregation function returns results based on arrival order and tracks data window contents in a separate shared data structure.
+			</para>
+
+			<para>
+				When comparing the <literal>first</literal> aggregation function to the <literal>prevtail</literal> function, the differences are as follows. The <literal>prevtail</literal> function is not an aggregation function and thereby not sensitive to the presence of <literal>group by</literal>. The <literal>prevtail</literal> function accesses data window contents directly and respects the sort order of the data window. The <literal>first</literal> aggregation function returns results based on arrival order and tracks data window contents in a separate shared data structure.
+			</para>
+
+			<para>
+				When comparing the <literal>last</literal> aggregation function to the <literal>nth</literal> aggregation function, the differences  are as follows. The <literal>nth</literal> aggregation function does not consider out-of-order deletes (for example with on-delete and sorted windows) and does not revert to the prior expression value when the last event or nth-event was deleted from a data window. The <literal>last</literal> aggregation function tracks the data window and reflects out-of-order deletes.
+			</para>
+
+			<para>
+				From an implementation perspective, the <literal>first</literal>, <literal>last</literal> and <literal>window</literal> aggregation functions share a common data structure for each stream. 
+			</para>
+			
+			<sect3 id="epl-function-aggregation-dwtrack-first">
+				<title><literal>First</literal> Aggregation Function</title>
+		
+				<para>
+					The synopsis for the <literal>first</literal> aggregation function is:
+				</para>
+				<synopsis><literal>first(</literal>*|<emphasis>stream</emphasis>.*|<emphasis>value_expression</emphasis> [, <emphasis>index_expression</emphasis>])</synopsis>
+
+				<para>
+					The <literal>first</literal> aggregation function returns properties of very first event in the data window. When used with <literal>group by</literal>, it returns properties of the first event in the data window for each group. When specifying an index expression, the function returns properties of the Nth-subsequent event to the first event, all according to order of arrival.
+				</para>
+				
+				<para>
+					The first parameter to the function is required and defines the event properties or expression result to return. The second parameter is an optional <emphasis>index_expression</emphasis> that must return an integer value used as an index to evaluate the Nth-subsequent event to the first event.
+				</para>
+				
+				<para>
+					You may specify the wildcard (<literal>*</literal>) character in which case the function returns the underlying event of the single selected stream. For joins and subqueries you must use the stream wildcard syntax below.
+				</para>
+
+				<para>
+					You may specify the stream name and wildcard (<literal>*</literal>) character in the <emphasis>stream</emphasis><literal>.*</literal> syntax. This returns the underlying event for the specified stream.
+				</para>
+
+				<para>
+					You may specify a <emphasis>value_expression</emphasis> to evaluate for the first event. The value expression may not select properties from multiple streams.
+				</para>
+				
+				<para>
+				    The <emphasis>index_expression</emphasis> is optional. If no index expression is provided, the function returns the first event. If present, the function evaluates the index expression to determine the value for N, and evaluates the Nth-subsequent event to the first event. A value of zero returns the first event and a value of 1 returns 
+				    the event subsequent to the first event. You may not specify event properties in the index expression.
+				</para>
+				
+				<para>
+					The function returns <literal>null</literal> if there are no events in the data window at time of evaluation or when the index is larger then the number of events held in the data window. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group or when the index is larger then the number of events held in the data window for that group.
+				</para>
+
+				<para>
+					To explain, lets consider the statement below which selects the underlying event of the first sensor event held by the length window of 2 events.  
+				</para>
+				<programlisting>select first(*) SensorEvent.win:length(2) </programlisting>
+				
+				<para>
+				   Assume event E1, event E2 and event E3 are of type SensorEvent. When event E1 arrives the statement outputs the underlying event E1. When event E2 arrives the statement again outputs the underlying event E1. When event E3 arrives the statement outputs the the underlying event E2, since 
+				   event E1 has left the data window.
+				</para>
+
+				<para>
+					The stream wildcard syntax is useful for joins and subqueries. This example demonstrates a subquery that returns the first SensorEvent when a DoorEvent arrives:
+				</para>
+				<programlisting>select (select first(se.*) from SensorEvent.win:length(2) as se) from DoorEvent </programlisting>
+				
+				<para>
+					The following example shows the use of an index expression. The output value for <literal>f1</literal> is the temperature property value of the first event in the data window, the value for <literal>f2</literal> is the temperature property value of the second event in the data window:
+				</para>
+				<programlisting>select first(temperature, 0) as f1, select first(temperature, 1) as f2
+from SensorEvent.win:time(10 sec)</programlisting>
+			</sect3>
+
+			<sect3 id="epl-function-aggregation-dwtrack-last">
+				<title><literal>Last</literal> Aggregation Function</title>
+		
+				<para>
+					The synopsis for the <literal>last</literal> aggregation function is:
+				</para>
+				<synopsis><literal>last(</literal>*|<emphasis>stream</emphasis>.*|<emphasis>value_expression</emphasis> [, <emphasis>index_expression</emphasis>])</synopsis>
+
+				<para>
+					The <literal>last</literal> aggregation function returns properties of the very last event in the data window. When used with <literal>group by</literal>, it returns properties of the last event in the data window for each group. When specifying an index expression, the function returns properties of the Nth-prior event to the last event, all according to order of arrival.
+				</para>
+
+				<para>
+					Similar to the <literal>first</literal> aggregation function described above, you may specify the wildcard (<literal>*</literal>) character or stream name and wildcard (<literal>*</literal>) character or a <emphasis>value_expression</emphasis> to evaluate for the last event.
+				</para>
+
+				<para>
+				    The <emphasis>index_expression</emphasis> is optional. If no index expression is provided, the function returns the last event. If present, the function evaluates the index expression to determine the value for N, and evaluates the Nth-prior event to the last event.  A value of zero returns the last event and a value of 1 returns 
+				    the event prior to  the last event.
+				    You may not specify event properties in the index expression.
+				</para>
+				
+				<para>
+					The function returns <literal>null</literal> if there are no events in the data window at time of evaluation or when the index is larger then the number of events held in the data window. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group or when the index is larger then the number of events held in the data window for that group.
+				</para>
+
+				<para>
+					The next statement selects the underlying event of the first and last sensor event held by the time window of 10 seconds:
+				</para>
+				<programlisting>select first(*), last(*) from SensorEvent.win:time(10 sec) </programlisting>
+				
+				<para>
+					The statement shown next selects the last temperature (<literal>f1</literal>) and the prior-to-last temperature (<literal>f1</literal>) of sensor events in the last 10 seconds:
+				</para>
+				<programlisting>select last(temperature, 0) as f1, select last(temperature, 1) as f2
+from SensorEvent.win:time(10 sec)</programlisting>
+			</sect3>
+
+			<sect3 id="epl-function-aggregation-dwtrack-window">
+				<title><literal>Window</literal> Aggregation Function</title>
+		
+				<para>
+					The synopsis for the <literal>window</literal> aggregation function is:
+				</para>
+				<synopsis><literal>window(</literal>*|<emphasis>stream</emphasis>.*|<emphasis>value_expression</emphasis>)</synopsis>
+
+				<para>
+					The <literal>window</literal> aggregation function returns properties of all events in the data window. When used with <literal>group by</literal>, it returns properties of all events in the data window for each group.
+				</para>
+
+				<para>
+					Similar to the <literal>first</literal> aggregation function described above, you may specify the wildcard (<literal>*</literal>) character or stream name and wildcard (<literal>*</literal>) character or a <emphasis>value_expression</emphasis> to evaluate for all events..
+				</para>
+
+				<para>
+					The function returns <literal>null</literal> if there are no events in the data window at time of evaluation. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group.
+				</para>
+
+				<para>
+					The next statement selects the underlying event of all events held by the time window of 10 seconds:
+				</para>
+				<programlisting>select window(*) from SensorEvent.win:time(10 sec) </programlisting>
+				
+				<para>
+					The <literal>window</literal> aggregation function requires that your stream is bound by a data window. You may not use the <literal>window</literal> aggregation function on unbound streams with the exception of on-demand queries.
+				</para>
+			</sect3>
+
+		</sect2>
+		
+		<sect2 id="epl-function-aggregation-add">
+			<title>Additional Aggregation Functions</title>
+
+			<para>
+				Esper provides the following additional aggregation functions beyond those in the SQL standard:
+			</para>
+		
+			<table frame="topbot" id="epl-grouping-aggregate-func-table-ext" revision="2">
+				<title>Syntax and results of EPL aggregation functions</title>
+				<tgroup cols="2">
+					<colspec colwidth="1*"/>
+					<colspec colwidth="2.0*"/>
+					<thead>
+						<row>
+							<entry>Aggregate Function</entry>
+							<entry>Result</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>firstever(<emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									The <literal>firstever</literal> aggregation function returns the very first value ever. If used with <literal>group by</literal> it returns the first value ever for that group.
+								</para>				
+								<para>
+									If used with a data window, the result of the function does not change as data points leave a data window. Use the <literal>first</literal> or <literal>prevtail</literal> function to return values relative to a data window.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>lastever(<emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									Returns the last value or last value per group, if used with <literal>group by</literal>.
+								</para>
+								<para>
+									This sample statement outputs the total price, the first price and the last price per symbol for the last 30 seconds of events and every 5 seconds:
+								</para>
+								<programlisting>select symbol, sum(price), lastever(price), firstever(price)
 from StockTickEvent.win:time(30 sec) 
 group by symbol
 output every 5 sec</programlisting>
-						</entry>
-					</row>
-					<row>
-						<entry>leaving()</entry>
-						<entry>
-							<para>
-								Returns true when any remove stream data has passed, for use in the <literal>having</literal> clause to output only when a data window has filled.
-							</para>
-							<para>
-								The <literal>leaving</literal> aggregation function is useful when you want to trigger output after a data window has a remove stream data point. Use the <literal>output after</literal> syntax as an alternative to output after a time interval.
-							</para>
-							<para>
-								This sample statement uses <literal>leaving()</literal> to output after the first data point leaves the data window, ignoring the first datapoint:
-							</para>
-							<programlisting>select symbol, sum(price) 
+								<para>
+									If used with a data window, the result of the function does not change as data points leave a data window (for example when all data points leave the data window). Use the <literal>last</literal> or <literal>prev</literal> function to return values relative to a data window.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>leaving()</entry>
+							<entry>
+								<para>
+									Returns true when any remove stream data has passed, for use in the <literal>having</literal> clause to output only when a data window has filled.
+								</para>
+								<para>
+									The <literal>leaving</literal> aggregation function is useful when you want to trigger output after a data window has a remove stream data point. Use the <literal>output after</literal> syntax as an alternative to output after a time interval.
+								</para>
+								<para>
+									This sample statement uses <literal>leaving()</literal> to output after the first data point leaves the data window, ignoring the first datapoint:
+								</para>
+								<programlisting>select symbol, sum(price) 
 from StockTickEvent.win:time(30 sec) 
 having leaving()</programlisting>
-						</entry>
-					</row>
-					<row>
-						<entry>nth(<emphasis>expression</emphasis>, <emphasis>N_index</emphasis>)</entry>
-						<entry>
-							<para>
-								Returns the Nth oldest element; If N=0 returns the most recent value. If N=1 returns the value before the most recent value. If N is larger than the events held in the data window for this group, returns null.
-							</para>
-							<para>
-								A maximum N historical values are stored, so it can be safely used to compare
-								recent values in large views without incurring excessive overhead.
-							</para>
-							<para>
-								As compared to the <literal>prev</literal> row function, this aggregation function works within the current <literal>group by</literal> group, see <xref linkend="processingmodel_aggregation_output"/>.
-							</para>
-							<para>
-								This statement outputs every 2 seconds the groups that have new data and their last price and the previous-to-last price:
-							</para>
-							<programlisting>select symbol, nth(price, 1), last(price) 
+							</entry>
+						</row>
+						<row>
+							<entry>nth(<emphasis>expression</emphasis>, <emphasis>N_index</emphasis>)</entry>
+							<entry>
+								<para>
+									Returns the Nth oldest element; If N=0 returns the most recent value. If N=1 returns the value before the most recent value. If N is larger than the events held in the data window for this group, returns null.
+								</para>
+								<para>
+									A maximum N historical values are stored, so it can be safely used to compare
+									recent values in large views without incurring excessive overhead.
+								</para>
+								<para>
+									As compared to the <literal>prev</literal> row function, this aggregation function works within the current <literal>group by</literal> group, see <xref linkend="processingmodel_aggregation_output"/>.
+								</para>
+								<para>
+									This statement outputs every 2 seconds the groups that have new data and their last price and the previous-to-last price:
+								</para>
+								<programlisting>select symbol, nth(price, 1), last(price) 
 from StockTickEvent 
 group by symbol
 output last every 2 sec</programlisting>
-						</entry>
-					</row>
-					<row>
-						<entry>
-							<para>
-								rate(<emphasis>number_of_seconds</emphasis>)
-							</para>
-						</entry>
-						<entry>
-							<para>
-								Returns an event arrival rate per second over the provided number of seconds, computed based on engine time.								
-							</para>
-							<para>
-								Returns null until events fill the number of seconds. Useful with <literal>output snapshot</literal> to output a current rate. Does not require a data window onto the stream(s).
-							</para>
-							<para>
-								A sample statement to output, every 2 seconds, the arrival rate per second considering the last 10 seconds of events is shown here:
-							</para>
-							<programlisting>select rate(10) from StockTickEvent
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>
+									rate(<emphasis>number_of_seconds</emphasis>)
+								</para>
+							</entry>
+							<entry>
+								<para>
+									Returns an event arrival rate per second over the provided number of seconds, computed based on engine time.								
+								</para>
+								<para>
+									Returns null until events fill the number of seconds. Useful with <literal>output snapshot</literal> to output a current rate. Does not require a data window onto the stream(s).
+								</para>
+								<para>
+									A sample statement to output, every 2 seconds, the arrival rate per second considering the last 10 seconds of events is shown here:
+								</para>
+								<programlisting>select rate(10) from StockTickEvent
 output snapshot every 2 sec</programlisting>
-							<para>
-								The aggregation function retains an engine timestamp value for each arriving event.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry>
-							<para>
-								rate(<emphasis>timestamp_property</emphasis>[, <emphasis>accumulator</emphasis>])
-							</para>
-						</entry>
-						<entry>
-							<para>
-								Returns an event arrival rate over the data window including the last remove stream event. The <emphasis>timestamp_property</emphasis>
-								is the name of a long-type property of the event that provides a timestamp value.
-							</para>
-							<para>
-								The first parameter is a property name or expression providing millisecond timestamp values.
-							</para>
-							<para>
-								The optional second parameter is a property or expression for computing an accumulation rate: If a value is provided as a second parameter then the accumulation rate for that quantity is returned (e.g. turnover in dollars per second).
-							</para>
-							<para>
-								Requires a data window declared onto the stream. Returns null until events start leaving the window.
-							</para>
-							<para>
-								This sample statement outputs event rate for each group (symbol) with fixed sample size of four events 
-								(and considering the last event that left). The <literal>timestamp</literal> event property must be part of the event for this to work.
-							</para>
-							<programlisting>select colour, rate(timestamp) as rate 
+								<para>
+									The aggregation function retains an engine timestamp value for each arriving event.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>
+								<para>
+									rate(<emphasis>timestamp_property</emphasis>[, <emphasis>accumulator</emphasis>])
+								</para>
+							</entry>
+							<entry>
+								<para>
+									Returns an event arrival rate over the data window including the last remove stream event. The <emphasis>timestamp_property</emphasis>
+									is the name of a long-type property of the event that provides a timestamp value.
+								</para>
+								<para>
+									The first parameter is a property name or expression providing millisecond timestamp values.
+								</para>
+								<para>
+									The optional second parameter is a property or expression for computing an accumulation rate: If a value is provided as a second parameter then the accumulation rate for that quantity is returned (e.g. turnover in dollars per second).
+								</para>
+								<para>
+									Requires a data window declared onto the stream. Returns null until events start leaving the window.
+								</para>
+								<para>
+									This sample statement outputs event rate for each group (symbol) with fixed sample size of four events 
+									(and considering the last event that left). The <literal>timestamp</literal> event property must be part of the event for this to work.
+								</para>
+								<programlisting>select colour, rate(timestamp) as rate 
 from StockTickEvent.std:groupby(symbol).win:length(4) 
 group by symbol</programlisting>
-						</entry>
-					</row>
-				</tbody>
-			</tgroup>
-		</table>
-
-		<para>
-			Built-in aggregation functions can be disabled via configuration (see <xref linkend="config-engine-expression-extendedagg"/>). A custom aggregation function of the same name as a built-on function may be registered to override the built-in function.
-		</para>
+							</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		
+			<para>
+				Built-in aggregation functions can be disabled via configuration (see <xref linkend="config-engine-expression-extendedagg"/>). A custom aggregation function of the same name as a built-on function may be registered to override the built-in function.
+			</para>
+		</sect2>
 	</sect1>		
 
 	<sect1 id="epl-function-user-defined">
