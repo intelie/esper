@@ -565,15 +565,15 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 		<indexterm><primary>aggregation functions</primary><secondary>overview</secondary></indexterm>
 		
 		<para>
-			Aggregation functions returns a single value from a collection of input values. The <literal>group by</literal> keywords are often used in conjunction with aggregation functions to group the result-set by one or more columns.
+			Aggregation functions return a single value from a collection of input values. The <literal>group by</literal> keywords are often used in conjunction with aggregation functions to group the result-set by one or more columns.
 		</para>
 
 		<para>
-			The EPL language extends the standard SQL aggregation functions by useful aggregation functions that can track a data window or compute rates. Your application may also add its own aggregation function as <xref linkend="custom-aggregation-function"/> describes.
+			The EPL language extends the standard SQL aggregation functions by useful aggregation functions that can track a data window or compute event rates. Your application may also add its own aggregation function as <xref linkend="custom-aggregation-function"/> describes.
 		</para>
 		
 		<para>
-			Aggregation values are always computed incrementally: Insert and remove streams cause aggregation values to change. The exception are on-demand queries and joins when using the <literal>unidirectional</literal> keyword. Aggregation functions are optimized to retain the minimal
+			Aggregation values are always computed incrementally: Insert and remove streams result in aggregation value changes. The exceptions are on-demand queries and joins when using the <literal>unidirectional</literal> keyword. Aggregation functions are optimized to retain the minimal
 				information necessary to compute the aggregated result. 
 		</para>
 		
@@ -685,7 +685,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 			<title>Data Window Aggregation Functions</title>
 
 			<para>
-				The <literal>first</literal>, <literal>last</literal> and <literal>window</literal> aggregation functions return event properties of events present in a stream's data window. The the functions alongside SQL aggregation functions or when information about data window contents is required.
+				The <literal>first</literal>, <literal>last</literal> and <literal>window</literal> aggregation functions return event properties of events present in a stream's data window. They are useful when information about current data window contents is required.
 			</para>
 			
 			<para>
@@ -738,16 +738,16 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 				</para>
 				
 				<para>
-					The function returns <literal>null</literal> if there are no events in the data window at time of evaluation or when the index is larger then the number of events held in the data window. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group or when the index is larger then the number of events held in the data window for that group.
+					The function returns <literal>null</literal> if there are no events in the data window or when the index is larger then the number of events held in the data window. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group or when the index is larger then the number of events held in the data window for that group.
 				</para>
 
 				<para>
-					To explain, lets consider the statement below which selects the underlying event of the first sensor event held by the length window of 2 events.  
+					To explain, consider the statement below which selects the underlying event of the first sensor event held by the length window of 2 events.  
 				</para>
 				<programlisting>select first(*) SensorEvent.win:length(2) </programlisting>
 				
 				<para>
-				   Assume event E1, event E2 and event E3 are of type SensorEvent. When event E1 arrives the statement outputs the underlying event E1. When event E2 arrives the statement again outputs the underlying event E1. When event E3 arrives the statement outputs the the underlying event E2, since 
+				   Assume event E1, event E2 and event E3 are of type SensorEvent. When event E1 arrives the statement outputs the underlying event E1. When event E2 arrives the statement again outputs the underlying event E1. When event E3 arrives the statement outputs the underlying event E2, since 
 				   event E1 has left the data window.
 				</para>
 
@@ -786,7 +786,7 @@ from SensorEvent.win:time(10 sec)</programlisting>
 				</para>
 				
 				<para>
-					The function returns <literal>null</literal> if there are no events in the data window at time of evaluation or when the index is larger then the number of events held in the data window. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group or when the index is larger then the number of events held in the data window for that group.
+					The function returns <literal>null</literal> if there are no events in the data window or when the index is larger then the number of events held in the data window. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group or when the index is larger then the number of events held in the data window for that group.
 				</para>
 
 				<para>
@@ -814,11 +814,11 @@ from SensorEvent.win:time(10 sec)</programlisting>
 				</para>
 
 				<para>
-					Similar to the <literal>first</literal> aggregation function described above, you may specify the wildcard (<literal>*</literal>) character or stream name and wildcard (<literal>*</literal>) character or a <emphasis>value_expression</emphasis> to evaluate for all events..
+					Similar to the <literal>first</literal> aggregation function described above, you may specify the wildcard (<literal>*</literal>) character or stream name and wildcard (<literal>*</literal>) character or a <emphasis>value_expression</emphasis> to evaluate for all events.
 				</para>
 
 				<para>
-					The function returns <literal>null</literal> if there are no events in the data window at time of evaluation. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group.
+					The function returns <literal>null</literal> if there are no events in the data window. If used with <literal>group by</literal>, it returns <literal>null</literal> if there are no events in the data window for that group.
 				</para>
 
 				<para>
