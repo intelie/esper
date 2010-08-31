@@ -226,6 +226,23 @@ countStmt.start();]]></programlisting>
 				The best delivery performance can generally be achieved by attaching a subscriber and by not attaching listeners.
                 The engine is aware of the listeners and subscriber attached to a statement. The engine uses this information internally to reduce statement overhead. For example, if your statement does not have listeners or a subscriber attached, the engine does not need to continuously generate results for delivery.
 			</para>
+
+			<para>
+				If your application attaches both a subscriber and one or more listeners then the subscriber receives the result first before any of the listeners.
+			</para>
+				
+			<para>
+				If your application attaches more then one listener then the <literal>UpdateListener</literal> listeners receive results first in the order they were added to the statement, and
+				<literal>StatementAwareUpdateListener</literal> listeners receive results next in the order they were added to the statement. To change the order of delivery among listeners your application can add and remove listeners at runtime.
+			</para>
+				
+			<para>
+				If you have configured outbound threading, it means a thread from the outbound thread pool delivers results to the subscriber and listeners instead of the processing or event-sending thread.
+			</para>
+				
+			<para>
+				If outbound threading is turned on, we recommend turning off the engine setting preserving the order of events delivered to listeners as described in <xref linkend="config-engine-threading-dispatch"/>. If outbound threading is turned on statement execution is not blocked for the configured time in the case a subscriber or listener takes too much time.
+			</para>
 	  </sect2>
 
 	  <sect2 id="api-admin-subscriber">		
