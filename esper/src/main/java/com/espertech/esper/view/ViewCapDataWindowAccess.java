@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view;
 
+import com.espertech.esper.view.internal.PriorEventViewFactory;
 import com.espertech.esper.view.std.GroupByViewFactory;
 import com.espertech.esper.core.StatementContext;
 
@@ -38,6 +39,9 @@ public class ViewCapDataWindowAccess implements ViewCapability
         {
             if (viewFactories.get(0) instanceof GroupByViewFactory)
             {
+                return true;
+            }
+            if (viewFactories.get(1) instanceof PriorEventViewFactory) {
                 return true;
             }
             return false;

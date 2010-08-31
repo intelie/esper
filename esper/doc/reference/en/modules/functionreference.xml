@@ -154,7 +154,15 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 						<entry><synopsis>prev(<emphasis>expression</emphasis>, <emphasis>event_property)</emphasis></synopsis></entry>
 						<entry>
 							<para>
-								Returns a property value of a previous event, relative to the event order within a data window 
+								Returns a property value or all properties of a previous event, relative to the event order within a data window, or according to an optional index parameter (N) the positional Nth-from-last value.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><synopsis>prevtail(<emphasis>expression</emphasis>, <emphasis>event_property)</emphasis></synopsis></entry>
+						<entry>
+							<para>
+								Returns a property value or all properties of the first event in a data window relative to the event order within a data window, or according to an optional index parameter (N) the positional Nth-from-first value.
 							</para>
 						</entry>
 					</row>
@@ -402,7 +410,15 @@ select current_timestamp() from MyEvent]]></programlisting>
 			<indexterm><primary>previous function</primary></indexterm>
 			<indexterm><primary>functions</primary><secondary>previous</secondary></indexterm>
 			<para>
-				The <literal>prev</literal> function returns the property value of a previous event. The first parameter denotes the i-th previous event in the order established by the data window. 
+				The <literal>prev</literal> function returns the property value or all event properties of a previous event. For data windows that introduce a sort order other then the order of arrival, such as the sorted data window and the time order data window,  the function returns the event at the specified position.
+			</para>
+
+			<para>
+				The <literal>prev</literal> function is not an aggregation function and does therefore not return results per group when used with <literal>group by</literal>. Please consider the <literal>last</literal>, <literal>lastever</literal> or <literal>nth</literal> aggregation functions instead as described in <xref linkend="epl-function-aggregation-dwtrack"/>.
+			</para>
+
+			<para>
+				The first parameter to the <literal>prev</literal> function is an index parameter and denotes the i-th previous event, in the order established by the data window. If no index is provided, the default index is 1 and the function returns the previous event.
 				The second parameter is a property name or stream name. If specifying a property name, the function returns the value for the previous event property value. If specifying a stream name, the function returns the previous event underlying object.
 			</para>
 
@@ -429,11 +445,6 @@ select current_timestamp() from MyEvent]]></programlisting>
 			<programlisting>select prev(rank, symbol) from Trade.ext:sort(volume, true, 10), RankSelectionEvent</programlisting>
 
 			<para>
-				And the expression <literal>count(*) - 1</literal> allows us to select the oldest event in the length window:
-			</para>
-			<programlisting>select prev(count(*) - 1, price) from Trade.win:length(100)</programlisting>
-
-			<para>
 				The <literal>prev</literal> function returns a <literal>null</literal> value if the data window does not currently hold the i-th previous event. The example below illustrates this using a time batch window. Here the <literal>prev</literal>  
 				function returns a null value for any events in which the previous event is not in the same batch of events. Note that the <literal>prior</literal> function as discussed below can be used if a null value is not the desired result.
 			</para>
@@ -449,10 +460,10 @@ select prev(symbol) from Trade
 select prev(symbol, 1) from Trade</programlisting>			
 
 			<sect3 id="epl-single-row-function-ref-prev-group">
-				<title>Previous Event per Group</title>
+				<title>Previous Event per Grouped Data Window</title>
 
 				<para>
-					The combination of <literal>prev</literal> function and group-by view returns the property value for a previous event in the given group. 
+					The combination of <literal>prev</literal> function and <literal>std:groupby</literal> view returns the property value for a previous event in the given group. 
 				</para>
 
 				<para>
@@ -460,12 +471,12 @@ select prev(symbol, 1) from Trade</programlisting>
 				</para>
 					
 				<para>
-					The statement that follows solves this problem. It declares a group-by view grouping on the symbol property and a time window of 1 minute. As a result, when the engine encounters a new symbol value that it hasn't seen before, it creates a new time window specifically to hold events for that symbol. Consequently, the previous function returns the previous event within the respective time window for that event's symbol value. 
+					The statement that follows solves this problem. It declares a <literal>std:groupby</literal> view grouping on the symbol property and a time window of 1 minute. As a result, when the engine encounters a new symbol value that it hasn't seen before, it creates a new time window specifically to hold events for that symbol. Consequently, the previous function returns the previous event within the respective time window for that event's symbol value. 
 				</para>
 				<programlisting>select prev(1, price) as prevPrice from Trade.std:groupby(symbol).win:time(1 min)</programlisting>
 
 				<para>
-					In a second example, assume we need to return, for each event, the current top price per symbol. We can use the <literal>prev</literal> to obtain the highest price from a sorted data window, and use the group-by view to group by symbol:
+					In a second example, assume we need to return, for each event, the current top price per symbol. We can use the <literal>prev</literal> to obtain the highest price from a sorted data window, and use the <literal>std:groupby</literal> view to group by symbol:
 				</para>
 				<programlisting>select prev(0, price) as topPricePerSymbol 
 from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
@@ -485,7 +496,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 					</listitem>
 					<listitem>
 						<para>
-							The function requires a data window view, or a group-by and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
+							The function requires a data window view, or a <literal>std:groupby</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
 						</para>
 					</listitem>
 				</itemizedlist>
@@ -522,6 +533,98 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 				</itemizedlist>
 			</sect3>
 			
+		</sect2>
+
+		<sect2 id="epl-single-row-function-ref-previoustail">
+			<title>The <literal>Previous-Tail</literal> Function</title>
+
+			<indexterm><primary>previous tail function</primary></indexterm>
+			<indexterm><primary>functions</primary><secondary>previous tail</secondary></indexterm>
+			<para>
+				The <literal>prevtail</literal> function returns the property value or all event properties of the positional-first event in a data window. For data windows that introduce a sort order other then the order of arrival, such as the sorted data window and the time order data window, the function returns the first event at the specified position.
+			</para>
+
+			<para>
+				The <literal>prevtail</literal> function is not an aggregation function and does therefore not return results per group when used with <literal>group by</literal>. Please consider the <literal>first</literal>, <literal>firstever</literal> or <literal>window</literal> aggregation functions instead as described in <xref linkend="epl-function-aggregation-dwtrack"/>.
+			</para>
+
+			<para>
+				The first parameter is an index parameter and denotes the i-th from-first event in the order established by the data window. If no index is provided the default is zero and the function returns the first event in the data window.
+				The second parameter is a property name or stream name. If specifying a property name, the function returns the value for the previous event property value. If specifying a stream name, the function returns the previous event underlying object.
+			</para>
+
+			<para>
+				This example selects the value of the <literal>price</literal> property of the first event held in the length window:
+			</para>
+			<programlisting>select prevtail(price) from Trade.win:length(10)</programlisting>
+
+			<para>
+				By using the stream alias in the <literal>prevtail</literal> function, the next example selects the trade event itself that is the second event held in the length window:
+			</para>
+			<programlisting>select prevtail(1, trade) from Trade.win:length(10) as trade</programlisting>
+
+			<para>
+				Since the <literal>prevtail</literal> function takes the order established by the data window into account, the function works well with sorted windows. In the following example the statement
+				selects the symbol of the 3 Trade events that had the smallest, second-smallest and third-smallest volume.
+			</para>
+			<programlisting>select prevtail(0, symbol), prevtail(1, symbol), prevtail(2, symbol)
+  from Trade.ext:sort(volume, true, 10)</programlisting>
+
+			<para>
+				The i-th previous event parameter can also be an expression returning an Integer-type value. The next statement joins the Trade data window with an <literal>RankSelectionEvent</literal> event that provides a <literal>rank</literal> property used to look up a certain position in the sorted Trade data window:
+			</para>
+			<programlisting>select prevtail(rank, symbol) from Trade.ext:sort(volume, true, 10), RankSelectionEvent</programlisting>
+
+			<para>
+				The <literal>prev</literal> function returns a <literal>null</literal> value if the data window does not currently holds positional-first or the Nth-from-first event. For batch data windows the value returned is relative to the current batch.
+			</para>
+
+			<para>
+				The following example returns the first and second symbol value in the batch:
+			</para>
+			<programlisting>select prevtail(0, symbol), prevtail(1, symbol) from Trade.win:time_batch(1 min)</programlisting>			
+
+			<para>
+				An alternative form of the <literal>prevtail</literal> function allows the index to not appear or appear after the property name if the index value is a constant and not an expression:
+			</para>
+			<programlisting>select prevtail(1, symbol) from Trade
+// ... equivalent to ...
+select prevtail(symbol) from Trade
+// ... and ...
+select prevtail(symbol, 1) from Trade</programlisting>			
+
+			<sect3 id="epl-single-row-function-ref-prevtail-group">
+				<title>Positional-First Event per Grouped Data Window</title>
+
+				<para>
+					The combination of <literal>prevtail</literal> function and <literal>std:groupby</literal> view returns the property value for a positional first event in the given group. 
+				</para>
+
+				<para>
+					Let's look at an example. This statement outputs the oldest price per symbol retaining the last 10 prices per symbol:
+				</para>
+				<programlisting>select prevtail(0, price) as oldestPrice from Trade.std:groupby(symbol).win:length(10)</programlisting>
+			</sect3>
+			
+			<sect3 id="epl-single-row-function-ref-prevtail-restrictions">
+				<title>Restrictions</title>
+				<para>
+						The following restrictions apply to the <literal>prev</literal> functions and its results:
+				</para>
+	
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							The function always returns a <literal>null</literal> value for remove stream (old data) events
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The function requires a data window view, or a <literal>std:groupby</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
+						</para>
+					</listitem>
+				</itemizedlist>
+			</sect3>			
 		</sect2>
 
 		<sect2 id="epl-single-row-function-ref-prior">

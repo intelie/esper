@@ -114,4 +114,49 @@ public class IStreamTimeOrderRandomAccess implements RandomAccessByIndex
     {
         return null;
     }
+
+    public EventBean getNewDataTail(int index)
+    {
+        initCache();
+
+        if ((index < cacheFilledTo) && (index >= 0))
+        {
+            return cache.get(cacheFilledTo - index - 1);
+        }
+
+        return null;
+    }
+
+    public Iterator<EventBean> getWindowIterator()
+    {
+        initCache();
+        return cache.iterator();
+    }
+
+    public int getWindowCount()
+    {
+        return currentSize;
+    }
+
+    private void initCache() {
+
+        // Load more into cache
+        while(true)
+        {
+            if (cacheFilledTo == currentSize)
+            {
+                break;
+            }
+            if (!iterator.hasNext())
+            {
+                break;
+            }
+            ArrayList<EventBean> events = iterator.next();
+            for (EventBean event : events)
+            {
+                cache.add(cacheFilledTo, event);
+                cacheFilledTo++;
+            }
+        }
+    }
 }

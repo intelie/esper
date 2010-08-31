@@ -9,8 +9,11 @@
 package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.ArrayEventIterator;
+import com.espertech.esper.collection.ReversedArrayEventIterator;
 import com.espertech.esper.collection.ViewUpdatedCollection;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -77,6 +80,33 @@ public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewU
             return lastNewData[relativeIndex];
         }
         return null;
+    }
+
+    public EventBean getRelativeToEnd(EventBean event, int prevIndex)
+    {
+        if (lastNewData == null)
+        {
+            return null;
+        }
+
+        if (prevIndex < lastNewData.length && prevIndex >= 0)
+        {
+            return lastNewData[prevIndex];
+        }
+        return null;
+    }
+
+    public Iterator<EventBean> getWindowToEvent(Object evalEvent)
+    {
+        return new ReversedArrayEventIterator(lastNewData);
+    }
+
+    public int getWindowToEventCount(EventBean evalEvent)
+    {
+        if (lastNewData == null) {
+            return 0;
+        }
+        return lastNewData.length;
     }
 
     /**

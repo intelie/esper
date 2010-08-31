@@ -179,5 +179,21 @@ public class PriorEventViewFactory implements ViewFactory
         {
             return buffer.getRelativeToEvent(event, relativeIndex);
         }
+
+        public EventBean getRelativeToEnd(EventBean event, int index)
+        {
+            // No requirement to index from end of current buffer
+            return null;
+        }
+
+        public Iterator<EventBean> getWindowToEvent(Object evalEvent)
+        {
+            return null;
+        }
+
+        public int getWindowToEventCount(EventBean evalEvent)
+        {
+            return 0;
+        }
     }
 }

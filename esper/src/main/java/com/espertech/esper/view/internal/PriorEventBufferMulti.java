@@ -13,6 +13,7 @@ import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
 import com.espertech.esper.collection.RollingEventBuffer;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -121,6 +122,24 @@ public class PriorEventBufferMulti implements ViewUpdatedCollection, RelativeAcc
             throw new IllegalStateException("Event not currently in collection, event=" + event);
         }
         return priorEvents[priorToIndex];
+    }
+
+    public EventBean getRelativeToEnd(EventBean event, int index)
+    {
+        // No requirements to return events related to the end of the current buffer
+        return null;
+    }
+
+    public int getWindowToEventCount(EventBean evalEvent)
+    {
+        // No requirements to return events related to the end of the current buffer
+        return 0;
+    }
+
+    public Iterator<EventBean> getWindowToEvent(Object evalEvent)
+    {
+        // No requirements to return events related to the end of the current buffer
+        return null;  
     }
 
     public void destroy()

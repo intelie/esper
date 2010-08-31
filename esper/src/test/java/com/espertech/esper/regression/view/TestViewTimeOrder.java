@@ -379,8 +379,14 @@ public class TestViewTimeOrder extends TestCase
                 "select irstream id, " +
                 " prev(0, id) as prevIdZero, " +
                 " prev(1, id) as prevIdOne, " +
-                " prior(1, id) as priorIdOne from " + SupportBeanTimestamp.class.getName() +
+                " prior(1, id) as priorIdOne," +
+                " prevtail(0, id) as prevTailIdZero, " +
+                " prevtail(1, id) as prevTailIdOne, " +
+                " prevcount(id) as prevCountId, " +
+                " prevwindow(id) as prevWindowId " +
+                " from " + SupportBeanTimestamp.class.getName() +
                 ".ext:time_order(timestamp, 10 sec)");
+        String[] fields = new String[] {"id", "prevIdZero", "prevIdOne", "priorIdOne", "prevTailIdZero", "prevTailIdOne", "prevCountId"};
         stmt.addListener(listener);
 
         sendTimer(20000);
@@ -394,8 +400,12 @@ public class TestViewTimeOrder extends TestCase
         assertEquals("E2", event.get("prevIdZero"));
         assertEquals("E1", event.get("prevIdOne"));
         assertEquals("E1", event.get("priorIdOne"));
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), new String[] {"id", "prevIdZero", "prevIdOne", "priorIdOne"},
-                new Object[][] {{"E2", "E2", "E1", "E1"}, {"E1", "E2", "E1", null}});
+        assertEquals("E1", event.get("prevTailIdZero"));
+        assertEquals("E2", event.get("prevTailIdOne"));
+        assertEquals(2L, event.get("prevCountId"));
+        ArrayAssertionUtil.assertEqualsExactOrder(new Object[] {"E2","E1"}, (Object[]) event.get("prevWindowId"));
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields,
+                new Object[][] {{"E2", "E2", "E1", "E1", "E1", "E2", 2L}, {"E1", "E2", "E1", null, "E1", "E2", 2L}});
 
         sendEvent("E3", 22000);
         event = listener.assertOneGetNewAndReset();
@@ -403,8 +413,12 @@ public class TestViewTimeOrder extends TestCase
         assertEquals("E2", event.get("prevIdZero"));
         assertEquals("E3", event.get("prevIdOne"));
         assertEquals("E2", event.get("priorIdOne"));
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), new String[] {"id", "prevIdZero", "prevIdOne", "priorIdOne"},
-                new Object[][] {{"E2", "E2", "E3", "E1"}, {"E3", "E2", "E3", "E2"}, {"E1", "E2", "E3", null}});
+        assertEquals("E1", event.get("prevTailIdZero"));
+        assertEquals("E3", event.get("prevTailIdOne"));
+        assertEquals(3L, event.get("prevCountId"));
+        ArrayAssertionUtil.assertEqualsExactOrder(new Object[] {"E2","E3","E1"}, (Object[]) event.get("prevWindowId"));
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields,
+                new Object[][] {{"E2", "E2", "E3", "E1", "E1", "E3", 3L}, {"E3", "E2", "E3", "E2", "E1", "E3", 3L}, {"E1", "E2", "E3", null, "E1", "E3", 3L}});
 
         sendTimer(31000);
         assertNull(listener.getLastNewData());
@@ -415,9 +429,13 @@ public class TestViewTimeOrder extends TestCase
         assertEquals(null, event.get("prevIdZero"));
         assertEquals(null, event.get("prevIdOne"));
         assertEquals("E1", event.get("priorIdOne"));
+        assertEquals(null, event.get("prevTailIdZero"));
+        assertEquals(null, event.get("prevTailIdOne"));
+        assertEquals(null, event.get("prevCountId"));
+        assertEquals(null, event.get("prevWindowId"));
         listener.reset();
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), new String[] {"id", "prevIdZero", "prevIdOne", "priorIdOne"},
-                new Object[][] {{"E3", "E3", "E1", "E2"}, {"E1", "E3", "E1", null}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields,
+                new Object[][] {{"E3", "E3", "E1", "E2", "E1", "E3", 2L}, {"E1", "E3", "E1", null, "E1", "E3", 2L}});
     }
 
     private SupportBeanTimestamp sendEvent(String id, String groupId, long timestamp)

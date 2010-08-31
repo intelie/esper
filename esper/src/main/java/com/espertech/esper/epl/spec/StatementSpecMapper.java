@@ -1214,7 +1214,8 @@ public class StatementSpecMapper
         }
         else if (expr instanceof PreviousExpression)
         {
-            return new ExprPreviousNode();
+            return new ExprPreviousNode(PreviousType.PREV);
+            // TODO
         }
         else if (expr instanceof StaticMethodExpression)
         {

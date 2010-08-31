@@ -470,7 +470,7 @@ public class TestPriorFunction extends TestCase
         tryPriorSortWindow(viewExpr);
     }
 
-    public void testPreviousTimeBatchWindowJoin()
+    public void testPriorTimeBatchWindowJoin()
     {
         String viewExpr = "select string as currSymbol, " +
                           "prior(2, symbol) as priorSymbol, " +

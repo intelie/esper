@@ -79,7 +79,7 @@ public class SupportExprNodeFactory
 
     public static ExprPreviousNode makePreviousNode() throws Exception
     {
-        ExprPreviousNode prevNode = new ExprPreviousNode();
+        ExprPreviousNode prevNode = new ExprPreviousNode(PreviousType.PREV);
         ExprNode indexNode = new ExprIdentNode("intPrimitive", "s1");
         prevNode.addChildNode(indexNode);
         ExprNode propNode = new ExprIdentNode("doublePrimitive", "s1");

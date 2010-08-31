@@ -9,7 +9,6 @@
 package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 
 import java.util.ArrayList;
 import java.util.Iterator;

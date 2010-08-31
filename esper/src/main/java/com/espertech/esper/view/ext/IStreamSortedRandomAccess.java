@@ -8,8 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.view.ext;
 
-import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.ArrayMaxEventIterator;
+import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.view.window.RandomAccessByIndex;
 import com.espertech.esper.view.window.RandomAccessByIndexObserver;
 
@@ -115,5 +116,55 @@ public class IStreamSortedRandomAccess implements RandomAccessByIndex
     public EventBean getOldData(int index)
     {
         return null;
+    }
+
+    public EventBean getNewDataTail(int index)
+    {
+        initCache();
+
+        if ((index < cacheFilledTo) && (index >= 0))
+        {
+            return cache[cacheFilledTo - index - 1];
+        }
+
+        return null;
+    }
+
+    public Iterator<EventBean> getWindowIterator()
+    {
+        initCache();
+        return new ArrayMaxEventIterator(cache, cacheFilledTo);
+    }
+
+    public int getWindowCount()
+    {
+        return currentSize;
+    }
+
+    private void initCache() {
+
+        if (iterator == null)
+        {
+            iterator = sortedEvents.values().iterator();
+        }
+
+        // Load more into cache
+        while(true)
+        {
+            if (cacheFilledTo == currentSize)
+            {
+                break;
+            }
+            if (!iterator.hasNext())
+            {
+                break;
+            }
+            LinkedList<EventBean> events = iterator.next();
+            for (EventBean event : events)
+            {
+                cache[cacheFilledTo] = event;
+                cacheFilledTo++;
+            }
+        }
     }
 }

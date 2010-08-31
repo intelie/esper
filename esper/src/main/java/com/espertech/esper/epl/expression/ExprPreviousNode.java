@@ -22,12 +22,17 @@ import com.espertech.esper.view.ViewCapDataWindowAccess;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 /**
  * Represents the 'prev' previous event function in an expression node tree.
  */
 public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 {
     private static final long serialVersionUID = 0L;
+
+    private final PreviousType previousType;
 
     private Class resultType;
     private int streamNumber;
@@ -36,6 +41,11 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 
     private transient RandomAccessByIndexGetter randomAccessGetter;
     private transient RelativeAccessByEventNIndexMap relativeAccessGetter;
+
+    public ExprPreviousNode(PreviousType previousType)
+    {
+        this.previousType = previousType;
+    }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
@@ -47,7 +57,12 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         // add constant of 1 for previous index
         if (this.getChildNodes().size() == 1)
         {
-            this.getChildNodes().add(0, new ExprConstantNode(1));
+            if (previousType == PreviousType.PREV) {
+                this.getChildNodes().add(0, new ExprConstantNode(1));
+            }
+            else {
+                this.getChildNodes().add(0, new ExprConstantNode(0));
+            }
         }
 
         // the row recognition patterns allows "prev(prop, index)", we switch index the first position
@@ -96,6 +111,13 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
             throw new ExprValidationException("Previous function requires an event property as parameter");
         }
 
+        if (previousType == PreviousType.COUNT) {
+            resultType = Long.class;
+        }
+        if (previousType == PreviousType.WINDOW) {
+            resultType = Object[].class;
+        }
+
         if (viewResourceDelegate == null)
         {
             throw new ExprValidationException("Previous function cannot be used in this context");
@@ -120,9 +142,62 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Integer index;
+        if (!isNewData) {
+            return null;
+        }
+
+        if (previousType == PreviousType.WINDOW) {
+            Iterator<EventBean> events;
+            int size;
+            if (randomAccessGetter != null)
+            {
+                RandomAccessByIndex randomAccess = randomAccessGetter.getAccessor();
+                events = randomAccess.getWindowIterator();
+                size = randomAccess.getWindowCount();
+            }
+            else
+            {
+                EventBean evalEvent = eventsPerStream[streamNumber];
+                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.getAccessor(evalEvent);
+                size = relativeAccess.getWindowToEventCount(evalEvent);
+                events = relativeAccess.getWindowToEvent(evalEvent);
+            }
+
+            if (size <= 0) {
+                return null;
+            }
+
+            EventBean originalEvent = eventsPerStream[streamNumber];
+            Object[] result = new Object[size];
+
+            for (int i = 0; i < size; i++) {
+                eventsPerStream[streamNumber] = events.next();
+                Object evalResult = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                result[i] = evalResult;
+            }
+
+            eventsPerStream[streamNumber] = originalEvent;
+            return result;
+        }
+
+        if (previousType == PreviousType.COUNT) {
+            long count;
+            if (randomAccessGetter != null)
+            {
+                RandomAccessByIndex randomAccess = randomAccessGetter.getAccessor();
+                count = randomAccess.getWindowCount();
+            }
+            else
+            {
+                EventBean evalEvent = eventsPerStream[streamNumber];
+                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.getAccessor(evalEvent);
+                count = relativeAccess.getWindowToEventCount(evalEvent);
+            }
+            return count;
+        }
 
         // Use constant if supplied
+        Integer index;
         if (isConstantIndex)
         {
             index = constantIndexNumber;
@@ -138,23 +213,29 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
             index = ((Number) indexResult).intValue();
         }
 
+        // TODO - convert to factory implementation
+
         // access based on index returned
         EventBean substituteEvent = null;
         if (randomAccessGetter != null)
         {
             RandomAccessByIndex randomAccess = randomAccessGetter.getAccessor();
-            if (isNewData)
-            {
+            if (previousType != PreviousType.TAIL) {
                 substituteEvent = randomAccess.getNewData(index);
+            }
+            else {
+                substituteEvent = randomAccess.getNewDataTail(index);
             }
         }
         else
         {
-            if (isNewData)
-            {
-                EventBean evalEvent = eventsPerStream[streamNumber];
-                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.getAccessor(evalEvent);
+            EventBean evalEvent = eventsPerStream[streamNumber];
+            RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.getAccessor(evalEvent);
+            if (previousType != PreviousType.TAIL) {
                 substituteEvent = relativeAccess.getRelativeToEvent(evalEvent, index);
+            }
+            else {
+                substituteEvent = relativeAccess.getRelativeToEnd(evalEvent, index);
             }
         }
         if (substituteEvent == null)
@@ -173,6 +254,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 
     public String toExpressionString()
     {
+        // TODO
         StringBuilder buffer = new StringBuilder();
         buffer.append("prev(");
         buffer.append(this.getChildNodes().get(0).toExpressionString());
@@ -184,6 +266,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
 
     public boolean equalsNode(ExprNode node)
     {
+        // TODO
         if (!(node instanceof ExprPreviousNode))
         {
             return false;

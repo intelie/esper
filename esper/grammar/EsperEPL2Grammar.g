@@ -77,6 +77,9 @@ tokens
 	SQL='sql';
 	METADATASQL='metadatasql';
 	PREVIOUS='prev';
+	PREVIOUSTAIL='prevtail';
+	PREVIOUSCOUNT='prevcount';
+	PREVIOUSWINDOW='prevwindow';
 	PRIOR='prior';
 	EXISTS='exists';
 	WEEKDAY='weekday';
@@ -450,6 +453,9 @@ tokens
 	parserTokenParaphases.put(SQL, "'sql'");
 	parserTokenParaphases.put(METADATASQL, "'metadatasql'");
 	parserTokenParaphases.put(PREVIOUS, "'prev'");
+	parserTokenParaphases.put(PREVIOUSTAIL, "'prevtail'");
+	parserTokenParaphases.put(PREVIOUSCOUNT, "'prevcount'");
+	parserTokenParaphases.put(PREVIOUSWINDOW, "'prevwindow'");
 	parserTokenParaphases.put(PRIOR, "'prior'");
 	parserTokenParaphases.put(EXISTS, "'exists'");
 	parserTokenParaphases.put(WEEKDAY, "'weekday'");
@@ -1255,6 +1261,9 @@ builtinFunc
 	| windowAggregation
 	| COALESCE^ LPAREN! expression COMMA! expression (COMMA! expression)* RPAREN!
 	| PREVIOUS^ LPAREN! expression (COMMA! expression)? RPAREN!
+	| PREVIOUSTAIL^ LPAREN! expression (COMMA! expression)? RPAREN!
+	| PREVIOUSCOUNT^ LPAREN! expression RPAREN!
+	| PREVIOUSWINDOW^ LPAREN! expression RPAREN!
 	| PRIOR^ LPAREN! NUM_INT COMMA! eventProperty RPAREN!
 	// MIN and MAX can also be "Math.min" static function and "min(price)" aggregation function and "min(a, b, c...)" built-in function
 	// therefore handled in code via libFunction as below
@@ -1622,6 +1631,7 @@ keywordAllowedIdent returns [String result]
 		|SQL { $result = "sql"; }
 		|METADATASQL { $result = "metadatasql"; }
 		|PREVIOUS { $result = "prev"; }
+		|PREVIOUSTAIL { $result = "prevtail"; }
 		|PRIOR { $result = "prior"; }
 		|WEEKDAY { $result = "weekday"; }
 		|LW { $result = "lastweekday"; }

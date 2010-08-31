@@ -531,6 +531,9 @@ builtinFunc
 	|	^(f=WINDOW_AGGREG (DISTINCT)? accessValueExpr) { leaveNode($f); }
 	| 	^(f=COALESCE valueExpr valueExpr (valueExpr)* ) { leaveNode($f); }
 	| 	^(f=PREVIOUS valueExpr valueExpr?) { leaveNode($f); }
+	| 	^(f=PREVIOUSTAIL valueExpr valueExpr?) { leaveNode($f); }
+	| 	^(f=PREVIOUSCOUNT valueExpr) { leaveNode($f); }
+	| 	^(f=PREVIOUSWINDOW valueExpr) { leaveNode($f); }
 	| 	^(f=PRIOR c=NUM_INT eventPropertyExpr[true]) {leaveNode($c); leaveNode($f);}
 	| 	^(f=INSTANCEOF valueExpr CLASS_IDENT (CLASS_IDENT)*) { leaveNode($f); }
 	| 	^(f=CAST valueExpr CLASS_IDENT) { leaveNode($f); }

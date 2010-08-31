@@ -10,6 +10,8 @@ package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EventBean;
 
+import java.util.Iterator;
+
 /**
  * Random access interface to insert stream and remove stream data based on an index.
  */
@@ -28,4 +30,10 @@ public interface RandomAccessByIndex
      * @return old data event
      */
     public EventBean getOldData(int index);
+
+    public EventBean getNewDataTail(int index);
+
+    public Iterator<EventBean> getWindowIterator();
+
+    public int getWindowCount();
 }

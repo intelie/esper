@@ -24,7 +24,7 @@ public class TestExprPreviousNode extends TestCase {
 
     public void testValidate() throws Exception
     {
-        prevNode = new ExprPreviousNode();
+        prevNode = new ExprPreviousNode(PreviousType.PREV);
 
         // No subnodes: Exception is thrown.
         tryInvalidValidate(prevNode);
@@ -49,7 +49,7 @@ public class TestExprPreviousNode extends TestCase {
 
     public void testEquals()  throws Exception
     {
-        ExprPreviousNode node1 = new ExprPreviousNode();
+        ExprPreviousNode node1 = new ExprPreviousNode(PreviousType.PREV);
         assertTrue(node1.equalsNode(prevNode));
     }
 

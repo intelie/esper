@@ -13,6 +13,8 @@ import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.view.window.RandomAccessByIndex;
 import com.espertech.esper.collection.RollingEventBuffer;
 
+import java.util.Iterator;
+
 /**
  * Buffer class for insert stream events only for use with unbound streams that inserts data only, to serve
  * up one or more prior events in the insert stream based on an index.
@@ -67,5 +69,23 @@ public class PriorEventBufferUnbound implements ViewUpdatedCollection, RandomAcc
     public void destroy()
     {
         // No action required
+    }
+
+    public EventBean getNewDataTail(int index)
+    {
+        // No requirement to index from end of current buffer
+        return null;
+    }
+
+    public Iterator<EventBean> getWindowIterator()
+    {
+        // no requirement for window iterator support
+        return null;
+    }
+
+    public int getWindowCount()
+    {
+        // no requirement for count support
+        return 0;
     }
 }

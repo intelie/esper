@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.ViewUpdatedCollection;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * For use with length and time window views that must provide random access into data window contents
@@ -116,5 +117,25 @@ public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedColl
     public boolean isEmpty()
     {
         return arrayList.isEmpty();
+    }
+
+    public EventBean getNewDataTail(int index)
+    {
+        // New events are added to the start of the list
+        if (index < arrayList.size() && index >= 0)
+        {
+            return arrayList.get(arrayList.size() - index - 1);
+        }
+        return null;
+    }
+
+    public Iterator<EventBean> getWindowIterator()
+    {
+        return arrayList.iterator();
+    }
+
+    public int getWindowCount()
+    {
+        return arrayList.size();
     }
 }

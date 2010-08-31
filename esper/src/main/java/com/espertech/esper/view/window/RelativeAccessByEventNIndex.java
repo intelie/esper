@@ -10,6 +10,8 @@ package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EventBean;
 
+import java.util.Iterator;
+
 /**
  * Provides access to prior events given an event from which to count back, and an index to look at.
  */
@@ -22,4 +24,10 @@ public interface RelativeAccessByEventNIndex
      * @return event
      */
     public EventBean getRelativeToEvent(EventBean event, int index);
+
+    public EventBean getRelativeToEnd(EventBean event, int index);
+
+    public Iterator<EventBean> getWindowToEvent(Object evalEvent);
+
+    public int getWindowToEventCount(EventBean evalEvent);   
 }

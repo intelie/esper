@@ -351,6 +351,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 leaveRegexp(node);
                 break;
             case PREVIOUS:
+            case PREVIOUSTAIL:
+            case PREVIOUSWINDOW:
+            case PREVIOUSCOUNT:
                 leavePrevious(node);
                 break;
             case PRIOR:
@@ -906,7 +909,24 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leavePrevious");
 
-        ExprPreviousNode previousNode = new ExprPreviousNode();
+        PreviousType previousType;
+        if (node.getType() == PREVIOUS) {
+            previousType = PreviousType.PREV;
+        }
+        else if (node.getType() == PREVIOUSTAIL) {
+            previousType = PreviousType.TAIL;
+        }
+        else if (node.getType() == PREVIOUSWINDOW) {
+            previousType = PreviousType.WINDOW;
+        }
+        else if (node.getType() == PREVIOUSCOUNT) {
+            previousType = PreviousType.COUNT;
+        }
+        else {
+            throw new IllegalStateException("Failed to handle type '" + node.getType() + "'");
+        }
+
+        ExprPreviousNode previousNode = new ExprPreviousNode(previousType);
         astExprNodeMap.put(node, previousNode);
     }
 
