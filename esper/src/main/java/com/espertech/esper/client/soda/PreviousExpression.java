@@ -17,6 +17,8 @@ public class PreviousExpression extends ExpressionBase
 {
     private static final long serialVersionUID = -4347875900366616364L;
 
+    private PreviousExpressionType type = PreviousExpressionType.PREV;
+
     /**
      * Ctor.
      */
@@ -46,14 +48,31 @@ public class PreviousExpression extends ExpressionBase
         this.addChild(new PropertyValueExpression(propertyName));
     }
 
+    public PreviousExpression(PreviousExpressionType type, Expression expression)
+    {
+        this.type = type;
+        this.addChild(expression);
+    }
+
     public ExpressionPrecedenceEnum getPrecedence()
     {
         return ExpressionPrecedenceEnum.UNARY;
     }
 
+    public PreviousExpressionType getType()
+    {
+        return type;
+    }
+
+    public void setType(PreviousExpressionType type)
+    {
+        this.type = type;
+    }
+
     public void toPrecedenceFreeEPL(StringWriter writer)
     {
-        writer.write("prev(");
+        writer.write(type.toString().toLowerCase());
+        writer.write("(");
         this.getChildren().get(0).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
         if (this.getChildren().size() > 1) {
             writer.write(", ");

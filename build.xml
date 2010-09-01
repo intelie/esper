@@ -32,33 +32,13 @@
         **/target/**, **/intellij/**, **/_classes/**,
         examples/benchmark/lib/*.jar,
         examples/terminalsvc-jse/lib/*.jar,
-        **/antlr-3.1.1.jar,
-        **/junit-4.4.jar, **/junit.license,
+        **/antlr-3.2.jar,
+        **/junit-4.8.1.jar, **/junit.license,
         **/mysql-connector-java-*.jar,**/OTFeed*.jar"/>
 
 	<target name="info" description="The master build is done my Maven">
 		<echo message="Please use Maven 2 to build Esper and related components. Maven build instructions are available on the website." />
 	</target>
-
-	<target name="grammar_html" description="Generate HTML page from ANTLR grammar">
-		<echo message="ANTLR3 tool does not (yet) support grammar HTML generation" />
-		<!--       
-			<java classname="org.antlr.Tool">
-			 <arg value="-html"/>
-			 <arg value="-o"/>
-			 <arg value="esper/doc/grammar"/>
-			 <arg value="-lib"/>
-			 <arg value="esper/target/generated-sources/antlr/com/espertech/esper/epl/generated"/>
-			 <arg value="esper/grammar/EsperEPL2Grammar.g"/>
-			 <arg value="esper/grammar/EsperEPL2Ast.g"/>
-			 <classpath>
-			   <pathelement location="esper/lib/antlr-3.1.1.jar"/>
-			   <pathelement location="../../../../software/antlr-3.1.1/lib/stringtemplate-3.1b1.jar"/>
-			   <pathelement location="../../../../software/antlr-3.1.1/lib/antlr-2.7.7.jar"/>
-			 </classpath>
-		       </java>
-		-->
-    	</target>		
 
 	<target name="touch_all" description="Update timestamp all artifacts">
 		<touch>

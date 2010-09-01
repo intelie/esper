@@ -64,7 +64,7 @@ mvn javadoc:javadoc
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
+			<version>1.2.16</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.jms</groupId>
@@ -88,7 +88,7 @@ mvn javadoc:javadoc
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr-runtime</artifactId>
-			<version>3.1.1</version>
+			<version>3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
@@ -98,13 +98,13 @@ mvn javadoc:javadoc
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.4</version>
+			<version>4.8.1</version>
 			<scope>test</scope> 
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>3.1.14</version>
+			<version>5.1.13</version>
 			<scope>test</scope> 
 		</dependency>
 	</dependencies>

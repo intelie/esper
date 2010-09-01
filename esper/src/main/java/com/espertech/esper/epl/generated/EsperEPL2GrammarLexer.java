@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 EsperEPL2Grammar.g 2010-08-31 14:15:21
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Grammar.g 2010-09-01 14:56:09
 
   package com.espertech.esper.epl.generated;
 
@@ -4543,10 +4543,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = NUM_INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            Token f1=null;
-            Token f2=null;
-            Token f3=null;
-            Token f4=null;
+            CommonToken f1=null;
+            CommonToken f2=null;
+            CommonToken f3=null;
+            CommonToken f4=null;
 
             boolean isDecimal=false; Token t=null;
             // EsperEPL2Grammar.g:1874:5: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )

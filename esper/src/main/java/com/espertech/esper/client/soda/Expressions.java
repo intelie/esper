@@ -497,6 +497,52 @@ public class Expressions implements Serializable
     }
 
     /**
+     * Previous tail function.
+     * @param expression provides the numeric index of the previous event
+     * @param property the name of the property to obtain the value for
+     * @return expression
+     */
+    public static PreviousExpression previousTail(Expression expression, String property)
+    {
+        PreviousExpression expr = new PreviousExpression(expression, property);
+        expr.setType(PreviousExpressionType.PREVTAIL);
+        return expr;
+    }
+
+    /**
+     * Previous tail function.
+     * @param index the numeric index of the previous event
+     * @param property the name of the property to obtain the value for
+     * @return expression
+     */
+    public static PreviousExpression previousTail(int index, String property)
+    {
+        PreviousExpression expr = new PreviousExpression(index, property);
+        expr.setType(PreviousExpressionType.PREVTAIL);
+        return expr;
+    }
+
+    /**
+     * Previous count function.
+     * @param property provides the properties or stream name to select for the previous event
+     * @return expression
+     */
+    public static PreviousExpression previousCount(String property)
+    {
+        return new PreviousExpression(PreviousExpressionType.PREVCOUNT, property(property));
+    }
+
+    /**
+     * Previous window function.
+     * @param property provides the properties or stream name to select for the previous event
+     * @return expression
+     */
+    public static PreviousExpression previousWindow(String property)
+    {
+        return new PreviousExpression(PreviousExpressionType.PREVWINDOW, property(property));
+    }
+
+    /**
      * Between.
      * @param property the name of the property supplying data points.
      * @param lowBoundaryProperty the name of the property supplying lower boundary.

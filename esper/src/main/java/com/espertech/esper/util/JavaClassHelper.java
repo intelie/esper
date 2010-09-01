@@ -1484,4 +1484,9 @@ public class JavaClassHelper
 
         return null;
     }
+
+    public static Class getArrayType(Class resultType)
+    {
+        return Array.newInstance(resultType, 0).getClass();
+    }
 }

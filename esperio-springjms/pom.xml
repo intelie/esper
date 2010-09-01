@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
+			<version>1.2.16</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.jms</groupId>
@@ -63,14 +63,9 @@
 			<version>1.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.7.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr-runtime</artifactId>
-			<version>3.1.1</version>
+			<version>3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
@@ -80,43 +75,48 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.4</version>
+			<version>4.8.1</version>
 			<scope>test</scope> 
 		</dependency>
 		<!-- for javax.jms 1.1 dependency -->
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jms_1.1_spec</artifactId>
-			<version>1.0</version> 
+			<version>1.1.1</version> 
 		</dependency>
-		<!-- mvn install:install-file -DgroupId=activemq -DartifactId=activemq -Dversion=4.1.0 -Dpackaging=jar -Dfile=lib/apache-activemq-4.1.0-incubator.jar -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
+		<dependency>
+		    <groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-core</artifactId>
-			<version>4.1.1</version>
+			<version>5.4.0</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- mvn install:install-file -DgroupId=spring -DartifactId=spring -Dversion=2.0.2 -Dpackaging=jar -Dfile=lib/spring.jar -->
+		<dependency>
+		    <groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-pool</artifactId>
+			<version>5.4.0</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.6</version>
+			<artifactId>spring-context</artifactId>
+			<version>3.0.4.RELEASE</version>
 		</dependency>
-        <!-- for some reason commons-pool is not properly referenced by activemq-core -->
-        <dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+        	<dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
-        <!-- for some reason not properly referenced by activemq-core -->		
-		<dependency>
-      		<groupId>backport-util-concurrent</groupId>
-      		<artifactId>backport-util-concurrent</artifactId>
-      		<version>3.1</version>
-      		<scope>test</scope>
-    	</dependency>
-		
 	</dependencies>
 	<build>
 		<plugins>

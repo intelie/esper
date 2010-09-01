@@ -30,7 +30,7 @@ CLASSPATH=$CLASSPATH:../lib/jnp-client.jar
 CLASSPATH=$CLASSPATH:../lib/jboss-j2ee.jar
 CLASSPATH=$CLASSPATH:$LIB/cglib-nodep-2.2.jar
 CLASSPATH=$CLASSPATH:$LIB/commons-logging-1.1.1.jar
-CLASSPATH=$CLASSPATH:$LIB/log4j-1.2.15.jar
-CLASSPATH=$CLASSPATH:$LIB/antlr-runtime-3.1.1.jar
+CLASSPATH=$CLASSPATH:$LIB/log4j-1.2.16.jar
+CLASSPATH=$CLASSPATH:$LIB/antlr-runtime-3.2.jar
 
 export CLASSPATH="$CLASSPATH"

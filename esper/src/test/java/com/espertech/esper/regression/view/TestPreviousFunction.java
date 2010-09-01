@@ -1,5 +1,6 @@
 package com.espertech.esper.regression.view;
 
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
@@ -16,22 +17,56 @@ public class TestPreviousFunction extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    // TODO - doc prevwindow
-    // TODO - doc prevcount
-    // TODO - HA
-    // TODO - assert type and expression string of prevwindow and prevcount
-    // TODO - assert SODA mapping
-    // TODO - remove "*" support from first/last/all
-    // TODO - doc review and fix for "prev" and "prevtail"
-    // TODO - match recognize not supported
-    // TODO: invalid cases
-    // TODO - invalid in filters, other places (search prev(...))
-
     public void setUp()
     {
         listener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testExprNameAndTypeAndSODA() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);        
+        String epl = "select " +
+                "prev(1, intPrimitive), " +
+                "prev(1, sb), " +
+                "prevtail(1, intPrimitive), " +
+                "prevtail(1, sb), " +
+                "prevwindow(intPrimitive), " +
+                "prevwindow(sb), " +
+                "prevcount(intPrimitive), " +
+                "prevcount(sb) " +
+                "from SupportBean.win:time(1 minutes) as sb";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        EventBean resultBean = listener.getNewDataListFlattened()[1];
+
+        Object[][] rows = new Object[][] {
+                {"prev(1, intPrimitive)", Integer.class},
+                {"prev(1, sb)", SupportBean.class},
+                {"prevtail(1, intPrimitive)", Integer.class},
+                {"prevtail(1, sb)", SupportBean.class},
+                {"prevwindow(intPrimitive)", Integer[].class},
+                {"prevwindow(sb)", SupportBean[].class},
+                {"prevcount(intPrimitive)", Long.class},
+                {"prevcount(sb)", Long.class}
+                };
+        for (int i = 0; i < rows.length; i++) {
+            String message = "For prop '" + rows[i][0] + "'";
+            EventPropertyDescriptor prop = stmt.getEventType().getPropertyDescriptors()[i];
+            assertEquals(message, rows[i][0], prop.getPropertyName());
+            assertEquals(message, rows[i][1], prop.getPropertyType());
+            Object result = resultBean.get(prop.getPropertyName());
+            assertEquals(message, prop.getPropertyType(), result.getClass());
+        }
+        
+        stmt.destroy();
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
+        assertEquals(model.toEPL(), epl);
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        assertEquals(stmt.getText(), epl);
     }
 
     public void testPrevStream()
@@ -199,12 +234,12 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrevPrice"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTail0Price"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTail1Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTail0Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTail1Price"));
         assertEquals(Long.class, selectTestView.getEventType().getPropertyType("countPrice"));
-        assertEquals(Object[].class, selectTestView.getEventType().getPropertyType("windowPrice"));
+        assertEquals(Double[].class, selectTestView.getEventType().getPropertyType("windowPrice"));
 
         sendMarketEvent("IBM", 75);
         assertReceived("IBM", null, null, 75d, null, 1L, splitDoubles("75d"));
@@ -248,10 +283,10 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrevPrice"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTail0Price"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTail1Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTail0Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTail1Price"));
 
         sendTimer(0);
         sendMarketEvent("IBM", 75);
@@ -317,10 +352,10 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrevPrice"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTail0Price"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTail1Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTail0Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTail1Price"));
 
         sendMarketEvent("IBM", 75);
         sendMarketEvent("MSFT", 50);
@@ -433,7 +468,7 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prevSymbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
 
         sendTimer(0);
         assertFalse(listener.isInvoked());
@@ -505,9 +540,9 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prevSymbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prevTailSymbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTailPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTailPrice"));
 
         sendMarketEvent("D1", 1, 0);
         assertNewEventWTail("D1", null, null, "D1", 1d, null, null, 1L, splitDoubles("1d"));
@@ -556,7 +591,7 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prevSymbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
 
         sendTimer(0);
         assertFalse(listener.isInvoked());
@@ -615,7 +650,7 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prevSymbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
 
         sendTimer(0);
         assertFalse(listener.isInvoked());
@@ -666,7 +701,7 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prev0Symbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prev0Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prev0Price"));
 
         sendMarketEvent("A", 1);
         assertNewEvents("A", "A", 1d, null, null, null, null, "A", 1d, null, null, 1L, splitDoubles("1d"));
@@ -703,7 +738,7 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prev0Symbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prev0Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prev0Price"));
 
         sendMarketEvent("A", 1);
         sendMarketEvent("B", 2);
@@ -801,7 +836,7 @@ public class TestPreviousFunction extends TestCase
         selectTestView.addListener(listener);
 
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("prev0Symbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prev0Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prev0Price"));
 
         sendMarketEvent("COX", 30);
         assertNewEvents("COX", "COX", 30d, null, null, null, null, "COX", 30d, null, null, 1L, splitDoubles("30d"));
@@ -827,9 +862,17 @@ public class TestPreviousFunction extends TestCase
 
     public void testInvalid()
     {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
         tryInvalid("select prev(0, average) " +
                 "from " + SupportMarketDataBean.class.getName() + ".win:length(100).stat:uni(price)",
                 "Error starting statement: Previous function requires a single data window view onto the stream [select prev(0, average) from com.espertech.esper.support.bean.SupportMarketDataBean.win:length(100).stat:uni(price)]");
+
+        tryInvalid("select count(*) from SupportBean.win:keepall() where prev(0, intPrimitive) = 5",
+                "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean.win:keepall() where prev(0, intPrimitive) = 5]");
+
+        tryInvalid("select count(*) from SupportBean.win:keepall() having prev(0, intPrimitive) = 5",
+                "Error starting statement: The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean.win:keepall() having prev(0, intPrimitive) = 5]");
     }
 
     private void tryInvalid(String statement, String expectedError)
@@ -1007,12 +1050,12 @@ public class TestPreviousFunction extends TestCase
 
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevPrevPrice"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTail0Price"));
-        assertEquals(double.class, selectTestView.getEventType().getPropertyType("prevTail1Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevPrevPrice"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTail0Price"));
+        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("prevTail1Price"));
         assertEquals(Long.class, selectTestView.getEventType().getPropertyType("countPrice"));
-        assertEquals(Object[].class, selectTestView.getEventType().getPropertyType("windowPrice"));
+        assertEquals(Double[].class, selectTestView.getEventType().getPropertyType("windowPrice"));
 
         sendMarketEvent("IBM", 75);
         assertReceived("IBM", null, null, 75d, null, 1L, splitDoubles("75d"));

@@ -11,6 +11,8 @@ Major API or EPL changes
   - Renamed "first" to "firstever"
   - Renamed "last" to "lastever" (this makes a difference as out-of-order deletes are handled by last only and not by lastever)
   - Introduced new aggregation functions that track the data window : first, last and window with a convenient syntax for access to all attributes
+  - Introduced "prevtail", "prevwindow" and "prevcount" functions for data window reporting
+  - ANTLR version upgrade from 3.1.1 to 3.2; (Optional) JUnit version upgrade from 4.4 to 4.8.1 (Optional) LOG4J upgrade from 1.2.16 to 1.2.16; (Optional) MySQL Connector from 3.1.14 to 5.1.13
 
 Changes in version 3.5.0
 ------------------------

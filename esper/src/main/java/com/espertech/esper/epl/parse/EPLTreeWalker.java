@@ -914,13 +914,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
             previousType = PreviousType.PREV;
         }
         else if (node.getType() == PREVIOUSTAIL) {
-            previousType = PreviousType.TAIL;
+            previousType = PreviousType.PREVTAIL;
         }
         else if (node.getType() == PREVIOUSWINDOW) {
-            previousType = PreviousType.WINDOW;
+            previousType = PreviousType.PREVWINDOW;
         }
         else if (node.getType() == PREVIOUSCOUNT) {
-            previousType = PreviousType.COUNT;
+            previousType = PreviousType.PREVCOUNT;
         }
         else {
             throw new IllegalStateException("Failed to handle type '" + node.getType() + "'");

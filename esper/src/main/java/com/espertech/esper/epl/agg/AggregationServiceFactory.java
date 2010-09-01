@@ -144,13 +144,31 @@ public class AggregationServiceFactory
                                                 Annotation[] annotations,
                                                 VariableService variableService,
                                                 StatementStopService statementStopService,
-                                                boolean isJoin)
+                                                boolean isJoin,
+                                                ExprNode whereClause,
+                                                ExprNode havingClause)
             throws ExprValidationException
     {
         // No aggregates used, we do not need this service
         if ((selectAggregateExprNodes.isEmpty()) && (havingAggregateExprNodes.isEmpty()))
         {
         	return new AggregationServiceNull();
+        }
+
+        // Validate the absence of "prev" function in where-clause:
+        // Since the "previous" function does not post remove stream results, disallow when used with aggregations.
+        if ((whereClause != null) || (havingClause != null)) {
+            ExprNodePreviousVisitorWParent visitor = new ExprNodePreviousVisitorWParent();
+            if (whereClause != null) {
+                whereClause.accept(visitor);
+            }
+            if (havingClause != null) {
+                havingClause.accept(visitor);
+            }
+            if ((visitor.getPrevious() != null) && (!visitor.getPrevious().isEmpty())) {
+                String funcname = visitor.getPrevious().get(0).getSecond().getPreviousType().toString().toLowerCase();
+                throw new ExprValidationException("The '" + funcname + "' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead");
+            }
         }
 
         // Compile a map of aggregation nodes and equivalent-to aggregation nodes.

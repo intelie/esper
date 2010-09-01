@@ -1214,8 +1214,8 @@ public class StatementSpecMapper
         }
         else if (expr instanceof PreviousExpression)
         {
-            return new ExprPreviousNode(PreviousType.PREV);
-            // TODO
+            PreviousExpression prev = (PreviousExpression) expr;
+            return new ExprPreviousNode(PreviousType.valueOf(prev.getType().toString()));
         }
         else if (expr instanceof StaticMethodExpression)
         {
@@ -1618,7 +1618,10 @@ public class StatementSpecMapper
         }
         else if (expr instanceof ExprPreviousNode)
         {
-            return new PreviousExpression();
+            ExprPreviousNode prev = (ExprPreviousNode) expr;
+            PreviousExpression result = new PreviousExpression();
+            result.setType(PreviousExpressionType.valueOf(prev.getPreviousType().toString()));
+            return result;
         }
         else if (expr instanceof ExprStaticMethodNode)
         {

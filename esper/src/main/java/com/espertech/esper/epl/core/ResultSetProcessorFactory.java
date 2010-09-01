@@ -286,7 +286,8 @@ public class ResultSetProcessorFactory
 
         // Construct the appropriate aggregation service
         boolean hasGroupBy = !groupByNodes.isEmpty();
-        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, stmtContext.getMethodResolutionService(), stmtContext, statementSpecCompiled.getAnnotations(), stmtContext.getVariableService(), stmtContext.getStatementStopService(), typeService.getEventTypes().length > 1);
+        AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, stmtContext.getMethodResolutionService(), stmtContext, statementSpecCompiled.getAnnotations(), stmtContext.getVariableService(), stmtContext.getStatementStopService(), typeService.getEventTypes().length > 1,
+                statementSpecCompiled.getFilterRootNode(), statementSpecCompiled.getHavingExprRootNode());
 
         boolean useCollatorSort = false;
         if (stmtContext.getConfigSnapshot() != null)
@@ -362,7 +363,7 @@ public class ResultSetProcessorFactory
             return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream, stmtContext);
         }
 
-        boolean hasAggregation = (!selectAggregateExprNodes.isEmpty()) || (!propertiesAggregatedHaving.isEmpty());
+        boolean hasAggregation = (!selectAggregateExprNodes.isEmpty()) || (!havingAggregateExprNodes.isEmpty()) || (!orderByAggregateExprNodes.isEmpty()) || (!propertiesAggregatedHaving.isEmpty());
         if ((groupByNodes.isEmpty()) && hasAggregation)
         {
             // (3)
