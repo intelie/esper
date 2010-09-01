@@ -167,6 +167,22 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 						</entry>
 					</row>
 					<row>
+						<entry><synopsis>prevcount(<emphasis>event_property</emphasis>)</synopsis></entry>
+						<entry>
+							<para>
+								Returns the count of events (number of data points) in a data window.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><synopsis>prevwindow(<emphasis>event_property</emphasis>)</synopsis></entry>
+						<entry>
+							<para>
+								Returns a property value of all events or all properties of all events in a data window in the order that reflects the sort order of the data window.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry><synopsis>prior(<emphasis>integer</emphasis>, <emphasis>event_property)</emphasis></synopsis></entry>
 						<entry>
 							<para>
@@ -627,6 +643,98 @@ select prevtail(symbol, 1) from Trade</programlisting>
 			</sect3>			
 		</sect2>
 
+		<sect2 id="epl-single-row-function-ref-previouswindow">
+			<title>The <literal>Previous-Window</literal> Function</title>
+
+			<indexterm><primary>previous window function</primary></indexterm>
+			<indexterm><primary>functions</primary><secondary>previous window</secondary></indexterm>
+			<para>
+				The <literal>prevwindow</literal> function returns property values or all event properties for all events in a data window. For data windows that introduce a sort order other then the order of arrival, such as the sorted data window and the time order data window, the function returns the event data sorted in that order, otherwise it returns the events sorted by order of arrival with the newest arriving event first (the head prev(0)
+			</para>
+
+			<para>
+				The <literal>prevtail</literal> function is not an aggregation function and does therefore not return results per group when used with <literal>group by</literal>. Please consider the <literal>first</literal>, <literal>firstever</literal> or <literal>window</literal> aggregation functions instead as described in <xref linkend="epl-function-aggregation-dwtrack"/>.
+			</para>
+
+			<para>
+				The first parameter is an index parameter and denotes the i-th from-first event in the order established by the data window. If no index is provided the default is zero and the function returns the first event in the data window.
+				The second parameter is a property name or stream name. If specifying a property name, the function returns the value for the previous event property value. If specifying a stream name, the function returns the previous event underlying object.
+			</para>
+
+			<para>
+				This example selects the value of the <literal>price</literal> property of the first event held in the length window:
+			</para>
+			<programlisting>select prevtail(price) from Trade.win:length(10)</programlisting>
+
+			<para>
+				By using the stream alias in the <literal>prevtail</literal> function, the next example selects the trade event itself that is the second event held in the length window:
+			</para>
+			<programlisting>select prevtail(1, trade) from Trade.win:length(10) as trade</programlisting>
+
+			<para>
+				Since the <literal>prevtail</literal> function takes the order established by the data window into account, the function works well with sorted windows. In the following example the statement
+				selects the symbol of the 3 Trade events that had the smallest, second-smallest and third-smallest volume.
+			</para>
+			<programlisting>select prevtail(0, symbol), prevtail(1, symbol), prevtail(2, symbol)
+  from Trade.ext:sort(volume, true, 10)</programlisting>
+
+			<para>
+				The i-th previous event parameter can also be an expression returning an Integer-type value. The next statement joins the Trade data window with an <literal>RankSelectionEvent</literal> event that provides a <literal>rank</literal> property used to look up a certain position in the sorted Trade data window:
+			</para>
+			<programlisting>select prevtail(rank, symbol) from Trade.ext:sort(volume, true, 10), RankSelectionEvent</programlisting>
+
+			<para>
+				The <literal>prev</literal> function returns a <literal>null</literal> value if the data window does not currently holds positional-first or the Nth-from-first event. For batch data windows the value returned is relative to the current batch.
+			</para>
+
+			<para>
+				The following example returns the first and second symbol value in the batch:
+			</para>
+			<programlisting>select prevtail(0, symbol), prevtail(1, symbol) from Trade.win:time_batch(1 min)</programlisting>			
+
+			<para>
+				An alternative form of the <literal>prevtail</literal> function allows the index to not appear or appear after the property name if the index value is a constant and not an expression:
+			</para>
+			<programlisting>select prevtail(1, symbol) from Trade
+// ... equivalent to ...
+select prevtail(symbol) from Trade
+// ... and ...
+select prevtail(symbol, 1) from Trade</programlisting>			
+
+			<sect3 id="epl-single-row-function-ref-prevtail-group">
+				<title>Positional-First Event per Grouped Data Window</title>
+
+				<para>
+					The combination of <literal>prevtail</literal> function and <literal>std:groupby</literal> view returns the property value for a positional first event in the given group. 
+				</para>
+
+				<para>
+					Let's look at an example. This statement outputs the oldest price per symbol retaining the last 10 prices per symbol:
+				</para>
+				<programlisting>select prevtail(0, price) as oldestPrice from Trade.std:groupby(symbol).win:length(10)</programlisting>
+			</sect3>
+			
+			<sect3 id="epl-single-row-function-ref-prevtail-restrictions">
+				<title>Restrictions</title>
+				<para>
+						The following restrictions apply to the <literal>prev</literal> functions and its results:
+				</para>
+	
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							The function always returns a <literal>null</literal> value for remove stream (old data) events
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The function requires a data window view, or a <literal>std:groupby</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
+						</para>
+					</listitem>
+				</itemizedlist>
+			</sect3>			
+		</sect2>
+
 		<sect2 id="epl-single-row-function-ref-prior">
 			<title>The <literal>Prior</literal> Function</title>
 
@@ -797,6 +905,14 @@ select prevtail(symbol, 1) from Trade</programlisting>
 
 			<para>
 				When comparing the <literal>first</literal> aggregation function to the <literal>prevtail</literal> function, the differences are as follows. The <literal>prevtail</literal> function is not an aggregation function and thereby not sensitive to the presence of <literal>group by</literal>. The <literal>prevtail</literal> function accesses data window contents directly and respects the sort order of the data window. The <literal>first</literal> aggregation function returns results based on arrival order and tracks data window contents in a separate shared data structure.
+			</para>
+
+			<para>
+				When comparing the <literal>window</literal> aggregation function to the <literal>prevwindow</literal> function, the differences are as follows. The <literal>prevwindow</literal> function is not an aggregation function and thereby not sensitive to the presence of <literal>group by</literal>. The <literal>prevwindow</literal> function accesses data window contents directly and respects the sort order of the data window. The <literal>window</literal> aggregation function returns results based on arrival order and tracks data window contents in a separate shared data structure.
+			</para>
+
+			<para>
+				When comparing the <literal>count</literal> aggregation function to the <literal>prevcount</literal> function, the differences are as follows. The <literal>prevcount</literal> function is not an aggregation function and thereby not sensitive to the presence of <literal>group by</literal>.
 			</para>
 
 			<para>
