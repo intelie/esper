@@ -40,7 +40,7 @@ public class TestViewGroupBy extends TestCase
 
     public void testInvalidGroupByNoChild()
     {
-        String stmtText = "select avg(price), symbol from " + SupportMarketDataBean.class.getName() + ".win:length(100).std:groupby(symbol)";
+        String stmtText = "select avg(price), symbol from " + SupportMarketDataBean.class.getName() + ".win:length(100).std:groupwin(symbol)";
 
         try
         {
@@ -48,7 +48,7 @@ public class TestViewGroupBy extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting statement: Invalid use of the 'std:groupby' view, the view requires one or more child views to group, or consider using the group-by clause [select avg(price), symbol from com.espertech.esper.support.bean.SupportMarketDataBean.win:length(100).std:groupby(symbol)]", ex.getMessage());
+            assertEquals("Error starting statement: Invalid use of the 'std:groupwin' view, the view requires one or more child views to group, or consider using the group-by clause [select avg(price), symbol from com.espertech.esper.support.bean.SupportMarketDataBean.win:length(100).std:groupwin(symbol)]", ex.getMessage());
         }
     }
 
@@ -57,16 +57,16 @@ public class TestViewGroupBy extends TestCase
         EPAdministrator epAdmin = epService.getEPAdministrator();
         String filter = "select * from " + SupportMarketDataBean.class.getName();
 
-        priceLast3Stats = epAdmin.createEPL(filter + ".std:groupby(symbol).win:length(3).stat:uni(price)");
+        priceLast3Stats = epAdmin.createEPL(filter + ".std:groupwin(symbol).win:length(3).stat:uni(price)");
         priceLast3Stats.addListener(priceLast3StatsListener);
 
-        volumeLast3Stats = epAdmin.createEPL(filter + ".std:groupby(symbol).win:length(3).stat:uni(volume)");
+        volumeLast3Stats = epAdmin.createEPL(filter + ".std:groupwin(symbol).win:length(3).stat:uni(volume)");
         volumeLast3Stats.addListener(volumeLast3StatsListener);
 
-        priceAllStats = epAdmin.createEPL(filter + ".std:groupby(symbol).stat:uni(price)");
+        priceAllStats = epAdmin.createEPL(filter + ".std:groupwin(symbol).stat:uni(price)");
         priceAllStats.addListener(priceAllStatsListener);
 
-        volumeAllStats = epAdmin.createEPL(filter + ".std:groupby(symbol).stat:uni(volume)");
+        volumeAllStats = epAdmin.createEPL(filter + ".std:groupwin(symbol).stat:uni(volume)");
         volumeAllStats.addListener(volumeAllStatsListener);
 
         Vector<Map<String, Object>> expectedList = new Vector<Map<String, Object>>();
@@ -134,7 +134,7 @@ public class TestViewGroupBy extends TestCase
 
     public void testLengthWindowGrouped()
     {
-        String stmtText = "select symbol, price from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:length(2)";
+        String stmtText = "select symbol, price from " + SupportMarketDataBean.class.getName() + ".std:groupwin(symbol).win:length(2)";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
@@ -147,7 +147,7 @@ public class TestViewGroupBy extends TestCase
         // further math tests can be found in the view unit test
         EPAdministrator admin = epService.getEPAdministrator();
         admin.getConfiguration().addEventType("Market", SupportMarketDataBean.class);
-        EPStatement statement = admin.createEPL("select * from Market.std:groupby(symbol).win:length(1000000).stat:correl(price, volume)");
+        EPStatement statement = admin.createEPL("select * from Market.std:groupwin(symbol).win:length(1000000).stat:correl(price, volume)");
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
 
@@ -171,7 +171,7 @@ public class TestViewGroupBy extends TestCase
         // further math tests can be found in the view unit test
         EPAdministrator admin = epService.getEPAdministrator();
         admin.getConfiguration().addEventType("Market", SupportMarketDataBean.class);
-        EPStatement statement = admin.createEPL("select * from Market.std:groupby(symbol).win:length(1000000).stat:linest(price, volume)");
+        EPStatement statement = admin.createEPL("select * from Market.std:groupwin(symbol).win:length(1000000).stat:linest(price, volume)");
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
 

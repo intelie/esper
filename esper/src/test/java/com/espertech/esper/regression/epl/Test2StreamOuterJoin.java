@@ -47,7 +47,7 @@ public class Test2StreamOuterJoin extends TestCase
         String stmt = "select string, intPrimitive, symbol, volume " +
                       "from " + SupportMarketDataBean.class.getName() + ".win:keepall() " +
                       "full outer join " +
-                      SupportBean.class.getName() + ".std:groupby(string, intPrimitive).win:length(2) " +
+                      SupportBean.class.getName() + ".std:groupwin(string, intPrimitive).win:length(2) " +
                       "on string = symbol group by string, intPrimitive, symbol " +
                       "order by string, intPrimitive, symbol, volume";
 

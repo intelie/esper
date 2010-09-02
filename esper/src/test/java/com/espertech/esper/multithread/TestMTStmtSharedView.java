@@ -50,7 +50,7 @@ public class TestMTStmtSharedView extends TestCase
         {
             stmt[i] = engine.getEPAdministrator().createEPL(
                 " select * " +
-                " from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).stat:uni(price)");
+                " from " + SupportMarketDataBean.class.getName() + ".std:groupwin(symbol).stat:uni(price)");
             listeners[i] = new SupportMTUpdateListener();
             stmt[i].addListener(listeners[i]);
         }
@@ -106,5 +106,5 @@ public class TestMTStmtSharedView extends TestCase
         return sum;
     }
 
-    private static Log log = LogFactory.getLog(TestMTStmtSharedView.class);    
+    private static Log log = LogFactory.getLog(TestMTStmtSharedView.class);
 }

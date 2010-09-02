@@ -25,7 +25,7 @@ public class TestPreviousFunction extends TestCase
     }
 
     public void testExprNameAndTypeAndSODA() {
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);        
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         String epl = "select " +
                 "prev(1, intPrimitive), " +
                 "prev(1, sb), " +
@@ -38,7 +38,7 @@ public class TestPreviousFunction extends TestCase
                 "from SupportBean.win:time(1 minutes) as sb";
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
-        
+
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
         EventBean resultBean = listener.getNewDataListFlattened()[1];
@@ -61,7 +61,7 @@ public class TestPreviousFunction extends TestCase
             Object result = resultBean.get(prop.getPropertyName());
             assertEquals(message, prop.getPropertyType(), result.getClass());
         }
-        
+
         stmt.destroy();
         EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
         assertEquals(model.toEPL(), epl);
@@ -188,7 +188,7 @@ public class TestPreviousFunction extends TestCase
                 "prevtail(price) as tailPrice, " +
                 "prevcount(price) as countPrice, " +
                 "prevwindow(price) as windowPrice " +
-                "from MDBean.std:groupby(symbol, feed).win:length(2)";
+                "from MDBean.std:groupwin(symbol, feed).win:length(2)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(listener);
@@ -227,7 +227,7 @@ public class TestPreviousFunction extends TestCase
                 "prevtail(1, price) as prevTail1Price, " +
                 "prevcount(price) as countPrice, " +
                 "prevwindow(price) as windowPrice " +
-                "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).ext:sort(10, price asc) ";
+                "from " + SupportMarketDataBean.class.getName() + ".std:groupwin(symbol).ext:sort(10, price asc) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(listener);
@@ -276,7 +276,7 @@ public class TestPreviousFunction extends TestCase
                 "prevtail(1, price) as prevTail1Price, " +
                 "prevcount(price) as countPrice, " +
                 "prevwindow(price) as windowPrice " +
-                "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:time_batch(1 sec) ";
+                "from " + SupportMarketDataBean.class.getName() + ".std:groupwin(symbol).win:time_batch(1 sec) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(listener);
@@ -345,7 +345,7 @@ public class TestPreviousFunction extends TestCase
                 "prevtail(price, 1) as prevTail1Price, " +
                 "prevcount(price) as countPrice, " +
                 "prevwindow(price) as windowPrice " +
-                "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:length_batch(3) ";
+                "from " + SupportMarketDataBean.class.getName() + ".std:groupwin(symbol).win:length_batch(3) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(listener);
@@ -418,7 +418,7 @@ public class TestPreviousFunction extends TestCase
                 "prevtail(1, price) as prevTail1Price, " +
                 "prevcount(price) as countPrice, " +
                 "prevwindow(price) as windowPrice " +
-                "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:time(20 sec) ";
+                "from " + SupportMarketDataBean.class.getName() + ".std:groupwin(symbol).win:time(20 sec) ";
         assertPerGroup(viewExpr);
     }
 
@@ -432,7 +432,7 @@ public class TestPreviousFunction extends TestCase
                 "prevtail(1, price) as prevTail1Price, " +
                 "prevcount(price) as countPrice, " +
                 "prevwindow(price) as windowPrice " +
-                "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:ext_timed(volume, 20 sec) ";
+                "from " + SupportMarketDataBean.class.getName() + ".std:groupwin(symbol).win:ext_timed(volume, 20 sec) ";
         assertPerGroup(viewExpr);
     }
 
@@ -446,7 +446,7 @@ public class TestPreviousFunction extends TestCase
                 "prevtail(price, 1) as prevTail1Price, " +
                 "prevcount(price) as countPrice, " +
                 "prevwindow(price) as windowPrice " +
-                "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:length(10) ";
+                "from " + SupportMarketDataBean.class.getName() + ".std:groupwin(symbol).win:length(10) ";
         assertPerGroup(viewExpr);
     }
 

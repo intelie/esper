@@ -470,13 +470,13 @@ delete from MyWindow where threshold > CURRENT_THRESHOLD</pre></div>
           stock tick events per symbol. Notice we are not using the last 10 events overall, we are looking at the last 10 events per symbol.
         </p>
 <div class="source"><pre>select symbol, avg(price) as avgPrice 
-from StockTick.std:groupby(symbol).win:length(10) 
+from StockTick.std:groupwin(symbol).win:length(10) 
 group by symbol</pre></div>      
         <p>
           We can also specify multiple categories:
         </p>
 <div class="source"><pre>select symbol, location, avg(price) as avgPrice 
-from StockTick.std:groupby(symbol,location).win:length(10) 
+from StockTick.std:groupwin(symbol,location).win:length(10) 
 group by symbol, location</pre></div>
 
         <p>
@@ -485,7 +485,7 @@ group by symbol, location</pre></div>
           This can be accomplished by leaving the group-by clause off. Now the engine computes the average price over all symbols, considering only the last 10 events per symbol:
         </p>
 <div class="source"><pre>select symbol, location, avg(price) as avgPrice 
-from StockTick.std:groupby(symbol).win:length(10)</pre></div>
+from StockTick.std:groupwin(symbol).win:length(10)</pre></div>
       </answer>
     </faq>    
 
@@ -563,9 +563,9 @@ output snapshot every 1 minute</pre></div>
 	<div class="source"><pre>select task, measurement, rate - prev(4, rate) as delta
 from CurrentStream.win:time(5 min)</pre></div>      
         <p>
-          The "prev" previous-event function also works well with the "std:groupby" view in that is operates per-group when used with this view, for example:
+          The "prev" previous-event function also works well with the "std:groupwin" view in that is operates per-group when used with this view, for example:
         </p>
-	<div class="source"><pre>select rate, prev(1, rate) from MyStream.std:groupby(task).win:length(2)</pre></div>      
+	<div class="source"><pre>select rate, prev(1, rate) from MyStream.std:groupwin(task).win:length(2)</pre></div>      
         <p>
           A pattern statement can also be a great approach to form pairs or triplets (or any other combination of old and current events) and insert the pattern-matched events into
           a new stream for further processing, or use the select-clause to determine deltas as this sample statement shows:
@@ -1180,7 +1180,7 @@ esper.statement.alert12.3.ha.prefix=durable</pre></div>
           provide the last value per such group when the output condition occurs.
         </p>
         <p>
-          Views can also compute one or more output values per group by means of the "std:groupby()" view. These view output events are 
+          Views can also compute one or more output values per group by means of the "std:groupwin()" view. These view output events are 
           not grouped by the group-by or output-rate clauses, if present.          
         </p>
         <p>
@@ -1687,7 +1687,7 @@ epService.getEPAdministrator().getConfiguration().addEventType("Volatility", map
         </p>
 	<div class="source"><pre>insert into Volatility
 select id, x+ prev(1,vol) as vol ,
-from Volatility.std:groupby(id).win:length(2)</pre></div>
+from Volatility.std:groupwin(id).win:length(2)</pre></div>
 
       </answer>
     </faq>

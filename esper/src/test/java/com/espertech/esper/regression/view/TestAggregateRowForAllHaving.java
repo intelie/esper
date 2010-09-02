@@ -83,7 +83,7 @@ public class TestAggregateRowForAllHaving extends TestCase
     public void testAvgGroupWindow()
     {
         //String stmtText = "select istream avg(price) as aprice from "+ SupportMarketDataBean.class.getName()
-        //        +".std:groupby(symbol).win:length(1) having avg(price) <= 0";
+        //        +".std:groupwin(symbol).win:length(1) having avg(price) <= 0";
         String stmtText = "select istream avg(price) as aprice from "+ SupportMarketDataBean.class.getName()
                 +".std:unique(symbol) having avg(price) <= 0";
         EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
@@ -95,7 +95,7 @@ public class TestAggregateRowForAllHaving extends TestCase
 
         sendEvent("A", 5);
         assertFalse(listener.isInvoked());
-        
+
         sendEvent("B", -6);
         assertEquals(-.5d, listener.getLastNewData()[0].get("aprice"));
         listener.reset();

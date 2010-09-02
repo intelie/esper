@@ -25,7 +25,7 @@ public class OHLCMain
         catch (RuntimeException ex)
         {
             log.error("Unexpected exception :" + ex.getMessage(), ex);
-        }        
+        }
     }
 
     public void run(String engineURI)
@@ -44,7 +44,7 @@ public class OHLCMain
         sendTimer(epService, toTime("9:01:50"));
 
         Object[][] statements = new Object[][] {
-            {"S1",    "select * from OHLCTick.std:groupby(ticker).examples:ohlcbarminute(timestamp, price)"},
+            {"S1",    "select * from OHLCTick.std:groupwin(ticker).examples:ohlcbarminute(timestamp, price)"},
             };
 
         for (Object[] statement : statements)

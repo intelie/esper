@@ -181,7 +181,7 @@ public EventType getEventType() {
 				</listitem>
 				<listitem>
 					<para>
-						The <literal>cloneView</literal> method must make a configured copy of the view to enable the view to work in a grouping context together with a <literal>std:groupby</literal> parent view
+						The <literal>cloneView</literal> method must make a configured copy of the view to enable the view to work in a grouping context together with a <literal>std:groupwin</literal> parent view
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -297,13 +297,13 @@ public EventType getEventType() {
 			<title>Requirement for Grouped Views</title>
 			
 			<para>
-				Grouped views are views that operate under the <literal>std:groupby</literal> view. When operating under one or more <literal>std:groupby</literal> views, the engine instantiates a single view instance when the statement starts, and a new view instance per group criteria dynamically as new group criteria become known. 
+				Grouped views are views that operate under the <literal>std:groupwin</literal> view. When operating under one or more <literal>std:groupwin</literal> views, the engine instantiates a single view instance when the statement starts, and a new view instance per group criteria dynamically as new group criteria become known. 
 			</para>
 		
 			<para>
 				The next statement shows EPL for using a view instance per grouping criteria:
 			</para>		
-			<programlisting><![CDATA[select * from StockTick.std:groupby(symbol).custom:trendspotter(price)]]></programlisting>
+			<programlisting><![CDATA[select * from StockTick.std:groupwin(symbol).custom:trendspotter(price)]]></programlisting>
 
 			<para>
 				Your view must implement the <literal>com.espertech.esper.view.CloneableView</literal> interface to indicate your view may create new views. This code snippet shows a sample implementation of the <literal>cloneView</literal> method required by the interface:

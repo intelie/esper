@@ -286,7 +286,7 @@ public class TestViewTimeOrder extends TestCase
         sendTimer(20000);
         EPStatement stmt = epService.getEPAdministrator().createEPL(
                 "select irstream * from " + SupportBeanTimestamp.class.getName() +
-                ".std:groupby(groupId).ext:time_order(timestamp, 10 sec)");
+                ".std:groupwin(groupId).ext:time_order(timestamp, 10 sec)");
         stmt.addListener(listener);
 
         // 1st event is old

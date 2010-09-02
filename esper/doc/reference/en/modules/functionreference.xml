@@ -478,14 +478,14 @@ select prev(symbol) from Trade
 select prev(symbol, 1) from Trade</programlisting>			
 
 			<para>
-				The combination of the <literal>prev</literal> function and <literal>std:groupby</literal> view returns the property value for a previous event in the given data window group. 
+				The combination of the <literal>prev</literal> function and <literal>std:groupwin</literal> view returns the property value for a previous event in the given data window group. 
 			</para>
 
 			<para>
 				The following example returns for each event the current smallest price per symbol:
 			</para>
 			<programlisting>select symbol, prev(0, price) as topPricePerSymbol 
-from Trade.std:groupby(symbol).ext:sort(1, price asc)</programlisting>
+from Trade.std:groupwin(symbol).ext:sort(1, price asc)</programlisting>
 			
 			<sect3 id="epl-single-row-function-ref-prev-restrictions">
 				<title>Restrictions</title>
@@ -501,7 +501,7 @@ from Trade.std:groupby(symbol).ext:sort(1, price asc)</programlisting>
 					</listitem>
 					<listitem>
 						<para>
-							The function requires a data window view, or a <literal>std:groupby</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
+							The function requires a data window view, or a <literal>std:groupwin</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
 						</para>
 					</listitem>
 				</itemizedlist>
@@ -526,7 +526,7 @@ from Trade.std:groupby(symbol).ext:sort(1, price asc)</programlisting>
 					</listitem>
 					<listitem>
 						<para>
-							The <literal>prev</literal> function returns the previous event grouped by a criteria by combining the <literal>std:groupby</literal> view and a data window. The <literal>prior</literal> function returns prior events posted by the last view regardless of data window grouping.
+							The <literal>prev</literal> function returns the previous event grouped by a criteria by combining the <literal>std:groupwin</literal> view and a data window. The <literal>prior</literal> function returns prior events posted by the last view regardless of data window grouping.
 						</para>
 					</listitem>
 					<listitem>
@@ -602,14 +602,14 @@ select prevtail(symbol) from Trade
 select prevtail(symbol, 1) from Trade</programlisting>			
 
 			<para>
-				The combination of the <literal>prevtail</literal> function and <literal>std:groupby</literal> view returns the property value for a positional first event in the given data window group. 
+				The combination of the <literal>prevtail</literal> function and <literal>std:groupwin</literal> view returns the property value for a positional first event in the given data window group. 
 			</para>
 
 			<para>
 				Let's look at an example. This statement outputs the oldest price per symbol retaining the last 10 prices per symbol:
 			</para>
 			<programlisting>select symbol, prevtail(0, price) as oldestPrice
-from Trade.std:groupby(symbol).win:length(10)</programlisting>
+from Trade.std:groupwin(symbol).win:length(10)</programlisting>
 			
 			<sect3 id="epl-single-row-function-ref-prevtail-restrictions">
 				<title>Restrictions</title>
@@ -625,7 +625,7 @@ from Trade.std:groupby(symbol).win:length(10)</programlisting>
 					</listitem>
 					<listitem>
 						<para>
-							The function requires a data window view, or a <literal>std:groupby</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
+							The function requires a data window view, or a <literal>std:groupwin</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
 						</para>
 					</listitem>
 				</itemizedlist>
@@ -673,13 +673,13 @@ from Trade.std:groupby(symbol).win:length(10)</programlisting>
 			</para>
 
 			<para>
-				The combination of the <literal>prevwindow</literal> function and <literal>std:groupby</literal> view returns the property value(s) for all events in the given data window group. 
+				The combination of the <literal>prevwindow</literal> function and <literal>std:groupwin</literal> view returns the property value(s) for all events in the given data window group. 
 			</para>
 
 			<para>
 				This example statement outputs all prices per symbol retaining the last 10 prices per symbol:
 			</para>
-			<programlisting>select symbol, prevwindow(price) from Trade.std:groupby(symbol).win:length(10)</programlisting>
+			<programlisting>select symbol, prevwindow(price) from Trade.std:groupwin(symbol).win:length(10)</programlisting>
 			
 			<sect3 id="epl-single-row-function-ref-prevwindow-restrictions">
 				<title>Restrictions</title>
@@ -695,7 +695,7 @@ from Trade.std:groupby(symbol).win:length(10)</programlisting>
 					</listitem>
 					<listitem>
 						<para>
-							The function requires a data window view, or a <literal>std:groupby</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
+							The function requires a data window view, or a <literal>std:groupwin</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
 						</para>
 					</listitem>
 				</itemizedlist>
@@ -730,13 +730,13 @@ from Trade.std:groupby(symbol).win:length(10)</programlisting>
 			<programlisting>select prevcount(trade) from Trade.win:length(10) as trade</programlisting>
 
 			<para>
-				The combination of the <literal>prevcount</literal> function and <literal>std:groupby</literal> view returns the count of events in the given data window group. 
+				The combination of the <literal>prevcount</literal> function and <literal>std:groupwin</literal> view returns the count of events in the given data window group. 
 			</para>
 
 			<para>
 				This example statement outputs the number of events retaining the last 10 events per symbol:
 			</para>
-			<programlisting>select symbol, prevcount(price) from Trade.std:groupby(symbol).win:length(10)</programlisting>
+			<programlisting>select symbol, prevcount(price) from Trade.std:groupwin(symbol).win:length(10)</programlisting>
 			
 			<sect3 id="epl-single-row-function-ref-prevcount-restrictions">
 				<title>Restrictions</title>
@@ -752,7 +752,7 @@ from Trade.std:groupby(symbol).win:length(10)</programlisting>
 					</listitem>
 					<listitem>
 						<para>
-							The function requires a data window view, or a <literal>std:groupby</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
+							The function requires a data window view, or a <literal>std:groupwin</literal> and data window view, without any additional sub-views. See <xref linkend=" epl-views"/> for built-in data window views.
 						</para>
 					</listitem>
 				</itemizedlist>
@@ -1211,7 +1211,7 @@ output snapshot every 2 sec</programlisting>
 									(and considering the last event that left). The <literal>timestamp</literal> event property must be part of the event for this to work.
 								</para>
 								<programlisting>select colour, rate(timestamp) as rate 
-from StockTickEvent.std:groupby(symbol).win:length(4) 
+from StockTickEvent.std:groupwin(symbol).win:length(4) 
 group by symbol</programlisting>
 							</entry>
 						</row>

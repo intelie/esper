@@ -163,7 +163,7 @@ public class TestRevisionWindowed extends TestCase
         sendTimer(8000);
         epService.getEPRuntime().sendEvent(new SupportDeltaOne("c", "c12", "c52"));
         listenerOne.reset();
-        
+
         sendTimer(10000);
         assertFalse(listenerOne.isInvoked());
 
@@ -213,7 +213,7 @@ public class TestRevisionWindowed extends TestCase
 
     public void testGroupLength()
     {
-        stmtCreateWin = epService.getEPAdministrator().createEPL("create window RevQuote.std:groupby(p1).win:length(2) as select * from RevisableQuote");
+        stmtCreateWin = epService.getEPAdministrator().createEPL("create window RevQuote.std:groupwin(p1).win:length(2) as select * from RevisableQuote");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from FullEvent");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from D1");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from D5");
@@ -259,5 +259,5 @@ public class TestRevisionWindowed extends TestCase
             result.put(entries[i][0], entries[i][1]);
         }
         return result;
-    }    
+    }
 }

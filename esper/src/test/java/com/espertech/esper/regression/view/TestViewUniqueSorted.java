@@ -47,7 +47,7 @@ public class TestViewUniqueSorted extends TestCase
         sendEvent("E4", 5);
         ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), "string".split(","), new Object[][] {{"E2"}, {"E4"}});
     }
-    
+
     public void testWindowStats()
     {
         // Get the top 3 volumes for each symbol
@@ -102,7 +102,7 @@ public class TestViewUniqueSorted extends TestCase
         String stmtString =
               "SELECT irstream * " +
               "FROM\n " +
-              SupportSensorEvent.class.getName() + ".std:groupby(type).win:time(1 hour).std:unique(device).ext:sort(1, measurement desc) as high ";
+              SupportSensorEvent.class.getName() + ".std:groupwin(type).win:time(1 hour).std:unique(device).ext:sort(1, measurement desc) as high ";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtString);
         stmt.addListener(testListener);

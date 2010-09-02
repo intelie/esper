@@ -205,7 +205,7 @@ public class TestEPLTreeWalker extends TestCase
         OnTriggerSetAssignment assign = setDesc.getAssignments().get(0);
         assertEquals("prop1", assign.getVariableName());
         assertTrue(assign.getExpression() instanceof ExprConstantNode);
-        
+
         assertEquals("a = b", raw.getFilterExprRootNode().toExpressionString());
     }
 
@@ -335,7 +335,7 @@ public class TestEPLTreeWalker extends TestCase
 
     public void testWalkCreateWindow() throws Exception
     {
-        String expression = "create window MyWindow.std:groupby(symbol).win:length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
+        String expression = "create window MyWindow.std:groupwin(symbol).win:length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         StatementSpecRaw raw = walker.getStatementSpec();
 
@@ -537,7 +537,7 @@ public class TestEPLTreeWalker extends TestCase
         identNode = (ExprIdentNode) equalsNode.getChildNodes().get(1);
         assertNull(identNode.getStreamOrPropertyName());
         assertEquals("f4", identNode.getUnresolvedPropertyName());
-        
+
         assertEquals(5, (int) walker.getStatementSpec().getRowLimitSpec().getNumRows());
         assertEquals(10, (int) walker.getStatementSpec().getRowLimitSpec().getOptionalOffset());
     }

@@ -16,6 +16,27 @@ public class TestDataWindowIntersectExpiry extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
+    public void testFirstUniqueAndLength()
+    {
+        init(false);
+        String[] fields = new String[] {"string", "intPrimitive"};
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string, intPrimitive from SupportBean.std:firstunique(string).win:firstlength(3)");
+        stmt.addListener(listener);
+
+        sendEvent("E1", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
+
+        sendEvent("E2", 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2});
+
+        sendEvent("E2", 10);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
+        assertFalse(listener.isInvoked());
+    }
+
     public void testBatchWindow()
     {
         init(false);
@@ -90,7 +111,7 @@ public class TestDataWindowIntersectExpiry extends TestCase
         init(false);
         String[] fields = new String[] {"string"};
 
-        String text = "select irstream string from SupportBean.std:groupby(intPrimitive).win:length(2).std:unique(intBoxed) retain-intersection";
+        String text = "select irstream string from SupportBean.std:groupwin(intPrimitive).win:length(2).std:unique(intBoxed) retain-intersection";
         EPStatement stmt = epService.getEPAdministrator().createEPL(text);
         stmt.addListener(listener);
 

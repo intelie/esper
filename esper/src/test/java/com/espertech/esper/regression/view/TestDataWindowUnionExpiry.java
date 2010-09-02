@@ -15,7 +15,7 @@ public class TestDataWindowUnionExpiry extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
-    
+
     public void testBatchWindow()
     {
         init(false);
@@ -89,7 +89,7 @@ public class TestDataWindowUnionExpiry extends TestCase
         init(false);
         String[] fields = new String[] {"string"};
 
-        String text = "select irstream string from SupportBean.std:groupby(intPrimitive).win:length(2).std:unique(intBoxed) retain-union";
+        String text = "select irstream string from SupportBean.std:groupwin(intPrimitive).win:length(2).std:unique(intBoxed) retain-union";
         EPStatement stmt = epService.getEPAdministrator().createEPL(text);
         stmt.addListener(listener);
 
@@ -222,7 +222,7 @@ public class TestDataWindowUnionExpiry extends TestCase
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.std:unique(intPrimitive).std:unique(intBoxed) retain-union");
         stmt.addListener(listener);
-        
+
         sendEvent("E1", 1, 10);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
@@ -415,7 +415,7 @@ public class TestDataWindowUnionExpiry extends TestCase
 
         sendTimer(13000);
         ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E3"});
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E4"));        
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E4"));
 
         sendTimer(10000000);
         assertFalse(listener.isInvoked());
@@ -494,11 +494,11 @@ public class TestDataWindowUnionExpiry extends TestCase
         init(false);
         String text = null;
 
-        text = "select string from SupportBean.std:groupby(string).std:groupby(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union";
-        tryInvalid(text, "Error starting statement: Multiple group-by views are not allowed in conjuntion with multiple data windows [select string from SupportBean.std:groupby(string).std:groupby(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union]");
+        text = "select string from SupportBean.std:groupwin(string).std:groupwin(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union";
+        tryInvalid(text, "Error starting statement: Multiple group-by views are not allowed in conjuntion with multiple data windows [select string from SupportBean.std:groupwin(string).std:groupwin(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union]");
 
-        text = "select string from SupportBean.std:groupby(string).std:unique(string).std:merge(string) retain-union";
-        tryInvalid(text, "Error starting statement: Error attaching view to parent view: Group by view for this merge view could not be found among parent views [select string from SupportBean.std:groupby(string).std:unique(string).std:merge(string) retain-union]");
+        text = "select string from SupportBean.std:groupwin(string).std:unique(string).std:merge(string) retain-union";
+        tryInvalid(text, "Error starting statement: Error attaching view to parent view: Group by view for this merge view could not be found among parent views [select string from SupportBean.std:groupwin(string).std:unique(string).std:merge(string) retain-union]");
     }
 
     public void testValidLegacy()

@@ -33,7 +33,7 @@ public class TestViewGroupWithinGroup extends TestCase
         // Listen to all ticks
         viewGrouped = epService.getEPAdministrator().createEPL(
                 "select irstream datapoints as size, symbol, feed, volume from " + SupportMarketDataBean.class.getName() +
-                ".std:groupby(symbol).std:groupby(feed).std:groupby(volume).stat:uni(price)");
+                ".std:groupwin(symbol).std:groupwin(feed).std:groupwin(volume).stat:uni(price)");
 
         // Counts per symbol, feed and volume the events
         viewGrouped.addListener(listener);

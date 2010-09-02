@@ -66,7 +66,7 @@ public class TestNamedWindowViews extends TestCase
 
         // fire trigger
         epService.getEPRuntime().getEventSender("TypeTrigger").sendEvent(new HashMap());
-        
+
         assertEquals(9, listenerStmtOne.assertOneGetNewAndReset().get("col2"));
     }
 
@@ -1082,7 +1082,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby(value).win:length(2) as MyMap";
+        String stmtTextCreate = "create window MyWindow.std:groupwin(value).win:length(2) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -1158,7 +1158,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby(value).win:time_batch(10 sec) as MyMap";
+        String stmtTextCreate = "create window MyWindow.std:groupwin(value).win:time_batch(10 sec) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -1539,7 +1539,7 @@ public class TestNamedWindowViews extends TestCase
     public void testSelectGroupedViewLateStart()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby(string, intPrimitive).win:length(9) as select string, intPrimitive from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.std:groupwin(string, intPrimitive).win:length(9) as select string, intPrimitive from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
 
         // create insert into
@@ -1588,7 +1588,7 @@ public class TestNamedWindowViews extends TestCase
     public void testSelectGroupedViewLateStartVariableIterate()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby(string, intPrimitive).win:length(9) as select string, intPrimitive, longPrimitive, boolPrimitive from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.std:groupwin(string, intPrimitive).win:length(9) as select string, intPrimitive, longPrimitive, boolPrimitive from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
 
         // create insert into
@@ -1713,8 +1713,8 @@ public class TestNamedWindowViews extends TestCase
 
     public void testInvalidNoDataWindow()
     {
-        assertEquals("Error starting statement: Named windows require one or more child views that are data window views [create window MyWindow.std:groupby(value).stat:uni(value) as MyMap]",
-                     tryInvalid("create window MyWindow.std:groupby(value).stat:uni(value) as MyMap"));
+        assertEquals("Error starting statement: Named windows require one or more child views that are data window views [create window MyWindow.std:groupwin(value).stat:uni(value) as MyMap]",
+                     tryInvalid("create window MyWindow.std:groupwin(value).stat:uni(value) as MyMap"));
         assertEquals("Named windows require one or more child views that are data window views [create window MyWindow as MyMap]",
                      tryInvalid("create window MyWindow as MyMap"));
         assertEquals("Named window 'dummy' has not been declared [on MyMap delete from dummy]",

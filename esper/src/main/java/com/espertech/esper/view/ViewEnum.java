@@ -105,7 +105,7 @@ public enum ViewEnum
     /**
      * Group-by.
      */
-    GROUP_PROPERTY("std", "groupby", GroupByViewFactory.class, GROUP_MERGE),
+    GROUP_PROPERTY("std", "groupwin", GroupByViewFactory.class, GROUP_MERGE),
 
     /**
      * Univariate statistics.

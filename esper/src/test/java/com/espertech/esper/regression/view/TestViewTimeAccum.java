@@ -214,7 +214,7 @@ public class TestViewTimeAccum extends TestCase
         sendTimer(startTime);
         EPStatement stmt = epService.getEPAdministrator().createEPL(
                 "select irstream * from " + SupportMarketDataBean.class.getName() +
-                ".std:groupby(symbol).win:time_accum(10 sec)");
+                ".std:groupwin(symbol).win:time_accum(10 sec)");
         stmt.addListener(listener);
         EPRuntime engine = epService.getEPRuntime();
 

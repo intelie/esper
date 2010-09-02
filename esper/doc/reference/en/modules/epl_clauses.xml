@@ -33,7 +33,7 @@
 		<orderedlist spacing="compact">
 			<listitem>
 				<para>
-					Data window views: <literal>win:length</literal>, <literal>win:length_batch</literal>, <literal>win:time</literal>, <literal>win:time_batch</literal>, <literal>win:time_length_batch</literal>, <literal>win:time_accum</literal>, <literal>win:ext_timed</literal>, <literal>ext:sort_window</literal>, <literal>ext:time_order</literal>, <literal>std:unique</literal>, <literal>std:groupby</literal>, <literal>std:lastevent</literal>, <literal>std:firstevent</literal>, <literal>std:firstunique</literal>, <literal>win:firstlength</literal>,  <literal>win:firsttime</literal>.
+					Data window views: <literal>win:length</literal>, <literal>win:length_batch</literal>, <literal>win:time</literal>, <literal>win:time_batch</literal>, <literal>win:time_length_batch</literal>, <literal>win:time_accum</literal>, <literal>win:ext_timed</literal>, <literal>ext:sort_window</literal>, <literal>ext:time_order</literal>, <literal>std:unique</literal>, <literal>std:groupwin</literal>, <literal>std:lastevent</literal>, <literal>std:firstevent</literal>, <literal>std:firstunique</literal>, <literal>win:firstlength</literal>,  <literal>win:firsttime</literal>.
 				</para>
 			</listitem>
 			<listitem>
@@ -1299,19 +1299,19 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 group by expressway]]></programlisting>
 
 			<para>
-				The next example serves to show staggering of views. It uses the <literal>std:groupby</literal> view to create a separate length window per car id:
+				The next example serves to show staggering of views. It uses the <literal>std:groupwin</literal> view to create a separate length window per car id:
 			</para>
 				
          <programlisting><![CDATA[select cardId, expressway, direction, segment, count(*) 
-from CarLocEvent.std:groupby(carId).win:length(4) 
+from CarLocEvent.std:groupwin(carId).win:length(4) 
 group by carId, expressway, direction, segment]]></programlisting>
 
 			<para>
-				The first view <literal>std:groupby(carId)</literal> groups car location events by car id. The second view <literal>win:length(4)</literal> keeps a length window of the 4 last events, with one separate length window for each car id. The example reports the number of events per car id and per expressway, direction and segment considering the last 4 events for each car id only. 
+				The first view <literal>std:groupwin(carId)</literal> groups car location events by car id. The second view <literal>win:length(4)</literal> keeps a length window of the 4 last events, with one separate length window for each car id. The example reports the number of events per car id and per expressway, direction and segment considering the last 4 events for each car id only. 
 			</para>
 			
 			<para>
-				Note that the <literal>group by</literal> syntax is generally preferable over <literal>std:groupby</literal> for grouping information as it is SQL-compliant, easier to read and does not create a separate data window per group. The <literal>std:groupby</literal> in above example creates a separate data window (length window in the example) per group, demonstrating staggering views.
+				Note that the <literal>group by</literal> syntax is generally preferable over <literal>std:groupwin</literal> for grouping information as it is SQL-compliant, easier to read and does not create a separate data window per group. The <literal>std:groupwin</literal> in above example creates a separate data window (length window in the example) per group, demonstrating staggering views.
 			</para>
 
 			<para>
@@ -1326,7 +1326,7 @@ group by carId, expressway, direction, segment]]></programlisting>
 		<sect2 id="epl-from-clause-view-multidatawindow" >
 		   <title>Multiple Data Window Views</title>
 		   <para>
-			   Data window views provide an expiry policy that indicates when to remove events from the data window, with the exception of the keep-all data window which has no expiry policy and the group-by view for allocating a new data window per group.
+			   Data window views provide an expiry policy that indicates when to remove events from the data window, with the exception of the keep-all data window which has no expiry policy and the <literal>std:groupwin</literal> grouped-window view for allocating a new data window per group.
 		   </para>
 		   
 		   <para>
@@ -1730,10 +1730,10 @@ having stddev(price) &gt; 0.8</programlisting>
 		</sect2>
 
         <sect2 id="epl-group-by-versus-view" >
-			 <title>Comparing the <emphasis>Group By</emphasis> clause and the <emphasis>std:groupby</emphasis> view</title>
+			 <title>Comparing the <emphasis>Group By</emphasis> clause and the <emphasis>std:groupwin</emphasis> view</title>
 
 			<para>
-				The <emphasis>group by</emphasis> clause as well as the built-in <emphasis>std:groupby</emphasis> view are similar in their ability to group events. This section explains the key differences in their behavior and use.
+				The <emphasis>group by</emphasis> clause as well as the built-in <emphasis>std:groupwin</emphasis> view are similar in their ability to group events. This section explains the key differences in their behavior and use.
 			</para>
 				
 			<para>
@@ -1741,7 +1741,7 @@ having stddev(price) &gt; 0.8</programlisting>
 			</para>
 
 			<para>
-				The <emphasis>std:groupby</emphasis> view is a built-in view that also groups events. The view is described in greater detail in <xref linkend="view-std-groupby"/>. Its primary use is to create a separate data window per group, or more generally to create separate instances of all its sub-views for each grouping key encountered.
+				The <emphasis>std:groupwin</emphasis> view is a built-in view that also groups events. The view is described in greater detail in <xref linkend="view-std-groupby"/>. Its primary use is to create a separate data window per group, or more generally to create separate instances of all its sub-views for each grouping key encountered.
 			</para>
 
 			<para>
@@ -1750,7 +1750,7 @@ having stddev(price) &gt; 0.8</programlisting>
 
 			<programlisting>select symbol, avg(price) from StockTickEvent group by symbol
 // ... is equivalent to ...
-select symbol, average from StockTickEvent.std:groupby(symbol).stat:uni(price)</programlisting>
+select symbol, average from StockTickEvent.std:groupwin(symbol).stat:uni(price)</programlisting>
 
 			<para>
 				The next example shows two queries that are NOT equivalent as the length window is ungrouped in the first query, and grouped in the second query:
@@ -1758,7 +1758,7 @@ select symbol, average from StockTickEvent.std:groupby(symbol).stat:uni(price)</
 
 			<programlisting>select symbol, sum(price) from StockTickEvent.win:length(10) group by symbol
 // ... NOT equivalent to ...
-select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)</programlisting>
+select symbol, sum(price) from StockTickEvent.std:groupwin(symbol).win:length(10)</programlisting>
 
 			<para>
 				The key difference between the two statements is that in the first statement the length window is ungrouped and applies to all events regardless of group. While in the second query each group gets its own instance of a length window. For example, in the second query events arriving for symbol "ABC" get a length window of 10 events, and events arriving for symbol "DEF" get their own length window of 10 events. 
@@ -2125,7 +2125,7 @@ order by price, volume</programlisting>
 		<itemizedlist spacing="compact">
 			<listitem>
 				<para>
-					If the statement is not a join, does not group via <literal>group by</literal> clause and does not declare grouped data windows via <literal>std:groupby</literal> view, the order in which events are delivered to listeners and through the <literal>iterator</literal> pull API is the order of event arrival.
+					If the statement is not a join, does not group via <literal>group by</literal> clause and does not declare grouped data windows via <literal>std:groupwin</literal> view, the order in which events are delivered to listeners and through the <literal>iterator</literal> pull API is the order of event arrival.
 				</para>
 			</listitem>
 			<listitem>
@@ -2711,7 +2711,7 @@ where tick.symbol = news.symbol]]></programlisting>
   where zoneId = RFID.zoneId) as name from RFIDEvent]]></programlisting>
 
 		<para>
-			Note that when a simple or correlated subquery returns multiple rows, the engine returns a <literal>null</literal> value as the subquery result. To limit the number of events returned by a subquery consider using one of the views <literal>std:lastevent</literal>, <literal>std:unique</literal> and <literal>std:groupby</literal>.
+			Note that when a simple or correlated subquery returns multiple rows, the engine returns a <literal>null</literal> value as the subquery result. To limit the number of events returned by a subquery consider using one of the views <literal>std:lastevent</literal>, <literal>std:unique</literal> and <literal>std:groupwin</literal>.
 		</para>
 
 		<para>
@@ -3830,7 +3830,7 @@ from ServiceOrderEvent as order]]></programlisting>
 			</para>
 
 			<para>
-				The following example further declares a view into the named window. Such a view can be a plug-in view or one of the built-in views, but cannot be a data window view (with the exception of the group-by view which is allowed).
+				The following example further declares a view into the named window. Such a view can be a plug-in view or one of the built-in views, but cannot be a data window view (with the exception of the <literal>std:groupwin</literal> grouped-window view which is allowed).
 			</para>
 			<programlisting><![CDATA[select * from AllOrdersNamedWindow(volume>0, price>0).mycompany:mypluginview()]]></programlisting>
 			

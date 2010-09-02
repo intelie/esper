@@ -75,7 +75,7 @@ public class TestOrderBySimple extends TestCase {
         ArrayAssertionUtil.assertPropsPerRow(receivedThree, "a.string".split(","), new Object [][] {{"A2"}, {"A1"}});
 
         // try grouped time window
-        String stmtTextTwo = "select rstream string from SupportBean.std:groupby(string).win:time(10) order by string desc";
+        String stmtTextTwo = "select rstream string from SupportBean.std:groupwin(string).win:time(10) order by string desc";
         EPStatement stmtTwo = epService.getEPAdministrator().createEPL(stmtTextTwo);
         SupportUpdateListener listenerTwo = new SupportUpdateListener();
         stmtTwo.addListener(listenerTwo);
@@ -83,7 +83,7 @@ public class TestOrderBySimple extends TestCase {
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
         epService.getEPRuntime().sendEvent(new SupportBean("A1", 1));
         epService.getEPRuntime().sendEvent(new SupportBean("A2", 1));
-        
+
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(11000));
         EventBean[] receivedTwo = listenerTwo.getNewDataListFlattened();
         assertEquals(2, receivedTwo.length);
@@ -108,7 +108,7 @@ public class TestOrderBySimple extends TestCase {
         /*
         Collections.sort(items);
         System.out.println("Sorted default" + items);
-        
+
         Collections.sort(items, new Comparator<String>() {
             Collator collator = Collator.getInstance(Locale.FRANCE);
             public int compare(String o1, String o2)

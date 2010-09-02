@@ -403,7 +403,7 @@ config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(fal
 			</para>
 			<programlisting><![CDATA[// less effective in a highly threaded environment 
 select venue, ccyPair, side, sum(qty)
-from CumulativePrice.std:groupby(ccyPair,side) as w
+from CumulativePrice.std:groupwin(ccyPair,side) as w
 where w.side='O']]></programlisting>
 
 			<para>

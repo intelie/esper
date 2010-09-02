@@ -15,6 +15,7 @@ Major API or EPL changes
   - Introduced "prevtail", "prevwindow" and "prevcount" functions for data window reporting
   - ANTLR version upgrade from 3.1.1 to 3.2; (Optional) JUnit version upgrade from 4.4 to 4.8.1 (Optional) LOG4J upgrade from 1.2.16 to 1.2.16; (Optional) MySQL Connector from 3.1.14 to 5.1.13
   - To be congruent to the JDBC 4 specification, the SQL query metadata now uses the value returned by the JDBC driver result set metadata for "getColumnLabel" as the column name or if that is null the value returned by "getColumnName"
+  - The "std:groupby" view has been renamed to "std:groupwin" to avoid confusion with the group-by clause.
 
 Changes in version 3.5.0
 ------------------------

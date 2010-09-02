@@ -29,8 +29,8 @@ public class TestOrderBySelfJoin extends TestCase
                     "c1.priority as priority, " +
                     "c2.priority as prio, cast(count(*), int) as cnt from " +
     	            SupportHierarchyEvent.class.getName() + ".std:lastevent() as c1, " +
-    	            SupportHierarchyEvent.class.getName() + ".std:groupby(event_criteria_id).std:lastevent() as c2, " +
-    	            SupportHierarchyEvent.class.getName() + ".std:groupby(event_criteria_id).std:lastevent() as p " +
+    	            SupportHierarchyEvent.class.getName() + ".std:groupwin(event_criteria_id).std:lastevent() as c2, " +
+    	            SupportHierarchyEvent.class.getName() + ".std:groupwin(event_criteria_id).std:lastevent() as p " +
                     "where c2.event_criteria_id in (c1.event_criteria_id,2,1) " +
                     "and p.event_criteria_id in (c1.parent_event_criteria_id, c1.event_criteria_id) " +
                     "order by c2.priority asc";

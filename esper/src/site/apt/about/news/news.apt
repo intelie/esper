@@ -558,7 +558,7 @@ News
     
     * Fixed issue ESPER-131 "Namespace problem using XML events and XPath properties"
     
-    * Fixed issue ESPER-134 "EPException using std:groupby without child view"
+    * Fixed issue ESPER-134 "EPException using std:groupwin without child view"
     
     * Fixed issue ESPER-142 "Relational Database Access does not work with Oracle JDBC"
     

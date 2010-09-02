@@ -100,7 +100,7 @@
 					</row>
 					<row>
 						<entry>Group By</entry>
-						<entry>std:groupby(<emphasis>grouping criteria(s)</emphasis>)</entry>
+						<entry>std:groupwin(<emphasis>grouping criteria(s)</emphasis>)</entry>
 						<entry>Groups events into sub-views by the value of the specified expression(s), generally used to provide a separate data window per group.</entry>
 					</row>
 					<row>
@@ -242,7 +242,7 @@
 					sum of price is calculated only for the last 10 events for each symbol and aggregates per symbol:
 				</para>
 	
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupby(symbol).win:length(10) group by symbol]]></programlisting>
+				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol).win:length(10) group by symbol]]></programlisting>
 			</sect2>
 
 			<sect2 id="view-win-length-batch" >
@@ -593,7 +593,7 @@ following conditions occurs, whichever occurs first: the data window has collect
 			</sect2>
 
 			<sect2 id="view-std-groupby" >
-			   <title>Group-By (<literal>std:groupby</literal>)</title>
+			   <title>Group-By (<literal>std:groupwin</literal>)</title>
 		
 				<indexterm><primary>group-by window</primary></indexterm>
 				<indexterm><primary>views</primary><secondary>group-by window</secondary></indexterm>
@@ -603,7 +603,7 @@ following conditions occurs, whichever occurs first: the data window has collect
 					This view groups events into sub-views by the value returned by the specified expression or the combination of values returned by a list of expressions. The view takes a single expression to supply the group-by values, or a list of expressions as parameters, as the synopsis shows:
 				</para>
 
-				<synopsis>std:groupby(<emphasis>grouping_expression</emphasis> [, <emphasis>grouping_expression</emphasis> ...])</synopsis>
+				<synopsis>std:groupwin(<emphasis>grouping_expression</emphasis> [, <emphasis>grouping_expression</emphasis> ...])</synopsis>
 
 				<para>
 					The <emphasis>grouping_expression</emphasis> expression(s) return one or more group keys, by which the view creates sub-views for each distinct group key. Note that the expression should not return an unlimited number of values: the grouping expression should not
@@ -618,51 +618,51 @@ following conditions occurs, whichever occurs first: the data window has collect
 					This example computes the total price for the last 5 events considering the last 5 events per each symbol, aggregating the price across all symbols (since no <literal>group by</literal> clause is specified the aggregation is across all symbols):
 				</para>
 	
-				<programlisting><![CDATA[select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(5)]]></programlisting>
+				<programlisting><![CDATA[select symbol, sum(price) from StockTickEvent.std:groupwin(symbol).win:length(5)]]></programlisting>
 
 				<para>
 					To compute the total price for the last 5 events considering the last 5 events per each symbol and outputting a price per symbol, add the <literal>group by</literal> clause:
 				</para>
 	
-				<programlisting><![CDATA[select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(5) group by symbol]]></programlisting>
+				<programlisting><![CDATA[select symbol, sum(price) from StockTickEvent.std:groupwin(symbol).win:length(5) group by symbol]]></programlisting>
 
 				<para>
-					The group-by view can also take multiple expressions that provide values to group by. This example computes the total price for each symbol and feed for the last 10 events per symbol and feed combination:
+					The <literal>std:groupwin</literal> grouped-window view can also take multiple expressions that provide values to group by. This example computes the total price for each symbol and feed for the last 10 events per symbol and feed combination:
 				</para>
 	
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupby(symbol, feed).win:length(10)]]></programlisting>
+				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol, feed).win:length(10)]]></programlisting>
 
 				<para>
-					The order in which the group-by view appears within sub-views of a stream controls the data the engine derives from events for each group. The next 2 statements demonstrate this using a length window.
+					The order in which the <literal>std:groupwin</literal> grouped-window view appears within sub-views of a stream controls the data the engine derives from events for each group. The next 2 statements demonstrate this using a length window.
 				</para>
 
 				<para>
-					By putting the group-by view in position after the length window, we can change the semantics of the query. The query now returns the total price per symbol for only the last 10 events across all symbols. Here the engine allocates only one length window for all events:
+					By putting the <literal>std:groupwin</literal> grouped-window view in position after the length window, we can change the semantics of the query. The query now returns the total price per symbol for only the last 10 events across all symbols. Here the engine allocates only one length window for all events:
 				</para>
 	
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.win:length(10).std:groupby(symbol)]]></programlisting>
+				<programlisting><![CDATA[select sum(price) from StockTickEvent.win:length(10).std:groupwin(symbol)]]></programlisting>
 
 				<para>
-					We have learned that by placing the group-by view before other views, these other views become part of the grouped set of views. The engine dynamically allocates a new view instance for each subview, every time it encounters a new group key such as a new value for symbol. Therefore, in <literal>std:groupby(symbol).win:length(10)</literal> the engine allocates a new length window for each distinct symbol. However in <literal>win:length(10).std:groupby(symbol)</literal> the engine maintains a single length window.
+					We have learned that by placing the <literal>std:groupwin</literal> grouped-window view before other views, these other views become part of the grouped set of views. The engine dynamically allocates a new view instance for each subview, every time it encounters a new group key such as a new value for symbol. Therefore, in <literal>std:groupwin(symbol).win:length(10)</literal> the engine allocates a new length window for each distinct symbol. However in <literal>win:length(10).std:groupwin(symbol)</literal> the engine maintains a single length window.
 				</para>
 
 				<para>
-					Multiple group-by views can also be used in the same statement. The statement below groups by symbol and feed. As the statement declares the length window after the group-by view for symbols, the engine allocates a new length window per symbol however reports total price per symbol and feed. The query results are total price per symbol and feed for the last 100 events per symbol (and not per feed).
+					Multiple <literal>std:groupwin</literal> grouped-window views can also be used in the same statement. The statement below groups by symbol and feed. As the statement declares the length window after the <literal>std:groupwin</literal> grouped-window view for symbols, the engine allocates a new length window per symbol however reports total price per symbol and feed. The query results are total price per symbol and feed for the last 100 events per symbol (and not per feed).
 				</para>
 
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupby(symbol).win:length(100)
-    .std:groupby(feed)]]></programlisting>
+				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol).win:length(100)
+    .std:groupwin(feed)]]></programlisting>
 
 				<para>
 					Last, we consider the permutation where the length window is declared after the group-by. Here, the query results are total price per symbol and feed for the last 100 events per symbol and feed.
 				</para>
 
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupby(symbol, feed)
+				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol, feed)
     .win:length(100)]]></programlisting>
     
 				<para>
-					For advanced users: There is an optional view that can control how the group-by view gets evaluated and that view is the <literal>std:merge</literal> view. 
-					The merge view can only occur after a group-by view in a view chain and controls
+					For advanced users: There is an optional view that can control how the <literal>std:groupwin</literal> grouped-window view gets evaluated and that view is the <literal>std:merge</literal> view. 
+					The merge view can only occur after a <literal>std:groupwin</literal> grouped-window view in a view chain and controls
 					at what point in the view chain the merge of the data stream occurs from view-instance-per-criteria to single view.
 				</para>
 
@@ -670,10 +670,10 @@ following conditions occurs, whichever occurs first: the data window has collect
 					Compare the following statements:
 				</para>
 				
-				<programlisting><![CDATA[select * from Market.std:groupby(ticker).win:length(1000000)
+				<programlisting><![CDATA[select * from Market.std:groupwin(ticker).win:length(1000000)
     .stat:weighted_avg(price, volume).std:merge(ticker)
 // ... and ...
-select * from Market.std:groupby(ticker).win:length(1000000).std:merge(ticker)
+select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
     .stat:weighted_avg(price, volume)]]></programlisting>
 
 				<para>
@@ -713,9 +713,9 @@ select * from Market.std:groupby(ticker).win:length(1000000).std:merge(ticker)
 				<programlisting><![CDATA[select size from StockTickEvent.win:time(1 min).std:size()]]></programlisting>
 
 				<para>
-					The size view is also useful in conjunction with a group-by view to count the number of events per group. The EPL below returns the number of events per symbol.
+					The size view is also useful in conjunction with a <literal>std:groupwin</literal> grouped-window view to count the number of events per group. The EPL below returns the number of events per symbol.
 				</para>
-				<programlisting><![CDATA[select size from StockTickEvent.std:groupby(symbol).std:size()]]></programlisting>
+				<programlisting><![CDATA[select size from StockTickEvent.std:groupwin(symbol).std:size()]]></programlisting>
 
 				<para>
 					When used without a data window, the view simply counts the number of events:
