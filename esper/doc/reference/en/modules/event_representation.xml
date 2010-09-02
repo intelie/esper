@@ -1221,6 +1221,14 @@ sender.sendEvent(node);]]></programlisting>
 				</para>
 			</sect3>
 
+			<sect3 id="eventrep-xml-dom-limitations">
+			   <title>Limitations</title>
+			   <para>
+				   The engine schema interrogation is based on the Xerces distribution packaged into Sun Java runtimes. Your application may not replace the JRE's Xerces version and use XML schemas, unless your application sets the DOM implementation registry as shown below before loading the engine configuration:
+			   </para>
+				<programlisting><![CDATA[System.setProperty(DOMImplementationRegistry.PROPERTY, 
+  "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl");]]></programlisting>
+			</sect3>
 		</sect2>
 
 		<sect2 id="eventrep-xml-dom-noschema">

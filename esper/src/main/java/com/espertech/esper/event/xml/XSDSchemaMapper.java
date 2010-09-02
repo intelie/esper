@@ -1,6 +1,7 @@
 package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.ConfigurationException;
+import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ResourceLoader;
 import com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl;
 import com.sun.org.apache.xerces.internal.impl.dv.xs.XSSimpleTypeDecl;
@@ -64,7 +65,15 @@ public class XSDSchemaMapper
         // Uses Xerxes internal classes
         DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
         registry.addSource(new DOMXSImplementationSourceImpl());
-        XSImplementation impl =(XSImplementation) registry.getDOMImplementation("XS-Loader");
+        Object xsImplementation = registry.getDOMImplementation("XS-Loader");
+        if (xsImplementation == null) {
+            throw new ConfigurationException("Failed to retrieve XS-Loader implementation from registry obtained via DOMImplementationRegistry.newInstance, please check that registry.getDOMImplementation(\"XS-Loader\") returns an instance");
+        }
+        if (!JavaClassHelper.isImplementsInterface(xsImplementation.getClass(), XSImplementation.class)) {
+            String message = "The XS-Loader instance returned by the DOM registry class '" + xsImplementation.getClass().getName() + "' does not implement the interface '" + XSImplementation.class.getName() + "'; If you have a another Xerces distribution in your classpath please ensure the classpath order loads the JRE Xerces distribution or set the DOMImplementationRegistry.PROPERTY system property";
+            throw new ConfigurationException(message);
+        }
+        XSImplementation impl =(XSImplementation) xsImplementation; 
         XSLoader schemaLoader = impl.createXSLoader(null);
         XSModel xsModel = schemaLoader.loadURI(uri);
 
