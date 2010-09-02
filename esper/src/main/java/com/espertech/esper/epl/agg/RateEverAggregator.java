@@ -9,8 +9,9 @@
 package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.schedule.TimeProvider;
+
+import java.util.ArrayDeque;
 
 /**
  * Aggregation computing an event arrival rate for with and without data window.
@@ -18,7 +19,7 @@ import com.espertech.esper.schedule.TimeProvider;
 public class RateEverAggregator implements AggregationMethod {
 
     private final long interval;
-    private final ArrayDequeJDK6Backport<Long> points;
+    private final ArrayDeque<Long> points;
     private boolean hasLeave = false;
     private final TimeProvider timeProvider;
 
@@ -30,7 +31,7 @@ public class RateEverAggregator implements AggregationMethod {
     public RateEverAggregator(long interval, TimeProvider timeProvider) {
         this.interval = interval;
         this.timeProvider = timeProvider;
-        points = new ArrayDequeJDK6Backport<Long>();
+        points = new ArrayDeque<Long>();
     }
 
     public void clear()

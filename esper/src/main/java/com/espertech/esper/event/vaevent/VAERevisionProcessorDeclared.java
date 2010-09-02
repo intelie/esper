@@ -12,7 +12,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.espertech.esper.event.*;
 import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.Viewable;
@@ -252,7 +251,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
             {
                 return Collections.EMPTY_LIST;
             }
-            ArrayDequeJDK6Backport<EventBean> list = new ArrayDequeJDK6Backport<EventBean>();
+            ArrayDeque<EventBean> list = new ArrayDeque<EventBean>();
             while (it.hasNext())
             {
                 RevisionEventBeanDeclared fullRevision = (RevisionEventBeanDeclared) it.next();

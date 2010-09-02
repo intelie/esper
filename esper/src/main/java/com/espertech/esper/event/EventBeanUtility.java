@@ -12,15 +12,15 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
-import com.espertech.esper.collection.*;
+import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.collection.MultiKeyUntypedEventPair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Method to getSelectListEvents events in collections to other collections or other event types.
@@ -62,7 +62,7 @@ public class EventBeanUtility
      * @param eventVector vector
      * @return array with all events
      */
-    public static UniformPair<EventBean[]> flattenList(ArrayDequeJDK6Backport<UniformPair<EventBean[]>> eventVector)
+    public static UniformPair<EventBean[]> flattenList(ArrayDeque<UniformPair<EventBean[]>> eventVector)
     {
         if (eventVector.isEmpty())
         {
@@ -136,7 +136,7 @@ public class EventBeanUtility
      * @param eventVector vector
      * @return array with all events
      */
-    public static EventBean[] flatten(ArrayDequeJDK6Backport<EventBean[]> eventVector)
+    public static EventBean[] flatten(ArrayDeque<EventBean[]> eventVector)
     {
         if (eventVector.isEmpty())
         {
@@ -454,7 +454,7 @@ public class EventBeanUtility
      * @param reader for retrieving properties
      * @return distinct events
      */
-    public static EventBean[] getDistinctByProp(ArrayDequeJDK6Backport<EventBean> events, EventBeanReader reader)
+    public static EventBean[] getDistinctByProp(ArrayDeque<EventBean> events, EventBeanReader reader)
     {
         if ((events == null) || (events.size() < 2))
         {

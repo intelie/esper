@@ -16,20 +16,20 @@ import com.espertech.esper.client.EventBean;
  */
 public final class TimeWindowIterator implements Iterator<EventBean>
 {
-    private final Iterator<Pair<Long, ArrayDequeJDK6Backport<EventBean>>> keyIterator;
+    private final Iterator<Pair<Long, ArrayDeque<EventBean>>> keyIterator;
     private Iterator<EventBean> currentListIterator;
 
     /**
      * Ctor.
      * @param window is the time-slotted collection
      */
-    public TimeWindowIterator(ArrayDequeJDK6Backport<Pair<Long, ArrayDequeJDK6Backport<EventBean>>> window)
+    public TimeWindowIterator(ArrayDeque<Pair<Long, ArrayDeque<EventBean>>> window)
     {
         keyIterator = window.iterator();
         if (keyIterator.hasNext())
         {
             // Position to the next filled list
-            Pair<Long, ArrayDequeJDK6Backport<EventBean>> pair = keyIterator.next();
+            Pair<Long, ArrayDeque<EventBean>> pair = keyIterator.next();
             while((pair.getSecond().isEmpty()) && (keyIterator.hasNext()))
             {
                 pair = keyIterator.next();
@@ -53,7 +53,7 @@ public final class TimeWindowIterator implements Iterator<EventBean>
             if (keyIterator.hasNext())
             {
                 // Position to the next filled list
-                Pair<Long, ArrayDequeJDK6Backport<EventBean>> pair = keyIterator.next();
+                Pair<Long, ArrayDeque<EventBean>> pair = keyIterator.next();
                 while((pair.getSecond().isEmpty()) && (keyIterator.hasNext()))
                 {
                     pair = keyIterator.next();

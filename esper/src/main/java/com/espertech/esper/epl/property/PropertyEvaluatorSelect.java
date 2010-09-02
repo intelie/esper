@@ -2,9 +2,10 @@ package com.espertech.esper.epl.property;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.epl.core.SelectExprProcessor;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+
+import java.util.ArrayDeque;
 
 /**
  * Property evaluator that considers a select-clauses and relies
@@ -28,12 +29,12 @@ public class PropertyEvaluatorSelect implements PropertyEvaluator
 
     public EventBean[] getProperty(EventBean event, ExprEvaluatorContext exprEvaluatorContext)
     {
-        ArrayDequeJDK6Backport<EventBean[]> rows = accumulative.getAccumulative(event, exprEvaluatorContext);
+        ArrayDeque<EventBean[]> rows = accumulative.getAccumulative(event, exprEvaluatorContext);
         if ((rows == null) || (rows.isEmpty()))
         {
             return null;
         }
-        ArrayDequeJDK6Backport<EventBean> result = new ArrayDequeJDK6Backport<EventBean>();
+        ArrayDeque<EventBean> result = new ArrayDeque<EventBean>();
         for (EventBean[] row : rows)
         {
             EventBean bean = selectExprProcessor.process(row, true, false);

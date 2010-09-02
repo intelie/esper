@@ -10,11 +10,11 @@ package com.espertech.esper.event.bean;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.lang.reflect.Array;
+import java.util.ArrayDeque;
 import java.util.Iterator;
 
 /**
@@ -202,7 +202,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
             {
                 return null;
             }
-            ArrayDequeJDK6Backport<EventBean> events = new ArrayDequeJDK6Backport<EventBean>();
+            ArrayDeque<EventBean> events = new ArrayDeque<EventBean>();
             while (iterator.hasNext())
             {
                 Object next = iterator.next();

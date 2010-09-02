@@ -1,20 +1,22 @@
 package com.espertech.esper.collection;
 
+import java.util.ArrayDeque;
+
 public class DualWorkQueue<Object> {
 
-    private ArrayDequeJDK6Backport<Object> frontQueue;
-    private ArrayDequeJDK6Backport<Object> backQueue;
+    private ArrayDeque<Object> frontQueue;
+    private ArrayDeque<Object> backQueue;
 
     public DualWorkQueue() {
-        frontQueue = new ArrayDequeJDK6Backport<Object>();
-        backQueue = new ArrayDequeJDK6Backport<Object>();
+        frontQueue = new ArrayDeque<Object>();
+        backQueue = new ArrayDeque<Object>();
     }
 
-    public ArrayDequeJDK6Backport<Object> getFrontQueue() {
+    public ArrayDeque<Object> getFrontQueue() {
         return frontQueue;
     }
 
-    public ArrayDequeJDK6Backport<Object> getBackQueue() {
+    public ArrayDeque<Object> getBackQueue() {
         return backQueue;
     }
 }

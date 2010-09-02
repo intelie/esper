@@ -11,15 +11,14 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.util.AuditPath;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
-
-import java.util.Collection;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Implementation of the filter service interface.
@@ -89,7 +88,7 @@ public final class FilterServiceImpl implements FilterServiceSPI
         long version = filtersVersion;
         numEventsEvaluated.incrementAndGet();
 
-        ArrayDequeJDK6Backport<FilterHandle> allMatches = new ArrayDequeJDK6Backport<FilterHandle>();
+        ArrayDeque<FilterHandle> allMatches = new ArrayDeque<FilterHandle>();
 
         // Finds all matching filters
         eventTypeIndex.matchEvent(eventBean, allMatches, exprEvaluatorContext);

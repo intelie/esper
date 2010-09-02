@@ -10,7 +10,6 @@ package com.espertech.esper.epl.named;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.NullIterator;
 import com.espertech.esper.core.EPStatementHandle;
@@ -249,7 +248,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
             {
                 return Collections.EMPTY_LIST;
             }
-            ArrayDequeJDK6Backport<EventBean> list = new ArrayDequeJDK6Backport<EventBean>();
+            ArrayDeque<EventBean> list = new ArrayDeque<EventBean>();
             while (it.hasNext())
             {
                 list.add(it.next());

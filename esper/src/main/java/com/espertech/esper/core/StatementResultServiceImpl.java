@@ -11,7 +11,6 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.thread.OutboundUnitRunnable;
@@ -77,9 +76,9 @@ public class StatementResultServiceImpl implements StatementResultService
     /**
      * Buffer for holding dispatchable events.
      */
-    protected ThreadLocal<ArrayDequeJDK6Backport<UniformPair<EventBean[]>>> lastResults = new ThreadLocal<ArrayDequeJDK6Backport<UniformPair<EventBean[]>>>() {
-        protected synchronized ArrayDequeJDK6Backport<UniformPair<EventBean[]>> initialValue() {
-            return new ArrayDequeJDK6Backport<UniformPair<EventBean[]>>();
+    protected ThreadLocal<ArrayDeque<UniformPair<EventBean[]>>> lastResults = new ThreadLocal<ArrayDeque<UniformPair<EventBean[]>>>() {
+        protected synchronized ArrayDeque<UniformPair<EventBean[]>> initialValue() {
+            return new ArrayDeque<UniformPair<EventBean[]>>();
         }
     };
 
@@ -207,7 +206,7 @@ public class StatementResultServiceImpl implements StatementResultService
 
     public void execute()
     {
-        ArrayDequeJDK6Backport<UniformPair<EventBean[]>> dispatches = lastResults.get();
+        ArrayDeque<UniformPair<EventBean[]>> dispatches = lastResults.get();
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".execute dispatches: " + dispatches.size());
@@ -396,7 +395,7 @@ public class StatementResultServiceImpl implements StatementResultService
     public void dispatchOnStop()
     {
         lastIterableEvent = null;
-        ArrayDequeJDK6Backport<UniformPair<EventBean[]>> dispatches = lastResults.get();
+        ArrayDeque<UniformPair<EventBean[]>> dispatches = lastResults.get();
         if (dispatches.isEmpty())
         {
             return;

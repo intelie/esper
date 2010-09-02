@@ -114,7 +114,7 @@ public class AnnotationUtil
         }
 
         // for all attributes determine value
-        final Map<String, Object> properties = new HashMap<String, Object>();
+        final Map<String, Object> properties = new LinkedHashMap<String, Object>();
         for (AnnotationAttribute annotationAttribute : annotationAttributeLists)
         {
             // find value pair for this attribute

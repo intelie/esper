@@ -15,7 +15,6 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.TimeWindow;
 import com.espertech.esper.collection.ViewUpdatedCollection;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
@@ -122,7 +121,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
         }
 
         // Remove from the window any events that have an older timestamp then the last event's timestamp
-        ArrayDequeJDK6Backport<EventBean> expired = null;
+        ArrayDeque<EventBean> expired = null;
         if (timestamp != -1)
         {
             expired = timeWindow.expireEvents(timestamp - millisecondsBeforeExpiry + 1);

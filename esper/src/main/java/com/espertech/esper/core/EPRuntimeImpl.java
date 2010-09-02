@@ -14,7 +14,6 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.client.util.EventRenderer;
 import com.espertech.esper.collection.ArrayBackedCollection;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.DualWorkQueue;
 import com.espertech.esper.collection.ThreadWorkQueue;
 import com.espertech.esper.core.thread.*;
@@ -56,7 +55,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     private AtomicLong routedInternal;
     private AtomicLong routedExternal;
     private EventRenderer eventRenderer;
-    private ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal;
+    private ThreadLocal<Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>>> matchesPerStmtThreadLocal;
     private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
     private InternalEventRouter internalEventRouter;
     private ExprEvaluatorContext engineFilterAndDispatchTimeContext;
@@ -99,13 +98,13 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         };
 
         matchesPerStmtThreadLocal =
-            new ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>>()
+            new ThreadLocal<Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>>>()
             {
-                protected synchronized Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> initialValue()
+                protected synchronized Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>> initialValue()
                 {
                     if (isPrioritized)
                     {
-                        return new TreeMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(new Comparator<EPStatementHandle>()
+                        return new TreeMap<EPStatementHandle, ArrayDeque<FilterHandleCallback>>(new Comparator<EPStatementHandle>()
                         {
                             // sorted descending order
                             public int compare(EPStatementHandle o1, EPStatementHandle o2)
@@ -120,7 +119,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                     }
                     else
                     {
-                        return new HashMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(10000);
+                        return new HashMap<EPStatementHandle, ArrayDeque<FilterHandleCallback>>(10000);
                     }
                 }
             };
@@ -579,7 +578,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             if (entry instanceof ScheduleHandleCallback)
             {
                 ScheduleHandleCallback existingCallback = (ScheduleHandleCallback) entry;
-                ArrayDequeJDK6Backport<ScheduleHandleCallback> entries = new ArrayDequeJDK6Backport<ScheduleHandleCallback>();
+                ArrayDeque<ScheduleHandleCallback> entries = new ArrayDeque<ScheduleHandleCallback>();
                 entries.add(existingCallback);
                 entries.add(callback);
                 stmtCallbacks.put(handle, entries);
@@ -587,7 +586,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             }
 
             // This statement has been encountered more then once before
-            ArrayDequeJDK6Backport<ScheduleHandleCallback> entries = (ArrayDequeJDK6Backport<ScheduleHandleCallback>) entry;
+            ArrayDeque<ScheduleHandleCallback> entries = (ArrayDeque<ScheduleHandleCallback>) entry;
             entries.add(callback);
         }
         handles.clear();
@@ -774,7 +773,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             return;
         }
 
-        Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> stmtCallbacks = matchesPerStmtThreadLocal.get();
+        Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>> stmtCallbacks = matchesPerStmtThreadLocal.get();
         Object[] matchArray = matches.getArray();
         int entryCount = matches.size();
 
@@ -787,10 +786,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             // Priority or preemptive settings also require special ordering.
             if (handle.isCanSelfJoin() || isPrioritized)
             {
-                ArrayDequeJDK6Backport<FilterHandleCallback> callbacks = stmtCallbacks.get(handle);
+                ArrayDeque<FilterHandleCallback> callbacks = stmtCallbacks.get(handle);
                 if (callbacks == null)
                 {
-                    callbacks = new ArrayDequeJDK6Backport<FilterHandleCallback>();
+                    callbacks = new ArrayDeque<FilterHandleCallback>();
                     stmtCallbacks.put(handle, callbacks);
                 }
                 callbacks.add(handleCallback.getFilterCallback());
@@ -828,10 +827,10 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             return;
         }
 
-        for (Map.Entry<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> entry : stmtCallbacks.entrySet())
+        for (Map.Entry<EPStatementHandle, ArrayDeque<FilterHandleCallback>> entry : stmtCallbacks.entrySet())
         {
             EPStatementHandle handle = entry.getKey();
-            ArrayDequeJDK6Backport<FilterHandleCallback> callbackList = entry.getValue();
+            ArrayDeque<FilterHandleCallback> callbackList = entry.getValue();
 
             if ((MetricReportingPath.isMetricsEnabled) && (handle.getMetricsHandle().isEnabled()))
             {
@@ -883,9 +882,9 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 services.getVariableService().setLocalVersion();
             }
 
-            if (callbackObject instanceof ArrayDequeJDK6Backport)
+            if (callbackObject instanceof ArrayDeque)
             {
-                ArrayDequeJDK6Backport<ScheduleHandleCallback> callbackList = (ArrayDequeJDK6Backport<ScheduleHandleCallback>) callbackObject;
+                ArrayDeque<ScheduleHandleCallback> callbackList = (ArrayDeque<ScheduleHandleCallback>) callbackObject;
                 for (ScheduleHandleCallback callback : callbackList)
                 {
                     callback.scheduledTrigger(services.getExtensionServicesContext());
@@ -948,7 +947,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      * @param event to process
      * @param version filter version
      */
-    public void processStatementFilterMultiple(EPStatementHandle handle, ArrayDequeJDK6Backport<FilterHandleCallback> callbackList, EventBean event, long version)
+    public void processStatementFilterMultiple(EPStatementHandle handle, ArrayDeque<FilterHandleCallback> callbackList, EventBean event, long version)
     {
         handle.getStatementLock().acquireLock(services.getStatementLockFactory());
         try
@@ -959,7 +958,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             }
             if (!handle.isCurrentFilter(version)) {
                 callbackList.clear();
-                ArrayDequeJDK6Backport<FilterHandle> callbackListNew = getCallbackList(event, handle.getStatementId());
+                ArrayDeque<FilterHandle> callbackListNew = getCallbackList(event, handle.getStatementId());
                 for (FilterHandle callback : callbackListNew)
                 {
                     EPStatementHandleCallback handleCallbackFilter = (EPStatementHandleCallback) callback;
@@ -1019,8 +1018,8 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
     }
 
-    private ArrayDequeJDK6Backport<FilterHandle> getCallbackList(EventBean event, String statementId) {
-        ArrayDequeJDK6Backport<FilterHandle> callbacks = new ArrayDequeJDK6Backport<FilterHandle>();
+    private ArrayDeque<FilterHandle> getCallbackList(EventBean event, String statementId) {
+        ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>();
         services.getFilterService().evaluate(event, callbacks, engineFilterAndDispatchTimeContext, statementId);
         return callbacks;
     }
@@ -1042,7 +1041,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 services.getVariableService().setLocalVersion();
             }
             if (!handle.isCurrentFilter(version)) {
-                ArrayDequeJDK6Backport<FilterHandle> callbackList = getCallbackList(event, handle.getStatementId());
+                ArrayDeque<FilterHandle> callbackList = getCallbackList(event, handle.getStatementId());
                 for (FilterHandle callback : callbackList)
                 {
                     EPStatementHandleCallback handleCallbackFilter = (EPStatementHandleCallback) callback;

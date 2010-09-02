@@ -54,11 +54,12 @@ public class TestNumberSetShiftGroupEnumeration extends TestCase {
                 {4, 3, 7, 2, 6, 1, 5},
         };
 
-        /** Comment in here to print */
+        /** Comment in here to print
         NumberSetShiftGroupEnumeration enumeration = new NumberSetShiftGroupEnumeration(set);
         while(enumeration.hasMoreElements()) {
             System.out.println(Arrays.toString(enumeration.nextElement()));
         }
+        */
 
         tryPermutation(set, expectedValues);
     }

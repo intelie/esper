@@ -1,6 +1,5 @@
 package com.espertech.esper.event;
 
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.support.bean.SupportBean;
@@ -48,7 +47,7 @@ public class TestEventBeanUtility extends TestCase
     {
         // test many arrays
         EventBean[] testEvents = makeEventArray(new String[] {"a1", "a2", "b1", "b2", "b3", "c1", "c2"});
-        ArrayDequeJDK6Backport<UniformPair<EventBean[]>> eventVector = new ArrayDequeJDK6Backport<UniformPair<EventBean[]>>();
+        ArrayDeque<UniformPair<EventBean[]>> eventVector = new ArrayDeque<UniformPair<EventBean[]>>();
 
         eventVector.add(new UniformPair<EventBean[]>(null, new EventBean[] {testEvents[0], testEvents[1]}));
         eventVector.add(new UniformPair<EventBean[]>(new EventBean[] {testEvents[2]}, null));
@@ -76,7 +75,7 @@ public class TestEventBeanUtility extends TestCase
     {
         // test many arrays
         EventBean[] testEvents = makeEventArray(new String[] {"a1", "a2", "b1", "b2", "b3", "c1", "c2"});
-        ArrayDequeJDK6Backport<EventBean[]> eventVector = new ArrayDequeJDK6Backport<EventBean[]>();
+        ArrayDeque<EventBean[]> eventVector = new ArrayDeque<EventBean[]>();
         eventVector.add(new EventBean[] {testEvents[0], testEvents[1]});
         eventVector.add(new EventBean[] {testEvents[2]});
         eventVector.add(new EventBean[] {testEvents[3], testEvents[4], testEvents[5]});

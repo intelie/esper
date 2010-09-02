@@ -7,7 +7,6 @@ import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.DualWorkQueue;
 import com.espertech.esper.collection.ThreadWorkQueue;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
@@ -21,10 +20,7 @@ import com.espertech.esper.util.ThreadLogUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Implementation for isolated runtime.
@@ -38,7 +34,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
     private boolean isLatchStatementInsertStream;
     private ExprEvaluatorContext isolatedTimeEvalContext;
 
-    private ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>> matchesPerStmtThreadLocal;
+    private ThreadLocal<Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>>> matchesPerStmtThreadLocal;
     private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
 
     /**
@@ -63,13 +59,13 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
         };
 
         matchesPerStmtThreadLocal =
-            new ThreadLocal<Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>>()
+            new ThreadLocal<Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>>>()
             {
-                protected synchronized Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> initialValue()
+                protected synchronized Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>> initialValue()
                 {
                     if (isPrioritized)
                     {
-                        return new TreeMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(new Comparator<EPStatementHandle>()
+                        return new TreeMap<EPStatementHandle, ArrayDeque<FilterHandleCallback>>(new Comparator<EPStatementHandle>()
                         {
                             // sorted descending order
                             public int compare(EPStatementHandle o1, EPStatementHandle o2)
@@ -84,7 +80,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
                     }
                     else
                     {
-                        return new HashMap<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>>(10000);
+                        return new HashMap<EPStatementHandle, ArrayDeque<FilterHandleCallback>>(10000);
                     }
                 }
             };
@@ -387,7 +383,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
             if (entry instanceof ScheduleHandleCallback)
             {
                 ScheduleHandleCallback existingCallback = (ScheduleHandleCallback) entry;
-                ArrayDequeJDK6Backport<ScheduleHandleCallback> entries = new ArrayDequeJDK6Backport<ScheduleHandleCallback>();
+                ArrayDeque<ScheduleHandleCallback> entries = new ArrayDeque<ScheduleHandleCallback>();
                 entries.add(existingCallback);
                 entries.add(callback);
                 stmtCallbacks.put(handle, entries);
@@ -395,7 +391,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
             }
 
             // This statement has been encountered more then once before
-            ArrayDequeJDK6Backport<ScheduleHandleCallback> entries = (ArrayDequeJDK6Backport<ScheduleHandleCallback>) entry;
+            ArrayDeque<ScheduleHandleCallback> entries = (ArrayDeque<ScheduleHandleCallback>) entry;
             entries.add(callback);
         }
         handles.clear();
@@ -567,7 +563,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
             return;
         }
 
-        Map<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> stmtCallbacks = matchesPerStmtThreadLocal.get();
+        Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>> stmtCallbacks = matchesPerStmtThreadLocal.get();
         Object[] matchArray = matches.getArray();
         int entryCount = matches.size();
 
@@ -580,10 +576,10 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
             // Priority or preemptive settings also require special ordering.
             if (handle.isCanSelfJoin() || isPrioritized)
             {
-                ArrayDequeJDK6Backport<FilterHandleCallback> callbacks = stmtCallbacks.get(handle);
+                ArrayDeque<FilterHandleCallback> callbacks = stmtCallbacks.get(handle);
                 if (callbacks == null)
                 {
-                    callbacks = new ArrayDequeJDK6Backport<FilterHandleCallback>();
+                    callbacks = new ArrayDeque<FilterHandleCallback>();
                     stmtCallbacks.put(handle, callbacks);
                 }
                 callbacks.add(handleCallback.getFilterCallback());
@@ -598,10 +594,10 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
             return;
         }
 
-        for (Map.Entry<EPStatementHandle, ArrayDequeJDK6Backport<FilterHandleCallback>> entry : stmtCallbacks.entrySet())
+        for (Map.Entry<EPStatementHandle, ArrayDeque<FilterHandleCallback>> entry : stmtCallbacks.entrySet())
         {
             EPStatementHandle handle = entry.getKey();
-            ArrayDequeJDK6Backport<FilterHandleCallback> callbackList = entry.getValue();
+            ArrayDeque<FilterHandleCallback> callbackList = entry.getValue();
 
             processStatementFilterMultiple(handle, callbackList, event);
 
@@ -619,7 +615,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
      * @param callbackList object containing callbacks
      * @param event to process
      */
-    public void processStatementFilterMultiple(EPStatementHandle handle, ArrayDequeJDK6Backport<FilterHandleCallback> callbackList, EventBean event)
+    public void processStatementFilterMultiple(EPStatementHandle handle, ArrayDeque<FilterHandleCallback> callbackList, EventBean event)
     {
         handle.getStatementLock().acquireLock(unisolatedServices.getStatementLockFactory());
         try

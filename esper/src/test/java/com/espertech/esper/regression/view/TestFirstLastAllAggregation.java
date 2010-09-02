@@ -142,7 +142,7 @@ public class TestFirstLastAllAggregation extends TestCase {
                    "Error starting statement: The 'window' aggregation function requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.intPrimitive) from SupportBean x]");
 
         tryInvalid("select firstever(x.*) from SupportBean.std:lastevent() as x",
-                   "Incorrect syntax near '*' at line 1 column 19, please check the select clause [select firstever(x.*) from SupportBean.std:lastevent() as x]");
+                   "Incorrect syntax near 'x' at line 1 column 17, please check the select clause [select firstever(x.*) from SupportBean.std:lastevent() as x]");
         tryInvalid("select window(x.intPrimitive, 10) from SupportBean x",
                    "Incorrect syntax near 'x' at line 1 column 14, please check the select clause [select window(x.intPrimitive, 10) from SupportBean x]");
 
@@ -761,7 +761,7 @@ public class TestFirstLastAllAggregation extends TestCase {
             fail();
         }
         catch (EPStatementException ex) {
-            assertEquals(ex.getMessage(), message);
+            assertEquals(message, ex.getMessage());
         }
     }
 }

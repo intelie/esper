@@ -42,7 +42,7 @@ public class TestTimeWindow extends TestCase
         window.add(22, beans[5]);
         assertTrue(window.getOldestTimestamp() == 19L);
 
-        ArrayDequeJDK6Backport<EventBean> beanList = window.expireEvents(19);
+        ArrayDeque<EventBean> beanList = window.expireEvents(19);
         assertTrue(beanList == null);
 
         beanList = window.expireEvents(20);
@@ -96,7 +96,7 @@ public class TestTimeWindow extends TestCase
         windowRemovable.remove(beans[0]);
         windowRemovable.remove(beans[3]);
 
-        ArrayDequeJDK6Backport<EventBean> beanList = windowRemovable.expireEvents(19);
+        ArrayDeque<EventBean> beanList = windowRemovable.expireEvents(19);
         assertTrue(beanList == null);
 
         beanList = windowRemovable.expireEvents(20);

@@ -8,21 +8,22 @@
  **************************************************************************************/
 package com.espertech.esper.dispatch;
 
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayDeque;
 
 /**
  * Implements dispatch service using a thread-local linked list of Dispatchable instances.
  */
 public class DispatchServiceImpl implements DispatchService
 {
-    private static final ThreadLocal<ArrayDequeJDK6Backport<Dispatchable>> threadDispatchQueue = new ThreadLocal<ArrayDequeJDK6Backport<Dispatchable>>()
+    private static final ThreadLocal<ArrayDeque<Dispatchable>> threadDispatchQueue = new ThreadLocal<ArrayDeque<Dispatchable>>()
     {
-        protected synchronized ArrayDequeJDK6Backport<Dispatchable> initialValue()
+        protected synchronized ArrayDeque<Dispatchable> initialValue()
         {
-            return new ArrayDequeJDK6Backport<Dispatchable>();
+            return new ArrayDeque<Dispatchable>();
         }
     };
 
@@ -33,16 +34,16 @@ public class DispatchServiceImpl implements DispatchService
 
     public void addExternal(Dispatchable dispatchable)
     {
-        ArrayDequeJDK6Backport<Dispatchable> dispatchQueue = threadDispatchQueue.get();
+        ArrayDeque<Dispatchable> dispatchQueue = threadDispatchQueue.get();
         addToQueue(dispatchable, dispatchQueue);
     }
 
-    private static void addToQueue(Dispatchable dispatchable, ArrayDequeJDK6Backport<Dispatchable> dispatchQueue)
+    private static void addToQueue(Dispatchable dispatchable, ArrayDeque<Dispatchable> dispatchQueue)
     {
         dispatchQueue.add(dispatchable);
     }
 
-    private static void dispatchFromQueue(ArrayDequeJDK6Backport<Dispatchable> dispatchQueue)
+    private static void dispatchFromQueue(ArrayDeque<Dispatchable> dispatchQueue)
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
         {

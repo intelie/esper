@@ -9,6 +9,7 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TestEventRendererXML extends TestCase
@@ -73,13 +74,13 @@ public class TestEventRendererXML extends TestCase
 
     public void testMapAndNestedArray()
     {
-        Map<String, Object> defOuter = new HashMap<String, Object>();
-        defOuter.put("prop0", SupportBean_A.class);
+        Map<String, Object> defOuter = new LinkedHashMap<String, Object>();
         defOuter.put("intarr", int[].class);
         defOuter.put("innersimple", "InnerMap");
         defOuter.put("innerarray", "InnerMap[]");
+        defOuter.put("prop0", SupportBean_A.class);
 
-        Map<String, Object> defInner = new HashMap<String, Object>();
+        Map<String, Object> defInner = new LinkedHashMap<String, Object>();
         defInner.put("stringarr", String[].class);
         defInner.put("prop1", String.class);
 
@@ -87,22 +88,22 @@ public class TestEventRendererXML extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("OuterMap", defOuter);
         EPStatement statement = epService.getEPAdministrator().createEPL("select * from OuterMap");
 
-        Map<String, Object> dataInner = new HashMap<String, Object>();
+        Map<String, Object> dataInner = new LinkedHashMap<String, Object>();
         dataInner.put("stringarr", new String[] {"a", null});
         dataInner.put("prop1", "");
-        Map<String, Object> dataArrayOne = new HashMap<String, Object>();
+        Map<String, Object> dataArrayOne = new LinkedHashMap<String, Object>();
         dataArrayOne.put("stringarr", new String[0]);
         dataArrayOne.put("prop1", "abcdef");
-        Map<String, Object> dataArrayTwo = new HashMap<String, Object>();
+        Map<String, Object> dataArrayTwo = new LinkedHashMap<String, Object>();
         dataArrayTwo.put("stringarr", new String[] {"R&R", "a>b"});
         dataArrayTwo.put("prop1", "");
-        Map<String, Object> dataArrayThree = new HashMap<String, Object>();
+        Map<String, Object> dataArrayThree = new LinkedHashMap<String, Object>();
         dataArrayOne.put("stringarr", null);
-        Map<String, Object> dataOuter = new HashMap<String, Object>();
-        dataOuter.put("prop0", new SupportBean_A("A1"));
+        Map<String, Object> dataOuter = new LinkedHashMap<String, Object>();
         dataOuter.put("intarr", new int[] {1, 2});
         dataOuter.put("innersimple", dataInner);
         dataOuter.put("innerarray", new Map[] {dataArrayOne, dataArrayTwo, dataArrayThree});
+        dataOuter.put("prop0", new SupportBean_A("A1"));
         epService.getEPRuntime().sendEvent(dataOuter, "OuterMap");
 
         String result = epService.getEPRuntime().getEventRenderer().renderXML("outerMap", statement.iterator().next());

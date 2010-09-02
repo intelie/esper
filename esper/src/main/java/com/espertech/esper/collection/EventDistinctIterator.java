@@ -15,6 +15,7 @@ import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.EventBeanReaderDefaultImpl;
 import com.espertech.esper.event.EventBeanReader;
 
+import java.util.ArrayDeque;
 import java.util.Iterator;
 
 /**
@@ -79,7 +80,7 @@ public class EventDistinctIterator implements Iterator<EventBean>
         }
 
         // read all events
-        ArrayDequeJDK6Backport<EventBean> events = new ArrayDequeJDK6Backport<EventBean>();
+        ArrayDeque<EventBean> events = new ArrayDeque<EventBean>();
         events.add(eventFirst);
         for (;sourceIterator.hasNext();)
         {

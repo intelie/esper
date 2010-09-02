@@ -11,7 +11,6 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.annotation.Hint;
 import com.espertech.esper.client.annotation.HintEnum;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluator;
@@ -28,10 +27,7 @@ import com.espertech.esper.view.StatementStopService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Implementation for handling aggregation with grouping by group-keys.
@@ -227,7 +223,7 @@ public class AggSvcGroupByReclaimAged extends AggregationServiceBase
 
     private void sweep(long currentTime, long currentMaxAge)
     {
-        ArrayDequeJDK6Backport<MultiKeyUntyped> removed = new ArrayDequeJDK6Backport<MultiKeyUntyped>();
+        ArrayDeque<MultiKeyUntyped> removed = new ArrayDeque<MultiKeyUntyped>();
         for (Map.Entry<MultiKeyUntyped, AggregationMethodRowAged> entry : aggregatorsPerGroup.entrySet())
         {
             long age = currentTime - entry.getValue().getLastUpdateTime();

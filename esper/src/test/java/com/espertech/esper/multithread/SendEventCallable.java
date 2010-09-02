@@ -23,7 +23,7 @@ public class SendEventCallable implements Callable
 
     public Object call() throws Exception
     {
-        log.info(".call Thread " + Thread.currentThread().getId() + " starting");
+        log.debug(".call Thread " + Thread.currentThread().getId() + " starting");
         try
         {
             while (events.hasNext())
@@ -36,7 +36,7 @@ public class SendEventCallable implements Callable
             log.fatal("Error in thread " + threadNum, ex);
             return false;
         }
-        log.info(".call Thread " + Thread.currentThread().getId() + " done");
+        log.debug(".call Thread " + Thread.currentThread().getId() + " done");
         return true;
     }
 

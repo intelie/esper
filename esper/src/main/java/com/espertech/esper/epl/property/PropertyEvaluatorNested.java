@@ -4,13 +4,13 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +49,7 @@ public class PropertyEvaluatorNested implements PropertyEvaluator
 
     public EventBean[] getProperty(EventBean event, ExprEvaluatorContext exprEvaluatorContext)
     {
-        ArrayDequeJDK6Backport<EventBean> resultEvents = new ArrayDequeJDK6Backport<EventBean>();
+        ArrayDeque<EventBean> resultEvents = new ArrayDeque<EventBean>();
         eventsPerStream[0] = event;
         populateEvents(event, 0, resultEvents, exprEvaluatorContext);
         if (resultEvents.isEmpty())

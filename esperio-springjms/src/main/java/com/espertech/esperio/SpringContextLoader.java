@@ -8,16 +8,14 @@
  **************************************************************************************/
 package com.espertech.esperio;
 
-import com.espertech.esper.client.EPException;
-import com.espertech.esper.core.EPServiceProviderSPI;
-import com.espertech.esper.plugin.PluginLoader;
-import com.espertech.esper.plugin.PluginLoaderInitContext;
-import com.espertech.esper.adapter.AdapterState;
 import com.espertech.esper.adapter.Adapter;
 import com.espertech.esper.adapter.AdapterSPI;
+import com.espertech.esper.adapter.AdapterState;
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.plugin.PluginLoader;
+import com.espertech.esper.plugin.PluginLoaderInitContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.context.support.AbstractXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -26,7 +24,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Loader for Spring-configured input and output adapters.
@@ -105,7 +102,7 @@ public class SpringContextLoader implements PluginLoader
         // no action required
     }
 
-    private AbstractXmlApplicationContext createSpringApplicationContext(String configuration, boolean fromClassPath) throws BeansException
+    private AbstractXmlApplicationContext createSpringApplicationContext(String configuration, boolean fromClassPath)
     {
         if (fromClassPath)
         {

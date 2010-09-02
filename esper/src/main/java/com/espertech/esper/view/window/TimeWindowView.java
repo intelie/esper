@@ -10,16 +10,15 @@ package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.TimeWindow;
 import com.espertech.esper.collection.ViewUpdatedCollection;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.schedule.ScheduleAdjustmentCallback;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.schedule.ScheduleAdjustmentCallback;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.DataWindowView;
@@ -28,6 +27,7 @@ import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayDeque;
 import java.util.Iterator;
 
 /**
@@ -179,7 +179,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
 
         // Remove from the timeWindow any events that have an older or timestamp then the given timestamp
         // The window extends from X to (X - millisecondsBeforeExpiry + 1)
-        ArrayDequeJDK6Backport<EventBean> expired = timeWindow.expireEvents(expireBeforeTimestamp);
+        ArrayDeque<EventBean> expired = timeWindow.expireEvents(expireBeforeTimestamp);
 
         // If there are child views, fireStatementStopped update method
         if (this.hasViews())

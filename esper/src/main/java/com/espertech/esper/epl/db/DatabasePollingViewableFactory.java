@@ -628,7 +628,10 @@ public class DatabasePollingViewableFactory
         Map<String, DBOutputTypeDesc> outputProperties = new HashMap<String, DBOutputTypeDesc>();
         for (int i = 0; i < resultMetaData.getColumnCount(); i++)
         {
-            String columnName = resultMetaData.getColumnName(i + 1);
+            String columnName = resultMetaData.getColumnLabel(i + 1);
+            if (columnName == null) {
+                columnName = resultMetaData.getColumnName(i + 1);
+            }
             int columnType = resultMetaData.getColumnType(i + 1);
             String javaClass = resultMetaData.getColumnTypeName(i + 1);
 

@@ -157,7 +157,7 @@ public class TestStatementAnnotation extends TestCase
         assertEquals(Tag.class, annotations[2].annotationType());
         assertEquals("UserId", ((Tag)annotations[2]).name());
         assertEquals("value", ((Tag)annotations[2]).value());
-        assertEquals("@Tag(value=\"value\", name=\"UserId\")", annotations[2].toString());
+        assertEquals("@Tag(name=\"UserId\", value=\"value\")", annotations[2].toString());
 
         assertFalse(annotations[2].equals(annotations[1]));
         assertTrue(annotations[1].equals(annotations[1]));

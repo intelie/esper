@@ -11,12 +11,14 @@ package com.espertech.esper.collection;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
 
+import java.util.ArrayDeque;
+
 /**
  * Buffer for events - accumulates events until flushed.
  */
 public class FlushedEventBuffer
 {
-    private ArrayDequeJDK6Backport<EventBean[]> remainEvents = new ArrayDequeJDK6Backport<EventBean[]>();
+    private ArrayDeque<EventBean[]> remainEvents = new ArrayDeque<EventBean[]>();
 
     /**
      * Add an event array to buffer.

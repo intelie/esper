@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.epl.join.table.EventTable;
@@ -332,7 +331,7 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
             {
                 return Collections.EMPTY_LIST;
             }
-            ArrayDequeJDK6Backport<EventBean> list = new ArrayDequeJDK6Backport<EventBean>();
+            ArrayDeque<EventBean> list = new ArrayDeque<EventBean>();
             while (it.hasNext())
             {
                 RevisionEventBeanMerge fullRevision = (RevisionEventBeanMerge) it.next();

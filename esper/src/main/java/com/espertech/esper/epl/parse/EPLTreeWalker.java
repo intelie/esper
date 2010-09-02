@@ -643,7 +643,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         List<ColumnDesc> columnTypes = getColTypeList(node);
 
         // get model-after types (could be multiple for variants)
-        Set<String> typeNames = new HashSet<String>();
+        Set<String> typeNames = new LinkedHashSet<String>();
         for (int i = 0; i < node.getChildCount(); i++) {
             if (node.getChild(i).getType() == VARIANT_LIST) {
                 for (int j = 0; j < node.getChild(i).getChildCount(); j++) {

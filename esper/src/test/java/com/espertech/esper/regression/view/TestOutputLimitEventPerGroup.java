@@ -323,7 +323,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         String stmtText = "select symbol, sum(price) " +
                             "from MarketData.win:time(5.5 sec) " +
                             "group by symbol " +
-                            "output every 1 seconds";
+                            "output every 1 seconds order by symbol asc";
         runAssertion56(stmtText, "default");
     }
 
@@ -333,7 +333,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
                             "from MarketData.win:time(5.5 sec), " +
                             "SupportBean.win:keepall() where string=symbol " +
                             "group by symbol " +
-                            "output every 1 seconds";
+                            "output every 1 seconds order by symbol asc";
         runAssertion56(stmtText, "default");
     }
 
@@ -593,12 +593,12 @@ public class TestOutputLimitEventPerGroup extends TestCase
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, new Object[][] {{"IBM", 25d}, {"MSFT", 9d}}, new Object[][] {{"IBM", null}, {"MSFT", null}});
-        expected.addResultInsRem(2200, 0, new Object[][] {{"IBM", 49d}, {"YAH", 1d}, {"IBM", 75d}}, new Object[][] {{"IBM", 25d}, {"YAH", null}, {"IBM", 49d}});
+        expected.addResultInsRem(2200, 0, new Object[][] {{"IBM", 49d}, {"IBM", 75d}, {"YAH", 1d}}, new Object[][] {{"IBM", 25d}, {"IBM", 49d}, {"YAH", null}});
         expected.addResultInsRem(3200, 0, null, null);
         expected.addResultInsRem(4200, 0, new Object[][] {{"YAH", 3d}}, new Object[][] {{"YAH", 1d}});
         expected.addResultInsRem(5200, 0, new Object[][] {{"IBM", 97d}, {"YAH", 6d}}, new Object[][] {{"IBM", 75d}, {"YAH", 3d}});
         expected.addResultInsRem(6200, 0, new Object[][] {{"IBM", 72d}, {"YAH", 7d}}, new Object[][] {{"IBM", 97d}, {"YAH", 6d}});
-        expected.addResultInsRem(7200, 0, new Object[][] {{"MSFT", null}, {"YAH", 6d}, {"IBM", 48d}}, new Object[][] {{"MSFT", 9d}, {"YAH", 7d}, {"IBM", 72d}});
+        expected.addResultInsRem(7200, 0, new Object[][] {{"IBM", 48d}, {"MSFT", null}, {"YAH", 6d}}, new Object[][] {{"IBM", 72d}, {"MSFT", 9d}, {"YAH", 7d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();

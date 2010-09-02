@@ -164,7 +164,8 @@ public class ResultAssertExecution
             // If we do expect remove stream events, asset both
             if (!isExpectNullRemoveStream)
             {
-                Assert.assertTrue("At time " + timeInSec + " expected events but received none", listener.isInvoked());
+                String message = "At time " + timeInSec;
+                Assert.assertTrue(message + " expected events but received none", listener.isInvoked());
                 ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), expected.getProperties(),
                         stepDesc.getNewDataPerRow(), "newData");
 

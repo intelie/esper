@@ -10,6 +10,8 @@ package com.espertech.esper.collection;
 
 import com.espertech.esper.client.EventBean;
 
+import java.util.ArrayDeque;
+
 /**
  * Simple collection that exposes a limited add-and-get interface and that is optimized towards holding
  * a single event, but can hold multiple events. If more then one event is added, the
@@ -18,7 +20,7 @@ import com.espertech.esper.client.EventBean;
 public class OneEventCollection
 {
     private EventBean firstEvent;
-    private ArrayDequeJDK6Backport<EventBean> additionalEvents;
+    private ArrayDeque<EventBean> additionalEvents;
 
     /**
      * Add an event to the collection.
@@ -39,7 +41,7 @@ public class OneEventCollection
 
         if (additionalEvents == null)
         {
-            additionalEvents = new ArrayDequeJDK6Backport<EventBean>();
+            additionalEvents = new ArrayDeque<EventBean>();
         }
         additionalEvents.add(event);
     }

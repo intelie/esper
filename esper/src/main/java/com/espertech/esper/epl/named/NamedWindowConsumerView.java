@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.FlushedEventBuffer;
 import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.epl.expression.ExprNode;

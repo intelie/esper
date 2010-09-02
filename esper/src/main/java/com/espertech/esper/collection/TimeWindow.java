@@ -10,7 +10,6 @@ package com.espertech.esper.collection;
 
 import java.util.*;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.schedule.ScheduleAdjustmentCallback;
 
 /**
  * Container for events per time slot. The time is provided as long milliseconds by client classes.
@@ -24,9 +23,9 @@ import com.espertech.esper.schedule.ScheduleAdjustmentCallback;
  */
 public final class TimeWindow implements Iterable
 {
-    private final ArrayDequeJDK6Backport<Pair<Long, ArrayDequeJDK6Backport<EventBean>>> window;
+    private final ArrayDeque<Pair<Long, ArrayDeque<EventBean>>> window;
     private Long oldestTimestamp;
-    private Map<EventBean, ArrayDequeJDK6Backport<EventBean>> reverseIndex;
+    private Map<EventBean, ArrayDeque<EventBean>> reverseIndex;
 
     /**
      * Ctor.
@@ -35,12 +34,12 @@ public final class TimeWindow implements Iterable
      */
     public TimeWindow(boolean isSupportRemoveStream)
     {
-        this.window = new ArrayDequeJDK6Backport<Pair<Long, ArrayDequeJDK6Backport<EventBean>>>();
+        this.window = new ArrayDeque<Pair<Long, ArrayDeque<EventBean>>>();
         this.oldestTimestamp = null;
 
         if (isSupportRemoveStream)
         {
-            reverseIndex = new HashMap<EventBean, ArrayDequeJDK6Backport<EventBean>>();
+            reverseIndex = new HashMap<EventBean, ArrayDeque<EventBean>>();
         }
     }
 
@@ -50,7 +49,7 @@ public final class TimeWindow implements Iterable
      */
     public void adjust(long delta)
     {
-        for (Pair<Long, ArrayDequeJDK6Backport<EventBean>> data : window)
+        for (Pair<Long, ArrayDeque<EventBean>> data : window)
         {
             data.setFirst(data.getFirst() + delta);
         }
@@ -76,9 +75,9 @@ public final class TimeWindow implements Iterable
         // Empty window
         if (window.isEmpty())
         {
-            ArrayDequeJDK6Backport<EventBean> listOfBeans = new ArrayDequeJDK6Backport<EventBean>();
+            ArrayDeque<EventBean> listOfBeans = new ArrayDeque<EventBean>();
             listOfBeans.add(bean);
-            Pair<Long, ArrayDequeJDK6Backport<EventBean>> pair = new Pair<Long, ArrayDequeJDK6Backport<EventBean>>(timestamp, listOfBeans);
+            Pair<Long, ArrayDeque<EventBean>> pair = new Pair<Long, ArrayDeque<EventBean>>(timestamp, listOfBeans);
             window.add(pair);
 
             if (reverseIndex != null)
@@ -88,7 +87,7 @@ public final class TimeWindow implements Iterable
             return;
         }
 
-        Pair<Long, ArrayDequeJDK6Backport<EventBean>> lastPair = window.getLast();
+        Pair<Long, ArrayDeque<EventBean>> lastPair = window.getLast();
 
         // Windows last timestamp matches the one supplied
         if (lastPair.getFirst() == timestamp)
@@ -102,9 +101,9 @@ public final class TimeWindow implements Iterable
         }
 
         // Append to window
-        ArrayDequeJDK6Backport<EventBean> listOfBeans = new ArrayDequeJDK6Backport<EventBean>();
+        ArrayDeque<EventBean> listOfBeans = new ArrayDeque<EventBean>();
         listOfBeans.add(bean);
-        Pair<Long, ArrayDequeJDK6Backport<EventBean>> pair = new Pair<Long, ArrayDequeJDK6Backport<EventBean>>(timestamp, listOfBeans);
+        Pair<Long, ArrayDeque<EventBean>> pair = new Pair<Long, ArrayDeque<EventBean>>(timestamp, listOfBeans);
         if (reverseIndex != null)
         {
             reverseIndex.put(bean, listOfBeans);
@@ -122,7 +121,7 @@ public final class TimeWindow implements Iterable
         {
             throw new UnsupportedOperationException("Time window does not accept event removal");
         }
-        ArrayDequeJDK6Backport<EventBean> list = reverseIndex.get(event);
+        ArrayDeque<EventBean> list = reverseIndex.get(event);
         if (list != null)
         {
             list.remove(event);
@@ -136,14 +135,14 @@ public final class TimeWindow implements Iterable
      * @param expireBefore is the timestamp from which on to keep events in the window
      * @return a list of events expired and removed from the window, or null if none expired
      */
-    public final ArrayDequeJDK6Backport<EventBean> expireEvents(long expireBefore)
+    public final ArrayDeque<EventBean> expireEvents(long expireBefore)
     {
         if (window.isEmpty())
         {
             return null;
         }
 
-        Pair<Long, ArrayDequeJDK6Backport<EventBean>> pair = window.getFirst();
+        Pair<Long, ArrayDeque<EventBean>> pair = window.getFirst();
 
         // If the first entry's timestamp is after the expiry date, nothing to expire
         if (pair.getFirst() >= expireBefore)
@@ -151,7 +150,7 @@ public final class TimeWindow implements Iterable
             return null;
         }
 
-        ArrayDequeJDK6Backport<EventBean> resultBeans = new ArrayDequeJDK6Backport<EventBean>();
+        ArrayDeque<EventBean> resultBeans = new ArrayDeque<EventBean>();
 
         // Repeat until the window is empty or the timestamp is above the expiry time
         do
@@ -220,7 +219,7 @@ public final class TimeWindow implements Iterable
      * Returns the reverse index, for testing purposes.
      * @return reverse index
      */
-    protected Map<EventBean, ArrayDequeJDK6Backport<EventBean>> getReverseIndex()
+    protected Map<EventBean, ArrayDeque<EventBean>> getReverseIndex()
     {
         return reverseIndex;
     }
