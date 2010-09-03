@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Factory for {@link FirstLengthWindowView}.
  */
-public class FirstLengthWindowViewFactory implements DataWindowViewFactory
+public class FirstLengthWindowViewFactory implements AsymetricDataWindowViewFactory
 {
     /**
      * Size of length first window.

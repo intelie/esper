@@ -16,6 +16,91 @@ public class TestDataWindowUnionExpiry extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
+    public void testFirstUniqueAndLengthOnDelete()
+    {
+        init(false);
+
+        EPStatement nwstmt = epService.getEPAdministrator().createEPL("create window MyWindow.std:firstunique(string).win:firstlength(3) retain-union as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("on SupportBean_S0 delete from MyWindow where string = p00");
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream * from MyWindow");
+        stmt.addListener(listener);
+
+        String[] fields = new String[] {"string", "intPrimitive"};
+
+        sendEvent("E1", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 1}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
+
+        sendEvent("E1", 99);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E1", 99}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 99});
+
+        sendEvent("E2", 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E1", 99}, {"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E1"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], "string".split(","), new Object[] {"E1"});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[1], "string".split(","), new Object[] {"E1"});
+        listener.reset();
+
+        sendEvent("E1", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 3}, {"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 3});
+    }
+
+    public void testFirstUniqueAndFirstLength()
+    {
+        init(false);
+
+        String epl = "select irstream string, intPrimitive from SupportBean.win:firstlength(3).std:firstunique(string) retain-union";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionFirstUniqueAndFirstLength(stmt);
+
+        stmt.destroy();
+        listener.reset();
+
+        epl = "select irstream string, intPrimitive from SupportBean.std:firstunique(string).win:firstlength(3) retain-union";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionFirstUniqueAndFirstLength(stmt);
+    }
+
+    private void runAssertionFirstUniqueAndFirstLength(EPStatement stmt)
+    {
+        String[] fields = new String[] {"string", "intPrimitive"};
+
+        sendEvent("E1", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
+
+        sendEvent("E1", 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E1", 2}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 2});
+
+        sendEvent("E2", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E1", 2}, {"E2", 1}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 1});
+
+        sendEvent("E2", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E1", 2}, {"E2", 1}});
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendEvent("E3", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E1", 2}, {"E2", 1}, {"E3", 3}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 3});
+
+        sendEvent("E3", 4);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E1", 2}, {"E2", 1}, {"E3", 3}});
+        assertFalse(listener.getAndClearIsInvoked());
+    }
+
     public void testBatchWindow()
     {
         init(false);

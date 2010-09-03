@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Factory for {@link FirstUniqueByPropertyView} instances.
  */
-public class FirstUniqueByPropertyViewFactory implements DataWindowViewFactory
+public class FirstUniqueByPropertyViewFactory implements AsymetricDataWindowViewFactory
 {
     /**
      * View parameters.

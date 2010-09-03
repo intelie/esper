@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Factory for {@link FirstTimeView}.
  */
-public class FirstTimeViewFactory implements DataWindowViewFactory
+public class FirstTimeViewFactory implements AsymetricDataWindowViewFactory
 {
     private EventType eventType;
 

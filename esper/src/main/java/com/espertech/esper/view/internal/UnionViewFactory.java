@@ -89,10 +89,15 @@ public class UnionViewFactory implements ViewFactory, DataWindowViewFactory
 
     public View makeView(StatementContext statementContext)
     {
+        boolean hasAsymetric = false;
         List<View> views = new ArrayList<View>();
         for (ViewFactory viewFactory : viewFactories)
         {
             views.add(viewFactory.makeView(statementContext));
+            hasAsymetric |= viewFactory instanceof AsymetricDataWindowViewFactory;
+        }
+        if (hasAsymetric) {
+            return new UnionAsymetricView(this, parentEventType, views);
         }
         return new UnionView(this, parentEventType, views);
     }

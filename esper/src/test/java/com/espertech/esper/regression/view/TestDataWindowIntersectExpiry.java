@@ -16,13 +16,121 @@ public class TestDataWindowIntersectExpiry extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    public void testFirstUniqueAndLength()
+    public void testUniqueAndFirstLength()
     {
         init(false);
+
+        String epl = "select irstream string, intPrimitive from SupportBean.win:firstlength(3).std:unique(string)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionUniqueAndFirstLength(stmt);
+
+        stmt.destroy();
+        listener.reset();
+        
+        epl = "select irstream string, intPrimitive from SupportBean.std:unique(string).win:firstlength(3)";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionUniqueAndFirstLength(stmt);
+    }
+
+    private void runAssertionUniqueAndFirstLength(EPStatement stmt)
+    {
         String[] fields = new String[] {"string", "intPrimitive"};
 
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string, intPrimitive from SupportBean.std:firstunique(string).win:firstlength(3)");
+        sendEvent("E1", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
+
+        sendEvent("E2", 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2});
+
+        sendEvent("E1", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 3}, {"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"E1", 3});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"E1", 1});
+        listener.reset();
+
+        sendEvent("E3", 30);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 3}, {"E2", 2}, {"E3", 30}});
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"E3", 30});
+        listener.reset();
+
+        sendEvent("E4", 40);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 3}, {"E2", 2}, {"E3", 30}});
+        assertFalse(listener.isInvoked());
+    }
+
+    public void testFirstUniqueAndFirstLength()
+    {
+        init(false);
+
+        String epl = "select irstream string, intPrimitive from SupportBean.std:firstunique(string).win:firstlength(3)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
+
+        runAssertionFirstUniqueAndLength(stmt);
+
+        stmt.destroy();
+        epl = "select irstream string, intPrimitive from SupportBean.win:firstlength(3).std:firstunique(string)";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionFirstUniqueAndLength(stmt);
+    }
+
+    public void testFirstUniqueAndLengthOnDelete()
+    {
+        init(false);
+
+        EPStatement nwstmt = epService.getEPAdministrator().createEPL("create window MyWindow.std:firstunique(string).win:firstlength(3) as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("on SupportBean_S0 delete from MyWindow where string = p00");
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream * from MyWindow");
+        stmt.addListener(listener);
+
+        String[] fields = new String[] {"string", "intPrimitive"};
+
+        sendEvent("E1", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 1}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
+
+        sendEvent("E1", 99);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 1}});
+        assertFalse(listener.isInvoked());
+
+        sendEvent("E2", 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2});
+        
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E1"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E1", 1});
+
+        sendEvent("E1", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 3}, {"E2", 2}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 3});
+
+        sendEvent("E1", 99);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 3}, {"E2", 2}});
+        assertFalse(listener.isInvoked());
+
+        sendEvent("E3", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 3}, {"E2", 2}, {"E3", 3}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 3});
+
+        sendEvent("E3", 98);
+        ArrayAssertionUtil.assertEqualsAnyOrder(nwstmt.iterator(), fields, new Object[][] {{"E1", 3}, {"E2", 2}, {"E3", 3}});
+        assertFalse(listener.isInvoked());
+    }
+
+    private void runAssertionFirstUniqueAndLength(EPStatement stmt) {
+
+        String[] fields = new String[] {"string", "intPrimitive"};
 
         sendEvent("E1", 1);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}});
@@ -34,6 +142,17 @@ public class TestDataWindowIntersectExpiry extends TestCase
 
         sendEvent("E2", 10);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
+        assertFalse(listener.isInvoked());
+
+        sendEvent("E3", 3);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 3});
+
+        sendEvent("E4", 4);
+        sendEvent("E4", 5);
+        sendEvent("E5", 5);
+        sendEvent("E1", 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
         assertFalse(listener.isInvoked());
     }
 

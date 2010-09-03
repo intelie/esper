@@ -89,10 +89,15 @@ public class IntersectViewFactory implements ViewFactory, DataWindowViewFactory
     public View makeView(StatementContext statementContext)
     {
         List<View> views = new ArrayList<View>();
+        boolean hasAsymetric = false;
         for (ViewFactory viewFactory : viewFactories)
         {
             viewFactory.setProvideCapability(new RemoveStreamViewCapability(true), null);   // require remove stream support for all views
             views.add(viewFactory.makeView(statementContext));
+            hasAsymetric |= viewFactory instanceof AsymetricDataWindowViewFactory;
+        }
+        if (hasAsymetric) {
+            return new IntersectAsymetricView(this, parentEventType, views);
         }
         return new IntersectView(this, parentEventType, views);
     }

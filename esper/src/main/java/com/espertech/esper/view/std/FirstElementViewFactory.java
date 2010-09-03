@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Factory for {@link com.espertech.esper.view.std.FirstElementView} instances.
  */
-public class FirstElementViewFactory implements DataWindowViewFactory
+public class FirstElementViewFactory implements AsymetricDataWindowViewFactory
 {
     private EventType eventType;
 
