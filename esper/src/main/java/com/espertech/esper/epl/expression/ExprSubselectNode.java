@@ -17,6 +17,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -45,7 +46,14 @@ public abstract class ExprSubselectNode extends ExprNode
     private StatementSpecRaw statementSpecRaw;
     private StatementSpecCompiled statementSpecCompiled;
     private TableLookupStrategy strategy;
+    private SubselectAggregationPreprocessor subselectAggregationPreprocessor;
     private String selectAsName;
+
+    private static Set<EventBean> singleNullRowEventSet = new HashSet<EventBean>();
+    static
+    {
+        singleNullRowEventSet.add(null);
+    }
 
     /**
      * Evaluate the lookup expression returning an evaluation result object.
@@ -105,6 +113,10 @@ public abstract class ExprSubselectNode extends ExprNode
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         Set<EventBean> matchingEvents = strategy.lookup(eventsPerStream);
+        if (subselectAggregationPreprocessor != null) {
+            subselectAggregationPreprocessor.evaluate(eventsPerStream, matchingEvents, exprEvaluatorContext);
+            matchingEvents = singleNullRowEventSet;
+        }
         return evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
     }
 
@@ -214,5 +226,9 @@ public abstract class ExprSubselectNode extends ExprNode
     public void setFilterSubqueryStreamTypes(StreamTypeService filterSubqueryStreamTypes)
     {
         this.filterSubqueryStreamTypes = filterSubqueryStreamTypes;
+    }
+
+    public void setSubselectAggregationPreprocessor(SubselectAggregationPreprocessor subselectAggregationPreprocessor) {
+        this.subselectAggregationPreprocessor = subselectAggregationPreprocessor;
     }
 }

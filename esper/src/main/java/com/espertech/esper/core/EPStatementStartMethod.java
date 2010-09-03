@@ -1636,7 +1636,7 @@ public class EPStatementStartMethod
                             {
                                 if (pair.getFirst() != 0)
                                 {
-                                    throw new ExprValidationException("Subselect aggregation function cannot aggregate across correlated properties");
+                                    throw new ExprValidationException("Subselect aggregation functions cannot aggregate across correlated properties");
                                 }
                             }
                         }
@@ -1667,6 +1667,7 @@ public class EPStatementStartMethod
 
             // Validate filter expression, if there is one
             ExprNode filterExpr = statementSpec.getFilterRootNode();
+            boolean correlatedSubquery = false;
             if (filterExpr != null)
             {
                 filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
@@ -1681,9 +1682,10 @@ public class EPStatementStartMethod
                 List<Pair<Integer, String>> propertiesNodes = visitor.getExprProperties();
                 for (Pair<Integer, String> pair : propertiesNodes)
                 {
-                    if ((pair.getFirst() != 0) && (aggregationService != null))
+                    if (pair.getFirst() != 0)
                     {
-                        throw new ExprValidationException("Subselect filter expression cannot be a correlated expression when aggregating properties via aggregation function");
+                        correlatedSubquery = true;
+                        break;
                     }
                 }
             }
@@ -1699,13 +1701,25 @@ public class EPStatementStartMethod
             // Note that "var1 + max(var2)" is not allowed as some properties are not under aggregation (which event to use?).
             if (aggregationService != null)
             {
-                SubselectAggregatorView aggregatorView = new SubselectAggregatorView(aggregationService, filterExpr, statementContext);
-                subselectView.addView(aggregatorView);
-                subselectView = aggregatorView;
-
-                eventIndex = null;
                 subselect.setStrategy(new TableLookupStrategyNullRow());
                 subselect.setFilterExpr(null);      // filter not evaluated by subselect expression as not correlated
+
+                if (!correlatedSubquery) {
+                    SubselectAggregatorView aggregatorView = new SubselectAggregatorView(aggregationService, filterExpr, statementContext);
+                    subselectView.addView(aggregatorView);
+                    subselectView = aggregatorView;
+                    eventIndex = null;
+                }
+                else {
+                    Pair<EventTable, TableLookupStrategy> indexPair = determineSubqueryIndex(filterExpr, eventType,
+                            outerEventTypes, subselectTypeService);
+                    subselect.setStrategy(indexPair.getSecond());
+                    subselect.setFilterExpr(null);  // this will be evaluated in the preprocessor
+                    eventIndex = indexPair.getFirst();
+
+                    SubselectAggregationPreprocessor preprocessor = new SubselectAggregationPreprocessor(aggregationService, filterExpr);
+                    subselect.setSubselectAggregationPreprocessor(preprocessor);
+                }
             }
             else
             {

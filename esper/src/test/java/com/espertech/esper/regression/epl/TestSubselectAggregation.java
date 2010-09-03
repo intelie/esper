@@ -1,10 +1,12 @@
 package com.espertech.esper.regression.epl;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean_S1;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
@@ -16,12 +18,81 @@ public class TestSubselectAggregation extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();        
+        config.addEventType("SupportBean", SupportBean.class);
         config.addEventType("S0", SupportBean_S0.class);
         config.addEventType("S1", SupportBean_S1.class);
         config.addEventType("MarketData", SupportMarketDataBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
+    }
+
+    public void testCorrelatedAggregationSelectEquals()
+    {
+        String stmtText = "select p00, " +
+                "(select sum(intPrimitive) from SupportBean.win:keepall() where string = s0.p00) as sump00 " +
+                "from S0 as s0";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+        String[] fields = "p00,sump00".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "T1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"T1", null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("T1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2, "T1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"T1", 10});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("T1", 11));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(3, "T1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"T1", 21});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(4, "T2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"T2", null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("T2", -2));
+        epService.getEPRuntime().sendEvent(new SupportBean("T2", -7));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(5, "T2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"T2", -9});
+    }
+
+    public void testCorrelatedAggregationWhereGreater()
+    {
+        String stmtText = "select p00 from S0 as s0 where id > " +
+                "(select sum(intPrimitive) from SupportBean.win:keepall() where string = s0.p00)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        runAssertionCorrAggWhereGreater();
+
+        stmtText = "select p00 from S0 as s0 where id > " +
+                "(select sum(intPrimitive) from SupportBean.win:keepall() where string||'X' = s0.p00||'X')";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        runAssertionCorrAggWhereGreater();
+    }
+
+    private void runAssertionCorrAggWhereGreater() {
+        String[] fields = "p00".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "T1"));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("T1", 10));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(10, "T1"));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(11, "T1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"T1"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("T1", 11));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(21, "T1"));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(22, "T1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"T1"});
     }
 
     public void testPriceMap()
@@ -178,17 +249,14 @@ public class TestSubselectAggregation extends TestCase
     {
         tryInvalid("", "Unexpected end of input []");
 
-        String stmtText = "select (select sum(id) from S1.win:length(3) as s1 where s1.id < s0.id) as value from S0 as s0";
-        tryInvalid(stmtText, "Error starting statement: Subselect filter expression cannot be a correlated expression when aggregating properties via aggregation function [select (select sum(id) from S1.win:length(3) as s1 where s1.id < s0.id) as value from S0 as s0]");
-
-        stmtText = "select (select sum(s0.id) from S1.win:length(3) as s1) as value from S0 as s0";
-        tryInvalid(stmtText, "Error starting statement: Subselect aggregation function cannot aggregate across correlated properties [select (select sum(s0.id) from S1.win:length(3) as s1) as value from S0 as s0]");
+        String stmtText = "select (select sum(s0.id) from S1.win:length(3) as s1) as value from S0 as s0";
+        tryInvalid(stmtText, "Error starting statement: Subselect aggregation functions cannot aggregate across correlated properties [select (select sum(s0.id) from S1.win:length(3) as s1) as value from S0 as s0]");
 
         stmtText = "select (select s1.id + sum(s1.id) from S1.win:length(3) as s1) as value from S0 as s0";
         tryInvalid(stmtText, "Error starting statement: Subselect properties must all be within aggregation functions [select (select s1.id + sum(s1.id) from S1.win:length(3) as s1) as value from S0 as s0]");
 
         stmtText = "select (select sum(s0.id + s1.id) from S1.win:length(3) as s1) as value from S0 as s0";
-        tryInvalid(stmtText, "Error starting statement: Subselect aggregation function cannot aggregate across correlated properties [select (select sum(s0.id + s1.id) from S1.win:length(3) as s1) as value from S0 as s0]");
+        tryInvalid(stmtText, "Error starting statement: Subselect aggregation functions cannot aggregate across correlated properties [select (select sum(s0.id + s1.id) from S1.win:length(3) as s1) as value from S0 as s0]");
     }
 
     private void tryInvalid(String stmtText, String message)
