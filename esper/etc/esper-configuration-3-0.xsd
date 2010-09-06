@@ -355,6 +355,7 @@
 					<xs:element ref="esper:language" minOccurs="0"/>
 					<xs:element ref="esper:expression" minOccurs="0"/>
 					<xs:element ref="esper:execution" minOccurs="0"/>
+					<xs:element ref="esper:exceptionHandling" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 		</xs:complexType>
@@ -672,6 +673,18 @@
 			<xs:attribute name="udf-cache" type="xs:boolean" use="optional"/>
 			<xs:attribute name="self-subselect-preeval" type="xs:boolean" use="optional"/>
 			<xs:attribute name="extended-agg" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="exceptionHandling">
+		<xs:complexType>
+				<xs:sequence>
+					<xs:element ref="esper:handlerFactory" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="handlerFactory">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="execution">
