@@ -5,6 +5,7 @@ import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.xml.SupportXPathFunctionResolver;
@@ -408,6 +409,41 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals("IBM", event.get("symbol_c"));
         assertEquals("IBM", event.get("symbol_d"));
         assertEquals("", event.get("symbol_e"));    // should be empty string as we are doing absolute XPath
+    }
+
+    public void testXPathArray() throws Exception
+    {
+        String xml = "<Event IsTriggering=\"True\">\n" +
+                "<Field Name=\"A\" Value=\"987654321\"/>\n" +
+                "<Field Name=\"B\" Value=\"2196958725202\"/>\n" +
+                "<Field Name=\"C\" Value=\"1232363702\"/>\n" +
+                "<Participants>\n" +
+                "<Participant>\n" +
+                "<Field Name=\"A\" Value=\"9876543210\"/>\n" +
+                "<Field Name=\"B\" Value=\"966607340\"/>\n" +
+                "<Field Name=\"D\" Value=\"353263010930650\"/>\n" +
+                "</Participant>\n" +
+                "</Participants>\n" +
+                "</Event>";
+
+        ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+        desc.setRootElementName("Event");
+        desc.addXPathProperty("A", "//Field[@Name='A']/@Value", XPathConstants.NODESET, "String[]");
+
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addEventType("Event", desc);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from Event");
+        updateListener = new SupportUpdateListener();
+        stmt.addListener(updateListener);
+
+        Document doc = SupportXML.getDocument(xml);
+        epService.getEPRuntime().sendEvent(doc);
+
+        EventBean event = updateListener.assertOneGetNewAndReset();
+        Object value = event.get("A");
+        ArrayAssertionUtil.assertProps(event, "A".split(","), new Object[] {new Object[] {"987654321", "9876543210"}});
     }
 
     private void assertDataSimpleXPath(String element1)

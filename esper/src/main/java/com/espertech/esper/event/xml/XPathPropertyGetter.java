@@ -238,15 +238,20 @@ public class XPathPropertyGetter implements EventPropertyGetter
 
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            Node item = nodeList.item(i);
-            if (item.getNodeType() != Node.ELEMENT_NODE)
-            {
-                continue;
-            }
             Object arrayItem = null;
             try
             {
-                String textContent = nodeList.item(i).getTextContent();
+                Node item = nodeList.item(i);
+                String textContent;
+                if ((item.getNodeType() == Node.ATTRIBUTE_NODE) || (item.getNodeType() == Node.ELEMENT_NODE))
+                {
+                    textContent = nodeList.item(i).getTextContent();
+                }
+                else
+                {
+                    continue;
+                }
+
                 arrayItem = simpleTypeParser.parse(textContent);
             }
             catch (Exception ex)
