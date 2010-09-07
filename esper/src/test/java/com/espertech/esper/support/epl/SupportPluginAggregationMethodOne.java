@@ -1,6 +1,7 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.agg.AggregationSupport;
+import com.espertech.esper.epl.agg.AggregationValidationContext;
 
 import java.io.Serializable;
 
@@ -13,7 +14,8 @@ public class SupportPluginAggregationMethodOne extends AggregationSupport implem
         count = 0;    
     }
 
-    public void validate(Class childNodeType)
+    @Override
+    public void validate(AggregationValidationContext validationContext)
     {
     }
 

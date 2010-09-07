@@ -1,30 +1,20 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.agg.AggregationSupport;
+import com.espertech.esper.epl.agg.AggregationValidationContext;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SupportPluginAggregationMethodThree extends AggregationSupport implements Serializable
 {
-    private static Class[] childNodeType;
-    private static boolean[] isConstantValue;
-    private static Object[] constantValue;
-    
+    private static List<AggregationValidationContext> contexts = new ArrayList<AggregationValidationContext>();
     private int count;
 
-    public static Class[] getChildNodeType()
+    public static List<AggregationValidationContext> getContexts()
     {
-        return childNodeType;
-    }
-
-    public static boolean[] getIsConstantValue()
-    {
-        return isConstantValue;
-    }
-
-    public static Object[] getConstantValue()
-    {
-        return constantValue;
+        return contexts;
     }
 
     public void clear()
@@ -32,16 +22,10 @@ public class SupportPluginAggregationMethodThree extends AggregationSupport impl
         count = 0;
     }
 
-    public void validate(Class childNodeType)
+    @Override
+    public void validate(AggregationValidationContext validationContext)
     {
-    }
-
-    public void validateMultiParameter(Class[] childNodeType, boolean[] isConstantValue, Object[] constantValue)
-    {
-        super.validateMultiParameter(childNodeType, isConstantValue, constantValue);
-        this.childNodeType = childNodeType;
-        this.isConstantValue = isConstantValue;
-        this.constantValue = constantValue;
+        contexts.add(validationContext);
     }
 
     public void enter(Object value)

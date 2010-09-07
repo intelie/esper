@@ -409,10 +409,14 @@ public EventType getEventType() {
   ...]]></programlisting>
 
 			<para>
-				An aggregation function must provide an implementation of the <literal>validate</literal> method that is passed the result type of the expression within the aggregation function. Since the example concatenation function requires string types, it implements a type check:
+				An aggregation function must provide an implementation of the <literal>validate</literal> method that is passed a <literal>AggregationValidationContext</literal> validation context object. Within the validation context you find the result type of each of the parameters expressions to the aggregation function as well as information about constant values and data window use. Please see the API documentation for a comprehensive list of validation context information.
 			</para>
-			<programlisting><![CDATA[public void validate(Class childNodeType) {
-  if (childNodeType != String.class) {
+				
+			<para>
+				Since the example concatenation function requires string types, it implements a type check:
+			</para>
+			<programlisting><![CDATA[public void validate(AggregationValidationContext validationContext) {
+  if (validationContext.getParameterTypes()[0] != String.class) {
     throw new IllegalArgumentException("Concat aggregation requires a String parameter");
   }
 }]]></programlisting>
@@ -499,25 +503,8 @@ public EventType getEventType() {
 
 			<para>
 				Your plug-in aggregation function may want to validate parameter types or may want to know which parameters are constant-value expressions. Constant-value expressions are evaluated only once by the engine and could
-				therefore be cached by your aggregation function for performance reasons.
+				therefore be cached by your aggregation function for performance reasons. The engine provides constant-value information as part of the <literal>AggregationValidationContext</literal> passed to the <literal>validate</literal> method.
 			</para>
-
-			<para>
-				To validate parameter types, or cache constant-value expressions results, override the <literal>validateMultiParameter</literal> method in your implementation of <literal>AggregationSupport</literal>. The engine provides the parameter type of each parameter. It also provides a flag indicating that the parameter is the result of a constant-value expression and provides the constant itself (if constant).
-			</para>
-
-			<para>
-				This sample implementation of <literal>validateMultiParameter</literal> simply checks that boundary values are of type Integer:
-			</para>
-			<programlisting><![CDATA[public void validateMultiParameter(Class[] parameterType, 
-  boolean[] isConstantValue, 
-  Object[] constantValue) {
-  super.validateMultiParameter(parameterType, isConstantValue, constantValue);
-  if ((parameterType[0] != Integer.class) || (parameterType[1] != Integer.class)) {
-    throw new IllegalArgumentException("Expected integer bounds");        
-  }
-}]]></programlisting>
-
 		</sect2>
 	</sect1>
 

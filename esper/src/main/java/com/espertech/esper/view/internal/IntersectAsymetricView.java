@@ -12,8 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 
 /**
- * A view that represents an intersection of multiple data windows wherein at least one is asymetric:
- * it does not present a insert stream for each insert stream event received.
+ * A view that represents an intersection of multiple data windows.
  * <p>
  * The view is parameterized by two or more data windows. From an external viewpoint, the
  * view retains all events that is in all of the data windows at the same time (an intersection)

@@ -1,6 +1,7 @@
 package com.espertech.esper.regression.client;
 
 import com.espertech.esper.epl.agg.AggregationSupport;
+import com.espertech.esper.epl.agg.AggregationValidationContext;
 
 import java.io.Serializable;
 
@@ -17,7 +18,8 @@ public class MyConcatAggregationFunction extends AggregationSupport implements S
         delimiter = "";
     }
 
-    public void validate(Class childNodeType)
+    @Override
+    public void validate(AggregationValidationContext validationContext)
     {
         // No need to check the expression node type
     }

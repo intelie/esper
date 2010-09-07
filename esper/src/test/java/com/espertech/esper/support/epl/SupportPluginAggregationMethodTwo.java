@@ -1,14 +1,16 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.agg.AggregationSupport;
+import com.espertech.esper.epl.agg.AggregationValidationContext;
 
 import java.io.Serializable;
 
 public class SupportPluginAggregationMethodTwo extends AggregationSupport implements Serializable
 {
-    public void validate(Class childNodeType)
+    @Override
+    public void validate(AggregationValidationContext validationContext)
     {
-        throw new IllegalArgumentException("Invalid node type: " + childNodeType.getName());
+        throw new IllegalArgumentException("Invalid parameter type '" + validationContext.getParameterTypes()[0].getName() + "', expecting string");
     }
 
     public void clear()
