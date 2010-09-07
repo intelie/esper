@@ -7,6 +7,7 @@ import com.espertech.esper.client.hook.ExceptionHandlerFactoryContext;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.core.StatementLifecycleEvent;
 import com.espertech.esper.epl.agg.AggregationSupport;
+import com.espertech.esper.epl.agg.AggregationValidationContext;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.*;
 import junit.framework.TestCase;
@@ -56,7 +57,8 @@ public class TestExceptionHandler extends TestCase
     public static class InvalidAggTest extends AggregationSupport {
 
         @Override
-        public void validate(Class childNodeType) {
+        public void validate(AggregationValidationContext validationContext)
+        {
         }
 
         @Override

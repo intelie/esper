@@ -3952,6 +3952,18 @@ select * from OrdersNamedWindow as win]]></programlisting>
 			<para>
 				 The query above returns a <literal>queryEvent</literal> column and a <literal>win</literal> column for each event. If only a single stream's event is desired in the result, use <literal>select win.*</literal> instead.
 			 </para>
+
+			<para>
+				 To trigger an on-select when an update to the selected named window occurs or when the triggering event is the same event that is being inserted into the named window, specify the named window name as the event type.
+			</para>
+			
+			<para>
+				The next query fires the select for every change to the named window OrdersNamedWindow:
+			</para>
+			<programlisting><![CDATA[on OrdersNamedWindow as trig 
+select onw.symbol, sum(onw.volume) 
+from OrdersNamedWindow as onw 
+where onw.symbol = trig.symbol]]></programlisting>
 		</sect2>
 
 		<sect2 id="named_playback" revision="1">

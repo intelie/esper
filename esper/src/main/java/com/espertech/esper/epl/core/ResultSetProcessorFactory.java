@@ -391,6 +391,9 @@ public class ResultSetProcessorFactory
         // Figure out if all non-aggregated event properties in the select clause are listed in the group by
         Set<Pair<Integer, String>> nonAggregatedPropsSelect = getNonAggregatedProps(selectNodes);
         boolean allInGroupBy = true;
+        if (isUsingStreamSelect) {
+            allInGroupBy = false;
+        }
         for (Pair<Integer, String> nonAggregatedProp : nonAggregatedPropsSelect)
         {
             if (!propertiesGroupBy.contains(nonAggregatedProp))

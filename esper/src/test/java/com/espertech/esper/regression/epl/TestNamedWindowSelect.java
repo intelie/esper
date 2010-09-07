@@ -30,6 +30,36 @@ public class TestNamedWindowSelect extends TestCase
         listenerConsumer = new SupportUpdateListener();
     }
 
+    public void testSelectAggregationHavingStreamWildcard()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
+        String[] fields = new String[] {"sumb"};
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() as (a string, b int)";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+
+        String stmtTextInsertOne = "insert into MyWindow select string as a, intPrimitive as b from SupportBean";
+        epService.getEPAdministrator().createEPL(stmtTextInsertOne);
+
+        String stmtTextSelect = "on SupportBean_A select mwc.* as mwcwin from MyWindow mwc where id = a group by a having sum(b) = 20";
+        EPStatement select = epService.getEPAdministrator().createEPL(stmtTextSelect);
+        select.addListener(listenerSelect);
+
+        // send 3 event
+        sendSupportBean("E1", 16);
+        sendSupportBean("E2", 2);
+        sendSupportBean("E1", 4);
+
+        // fire trigger
+        sendSupportBean_A("E1");
+        EventBean[] events = listenerSelect.getLastNewData();
+        assertEquals(2, events.length);
+        assertEquals("E1", events[0].get("mwcwin.a"));
+        assertEquals("E1", events[1].get("mwcwin.a"));
+    }
+
     public void testPatternTimedSelect()
     {
         // test for JIRA ESPER-332
