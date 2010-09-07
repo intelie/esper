@@ -1784,6 +1784,34 @@ isolatedService.getEPRuntime().send(historyEvent);
 
     </sect1>
 
+    <sect1 id="api-exception">
+        <title>Exception Handling</title>
+        
+        <para>
+			You may register one or more exception handlers for the engine to invoke in the case it encounters an exception processing a continuously-executing statement. By default and without exception handlers the engine cancels execution of the current EPL statement that encountered the exception, logs the exception and continues to the next statement, if any. The configuration is described in <xref linkend="config-engine-exceptionhandling"/>.
+        </para>
+        
+        <para>
+			If your application registers exception handlers as part of engine configuration, the engine invokes the exception handlers in the order they are registered passing relevant exception information such as EPL statement name, expression and the exception itself.
+        </para>
+        
+        <para>
+			Exception handlers receive any EPL statement unchecked exception such as internal exceptions or exceptions thrown by plug-in aggregation functions or plug-in views. The engine does not provide to exception handlers any exceptions thrown by static method invocations for function calls, method invocations in joins, methods on event classes and listeners or subscriber exceptions.
+        </para>
+
+        <para>
+			An exception handler can itself throw a runtime exception to cancel execution of the current event against any further statements.
+        </para>
+
+        <para>
+			For on-demand queries the API indicates any exception directly back to the caller without the exception handlers being invoked, as exception handlers apply to continuous queries only. The same applies to any API calls other then <literal>sendEvent</literal> and the <literal>EventSender</literal> methods.
+        </para>
+        
+        <para>
+			As the configuration section describes, your application registers one or more classes that implement the <literal>ExceptionHandlerFactory</literal> interface in the engine configuration. Upon engine initialization the engine obtains a factory instance from the class name that then provides the exception handler instance. The exception handler class must implement the <literal>ExceptionHandler</literal> interface.
+        </para>
+    </sect1>
+
     <sect1 id="api-soda">
         <title>Statement Object Model</title>
         

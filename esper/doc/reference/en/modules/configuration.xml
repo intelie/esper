@@ -1861,6 +1861,37 @@ config.getEngineDefaults().getExecution().setPrioritized(true);]]></programlisti
 			</sect3>
 		</sect2>
 
+		<sect2 id="config-engine-exceptionhandling" revision="1">
+			<title>Engine Settings related to Exception Handling</title>
+			
+			<para>
+				Use the settings as described here to register an exception handler factory class that provides an exception handler. The engine invokes exception handlers in the order they are listed to handle a continues-query unchecked exception, as further described in <xref linkend="api-exception"/>.
+			</para>
+
+			<para>
+				Please provide the full-qualified class name of each class that implements the <literal>com.espertech.esper.client.hook.ExceptionHandlerFactory</literal> interface in the engine defaults configuration as below.
+			</para>
+	
+			<para>
+				 The XML configuration is as follows:
+			</para>
+
+			<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <exceptionHandling>
+      <handlerFactory class="my.company.cep.MyCEPEngineExceptionHandlerFactory"/>
+    </exceptionHandling>
+  </defaults>
+</engine-settings>]]></programlisting>
+		
+			<para>
+			 The API calls to register an exception handler factory are as follows:
+			</para>
+			<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getExceptionHandling().addClass(MyCEPEngineExceptionHandlerFactory.class);]]></programlisting>
+	
+		</sect2>
+
 		<sect2 id="config-revisionevent" revision="1">
 			<title>Revision Event Type</title>
 			

@@ -17,6 +17,7 @@ Major API or EPL changes
   - To be congruent to the JDBC 4 specification, the SQL query metadata now uses the value returned by the JDBC driver result set metadata for "getColumnLabel" as the column name or if that is null the value returned by "getColumnName"
   - The "std:groupby" view has been renamed to "std:groupwin" to avoid confusion with the group-by clause.
   - Support for correlated aggregation in subqueries
+  - New feature allows registering an exception handler that is called when any continous-query statement exception occurs
 
 Changes in version 3.5.0
 ------------------------
