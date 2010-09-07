@@ -8,18 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.core.EPStatementHandle;
-import com.espertech.esper.core.StatementLockFactory;
-import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.core.EPStatementHandle;
+import com.espertech.esper.core.ExceptionHandlingService;
+import com.espertech.esper.core.StatementLockFactory;
+import com.espertech.esper.core.StatementResultService;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.view.ViewProcessingException;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprValidationException;
 
 import java.util.*;
 
@@ -34,6 +34,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
     private final StatementLockFactory statementLockFactory;
     private final VariableService variableService;
     private final Set<NamedWindowLifecycleObserver> observers;
+    private final ExceptionHandlingService exceptionHandlingService;
     private final boolean isPrioritized;
 
     private ThreadLocal<List<NamedWindowConsumerDispatchUnit>> threadLocal = new ThreadLocal<List<NamedWindowConsumerDispatchUnit>>()
@@ -58,7 +59,8 @@ public class NamedWindowServiceImpl implements NamedWindowService
      * @param variableService is for variable access
      * @param isPrioritized if the engine is running with prioritized execution
      */
-    public NamedWindowServiceImpl(StatementLockFactory statementLockFactory, VariableService variableService, boolean isPrioritized)
+    public NamedWindowServiceImpl(StatementLockFactory statementLockFactory, VariableService variableService, boolean isPrioritized,
+                                  ExceptionHandlingService exceptionHandlingService)
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();
         this.windowStatementLocks = new HashMap<String, ManagedLock>();
@@ -66,6 +68,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         this.variableService = variableService;
         this.observers = new HashSet<NamedWindowLifecycleObserver>();
         this.isPrioritized = isPrioritized;
+        this.exceptionHandlingService = exceptionHandlingService;
     }
 
     public void destroy()
@@ -186,6 +189,9 @@ public class NamedWindowServiceImpl implements NamedWindowService
                     // internal join processing, if applicable
                     handle.internalDispatch(exprEvaluatorContext);
                 }
+                catch (RuntimeException ex) {
+                    exceptionHandlingService.handleException(ex, handle);
+                }
                 finally
                 {
                     handle.getStatementLock().releaseLock(null);
@@ -263,6 +269,9 @@ public class NamedWindowServiceImpl implements NamedWindowService
                     // internal join processing, if applicable
                     handle.internalDispatch(exprEvaluatorContext);
                 }
+                catch (RuntimeException ex) {
+                    exceptionHandlingService.handleException(ex, handle);
+                }
                 finally
                 {
                     handle.getStatementLock().releaseLock(null);
@@ -312,6 +321,9 @@ public class NamedWindowServiceImpl implements NamedWindowService
 
                 // internal join processing, if applicable
                 handle.internalDispatch(exprEvaluatorContext);
+            }
+            catch (RuntimeException ex) {
+                exceptionHandlingService.handleException(ex, handle);
             }
             finally
             {

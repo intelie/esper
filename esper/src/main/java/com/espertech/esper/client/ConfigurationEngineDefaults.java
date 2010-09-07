@@ -1238,11 +1238,15 @@ public class ConfigurationEngineDefaults implements Serializable
             return handlerFactories;
         }
 
-        public void add(String classNameHandlerFactory) {
+        public void addClass(String exceptionHandlerFactoryClassName) {
             if (handlerFactories == null) {
                 handlerFactories = new ArrayList<String>();
             }
-            handlerFactories.add(classNameHandlerFactory);
+            handlerFactories.add(exceptionHandlerFactoryClassName);
+        }
+
+        public void addClass(Class exceptionHandlerFactoryClass) {
+            addClass(exceptionHandlerFactoryClass.getName());
         }
     }
 }

@@ -71,6 +71,7 @@ public final class EPServicesContext
     private StatementIsolationService statementIsolationService;
     private SchedulingMgmtService schedulingMgmtService;
     private DeploymentStateService deploymentStateService;
+    private ExceptionHandlingService exceptionHandlingService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -139,7 +140,8 @@ public final class EPServicesContext
                              InternalEventRouterImpl internalEventRouter,
                              StatementIsolationService statementIsolationService,
                              SchedulingMgmtService schedulingMgmtService,
-                             DeploymentStateService deploymentStateService)
+                             DeploymentStateService deploymentStateService,
+                             ExceptionHandlingService exceptionHandlingService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -174,6 +176,7 @@ public final class EPServicesContext
         this.schedulingMgmtService = schedulingMgmtService;
         this.statementVariableRef = statementVariableRef;
         this.deploymentStateService = deploymentStateService;
+        this.exceptionHandlingService = exceptionHandlingService;
     }
 
     /**
@@ -592,5 +595,9 @@ public final class EPServicesContext
     public DeploymentStateService getDeploymentStateService()
     {
         return deploymentStateService;
+    }
+
+    public ExceptionHandlingService getExceptionHandlingService() {
+        return exceptionHandlingService;
     }
 }

@@ -361,7 +361,7 @@ public class TestEPLTreeWalker extends TestCase
 
         // 2 views
         assertEquals(2, raw.getCreateWindowDesc().getViewSpecs().size());
-        assertEquals("groupby", raw.getCreateWindowDesc().getViewSpecs().get(0).getObjectName());
+        assertEquals("groupwin", raw.getCreateWindowDesc().getViewSpecs().get(0).getObjectName());
         assertEquals("std", raw.getCreateWindowDesc().getViewSpecs().get(0).getObjectNamespace());
         assertEquals("length", raw.getCreateWindowDesc().getViewSpecs().get(1).getObjectName());
     }

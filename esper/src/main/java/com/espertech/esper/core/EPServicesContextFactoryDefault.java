@@ -9,6 +9,9 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.hook.ExceptionHandler;
+import com.espertech.esper.client.hook.ExceptionHandlerFactoryContext;
+import com.espertech.esper.client.hook.ExceptionHandlerFactory;
 import com.espertech.esper.core.deploy.DeploymentStateService;
 import com.espertech.esper.core.deploy.DeploymentStateServiceImpl;
 import com.espertech.esper.core.thread.ThreadingService;
@@ -51,19 +54,20 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ManagedReadWriteLock;
 import com.espertech.esper.view.stream.StreamFactoryService;
 import com.espertech.esper.view.stream.StreamFactoryServiceProvider;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Factory for services context.
  */
 public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 {
+    private static final Log log = LogFactory.getLog(EPServicesContextFactoryDefault.class);
+
     public EPServicesContext createServicesContext(EPServiceProvider epServiceProvider, ConfigurationInformation configSnapshot)
     {
         // Make services that depend on snapshot config entries
@@ -88,6 +92,9 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         // JNDI context for binding resources
         EngineEnvContext jndiContext = new EngineEnvContext();
 
+        // exception handling
+        ExceptionHandlingService exceptionHandlingService = initExceptionHandling(epServiceProvider.getURI(), configSnapshot.getEngineDefaults().getExceptionHandling());
+
         // Statement context factory
         StatementContextFactory statementContextFactory = new StatementContextFactoryDefault(plugInViews, plugInPatternObj);
 
@@ -106,7 +113,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         StatementLockFactory statementLockFactory = new StatementLockFactoryImpl();
         StreamFactoryService streamFactoryService = StreamFactoryServiceProvider.newService(configSnapshot.getEngineDefaults().getViewResources().isShareViews());
         FilterServiceSPI filterService = FilterServiceProvider.newService();
-        NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService, engineSettingsService.getEngineSettings().getExecution().isPrioritized());
+        NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService, engineSettingsService.getEngineSettings().getExecution().isPrioritized(), exceptionHandlingService);
 
         ValueAddEventService valueAddEventService = new ValueAddEventServiceImpl();
         valueAddEventService.init(configSnapshot.getRevisionEventTypes(), configSnapshot.getVariantStreams(), eventAdapterService);
@@ -130,7 +137,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
                 namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
                 statementVariableRef, configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService,
-                deploymentStateService);
+                deploymentStateService, exceptionHandlingService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
@@ -143,6 +150,34 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         statementIsolationService.setEpServicesContext(services);
 
         return services;
+    }
+
+    protected static ExceptionHandlingService initExceptionHandling(String engineURI, ConfigurationEngineDefaults.ExceptionHandling exceptionHandling)
+        throws ConfigurationException
+    {
+        List<ExceptionHandler> result;
+        if (exceptionHandling.getHandlerFactories() == null || exceptionHandling.getHandlerFactories().isEmpty()) {
+            result = Collections.emptyList();
+        }
+        else {
+            result = new ArrayList<ExceptionHandler>();
+            ExceptionHandlerFactoryContext context = new ExceptionHandlerFactoryContext(engineURI);
+            for (String className : exceptionHandling.getHandlerFactories()) {
+                try {
+                    ExceptionHandlerFactory factory = (ExceptionHandlerFactory) JavaClassHelper.instantiate(ExceptionHandlerFactory.class, className);
+                    ExceptionHandler handler = factory.getHandler(context);
+                    if (handler == null) {
+                        log.warn("Exception handler factory '" + className + "' returned a null handler, skipping factory");
+                        continue;
+                    }
+                    result.add(handler);
+                }
+                catch (RuntimeException ex) {
+                    throw new ConfigurationException("Exception initializing exception handler from exception handler factory '" + className + "': " + ex.getMessage(), ex);
+                }
+            }
+        }
+        return new ExceptionHandlingService(engineURI, result);
     }
 
     /**

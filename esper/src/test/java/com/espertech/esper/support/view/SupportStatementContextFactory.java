@@ -1,5 +1,7 @@
 package com.espertech.esper.support.view;
 
+import com.espertech.esper.client.hook.ExceptionHandler;
+import com.espertech.esper.core.ExceptionHandlingService;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.StatementResultServiceImpl;
 import com.espertech.esper.core.StatementFilterVersion;
@@ -20,6 +22,8 @@ import com.espertech.esper.core.thread.ThreadingServiceImpl;
 import com.espertech.esper.event.vaevent.ValueAddEventServiceImpl;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.ConfigurationEngineDefaults;
+
+import java.util.Collections;
 
 public class SupportStatementContextFactory
 {
@@ -59,7 +63,7 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 new OutputConditionFactoryDefault(),
-                new NamedWindowServiceImpl(null, variableService, false),
+                new NamedWindowServiceImpl(null, variableService, false, new ExceptionHandlingService("engURI", Collections.<ExceptionHandler>emptyList())),
                 null,
                 new StatementResultServiceImpl(null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading())), // statement result svc
                 null, // resolution URIs

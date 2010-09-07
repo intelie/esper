@@ -906,6 +906,10 @@ class ConfigurationParser {
             {
                 handleExecution(configuration, subElement);
             }
+            if (subElement.getNodeName().equals("exceptionHandling"))
+            {
+                handleExceptionHandling(configuration, subElement);
+            }
         }
     }
 
@@ -1249,6 +1253,20 @@ class ConfigurationParser {
         {
             boolean isPrioritized = Boolean.parseBoolean(prioritizedStr);
             configuration.getEngineDefaults().getExecution().setPrioritized(isPrioritized);
+        }
+    }
+
+    private static void handleExceptionHandling(Configuration configuration, Element parentElement)
+    {
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("handlerFactory"))
+            {
+                String text = getRequiredAttribute(subElement, "class");
+                configuration.getEngineDefaults().getExceptionHandling().addClass(text);
+            }
         }
     }
 

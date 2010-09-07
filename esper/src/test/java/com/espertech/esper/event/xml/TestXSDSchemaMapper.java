@@ -121,9 +121,6 @@ public class TestXSDSchemaMapper extends TestCase
         }
 
         XSElementDeclaration dec = (XSElementDeclaration) elements.item(0);
-        if (dec.getTypeDefinition().getTypeCategory() != XSTypeDefinition.COMPLEX_TYPE) {
-            throw new PropertyAccessException("Invalid schema - the root element must have at least either attribute declarations or childs elements");
-        }
 
         XSComplexTypeDefinition complexActualElement = (XSComplexTypeDefinition) dec.getTypeDefinition();
         printSchemaDef(complexActualElement, 2);

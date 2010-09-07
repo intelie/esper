@@ -465,16 +465,7 @@ public class TestFromClauseMethod extends TestCase
                 " method:com.espertech.esper.support.epl.SupportStaticMethodLib.throwExceptionBeanReturn()";
 
         epService.getEPAdministrator().createEPL(joinStatement);
-
-        try
-        {
-            sendBeanEvent("E1");
-            fail();
-        }
-        catch (EPException ex)
-        {
-            assertEquals("com.espertech.esper.client.EPException: Method 'throwExceptionBeanReturn' of class 'com.espertech.esper.support.epl.SupportStaticMethodLib' reported an exception: java.lang.Exception: throwException text here", ex.getMessage());
-        }
+        sendBeanEvent("E1");
     }
 
     public void testInvalid()

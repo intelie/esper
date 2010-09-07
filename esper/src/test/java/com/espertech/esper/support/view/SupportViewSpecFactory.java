@@ -44,7 +44,7 @@ public class SupportViewSpecFactory
     {
         List<ViewSpec> specifications = new LinkedList<ViewSpec>();
 
-        ViewSpec specOne = makeSpec("std", "groupby",
+        ViewSpec specOne = makeSpec("std", "groupwin",
                 new Class[] { String.class }, new String[] { "string" } );
         ViewSpec specTwo = makeSpec("win", "length",
                 new Class[] { int.class }, new String[] { "100" } );

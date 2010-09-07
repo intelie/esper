@@ -900,8 +900,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             handle.internalDispatch(exprEvaluatorContext);
         }
         catch (RuntimeException ex) {
-            log.error("Exception encountered processing statement '" + handle.getStatementName() + "': " + ex.getMessage(), ex);
-            throw ex;
+            services.getExceptionHandlingService().handleException(ex, handle);
         }
         finally
         {
@@ -931,8 +930,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             handle.getEpStatementHandle().internalDispatch(exprEvaluatorContext);
         }
         catch (RuntimeException ex) {
-            log.error("Exception encountered processing statement '" + handle.getEpStatementHandle().getStatementName() + "': " + ex.getMessage(), ex);
-            throw ex;
+            services.getExceptionHandlingService().handleException(ex, handle.getEpStatementHandle());
         }
         finally
         {
@@ -1009,8 +1007,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             handle.internalDispatch(this.engineFilterAndDispatchTimeContext);
         }
         catch (RuntimeException ex) {
-            log.error("Exception encountered processing statement '" + handle.getStatementName() + "': " + ex.getMessage(), ex);
-            throw ex;
+            services.getExceptionHandlingService().handleException(ex, handle);
         }
         finally
         {
@@ -1056,8 +1053,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             handle.internalDispatch(engineFilterAndDispatchTimeContext);
         }
         catch (RuntimeException ex) {
-            log.error("Exception encountered processing statement '" + handle.getStatementName() + "': " + ex.getMessage(), ex);
-            throw ex;
+            services.getExceptionHandlingService().handleException(ex, handle);
         }
         finally
         {

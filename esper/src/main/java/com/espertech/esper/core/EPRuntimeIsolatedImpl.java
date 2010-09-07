@@ -669,7 +669,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
         }
         catch (RuntimeException ex)
         {
-            throw ex;
+            unisolatedServices.getExceptionHandlingService().handleException(ex, handle);
         }
         finally
         {
@@ -700,7 +700,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
         }
         catch (RuntimeException ex)
         {
-            throw ex;
+            unisolatedServices.getExceptionHandlingService().handleException(ex, handle);
         }
         finally
         {
