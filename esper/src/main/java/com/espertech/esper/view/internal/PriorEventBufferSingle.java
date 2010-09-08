@@ -91,7 +91,7 @@ public class PriorEventBufferSingle implements ViewUpdatedCollection, RelativeAc
         {
             if (!priorEventMap.containsKey(event))
             {
-                throw new IllegalStateException("Event not currently in collection, event=" + event);
+                return null;
             }
         }
         return priorEvent;

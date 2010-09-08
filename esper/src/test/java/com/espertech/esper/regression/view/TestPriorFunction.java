@@ -26,6 +26,17 @@ public class TestPriorFunction extends TestCase
         epService.initialize();
     }
 
+    public void testPriorStats() {
+        // TODO ESPER-497 
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        String epl = "SELECT * FROM SupportBean().win:time(5 minutes).stat:uni(intPrimitive)\n" +
+                "WHERE\n" +
+                "prior(1, average) > 0";
+        epService.getEPAdministrator().createEPL(epl);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+    }
+
     public void testPriorStream()
     {
         epService.getEPAdministrator().getConfiguration().addEventType("S0", SupportBean_S0.class);
