@@ -107,5 +107,10 @@ public final class MergeView extends ViewSupport implements CloneableView
         return this.getClass().getName() + " groupFieldName=" + Arrays.toString(groupFieldNames);
     }
 
+    public void removeParentView(View view)
+    {
+        parentViews.remove(view);
+    }
+
     private static final Log log = LogFactory.getLog(MergeView.class);
 }

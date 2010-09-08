@@ -1,6 +1,8 @@
 package com.espertech.esper.regression.view;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -36,6 +38,27 @@ public class TestViewGroupBy extends TestCase
 
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testReclaimAgedHint() {
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        String epl = "@Hint('reclaim_group_aged=5,reclaim_group_freq=1') " +
+                "select * from SupportBean.std:groupwin(string).win:keepall()";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+
+        int maxSlots = 10;
+        int maxEventsPerSlot = 1000;
+        for (int timeSlot = 0; timeSlot < maxSlots; timeSlot++) {
+            epService.getEPRuntime().sendEvent(new CurrentTimeEvent(timeSlot * 1000 + 1));
+
+            for (int i = 0; i < maxEventsPerSlot; i++) {
+                epService.getEPRuntime().sendEvent(new SupportBean("E" + timeSlot, 0));
+            }
+        }
+        
+        EventBean[] iterator = ArrayAssertionUtil.iteratorToArray(stmt.iterator());
+        assertTrue(iterator.length <= 6 * maxEventsPerSlot);
     }
 
     public void testInvalidGroupByNoChild()

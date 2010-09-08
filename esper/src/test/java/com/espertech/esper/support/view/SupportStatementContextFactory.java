@@ -72,6 +72,7 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 null,
-                new StatementFilterVersion());
+                new StatementFilterVersion(),
+                null);
     }
 }

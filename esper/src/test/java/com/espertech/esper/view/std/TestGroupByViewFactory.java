@@ -34,12 +34,12 @@ public class TestGroupByViewFactory extends TestCase
         factory.setViewParameters(null, TestViewSupport.toExprListBean(new Object[] {"string", "longPrimitive"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
-        assertFalse(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string"))));
-        assertTrue(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive"))));
+        assertFalse(factory.canReuse(new GroupByViewImpl(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string"))));
+        assertTrue(factory.canReuse(new GroupByViewImpl(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive"))));
 
         factory.setViewParameters(null, TestViewSupport.toExprListBean(new Object[] {SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive")}));
-        assertFalse(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string"))));
-        assertTrue(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive"))));
+        assertFalse(factory.canReuse(new GroupByViewImpl(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string"))));
+        assertTrue(factory.canReuse(new GroupByViewImpl(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive"))));
     }
 
     public void testAttaches() throws Exception

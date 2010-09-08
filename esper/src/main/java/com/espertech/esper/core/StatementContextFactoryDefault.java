@@ -154,7 +154,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 engineServices.getInternalEventEngineRouteDest(),
                 engineServices.getMetricsReportingService(),
                 engineServices.getViewService(),
-                statementFilterVersion);
+                statementFilterVersion,
+                annotations);
     }
 
     /**

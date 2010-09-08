@@ -8,21 +8,26 @@
  **************************************************************************************/
 package com.espertech.esper.view.std;
 
-import com.espertech.esper.view.*;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.annotation.Hint;
+import com.espertech.esper.client.annotation.HintEnum;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
-import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.view.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Factory for {@link GroupByView} instances.
  */
 public class GroupByViewFactory implements ViewFactory
 {
+    private static Log log = LogFactory.getLog(GroupByViewFactory.class);
+
     /**
      * View parameters.
      */
@@ -35,9 +40,47 @@ public class GroupByViewFactory implements ViewFactory
 
     private EventType eventType;
 
+    protected boolean isReclaimAged;
+    protected double reclaimMaxAge;
+    protected double reclaimFrequency;
+
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
         this.viewParameters = expressionParameters;
+
+        Hint reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.getHint(viewFactoryContext.getStatementContext().getAnnotations());
+        Hint reclaimGroupFrequency = HintEnum.RECLAIM_GROUP_AGED.getHint(viewFactoryContext.getStatementContext().getAnnotations());
+
+        if (reclaimGroupAged != null) {
+            isReclaimAged = true;
+            String hintValueMaxAge = HintEnum.RECLAIM_GROUP_AGED.getHintAssignedValue(reclaimGroupAged);
+            if (hintValueMaxAge == null)
+            {
+                throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_AGED + "' has not been provided");
+            }
+            try {
+                reclaimMaxAge = Double.parseDouble(hintValueMaxAge);
+            }
+            catch (RuntimeException ex) {
+                throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_AGED + "' value '" + hintValueMaxAge + "' could not be parsed as a double value");
+            }
+
+            String hintValueFrequency = HintEnum.RECLAIM_GROUP_FREQ.getHintAssignedValue(reclaimGroupAged);
+            if (reclaimGroupFrequency == null)
+            {
+                throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' has not been provided");
+            }
+            try {
+                reclaimFrequency = Double.parseDouble(hintValueFrequency);
+            }
+            catch (RuntimeException ex) {
+                throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' value '" + hintValueFrequency + "' could not be parsed as a double value");
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("Using reclaim-aged strategy for group-window age " + reclaimMaxAge + " frequency " + reclaimFrequency);
+            }
+        }
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
@@ -74,7 +117,10 @@ public class GroupByViewFactory implements ViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new GroupByView(statementContext, criteriaExpressions);
+        if (isReclaimAged) {
+            return new GroupByViewReclaimAged(statementContext, criteriaExpressions, reclaimMaxAge, reclaimFrequency);
+        }
+        return new GroupByViewImpl(statementContext, criteriaExpressions);
     }
 
     public EventType getEventType()
@@ -82,65 +128,14 @@ public class GroupByViewFactory implements ViewFactory
         return eventType;
     }
 
-    /**
-     * Parses the given view parameters into a list of field names to group-by.
-     * @param viewParameters is the raw parameter objects
-     * @param viewName is the name of the view
-     * @return field names
-     * @throws ViewParameterException thrown to indicate a parameter problem
-     */
-    protected static String[] getFieldNameParams(List<Object> viewParameters, String viewName) throws ViewParameterException
-    {
-        String[] fieldNames;
-
-        String errorMessage = '\'' + viewName + "' view requires a list of String values or a String-array as parameter";
-        if (viewParameters.isEmpty())
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-
-        if (viewParameters.size() > 1)
-        {
-            List<String> fields = new ArrayList<String>();
-            for (Object param : viewParameters)
-            {
-                if (!(param instanceof String))
-                {
-                    throw new ViewParameterException(errorMessage);
-                }
-                fields.add((String) param);
-            }
-            fieldNames = fields.toArray(new String[fields.size()]);
-        }
-        else
-        {
-            Object param = viewParameters.get(0);
-            if (param instanceof String[])
-            {
-                String[] arr = (String[]) param;
-                if (arr.length == 0)
-                {
-                    throw new ViewParameterException(errorMessage);
-                }
-                fieldNames = arr;
-            }
-            else if (param instanceof String)
-            {
-                fieldNames = new String[] {(String)param};
-            }
-            else
-            {
-                throw new ViewParameterException(errorMessage);
-            }
-        }
-
-        return fieldNames;
-    }
-
     public boolean canReuse(View view)
     {
         if (!(view instanceof GroupByView))
         {
+            return false;
+        }
+
+        if (isReclaimAged) {
             return false;
         }
 

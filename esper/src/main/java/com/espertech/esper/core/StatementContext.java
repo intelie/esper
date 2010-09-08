@@ -29,6 +29,7 @@ import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewResolutionService;
 import com.espertech.esper.view.ViewService;
 
+import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.util.HashSet;
 
@@ -67,6 +68,7 @@ public final class StatementContext implements ExprEvaluatorContext
     private final MetricReportingServiceSPI metricReportingService;
     private final ViewService viewService;
     private final StatementFilterVersion statementFilterVersion;
+    private final Annotation[] annotations;
 
     /**
      * Constructor.
@@ -126,7 +128,8 @@ public final class StatementContext implements ExprEvaluatorContext
                               InternalEventRouteDest internalEventEngineRouteDest,
                               MetricReportingServiceSPI metricReportingService,
                               ViewService viewService,
-                              StatementFilterVersion statementFilterVersion)
+                              StatementFilterVersion statementFilterVersion,
+                              Annotation[] annotations)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -158,6 +161,7 @@ public final class StatementContext implements ExprEvaluatorContext
         this.metricReportingService = metricReportingService;
         this.viewService = viewService;
         this.statementFilterVersion = statementFilterVersion;
+        this.annotations = annotations;
     }
 
     /**
@@ -470,6 +474,11 @@ public final class StatementContext implements ExprEvaluatorContext
      */
     public StatementFilterVersion getStatementFilterVersion() {
         return statementFilterVersion;
+    }
+
+    public Annotation[] getAnnotations()
+    {
+        return annotations;
     }
 
     public String toString()
