@@ -1,15 +1,15 @@
 package com.espertech.esper.view.std;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.view.SupportBeanClassView;
-import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.view.ViewFieldEnum;
+import junit.framework.TestCase;
 
 public class TestSizeView extends TestCase
 {
@@ -19,7 +19,8 @@ public class TestSizeView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new SizeView(SupportStatementContextFactory.makeContext());
+        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        myView = new SizeView(SupportStatementContextFactory.makeContext(), type, null);
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -85,7 +86,8 @@ public class TestSizeView extends TestCase
 
     public void testSchema()
     {
-        SizeView view = new SizeView(SupportStatementContextFactory.makeContext());
+        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        SizeView view = new SizeView(SupportStatementContextFactory.makeContext(), type, null);
 
         EventType eventType = view.getEventType();
         assertEquals(long.class, eventType.getPropertyType(ViewFieldEnum.SIZE_VIEW__SIZE.getName()));

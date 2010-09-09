@@ -6,12 +6,14 @@ import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.TestViewSupport;
+import com.espertech.esper.view.ViewFactoryContext;
 import com.espertech.esper.view.ViewParameterException;
 import junit.framework.TestCase;
 
 public class TestGroupByViewFactory extends TestCase
 {
     private GroupByViewFactory factory;
+    private ViewFactoryContext viewFactoryContext = new ViewFactoryContext(SupportStatementContextFactory.makeContext(), 1, 0, null, null);
 
     public void setUp()
     {
@@ -31,13 +33,13 @@ public class TestGroupByViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprListBean(new Object[] {"string", "longPrimitive"}));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListBean(new Object[] {"string", "longPrimitive"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new GroupByViewImpl(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string"))));
         assertTrue(factory.canReuse(new GroupByViewImpl(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive"))));
 
-        factory.setViewParameters(null, TestViewSupport.toExprListBean(new Object[] {SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive")}));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListBean(new Object[] {SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive")}));
         assertFalse(factory.canReuse(new GroupByViewImpl(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string"))));
         assertTrue(factory.canReuse(new GroupByViewImpl(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesBean("string", "longPrimitive"))));
     }
@@ -47,7 +49,7 @@ public class TestGroupByViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportBean.class);
 
-        factory.setViewParameters(null, TestViewSupport.toExprListBean(new Object[] {"intBoxed"}));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListBean(new Object[] {"intBoxed"}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
     }
 
@@ -56,7 +58,7 @@ public class TestGroupByViewFactory extends TestCase
         try
         {
             GroupByViewFactory factory = new GroupByViewFactory();
-            factory.setViewParameters(null, TestViewSupport.toExprListBean(params));
+            factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListBean(params));
             factory.attach(SupportEventTypeFactory.createBeanType(SupportBean.class), SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
@@ -69,7 +71,7 @@ public class TestGroupByViewFactory extends TestCase
     private void tryParameter(Object[] params, String[] fieldNames) throws Exception
     {
         GroupByViewFactory factory = new GroupByViewFactory();
-        factory.setViewParameters(null, TestViewSupport.toExprListBean(params));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListBean(params));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportBean.class), SupportStatementContextFactory.makeContext(), null, null);
         GroupByView view = (GroupByView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldNames[0], view.getCriteriaExpressions()[0].toExpressionString());

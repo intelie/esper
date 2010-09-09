@@ -170,23 +170,23 @@ public class TestViewGroupBy extends TestCase
         // further math tests can be found in the view unit test
         EPAdministrator admin = epService.getEPAdministrator();
         admin.getConfiguration().addEventType("Market", SupportMarketDataBean.class);
-        EPStatement statement = admin.createEPL("select * from Market.std:groupwin(symbol).win:length(1000000).stat:correl(price, volume)");
+        EPStatement statement = admin.createEPL("select * from Market.std:groupwin(symbol).win:length(1000000).stat:correl(price, volume, feed)");
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
 
-        String[] fields = new String[] {"symbol", "correlation"};
+        String[] fields = new String[] {"symbol", "correlation", "feed"};
 
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 10.0, 1000L, null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", Double.NaN});
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 10.0, 1000L, "f1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", Double.NaN, "f1"});
 
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 1.0, 2L, null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", Double.NaN});
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 1.0, 2L, "f2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", Double.NaN, "f2"});
 
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 2.0, 4L, null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", 1.0});
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 2.0, 4L, "f3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", 1.0, "f3"});
 
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 20.0, 2000L, null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", 1.0});
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 20.0, 2000L, "f4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", 1.0, "f4"});
     }
 
     public void testLinest()
@@ -194,23 +194,23 @@ public class TestViewGroupBy extends TestCase
         // further math tests can be found in the view unit test
         EPAdministrator admin = epService.getEPAdministrator();
         admin.getConfiguration().addEventType("Market", SupportMarketDataBean.class);
-        EPStatement statement = admin.createEPL("select * from Market.std:groupwin(symbol).win:length(1000000).stat:linest(price, volume)");
+        EPStatement statement = admin.createEPL("select * from Market.std:groupwin(symbol).win:length(1000000).stat:linest(price, volume, feed)");
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
 
-        String[] fields = new String[] {"symbol", "slope", "YIntercept"};
+        String[] fields = new String[] {"symbol", "slope", "YIntercept", "feed"};
 
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 10.0, 50000L, null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", Double.NaN, Double.NaN});
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 10.0, 50000L, "f1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", Double.NaN, Double.NaN, "f1"});
 
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 1.0, 1L, null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", Double.NaN, Double.NaN});
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 1.0, 1L, "f2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", Double.NaN, Double.NaN, "f2"});
 
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 2.0, 2L, null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", 1.0, 0.0});
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 2.0, 2L, "f3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", 1.0, 0.0, "f3"});
 
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 11.0, 50100L, null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", 100.0, 49000.0});
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 11.0, 50100L, "f4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", 100.0, 49000.0, "f4"});
     }
 
     private void sendEvent(String symbol, double price)

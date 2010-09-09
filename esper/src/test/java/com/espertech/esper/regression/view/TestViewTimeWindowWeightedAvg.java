@@ -14,7 +14,8 @@ import com.espertech.esper.client.EventBean;
 public class TestViewTimeWindowWeightedAvg extends TestCase
 {
     private static String SYMBOL = "CSCO.O";
-            
+    private static String FEED = "feed1";
+
     private EPServiceProvider epService;
     private SupportUpdateListener testListener;
     private EPStatement weightedAvgView;
@@ -30,7 +31,7 @@ public class TestViewTimeWindowWeightedAvg extends TestCase
         // Set up a 1 second time window
         weightedAvgView = epService.getEPAdministrator().createEPL(
                 "select * from " + SupportMarketDataBean.class.getName() +
-                "(symbol='" + SYMBOL + "').win:time(3.0).stat:weighted_avg(price, volume)");
+                "(symbol='" + SYMBOL + "').win:time(3.0).stat:weighted_avg(price, volume, symbol, feed)");
         weightedAvgView.addListener(testListener);
     }
     
@@ -73,7 +74,7 @@ public class TestViewTimeWindowWeightedAvg extends TestCase
 
     private SupportMarketDataBean makeBean(String symbol, double price, long volume)
     {
-        return new SupportMarketDataBean(symbol, price, volume, "");
+        return new SupportMarketDataBean(symbol, price, volume, FEED);
     }
 
     private void checkValue(double avgE)
@@ -93,6 +94,8 @@ public class TestViewTimeWindowWeightedAvg extends TestCase
     {
         double avg = getDoubleValue(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE, values);
         assertTrue(DoubleValueAssertionUtil.equals(avg,  avgE, 6));
+        assertEquals(FEED, values.get("feed"));
+        assertEquals(SYMBOL, values.get("symbol"));
     }
 
     private double getDoubleValue(ViewFieldEnum field, EventBean event)

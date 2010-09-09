@@ -1,15 +1,16 @@
 package com.espertech.esper.view.stat;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.util.DoubleValueAssertionUtil;
 import com.espertech.esper.support.view.SupportBeanClassView;
-import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
-import com.espertech.esper.support.epl.SupportExprNodeFactory;
+import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.view.ViewFieldEnum;
+import junit.framework.TestCase;
 
 import java.util.Iterator;
 
@@ -21,7 +22,8 @@ public class TestWeightedAverageView extends TestCase
     public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        myView = new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"));
+        EventType type = WeightedAverageView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        myView = new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"), type, null);
         
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -61,7 +63,7 @@ public class TestWeightedAverageView extends TestCase
 
     public void testGetSchema()
     {
-        assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName()) == double.class);
+        assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName()) == Double.class);
     }
 
     public void testCopyView() throws Exception

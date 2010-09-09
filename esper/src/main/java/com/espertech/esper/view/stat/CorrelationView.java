@@ -8,11 +8,17 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.view.ViewFieldEnum;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A view that calculates correlation on two fields. The view uses internally a {@link CorrelationBean}
@@ -22,30 +28,34 @@ import com.espertech.esper.epl.expression.ExprNode;
  */
 public final class CorrelationView extends BaseBivariateStatisticsView implements CloneableView
 {
-    private EventType eventType;
-
     /**
      * Constructor.
      * @param xExpression is the expression providing X data points
      * @param yExpression is the expression providing X data points
-     * @param statementContext contains required view services
+x     * @param statementContext contains required view services
      */
-    public CorrelationView(StatementContext statementContext, ExprNode xExpression, ExprNode yExpression)
+    public CorrelationView(StatementContext statementContext, ExprNode xExpression, ExprNode yExpression, EventType eventType, StatViewAdditionalProps additionalProps)
     {
-        super(statementContext, new CorrelationBean(), xExpression, yExpression);
+        super(statementContext, new CorrelationBean(), xExpression, yExpression, eventType, additionalProps);
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new CorrelationView(statementContext, this.getExpressionX(), this.getExpressionY());
+        return new CorrelationView(statementContext, this.getExpressionX(), this.getExpressionY(), eventType, additionalProps);
+    }
+
+    protected EventBean populateMap(BaseStatisticsBean baseStatisticsBean,
+                                         EventAdapterService eventAdapterService,
+                                         EventType eventType)
+    {
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put(ViewFieldEnum.CORRELATION__CORRELATION.getName(), ((CorrelationBean) baseStatisticsBean).getCorrelation());
+        addProperties(result);
+        return eventAdapterService.adaptorForTypedMap(result, eventType);
     }
 
     public EventType getEventType()
     {
-        if (eventType == null)
-        {
-            eventType = createEventType(statementContext);
-        }
         return eventType;
     }
 
@@ -61,10 +71,12 @@ public final class CorrelationView extends BaseBivariateStatisticsView implement
      * @param statementContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(StatementContext statementContext)
+    protected static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps)
     {
-        return statementContext.getEventAdapterService().addBeanType(CorrelationBean.class.getName(), CorrelationBean.class, false);
+        Map<String, Object> eventTypeMap = new HashMap<String, Object>();
+        eventTypeMap.put(ViewFieldEnum.CORRELATION__CORRELATION.getName(), Double.class);
+        StatViewAdditionalProps.addCheckDupProperties(eventTypeMap, additionalProps,
+                ViewFieldEnum.CORRELATION__CORRELATION);
+        return statementContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
     }
 }
-
-

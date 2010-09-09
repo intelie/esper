@@ -154,27 +154,27 @@
 				<tbody>
 					<row>
 						<entry>Size</entry>
-						<entry>std:size()</entry>
+						<entry>std:size([<emphasis>expression</emphasis>, ...])</entry>
 						<entry>Derives a count of the number of events in a data window, or in an insert stream if used without a data window.</entry>
 					</row>
 					<row>
 						<entry>Univariate statistics</entry>
-						<entry>stat:uni(<emphasis>value expression</emphasis>)</entry>
+						<entry>stat:uni(<emphasis>value expression</emphasis> [,<emphasis>expression</emphasis>, ...])</entry>
 						<entry>Calculates univariate statistics on the values returned by the expression.</entry>
 					</row>
 					<row>
 						<entry>Regression</entry>
-						<entry>stat:linest(<emphasis>value expression, value expression</emphasis>)</entry>
+						<entry>stat:linest(<emphasis>value expression, value expression</emphasis> [,<emphasis>expression</emphasis>, ...])</entry>
 						<entry>Calculates regression on the values returned by two expressions.</entry>
 					</row>
 					<row>
 						<entry>Correlation</entry>
-						<entry>stat:correl(<emphasis>value expression, value expression</emphasis>)</entry>
+						<entry>stat:correl(<emphasis>value expression, value expression</emphasis> [,<emphasis>expression</emphasis>, ...])</entry>
 						<entry>Calculates the correlation value on the values returned by two expressions.</entry>
 					</row>
 					<row>
 						<entry>Weighted average</entry>
-						<entry>stat:weighted_avg(<emphasis>value expression, value expression</emphasis>)</entry>
+						<entry>stat:weighted_avg(<emphasis>value expression, value expression</emphasis> [,<emphasis>expression</emphasis>, ...])</entry>
 						<entry>Calculates weighted average given a weight expression and an expression to compute the average for.</entry>
 					</row>
 				</tbody>
@@ -710,7 +710,7 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 					This view posts the number of events received from a stream or view. The synopsis is:
 				</para>
 
-				<synopsis>std:size()</synopsis>
+				<synopsis>std:size([<emphasis>expression</emphasis>, ...])</synopsis>
 
 				<para>					
 					The view posts a single long-typed property named <literal>size</literal>. The view posts the prior size as old data, and the current size as new data to update listeners of the view. Via the <literal>iterator</literal> method of the statement the size value can also be polled (read).
@@ -828,6 +828,15 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
         <sect1 id="stat-views" >
            <title>Statistics views</title>
            
+           <para>
+			   The statistics views can be used combined with data window views or alone. Very similar to aggregation functions, these views aggregate or derive information from an event stream. As compared to aggregation functions,
+			   statistics views can post multiple derived fields including properties from the last event that was received. The derived fields and event properties are available for querying in the <literal>where</literal>-clause and are often compared to prior values using the <literal>prior</literal> function.
+           </para>
+           
+           <para>
+			   Statistics views accept one or more primary value expressions and optional additional expressions that return values based on the last event received.
+           </para>
+           
 			<sect2 id="view-stat-uni" >
 			   <title>Univariate statistics (<literal>stat:uni</literal>)</title>
 		
@@ -836,9 +845,9 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<indexterm><primary>derived-value views</primary><secondary>univariate statistics</secondary></indexterm>
 
 				<para>
-					This view calculates univariate statistics on a numeric expression. The view takes a single expression as a parameter. The expression must return a numeric value:
+					This view calculates univariate statistics on a numeric expression. The view takes a single expression as a parameter. The value expression must return a numeric value:
 				</para>
-				<synopsis>stat:uni(<emphasis>value_expression</emphasis>)</synopsis>
+				<synopsis>stat:uni(<emphasis>value_expression</emphasis> [,<emphasis>expression</emphasis>, ...])</synopsis>
 				
 				<table frame="topbot" id="view-stat-uni-table" revision="2">
 					<title>Univariate statistics derived properties</title>
@@ -897,7 +906,7 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 					This view calculates regression and related intermediate results on the values returned by two expressions. The view takes two expressions as parameters. The expressions must return a numeric value:
 				</para>
 				
-				<synopsis>stat:linest(<emphasis>value_expression</emphasis>, <emphasis>value_expression</emphasis>)</synopsis>
+				<synopsis>stat:linest(<emphasis>value_expression</emphasis>, <emphasis>value_expression</emphasis> [,<emphasis>expression</emphasis>, ...])</synopsis>
 
 				<table frame="topbot" id="view-stat-linest-table" revision="2">
 					<title>Regression derived properties</title>
@@ -1009,7 +1018,7 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 					This view calculates the correlation value on the value returned by two expressions. The view takes two expressions as parameters. The expressions must be return a numeric value:
 				</para>
 				
-				<synopsis>stat:correl(<emphasis>value_expression</emphasis>, <emphasis>value_expression</emphasis>)</synopsis>
+				<synopsis>stat:correl(<emphasis>value_expression</emphasis>, <emphasis>value_expression</emphasis> [,<emphasis>expression</emphasis>, ...])</synopsis>
 				
 				<table frame="topbot" id="view-stat-correl-table" revision="2">
 					<title>Correlation derived properties</title>
@@ -1048,7 +1057,7 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<para>
 					This view returns the weighted average given an expression returning values to compute the average for and an expression returning weight. The view takes two expressions as parameters. The expressions must return numeric values:
 				</para>				
-				<synopsis>stat:weighted_avg(<emphasis>value_expression_field</emphasis>, <emphasis>value_expression_weight</emphasis>)</synopsis>
+				<synopsis>stat:weighted_avg(<emphasis>value_expression_field</emphasis>, <emphasis>value_expression_weight</emphasis> [,<emphasis>expression</emphasis>, ...])</synopsis>
 				
 				<table frame="topbot" id="view-stat-weightedavg-table" revision="2">
 					<title>Weighted average derived properties</title>
@@ -1082,6 +1091,10 @@ from StockTickEvent(symbol='GE').win:time(3 seconds).stat:weighted_avg(price, vo
 
         <sect1 id="ext-views" >
            <title>Extension View Set</title>
+           
+           <para>
+			   The views in this set are data windows that order events according to a criteria.
+           </para>
 
 			<sect2 id="view-ext-sort" >
 			   <title>Sorted Window View (<literal>ext:sort</literal>)</title>

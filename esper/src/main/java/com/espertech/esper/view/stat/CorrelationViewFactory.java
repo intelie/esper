@@ -36,6 +36,9 @@ public class CorrelationViewFactory implements ViewFactory
      * Property name of Y field.
      */
     protected ExprNode expressionY;
+
+    protected StatViewAdditionalProps additionalProps;
+
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
@@ -47,11 +50,9 @@ public class CorrelationViewFactory implements ViewFactory
     {
         ExprNode[] validated = ViewFactorySupport.validate("Correlation view", parentEventType, statementContext, viewParameters, false);
         String errorMessage = "Correlation view requires two expressions providing x and y values as properties";
-        if (viewParameters.size() != 2)
-        {
+        if (validated.length < 2) {
             throw new ViewParameterException(errorMessage);
         }
-
         if ((!JavaClassHelper.isNumeric(validated[0].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
         {
             throw new ViewParameterException(errorMessage);
@@ -60,7 +61,8 @@ public class CorrelationViewFactory implements ViewFactory
         expressionX = validated[0];
         expressionY = validated[1];
 
-        eventType = CorrelationView.createEventType(statementContext);
+        additionalProps = StatViewAdditionalProps.make(validated, 2);
+        eventType = CorrelationView.createEventType(statementContext, additionalProps);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -75,7 +77,7 @@ public class CorrelationViewFactory implements ViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new CorrelationView(statementContext, expressionX, expressionY);
+        return new CorrelationView(statementContext, expressionX, expressionY, eventType, additionalProps);
     }
 
     public EventType getEventType()
@@ -87,6 +89,10 @@ public class CorrelationViewFactory implements ViewFactory
     {
         if (!(view instanceof CorrelationView))
         {
+            return false;
+        }
+
+        if (additionalProps != null) {
             return false;
         }
 

@@ -8,15 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.view.std;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.SingleEventIterator;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.View;
+import com.espertech.esper.view.ViewFieldEnum;
+import com.espertech.esper.view.ViewSupport;
+import com.espertech.esper.view.stat.StatViewAdditionalProps;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import com.espertech.esper.collection.SingleEventIterator;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.view.*;
-import com.espertech.esper.core.StatementContext;
 
 /**
  * This view is a very simple view presenting the number of elements in a stream or view.
@@ -26,23 +30,27 @@ import com.espertech.esper.core.StatementContext;
 public final class SizeView extends ViewSupport implements CloneableView
 {
     private final StatementContext statementContext;
-    private EventType eventType;
+    private final EventType eventType;
+    private final StatViewAdditionalProps additionalProps;
+
     private long size = 0;
     private EventBean lastSizeEvent;
+    private Object[] lastValuesEventNew;
 
     /**
      * Ctor.
      * @param statementContext is services
      */
-    public SizeView(StatementContext statementContext)
+    public SizeView(StatementContext statementContext, EventType eventType, StatViewAdditionalProps additionalProps)
     {
         this.statementContext = statementContext;
-        this.eventType = createEventType(statementContext);
+        this.eventType = eventType;
+        this.additionalProps = additionalProps;
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new SizeView(statementContext);
+        return new SizeView(statementContext, eventType, additionalProps);
     }
 
     public final EventType getEventType()
@@ -58,6 +66,15 @@ public final class SizeView extends ViewSupport implements CloneableView
         if (newData != null)
         {
             size += newData.length;
+
+            if ((additionalProps != null) && (newData.length != 0)) {
+                if (lastValuesEventNew == null) {
+                    lastValuesEventNew = new Object[additionalProps.getAdditionalExpr().length];
+                }
+                for (int val = 0; val < additionalProps.getAdditionalExpr().length; val++) {
+                    lastValuesEventNew[val] = additionalProps.getAdditionalExpr()[val].evaluate(new EventBean[] {newData[newData.length - 1]}, true, statementContext);
+                }
+            }
         }
 
         if (oldData != null)
@@ -70,6 +87,7 @@ public final class SizeView extends ViewSupport implements CloneableView
         {
             Map<String, Object> postNewData = new HashMap<String, Object>();
             postNewData.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), size);
+            addProperties(postNewData);
             EventBean newEvent = statementContext.getEventAdapterService().adaptorForTypedMap(postNewData, eventType);
 
             if (lastSizeEvent != null)
@@ -93,6 +111,7 @@ public final class SizeView extends ViewSupport implements CloneableView
     {
         HashMap<String, Object> current = new HashMap<String, Object>();
         current.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), size);
+        addProperties(current);
         return new SingleEventIterator(statementContext.getEventAdapterService().adaptorForTypedMap(current, eventType));
     }
 
@@ -106,10 +125,19 @@ public final class SizeView extends ViewSupport implements CloneableView
      * @param statementContext is the event adapter service
      * @return event type for view
      */
-    protected static EventType createEventType(StatementContext statementContext)
+    public static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps)
     {
         Map<String, Object> schemaMap = new HashMap<String, Object>();
         schemaMap.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), long.class);
+        StatViewAdditionalProps.addCheckDupProperties(schemaMap, additionalProps, ViewFieldEnum.SIZE_VIEW__SIZE);
         return statementContext.getEventAdapterService().createAnonymousMapType(schemaMap);
+    }
+
+    private void addProperties(Map<String, Object> newDataMap)
+    {
+        if (additionalProps == null) {
+            return;
+        }
+        additionalProps.addProperties(newDataMap, lastValuesEventNew);
     }
 }

@@ -1,5 +1,6 @@
 package com.espertech.esper.regression.view;
 
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
@@ -33,6 +34,18 @@ public class TestCountAll extends TestCase
 
         sendEvent("DELL", 1L);
         assertSize(2, 1);
+
+        selectTestView.destroy();
+        statementText = "select size, symbol, feed from " + SupportMarketDataBean.class.getName() + ".std:size(symbol, feed)";
+        selectTestView = epService.getEPAdministrator().createEPL(statementText);
+        selectTestView.addListener(listener);
+        String[] fields = "size,symbol,feed".split(",");
+
+        sendEvent("DELL", 1L);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1L, "DELL", "f1"});
+
+        sendEvent("DELL", 1L);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {2L, "DELL", "f1"});
     }
 
     public void testCountPlusStar()
@@ -115,7 +128,7 @@ public class TestCountAll extends TestCase
 
     private void sendEvent(String symbol, Long volume)
     {
-        SupportMarketDataBean bean = new SupportMarketDataBean(symbol, 0, volume, null);
+        SupportMarketDataBean bean = new SupportMarketDataBean(symbol, 0, volume, "f1");
         epService.getEPRuntime().sendEvent(bean);
     }
 

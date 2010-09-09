@@ -8,16 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
-import com.espertech.esper.view.*;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.View;
+import com.espertech.esper.view.ViewFieldEnum;
+import com.espertech.esper.view.ViewSupport;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * View for computing a weighted average. The view uses 2 fields within the parent view to compute the weighted average.
@@ -31,11 +34,14 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
     private final StatementContext statementContext;
     private final ExprNode fieldNameX;
     private final ExprNode fieldNameWeight;
+    private final StatViewAdditionalProps additionalProps;
+
     private EventBean[] eventsPerStream = new EventBean[1];
 
     private double sumXtimesW = Double.NaN;
     private double sumW = Double.NaN;
     private double currentValue = Double.NaN;
+    private Object[] lastValuesEventNew;
 
     private EventBean lastNewEvent;
 
@@ -47,17 +53,18 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
      * @param fieldNameWeight is the field name for the weight to apply to each data point
      * @param statementContext contains required view services
      */
-    public WeightedAverageView(StatementContext statementContext, ExprNode fieldNameX, ExprNode fieldNameWeight)
+    public WeightedAverageView(StatementContext statementContext, ExprNode fieldNameX, ExprNode fieldNameWeight, EventType eventType, StatViewAdditionalProps additionalProps)
     {
         this.fieldNameX = fieldNameX;
         this.fieldNameWeight = fieldNameWeight;
         this.statementContext = statementContext;
-        eventType = createEventType(statementContext);
+        this.eventType = eventType;
+        this.additionalProps = additionalProps;
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight);
+        return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight, eventType, additionalProps);
     }
 
     /**
@@ -101,6 +108,15 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
                     sumXtimesW += point * weight;
                     sumW += weight;
                 }
+
+                if ((additionalProps != null) && (newData.length - 1 == i)) {
+                    if (lastValuesEventNew == null) {
+                        lastValuesEventNew = new Object[additionalProps.getAdditionalExpr().length];
+                    }
+                    for (int val = 0; val < additionalProps.getAdditionalExpr().length; val++) {
+                        lastValuesEventNew[val] = additionalProps.getAdditionalExpr()[val].evaluate(eventsPerStream, true, statementContext);
+                    }
+                }
             }
         }
 
@@ -132,6 +148,7 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
         {
             Map<String, Object> newDataMap = new HashMap<String, Object>();
             newDataMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), currentValue);
+            addProperties(newDataMap);
             EventBean newDataEvent = statementContext.getEventAdapterService().adaptorForTypedMap(newDataMap, eventType);
 
             if (lastNewEvent == null)
@@ -150,6 +167,14 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
         }
     }
 
+    private void addProperties(Map<String, Object> newDataMap)
+    {
+        if (additionalProps == null) {
+            return;
+        }
+        additionalProps.addProperties(newDataMap, lastValuesEventNew);
+    }
+
     public final EventType getEventType()
     {
         return eventType;
@@ -159,6 +184,7 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
     {
         Map<String, Object> newDataMap = new HashMap<String, Object>();
         newDataMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), currentValue);
+        addProperties(newDataMap);
         return new SingleEventIterator(statementContext.getEventAdapterService().adaptorForTypedMap(newDataMap, eventType));
     }
 
@@ -174,10 +200,11 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
      * @param statementContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(StatementContext statementContext)
+    public static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps)
     {
         Map<String, Object> schemaMap = new HashMap<String, Object>();
-        schemaMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), double.class);
+        schemaMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), Double.class);
+        StatViewAdditionalProps.addCheckDupProperties(schemaMap, additionalProps, ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE);
         return statementContext.getEventAdapterService().createAnonymousMapType(schemaMap);
     }
 }

@@ -1,5 +1,6 @@
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.client.EventType;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -21,7 +22,8 @@ public class TestUnivariateStatisticsView extends TestCase
     public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        myView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"));
+        EventType type = UnivariateStatisticsView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        myView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), type, null);
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);

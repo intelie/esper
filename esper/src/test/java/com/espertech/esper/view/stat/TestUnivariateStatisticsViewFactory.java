@@ -35,8 +35,9 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
-        assertFalse(factory.canReuse(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("symbol"))));
-        assertTrue(factory.canReuse(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"))));
+        EventType type = UnivariateStatisticsView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        assertFalse(factory.canReuse(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("symbol"), type, null)));
+        assertTrue(factory.canReuse(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), type, null)));
     }
 
     public void testAttaches() throws Exception

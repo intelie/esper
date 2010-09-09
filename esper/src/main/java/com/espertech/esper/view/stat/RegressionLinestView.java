@@ -8,11 +8,17 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.view.ViewFieldEnum;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A view that calculates regression on two fields. The view uses internally a {@link RegressionBean}
@@ -22,30 +28,24 @@ import com.espertech.esper.epl.expression.ExprNode;
  */
 public final class RegressionLinestView extends BaseBivariateStatisticsView implements CloneableView
 {
-    private EventType eventType;
-
     /**
      * Constructor.
      * @param xFieldName is the field name of the field providing X data points
      * @param yFieldName is the field name of the field providing X data points
      * @param statementContext contains required view services
      */
-    public RegressionLinestView(StatementContext statementContext, ExprNode xFieldName, ExprNode yFieldName)
+    public RegressionLinestView(StatementContext statementContext, ExprNode xFieldName, ExprNode yFieldName, EventType eventType, StatViewAdditionalProps additionalProps)
     {
-        super(statementContext, new RegressionBean(), xFieldName, yFieldName);
+        super(statementContext, new RegressionBean(), xFieldName, yFieldName, eventType, additionalProps);
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new RegressionLinestView(statementContext, this.getExpressionX(), this.getExpressionY());
+        return new RegressionLinestView(statementContext, this.getExpressionX(), this.getExpressionY(), eventType, additionalProps);
     }
 
     public EventType getEventType()
     {
-        if (eventType == null)
-        {
-            eventType = createEventType(statementContext);
-        }
         return eventType;
     }
 
@@ -56,14 +56,31 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
                 " fieldY=" + this.getExpressionY();
     }
 
+    protected EventBean populateMap(BaseStatisticsBean baseStatisticsBean,
+                                         EventAdapterService eventAdapterService,
+                                         EventType eventType)
+    {
+        Map<String, Object> result = new HashMap<String, Object>();
+        RegressionBean rb = (RegressionBean) baseStatisticsBean;
+        result.put(ViewFieldEnum.REGRESSION__SLOPE.getName(), rb.getSlope());
+        result.put(ViewFieldEnum.REGRESSION__YINTERCEPT.getName(), rb.getYIntercept());
+        addProperties(result);
+        return eventAdapterService.adaptorForTypedMap(result, eventType);
+    }
+
     /**
      * Creates the event type for this view.
      * @param statementContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(StatementContext statementContext)
+    protected static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps)
     {
-        return statementContext.getEventAdapterService().addBeanType(RegressionBean.class.getName(), RegressionBean.class, false);
+        Map<String, Object> eventTypeMap = new HashMap<String, Object>();
+        eventTypeMap.put(ViewFieldEnum.REGRESSION__SLOPE.getName(), Double.class);
+        eventTypeMap.put(ViewFieldEnum.REGRESSION__YINTERCEPT.getName(), Double.class);
+        StatViewAdditionalProps.addCheckDupProperties(eventTypeMap, additionalProps,
+                ViewFieldEnum.REGRESSION__SLOPE, ViewFieldEnum.REGRESSION__YINTERCEPT);
+        return statementContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
     }
 }
 

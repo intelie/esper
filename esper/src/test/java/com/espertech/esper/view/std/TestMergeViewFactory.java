@@ -6,6 +6,7 @@ import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewFactory;
+import com.espertech.esper.view.ViewFactoryContext;
 import com.espertech.esper.view.ViewParameterException;
 import junit.framework.TestCase;
 
@@ -15,7 +16,8 @@ import java.util.List;
 public class TestMergeViewFactory extends TestCase
 {
     private MergeViewFactory factory;
-    List<ViewFactory> parents;
+    private List<ViewFactory> parents;
+    private ViewFactoryContext viewFactoryContext = new ViewFactoryContext(SupportStatementContextFactory.makeContext(), 1, 0, null, null);
 
     public void setUp() throws Exception
     {
@@ -23,7 +25,7 @@ public class TestMergeViewFactory extends TestCase
 
         parents = new ArrayList<ViewFactory>();
         GroupByViewFactory groupByView = new GroupByViewFactory();
-        groupByView.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"symbol", "feed"}));
+        groupByView.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(new Object[] {"symbol", "feed"}));
         groupByView.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         parents.add(groupByView);
     }
@@ -40,7 +42,7 @@ public class TestMergeViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"symbol", "feed"}));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(new Object[] {"symbol", "feed"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, parents);
         assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesMD("symbol"), null)));

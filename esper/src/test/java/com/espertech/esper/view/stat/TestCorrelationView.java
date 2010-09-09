@@ -1,5 +1,6 @@
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.client.EventType;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -21,8 +22,9 @@ public class TestCorrelationView extends TestCase
     public void setUp() throws Exception
     {
         // Set up sum view and a test child view
+        EventType type = CorrelationView.createEventType(SupportStatementContextFactory.makeContext(), null);
         myView = new CorrelationView(SupportStatementContextFactory.makeContext(),
-                SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"));
+                SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"), type, null);
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -62,7 +64,7 @@ public class TestCorrelationView extends TestCase
 
     public void testGetSchema()
     {
-        assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.CORRELATION__CORRELATION.getName()) == double.class);
+        assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.CORRELATION__CORRELATION.getName()) == Double.class);
     }
 
     public void testCopyView() throws Exception

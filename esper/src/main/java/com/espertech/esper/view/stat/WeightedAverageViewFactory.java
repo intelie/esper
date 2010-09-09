@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
 
@@ -34,7 +34,9 @@ public class WeightedAverageViewFactory implements ViewFactory
      */
     protected ExprNode fieldNameWeight;
 
-    private EventType eventType;
+    protected StatViewAdditionalProps additionalProps;
+
+    protected EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
@@ -46,8 +48,7 @@ public class WeightedAverageViewFactory implements ViewFactory
         ExprNode[] validated = ViewFactorySupport.validate("Weighted average view", parentEventType, statementContext, viewParameters, false);
 
         String errorMessage = "Weighted average view requires two expressions returning numeric values as parameters";
-        if (viewParameters.size() != 2)
-        {
+        if (validated.length < 2) {
             throw new ViewParameterException(errorMessage);
         }
         if ((!JavaClassHelper.isNumeric(validated[0].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
@@ -57,7 +58,8 @@ public class WeightedAverageViewFactory implements ViewFactory
 
         fieldNameX = validated[0];
         fieldNameWeight = validated[1];
-        eventType = WeightedAverageView.createEventType(statementContext);
+        additionalProps = StatViewAdditionalProps.make(validated, 2);
+        eventType = WeightedAverageView.createEventType(statementContext, additionalProps);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -72,7 +74,7 @@ public class WeightedAverageViewFactory implements ViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight);
+        return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight, eventType, additionalProps);
     }
 
     public EventType getEventType()
@@ -82,8 +84,10 @@ public class WeightedAverageViewFactory implements ViewFactory
 
     public boolean canReuse(View view)
     {
-        if (!(view instanceof WeightedAverageView))
-        {
+        if (!(view instanceof WeightedAverageView)) {
+            return false;
+        }
+        if (additionalProps != null) {
             return false;
         }
 

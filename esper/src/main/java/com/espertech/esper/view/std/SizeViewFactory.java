@@ -13,6 +13,8 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.view.stat.RegressionLinestView;
+import com.espertech.esper.view.stat.StatViewAdditionalProps;
 
 import java.util.List;
 
@@ -21,21 +23,22 @@ import java.util.List;
  */
 public class SizeViewFactory implements ViewFactory
 {
-    private EventType eventType;
+    private List<ExprNode> viewParameters;
+
+    protected StatViewAdditionalProps additionalProps;
+
+    protected EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Size' view", viewFactoryContext.getStatementContext(), expressionParameters);
-        String errorMessage = "'Size' view does not take any parameters";
-        if (!viewParameters.isEmpty())
-        {
-            throw new ViewParameterException(errorMessage);
-        }
+        this.viewParameters = expressionParameters;
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
-        eventType = SizeView.createEventType(statementContext);
+        ExprNode[] validated = ViewFactorySupport.validate("Size view", parentEventType, statementContext, viewParameters, false);
+        additionalProps = StatViewAdditionalProps.make(validated, 0);
+        eventType = SizeView.createEventType(statementContext, additionalProps);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -50,7 +53,7 @@ public class SizeViewFactory implements ViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new SizeView(statementContext);
+        return new SizeView(statementContext, eventType, additionalProps);
     }
 
     public EventType getEventType()
@@ -62,6 +65,9 @@ public class SizeViewFactory implements ViewFactory
     {
         if (!(view instanceof SizeView))
         {
+            return false;
+        }
+        if (additionalProps != null) {
             return false;
         }
         return true;

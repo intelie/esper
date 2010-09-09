@@ -31,7 +31,9 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
      * Property name of data field.
      */
     protected ExprNode fieldExpression;
-    private EventType eventType;
+    protected StatViewAdditionalProps additionalProps;
+
+    protected EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
@@ -42,8 +44,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
     {
         ExprNode[] validated = ViewFactorySupport.validate("Univariate statistics", parentEventType, statementContext, viewParameters, false);
         String errorMessage = "Univariate statistics view require a single expression returning a numeric value as a parameter";
-        if (viewParameters.size() != 1)
-        {
+        if (validated.length < 1) {
             throw new ViewParameterException(errorMessage);
         }
         if (!JavaClassHelper.isNumeric(validated[0].getType()))
@@ -52,7 +53,8 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
         }
         fieldExpression = validated[0];
 
-        eventType = UnivariateStatisticsView.createEventType(statementContext);
+        additionalProps = StatViewAdditionalProps.make(validated, 1);
+        eventType = UnivariateStatisticsView.createEventType(statementContext, additionalProps);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -67,7 +69,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new UnivariateStatisticsView(statementContext, fieldExpression);
+        return new UnivariateStatisticsView(statementContext, fieldExpression, eventType, additionalProps);
     }
 
     public EventType getEventType()
@@ -77,8 +79,10 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
 
     public boolean canReuse(View view)
     {
-        if (!(view instanceof UnivariateStatisticsView))
-        {
+        if (!(view instanceof UnivariateStatisticsView)) {
+            return false;
+        }
+        if (additionalProps != null) {
             return false;
         }
 

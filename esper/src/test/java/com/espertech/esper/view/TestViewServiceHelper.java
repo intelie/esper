@@ -1,5 +1,6 @@
 package com.espertech.esper.view;
 
+import com.espertech.esper.client.EventType;
 import junit.framework.TestCase;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.support.bean.SupportBean;
@@ -112,7 +113,8 @@ public class TestViewServiceHelper extends TestCase
         // One child view under the top view that does not match
         testView = new SupportBeanClassView(TEST_CLASS);
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        myLengthWindowView.addView(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeBean("longBoxed")));
+        EventType type = UnivariateStatisticsView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        myLengthWindowView.addView(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeBean("longBoxed"), type, null));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
         assertEquals(1, result.getSecond().size());
         assertEquals(myLengthWindowView, result.getSecond().get(0));
@@ -121,7 +123,7 @@ public class TestViewServiceHelper extends TestCase
 
         // Add child view under the top view that does match
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeBean("intPrimitive"));
+        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeBean("intPrimitive"), type, null);
         myLengthWindowView.addView(myUnivarView);
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 

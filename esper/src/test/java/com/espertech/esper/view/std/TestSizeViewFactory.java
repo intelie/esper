@@ -1,5 +1,6 @@
 package com.espertech.esper.view.std;
 
+import com.espertech.esper.client.EventType;
 import junit.framework.TestCase;
 
 import com.espertech.esper.view.ViewParameterException;
@@ -18,27 +19,13 @@ public class TestSizeViewFactory extends TestCase
     public void testSetParameters() throws Exception
     {
         tryParameter(new Object[] {});
-        tryInvalidParameter(1.1d);
     }
 
     public void testCanReuse() throws Exception
     {
         assertFalse(factory.canReuse(new LastElementView()));
-        assertTrue(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
-    }
-
-    private void tryInvalidParameter(Object param) throws Exception
-    {
-        try
-        {
-            SizeViewFactory factory = new SizeViewFactory();
-            factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {param}));
-            fail();
-        }
-        catch (ViewParameterException ex)
-        {
-            // expected
-        }
+        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        assertTrue(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext(), type, null)));
     }
 
     private void tryParameter(Object[] param) throws Exception

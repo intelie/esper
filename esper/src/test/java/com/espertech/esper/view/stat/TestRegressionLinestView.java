@@ -1,5 +1,6 @@
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.client.EventType;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -21,7 +22,8 @@ public class TestRegressionLinestView extends TestCase
     public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        myView = new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"));
+        EventType type = RegressionLinestView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        myView = new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"), type, null);
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -61,8 +63,8 @@ public class TestRegressionLinestView extends TestCase
 
     public void testGetSchema()
     {
-        assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.REGRESSION__SLOPE.getName()) == double.class);
-        assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.REGRESSION__YINTERCEPT.getName()) == double.class);
+        assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.REGRESSION__SLOPE.getName()) == Double.class);
+        assertTrue(myView.getEventType().getPropertyType(ViewFieldEnum.REGRESSION__YINTERCEPT.getName()) == Double.class);
     }
 
     public void testCopyView() throws Exception
