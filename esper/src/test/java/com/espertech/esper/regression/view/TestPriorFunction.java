@@ -26,15 +26,21 @@ public class TestPriorFunction extends TestCase
         epService.initialize();
     }
 
-    public void testPriorStats() {
-        // TODO ESPER-497 
+    public void testPriorTimewindowStats() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
-        String epl = "SELECT * FROM SupportBean().win:time(5 minutes).stat:uni(intPrimitive)\n" +
-                "WHERE\n" +
-                "prior(1, average) > 0";
-        epService.getEPAdministrator().createEPL(epl);
+        String epl = "SELECT prior(1, average) as value FROM SupportBean().win:time(5 minutes).stat:uni(intPrimitive)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        assertEquals(null, listener.assertOneGetNewAndReset().get("value"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 4));
+        assertEquals(1.0, listener.assertOneGetNewAndReset().get("value"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
+        assertEquals(2.5, listener.assertOneGetNewAndReset().get("value"));
     }
 
     public void testPriorStream()
