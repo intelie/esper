@@ -66,15 +66,20 @@ public class GroupByViewFactory implements ViewFactory
             }
 
             String hintValueFrequency = HintEnum.RECLAIM_GROUP_FREQ.getHintAssignedValue(reclaimGroupAged);
-            if (reclaimGroupFrequency == null)
+            if (hintValueFrequency == null)
             {
-                throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' has not been provided");
+                reclaimFrequency = reclaimMaxAge;
             }
-            try {
-                reclaimFrequency = Double.parseDouble(hintValueFrequency);
+            else {
+                try {
+                    reclaimFrequency = Double.parseDouble(hintValueFrequency);
+                }
+                catch (RuntimeException ex) {
+                    throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' value '" + hintValueFrequency + "' could not be parsed as a double value");
+                }
             }
-            catch (RuntimeException ex) {
-                throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' value '" + hintValueFrequency + "' could not be parsed as a double value");
+            if (reclaimMaxAge < 100) {
+                log.warn("Reclaim max age parameter is less then 100 milliseconds, are your sure?");
             }
 
             if (log.isDebugEnabled()) {

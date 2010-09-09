@@ -558,7 +558,7 @@ select a.symbol, avgA, avgB from StreamAvgA.std:lastevent() a, StreamAvgB.std:la
 			</para>
 
 			<para>
-				The hint for use with <literal>group by</literal> to specify how state for groups is reclaimed is described in <xref linkend="epl-groupby-hints"/>.
+				The hint for use with <literal>group by</literal> to specify how state for groups is reclaimed is described in <xref linkend="epl-groupby-hints"/> and <xref linkend="view-std-groupwin"/>.
 			</para>
 
 			<para>

@@ -21,12 +21,12 @@ public enum HintEnum
     DISABLE_RECLAIM_GROUP("DISABLE_RECLAIM_GROUP", false, false),
 
     /**
-     * For use with group-by, reclaim groups for unbound streams based on time. The number of seconds after which a groups is reclaimed if inactive.
+     * For use with group-by and std:groupwin, reclaim groups for unbound streams based on time. The number of seconds after which a groups is reclaimed if inactive.
      */
     RECLAIM_GROUP_AGED("RECLAIM_GROUP_AGED", true, true),
 
     /**
-     * For use with group-by, reclaim groups for unbound streams based on time, this number is the frequency in seconds at which a sweep occurs for aged
+     * For use with group-by and std:groupwin, reclaim groups for unbound streams based on time, this number is the frequency in seconds at which a sweep occurs for aged
      * groups, if not provided then the sweep frequency is the same number as the age.
      */
     RECLAIM_GROUP_FREQ("RECLAIM_GROUP_FREQ", true, true);

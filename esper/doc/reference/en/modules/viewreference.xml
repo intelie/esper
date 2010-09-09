@@ -22,7 +22,7 @@
         </para>
 
         <para>
-			The keep-all data window counts as a data window but has no expiry policy: it retains all events received. The group-by data window allocates a new data window per group and thereby counts as a data window, but cannot appear alone.
+			The keep-all data window counts as a data window but has no expiry policy: it retains all events received. The grouped-window declaration allocates a new data window per grouping criteria and thereby counts as a data window, but cannot appear alone.
         </para>
 
         <para>
@@ -99,7 +99,7 @@
 						<entry>Retains only the most recent among events having the same value for the criteria expression(s). Acts as a length window of size 1 for each distinct expression value.</entry>
 					</row>
 					<row>
-						<entry>Group By</entry>
+						<entry>Grouped Data Window</entry>
 						<entry>std:groupwin(<emphasis>grouping criteria(s)</emphasis>)</entry>
 						<entry>Groups events into sub-views by the value of the specified expression(s), generally used to provide a separate data window per group.</entry>
 					</row>
@@ -592,15 +592,15 @@ following conditions occurs, whichever occurs first: the data window has collect
 				<programlisting><![CDATA[select * from StockTickEvent.std:unique(symbol, feed)]]></programlisting>
 			</sect2>
 
-			<sect2 id="view-std-groupby" >
-			   <title>Group-By (<literal>std:groupwin</literal>)</title>
+			<sect2 id="view-std-groupwin" >
+			   <title>Grouped Data Window (<literal>std:groupwin</literal>)</title>
 		
-				<indexterm><primary>group-by window</primary></indexterm>
-				<indexterm><primary>views</primary><secondary>group-by window</secondary></indexterm>
-				<indexterm><primary>data window views</primary><secondary>group-by window</secondary></indexterm>
+				<indexterm><primary>groupwin window</primary></indexterm>
+				<indexterm><primary>views</primary><secondary>grouped data window</secondary></indexterm>
+				<indexterm><primary>data window views</primary><secondary>grouped data window</secondary></indexterm>
 				
 				<para>
-					This view groups events into sub-views by the value returned by the specified expression or the combination of values returned by a list of expressions. The view takes a single expression to supply the group-by values, or a list of expressions as parameters, as the synopsis shows:
+					This view groups events into sub-views by the value returned by the specified expression or the combination of values returned by a list of expressions. The view takes a single expression to supply the group criteria values, or a list of expressions as parameters, as the synopsis shows:
 				</para>
 
 				<synopsis>std:groupwin(<emphasis>grouping_expression</emphasis> [, <emphasis>grouping_expression</emphasis> ...])</synopsis>
@@ -619,6 +619,19 @@ following conditions occurs, whichever occurs first: the data window has collect
 				</para>
 	
 				<programlisting><![CDATA[select symbol, sum(price) from StockTickEvent.std:groupwin(symbol).win:length(5)]]></programlisting>
+
+				<para>
+					The @Hint("<literal>reclaim_group_aged=</literal><emphasis>age_in_seconds</emphasis>") hint instructs the engine to discard grouped data window state that has not been updated for <emphasis>age_in_seconds</emphasis> seconds. 
+					The optional @Hint("<literal>reclaim_group_freq=</literal><emphasis>sweep_frequency_in_seconds</emphasis>") can be specified in addition to control the frequency at which the engine sweeps data window state.
+					If the hint is not specified, the frequency defaults to the same value as <emphasis>age_in_seconds</emphasis>. Use the hints when your group criteria returns a changing or unlimited number of values. By default and without hints the view does not reclaim or remove data windows for group criteria values.
+				</para>
+				
+				<para>
+					The updated sample statement with both hints:
+				</para>
+				<programlisting><![CDATA[// Remove data window views for symbols not updated for 10 seconds or more and sweep every 30 seconds
+@Hint('reclaim_group_aged=10,reclaim_group_freq=30')
+select symbol, sum(price) from StockTickEvent.std:groupwin(symbol).win:length(5)]]></programlisting>
 
 				<para>
 					To compute the total price for the last 5 events considering the last 5 events per each symbol and outputting a price per symbol, add the <literal>group by</literal> clause:
@@ -651,14 +664,14 @@ following conditions occurs, whichever occurs first: the data window has collect
 				</para>
 
 				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol).win:length(100)
-    .std:groupwin(feed)]]></programlisting>
+.std:groupwin(feed)]]></programlisting>
 
 				<para>
-					Last, we consider the permutation where the length window is declared after the group-by. Here, the query results are total price per symbol and feed for the last 100 events per symbol and feed.
+					Last, we consider the permutation where the length window is declared after the grouped data window. Here, the query results are total price per symbol and feed for the last 100 events per symbol and feed.
 				</para>
 
 				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol, feed)
-    .win:length(100)]]></programlisting>
+.win:length(100)]]></programlisting>
     
 				<para>
 					For advanced users: There is an optional view that can control how the <literal>std:groupwin</literal> grouped-window view gets evaluated and that view is the <literal>std:merge</literal> view. 

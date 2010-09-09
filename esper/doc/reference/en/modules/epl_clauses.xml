@@ -1741,7 +1741,7 @@ having stddev(price) &gt; 0.8</programlisting>
 			</para>
 
 			<para>
-				The <emphasis>std:groupwin</emphasis> view is a built-in view that also groups events. The view is described in greater detail in <xref linkend="view-std-groupby"/>. Its primary use is to create a separate data window per group, or more generally to create separate instances of all its sub-views for each grouping key encountered.
+				The <emphasis>std:groupwin</emphasis> view is a built-in view that also groups events. The view is described in greater detail in <xref linkend="view-std-groupwin"/>. Its primary use is to create a separate data window per group, or more generally to create separate instances of all its sub-views for each grouping key encountered.
 			</para>
 
 			<para>
