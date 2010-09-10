@@ -19,6 +19,7 @@ Major API or EPL changes
   - For plug-in aggregation functions, the parameter to the "validate" method has changed and is now a validation context that provides additional information, The "validateMultiParameter" method has been removed.
   - Support for correlated aggregation in subqueries
   - New feature allows registering an exception handler that is called when any continous-query statement exception occurs
+  - Statistics views and size view now accept additional expressions as parameters for returning values pertaining to the last-applied event 
 
 Changes in version 3.5.0
 ------------------------

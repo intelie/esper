@@ -98,7 +98,7 @@ public class ExprEqualsNode extends ExprNode
         {
             if (!JavaClassHelper.isNumeric(coercionType))
             {
-                throw new IllegalStateException("Coercion type " + coercionType + " not numeric");
+                throw new ExprValidationException("Cannot convert datatype '" + coercionType.getName() + "' to a numeric value");
             }
             mustCoerce = true;
             numberCoercerLHS = SimpleNumberCoercerFactory.getCoercer(typeOne, coercionType);
