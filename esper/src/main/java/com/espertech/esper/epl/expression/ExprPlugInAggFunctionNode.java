@@ -72,7 +72,13 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
             throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.getFunctionName() + "' failed validation: " + ex.getMessage());
         }
 
-        return new ExprPlugInAggFunctionNodeFactory(aggregationSupport, super.isDistinct());
+        Class childType = null;
+        if (this.getChildNodes().size() > 0)
+        {
+            childType = this.getChildNodes().get(0).getType();
+        }
+
+        return new ExprPlugInAggFunctionNodeFactory(aggregationSupport, super.isDistinct(), childType);
     }
 
     public String getAggregationFunctionName()

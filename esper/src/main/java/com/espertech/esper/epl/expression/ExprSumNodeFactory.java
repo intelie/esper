@@ -40,7 +40,7 @@ public class ExprSumNodeFactory implements AggregationMethodFactory
         if (!isDistinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, resultType);
+        return methodResolutionService.makeDistinctAggregator(method, inputValueType);
     }
 
     public AggregationAccessor getAccessor()

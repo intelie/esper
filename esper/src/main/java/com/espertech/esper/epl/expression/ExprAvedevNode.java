@@ -31,8 +31,8 @@ public class ExprAvedevNode extends ExprAggregateNode
 
     public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        super.validateSingleNumericChild(streamTypeService);
-        return new ExprAvedevNodeFactory(super.isDistinct());
+        Class childType = super.validateSingleNumericChild(streamTypeService);
+        return new ExprAvedevNodeFactory(super.isDistinct(), childType);
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)

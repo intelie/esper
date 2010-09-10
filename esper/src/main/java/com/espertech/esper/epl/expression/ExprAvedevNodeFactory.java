@@ -14,10 +14,12 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 public class ExprAvedevNodeFactory implements AggregationMethodFactory
 {
     private final boolean isDistinct;
+    private final Class aggregatedValueType;
 
-    public ExprAvedevNodeFactory(boolean isDistinct)
+    public ExprAvedevNodeFactory(boolean isDistinct, Class aggregatedValueType)
     {
         this.isDistinct = isDistinct;
+        this.aggregatedValueType = aggregatedValueType;
     }
 
     public Class getResultType()
@@ -36,7 +38,7 @@ public class ExprAvedevNodeFactory implements AggregationMethodFactory
         if (!isDistinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, Double.class);
+        return methodResolutionService.makeDistinctAggregator(method, aggregatedValueType);
     }
 
     public AggregationAccessor getAccessor()

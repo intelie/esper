@@ -15,11 +15,13 @@ public class ExprCountNodeFactory implements AggregationMethodFactory
 {
     private final boolean ignoreNulls;
     private final boolean isDistinct;
+    private final Class countedValueType;
 
-    public ExprCountNodeFactory(boolean ignoreNulls, boolean isDistinct)
+    public ExprCountNodeFactory(boolean ignoreNulls, boolean isDistinct, Class countedValueType)
     {
         this.ignoreNulls = ignoreNulls;
         this.isDistinct = isDistinct;
+        this.countedValueType = countedValueType;
     }
 
     public Class getResultType()
@@ -38,7 +40,7 @@ public class ExprCountNodeFactory implements AggregationMethodFactory
         if (!isDistinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, Long.class);
+        return methodResolutionService.makeDistinctAggregator(method, countedValueType);
     }
 
     public AggregationAccessor getAccessor()

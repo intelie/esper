@@ -31,10 +31,16 @@ public class ExprCountNode extends ExprAggregateNode
 
     public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
+        Class childType = null;
+        if (this.getChildNodes().size() > 0)
+        {
+            childType = this.getChildNodes().get(0).getType();
+        }
+
         // Empty child node list signals count(*), does not ignore nulls
         if (this.getChildNodes().isEmpty())
         {
-            return new ExprCountNodeFactory(false, super.isDistinct);
+            return new ExprCountNodeFactory(false, super.isDistinct, childType);
         }
         else
         {
@@ -43,7 +49,7 @@ public class ExprCountNode extends ExprAggregateNode
             {
                 throw new ExprValidationException("Count node must have zero or 1 child nodes");
             }
-            return new ExprCountNodeFactory(true, super.isDistinct);
+            return new ExprCountNodeFactory(true, super.isDistinct, childType);
         }
     }
 

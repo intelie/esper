@@ -31,8 +31,8 @@ public class ExprMedianNode extends ExprAggregateNode
 
     public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        super.validateSingleNumericChild(streamTypeService);
-        return new ExprMedianNodeFactory(super.isDistinct);
+        Class childType = super.validateSingleNumericChild(streamTypeService);
+        return new ExprMedianNodeFactory(super.isDistinct, childType);
     }
 
     protected String getAggregationFunctionName()

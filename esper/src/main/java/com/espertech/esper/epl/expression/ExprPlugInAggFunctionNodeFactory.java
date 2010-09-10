@@ -7,11 +7,13 @@ public class ExprPlugInAggFunctionNodeFactory implements AggregationMethodFactor
 {
     private final AggregationSupport aggregationSupport;
     private final boolean distinct;
+    private final Class aggregatedValueType;
 
-    public ExprPlugInAggFunctionNodeFactory(AggregationSupport aggregationSupport, boolean distinct)
+    public ExprPlugInAggFunctionNodeFactory(AggregationSupport aggregationSupport, boolean distinct, Class aggregatedValueType)
     {
         this.aggregationSupport = aggregationSupport;
         this.distinct = distinct;
+        this.aggregatedValueType = aggregatedValueType;
     }
 
     public Class getResultType()
@@ -30,7 +32,7 @@ public class ExprPlugInAggFunctionNodeFactory implements AggregationMethodFactor
         if (!distinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, aggregationSupport.getValueType());
+        return methodResolutionService.makeDistinctAggregator(method, aggregatedValueType);
     }
 
     public AggregationAccessor getAccessor()
