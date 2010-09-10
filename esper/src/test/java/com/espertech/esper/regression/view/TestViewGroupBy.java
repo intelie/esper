@@ -174,6 +174,8 @@ public class TestViewGroupBy extends TestCase
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
 
+        assertEquals(Double.class, statement.getEventType().getPropertyType("correlation"));
+
         String[] fields = new String[] {"symbol", "correlation", "feed"};
 
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 10.0, 1000L, "f1"));
@@ -198,13 +200,52 @@ public class TestViewGroupBy extends TestCase
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
 
+        assertEquals(Double.class, statement.getEventType().getPropertyType("slope"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("YIntercept"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("XAverage"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("XStandardDeviationPop"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("XStandardDeviationSample"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("XSum"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("XVariance"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("YAverage"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("YStandardDeviationPop"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("YStandardDeviationSample"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("YSum"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("YVariance"));
+        assertEquals(Long.class, statement.getEventType().getPropertyType("dataPoints"));
+        assertEquals(Long.class, statement.getEventType().getPropertyType("n"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("sumX"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("sumXSq"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("sumXY"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("sumY"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("sumYSq"));
+
         String[] fields = new String[] {"symbol", "slope", "YIntercept", "feed"};
 
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ABC", 10.0, 50000L, "f1"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"ABC", Double.NaN, Double.NaN, "f1"});
 
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 1.0, 1L, "f2"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", Double.NaN, Double.NaN, "f2"});
+        EventBean event = listener.assertOneGetNewAndReset();
+        ArrayAssertionUtil.assertProps(event, fields, new Object[] {"DEF", Double.NaN, Double.NaN, "f2"});
+        assertEquals(1d, event.get("XAverage"));
+        assertEquals(0d, event.get("XStandardDeviationPop"));
+        assertEquals(Double.NaN, event.get("XStandardDeviationSample"));
+        assertEquals(1d, event.get("XSum"));
+        assertEquals(Double.NaN, event.get("XVariance"));
+        assertEquals(1d, event.get("YAverage"));
+        assertEquals(0d, event.get("YStandardDeviationPop"));
+        assertEquals(Double.NaN, event.get("YStandardDeviationSample"));
+        assertEquals(1d, event.get("YSum"));
+        assertEquals(Double.NaN, event.get("YVariance"));
+        assertEquals(1L, event.get("dataPoints"));
+        assertEquals(1L, event.get("n"));
+        assertEquals(1d, event.get("sumX"));
+        assertEquals(1d, event.get("sumXSq"));
+        assertEquals(1d, event.get("sumXY"));
+        assertEquals(1d, event.get("sumY"));
+        assertEquals(1d, event.get("sumYSq"));
+        // above computed values tested in more detail in RegressionBean test
 
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("DEF", 2.0, 2L, "f3"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"DEF", 1.0, 0.0, "f3"});

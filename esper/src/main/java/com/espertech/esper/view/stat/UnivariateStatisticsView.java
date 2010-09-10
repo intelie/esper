@@ -173,12 +173,12 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
     public static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps)
     {
         Map<String, Object> eventTypeMap = new HashMap<String, Object>();
-        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS.getName(), long.class);
-        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL.getName(), double.class);
-        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.getName(), double.class);
-        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.getName(), double.class);
-        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.getName(), double.class);
-        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.getName(), double.class);
+        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS.getName(), Long.class);
+        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL.getName(), Double.class);
+        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.getName(), Double.class);
+        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.getName(), Double.class);
+        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.getName(), Double.class);
+        eventTypeMap.put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.getName(), Double.class);
         StatViewAdditionalProps.addCheckDupProperties(eventTypeMap, additionalProps,
                 ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS,
                 ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL,

@@ -70,6 +70,13 @@ public class TestViewLengthWindowStats extends TestCase
         statement.addListener(testListener);
         testListener.reset();
 
+        assertEquals(Double.class, statement.getEventType().getPropertyType("average"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("variance"));
+        assertEquals(Long.class, statement.getEventType().getPropertyType("datapoints"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("total"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("stddev"));
+        assertEquals(Double.class, statement.getEventType().getPropertyType("stddevpa"));
+
         sendEvent(SYMBOL, 100);
         checkOld(true, 0, 0, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
         checkNew(1, 100, 100, 0, Double.NaN, Double.NaN);

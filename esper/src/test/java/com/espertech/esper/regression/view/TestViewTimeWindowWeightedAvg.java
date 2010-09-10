@@ -33,6 +33,8 @@ public class TestViewTimeWindowWeightedAvg extends TestCase
                 "select * from " + SupportMarketDataBean.class.getName() +
                 "(symbol='" + SYMBOL + "').win:time(3.0).stat:weighted_avg(price, volume, symbol, feed)");
         weightedAvgView.addListener(testListener);
+        
+        assertEquals(Double.class, weightedAvgView.getEventType().getPropertyType("average"));
     }
     
     public void testWindowStats()

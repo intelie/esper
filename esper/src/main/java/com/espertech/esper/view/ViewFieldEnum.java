@@ -66,6 +66,91 @@ public enum ViewFieldEnum
      */
     REGRESSION__YINTERCEPT("YIntercept"),
 
+	/**
+	* XAverage
+	*/
+	REGRESSION__XAVERAGE("XAverage"),
+
+	/**
+	* XStandardDeviationPop
+	*/
+	REGRESSION__XSTANDARDDEVIATIONPOP("XStandardDeviationPop"),
+
+	/**
+	* XStandardDeviationSample
+	*/
+	REGRESSION__XSTANDARDDEVIATIONSAMPLE("XStandardDeviationSample"),
+
+	/**
+	* XSum
+	*/
+	REGRESSION__XSUM("XSum"),
+
+	/**
+	* XVariance
+	*/
+	REGRESSION__XVARIANCE("XVariance"),
+
+	/**
+	* YAverage
+	*/
+	REGRESSION__YAVERAGE("YAverage"),
+
+	/**
+	* YStandardDeviationPop
+	*/
+	REGRESSION__YSTANDARDDEVIATIONPOP("YStandardDeviationPop"),
+
+	/**
+	* YStandardDeviationSample
+	*/
+	REGRESSION__YSTANDARDDEVIATIONSAMPLE("YStandardDeviationSample"),
+
+	/**
+	* YSum
+	*/
+	REGRESSION__YSUM("YSum"),
+
+	/**
+	* YVariance
+	*/
+	REGRESSION__YVARIANCE("YVariance"),
+
+	/**
+	* dataPoints
+	*/
+	REGRESSION__DATAPOINTS("dataPoints"),
+
+	/**
+	* n
+	*/
+	REGRESSION__N("n"),
+
+	/**
+	* sumX
+	*/
+	REGRESSION__SUMX("sumX"),
+
+	/**
+	* sumXSq
+	*/
+	REGRESSION__SUMXSQ("sumXSq"),
+
+	/**
+	* sumXY
+	*/
+	REGRESSION__SUMXY("sumXY"),
+
+	/**
+	* sumY
+	*/
+	REGRESSION__SUMY("sumY"),
+
+	/**
+	* sumYSq
+	*/
+	REGRESSION__SUMYSQ("sumYSq"),
+
     /**
      * Size.
      */

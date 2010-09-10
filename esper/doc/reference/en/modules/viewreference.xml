@@ -155,7 +155,7 @@
 					<row>
 						<entry>Size</entry>
 						<entry>std:size([<emphasis>expression</emphasis>, ...])</entry>
-						<entry>Derives a count of the number of events in a data window, or in an insert stream if used without a data window.</entry>
+						<entry>Derives a count of the number of events in a data window, or in an insert stream if used without a data window, and optionally provides additional event properties as listed in parameters.</entry>
 					</row>
 					<row>
 						<entry>Univariate statistics</entry>
@@ -707,7 +707,7 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<indexterm><primary>data window views</primary><secondary>size window</secondary></indexterm>
 
 				<para>
-					This view posts the number of events received from a stream or view. The synopsis is:
+					This view posts the number of events received from a stream or view plus any additional event properties or expression values listed as parameters. The synopsis is:
 				</para>
 
 				<synopsis>std:size([<emphasis>expression</emphasis>, ...])</synopsis>
@@ -715,15 +715,28 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<para>					
 					The view posts a single long-typed property named <literal>size</literal>. The view posts the prior size as old data, and the current size as new data to update listeners of the view. Via the <literal>iterator</literal> method of the statement the size value can also be polled (read).
 				</para>
+				
+				<para>
+					As optional parameters the view takes a list of expressions that the view evaluates against the last arriving event and provides along the <literal>size</literal> field.
+				</para>
 
 				<para>					
-					This view provides only a single property named <literal>size</literal> and no other properties of your selected stream are available. Use the <literal>count(...)</literal> aggregation function to select other properties of your stream.
+					An alternative to receiving a data window event count is the <literal>prevcount</literal> function. Compared to the <literal>std:size</literal> view the <literal>prevcount</literal> function requires a data window while the <literal>std:size</literal> view does not. The related <literal>count(...)</literal> aggregation function provides a count per group when used with <literal>group by</literal>.
 				</para>
 
 				<para>
-					When combined with a data window view, the size view reports the current and prior number of events in the data window. This example reports the number of tick events within the last 1 minute:
+					When combined with a data window view, the size view reports the current number of events in the data window in the insert stream and the prior number of events in the data window as the remove stream. This example reports the number of tick events within the last 1 minute:
 				</para>
 				<programlisting><![CDATA[select size from StockTickEvent.win:time(1 min).std:size()]]></programlisting>
+
+				<para>
+					To select additional event properties you may add each event property to output as a parameter to the view. 
+				</para>
+
+				<para>
+					The next example selects the symbol and feed event properties in addition to the <literal>size</literal> property:
+				</para>
+				<programlisting><![CDATA[select size, symbol, feed from StockTickEvent.win:time(1 min).std:size(symbol, feed)]]></programlisting>
 
 				<para>
 					The size view is also useful in conjunction with a <literal>std:groupwin</literal> grouped-window view to count the number of events per group. The EPL below returns the number of events per symbol.
@@ -736,7 +749,7 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<programlisting><![CDATA[select size from StockTickEvent.std:size()]]></programlisting>
 
 				<para>
-					All views can be used with pattern statements as well. The next EPL snippet shows a pattern where we look for tick events followed by trade events for the same symbol. The size view counts the number of occurances of the pattern.
+					All views can be used with pattern statements as well. The next EPL snippet shows a pattern where we look for tick events followed by trade events for the same symbol. The size view counts the number of occurrences of the pattern.
 				</para>
 				<programlisting><![CDATA[select size from pattern[every s=StockTickEvent -> TradeEvent(symbol=s.symbol)].std:size()]]></programlisting>
 			</sect2>
@@ -834,7 +847,7 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
            </para>
            
            <para>
-			   Statistics views accept one or more primary value expressions and optional additional expressions that return values based on the last event received.
+			   Statistics views accept one or more primary value expressions and any number of optional additional expressions that return values based on the last event received.
            </para>
            
 			<sect2 id="view-stat-uni" >
@@ -845,9 +858,13 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<indexterm><primary>derived-value views</primary><secondary>univariate statistics</secondary></indexterm>
 
 				<para>
-					This view calculates univariate statistics on a numeric expression. The view takes a single expression as a parameter. The value expression must return a numeric value:
+					This view calculates univariate statistics on a numeric expression. The view takes a single value expression as a parameter plus any number of optional additional expressions to return properties of the last event. The value expression must return a numeric value:
 				</para>
 				<synopsis>stat:uni(<emphasis>value_expression</emphasis> [,<emphasis>expression</emphasis>, ...])</synopsis>
+				
+				<para>
+					After the value expression you may optionally list additional expressions or event properties to evaluate for the stream and return their value based on the last arriving event.
+				</para>
 				
 				<table frame="topbot" id="view-stat-uni-table" revision="2">
 					<title>Univariate statistics derived properties</title>
@@ -892,8 +909,16 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<para>
 					The below example selects the standard deviation on price for stock tick events for the last 10 events.
 				</para>
-	
 				<programlisting><![CDATA[select stddev from StockTickEvent.win:length(10).stat:uni(price)]]></programlisting>
+
+				<para>
+					To add properties from the event stream you may simply add all additional properties as parameters to the view.
+				</para>
+
+				<para>
+					This example selects all of the derived values, based on the price property, plus the values of the symbol and feed event properties:
+				</para>
+				<programlisting><![CDATA[select * from StockTickEvent.win:length(10).stat:uni(price, symbol, feed)]]></programlisting>
 			</sect2>
 
 			<sect2 id="view-stat-linest" >
@@ -903,10 +928,14 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<indexterm><primary>views</primary><secondary>regression</secondary></indexterm>
 				<indexterm><primary>derived-value views</primary><secondary>regression</secondary></indexterm>
 				<para>
-					This view calculates regression and related intermediate results on the values returned by two expressions. The view takes two expressions as parameters. The expressions must return a numeric value:
+					This view calculates regression and related intermediate results on the values returned by two expressions. The view takes two value expressions as parameters plus any number of optional additional expressions to return properties of the last event. The value expressions must return a numeric value:
 				</para>
 				
 				<synopsis>stat:linest(<emphasis>value_expression</emphasis>, <emphasis>value_expression</emphasis> [,<emphasis>expression</emphasis>, ...])</synopsis>
+
+				<para>
+					After the two value expressions you may optionally list additional expressions or event properties to evaluate for the stream and return their value based on the last arriving event.
+				</para>
 
 				<table frame="topbot" id="view-stat-linest-table" revision="2">
 					<title>Regression derived properties</title>
@@ -1001,10 +1030,19 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				</table>
 				
 				<para>
-					Calculate regression and return the slope and y-intercept on price and offer for all events in the last 10 seconds.
+					The next example calculates regression and returns the slope and y-intercept on price and offer for all events in the last 10 seconds.
 				</para>
-	
 				<programlisting><![CDATA[select slope, YIntercept from StockTickEvent.win:time(10 seconds).stat:linest(price, offer)]]></programlisting>	
+				
+				<para>
+					To add properties from the event stream you may simply add all additional properties as parameters to the view.
+				</para>
+
+				<para>
+					This example selects all of the derived values, based on the price and offer properties, plus the values of the symbol and feed event properties:
+				</para>
+				<programlisting><![CDATA[select * from StockTickEvent.win:time(10 seconds).stat:linest(price, offer, symbol, feed)]]></programlisting>
+
 			</sect2>
 				
 			<sect2 id="view-stat-correl" >
@@ -1015,11 +1053,15 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<indexterm><primary>derived-value views</primary><secondary>correlation</secondary></indexterm>
 
 				<para>
-					This view calculates the correlation value on the value returned by two expressions. The view takes two expressions as parameters. The expressions must be return a numeric value:
+					This view calculates the correlation value on the value returned by two expressions. The view takes two value expressions as parameters plus any number of optional additional expressions to return properties of the last event. The value expressions must be return a numeric value:
 				</para>
 				
 				<synopsis>stat:correl(<emphasis>value_expression</emphasis>, <emphasis>value_expression</emphasis> [,<emphasis>expression</emphasis>, ...])</synopsis>
 				
+				<para>
+					After the two value expressions you may optionally list additional expressions or event properties to evaluate for the stream and return their value based on the last arriving event.
+				</para>
+
 				<table frame="topbot" id="view-stat-correl-table" revision="2">
 					<title>Correlation derived properties</title>
 					<tgroup cols="2">
@@ -1041,10 +1083,19 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				</table>
 	
 				<para>
-					Calculate correlation on price and offer over all stock tick events for GE.
+					The next example calculates correlation on price and offer over all stock tick events for GE:
 				</para>
-	
 				<programlisting><![CDATA[select correlation from StockTickEvent(symbol='GE').stat:correl(price, offer)]]></programlisting>            
+				
+				<para>
+					To add properties from the event stream you may simply add all additional properties as parameters to the view.
+				</para>
+
+				<para>
+					This example selects all of the derived values, based on the price and offer property, plus the values of the feed event property:
+				</para>
+				<programlisting><![CDATA[select * from StockTickEvent(symbol='GE').stat:correl(price, offer, feed)]]></programlisting>            
+
 			</sect2>
 						
 			<sect2 id="view-stat-weightedavg" >
@@ -1055,10 +1106,14 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				<indexterm><primary>derived-value views</primary><secondary>weighted average</secondary></indexterm>
 
 				<para>
-					This view returns the weighted average given an expression returning values to compute the average for and an expression returning weight. The view takes two expressions as parameters. The expressions must return numeric values:
+					This view returns the weighted average given an expression returning values to compute the average for and an expression returning weight. The view takes two value expressions as parameters plus any number of optional additional expressions to return properties of the last event. The value expressions must return numeric values:
 				</para>				
 				<synopsis>stat:weighted_avg(<emphasis>value_expression_field</emphasis>, <emphasis>value_expression_weight</emphasis> [,<emphasis>expression</emphasis>, ...])</synopsis>
 				
+				<para>
+					After the value expression you may optionally list additional expressions or event properties to evaluate for the stream and return their value based on the last arriving event.
+				</para>
+
 				<table frame="topbot" id="view-stat-weightedavg-table" revision="2">
 					<title>Weighted average derived properties</title>
 					<tgroup cols="2">
@@ -1080,11 +1135,21 @@ select * from Market.std:groupwin(ticker).win:length(1000000).std:merge(ticker)
 				</table>
 	
 				<para>
-					A statement that derives the volume-weighted average price for the last 3 seconds:
+					A statement that derives the volume-weighted average price for the last 3 seconds is shown below:
 				</para>
 	
 				<programlisting><![CDATA[select average 
 from StockTickEvent(symbol='GE').win:time(3 seconds).stat:weighted_avg(price, volume)]]></programlisting>            
+
+				<para>
+					To add properties from the event stream you may simply add all additional properties as parameters to the view.
+				</para>
+
+				<para>
+					This example selects all of the derived values, based on the price and volume properties, plus the values of the symbol and feed event properties:
+				</para>
+				<programlisting><![CDATA[select *
+from StockTickEvent.win:time(3 seconds).stat:weighted_avg(price, volume, symbol, feed)]]></programlisting>
 			</sect2> 
 			
 		</sect1>
