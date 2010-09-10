@@ -81,7 +81,9 @@ public class TimerWithinOrMaxCountGuard implements Guard, ScheduleHandleCallback
     }
 
     private void deactivateTimer() {
-        context.getSchedulingService().remove(scheduleHandle, scheduleSlot);
+        if (scheduleHandle != null) {
+            context.getSchedulingService().remove(scheduleHandle, scheduleSlot);
+        }
         scheduleHandle = null;
         isTimerActive = false;
     }

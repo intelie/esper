@@ -40,6 +40,39 @@ public class TestViewGroupBy extends TestCase
         epService.initialize();
     }
 
+    public void testIhg() throws Exception {
+        String module = "create variable integer SUMMARY_OUTPUT_TIME=60;\n" +
+                "create variant schema GuestSummaryData as *;\n" +
+                "\n" +
+                "insert into GuestSummaryData\n" +
+                "select esbEvent.sourceIP as ipAddresses from \n" +
+                "EsbServiceRequestEvent.win:time_length_batch(100, SUMMARY_OUTPUT_TIME) as esbEvent, \n" +
+                "TransactionEvent.win:time_length_batch(100, SUMMARY_OUTPUT_TIME) as txnEvent where\n" +
+                "cast(txnEvent.transactionId, string)=esbEvent.transactionId and\n" +
+                "esbEvent.destination='todo';\n" +
+                "\n" +
+                "insert into SummaryData\n" +
+                "select *\n" +
+                "from GuestSummaryData.win:time_length_batch(100, SUMMARY_OUTPUT_TIME*2);\n" +
+                "\n" +
+                "@Name('DashboardApp-PersistableSummaryData')\n" +
+                "@Description('persist summary data')\n" +
+                "select *\n" +
+                "from SummaryData.win:time_length_batch(90, 2000);";
+        
+        Map<String, Object> defEsb = new HashMap<String, Object>();
+        defEsb.put("sourceIP", "string");
+        defEsb.put("transactionId", "string");
+        defEsb.put("destination", "string");
+        epService.getEPAdministrator().getConfiguration().addEventType("EsbServiceRequestEvent", defEsb);
+
+        Map<String, Object> defTxn = new HashMap<String, Object>();
+        defTxn.put("transactionId", "string");
+        epService.getEPAdministrator().getConfiguration().addEventType("TransactionEvent", defTxn);
+
+        epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(module, null, null, null);
+    }
+
     public void testReclaimAgedHint() {
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
