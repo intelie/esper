@@ -9,7 +9,7 @@ public class TestRegressionBean extends TestCase
 
     public void testLINEST()
     {
-        RegressionBean stat = new RegressionBean();
+        BaseStatisticsBean stat = new BaseStatisticsBean();
 
         assertEquals(Double.NaN, stat.getSlope());
         assertEquals(Double.NaN, stat.getYIntercept());

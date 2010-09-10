@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A view that calculates regression on two fields. The view uses internally a {@link RegressionBean}
+ * A view that calculates regression on two fields. The view uses internally a {@link BaseStatisticsBean}
  * instance for the calculations, it also returns this bean as the result.
  * This class accepts most of its behaviour from its parent, {@link com.espertech.esper.view.stat.BaseBivariateStatisticsView}. It adds
  * the usage of the regression bean and the appropriate schema.
@@ -36,7 +36,7 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
      */
     public RegressionLinestView(StatementContext statementContext, ExprNode xFieldName, ExprNode yFieldName, EventType eventType, StatViewAdditionalProps additionalProps)
     {
-        super(statementContext, new RegressionBean(), xFieldName, yFieldName, eventType, additionalProps);
+        super(statementContext, xFieldName, yFieldName, eventType, additionalProps);
     }
 
     public View cloneView(StatementContext statementContext)
@@ -56,15 +56,27 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
                 " fieldY=" + this.getExpressionY();
     }
 
-    protected EventBean populateMap(BaseStatisticsBean baseStatisticsBean,
+    public EventBean populateMap(BaseStatisticsBean baseStatisticsBean,
                                          EventAdapterService eventAdapterService,
-                                         EventType eventType)
+                                         EventType eventType,
+                                         StatViewAdditionalProps additionalProps,
+                                         Object[] decoration)
+    {
+        return doPopulateMap(baseStatisticsBean,eventAdapterService,eventType,additionalProps,decoration);
+    }
+
+    public static EventBean doPopulateMap(BaseStatisticsBean baseStatisticsBean,
+                                         EventAdapterService eventAdapterService,
+                                         EventType eventType,
+                                         StatViewAdditionalProps additionalProps,
+                                         Object[] decoration)
     {
         Map<String, Object> result = new HashMap<String, Object>();
-        RegressionBean rb = (RegressionBean) baseStatisticsBean;
-        result.put(ViewFieldEnum.REGRESSION__SLOPE.getName(), rb.getSlope());
-        result.put(ViewFieldEnum.REGRESSION__YINTERCEPT.getName(), rb.getYIntercept());
-        addProperties(result);
+        result.put(ViewFieldEnum.REGRESSION__SLOPE.getName(), baseStatisticsBean.getSlope());
+        result.put(ViewFieldEnum.REGRESSION__YINTERCEPT.getName(), baseStatisticsBean.getYIntercept());
+        if (additionalProps != null) {
+            additionalProps.addProperties(result, decoration);
+        }
         return eventAdapterService.adaptorForTypedMap(result, eventType);
     }
 
@@ -83,4 +95,3 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
         return statementContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
     }
 }
-

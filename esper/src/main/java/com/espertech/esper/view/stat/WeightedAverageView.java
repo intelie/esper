@@ -108,14 +108,14 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
                     sumXtimesW += point * weight;
                     sumW += weight;
                 }
+            }
 
-                if ((additionalProps != null) && (newData.length - 1 == i)) {
-                    if (lastValuesEventNew == null) {
-                        lastValuesEventNew = new Object[additionalProps.getAdditionalExpr().length];
-                    }
-                    for (int val = 0; val < additionalProps.getAdditionalExpr().length; val++) {
-                        lastValuesEventNew[val] = additionalProps.getAdditionalExpr()[val].evaluate(eventsPerStream, true, statementContext);
-                    }
+            if ((additionalProps != null) && (newData.length != 0)) {
+                if (lastValuesEventNew == null) {
+                    lastValuesEventNew = new Object[additionalProps.getAdditionalExpr().length];
+                }
+                for (int val = 0; val < additionalProps.getAdditionalExpr().length; val++) {
+                    lastValuesEventNew[val] = additionalProps.getAdditionalExpr()[val].evaluate(eventsPerStream, true, statementContext);
                 }
             }
         }

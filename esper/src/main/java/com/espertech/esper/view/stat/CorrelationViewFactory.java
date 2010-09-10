@@ -39,7 +39,7 @@ public class CorrelationViewFactory implements ViewFactory
 
     protected StatViewAdditionalProps additionalProps;
 
-    private EventType eventType;
+    protected EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {

@@ -383,4 +383,66 @@ public class BaseStatisticsBean implements Cloneable, Serializable
     {
         return dataPoints;
     }
+
+    /**
+     * Returns the Y intercept.
+     * @return Y intercept
+     */
+    public double getYIntercept()
+    {
+        double slope = getSlope();
+
+        if (Double.isNaN(slope))
+        {
+            return Double.NaN;
+        }
+
+        return getYSum() / getN() - getSlope() * getXSum() / getN();
+    }
+
+    /**
+     * Returns the slope.
+     * @return regression slope
+     */
+    public double getSlope()
+    {
+        if (this.getN() == 0)
+        {
+            return Double.NaN;
+        }
+
+        double ssx = getSumXSq() - getXSum() * getXSum() / getN();
+
+        if (ssx == 0)
+        {
+            return Double.NaN;
+        }
+
+        double sp = getSumXY() - this.getXSum() * this.getYSum() / getN();
+
+        return sp / ssx;
+    }
+
+    /**
+     * Return the correlation value for the two data series (Microsoft Excel function CORREL).
+     * @return correlation value
+     */
+    public final double getCorrelation()
+    {
+        if (this.getN() == 0)
+        {
+            return Double.NaN;
+        }
+
+        double dx = this.getSumXSq() - (this.getXSum() * this.getXSum()) / this.getN();
+        double dy = this.getSumYSq() - (this.getYSum() * this.getYSum()) / this.getN();
+
+        if (dx == 0 || dy == 0)
+        {
+            return Double.NaN;
+        }
+
+        double sp = this.getSumXY() - this.getXSum() * this.getYSum() / this.getN();
+        return sp / Math.sqrt(dx * dy);
+    }    
 }

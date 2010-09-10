@@ -8,16 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.view.ViewSupport;
 
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * View for computing statistics that require 2 input variable arrays containing X and Y datapoints.
@@ -28,7 +27,7 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     /**
      * This bean can be overridden by subclasses providing extra values such as correlation, regression.
      */
-    protected BaseStatisticsBean statisticsBean;
+    protected BaseStatisticsBean statisticsBean = new BaseStatisticsBean();
 
     private final ExprNode expressionX;
     private final ExprNode expressionY;
@@ -44,17 +43,16 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     private Object[] lastValuesEventNew;
     private EventBean lastNewEvent;
 
-    protected abstract EventBean populateMap(BaseStatisticsBean baseStatisticsBean, EventAdapterService eventAdapterService,EventType eventType);
+    protected abstract EventBean populateMap(BaseStatisticsBean baseStatisticsBean, EventAdapterService eventAdapterService,
+                                             EventType eventType, StatViewAdditionalProps additionalProps, Object[] decoration);
 
     /**
      * Constructor requires the name of the two fields to use in the parent view to compute the statistics.
-     * @param statisticsBean is the base class prodiving sum of X and Y and squares for use by subclasses
      * @param expressionX is the expression to get the X values from
      * @param expressionY is the expression to get the Y values from
      * @param statementContext contains required view services
      */
     public BaseBivariateStatisticsView(StatementContext statementContext,
-                                       BaseStatisticsBean statisticsBean,
                                        ExprNode expressionX,
                                        ExprNode expressionY,
                                        EventType eventType,
@@ -62,7 +60,6 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
                                        )
     {
         this.statementContext = statementContext;
-        this.statisticsBean = statisticsBean;
         this.expressionX = expressionX;
         this.expressionY = expressionY;
         this.eventType = eventType;
@@ -77,7 +74,7 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
         {
             if (this.hasViews())
             {
-                oldValues = populateMap(statisticsBean, statementContext.getEventAdapterService(), eventType);
+                oldValues = populateMap(statisticsBean, statementContext.getEventAdapterService(), eventType, additionalProps, null);
             }
         }
 
@@ -90,14 +87,14 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
                 double X = ((Number) expressionX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 double Y = ((Number) expressionY.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 statisticsBean.addPoint(X, Y);
+            }
 
-                if ((additionalProps != null) && (newData.length - 1 == i)) {
-                    if (lastValuesEventNew == null) {
-                        lastValuesEventNew = new Object[additionalProps.getAdditionalExpr().length];
-                    }
-                    for (int val = 0; val < additionalProps.getAdditionalExpr().length; val++) {
-                        lastValuesEventNew[val] = additionalProps.getAdditionalExpr()[val].evaluate(eventsPerStream, true, statementContext);
-                    }
+            if ((additionalProps != null) && (newData.length != 0)) {
+                if (lastValuesEventNew == null) {
+                    lastValuesEventNew = new Object[additionalProps.getAdditionalExpr().length];
+                }
+                for (int val = 0; val < additionalProps.getAdditionalExpr().length; val++) {
+                    lastValuesEventNew[val] = additionalProps.getAdditionalExpr()[val].evaluate(eventsPerStream, true, statementContext);
                 }
             }
         }
@@ -117,7 +114,7 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
         // If there are child view, fireStatementStopped update method
         if (this.hasViews())
         {
-            EventBean newDataMap = populateMap(statisticsBean, statementContext.getEventAdapterService(), eventType);
+            EventBean newDataMap = populateMap(statisticsBean, statementContext.getEventAdapterService(), eventType, additionalProps, lastValuesEventNew);
 
             if (lastNewEvent == null)
             {
@@ -136,7 +133,7 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     {
         return new SingleEventIterator(populateMap(statisticsBean,
                 statementContext.getEventAdapterService(),
-                eventType));
+                eventType, additionalProps, lastValuesEventNew));
     }
 
     /**
@@ -155,13 +152,5 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     public final ExprNode getExpressionY()
     {
         return expressionY;
-    }
-
-    protected void addProperties(Map<String, Object> newDataMap)
-    {
-        if (additionalProps == null) {
-            return;
-        }
-        additionalProps.addProperties(newDataMap, lastValuesEventNew);
     }
 }

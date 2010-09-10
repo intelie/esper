@@ -1,7 +1,7 @@
 package com.espertech.esper.view.stat;
 
-import junit.framework.TestCase;
 import com.espertech.esper.support.util.DoubleValueAssertionUtil;
+import junit.framework.TestCase;
 
 public class TestCorrelationBean extends TestCase
 {
@@ -9,7 +9,7 @@ public class TestCorrelationBean extends TestCase
 
     public void testCORREL()
     {
-        CorrelationBean stat = new CorrelationBean();
+        BaseStatisticsBean stat = new BaseStatisticsBean();
 
         assertEquals(Double.NaN, stat.getCorrelation());
         assertEquals(0, stat.getN());
