@@ -8,21 +8,21 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.lookup.TableLookupStrategy;
-import com.espertech.esper.client.EventBean;
 
-import java.util.Set;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Uses an index to determine event to be deleted or selected from a named window.
  */
 public class LookupStrategyIndexed implements LookupStrategy
 {
-    private final ExprNode joinExpr;
+    private final ExprEvaluator joinExpr;
     private final EventBean[] eventsPerStream;
     private final TableLookupStrategy tableLookupStrategy;
 
@@ -31,7 +31,7 @@ public class LookupStrategyIndexed implements LookupStrategy
      * @param joinExpr the validated where clause of the on-delete
      * @param tableLookupStrategy the strategy for looking up in an index the matching events using correlation
      */
-    public LookupStrategyIndexed(ExprNode joinExpr, TableLookupStrategy tableLookupStrategy)
+    public LookupStrategyIndexed(ExprEvaluator joinExpr, TableLookupStrategy tableLookupStrategy)
     {
         this.joinExpr = joinExpr;
         this.eventsPerStream = new EventBean[2];

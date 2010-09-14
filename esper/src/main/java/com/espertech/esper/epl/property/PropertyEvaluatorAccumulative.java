@@ -3,8 +3,8 @@ package com.espertech.esper.epl.property;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +23,7 @@ public class PropertyEvaluatorAccumulative
 
     private final EventPropertyGetter[] getter;
     private final FragmentEventType[] fragmentEventType;
-    private final ExprNode[] whereClauses;
+    private final ExprEvaluator[] whereClauses;
     private final EventBean[] eventsPerStream;
     private final int lastLevel;
     private final int levels;
@@ -36,7 +36,7 @@ public class PropertyEvaluatorAccumulative
      * @param whereClauses filters, if any
      * @param propertyNames the property names that are staggered
      */
-    public PropertyEvaluatorAccumulative(EventPropertyGetter[] getter, FragmentEventType[] fragmentEventType, ExprNode[] whereClauses, List<String> propertyNames)
+    public PropertyEvaluatorAccumulative(EventPropertyGetter[] getter, FragmentEventType[] fragmentEventType, ExprEvaluator[] whereClauses, List<String> propertyNames)
     {
         this.fragmentEventType = fragmentEventType;
         this.getter = getter;

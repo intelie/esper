@@ -8,18 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.schedule.TimeProvider;
 
 /**
  * Represents an stream selector that returns the streams underlying event, or null if undefined.
  */
-public class ExprStreamUnderlyingNode extends ExprNode
+public class ExprStreamUnderlyingNode extends ExprNode implements ExprEvaluator
 {
     private final String streamName;
     private final boolean isWildcard;
@@ -46,6 +46,11 @@ public class ExprStreamUnderlyingNode extends ExprNode
         isWildcard = wildcard;
         this.streamNum = streamNum;
         this.type = type;
+    }
+
+    @Override
+    public ExprEvaluator getExprEvaluator() {
+        return this;
     }
 
     /**

@@ -8,10 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.client.soda.ForClauseKeyword;
 import com.espertech.esper.core.StatementResultService;
-import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
@@ -19,7 +21,6 @@ import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.schedule.TimeProvider;
-import com.espertech.esper.client.soda.ForClauseKeyword;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -102,7 +103,7 @@ public class SelectExprProcessorFactory
             }
 
             BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());
-            statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned(), forDelivery, groupedDeliveryExpr, exprEvaluatorContext);
+            statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned(), forDelivery, ExprNodeUtility.getEvaluators(groupedDeliveryExpr), exprEvaluatorContext);
             return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor, exprEvaluatorContext);
         }
 

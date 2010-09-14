@@ -8,13 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.view.ext;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprOrderedExpr;
-import com.espertech.esper.epl.expression.ExprNodeUtility;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.*;
 import com.espertech.esper.view.window.RandomAccessByIndexGetter;
 
@@ -33,6 +31,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
      * The sort-by expressions.
      */
     protected ExprNode[] sortCriteriaExpressions;
+
 
     /**
      * The flags defining the ascending or descending sort order.
@@ -86,7 +85,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
             if (validated[i] instanceof ExprOrderedExpr)
             {
                 isDescendingValues[i - 1] = ((ExprOrderedExpr) validated[i]).isDescending();
-                sortCriteriaExpressions[i - 1] = validated[i].getChildNodes().get(0);                
+                sortCriteriaExpressions[i - 1] = validated[i].getChildNodes().get(0);
             }
             else
             {
@@ -144,7 +143,8 @@ public class SortWindowViewFactory implements DataWindowViewFactory
             useCollatorSort = statementContext.getConfigSnapshot().getEngineDefaults().getLanguage().isSortUsingCollator();
         }
 
-        return new SortWindowView(this, sortCriteriaExpressions, isDescendingValues, sortWindowSize, sortedRandomAccess, useCollatorSort, statementContext);
+        ExprEvaluator[] childEvals = ExprNodeUtility.getEvaluators(sortCriteriaExpressions);
+        return new SortWindowView(this, sortCriteriaExpressions, childEvals, isDescendingValues, sortWindowSize, sortedRandomAccess, useCollatorSort, statementContext);
     }
 
     public EventType getEventType()

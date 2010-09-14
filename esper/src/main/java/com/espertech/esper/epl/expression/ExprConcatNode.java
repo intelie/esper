@@ -18,9 +18,10 @@ import com.espertech.esper.schedule.TimeProvider;
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
  */
-public class ExprConcatNode extends ExprNode
+public class ExprConcatNode extends ExprNode implements ExprEvaluator
 {
     private StringBuffer buffer;
+    private transient ExprEvaluator[] evaluators;
     private static final long serialVersionUID = 5811427566733004327L;
 
     /**
@@ -31,20 +32,27 @@ public class ExprConcatNode extends ExprNode
         buffer = new StringBuffer();
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {
             throw new ExprValidationException("Concat node must have at least 2 child nodes");
         }
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
 
-        for (int i = 0; i < this.getChildNodes().size(); i++)
+        for (int i = 0; i < evaluators.length; i++)
         {
-            Class childType = this.getChildNodes().get(i).getType();
+            Class childType = evaluators[i].getType();
+            String childTypeName = childType == null ? "null" : childType.getSimpleName();
             if (childType != String.class)
             {
                 throw new ExprValidationException("Implicit conversion from datatype '" +
-                        childType.getSimpleName() +
+                        childTypeName +
                         "' to string is not allowed");
             }
         }
@@ -63,7 +71,7 @@ public class ExprConcatNode extends ExprNode
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         buffer.delete(0, buffer.length());
-        for (ExprNode child : this.getChildNodes())
+        for (ExprEvaluator child : evaluators)
         {
             String result = (String) child.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (result == null)

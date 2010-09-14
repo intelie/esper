@@ -2,6 +2,7 @@ package com.espertech.esper.view.ext;
 
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
@@ -59,15 +60,15 @@ public class TestSortWindowViewFactory extends TestCase
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {100, "price"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
-        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price"), new boolean[] {false}, 100, null, false, null)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("volume"), new boolean[] {true}, 100, null, false, null)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price"), new boolean[] {false}, 99, null, false, null)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("symbol"), new boolean[] {false}, 100, null, false, null)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price"), new ExprEvaluator[0], new boolean[] {false}, 100, null, false, null)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("volume"), new ExprEvaluator[0], new boolean[] {true}, 100, null, false, null)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price"), new ExprEvaluator[0], new boolean[] {false}, 99, null, false, null)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("symbol"), new ExprEvaluator[0], new boolean[] {false}, 100, null, false, null)));
 
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {100, "price", "volume"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
-        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price", "volume"), new boolean[] {false, false}, 100, null, false, null)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price", "symbol"), new boolean[] {true, false}, 100, null, false, null)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price", "volume"), new ExprEvaluator[0], new boolean[] {false, false}, 100, null, false, null)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price", "symbol"), new ExprEvaluator[0], new boolean[] {true, false}, 100, null, false, null)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception

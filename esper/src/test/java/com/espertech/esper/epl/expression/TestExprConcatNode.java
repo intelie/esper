@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.support.epl.SupportExprNodeUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.type.MathArithTypeEnum;
@@ -59,11 +60,12 @@ public class TestExprConcatNode extends TestCase
     {
         concatNode.addChildNode(new SupportExprNode("x"));
         concatNode.addChildNode(new SupportExprNode("y"));
+        SupportExprNodeUtil.validate(concatNode);
         assertEquals("xy", concatNode.evaluate(null, false, null));
+
         concatNode.addChildNode(new SupportExprNode("z"));
+        SupportExprNodeUtil.validate(concatNode);
         assertEquals("xyz", concatNode.evaluate(null, false, null));
-        concatNode.addChildNode(new SupportExprNode(null));
-        assertEquals(null, concatNode.evaluate(null, false, null));
     }
 
     public void testEqualsNode() throws Exception

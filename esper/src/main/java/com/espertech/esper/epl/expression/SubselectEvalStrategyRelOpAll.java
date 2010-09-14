@@ -11,9 +11,9 @@ import java.util.Set;
 public class SubselectEvalStrategyRelOpAll implements SubselectEvalStrategy
 {
     private final RelationalOpEnum.Computer computer;
-    private final ExprNode valueExpr;
-    private final ExprNode selectClauseExpr;
-    private final ExprNode filterExpr;
+    private final ExprEvaluator valueExpr;
+    private final ExprEvaluator selectClauseExpr;
+    private final ExprEvaluator filterExpr;
 
     /**
      * Ctor.
@@ -22,7 +22,7 @@ public class SubselectEvalStrategyRelOpAll implements SubselectEvalStrategy
      * @param selectClause select or null
      * @param filterExpr filter or null
      */
-    public SubselectEvalStrategyRelOpAll(RelationalOpEnum.Computer computer, ExprNode valueExpr, ExprNode selectClause, ExprNode filterExpr)
+    public SubselectEvalStrategyRelOpAll(RelationalOpEnum.Computer computer, ExprEvaluator valueExpr, ExprEvaluator selectClause, ExprEvaluator filterExpr)
     {
         this.computer = computer;
         this.valueExpr = valueExpr;

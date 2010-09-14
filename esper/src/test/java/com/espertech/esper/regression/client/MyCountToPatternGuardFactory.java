@@ -30,7 +30,7 @@ public class MyCountToPatternGuardFactory extends GuardFactorySupport
             throw new GuardParameterException(message);
         }
 
-        if (guardParameters.get(0).getType() != Integer.class)
+        if (guardParameters.get(0).getExprEvaluator().getType() != Integer.class)
         {
             throw new GuardParameterException(message);
         }

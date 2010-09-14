@@ -36,9 +36,5 @@ public interface ExprValidator
                          VariableService variableService,
                          ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException;
 
-    /**
-     * Returns the type that the node's evaluate method returns an instance of.
-     * @return type returned when evaluated
-     */
-    public Class getType();
+    public ExprEvaluator getExprEvaluator();
 }

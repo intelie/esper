@@ -1,6 +1,7 @@
 package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
@@ -18,7 +19,8 @@ public class TestExternallyTimedWindowView extends TestCase
     public void setUp() throws Exception
     {
         // Set up timed window view and a test child view, set the time window size to 1 second
-        myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("longPrimitive"), 1000, null, false, null);
+        ExprNode node = SupportExprNodeFactory.makeIdentNodeBean("longPrimitive");
+        myView = new ExternallyTimedWindowView(null, node, node.getExprEvaluator(), 1000, null, false, null);
         childView = new SupportBeanClassView(SupportBean.class);
         myView.addView(childView);
     }
@@ -27,7 +29,7 @@ public class TestExternallyTimedWindowView extends TestCase
     {
         try
         {
-            myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("string"), 0, null, false, null);
+            myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("string"), null, 0, null, false, null);
         }
         catch (IllegalArgumentException ex)
         {

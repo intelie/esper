@@ -19,10 +19,16 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Expression for use within crontab to specify a list of values.
  */
-public class ExprNumberSetList extends ExprNode
+public class ExprNumberSetList extends ExprNode implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetList.class);
+    private transient ExprEvaluator[] evaluators;
     private static final long serialVersionUID = 4941618470342360450L;
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
 
     public String toExpressionString()
     {
@@ -64,7 +70,8 @@ public class ExprNumberSetList extends ExprNode
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // all nodes must either be int, frequency or range
-        for (ExprNode child : this.getChildNodes())
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
+        for (ExprEvaluator child : evaluators)
         {
             Class type = child.getType();
             if ((type == FrequencyParameter.class) || (type == RangeParameter.class))
@@ -87,7 +94,7 @@ public class ExprNumberSetList extends ExprNode
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         List<NumberSetParameter> parameters = new ArrayList<NumberSetParameter>();
-        for (ExprNode child : this.getChildNodes())
+        for (ExprEvaluator child : evaluators)
         {
             Object value = child.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (value == null)

@@ -42,7 +42,7 @@ public class ExprMinMaxAggrNode extends ExprAggregateNode
 
         boolean hasDataWindows = ExprNodeUtility.hasRemoveStream(child, streamTypeService);
 
-        return new ExprMinMaxAggrNodeFactory(minMaxTypeEnum, child.getType(), hasDataWindows, super.isDistinct());
+        return new ExprMinMaxAggrNodeFactory(minMaxTypeEnum, child.getExprEvaluator().getType(), hasDataWindows, super.isDistinct());
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)

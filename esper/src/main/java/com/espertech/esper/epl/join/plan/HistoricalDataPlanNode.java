@@ -70,7 +70,7 @@ public class HistoricalDataPlanNode extends QueryPlanNode
     {
         Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> pair = historicalStreamIndexLists[streamNum].getStrategy(pollingStreamNum);
         HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[streamNum];
-        return new HistoricalTableLookupStrategy(viewable, pair.getSecond(), pair.getFirst(), numStreams, streamNum, rootStreamNum, outerJoinExprNode);
+        return new HistoricalTableLookupStrategy(viewable, pair.getSecond(), pair.getFirst(), numStreams, streamNum, rootStreamNum, outerJoinExprNode == null ? null : outerJoinExprNode.getExprEvaluator());
     }
 
     protected void print(IndentWriter writer)

@@ -16,6 +16,7 @@ import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.property.PropertyEvaluator;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.filter.FilterSpecCompiled;
@@ -116,7 +117,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     public NamedWindowConsumerView addConsumer(List<ExprNode> filterList, PropertyEvaluator optPropertyEvaluator, EPStatementHandle statementHandle, StatementStopService statementStopService)
     {
         // Construct consumer view, allow a callback to this view to remove the consumer
-        NamedWindowConsumerView consumerView = new NamedWindowConsumerView(filterList, optPropertyEvaluator, eventType, statementStopService, this, exprEvaluatorContext);
+        NamedWindowConsumerView consumerView = new NamedWindowConsumerView(ExprNodeUtility.getEvaluators(filterList), optPropertyEvaluator, eventType, statementStopService, this, exprEvaluatorContext);
 
         // Keep a list of consumer views per statement to accomodate joins and subqueries
         List<NamedWindowConsumerView> viewsPerStatements = consumers.get(statementHandle);

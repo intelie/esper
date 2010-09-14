@@ -163,8 +163,8 @@ public class SelectExprProcessorHelper
         for (int i = 0; i < selectionList.size(); i++)
         {
             ExprNode expr = selectionList.get(i).getSelectExpression();
-            expressionNodes[i] = expr;
-            expressionReturnTypes[i] = expr.getType();
+            expressionNodes[i] = expr.getExprEvaluator();
+            expressionReturnTypes[i] = expressionNodes[i].getType();
         }
 
         // Get column names
@@ -257,6 +257,7 @@ public class SelectExprProcessorHelper
 
                 // A match was found, we replace the expression
                 final EventPropertyGetter getter = eventTypeStream.getGetter(propertyName);
+                final Class returnType = eventTypeStream.getPropertyType(propertyName);
                 evaluatorFragment = new ExprEvaluator() {
                     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                     {
@@ -267,6 +268,10 @@ public class SelectExprProcessorHelper
                         }
                         return getter.get(streamEvent);
                     }
+                    public Class getType()
+                    {
+                        return returnType;
+                    }
                 };
                 expressionNodes[i] = evaluatorFragment;
             }
@@ -274,6 +279,7 @@ public class SelectExprProcessorHelper
             {
                 ExprEvaluator evaluatorFragment;
                 final EventPropertyGetter getter =  eventTypeStream.getGetter(propertyName);
+                final Class returnType = eventTypeStream.getFragmentType(propertyName).getFragmentType().getUnderlyingType();
 
                 // A match was found, we replace the expression
                 evaluatorFragment = new ExprEvaluator() {
@@ -287,6 +293,11 @@ public class SelectExprProcessorHelper
                         }
                         return getter.getFragment(streamEvent);
                     }
+
+                    public Class getType()
+                    {
+                        return returnType;
+                    }                    
                 };
 
                 expressionNodes[i] = evaluatorFragment;
@@ -313,6 +324,7 @@ public class SelectExprProcessorHelper
 
             ExprStreamUnderlyingNode undNode = (ExprStreamUnderlyingNode) expressionNodes[i];
             final int streamNum = undNode.getStreamId();
+            final Class returnType = undNode.getType();
             EventType eventTypeStream = typeService.getEventTypes()[streamNum];
 
             // A match was found, we replace the expression
@@ -321,6 +333,11 @@ public class SelectExprProcessorHelper
                 public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                 {
                     return eventsPerStream[streamNum];
+                }
+
+                public Class getType()
+                {
+                    return returnType;
                 }
             };
 

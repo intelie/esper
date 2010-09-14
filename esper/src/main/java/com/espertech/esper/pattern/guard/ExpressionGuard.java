@@ -10,16 +10,10 @@ package com.espertech.esper.pattern.guard;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.soda.Expression;
-import com.espertech.esper.core.EPStatementHandleCallback;
-import com.espertech.esper.core.ExtensionServicesContext;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.schedule.ScheduleHandleCallback;
-import com.espertech.esper.schedule.ScheduleSlot;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,14 +29,14 @@ public class ExpressionGuard implements Guard
     private final PatternContext context;
     private final Quitable quitable;
     private final MatchedEventConvertor convertor;
-    private final ExprNode expression;
+    private final ExprEvaluator expression;
 
     /**
      * Ctor.
      * @param context - contains timer service
      * @param quitable - to use to indicate that the gaurd quitted
      */
-    public ExpressionGuard(MatchedEventConvertor convertor, ExprNode expression, PatternContext context, Quitable quitable) {
+    public ExpressionGuard(MatchedEventConvertor convertor, ExprEvaluator expression, PatternContext context, Quitable quitable) {
         this.context = context;
         this.quitable = quitable;
         this.convertor = convertor;

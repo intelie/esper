@@ -22,7 +22,7 @@ public class MyFileExistsObserverFactory extends ObserverFactorySupport
         {
             throw new ObserverParameterException(message);
         }
-        if (!(expressionParameters.get(0).getType() == String.class))
+        if (!(expressionParameters.get(0).getExprEvaluator().getType() == String.class))
         {
             throw new ObserverParameterException(message);
         }

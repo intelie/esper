@@ -9,6 +9,7 @@
 package com.espertech.esper.view.window;
 
 import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
@@ -32,6 +33,7 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
      * The timestamp property name.
      */
     protected ExprNode timestampExpression;
+    protected ExprEvaluator timestampExpressionEval;
 
     /**
      * The number of msec to expire.
@@ -62,11 +64,12 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
             throw new ViewParameterException(errorMessage);
         }
 
-        if (!JavaClassHelper.isNumeric(validated[0].getType()))
+        if (!JavaClassHelper.isNumeric(validated[0].getExprEvaluator().getType()))
         {
             throw new ViewParameterException(errorMessage);
         }
         timestampExpression = validated[0];
+        timestampExpressionEval = timestampExpression.getExprEvaluator();
 
         ViewFactorySupport.assertReturnsNonConstant("Externally-timed window", validated[0], 0);
         Object parameter = ViewFactorySupport.evaluateAssertNoProperties("Externally-timed window", validated[1], 1, statementContext);
@@ -134,7 +137,7 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
             randomAccessGetterImpl.updated(randomAccess);
         }
 
-        return new ExternallyTimedWindowView(this, timestampExpression, millisecondsBeforeExpiry, randomAccess, isRemoveStreamHandling, statementContext);
+        return new ExternallyTimedWindowView(this, timestampExpression, timestampExpressionEval, millisecondsBeforeExpiry, randomAccess, isRemoveStreamHandling, statementContext);
     }
 
     public EventType getEventType()

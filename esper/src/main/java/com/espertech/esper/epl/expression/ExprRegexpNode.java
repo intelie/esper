@@ -8,14 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.client.EPException;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -23,13 +23,14 @@ import java.util.regex.PatternSyntaxException;
 /**
  * Represents the regexp-clause in an expression tree.
  */
-public class ExprRegexpNode extends ExprNode
+public class ExprRegexpNode extends ExprNode implements ExprEvaluator
 {
     private final boolean isNot;
 
     private Pattern pattern;
     private boolean isNumericValue;
     private boolean isConstantPattern;
+    private transient ExprEvaluator[] evaluators;
     private static final long serialVersionUID = -837177267278295664L;
 
     /**
@@ -41,16 +42,21 @@ public class ExprRegexpNode extends ExprNode
         this.isNot = not;
     }
 
+    @Override
+    public ExprEvaluator getExprEvaluator() {
+        return this;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {
             throw new ExprValidationException("The regexp operator requires 2 child expressions");
         }
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
 
         // check pattern child node
-        ExprNode patternChildNode = this.getChildNodes().get(1);
-        Class patternChildType = patternChildNode.getType();
+        Class patternChildType = evaluators[1].getType();
         if (patternChildType != String.class)
         {
             throw new ExprValidationException("The regexp operator requires a String-type pattern expression");
@@ -61,7 +67,7 @@ public class ExprRegexpNode extends ExprNode
         }
 
         // check eval child node - can be String or numeric
-        Class evalChildType = this.getChildNodes().get(0).getType();
+        Class evalChildType = evaluators[0].getType();
         isNumericValue = JavaClassHelper.isNumeric(evalChildType);
         if ((evalChildType != String.class) && (!isNumericValue))
         {
@@ -83,7 +89,7 @@ public class ExprRegexpNode extends ExprNode
     {
         if (pattern == null)
         {
-            String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            String patternText = (String) evaluators[1].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (patternText == null)
             {
                 return null;
@@ -101,7 +107,7 @@ public class ExprRegexpNode extends ExprNode
         {
             if (!isConstantPattern)
             {
-                String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                String patternText = (String) evaluators[1].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (patternText == null)
                 {
                     return null;
@@ -117,7 +123,7 @@ public class ExprRegexpNode extends ExprNode
             }
         }
 
-        Object evalValue = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object evalValue = evaluators[0].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (evalValue == null)
         {
             return null;

@@ -415,7 +415,7 @@ valueExpr
 	| 	eventPropertyExpr[true]
 	|   	evalExprChoice
 	|	builtinFunc
-	|   	libFunc
+	|   	libFuncChain
 	|	caseExpr
 	|	inExpr 
 	|	betweenExpr
@@ -561,8 +561,17 @@ arithmeticExpr
 	| 	^(a=CONCAT valueExpr valueExpr (valueExpr)*) { leaveNode($a); }
 	;
 	
-libFunc
-	:  ^(l=LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? (valueExpr)*) { leaveNode($l); }
+libFuncChain
+	:  	^(l=LIB_FUNC_CHAIN libFunctionWithClass libOrPropFunction*) { leaveNode($l); }
+	;
+
+libFunctionWithClass
+	:  	^(l=LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? (valueExpr)*)
+	;
+	
+libOrPropFunction
+	:   	eventPropertyExpr[false] 
+	|   	libFunctionWithClass
 	;
 	
 //----------------------------------------------------------------------------

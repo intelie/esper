@@ -22,6 +22,29 @@ import java.util.Set;
  */
 public class ExprNodeUtility
 {
+    public static ExprEvaluator[] getEvaluators(ExprNode[] exprNodes) {
+        if (exprNodes == null) {
+            return null;
+        }
+        ExprEvaluator[] eval = new ExprEvaluator[exprNodes.length];
+        for (int i = 0; i < exprNodes.length; i++) {
+            ExprNode node = exprNodes[i];
+            if (node != null) {
+                eval[i] = node.getExprEvaluator();
+            }
+        }
+        return eval;
+    }
+
+    public static ExprEvaluator[] getEvaluators(List<ExprNode> childNodes)
+    {
+        ExprEvaluator[] eval = new ExprEvaluator[childNodes.size()];
+        for (int i = 0; i < childNodes.size(); i++) {
+            eval[i] = childNodes.get(i).getExprEvaluator();
+        }
+        return eval;
+    }
+
     public static Set<Integer> getIdentStreamNumbers(ExprNode child) {
 
         Set<Integer> streams = new HashSet<Integer>();
@@ -84,7 +107,7 @@ public class ExprNodeUtility
      * @param exprEvaluatorContext context for expression evaluation
      * @return filtered stream one events
      */
-    public static EventBean[] applyFilterExpression(ExprNode filter, EventBean streamZeroEvent, EventBean[] streamOneEvents, ExprEvaluatorContext exprEvaluatorContext)
+    public static EventBean[] applyFilterExpression(ExprEvaluator filter, EventBean streamZeroEvent, EventBean[] streamOneEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         EventBean[] eventsPerStream = new EventBean[2];
         eventsPerStream[0] = streamZeroEvent;
@@ -118,7 +141,7 @@ public class ExprNodeUtility
      * @param exprEvaluatorContext context for expression evaluation
      * @return pass indicator
      */
-    public static boolean applyFilterExpression(ExprNode filter, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+    public static boolean applyFilterExpression(ExprEvaluator filter, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
     {
         Boolean result = (Boolean) filter.evaluate(eventsPerStream, true, exprEvaluatorContext);
         return (result != null) && result;

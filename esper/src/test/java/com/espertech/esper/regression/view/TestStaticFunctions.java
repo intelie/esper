@@ -3,14 +3,12 @@ package com.espertech.esper.regression.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.espertech.esper.support.bean.*;
+import com.espertech.esper.support.epl.SupportChainFuncLib;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.bean.SupportTemperatureBean;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -33,6 +31,64 @@ public class TestStaticFunctions extends TestCase
 	    epService.initialize();
 	    stream = " from " + SupportMarketDataBean.class.getName() +".win:length(5) ";
 	}
+
+    // TODO - remove ugly ExprNode.getValidatedSubtree as it is easy to forget to modify the expression tree
+    // TODO - test instanceof ExprIdentNode
+    // TODO - test invoke method on event itself
+    // TODO - test fully-qualified class returning class
+    // TODO - test nested property call method
+    // TODO - test additional static functions configurable
+
+    public void testFunctionChain() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanComplexProps", SupportBeanComplexProps.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addImport(SupportChainFuncLib.class.getName());
+
+        // TODO (1) invoke expression on the result of an event property
+        // TODO: (1a) event property
+        // TODO (1b) expression onto event property : static method invocation does not recognize this as a property, size() function
+        /*
+        statementText = "select arrayProperty.size() as sizearray from SupportBeanComplexProps";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(statementText);
+        listener = new SupportUpdateListener();
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
+
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), "sizearray".split(","), new Object[] {1});
+        */
+
+        // TODO (2) chaining: not parsing a static functions don't invoke further static functions
+        /*
+        int value = SupportChainFuncLib.getInner(1, 2).add(3, 4).getTotal();
+        statementText = "select SupportChainFuncLib.getInner(1, 2).add(3, 4).getTotal() as value from SupportBean";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(statementText);
+        listener = new SupportUpdateListener();
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), "value".split(","), new Object[] {value});
+        */
+
+        // TODO (3) support for passing an expression to an index or mapped property, i.e. arrar(length - 1)
+        //statementText = "select arrayProperty.get(arrayProperty.size() - 1) as sizearray from SupportBeanComplexProps";
+        statementText = "select arrayProperty.size() as sizearray from SupportBeanComplexProps";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(statementText);
+        listener = new SupportUpdateListener();
+        stmtOne.addListener(listener);
+
+        SupportBeanComplexProps bean = SupportBeanComplexProps.makeDefaultBean();
+        epService.getEPRuntime().sendEvent(bean);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), "sizearray".split(","), new Object[] {bean.getArrayProperty().length});
+        /*
+        */
+
+        // TODO (3a) support for taking the event and calling a function on it
+        // TODO (4) support of regular Java syntax
+        // TODO new Person("Domenico")
+        // TODO Person.class
+        // TODO { java block }
+    }
 
     public void testEscape() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);

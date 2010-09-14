@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.support.epl.SupportExprNodeUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.type.MathArithTypeEnum;
@@ -85,11 +86,12 @@ public class TestExprMathNode extends TestCase
         assertFalse(arithNode.equalsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false)));
     }
 
-    private ExprMathNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight)
+    private ExprMathNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight) throws Exception
     {
         ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
         mathNode.addChildNode(new SupportExprNode(valueLeft, typeLeft));
         mathNode.addChildNode(new SupportExprNode(valueRight, typeRight));
+        SupportExprNodeUtil.validate(mathNode);
         return mathNode;
     }
 }

@@ -23,7 +23,7 @@ import com.espertech.esper.view.window.RelativeAccessByEventNIndexMap;
 /**
  * Represents the 'prev' previous event function in an expression node tree.
  */
-public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
+public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, ExprEvaluator
 {
     private static final long serialVersionUID = 0L;
 
@@ -39,6 +39,11 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
     public ExprPreviousNode(PreviousType previousType)
     {
         this.previousType = previousType;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
@@ -73,7 +78,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         if (this.getChildNodes().get(0).isConstantResult())
         {
             ExprNode constantNode = this.getChildNodes().get(0);
-            Object value = constantNode.evaluate(null, false, exprEvaluatorContext);
+            Object value = constantNode.getExprEvaluator().evaluate(null, false, exprEvaluatorContext);
             if (!(value instanceof Number))
             {
                 throw new ExprValidationException("Previous function requires an integer index parameter or expression");
@@ -93,12 +98,12 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         if (this.getChildNodes().get(1) instanceof ExprIdentNode) {
             ExprIdentNode identNode = (ExprIdentNode) this.getChildNodes().get(1);
             streamNumber = identNode.getStreamId();
-            resultType = JavaClassHelper.getBoxedType(this.getChildNodes().get(1).getType());
+            resultType = JavaClassHelper.getBoxedType(this.getChildNodes().get(1).getExprEvaluator().getType());
         }
         else if (this.getChildNodes().get(1) instanceof ExprStreamUnderlyingNode) {
             ExprStreamUnderlyingNode streamNode = (ExprStreamUnderlyingNode) this.getChildNodes().get(1);
             streamNumber = streamNode.getStreamId();
-            resultType = JavaClassHelper.getBoxedType(this.getChildNodes().get(1).getType());
+            resultType = JavaClassHelper.getBoxedType(this.getChildNodes().get(1).getExprEvaluator().getType());
         }
         else
         {
@@ -207,14 +212,14 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
         }
 
         if (previousType == PreviousType.PREVWINDOW) {
-            evaluator = new ExprPreviousEvalWindow(streamNumber, this.getChildNodes().get(1), resultType.getComponentType(),
+            evaluator = new ExprPreviousEvalWindow(streamNumber, this.getChildNodes().get(1).getExprEvaluator(), resultType.getComponentType(),
                     randomAccessGetter, relativeAccessGetter);
         }
         else if (previousType == PreviousType.PREVCOUNT) {
             evaluator = new ExprPreviousEvalCount(streamNumber, randomAccessGetter, relativeAccessGetter);
         }
         else {
-            evaluator = new ExprPreviousEvalPrev(streamNumber, this.getChildNodes().get(0), this.getChildNodes().get(1),
+            evaluator = new ExprPreviousEvalPrev(streamNumber, this.getChildNodes().get(0).getExprEvaluator(), this.getChildNodes().get(1).getExprEvaluator(),
                     randomAccessGetter, relativeAccessGetter, isConstantIndex, constantIndexNumber, previousType == PreviousType.PREVTAIL);
         }
     }

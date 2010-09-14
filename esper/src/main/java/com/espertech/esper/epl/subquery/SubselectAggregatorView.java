@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.subquery;
 
-import com.espertech.esper.epl.agg.AggregationService;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.agg.AggregationService;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.view.ViewSupport;
 
 import java.util.Iterator;
@@ -24,7 +24,7 @@ import java.util.Iterator;
 public class SubselectAggregatorView extends ViewSupport
 {
     private final AggregationService aggregationService;
-    private final ExprNode optionalFilterExpr;
+    private final ExprEvaluator optionalFilterExpr;
     private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
@@ -33,7 +33,7 @@ public class SubselectAggregatorView extends ViewSupport
      * @param optionalFilterExpr for filtering the view-posted events before aggregation
      * @param exprEvaluatorContext expression evaluation context
      */
-    public SubselectAggregatorView(AggregationService aggregationService, ExprNode optionalFilterExpr, ExprEvaluatorContext exprEvaluatorContext) {
+    public SubselectAggregatorView(AggregationService aggregationService, ExprEvaluator optionalFilterExpr, ExprEvaluatorContext exprEvaluatorContext) {
         this.aggregationService = aggregationService;
         this.optionalFilterExpr = optionalFilterExpr;
         this.exprEvaluatorContext = exprEvaluatorContext;

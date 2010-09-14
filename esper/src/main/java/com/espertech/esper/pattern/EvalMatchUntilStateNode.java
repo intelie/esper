@@ -14,8 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * This class represents the state of a match-until node in the evaluation state tree.
@@ -92,10 +92,10 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
 
         EventBean[] eventsPerStream = matchedEventConvertor.convert(beginState);
         if (evalMatchUntilNode.getLowerBounds() != null) {
-            lowerbounds = (Integer) evalMatchUntilNode.getLowerBounds().evaluate(eventsPerStream, true, context);
+            lowerbounds = (Integer) evalMatchUntilNode.getLowerBounds().getExprEvaluator().evaluate(eventsPerStream, true, context);
         }
         if (evalMatchUntilNode.getUpperBounds() != null) {
-            upperbounds = (Integer) evalMatchUntilNode.getUpperBounds().evaluate(eventsPerStream, true, context);
+            upperbounds = (Integer) evalMatchUntilNode.getUpperBounds().getExprEvaluator().evaluate(eventsPerStream, true, context);
         }
         if (upperbounds != null && lowerbounds != null) {
             if (upperbounds < lowerbounds) {

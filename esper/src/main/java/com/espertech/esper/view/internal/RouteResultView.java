@@ -7,8 +7,9 @@ import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.view.ViewSupport;
 
 import java.util.Iterator;
@@ -44,11 +45,11 @@ public class RouteResultView extends ViewSupport
         this.eventType = eventType;
         if (isFirst)
         {
-            handler = new RouteResultViewHandlerFirst(epStatementHandle, internalEventRouter, isNamedWindowInsert, processors, whereClauses, statementContext);
+            handler = new RouteResultViewHandlerFirst(epStatementHandle, internalEventRouter, isNamedWindowInsert, processors, ExprNodeUtility.getEvaluators(whereClauses), statementContext);
         }
         else
         {
-            handler = new RouteResultViewHandlerAll(epStatementHandle, internalEventRouter, isNamedWindowInsert, processors, whereClauses, statementContext);
+            handler = new RouteResultViewHandlerAll(epStatementHandle, internalEventRouter, isNamedWindowInsert, processors, ExprNodeUtility.getEvaluators(whereClauses), statementContext);
         }
     }
 

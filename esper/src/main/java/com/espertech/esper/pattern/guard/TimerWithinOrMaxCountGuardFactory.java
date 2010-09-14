@@ -40,11 +40,11 @@ public class TimerWithinOrMaxCountGuardFactory implements GuardFactory, MetaDefI
             throw new GuardParameterException(message);
         }
 
-        if (!JavaClassHelper.isNumeric(params.get(0).getType())) {
+        if (!JavaClassHelper.isNumeric(params.get(0).getExprEvaluator().getType())) {
             throw new GuardParameterException(message);
         }
 
-        if (params.get(1).getType() != Integer.class) {
+        if (params.get(1).getExprEvaluator().getType() != Integer.class) {
             throw new GuardParameterException(message);
         }
 

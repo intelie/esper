@@ -49,7 +49,7 @@ public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefIte
             throw new ObserverParameterException(errorMessage);
         }
 
-        Class returnType = params.get(0).getType();
+        Class returnType = params.get(0).getExprEvaluator().getType();
         if (!(JavaClassHelper.isNumeric(returnType)))
         {
             throw new ObserverParameterException(errorMessage);
@@ -61,7 +61,7 @@ public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefIte
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
     {
-        Object result = parameter.evaluate(convertor.convert(beginState), true, context);
+        Object result = parameter.getExprEvaluator().evaluate(convertor.convert(beginState), true, context);
         if (result == null)
         {
             throw new EPException("Null value returned for guard expression");

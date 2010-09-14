@@ -99,30 +99,37 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
         representativeNode.addChildNode(leftNode);
         representativeNode.addChildNode(rightNode);
 
-        if (addLeftNode != null)
-        {
-            ExprAndNode andNode = new ExprAndNode();
-            andNode.addChildNode(representativeNode);
-            representativeNode = andNode;
-
-            for (int i = 0; i < addLeftNode.length; i++)
-            {
-                ExprEqualsNode eqNode = new ExprEqualsNode(false);
-                eqNode.addChildNode(addLeftNode[i]);
-                eqNode.addChildNode(addRightNode[i]);
-                andNode.addChildNode(eqNode);
-            }
+        if (addLeftNode == null) {
+            topValidate(representativeNode, exprEvaluatorContext);
+            return representativeNode;
         }
 
+        ExprAndNode andNode = new ExprAndNode();
+        topValidate(representativeNode, exprEvaluatorContext);
+        andNode.addChildNode(representativeNode);
+        representativeNode = andNode;
+
+        for (int i = 0; i < addLeftNode.length; i++)
+        {
+            ExprEqualsNode eqNode = new ExprEqualsNode(false);
+            eqNode.addChildNode(addLeftNode[i]);
+            eqNode.addChildNode(addRightNode[i]);
+            topValidate(eqNode, exprEvaluatorContext);
+            andNode.addChildNode(eqNode);
+        }
+
+        topValidate(andNode, exprEvaluatorContext);
+        return representativeNode;
+    }
+
+    private void topValidate(ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext) {
         try
         {
-            representativeNode.validate(null, null, null, null, null, exprEvaluatorContext);
+            exprNode.validate(null, null, null, null, null, exprEvaluatorContext);
         }
         catch (ExprValidationException e)
         {
             throw new IllegalStateException("Failed to make representative node for outer join criteria");
         }
-        
-        return representativeNode;
     }
 }

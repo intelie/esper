@@ -14,21 +14,18 @@ import com.espertech.esper.view.window.RandomAccessByIndexGetter;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndexMap;
 
-import java.lang.reflect.Array;
-import java.util.Iterator;
-
 public class ExprPreviousEvalPrev implements ExprPreviousEval
 {
     private final int streamNumber;
-    private final ExprNode indexNode;
-    private final ExprNode evalNode;
+    private final ExprEvaluator indexNode;
+    private final ExprEvaluator evalNode;
     private final RandomAccessByIndexGetter randomAccessGetter;
     private final RelativeAccessByEventNIndexMap relativeAccessGetter;
     private final boolean isConstantIndex;
     private final Integer constantIndexNumber;
     private final boolean isTail;
 
-    public ExprPreviousEvalPrev(int streamNumber, ExprNode indexNode, ExprNode evalNode, RandomAccessByIndexGetter randomAccessGetter, RelativeAccessByEventNIndexMap relativeAccessGetter, boolean constantIndex, Integer constantIndexNumber, boolean tail)
+    public ExprPreviousEvalPrev(int streamNumber, ExprEvaluator indexNode, ExprEvaluator evalNode, RandomAccessByIndexGetter randomAccessGetter, RelativeAccessByEventNIndexMap relativeAccessGetter, boolean constantIndex, Integer constantIndexNumber, boolean tail)
     {
         this.streamNumber = streamNumber;
         this.indexNode = indexNode;
@@ -60,7 +57,7 @@ public class ExprPreviousEvalPrev implements ExprPreviousEval
         }
 
         // access based on index returned
-        EventBean substituteEvent = null;
+        EventBean substituteEvent;
         if (randomAccessGetter != null)
         {
             RandomAccessByIndex randomAccess = randomAccessGetter.getAccessor();

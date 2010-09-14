@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.view.CloneableView;
@@ -32,6 +33,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
     private final StatementContext statementContext;
     private final EventType eventType;
     private final ExprNode fieldExpression;
+    private final ExprEvaluator fieldExpressionEvaluator;
     private final BaseStatisticsBean baseStatisticsBean = new BaseStatisticsBean();
     private final StatViewAdditionalProps additionalProps;
 
@@ -49,6 +51,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
     {
         this.statementContext = statementContext;
         this.fieldExpression = fieldExpression;
+        this.fieldExpressionEvaluator = fieldExpression.getExprEvaluator();
         this.eventType = eventType;
         this.additionalProps = additionalProps;
     }
@@ -85,7 +88,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
             for (int i = 0; i < newData.length; i++)
             {
                 eventsPerStream[0] = newData[i];
-                double point = ((Number) fieldExpression.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double point = ((Number) fieldExpressionEvaluator.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 baseStatisticsBean.addPoint(point, 0);
             }
 
@@ -105,7 +108,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
             for (int i = 0; i < oldData.length; i++)
             {
                 eventsPerStream[0] = oldData[i];
-                double point = ((Number) fieldExpression.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double point = ((Number) fieldExpressionEvaluator.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 baseStatisticsBean.removePoint(point, 0);
             }
         }

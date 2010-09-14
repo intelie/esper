@@ -1,17 +1,14 @@
 package com.espertech.esper.regression.epl;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportVariableSetEvent;
-import com.espertech.esper.support.bean.bookexample.OrderBean;
-import com.espertech.esper.support.bean.bookexample.BookDesc;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 
 import java.util.HashMap;
 import java.util.Map;

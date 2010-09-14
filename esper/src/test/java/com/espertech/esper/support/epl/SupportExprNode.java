@@ -3,6 +3,7 @@ package com.espertech.esper.support.epl;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
@@ -10,7 +11,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 
-public class SupportExprNode extends ExprNode
+public class SupportExprNode extends ExprNode implements ExprEvaluator
 {
     private static int validateCount;
 
@@ -39,6 +40,11 @@ public class SupportExprNode extends ExprNode
     {
         this.value = value;
         this.type = type;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

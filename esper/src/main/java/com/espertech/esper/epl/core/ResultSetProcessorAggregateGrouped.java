@@ -16,7 +16,7 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.agg.AggregationService;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
@@ -46,8 +46,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
     private final SelectExprProcessor selectExprProcessor;
     private final OrderByProcessor orderByProcessor;
     private final AggregationService aggregationService;
-    private final List<ExprNode> groupKeyNodes;
-    private final ExprNode optionalHavingNode;
+    private final ExprEvaluator[] groupKeyNodes;
+    private final ExprEvaluator optionalHavingNode;
     private final boolean isSorting;
     private final boolean isSelectRStream;
     private final boolean isUnidirectional;
@@ -80,8 +80,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
     public ResultSetProcessorAggregateGrouped(SelectExprProcessor selectExprProcessor,
                                       		  OrderByProcessor orderByProcessor,
                                       		  AggregationService aggregationService,
-                                      		  List<ExprNode> groupKeyNodes,
-                                      		  ExprNode optionalHavingNode,
+                                      		  ExprEvaluator[] groupKeyNodes,
+                                      		  ExprEvaluator optionalHavingNode,
                                               boolean isSelectRStream,
                                               boolean isUnidirectional,
                                               StatementContext statementContext,
@@ -325,10 +325,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
      */
     protected MultiKeyUntyped generateGroupKey(EventBean[] eventsPerStream, boolean isNewData)
     {
-        Object[] keys = new Object[groupKeyNodes.size()];
+        Object[] keys = new Object[groupKeyNodes.length];
 
         int count = 0;
-        for (ExprNode exprNode : groupKeyNodes)
+        for (ExprEvaluator exprNode : groupKeyNodes)
         {
             keys[count] = exprNode.evaluate(eventsPerStream, isNewData, statementContext);
             count++;
@@ -468,7 +468,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
      * Returns the having node.
      * @return having expression
      */
-    public ExprNode getOptionalHavingNode()
+    public ExprEvaluator getOptionalHavingNode()
     {
         return optionalHavingNode;
     }

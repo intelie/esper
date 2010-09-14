@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Represents an invocation of a instance method on an event of a given stream in the expression tree.
  */
-public class ExprStreamInstanceMethodNode extends ExprNode
+public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprNode.class);
 	private final String streamName;
@@ -36,6 +36,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode
     private int streamNum = -1;
     private Class[] paramTypes;
 	private FastMethod instanceMethod;
+    private transient ExprEvaluator[] evaluators;
     private static final long serialVersionUID = 3422689488586035557L;
 
     /**
@@ -57,6 +58,11 @@ public class ExprStreamInstanceMethodNode extends ExprNode
 		this.streamName = streamName;
 		this.methodName = methodName;
 	}
+
+    @Override
+    public ExprEvaluator getExprEvaluator() {
+        return this;
+    }
 
     public boolean isConstantResult()
     {
@@ -142,12 +148,12 @@ public class ExprStreamInstanceMethodNode extends ExprNode
 	{
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
 		paramTypes = new Class[childNodes.size()];
-		int count = 0;
 
-        for(ExprNode childNode : childNodes)
+        for(int i = 0; i < evaluators.length; i++)
 		{
-			paramTypes[count++] = childNode.getType();
+			paramTypes[i] = evaluators[i].getType();
         }
 
         String[] streams = streamTypeService.getStreamNames();
@@ -204,10 +210,10 @@ public class ExprStreamInstanceMethodNode extends ExprNode
         // get parameters
         List<ExprNode> childNodes = this.getChildNodes();
 		Object[] args = new Object[childNodes.size()];
-		int count = 0;
-		for(ExprNode childNode : childNodes)
+
+        for(int i = 0; i < evaluators.length; i++)
 		{
-			args[count++] = childNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+			args[i] = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 		}
 
 		try

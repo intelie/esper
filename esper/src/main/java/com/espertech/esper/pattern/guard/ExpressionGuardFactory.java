@@ -8,12 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.guard;
 
-import com.espertech.esper.client.EPException;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.pattern.PatternExpressionUtil;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;
 
@@ -43,7 +41,7 @@ public class ExpressionGuardFactory implements GuardFactory, MetaDefItem, Serial
         }
         expression = params.get(0);
 
-        if (JavaClassHelper.getBoxedType(params.get(0).getType()) != Boolean.class)
+        if (JavaClassHelper.getBoxedType(params.get(0).getExprEvaluator().getType()) != Boolean.class)
         {
             throw new GuardParameterException(errorMessage);
         }
@@ -53,6 +51,6 @@ public class ExpressionGuardFactory implements GuardFactory, MetaDefItem, Serial
 
     public Guard makeGuard(PatternContext context, MatchedEventMap matchedEventMap, Quitable quitable, Object stateNodeId, Object guardState)
     {
-        return new ExpressionGuard(convertor, expression, context, quitable);
+        return new ExpressionGuard(convertor, expression.getExprEvaluator(), context, quitable);
     }
 }

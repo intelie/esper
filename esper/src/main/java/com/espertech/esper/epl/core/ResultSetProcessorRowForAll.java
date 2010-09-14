@@ -12,8 +12,8 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.*;
 import com.espertech.esper.epl.agg.AggregationService;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.view.Viewable;
 
@@ -38,7 +38,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
     private final SelectExprProcessor selectExprProcessor;
     private final AggregationService aggregationService;
     private final OrderByProcessor orderByProcessor;
-    private final ExprNode optionalHavingNode;
+    private final ExprEvaluator optionalHavingNode;
     private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
@@ -54,7 +54,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
     public ResultSetProcessorRowForAll(SelectExprProcessor selectExprProcessor,
                                        AggregationService aggregationService,
                                        OrderByProcessor orderByProcessor,
-                                       ExprNode optionalHavingNode,
+                                       ExprEvaluator optionalHavingNode,
                                        boolean isSelectRStream,
                                        boolean isUnidirectional,
                                        ExprEvaluatorContext exprEvaluatorContext)

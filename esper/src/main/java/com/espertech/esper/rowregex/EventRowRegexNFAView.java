@@ -11,6 +11,7 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.agg.AggregationServiceMatchRecognize;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.expression.ExprPreviousMatchRecognizeNode;
 import com.espertech.esper.epl.spec.MatchRecognizeDefineItem;
 import com.espertech.esper.epl.spec.MatchRecognizeMeasureItem;
@@ -179,12 +180,12 @@ public class EventRowRegexNFAView extends ViewSupport
 
         // create evaluators
         columnNames = new String[matchRecognizeSpec.getMeasures().size()];
-        columnEvaluators = new ExprNode[matchRecognizeSpec.getMeasures().size()];
+        columnEvaluators = new ExprEvaluator[matchRecognizeSpec.getMeasures().size()];
         int count = 0;
         for (MatchRecognizeMeasureItem measureItem : matchRecognizeSpec.getMeasures())
         {
             columnNames[count] = measureItem.getName();
-            columnEvaluators[count] = measureItem.getExpr();
+            columnEvaluators[count] = measureItem.getExpr().getExprEvaluator();
             count++;
         }
 
@@ -195,7 +196,7 @@ public class EventRowRegexNFAView extends ViewSupport
         }
         else
         {
-            regexPartitionStateRepo = new RegexPartitionStateRepoGroup(randomAccessByIndexGetter, matchRecognizeSpec.getPartitionByExpressions(), matchRecognizeSpec.getInterval() != null, statementContext);
+            regexPartitionStateRepo = new RegexPartitionStateRepoGroup(randomAccessByIndexGetter, ExprNodeUtility.getEvaluators(matchRecognizeSpec.getPartitionByExpressions()), matchRecognizeSpec.getInterval() != null, statementContext);
         }
     }
 

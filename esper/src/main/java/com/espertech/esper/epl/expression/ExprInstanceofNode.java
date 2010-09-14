@@ -23,12 +23,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Represents the INSTANCEOF(a,b,...) function is an expression tree.
  */
-public class ExprInstanceofNode extends ExprNode
+public class ExprInstanceofNode extends ExprNode implements ExprEvaluator
 {
     private final String[] classIdentifiers;
 
     private Class[] classes;
     private CopyOnWriteArrayList<Pair<Class, Boolean>> resultCache = new CopyOnWriteArrayList<Pair<Class, Boolean>>();
+    private transient ExprEvaluator evaluator;
     private static final long serialVersionUID = 3358616797009364727L;
 
     /**
@@ -40,6 +41,11 @@ public class ExprInstanceofNode extends ExprNode
         this.classIdentifiers = classIdentifiers;
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
+    
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
@@ -51,6 +57,7 @@ public class ExprInstanceofNode extends ExprNode
             throw new ExprValidationException("Instanceof node must have 1 or more class identifiers to verify type against");
         }
 
+        evaluator = this.getChildNodes().get(0).getExprEvaluator();
         Set<Class> classList = getClassSet(classIdentifiers);
         classes = classList.toArray(new Class[classList.size()]);
     }
@@ -67,7 +74,7 @@ public class ExprInstanceofNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object result = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object result = evaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (result == null)
         {
             return false;

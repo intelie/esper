@@ -73,9 +73,9 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
             boolean isFirst = accessType == AggregationAccessType.FIRST;
             int constant = -1;
             if (indexEvalNode.isConstantResult()) {
-                constant = (Integer) indexEvalNode.evaluate(null, true, null);
+                constant = (Integer) indexEvalNode.getExprEvaluator().evaluate(null, true, null);
             }
-            return new AggregationAccessorFirstLastIndex(streamNum, childNode, indexEvalNode, constant, isFirst);
+            return new AggregationAccessorFirstLastIndex(streamNum, childNode, indexEvalNode.getExprEvaluator(), constant, isFirst);
         }
         else {
             if (accessType == AggregationAccessType.FIRST) {

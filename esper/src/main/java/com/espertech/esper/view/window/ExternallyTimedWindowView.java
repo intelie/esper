@@ -10,6 +10,7 @@ package com.espertech.esper.view.window;
 
 import java.util.*;
 
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.view.*;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
@@ -41,6 +42,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
 {
     private final ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory;
     private final ExprNode timestampExpression;
+    private final ExprEvaluator timestampExpressionEval;
     private final long millisecondsBeforeExpiry;
 
     private final EventBean[] eventsPerStream = new EventBean[1];
@@ -64,11 +66,12 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * @param exprEvaluatorContext context for expression evalauation
      */
     public ExternallyTimedWindowView(ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory,
-                                     ExprNode timestampExpression, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,
+                                     ExprNode timestampExpression, ExprEvaluator timestampExpressionEval, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,
                                      boolean isRemoveStreamHandling, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.externallyTimedWindowViewFactory = externallyTimedWindowViewFactory;
         this.timestampExpression = timestampExpression;
+        this.timestampExpressionEval = timestampExpressionEval;
         this.millisecondsBeforeExpiry = msecBeforeExpiry;
         this.viewUpdatedCollection = viewUpdatedCollection;
         this.isRemoveStreamHandling = isRemoveStreamHandling;
@@ -180,7 +183,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     private long getLongValue(EventBean obj)
     {
         eventsPerStream[0] = obj;
-        Number num = (Number) timestampExpression.evaluate(eventsPerStream, true, exprEvaluatorContext);
+        Number num = (Number) timestampExpressionEval.evaluate(eventsPerStream, true, exprEvaluatorContext);
         return num.longValue();
     }
 

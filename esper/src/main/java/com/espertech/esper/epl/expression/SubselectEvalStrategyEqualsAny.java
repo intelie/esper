@@ -14,9 +14,9 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
     private final boolean isNot;
     private final boolean mustCoerce;
     private final SimpleNumberCoercer coercer;
-    private final ExprNode valueExpr;
-    private final ExprNode filterExpr;
-    private final ExprNode selectClauseExpr;
+    private final ExprEvaluator valueExpr;
+    private final ExprEvaluator filterExpr;
+    private final ExprEvaluator selectClauseExpr;
 
     /**
      * Ctor.
@@ -27,7 +27,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
      * @param selectClauseExpr select clause or null
      * @param filterExpr filter or null
      */
-    public SubselectEvalStrategyEqualsAny(boolean notIn, boolean mustCoerce, Class coercionType, ExprNode valueExpr, ExprNode selectClauseExpr, ExprNode filterExpr)
+    public SubselectEvalStrategyEqualsAny(boolean notIn, boolean mustCoerce, Class coercionType, ExprEvaluator valueExpr, ExprEvaluator selectClauseExpr, ExprEvaluator filterExpr)
     {
         isNot = notIn;
         this.mustCoerce = mustCoerce;

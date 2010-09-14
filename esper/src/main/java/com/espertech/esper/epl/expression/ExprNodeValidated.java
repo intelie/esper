@@ -1,17 +1,16 @@
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
-import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
-import com.espertech.esper.client.EventBean;
 
 /**
  * A placeholder for another expression node that has been validated already.
  */
-public class ExprNodeValidated extends ExprNode
+public class ExprNodeValidated extends ExprNode implements ExprEvaluator
 {
     private final ExprNode inner;
     private static final long serialVersionUID = 301058622892268624L;
@@ -23,6 +22,11 @@ public class ExprNodeValidated extends ExprNode
     public ExprNodeValidated(ExprNode inner)
     {
         this.inner = inner;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     public String toExpressionString()
@@ -59,11 +63,11 @@ public class ExprNodeValidated extends ExprNode
 
     public Class getType()
     {
-        return inner.getType();
+        return inner.getExprEvaluator().getType();
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        return inner.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        return inner.getExprEvaluator().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
     }
 }

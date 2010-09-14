@@ -8,18 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -30,25 +26,23 @@ public class ExprStaticMethodNode extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprStaticMethodNode.class);
 
-	private final String className;
+	private final String classOrPropertyName;
 	private final String methodName;
-	private Class[] paramTypes;
-	private FastMethod staticMethod;
-    private boolean isConstantParameters;
-    private boolean isCachedResult;
-    private Object cachedResult;
-    private boolean isUseCache;
+    private final boolean isUseCache;
+
+    private ExprEvaluator evaluator;
+    private boolean isReturnsConstantResult;
     private static final long serialVersionUID = -2237283743896280252L;
 
     /**
 	 * Ctor.
-	 * @param className - the declaring class for the method that this node will invoke
+	 * @param classOrPropertyName - the declaring class for the method that this node will invoke
 	 * @param methodName - the name of the method that this node will invoke
      * @param isUseCache - configuration whether to use cache
 	 */
-	public ExprStaticMethodNode(String className, String methodName, boolean isUseCache)
+	public ExprStaticMethodNode(String classOrPropertyName, String methodName, boolean isUseCache)
 	{
-		if(className == null)
+		if(classOrPropertyName == null)
 		{
 			throw new NullPointerException("Class name is null");
 		}
@@ -57,31 +51,28 @@ public class ExprStaticMethodNode extends ExprNode
 			throw new NullPointerException("Method name is null");
 		}
 
-		this.className = className;
+		this.classOrPropertyName = classOrPropertyName;
 		this.methodName = methodName;
         this.isUseCache = isUseCache;
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        return evaluator;
+    }
+
+    @Override
     public boolean isConstantResult()
     {
-        return isConstantParameters;
+        return isReturnsConstantResult;
     }
 
     /**
-     * Returns the static method.
-	 * @return the static method that this node invokes
-	 */
-	protected Method getStaticMethod()
-	{
-		return staticMethod.getJavaMethod();
-	}
-
-	/**
      * Returns the class name.
 	 * @return the class that declared the static method
 	 */
-	public String getClassName() {
-		return className;
+	public String getClassOrPropertyName() {
+		return classOrPropertyName;
 	}
 
 	/**
@@ -92,18 +83,10 @@ public class ExprStaticMethodNode extends ExprNode
 		return methodName;
 	}
 
-	/**
-     * Returns parameter descriptor.
-	 * @return the types of the child nodes of this node
-	 */
-	public Class[] getParamTypes() {
-		return paramTypes;
-	}
-
 	public String toExpressionString()
 	{
         StringBuilder buffer = new StringBuilder();
-		buffer.append(className);
+		buffer.append(classOrPropertyName);
 		buffer.append('.');
 		buffer.append(methodName);
 
@@ -126,42 +109,55 @@ public class ExprStaticMethodNode extends ExprNode
 		{
 			return false;
 		}
-
-		if(staticMethod == null)
-		{
-			throw new IllegalStateException("ExprStaticMethodNode has not been validated");
-		}
-		else
-		{
-			ExprStaticMethodNode otherNode = (ExprStaticMethodNode) node;
-			return staticMethod.equals(otherNode.staticMethod);
-		}
+        ExprStaticMethodNode otherNode = (ExprStaticMethodNode) node;
+        return classOrPropertyName.equals(otherNode.classOrPropertyName) && methodName.equals(otherNode.methodName);
 	}
 
 	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
 	{
+        // See if the class name
+        PropertyResolutionDescriptor classPropertyResoltion = null;
+        try
+        {
+            classPropertyResoltion = streamTypeService.resolveByPropertyName(classOrPropertyName);
+        }
+        catch (StreamTypesException e) {
+            // expected, may actually be a class name
+        }
+
+        if (classPropertyResoltion != null) {
+            evaluator = validatePropertyMethod(methodName, classPropertyResoltion);
+            return;
+        }
+
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();
-		paramTypes = new Class[childNodes.size()];
+		Class[] paramTypes = new Class[childNodes.size()];
 		int count = 0;
         
         boolean allConstants = true;
+        ExprEvaluator[] childEvals = new ExprEvaluator[childNodes.size()];
         for(ExprNode childNode : childNodes)
 		{
-			paramTypes[count++] = childNode.getType();
+            ExprEvaluator eval = childNode.getExprEvaluator();
+            childEvals[count] = eval;
+			paramTypes[count] = eval.getType();
+            count++;
             if (!(childNode.isConstantResult()))
             {
                 allConstants = false;
             }
         }
-        isConstantParameters = allConstants && isUseCache;
+        boolean isConstantParameters = allConstants && isUseCache;
+        isReturnsConstantResult = isConstantParameters; 
 
         // Try to resolve the method
 		try
 		{
-			Method method = methodResolutionService.resolveMethod(className, methodName, paramTypes);
+			Method method = methodResolutionService.resolveMethod(classOrPropertyName, methodName, paramTypes);
 			FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
-			staticMethod = declaringClass.getMethod(method);
+			FastMethod staticMethod = declaringClass.getMethod(method);
+            this.evaluator = new ExprStaticMethodEvalInvoke(classOrPropertyName, staticMethod, childEvals, isConstantParameters);
 		}
 		catch(Exception e)
 		{
@@ -169,51 +165,18 @@ public class ExprStaticMethodNode extends ExprNode
 		}
 	}
 
-	public Class getType()
-	{
-		if(staticMethod == null)
-		{
-			throw new IllegalStateException("ExprStaticMethodNode has not been validated");
-		}
-		return staticMethod.getReturnType();
-	}
-
-	public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
-	{
-        if ((isConstantParameters) && (isCachedResult))
-        {
-            return cachedResult;
-        }
-        List<ExprNode> childNodes = this.getChildNodes();
-
-		Object[] args = new Object[childNodes.size()];
-		int count = 0;
-		for(ExprNode childNode : childNodes)
-		{
-			args[count++] = childNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-		}
-
-		// The method is static so the object it is invoked on
-		// can be null
-		Object obj = null;
-		try
-		{
-            Object result = staticMethod.invoke(obj, args);
-            if (isConstantParameters)
-            {
-                cachedResult = result;
-                isCachedResult = true;
+    private ExprEvaluator validatePropertyMethod(String methodName, PropertyResolutionDescriptor classPropertyResoltion)
+            throws ExprValidationException
+    {
+        // There are two built-in methods:
+        //   size() - returns array size
+        //   get(index) - returns array index
+        if (methodName.toLowerCase().equals("size")) {
+            if (classPropertyResoltion.getPropertyType().isArray()) {
+                return new ExprIdentEvalSize(classPropertyResoltion.getStreamNum(), classPropertyResoltion.getStreamEventType().getGetter(classPropertyResoltion.getPropertyName()));
             }
-            return result;
-		}
-		catch (InvocationTargetException e)
-		{
-            String message = "Method '" + staticMethod.getName() +
-                    "' of class '" + className +
-                    "' reported an exception: " +
-                    e.getTargetException();
-            log.error(message, e.getTargetException());
-		}
-        return null;
+        }
+        // TODO
+        throw new ExprValidationException("TODO");
     }
 }

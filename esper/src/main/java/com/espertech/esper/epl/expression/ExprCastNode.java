@@ -8,25 +8,26 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.*;
 
-import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Represents the CAST(expression, type) function is an expression tree.
  */
-public class ExprCastNode extends ExprNode
+public class ExprCastNode extends ExprNode implements ExprEvaluator
 {
     private final String classIdentifier;
     private Class targetType;
     private transient CasterParserComputer casterParserComputer;
+    private transient ExprEvaluator evaluator;
     private static final long serialVersionUID = 7448449031028156455L;
 
     /**
@@ -36,6 +37,11 @@ public class ExprCastNode extends ExprNode
     public ExprCastNode(String classIdentifier)
     {
         this.classIdentifier = classIdentifier;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     /**
@@ -54,7 +60,8 @@ public class ExprCastNode extends ExprNode
             throw new ExprValidationException("Cast function node must have exactly 1 child node");
         }
 
-        Class fromType = this.getChildNodes().get(0).getType();
+        evaluator = this.getChildNodes().get(0).getExprEvaluator();
+        Class fromType = evaluator.getType();
 
         // identify target type
         // try the primitive names including "string"
@@ -135,12 +142,11 @@ public class ExprCastNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object result = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object result = evaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (result == null)
         {
             return null;
         }
-
         return casterParserComputer.compute(result);
     }
 

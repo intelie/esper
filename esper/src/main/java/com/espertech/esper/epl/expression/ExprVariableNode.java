@@ -15,13 +15,12 @@ import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 import com.espertech.esper.schedule.TimeProvider;
 
 /**
  * Represents a variable in an expression tree.
  */
-public class ExprVariableNode extends ExprNode
+public class ExprVariableNode extends ExprNode implements ExprEvaluator
 {
     private static final long serialVersionUID = 0L;
 
@@ -52,6 +51,11 @@ public class ExprVariableNode extends ExprNode
             this.variableName = variableName;
             this.optSubPropName = null;
         }
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     /**

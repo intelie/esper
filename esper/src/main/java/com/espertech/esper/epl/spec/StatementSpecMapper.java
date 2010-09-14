@@ -668,7 +668,16 @@ public class StatementSpecMapper
         spec.setDefines(defines);
 
         if (clause.getIntervalClause() != null) {
-            spec.setInterval(new MatchRecognizeInterval((ExprTimePeriod) mapExpressionDeep(clause.getIntervalClause().getExpression(), mapContext)));
+            ExprTimePeriod timePeriod = (ExprTimePeriod) mapExpressionDeep(clause.getIntervalClause().getExpression(), mapContext);
+            try
+            {
+                timePeriod.validate(null, null, null, null, null, null);
+            }
+            catch (ExprValidationException e)
+            {
+                throw new RuntimeException("Error validating time-period expression: " + e.getMessage(), e);
+            }
+            spec.setInterval(new MatchRecognizeInterval(timePeriod));
         }
         spec.setPattern(mapExpressionDeepRowRegex(clause.getPattern(), mapContext));
         raw.setMatchRecognizeSpec(spec);
@@ -1626,7 +1635,7 @@ public class StatementSpecMapper
         else if (expr instanceof ExprStaticMethodNode)
         {
             ExprStaticMethodNode node = (ExprStaticMethodNode) expr;
-            return new StaticMethodExpression(node.getClassName(), node.getMethodName());
+            return new StaticMethodExpression(node.getClassOrPropertyName(), node.getMethodName());
         }
         else if (expr instanceof ExprMinMaxAggrNode)
         {

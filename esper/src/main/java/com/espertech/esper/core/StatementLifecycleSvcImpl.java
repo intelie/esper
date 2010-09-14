@@ -1259,7 +1259,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 }
             }
 
-            NamedWindowSelectedProps validatedElement = new NamedWindowSelectedProps(validatedExpression.getType(), asName, fragmentType);
+            NamedWindowSelectedProps validatedElement = new NamedWindowSelectedProps(validatedExpression.getExprEvaluator().getType(), asName, fragmentType);
             selectProps.add(validatedElement);
         }
 

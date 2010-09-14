@@ -9,18 +9,18 @@
 package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
+import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.rep.Cursor;
 import com.espertech.esper.epl.join.rep.Node;
-import com.espertech.esper.epl.join.PollResultIndexingStrategy;
-import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.view.HistoricalEventViewable;
 
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * A lookup strategy for use in outer joins onto historical streams.
@@ -32,7 +32,7 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
     private final HistoricalIndexLookupStrategy lookupStrategy;
     private final int streamNum;
     private final int rootStreamNum;
-    private final ExprNode outerJoinExprNode;
+    private final ExprEvaluator outerJoinExprNode;
     private final EventBean[][] lookupEventsPerStream;
 
     /**
@@ -45,7 +45,7 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
      * @param rootStreamNum the query plan root stream number
      * @param outerJoinExprNode an optional outer join expression
      */
-    public HistoricalTableLookupStrategy(HistoricalEventViewable viewable, PollResultIndexingStrategy indexingStrategy, HistoricalIndexLookupStrategy lookupStrategy, int numStreams, int streamNum, int rootStreamNum, ExprNode outerJoinExprNode)
+    public HistoricalTableLookupStrategy(HistoricalEventViewable viewable, PollResultIndexingStrategy indexingStrategy, HistoricalIndexLookupStrategy lookupStrategy, int numStreams, int streamNum, int rootStreamNum, ExprEvaluator outerJoinExprNode)
     {
         this.viewable = viewable;
         this.indexingStrategy = indexingStrategy;

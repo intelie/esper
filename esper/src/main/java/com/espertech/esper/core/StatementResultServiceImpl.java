@@ -16,6 +16,7 @@ import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.thread.OutboundUnitRunnable;
 import com.espertech.esper.core.thread.ThreadingOption;
 import com.espertech.esper.core.thread.ThreadingService;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.metric.MetricReportingPath;
@@ -55,7 +56,7 @@ public class StatementResultServiceImpl implements StatementResultService
     private StatementMetricHandle statementMetricHandle;
 
     private boolean forClauseDelivery= false;
-    private ExprNode[] groupDeliveryExpressions;
+    private ExprEvaluator[] groupDeliveryExpressions;
     private ExprEvaluatorContext exprEvaluatorContext;
 
     // For natural delivery derived out of select-clause expressions
@@ -122,7 +123,7 @@ public class StatementResultServiceImpl implements StatementResultService
     }
 
     public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames,
-                                boolean forClauseDelivery, ExprNode[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext)
+                                boolean forClauseDelivery, ExprEvaluator[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((selectClauseTypes == null) || (selectClauseTypes.length == 0))
         {

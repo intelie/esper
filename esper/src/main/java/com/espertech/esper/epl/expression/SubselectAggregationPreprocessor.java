@@ -8,9 +8,9 @@ import java.util.Set;
 public class SubselectAggregationPreprocessor {
 
     private final AggregationService aggregationService;
-    private final ExprNode filterExpr;
+    private final ExprEvaluator filterExpr;
 
-    public SubselectAggregationPreprocessor(AggregationService aggregationService, ExprNode filterExpr) {
+    public SubselectAggregationPreprocessor(AggregationService aggregationService, ExprEvaluator filterExpr) {
         this.aggregationService = aggregationService;
         this.filterExpr = filterExpr;
     }

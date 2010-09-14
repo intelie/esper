@@ -54,7 +54,7 @@ public class RegressionLinestViewFactory implements ViewFactory
         if (validated.length < 2) {
             throw new ViewParameterException(errorMessage);
         }
-        if ((!JavaClassHelper.isNumeric(validated[0].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
+        if ((!JavaClassHelper.isNumeric(validated[0].getExprEvaluator().getType())) || (!JavaClassHelper.isNumeric(validated[1].getExprEvaluator().getType())))
         {
             throw new ViewParameterException(errorMessage);
         }

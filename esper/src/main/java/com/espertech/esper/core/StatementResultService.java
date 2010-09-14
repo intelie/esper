@@ -10,9 +10,9 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.epl.metric.StatementMetricHandle;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
 
 /**
  * Interface for a statement-level service for coordinating the insert/remove stream generation,
@@ -38,7 +38,7 @@ public interface StatementResultService
      * @param selectClauseColumnNames column names
      */
     public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames,
-                                boolean forClauseDelivery, ExprNode[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext);
+                                boolean forClauseDelivery, ExprEvaluator[] groupDeliveryExpressions, ExprEvaluatorContext exprEvaluatorContext);
 
     /**
      * Returns true to indicate that synthetic events should be produced, for

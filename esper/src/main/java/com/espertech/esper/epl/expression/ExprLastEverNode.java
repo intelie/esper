@@ -34,7 +34,7 @@ public class ExprLastEverNode extends ExprAggregateNode
         {
             throw new ExprValidationException("Last aggregation function must have 1 child node");
         }
-        return new ExprLastEverNodeFactory(this.getChildNodes().get(0).getType());
+        return new ExprLastEverNodeFactory(this.getChildNodes().get(0).getExprEvaluator().getType());
     }
 
     protected String getAggregationFunctionName()

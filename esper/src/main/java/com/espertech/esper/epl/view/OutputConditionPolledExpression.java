@@ -11,6 +11,7 @@ package com.espertech.esper.epl.view;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeIdentifierVisitor;
 import com.espertech.esper.epl.expression.ExprValidationException;
@@ -30,7 +31,7 @@ import java.util.Map;
 public class OutputConditionPolledExpression implements OutputConditionPolled
 {
     private static final Log log = LogFactory.getLog(OutputConditionPolledExpression.class);
-    private final ExprNode whenExpressionNode;
+    private final ExprEvaluator whenExpressionNode;
     private final StatementContext context;
     private final VariableReadWritePackage variableReadWritePackage;
 
@@ -53,7 +54,7 @@ public class OutputConditionPolledExpression implements OutputConditionPolled
     public OutputConditionPolledExpression(ExprNode whenExpressionNode, List<OnTriggerSetAssignment> assignments, final StatementContext context)
             throws ExprValidationException
     {
-        this.whenExpressionNode = whenExpressionNode;
+        this.whenExpressionNode = whenExpressionNode.getExprEvaluator();
         this.context = context;
         this.eventsPerStream = new EventBean[1];
 

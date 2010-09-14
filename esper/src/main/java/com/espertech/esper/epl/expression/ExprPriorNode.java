@@ -8,27 +8,28 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.ViewResourceCallback;
-import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.view.ViewCapPriorEventAccess;
 import com.espertech.esper.view.window.RandomAccessByIndex;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
-import com.espertech.esper.view.ViewCapPriorEventAccess;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.schedule.TimeProvider;
 
 /**
  * Represents the 'prior' prior event function in an expression node tree.
  */
-public class ExprPriorNode extends ExprNode implements ViewResourceCallback
+public class ExprPriorNode extends ExprNode implements ViewResourceCallback, ExprEvaluator
 {
     private Class resultType;
     private int streamNumber;
     private int constantIndexNumber;
     private RelativeAccessByEventNIndex relativeAccess;
     private RandomAccessByIndex randomAccess;
+    private ExprEvaluator evaluator;
     private static final long serialVersionUID = -2115346817501589366L;
 
     /**
@@ -38,6 +39,11 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
     public int getConstantIndexNumber()
     {
         return constantIndexNumber;
+    }
+
+    @Override
+    public ExprEvaluator getExprEvaluator() {
+        return this;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
@@ -51,25 +57,26 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
             throw new ExprValidationException("Prior function requires an integer index parameter");
         }
         ExprNode constantNode = this.getChildNodes().get(0);
-        if (constantNode.getType() != Integer.class)
+        if (constantNode.getExprEvaluator().getType() != Integer.class)
         {
             throw new ExprValidationException("Prior function requires an integer index parameter");
         }
 
-        Object value = constantNode.evaluate(null, false, exprEvaluatorContext);
+        Object value = constantNode.getExprEvaluator().evaluate(null, false, exprEvaluatorContext);
         constantIndexNumber = ((Number) value).intValue();
+        evaluator = this.getChildNodes().get(1).getExprEvaluator();
 
         // Determine stream number
         // Determine stream number
         if (this.getChildNodes().get(1) instanceof ExprIdentNode) {
             ExprIdentNode identNode = (ExprIdentNode) this.getChildNodes().get(1);
             streamNumber = identNode.getStreamId();
-            resultType = this.getChildNodes().get(1).getType();
+            resultType = evaluator.getType();
         }
         else if (this.getChildNodes().get(1) instanceof ExprStreamUnderlyingNode) {
             ExprStreamUnderlyingNode streamNode = (ExprStreamUnderlyingNode) this.getChildNodes().get(1);
             streamNumber = streamNode.getStreamId();
-            resultType = this.getChildNodes().get(1).getType();
+            resultType = evaluator.getType();
         }
         else
         {
@@ -120,7 +127,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
 
         // Substitute original event with prior event, evaluate inner expression
         eventsPerStream[streamNumber] = substituteEvent;
-        Object evalResult = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object evalResult = evaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         eventsPerStream[streamNumber] = originalEvent;
 
         return evalResult;

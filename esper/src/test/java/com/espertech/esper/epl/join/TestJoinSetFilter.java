@@ -30,7 +30,7 @@ public class TestJoinSetFilter extends TestCase
         eventSet.add(new MultiKey<EventBean>(pairOne));
         eventSet.add(new MultiKey<EventBean>(pairTwo));
 
-        JoinSetFilter.filter(topNode, eventSet, true, null);
+        JoinSetFilter.filter(topNode.getExprEvaluator(), eventSet, true, null);
 
         assertEquals(1, eventSet.size());
         assertSame(pairOne, eventSet.iterator().next().getArray());

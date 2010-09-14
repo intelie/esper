@@ -24,7 +24,7 @@ public class ASTMatchUntilHelper
         Object constantLower = null;
         String numericMessage = "Match-until bounds expect a numeric or expression value";
         if (lowerBounds instanceof ExprConstantNode) {
-            constantLower = lowerBounds.evaluate(null, true, null);
+            constantLower = lowerBounds.getExprEvaluator().evaluate(null, true, null);
             if (constantLower == null || !(constantLower instanceof Number)) {
                 throw new ASTWalkException(numericMessage);
             }
@@ -35,7 +35,7 @@ public class ASTMatchUntilHelper
 
         Object constantUpper = null;
         if (upperBounds instanceof ExprConstantNode) {
-            constantUpper = upperBounds.evaluate(null, true, null);
+            constantUpper = upperBounds.getExprEvaluator().evaluate(null, true, null);
             if (constantUpper == null || !(constantUpper instanceof Number)) {
                 throw new ASTWalkException(numericMessage);
             }

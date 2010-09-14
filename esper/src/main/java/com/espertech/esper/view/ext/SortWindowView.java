@@ -8,12 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.view.ext;
 
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.MultiKeyCollatingComparator;
 import com.espertech.esper.util.MultiKeyComparator;
@@ -43,6 +44,7 @@ import java.util.*;
 public final class SortWindowView extends ViewSupport implements DataWindowView, CloneableView
 {
     private final SortWindowViewFactory sortWindowViewFactory;
+    private final ExprEvaluator[] sortCriteriaEvaluators;
     private final ExprNode[] sortCriteriaExpressions;
     private final EventBean[] eventsPerStream = new EventBean[1];
     private final boolean[] isDescendingValues;
@@ -66,6 +68,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
      */
     public SortWindowView(SortWindowViewFactory sortWindowViewFactory,
                           ExprNode[] sortCriteriaExpressions,
+                          ExprEvaluator[] sortCriteriaEvaluators,
                           boolean[] descendingValues,
                           int sortWindowSize,
                           IStreamSortedRandomAccess optionalSortedRandomAccess,
@@ -74,6 +77,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
     {
         this.sortWindowViewFactory = sortWindowViewFactory;
         this.sortCriteriaExpressions = sortCriteriaExpressions;
+        this.sortCriteriaEvaluators = sortCriteriaEvaluators;
         this.isDescendingValues = descendingValues;
         this.sortWindowSize = sortWindowSize;
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
@@ -84,7 +88,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         boolean stringTypes[] = new boolean[sortCriteriaExpressions.length];
 
         int count = 0;
-        for(ExprNode node : sortCriteriaExpressions)
+        for(ExprEvaluator node : sortCriteriaEvaluators)
         {
             if (node.getType() == String.class)
             {
@@ -281,7 +285,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         eventsPerStream[0] = event;
     	Object[] result = new Object[sortCriteriaExpressions.length];
     	int count = 0;
-    	for(ExprNode expr : sortCriteriaExpressions)
+    	for(ExprEvaluator expr : sortCriteriaEvaluators)
     	{
             result[count++] = expr.evaluate(eventsPerStream, true, exprEvaluatorContext);
     	}

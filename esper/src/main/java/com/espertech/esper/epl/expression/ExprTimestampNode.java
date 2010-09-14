@@ -18,7 +18,7 @@ import com.espertech.esper.schedule.TimeProvider;
 /**
  * Represents the CURRENT_TIMESTAMP() function or reserved keyword in an expression tree.
  */
-public class ExprTimestampNode extends ExprNode
+public class ExprTimestampNode extends ExprNode implements ExprEvaluator
 {
     private static final long serialVersionUID = -6332243334897136751L;
 
@@ -27,6 +27,11 @@ public class ExprTimestampNode extends ExprNode
      */
     public ExprTimestampNode()
     {
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     public void validate(StreamTypeService streamTypeService,

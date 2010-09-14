@@ -34,7 +34,7 @@ public class ExprFirstEverNode extends ExprAggregateNode
         {
             throw new ExprValidationException("First aggregation node must have 1 child nodes");
         }
-        return new ExprFirstEverNodeFactory(this.getChildNodes().get(0).getType());
+        return new ExprFirstEverNodeFactory(this.getChildNodes().get(0).getExprEvaluator().getType());
     }
 
     protected String getAggregationFunctionName()

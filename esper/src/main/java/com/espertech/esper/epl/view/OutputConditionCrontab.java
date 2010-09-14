@@ -11,10 +11,11 @@ package com.espertech.esper.epl.view;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.core.StreamTypeServiceImpl;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.schedule.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
@@ -65,12 +66,12 @@ public final class OutputConditionCrontab implements OutputCondition
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
 
         // Validate the expression
-        ExprNode[] expressions = new ExprNode[scheduleSpecExpressionList.size()];
+        ExprEvaluator[] expressions = new ExprEvaluator[scheduleSpecExpressionList.size()];
         int count = 0;
         for (ExprNode parameters : scheduleSpecExpressionList)
         {
             ExprNode node = parameters.getValidatedSubtree(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
-            expressions[count++] = node;
+            expressions[count++] = node.getExprEvaluator();
         }
 
         try
@@ -136,11 +137,11 @@ public final class OutputConditionCrontab implements OutputCondition
         context.getSchedulingService().add(scheduleSpec, handle, scheduleSlot);
     }
 
-    private static Object[] evaluate(ExprNode[] parameters, ExprEvaluatorContext exprEvaluatorContext)
+    private static Object[] evaluate(ExprEvaluator[] parameters, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object[] results = new Object[parameters.length];
         int count = 0;
-        for (ExprNode expr : parameters)
+        for (ExprEvaluator expr : parameters)
         {
             try
             {

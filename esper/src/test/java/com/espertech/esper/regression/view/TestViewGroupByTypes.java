@@ -23,7 +23,7 @@ public class TestViewGroupByTypes extends TestCase
 
         assertEquals(int.class, stmt.getEventType().getPropertyType("intPrimitive"));
         assertEquals(Long.class, stmt.getEventType().getPropertyType("longBoxed"));
-        assertEquals(double.class, stmt.getEventType().getPropertyType("stddev"));
+        assertEquals(Double.class, stmt.getEventType().getPropertyType("stddev"));
         assertEquals(8, stmt.getEventType().getPropertyNames().length);
     }
 }

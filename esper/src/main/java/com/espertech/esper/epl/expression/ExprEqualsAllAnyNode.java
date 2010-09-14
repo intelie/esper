@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Represents an equals-for-group (= ANY/ALL/SOME (expression list)) comparator in a expression tree.
  */
-public class ExprEqualsAllAnyNode extends ExprNode
+public class ExprEqualsAllAnyNode extends ExprNode implements ExprEvaluator
 {
     private final boolean isNot;
     private final boolean isAll;
@@ -28,6 +28,9 @@ public class ExprEqualsAllAnyNode extends ExprNode
     private boolean mustCoerce;
     private SimpleNumberCoercer coercer;
     private boolean hasCollectionOrArray;
+
+    private transient ExprEvaluator[] evaluators;
+
     private static final long serialVersionUID = -2410457251623137179L;
 
     /**
@@ -39,6 +42,11 @@ public class ExprEqualsAllAnyNode extends ExprNode
     {
         this.isNot = isNotEquals;
         this.isAll = isAll;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     /**
@@ -67,8 +75,10 @@ public class ExprEqualsAllAnyNode extends ExprNode
             throw new IllegalStateException("Equals group node does not have 1 or more child nodes");
         }
 
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
+
         // Must be the same boxed type returned by expressions under this
-        Class typeOne = JavaClassHelper.getBoxedType(this.getChildNodes().get(0).getType());
+        Class typeOne = JavaClassHelper.getBoxedType(evaluators[0].getType());
 
         // collections, array or map not supported
         if ((typeOne.isArray()) || (JavaClassHelper.isImplementsInterface(typeOne, Collection.class)) || (JavaClassHelper.isImplementsInterface(typeOne, Map.class)))
@@ -81,7 +91,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
         hasCollectionOrArray = false;
         for (int i = 0; i < this.getChildNodes().size() - 1; i++)
         {
-            Class propType = this.getChildNodes().get(i + 1).getType();
+            Class propType = evaluators[i + 1].getType();
             if (propType.isArray())
             {
                 hasCollectionOrArray = true;
@@ -144,7 +154,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object leftResult = evaluators[0].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
         if (hasCollectionOrArray)
         {
@@ -189,7 +199,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult != null)
                 {
@@ -233,7 +243,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult != null)
                 {
@@ -277,7 +287,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -387,7 +397,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -502,7 +512,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             int len = this.getChildNodes().size() - 1;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (leftResult == null)
                 {
@@ -550,7 +560,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -594,7 +604,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -707,7 +717,7 @@ public class ExprEqualsAllAnyNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {

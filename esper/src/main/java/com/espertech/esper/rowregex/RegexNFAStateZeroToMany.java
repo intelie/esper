@@ -1,6 +1,7 @@
 package com.espertech.esper.rowregex;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
@@ -9,7 +10,7 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
  */
 public class RegexNFAStateZeroToMany extends RegexNFAStateBase implements RegexNFAState
 {
-    private ExprNode exprNode;
+    private ExprEvaluator exprNode;
 
     /**
      * Ctor.
@@ -23,7 +24,7 @@ public class RegexNFAStateZeroToMany extends RegexNFAStateBase implements RegexN
     public RegexNFAStateZeroToMany(String nodeNum, String variableName, int streamNum, boolean multiple, boolean isGreedy, ExprNode exprNode)
     {
         super(nodeNum, variableName, streamNum, multiple, isGreedy);
-        this.exprNode = exprNode;
+        this.exprNode = exprNode.getExprEvaluator();
         this.addState(this);
     }
 
@@ -47,7 +48,7 @@ public class RegexNFAStateZeroToMany extends RegexNFAStateBase implements RegexN
         {
             return "ZeroMany-Unfiltered";            
         }
-        return "ZeroMany-Filter(" + exprNode.toExpressionString() + ")";
+        return "ZeroMany-Filtered";
     }
 
 }

@@ -14,15 +14,16 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.core.StatementResultService;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.spec.OnTriggerWindowUpdateDesc;
-import com.espertech.esper.event.*;
+import com.espertech.esper.event.EventBeanCopyMethod;
+import com.espertech.esper.event.EventPropertyWriter;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.util.TypeWidener;
 import com.espertech.esper.util.TypeWidenerFactory;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.StatementStopService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +41,7 @@ public class NamedWindowOnUpdateView extends NamedWindowOnExprBaseView
     private static final Log log = LogFactory.getLog(NamedWindowOnUpdateView.class);
     private EventBean[] lastResult;
     private final StatementResultService statementResultService;
-    private final ExprNode[] expressions;
+    private final ExprEvaluator[] expressions;
     private final String[] propertyNames;
     private final EventPropertyWriter[] writers;
     private final EventTypeSPI eventTypeSPI;
@@ -74,14 +75,14 @@ public class NamedWindowOnUpdateView extends NamedWindowOnExprBaseView
         wideners = new TypeWidener[onTriggerDesc.getAssignments().size()];
         List<String> properties = new ArrayList<String>();
         int len = onTriggerDesc.getAssignments().size();
-        expressions = new ExprNode[len];
+        expressions = new ExprEvaluator[len];
         writers = new EventPropertyWriter[len];
         notNullableField = new boolean[len];
 
         for (int i = 0; i < onTriggerDesc.getAssignments().size(); i++)
         {
             OnTriggerSetAssignment assignment = onTriggerDesc.getAssignments().get(i);
-            expressions[i] = assignment.getExpression();
+            expressions[i] = assignment.getExpression().getExprEvaluator();
             EventPropertyDescriptor writableProperty = eventTypeSPI.getWritableProperty(assignment.getVariableName());
 
             if (writableProperty == null)
@@ -92,7 +93,7 @@ public class NamedWindowOnUpdateView extends NamedWindowOnExprBaseView
             notNullableField[i] = writableProperty.getPropertyType().isPrimitive();
 
             properties.add(assignment.getVariableName());
-            wideners[i] = TypeWidenerFactory.getCheckPropertyAssignType(assignment.getExpression().toExpressionString(), assignment.getExpression().getType(),
+            wideners[i] = TypeWidenerFactory.getCheckPropertyAssignType(assignment.getExpression().toExpressionString(), assignment.getExpression().getExprEvaluator().getType(),
                     writableProperty.getPropertyType(), assignment.getVariableName());
         }
         propertyNames = properties.toArray(new String[properties.size()]);
@@ -126,7 +127,7 @@ public class NamedWindowOnUpdateView extends NamedWindowOnExprBaseView
                     Object result = expressions[i].evaluate(eventsPerStream, true, super.getExprEvaluatorContext());
 
                     if (result == null && notNullableField[i]) {
-                        log.warn("Null value returned by expression for assignment to property '" + propertyNames[i] + " is ignored as the property type is not nullable for expression '" + expressions[i].toExpressionString() + "'");
+                        log.warn("Null value returned by expression for assignment to property '" + propertyNames[i] + " is ignored as the property type is not nullable for expression");
                         continue;
                     }
 

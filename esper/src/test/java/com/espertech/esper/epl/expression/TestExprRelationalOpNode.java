@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.support.epl.SupportExprNodeUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.type.RelationalOpEnum;
@@ -100,11 +101,12 @@ public class TestExprRelationalOpNode extends TestCase
         assertEquals("10>=5", opNode.toExpressionString());
     }
 
-    private ExprRelationalOpNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight)
+    private ExprRelationalOpNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight) throws Exception
     {
         ExprRelationalOpNode relOpNode = new ExprRelationalOpNode(RelationalOpEnum.GE);
         relOpNode.addChildNode(new SupportExprNode(valueLeft, typeLeft));
         relOpNode.addChildNode(new SupportExprNode(valueRight, typeRight));
+        SupportExprNodeUtil.validate(relOpNode);
         return relOpNode;
     }
 

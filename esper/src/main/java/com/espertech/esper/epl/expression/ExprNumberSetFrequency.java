@@ -14,10 +14,16 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Expression for use within crontab to specify a frequency.
  */
-public class ExprNumberSetFrequency extends ExprNode
+public class ExprNumberSetFrequency extends ExprNode implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetFrequency.class);
+    private transient ExprEvaluator evaluator;
     private static final long serialVersionUID = -5389069399403078192L;
+
+    @Override
+    public ExprEvaluator getExprEvaluator() {
+        return this;
+    }
 
     public String toExpressionString()
     {
@@ -40,7 +46,8 @@ public class ExprNumberSetFrequency extends ExprNode
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        Class type = this.getChildNodes().get(0).getType();
+        evaluator = this.getChildNodes().get(0).getExprEvaluator();
+        Class type = evaluator.getType();
         if (!(JavaClassHelper.isNumericNonFP(type)))
         {
             throw new ExprValidationException("Frequency operator requires an integer-type parameter");
@@ -54,7 +61,7 @@ public class ExprNumberSetFrequency extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object value = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object value = evaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (value == null)
         {
             log.warn("Null value returned for frequency parameter");

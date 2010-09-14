@@ -24,7 +24,7 @@ import java.io.Serializable;
  * Superclass for filter nodes in a filter expression tree. Allow
  * validation against stream event types and evaluation of events against filter tree.
  */
-public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefItem, Serializable
+public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 0L;
 
@@ -124,7 +124,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     private ExprNode resolveInstanceMethod(ExprStaticMethodNode staticMethodNode, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException existingException, ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
-        String streamName = staticMethodNode.getClassName();
+        String streamName = staticMethodNode.getClassOrPropertyName();
 
         boolean streamFound = false;
         for (String name : streamTypeService.getStreamNames())

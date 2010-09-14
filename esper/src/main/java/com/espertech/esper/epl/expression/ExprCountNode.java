@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
@@ -34,7 +33,7 @@ public class ExprCountNode extends ExprAggregateNode
         Class childType = null;
         if (this.getChildNodes().size() > 0)
         {
-            childType = this.getChildNodes().get(0).getType();
+            childType = this.getChildNodes().get(0).getExprEvaluator().getType();
         }
 
         // Empty child node list signals count(*), does not ignore nulls

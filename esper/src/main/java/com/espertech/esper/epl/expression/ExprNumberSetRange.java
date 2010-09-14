@@ -16,9 +16,10 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * Differs from the between-expression since the value returned by evaluating is a cron-value object.
  */
-public class ExprNumberSetRange extends ExprNode
+public class ExprNumberSetRange extends ExprNode implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetRange.class);
+    private transient ExprEvaluator evaluators[];
     private static final long serialVersionUID = -3777415170380735662L;
 
     public String toExpressionString()
@@ -26,6 +27,11 @@ public class ExprNumberSetRange extends ExprNode
         return this.getChildNodes().get(0).toExpressionString() +
                 ":" +
                 this.getChildNodes().get(1).toExpressionString();
+    }
+
+    @Override
+    public ExprEvaluator getExprEvaluator() {
+        return this;
     }
 
     public boolean isConstantResult()
@@ -40,8 +46,9 @@ public class ExprNumberSetRange extends ExprNode
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        Class typeOne = this.getChildNodes().get(0).getType();
-        Class typeTwo = this.getChildNodes().get(1).getType();
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
+        Class typeOne = evaluators[0].getType();
+        Class typeTwo = evaluators[1].getType();
         if ((!(JavaClassHelper.isNumericNonFP(typeOne))) || (!(JavaClassHelper.isNumericNonFP(typeTwo))))
         {
             throw new ExprValidationException("Range operator requires integer-type parameters");
@@ -55,8 +62,8 @@ public class ExprNumberSetRange extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object valueLower = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-        Object valueUpper = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object valueLower = evaluators[0].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object valueUpper = evaluators[1].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (valueLower == null)
         {
             log.warn("Null value returned for lower bounds value in range parameter, using zero as lower bounds");

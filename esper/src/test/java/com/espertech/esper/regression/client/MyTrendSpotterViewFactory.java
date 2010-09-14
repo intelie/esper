@@ -27,7 +27,7 @@ public class MyTrendSpotterViewFactory extends ViewFactorySupport
         {
             throw new ViewParameterException(message);
         }
-        Class resultType = validated[0].getType();
+        Class resultType = validated[0].getExprEvaluator().getType();
         if ((resultType != Integer.class) && (resultType != int.class) &&
             (resultType != Double.class) && (resultType != double.class))
         {

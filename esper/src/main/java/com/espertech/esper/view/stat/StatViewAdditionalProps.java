@@ -1,5 +1,6 @@
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.view.ViewFieldEnum;
 
@@ -8,9 +9,9 @@ import java.util.Map;
 public class StatViewAdditionalProps
 {
     private final String[] additionalProps;
-    private final ExprNode[] additionalExpr;
+    private final ExprEvaluator[] additionalExpr;
 
-    private StatViewAdditionalProps(String[] additionalProps, ExprNode[] additionalExpr)
+    private StatViewAdditionalProps(String[] additionalProps, ExprEvaluator[] additionalExpr)
     {
         this.additionalProps = additionalProps;
         this.additionalExpr = additionalExpr;
@@ -21,7 +22,7 @@ public class StatViewAdditionalProps
         return additionalProps;
     }
 
-    public ExprNode[] getAdditionalExpr()
+    public ExprEvaluator[] getAdditionalExpr()
     {
         return additionalExpr;
     }
@@ -32,10 +33,10 @@ public class StatViewAdditionalProps
         }
 
         String[] additionalProps = new String[validated.length - startIndex];
-        ExprNode[] lastValueExpr = new ExprNode[validated.length - startIndex];
+        ExprEvaluator[] lastValueExpr = new ExprEvaluator[validated.length - startIndex];
         for (int i = startIndex; i < validated.length; i++) {
             additionalProps[i - startIndex] = validated[i].toExpressionString();
-            lastValueExpr[i - startIndex] = validated[i];
+            lastValueExpr[i - startIndex] = validated[i].getExprEvaluator();
         }
         return new StatViewAdditionalProps(additionalProps, lastValueExpr);
     }

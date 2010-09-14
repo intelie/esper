@@ -30,6 +30,7 @@ import com.espertech.esper.rowregex.*;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.*;
+import com.espertech.esper.type.StringValue;
 import com.espertech.esper.util.PlaceholderParseException;
 import com.espertech.esper.util.PlaceholderParser;
 import org.antlr.runtime.tree.Tree;
@@ -264,9 +265,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case WINDOW_AGGREG:
                 leaveAggregate(node);
                 break;
-            case LIB_FUNCTION:
+            case LIB_FUNC_CHAIN:
             	leaveLibFunction(node);
-            	break;
+                break;
             case LEFT_OUTERJOIN_EXPR:
             case RIGHT_OUTERJOIN_EXPR:
             case FULL_OUTERJOIN_EXPR:
@@ -484,20 +485,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         // This is for automatic expression tree building.
         if (!astExprNodeMap.isEmpty())
         {
-            ExprNode thisEvalNode = astExprNodeMap.get(node);
-            for (int i = 0; i < node.getChildCount(); i++)
-            {
-                Tree childNode = node.getChild(i);
-
-                ExprNode childEvalNode = astExprNodeMap.get(childNode);
-                // If there was an expression node generated for the child node, and there is a current expression node,
-                // add it to the current expression node (thisEvalNode)
-                if ((childEvalNode != null) && (thisEvalNode != null))
-                {
-                    thisEvalNode.addChildNode(childEvalNode);
-                    astExprNodeMap.remove(childNode);
-                }
-            }
+            mapChildASTToChildExprNode(node);
         }
 
         // For each AST child node of this AST node that generated an EvalNode add the EvalNode as a child
@@ -529,6 +517,24 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     thisRegexNode.addChildNode(childEvalNode);
                     astRowRegexNodeMap.remove(childNode);
                 }
+            }
+        }
+    }
+
+    private void mapChildASTToChildExprNode(Tree node)
+    {
+        ExprNode thisEvalNode = astExprNodeMap.get(node);
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            Tree childNode = node.getChild(i);
+
+            ExprNode childEvalNode = astExprNodeMap.get(childNode);
+            // If there was an expression node generated for the child node, and there is a current expression node,
+            // add it to the current expression node (thisEvalNode)
+            if ((childEvalNode != null) && (thisEvalNode != null))
+            {
+                thisEvalNode.addChildNode(childEvalNode);
+                astExprNodeMap.remove(childNode);
             }
         }
     }
@@ -1764,9 +1770,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.getReferencedVariables().add(propertyName);
     }
 
-    private void leaveLibFunction(Tree node)
+    private void leaveLibFunctionOld(Tree node)
     {
-    	log.debug(".leaveLibFunction");
+    	log.debug(".leaveLibFunctionOld");
 
         String childNodeText = node.getChild(0).getText();
         if ((childNodeText.toLowerCase().equals("max")) || (childNodeText.toLowerCase().equals("min")))
@@ -1778,7 +1784,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         if (node.getChild(0).getType() == CLASS_IDENT)
         {
             String className = node.getChild(0).getText();
-            String methodName = ASTConstantHelper.removeTicks(node.getChild(1).getText());
+            String methodName = node.getChild(1).getText();
             astExprNodeMap.put(node, new ExprStaticMethodNode(className, methodName,  configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
             return;
         }
@@ -1815,6 +1821,105 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         throw new IllegalStateException("Unknown method named '" + childNodeText + "' could not be resolved");
+    }
+
+    private void leaveLibFunction(Tree node)
+    {
+    	log.debug(".leaveLibFunction");
+
+        // Single chain can include a class name or property name.
+        // As the current node does not generate any expression for this 1-element chain, forward expression to this node.
+        if (node.getChildCount() == 1) {
+            leaveLibFunctionOld(node.getChild(0));
+            mapChildASTToChildExprNode(node.getChild(0));
+            ExprNode generated = astExprNodeMap.remove(node.getChild(0));
+            astExprNodeMap.put(node, generated);
+            return;
+        }
+        throw new IllegalArgumentException("Lib chain not handled");
+
+        /*
+        List<ExprChainedSpec> chained = new ArrayList<ExprChainedSpec>();
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Tree chainElement = node.getChild(i);
+
+            if (chainElement.getChild(0).getType() == EVENT_PROP_EXPR) {
+                String eventProperty = ASTFilterSpecHelper.getPropertyName(chainElement.getChild(0), 0);
+                chained.add(new ExprChainedSpec(eventProperty));
+            }
+
+            int count = 0;
+            String className = null;
+            if (chainElement.getChild(count).getType() == CLASS_IDENT) {
+                className = ASTConstantHelper.removeTicks(chainElement.getChild(count).getText());
+            }
+            count++;
+
+            String methodName = ASTConstantHelper.removeTicks(chainElement.getChild(count).getText());
+            count++;
+
+            List<ExprNode> parameters = new ArrayList<ExprNode>();
+            for (int exprNum = count; exprNum < chainElement.getChildCount(); exprNum++) {
+                ExprNode parameter = astExprNodeMap.remove(chainElement.getChild(exprNum));
+                parameters.add(parameter);
+            }
+            chained.add(new ExprChainedSpec(methodName, parameters, className));
+        }
+
+        /*
+        if (node.getChild(0).getType() == CLASS_IDENT)
+        {
+            String className = node.getChild(0).getText();
+            String methodName = (node.getChild(1).getText());
+            astExprNodeMap.put(node, new ExprStaticMethodNode(className, methodName,  configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
+            return;
+        }
+        */
+
+        //astExprNodeMap.put(node, new ExprChainedNode(chained));
+    }
+
+    private boolean handleAdditionalKnownFunc(Tree node)
+    {
+        String childNodeText = node.getChild(0).getText();
+        if ((childNodeText.toLowerCase().equals("max")) || (childNodeText.toLowerCase().equals("min")))
+        {
+            handleMinMax(node);
+            return true;
+        }
+
+        boolean isDistinct = false;
+        if ((node.getChild(1) != null) && (node.getChild(1).getType() == DISTINCT))
+        {
+            isDistinct = true;
+        }
+
+        // try plug-in aggregation function
+        try
+        {
+            AggregationSupport aggregation = engineImportService.resolveAggregation(childNodeText);
+
+            astExprNodeMap.put(node, new ExprPlugInAggFunctionNode(isDistinct, aggregation, childNodeText));
+            return true;
+        }
+        catch (EngineImportUndefinedException e)
+        {
+            // Not an aggretaion function
+        }
+        catch (EngineImportException e)
+        {
+            throw new IllegalStateException("Error resolving aggregation: " + e.getMessage(), e);
+        }
+
+        // try built-in expanded set of aggregation functions
+        ExprNode extentedBuiltIn = engineImportService.resolveAggExtendedBuiltin(childNodeText, isDistinct);
+        if (extentedBuiltIn != null)
+        {
+            astExprNodeMap.put(node, extentedBuiltIn);
+            return true;
+        }
+
+        return false;
     }
 
     private void leaveEqualsExpr(Tree node)

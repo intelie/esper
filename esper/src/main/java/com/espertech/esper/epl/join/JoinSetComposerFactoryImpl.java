@@ -9,10 +9,7 @@
 package com.espertech.esper.epl.join;
 
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.expression.ExprAndNode;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.plan.*;
 import com.espertech.esper.epl.join.table.*;
@@ -292,7 +289,8 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 determineIndexing(filterForIndexing, streamTypes[polledViewNum], streamTypes[streamViewNum], polledViewNum, streamViewNum);
 
         HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[polledViewNum];
-        queryStrategies[streamViewNum] = new HistoricalDataQueryStrategy(streamViewNum, polledViewNum, viewable, isOuterJoin, outerJoinEqualsNode,
+        ExprEvaluator outerJoinEqualsNodeEval = outerJoinEqualsNode == null ? null : outerJoinEqualsNode.getExprEvaluator();
+        queryStrategies[streamViewNum] = new HistoricalDataQueryStrategy(streamViewNum, polledViewNum, viewable, isOuterJoin, outerJoinEqualsNodeEval,
                 indexStrategies.getFirst(), indexStrategies.getSecond());
 
         // for strictly historical joins, create a query strategy for the non-subordinate historical view
@@ -319,7 +317,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             }
 
             viewable = (HistoricalEventViewable) streamViews[streamViewNum];
-            queryStrategies[polledViewNum] = new HistoricalDataQueryStrategy(polledViewNum, streamViewNum, viewable, isOuterJoin, outerJoinEqualsNode,
+            queryStrategies[polledViewNum] = new HistoricalDataQueryStrategy(polledViewNum, streamViewNum, viewable, isOuterJoin, outerJoinEqualsNodeEval,
                     new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
         }
 

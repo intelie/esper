@@ -45,10 +45,10 @@ public class ExprRateAggNode extends ExprAggregateNode
                 intervalMSec = Math.round(secInterval * 1000d);
             }
             else if (first instanceof ExprConstantNode) {
-                if (!JavaClassHelper.isNumeric(first.getType())) {
+                if (!JavaClassHelper.isNumeric(first.getExprEvaluator().getType())) {
                     throw new ExprValidationException(message);
                 }
-                Number num = (Number) first.evaluate(null, true, exprEvaluatorContext);
+                Number num = (Number) first.getExprEvaluator().evaluate(null, true, exprEvaluatorContext);
                 intervalMSec = Math.round(num.doubleValue() * 1000d);
             }
             else {
@@ -59,7 +59,7 @@ public class ExprRateAggNode extends ExprAggregateNode
         }
         else {
             String message = "The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation";
-            Class boxedParamOne = JavaClassHelper.getBoxedType(first.getType());
+            Class boxedParamOne = JavaClassHelper.getBoxedType(first.getExprEvaluator().getType());
             if (boxedParamOne != Long.class) {
                 throw new ExprValidationException(message);
             }
@@ -70,7 +70,7 @@ public class ExprRateAggNode extends ExprAggregateNode
                 throw new ExprValidationException("The rate aggregation function does not allow the current engine timestamp as a parameter");
             }
             if (this.getChildNodes().size() > 1) {
-                if (!JavaClassHelper.isNumeric(this.getChildNodes().get(1).getType())) {
+                if (!JavaClassHelper.isNumeric(this.getChildNodes().get(1).getExprEvaluator().getType())) {
                     throw new ExprValidationException("The rate aggregation function accepts an expression returning a numeric value to accumulate as an optional second parameter");
                 }
             }

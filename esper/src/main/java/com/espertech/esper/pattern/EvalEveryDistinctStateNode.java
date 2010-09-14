@@ -8,14 +8,17 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -27,7 +30,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
     private final Map<EvalStateNode, Set<MultiKeyUntyped>> spawnedNodes;
     private final MatchedEventMap beginState;
     private final PatternContext context;
-    private final List<ExprNode> expressions;
+    private final ExprEvaluator[] expressions;
     private final MatchedEventConvertor matchedEventConvertor;
 
     /**
@@ -43,7 +46,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
                                   EvalEveryDistinctNode everyNode,
                                   MatchedEventMap beginState,
                                   PatternContext context,
-                                  List<ExprNode> expressions,
+                                  ExprEvaluator[] expressions,
                                   MatchedEventConvertor matchedEventConvertor)
     {
         super(everyNode, parentNode, null);
@@ -227,10 +230,10 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
     private MultiKeyUntyped getKeys(MatchedEventMap currentState)
     {
         EventBean[] eventsPerStream = matchedEventConvertor.convert(currentState);
-        Object[] keys = new Object[expressions.size()];
+        Object[] keys = new Object[expressions.length];
         for (int i = 0; i < keys.length; i++)
         {
-            keys[i] = expressions.get(i).evaluate(eventsPerStream, true, context);
+            keys[i] = expressions[i].evaluate(eventsPerStream, true, context);
         }
         return new MultiKeyUntyped(keys);
     }

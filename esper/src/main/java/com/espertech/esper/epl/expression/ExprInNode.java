@@ -25,13 +25,16 @@ import java.util.*;
 /**
  * Represents the in-clause (set check) function in an expression tree.
  */
-public class ExprInNode extends ExprNode
+public class ExprInNode extends ExprNode implements ExprEvaluator
 {
     private final boolean isNotIn;
 
     private boolean mustCoerce;
     private boolean hasCollectionOrArray;
-    private SimpleNumberCoercer coercer;
+
+    private transient SimpleNumberCoercer coercer;
+    private transient ExprEvaluator[] evaluators;
+
     private static final long serialVersionUID = -601723009914169907L;
 
     /**
@@ -43,6 +46,11 @@ public class ExprInNode extends ExprNode
         this.isNotIn = isNotIn;
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
+    
     /**
      * Returns true for not-in, false for regular in
      * @return false for "val in (a,b,c)" or true for "val not in (a,b,c)"
@@ -58,9 +66,10 @@ public class ExprInNode extends ExprNode
         {
             throw new ExprValidationException("The IN operator requires at least 2 child expressions");
         }
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
 
         // Must be the same boxed type returned by expressions under this
-        Class typeOne = JavaClassHelper.getBoxedType(this.getChildNodes().get(0).getType());
+        Class typeOne = JavaClassHelper.getBoxedType(evaluators[0].getType());
 
         // collections, array or map not supported
         if ((typeOne.isArray()) || (JavaClassHelper.isImplementsInterface(typeOne, Collection.class)) || (JavaClassHelper.isImplementsInterface(typeOne, Map.class)))
@@ -73,7 +82,7 @@ public class ExprInNode extends ExprNode
         hasCollectionOrArray = false;
         for (int i = 0; i < this.getChildNodes().size() - 1; i++)
         {
-            Class propType = this.getChildNodes().get(i + 1).getType();
+            Class propType = evaluators[i + 1].getType();
             if (propType == null)
             {
                 continue;
@@ -135,7 +144,7 @@ public class ExprInNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object inPropResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object inPropResult = evaluators[0].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
         if (!hasCollectionOrArray)
         {
@@ -152,7 +161,7 @@ public class ExprInNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {
@@ -189,7 +198,7 @@ public class ExprInNode extends ExprNode
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object rightResult = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null)
                 {

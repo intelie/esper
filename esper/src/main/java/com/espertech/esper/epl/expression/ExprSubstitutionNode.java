@@ -69,6 +69,11 @@ public class ExprSubstitutionNode extends ExprNode
         throw new EPException(ERROR_MSG);
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        throw new EPException(ERROR_MSG);
+    }
+
     public String toExpressionString()
     {
         throw new EPException(ERROR_MSG);

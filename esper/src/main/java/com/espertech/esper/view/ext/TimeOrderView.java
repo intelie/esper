@@ -8,12 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.view.ext;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -45,6 +46,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
     private final StatementContext statementContext;
     private final TimeOrderViewFactory timeOrderViewFactory;
     private final ExprNode timestampExpression;
+    private final ExprEvaluator timestampEvaluator;
     private final long intervalSize;
     private final IStreamTimeOrderRandomAccess optionalSortedRandomAccess;
     private final ScheduleSlot scheduleSlot;
@@ -69,6 +71,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
     public TimeOrderView( StatementContext statementContext,
                           TimeOrderViewFactory timeOrderViewFactory,
                           ExprNode timestampExpr,
+                          ExprEvaluator timestampEvaluator,
                           long intervalSize,
                           IStreamTimeOrderRandomAccess optionalSortedRandomAccess,
                           boolean isRemoveStreamHandling)
@@ -76,6 +79,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         this.statementContext = statementContext;
         this.timeOrderViewFactory = timeOrderViewFactory;
         this.timestampExpression = timestampExpr;
+        this.timestampEvaluator = timestampEvaluator;
         this.intervalSize = intervalSize;
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
         this.scheduleSlot = statementContext.getScheduleBucket().allocateSlot();
@@ -163,7 +167,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
                 // get timestamp of event
                 EventBean newEvent = newData[i];
                 eventsPerStream[0] = newEvent;
-                Long timestamp = (Long) timestampExpression.evaluate(eventsPerStream, true, statementContext);
+                Long timestamp = (Long) timestampEvaluator.evaluate(eventsPerStream, true, statementContext);
 
                 // if the event timestamp indicates its older then the tail of the window, release it
                 if (timestamp < windowTailTime)

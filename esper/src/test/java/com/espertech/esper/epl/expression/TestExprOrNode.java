@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.support.epl.SupportExprNodeUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.support.epl.SupportBoolExprNode;
@@ -52,20 +53,23 @@ public class TestExprOrNode extends TestCase
         }
     }
 
-    public void testEvaluate()
+    public void testEvaluate() throws Exception
     {
         orNode.addChildNode(new SupportBoolExprNode(true));
         orNode.addChildNode(new SupportBoolExprNode(false));
+        SupportExprNodeUtil.validate(orNode);
         assertTrue( (Boolean) orNode.evaluate(null, false, null));
 
         orNode = new ExprOrNode();
         orNode.addChildNode(new SupportBoolExprNode(false));
         orNode.addChildNode(new SupportBoolExprNode(false));
+        SupportExprNodeUtil.validate(orNode);
         assertFalse( (Boolean) orNode.evaluate(null, false, null));
 
         orNode = new ExprOrNode();
         orNode.addChildNode(new SupportExprNode(null, Boolean.class));
         orNode.addChildNode(new SupportExprNode(false));
+        SupportExprNodeUtil.validate(orNode);
         assertNull(orNode.evaluate(null, false, null));
     }
 

@@ -47,7 +47,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
         if (validated.length < 1) {
             throw new ViewParameterException(errorMessage);
         }
-        if (!JavaClassHelper.isNumeric(validated[0].getType()))
+        if (!JavaClassHelper.isNumeric(validated[0].getExprEvaluator().getType()))
         {
             throw new ViewParameterException(errorMessage);
         }

@@ -189,6 +189,7 @@ tokens
 	EXPRCOL;
 	CONCAT;	
 	LIB_FUNCTION;
+	LIB_FUNC_CHAIN;
 	UNARY_MINUS;
 	TIME_PERIOD;
 	ARRAY_EXPR;
@@ -1305,10 +1306,25 @@ eventPropertyOrLibFunction
 	;
 	
 libFunction
+	: libFunctionWithClass (DOT libFunctionChained)*
+	  -> ^(LIB_FUNC_CHAIN libFunctionWithClass libFunctionChained*)
+	;
+	
+libFunctionChained
+	: (eventPropertyAtomic) => eventPropertyAtomic 
+	| libFunctionNoClass
+	;
+	
+libFunctionWithClass
 	: (classIdentifierNonGreedy DOT)? funcIdent LPAREN (libFunctionArgs)? RPAREN
 	  -> ^(LIB_FUNCTION classIdentifierNonGreedy? funcIdent libFunctionArgs?)
 	;	
-	
+
+libFunctionNoClass
+	: funcIdent LPAREN (libFunctionArgs)? RPAREN
+	  -> ^(LIB_FUNCTION funcIdent libFunctionArgs?)
+	;	
+
 funcIdent
 	: escapableIdent
 	| max=MAX -> IDENT[$max]

@@ -43,7 +43,7 @@ public class SubselectEvalStrategyFactory
         ExprNode valueExpr = subselectExpression.getChildNodes().get(0);
 
         // Must be the same boxed type returned by expressions under this
-        Class typeOne = JavaClassHelper.getBoxedType(subselectExpression.getChildNodes().get(0).getType());
+        Class typeOne = JavaClassHelper.getBoxedType(subselectExpression.getChildNodes().get(0).getExprEvaluator().getType());
 
         // collections, array or map not supported
         if ((typeOne.isArray()) || (JavaClassHelper.isImplementsInterface(typeOne, Collection.class)) || (JavaClassHelper.isImplementsInterface(typeOne, Map.class)))
@@ -54,7 +54,7 @@ public class SubselectEvalStrategyFactory
         Class typeTwo;
         if (subselectExpression.getSelectClause() != null)
         {
-            typeTwo = subselectExpression.getSelectClause().getType();
+            typeTwo = subselectExpression.getSelectClause().getExprEvaluator().getType();
         }
         else
         {
@@ -82,11 +82,13 @@ public class SubselectEvalStrategyFactory
             Class compareType = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
             RelationalOpEnum.Computer computer = relationalOp.getComputer(compareType, typeOne, typeTwo);
 
+            ExprEvaluator selectClause = subselectExpression.getSelectClause() == null ? null : subselectExpression.getSelectClause().getExprEvaluator();
+            ExprEvaluator filterExpr = subselectExpression.getFilterExpr();
             if (isAny)
             {
-                return new SubselectEvalStrategyRelOpAny(computer, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
+                return new SubselectEvalStrategyRelOpAny(computer, valueExpr.getExprEvaluator(),selectClause ,filterExpr);
             }
-            return new SubselectEvalStrategyRelOpAll(computer, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
+            return new SubselectEvalStrategyRelOpAll(computer, valueExpr.getExprEvaluator(), selectClause, filterExpr);
         }
 
         // Get the common type such as Bool, String or Double and Long
@@ -116,17 +118,20 @@ public class SubselectEvalStrategyFactory
             }
         }
 
+        ExprEvaluator value = valueExpr.getExprEvaluator();
+        ExprEvaluator select = subselectExpression.getSelectClause() == null ? null : subselectExpression.getSelectClause().getExprEvaluator();
+        ExprEvaluator filter = subselectExpression.getFilterExpr() == null ? null : subselectExpression.getFilterExpr();
         if (isAll)
         {
-            return new SubselectEvalStrategyEqualsAll(isNot, mustCoerce, coercionType, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
+            return new SubselectEvalStrategyEqualsAll(isNot, mustCoerce, coercionType, value, select, filter);
         }
         else if (isAny)
         {
-            return new SubselectEvalStrategyEqualsAny(isNot, mustCoerce, coercionType, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
+            return new SubselectEvalStrategyEqualsAny(isNot, mustCoerce, coercionType, value, select, filter);
         }
         else
         {
-            return new SubselectEvalStrategyEqualsIn(isNot, mustCoerce, coercionType, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
+            return new SubselectEvalStrategyEqualsIn(isNot, mustCoerce, coercionType, value, select, filter);
         }
     }
 }

@@ -123,9 +123,9 @@ public class GroupByViewFactory implements ViewFactory
     public View makeView(StatementContext statementContext)
     {
         if (isReclaimAged) {
-            return new GroupByViewReclaimAged(statementContext, criteriaExpressions, reclaimMaxAge, reclaimFrequency);
+            return new GroupByViewReclaimAged(statementContext, criteriaExpressions, ExprNodeUtility.getEvaluators(criteriaExpressions), reclaimMaxAge, reclaimFrequency);
         }
-        return new GroupByViewImpl(statementContext, criteriaExpressions);
+        return new GroupByViewImpl(statementContext, criteriaExpressions, ExprNodeUtility.getEvaluators(criteriaExpressions));
     }
 
     public EventType getEventType()

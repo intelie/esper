@@ -9,18 +9,20 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.agg.AggregationMethodFactory;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.agg.AggregationMethod;
+import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.agg.AggregationResultFuture;
+import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.JavaClassHelper;
 
-import java.util.List;
-import java.util.TreeMap;
-import java.util.Map;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Base expression node that represents an aggregation function such as 'sum' or 'count'.
@@ -33,7 +35,7 @@ import java.util.LinkedList;
  * Concrete subclasses must supply an aggregation state prototype node {@link AggregationMethod} that reflects
  * each group's (there may be group-by critera) current aggregation state.
  */
-public abstract class ExprAggregateNode extends ExprNode
+public abstract class ExprAggregateNode extends ExprNode implements ExprEvaluator
 {
 	private AggregationResultFuture aggregationResultFuture;
 	private int column;
@@ -76,6 +78,11 @@ public abstract class ExprAggregateNode extends ExprNode
     protected ExprAggregateNode(boolean distinct)
     {
         isDistinct = distinct;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     public boolean isConstantResult()
@@ -227,7 +234,7 @@ public abstract class ExprAggregateNode extends ExprNode
         }
 
         ExprNode child = this.getChildNodes().get(0);
-        Class childType = child.getType();
+        Class childType = child.getExprEvaluator().getType();
         if (!JavaClassHelper.isNumeric(childType))
         {
             throw new ExprValidationException("Implicit conversion from datatype '" +

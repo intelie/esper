@@ -41,7 +41,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
     private final EventType eventType;
     private final ThreadLocal<DataCache> dataCacheThreadLocal = new ThreadLocal<DataCache>();
 
-    private ExprNode[] evaluators;
+    private ExprEvaluator[] evaluators;
     private SortedSet<Integer> subordinateStreams;
     private ExprEvaluatorContext exprEvaluatorContext;
 
@@ -95,7 +95,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
                          String engineURI,
                          Map<Integer, List<ExprNode>> sqlParameters) throws ExprValidationException
     {
-        evaluators = new ExprNode[inputParameters.size()];
+        evaluators = new ExprEvaluator[inputParameters.size()];
         subordinateStreams = new TreeSet<Integer>();
         this.exprEvaluatorContext = exprEvaluatorContext;
 
@@ -107,7 +107,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
                 throw new ExprValidationException("Internal error find expression for historical stream parameter " + count + " stream " + myStreamNumber);
             }
             ExprNode evaluator = raw.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
-            evaluators[count++] = evaluator;
+            evaluators[count++] = evaluator.getExprEvaluator();
 
             ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
             visitor.visit(evaluator);

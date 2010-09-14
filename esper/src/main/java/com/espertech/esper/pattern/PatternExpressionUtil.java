@@ -84,7 +84,7 @@ public class PatternExpressionUtil
     {
         try
         {
-            return expression.evaluate(eventsPerStream, true, exprEvaluatorContext);
+            return expression.getExprEvaluator().evaluate(eventsPerStream, true, exprEvaluatorContext);
         }
         catch (RuntimeException ex)
         {

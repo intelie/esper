@@ -20,11 +20,19 @@ import com.espertech.esper.schedule.TimeProvider;
 /**
  * Represents the COALESCE(a,b,...) function is an expression tree.
  */
-public class ExprCoalesceNode extends ExprNode
+public class ExprCoalesceNode extends ExprNode implements ExprEvaluator
 {
     private Class resultType;
     private boolean[] isNumericCoercion;
+
+    private transient ExprEvaluator[] evaluators;
+
     private static final long serialVersionUID = -8276568753875819730L;
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
@@ -32,14 +40,13 @@ public class ExprCoalesceNode extends ExprNode
         {
             throw new ExprValidationException("Coalesce node must have at least 2 child nodes");
         }
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
 
         // get child expression types
         Class[] childTypes = new Class[getChildNodes().size()];
-        int count = 0;
-        for (ExprNode child : this.getChildNodes())
+        for (int i = 0; i < evaluators.length; i++)
         {
-            childTypes[count] = child.getType();
-            count++;
+            childTypes[i] = evaluators[i].getType();
         }
 
         // determine coercion type
@@ -53,21 +60,19 @@ public class ExprCoalesceNode extends ExprNode
 
         // determine which child nodes need numeric coercion
         isNumericCoercion = new boolean[getChildNodes().size()];
-        count = 0;
-        for (ExprNode child : this.getChildNodes())
+        for (int i = 0; i < evaluators.length; i++)
         {
-            if ((JavaClassHelper.getBoxedType(child.getType()) != resultType) &&
-                (child.getType() != null) && (resultType != null))
+            if ((JavaClassHelper.getBoxedType(evaluators[i].getType()) != resultType) &&
+                (evaluators[i].getType() != null) && (resultType != null))
             {
                 if (!JavaClassHelper.isNumeric(resultType))
                 {
                     throw new ExprValidationException("Implicit conversion from datatype '" +
                             resultType.getSimpleName() +
-                            "' to " + child.getType() + " is not allowed");
+                            "' to " + evaluators[i].getType() + " is not allowed");
                 }
-                isNumericCoercion[count] = true;
+                isNumericCoercion[i] = true;
             }
-            count++;
         }
     }
 
@@ -86,21 +91,19 @@ public class ExprCoalesceNode extends ExprNode
         Object value;
 
         // Look for the first non-null return value
-        int count = 0;
-        for (ExprNode childNode : this.getChildNodes())
+        for (int i = 0; i < evaluators.length; i++)
         {
-            value = childNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            value = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
             if (value != null)
             {
                 // Check if we need to coerce
-                if (isNumericCoercion[count])
+                if (isNumericCoercion[i])
                 {
                     return JavaClassHelper.coerceBoxed((Number)value, resultType);
                 }
                 return value;
             }
-            count++;
         }
 
         return null;

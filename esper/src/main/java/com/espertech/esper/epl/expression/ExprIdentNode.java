@@ -21,7 +21,7 @@ import com.espertech.esper.util.LevenshteinDistance;
 /**
  * Represents an stream property identifier in a filter expressiun tree.
  */
-public class ExprIdentNode extends ExprNode
+public class ExprIdentNode extends ExprNode implements ExprEvaluator
 {
     // select myprop from...        is a simple property, no stream supplied
     // select s0.myprop from...     is a simple property with a stream supplied, or a nested property (cannot tell until resolved)
@@ -69,6 +69,11 @@ public class ExprIdentNode extends ExprNode
         }
         this.unresolvedPropertyName = unresolvedPropertyName;
         this.streamOrPropertyName = streamOrPropertyName;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     /**

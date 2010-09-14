@@ -2,6 +2,7 @@ package com.espertech.esper.rowregex;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
@@ -23,7 +24,7 @@ public class RegexPartitionStateRepoGroup implements RegexPartitionStateRepo
     private final RegexPartitionStateRandomAccessGetter getter;
     private final Map<MultiKeyUntyped, RegexPartitionState> states;
     private final boolean hasInterval;
-    private final List<ExprNode> partitionExpressions;
+    private final ExprEvaluator[] partitionExpressions;
     private final EventBean[] eventsPerStream = new EventBean[1];
     private final ExprEvaluatorContext exprEvaluatorContext;
     private int currentCollectionSize = INITIAL_COLLECTION_MIN;
@@ -36,7 +37,7 @@ public class RegexPartitionStateRepoGroup implements RegexPartitionStateRepo
      * @param exprEvaluatorContext context for evaluating expressions
      */
     public RegexPartitionStateRepoGroup(RegexPartitionStateRandomAccessGetter getter,
-                                        List<ExprNode> partitionExpressions,
+                                        ExprEvaluator[] partitionExpressions,
                                         boolean hasInterval,
                                         ExprEvaluatorContext exprEvaluatorContext)
     {
@@ -164,10 +165,10 @@ public class RegexPartitionStateRepoGroup implements RegexPartitionStateRepo
 
     private MultiKeyUntyped getKeys(EventBean event)
     {
-        Object[] keys = new Object[partitionExpressions.size()];
+        Object[] keys = new Object[partitionExpressions.length];
         eventsPerStream[0] = event;
         int count = 0;
-        for (ExprNode node : partitionExpressions)
+        for (ExprEvaluator node : partitionExpressions)
         {
             keys[count++] = node.evaluate(eventsPerStream, true, exprEvaluatorContext);
         }

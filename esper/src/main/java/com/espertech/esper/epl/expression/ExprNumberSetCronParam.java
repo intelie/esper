@@ -18,12 +18,13 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * May have one subnode depending on the cron parameter type.
  */
-public class ExprNumberSetCronParam extends ExprNode
+public class ExprNumberSetCronParam extends ExprNode implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetCronParam.class);
-    
+
     private final CronOperatorEnum cronOperator;
     private TimeProvider timeProvider;
+    private transient ExprEvaluator evaluator;
     private static final long serialVersionUID = -1315999998249935318L;
 
     /**
@@ -33,6 +34,11 @@ public class ExprNumberSetCronParam extends ExprNode
     public ExprNumberSetCronParam(CronOperatorEnum cronOperator)
     {
         this.cronOperator = cronOperator;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     /**
@@ -79,7 +85,8 @@ public class ExprNumberSetCronParam extends ExprNode
         {
             return;
         }
-        Class type = this.getChildNodes().get(0).getType();
+        evaluator = this.getChildNodes().get(0).getExprEvaluator();
+        Class type = evaluator.getType();
         if (!(JavaClassHelper.isNumericNonFP(type)))
         {
             throw new ExprValidationException("Frequency operator requires an integer-type parameter");
@@ -101,7 +108,7 @@ public class ExprNumberSetCronParam extends ExprNode
         {
             return new CronParameter(cronOperator, null, timeProvider.getTime());
         }
-        Object value = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object value = evaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (value == null)
         {
             log.warn("Null value returned for cron parameter");

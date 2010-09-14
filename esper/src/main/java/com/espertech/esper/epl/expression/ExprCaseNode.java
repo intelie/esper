@@ -20,23 +20,26 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleNumberCoercerFactory;
 import com.espertech.esper.util.SimpleNumberCoercer;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Represents the case-when-then-else control flow function is an expression tree.
  */
-public class ExprCaseNode extends ExprNode
+public class ExprCaseNode extends ExprNode implements ExprEvaluator
 {
+    private static final long serialVersionUID = 792538321520346459L;
+
     private final boolean isCase2;
-    private List<UniformPair<ExprNode>> whenThenNodeList;
-    private ExprNode optionalCompareExprNode;
-    private ExprNode optionalElseExprNode;
     private Class resultType;
     private boolean isNumericResult;
     private boolean mustCoerce;
-    private SimpleNumberCoercer coercer;
-    private static final long serialVersionUID = 792538321520346459L;
+
+    private transient SimpleNumberCoercer coercer;
+    private transient List<UniformPair<ExprEvaluator>> whenThenNodeList;
+    private transient ExprEvaluator optionalCompareExprNode;
+    private transient ExprEvaluator optionalElseExprNode;
 
     /**
      * Ctor.
@@ -47,6 +50,11 @@ public class ExprCaseNode extends ExprNode
     public ExprCaseNode(boolean isCase2)
     {
         this.isCase2 = isCase2;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     /**
@@ -60,18 +68,34 @@ public class ExprCaseNode extends ExprNode
 
     public void validate(StreamTypeService streamTypeService_, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
+        CaseAnalysis analysis = analyzeCase();
+
+        whenThenNodeList = new ArrayList<UniformPair<ExprEvaluator>>();
+        for (UniformPair<ExprNode> pair : analysis.getWhenThenNodeList())
+        {
+            if (!isCase2) {
+                if (pair.getFirst().getExprEvaluator().getType() != Boolean.class)
+                {
+                    throw new ExprValidationException("Case node 'when' expressions must return a boolean value");
+                }
+            }
+            whenThenNodeList.add(new UniformPair<ExprEvaluator>(pair.getFirst().getExprEvaluator(), pair.getSecond().getExprEvaluator()));
+        }
+        if (analysis.getOptionalCompareExprNode() != null) {
+            optionalCompareExprNode = analysis.getOptionalCompareExprNode().getExprEvaluator();
+        }
+        if (analysis.getOptionalElseExprNode() != null) {
+            optionalElseExprNode = analysis.getOptionalElseExprNode().getExprEvaluator();
+        }
+
         if (isCase2)
         {
             validateCaseTwo();
         }
-        else
-        {
-            validateCaseOne();
-        }
 
         // Determine type of each result (then-node and else node) child node expression
         List<Class> childTypes = new LinkedList<Class>();
-        for (UniformPair<ExprNode> pair : whenThenNodeList)
+        for (UniformPair<ExprEvaluator> pair : whenThenNodeList)
         {
             childTypes.add(pair.getSecond().getType());
         }
@@ -129,30 +153,40 @@ public class ExprCaseNode extends ExprNode
 
     public String toExpressionString()
     {
+        CaseAnalysis analysis;
+        try
+        {
+             analysis = analyzeCase();
+        }
+        catch (ExprValidationException e)
+        {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
         StringBuilder buffer = new StringBuilder();
         buffer.append("case");
         if (isCase2)
         {
             buffer.append(' ');
-            buffer.append(this.getChildNodes().get(0).toExpressionString());
+            buffer.append(analysis.getOptionalCompareExprNode().toExpressionString());
         }
-        for (UniformPair<ExprNode> p : whenThenNodeList)
+        for (UniformPair<ExprNode> p : analysis.getWhenThenNodeList())
         {
             buffer.append(" when ");
             buffer.append(p.getFirst().toExpressionString());
             buffer.append(" then ");
             buffer.append(p.getSecond().toExpressionString());
         }
-        if (optionalElseExprNode != null)
+        if (analysis.getOptionalElseExprNode() != null)
         {
             buffer.append(" else ");
-            buffer.append(optionalElseExprNode.toExpressionString());
+            buffer.append(analysis.getOptionalElseExprNode().toExpressionString());
         }
         buffer.append(" end");
         return buffer.toString();
     }
 
-    private void validateCaseOne() throws ExprValidationException
+    private CaseAnalysis analyzeCaseOne() throws ExprValidationException
     {
         // Case 1 expression example:
         //      case when a=b then x [when c=d then y...] [else y]
@@ -163,27 +197,23 @@ public class ExprCaseNode extends ExprNode
             throw new ExprValidationException("Case node must have at least 2 child nodes");
         }
 
-        whenThenNodeList = new LinkedList<UniformPair<ExprNode>>();
+        List<UniformPair<ExprNode>> whenThenNodeList = new LinkedList<UniformPair<ExprNode>>();
         int numWhenThen = children.length >> 1;
         for (int i = 0; i < numWhenThen; i++)
         {
             ExprNode whenExpr = children[(i << 1)];
             ExprNode thenExpr = children[(i << 1) + 1];
-            if (whenExpr.getType() != Boolean.class)
-            {
-                throw new ExprValidationException("Case node 'when' expressions must return a boolean value");
-            }
             whenThenNodeList.add(new UniformPair<ExprNode>(whenExpr, thenExpr));
         }
+        ExprNode optionalElseExprNode = null;
         if (children.length % 2 != 0)
         {
             optionalElseExprNode = children[children.length - 1];
         }
+        return new CaseAnalysis(whenThenNodeList, null, optionalElseExprNode);
     }
 
-    @SuppressWarnings({"MultiplyOrDivideByPowerOfTwo"})
-    private void validateCaseTwo() throws ExprValidationException
-    {
+    private CaseAnalysis analyzeCaseTwo() throws ExprValidationException {
         // Case 2 expression example:
         //      case p when p1 then x [when p2 then y...] [else z]
         //
@@ -193,23 +223,28 @@ public class ExprCaseNode extends ExprNode
             throw new ExprValidationException("Case node must have at least 3 child nodes");
         }
 
-        optionalCompareExprNode = children[0];
+        ExprNode optionalCompareExprNode = children[0];
 
-        whenThenNodeList = new LinkedList<UniformPair<ExprNode>>();
+        List<UniformPair<ExprNode>> whenThenNodeList = new LinkedList<UniformPair<ExprNode>>();
         int numWhenThen = (children.length - 1) / 2;
         for (int i = 0; i < numWhenThen; i++)
         {
             whenThenNodeList.add(new UniformPair<ExprNode>(children[i * 2 + 1], children[i * 2 + 2]));
         }
+        ExprNode optionalElseExprNode = null;
         if (numWhenThen * 2 + 1 < children.length)
         {
             optionalElseExprNode = children[children.length - 1];
         }
+        return new CaseAnalysis(whenThenNodeList, optionalCompareExprNode, optionalElseExprNode);
+    }
 
+    private void validateCaseTwo() throws ExprValidationException
+    {
         // validate we can compare result types
         List<Class> comparedTypes = new LinkedList<Class>();
         comparedTypes.add(optionalCompareExprNode.getType());
-        for (UniformPair<ExprNode> pair : whenThenNodeList)
+        for (UniformPair<ExprEvaluator> pair : whenThenNodeList)
         {
             comparedTypes.add(pair.getFirst().getType());
         }
@@ -248,7 +283,7 @@ public class ExprCaseNode extends ExprNode
 
         Object caseResult = null;
         boolean matched = false;
-        for (UniformPair<ExprNode> p : whenThenNodeList)
+        for (UniformPair<ExprEvaluator> p : whenThenNodeList)
         {
             Boolean whenResult = (Boolean) p.getFirst().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
@@ -286,7 +321,7 @@ public class ExprCaseNode extends ExprNode
         Object checkResult = optionalCompareExprNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         Object caseResult = null;
         boolean matched = false;
-        for (UniformPair<ExprNode> p : whenThenNodeList)
+        for (UniformPair<ExprEvaluator> p : whenThenNodeList)
         {
             Object whenResult = p.getFirst().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
@@ -334,6 +369,45 @@ public class ExprCaseNode extends ExprNode
             Number left = coercer.coerceBoxed((Number) leftResult);
             Number right = coercer.coerceBoxed((Number) rightResult);
             return left.equals(right);
+        }
+    }
+
+    private CaseAnalysis analyzeCase() throws ExprValidationException {
+        if (isCase2)
+        {
+            return analyzeCaseTwo();
+        }
+        else
+        {
+            return analyzeCaseOne();
+        }
+    }
+
+    public static class CaseAnalysis {
+        private List<UniformPair<ExprNode>> whenThenNodeList;
+        private ExprNode optionalCompareExprNode;
+        private ExprNode optionalElseExprNode;
+
+        public CaseAnalysis(List<UniformPair<ExprNode>> whenThenNodeList, ExprNode optionalCompareExprNode, ExprNode optionalElseExprNode)
+        {
+            this.whenThenNodeList = whenThenNodeList;
+            this.optionalCompareExprNode = optionalCompareExprNode;
+            this.optionalElseExprNode = optionalElseExprNode;
+        }
+
+        public List<UniformPair<ExprNode>> getWhenThenNodeList()
+        {
+            return whenThenNodeList;
+        }
+
+        public ExprNode getOptionalCompareExprNode()
+        {
+            return optionalCompareExprNode;
+        }
+
+        public ExprNode getOptionalElseExprNode()
+        {
+            return optionalElseExprNode;
         }
     }
 }

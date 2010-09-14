@@ -8,26 +8,28 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.type.BitWiseOpEnum;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.type.BitWiseOpEnum;
+import com.espertech.esper.util.JavaClassHelper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Represents the bit-wise operators in an expression tree.
  */
-public class ExprBitWiseNode extends ExprNode {
+public class ExprBitWiseNode extends ExprNode implements ExprEvaluator {
 
     private final BitWiseOpEnum _bitWiseOpEnum;
     private BitWiseOpEnum.Computer bitWiseOpEnumComputer;
     private Class resultType;
+
+    private transient ExprEvaluator[] evaluators;
+
     private static final long serialVersionUID = 9035943176810365437L;
 
     /**
@@ -37,6 +39,11 @@ public class ExprBitWiseNode extends ExprNode {
     public ExprBitWiseNode(BitWiseOpEnum bitWiseOpEnum_)
     {
         _bitWiseOpEnum = bitWiseOpEnum_;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     /**
@@ -55,7 +62,8 @@ public class ExprBitWiseNode extends ExprNode {
             throw new ExprValidationException("BitWise node must have 2 child nodes");
         }
 
-        for (ExprNode child : getChildNodes())
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
+        for (ExprEvaluator child : evaluators)
         {
             Class childType = child.getType();
             if ((!JavaClassHelper.isBoolean(childType)) && (!JavaClassHelper.isNumeric(childType)))
@@ -66,8 +74,8 @@ public class ExprBitWiseNode extends ExprNode {
         }
 
         // Determine result type, set up compute function
-        Class childTypeOne = this.getChildNodes().get(0).getType();
-        Class childTypeTwo = this.getChildNodes().get(1).getType();
+        Class childTypeOne = evaluators[0].getType();
+        Class childTypeTwo = evaluators[1].getType();
         if ((JavaClassHelper.isFloatingPointClass(childTypeOne)) || (JavaClassHelper.isFloatingPointClass(childTypeTwo)))
         {
             throw new ExprValidationException("Invalid type for bitwise " + _bitWiseOpEnum.getComputeDescription()  + " operator");
@@ -100,8 +108,8 @@ public class ExprBitWiseNode extends ExprNode {
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object valueChildOne = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-        Object valueChildTwo = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object valueChildOne = evaluators[0].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object valueChildTwo = evaluators[1].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
         if ((valueChildOne == null) || (valueChildTwo == null))
         {

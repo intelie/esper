@@ -11,7 +11,7 @@ import com.espertech.esper.type.WildcardParameter;
 /**
  * Expression for use within crontab to specify a wildcard.
  */
-public class ExprNumberSetWildcard extends ExprNode
+public class ExprNumberSetWildcard extends ExprNode implements ExprEvaluator
 {
     private static final WildcardParameter wildcardParameter = new WildcardParameter();
     private static final long serialVersionUID = -6098833102154556698L;
@@ -19,6 +19,11 @@ public class ExprNumberSetWildcard extends ExprNode
     public String toExpressionString()
     {
         return "*";
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     public boolean isConstantResult()

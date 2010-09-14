@@ -18,7 +18,7 @@ import com.espertech.esper.schedule.TimeProvider;
 /**
  * Represents a constant in an expressiun tree.
  */
-public class ExprConstantNode extends ExprNode
+public class ExprConstantNode extends ExprNode implements ExprEvaluator
 {
     private Object value;
     private final Class clazz;
@@ -104,6 +104,11 @@ public class ExprConstantNode extends ExprNode
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         return value;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     public String toExpressionString()

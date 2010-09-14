@@ -64,7 +64,7 @@ public class TimeOrderViewFactory implements DataWindowViewFactory
             throw new ViewParameterException(errorMessage);
         }
 
-        if (!JavaClassHelper.isNumeric(validated[0].getType()))
+        if (!JavaClassHelper.isNumeric(validated[0].getExprEvaluator().getType()))
         {
             throw new ViewParameterException(errorMessage);
         }
@@ -140,7 +140,7 @@ public class TimeOrderViewFactory implements DataWindowViewFactory
             randomAccessGetterImpl.updated(sortedRandomAccess);
         }
 
-        return new TimeOrderView(statementContext, this, timestampExpression, intervalSize, sortedRandomAccess, isRemoveStreamHandling);
+        return new TimeOrderView(statementContext, this, timestampExpression, timestampExpression.getExprEvaluator(), intervalSize, sortedRandomAccess, isRemoveStreamHandling);
     }
 
     public EventType getEventType()

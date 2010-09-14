@@ -18,7 +18,7 @@ import com.espertech.esper.core.StatementResultListener;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.epl.core.ResultSetProcessor;
-import com.espertech.esper.epl.expression.ExprTimePeriod;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.join.JoinExecutionStrategy;
 import com.espertech.esper.epl.join.JoinSetIndicator;
 import com.espertech.esper.event.EventBeanReader;
@@ -110,7 +110,7 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
      * @param afterTimePeriod after-keyword time period
      * @param afterConditionNumberOfEvents after-keyword number of events
      */
-    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementContext statementContext, boolean isDistinct, ExprTimePeriod afterTimePeriod, Integer afterConditionNumberOfEvents)
+    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementContext statementContext, boolean isDistinct, ExprEvaluator afterTimePeriod, Integer afterConditionNumberOfEvents)
     {
         this.resultSetProcessor = resultSetProcessor;
         this.outputStrategy = outputStrategy;

@@ -53,12 +53,12 @@ public class TestExprNode extends TestCase
         ExprNode identNode = new ExprIdentNode("Integer.valueOf(\"3\")");
         ExprNode result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null, null);
         assertTrue(result instanceof ExprStaticMethodNode);
-        assertEquals(Integer.valueOf("3"), result.evaluate(null, false, null));
+        assertEquals(Integer.valueOf("3"), result.getExprEvaluator().evaluate(null, false, null));
 
         identNode = new ExprIdentNode("Integer.valueOf(\'3\')");
         result = identNode.getValidatedSubtree(typeService, methodResolutionService, null, null, null, null);
         assertTrue(result instanceof ExprStaticMethodNode);
-        assertEquals(Integer.valueOf("3"), result.evaluate(null, false, null));
+        assertEquals(Integer.valueOf("3"), result.getExprEvaluator().evaluate(null, false, null));
 
         identNode = new ExprIdentNode("UknownClass.nonexistentMethod(\"3\")");
         try

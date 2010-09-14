@@ -13,8 +13,10 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
@@ -46,6 +48,7 @@ import java.util.Map;
 public final class UniqueByPropertyView extends ViewSupport implements CloneableView
 {
     private final ExprNode[] criteriaExpressions;
+    private final ExprEvaluator[] criteriaExpressionsEvals;
     private final int numKeys;
     private final Map<MultiKey<Object>, EventBean> mostRecentEvents = new LinkedHashMap<MultiKey<Object>, EventBean>();
     private final EventBean[] eventsPerStream = new EventBean[1];
@@ -59,6 +62,7 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
     public UniqueByPropertyView(ExprNode[] criteriaExpressions, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.criteriaExpressions = criteriaExpressions;
+        this.criteriaExpressionsEvals = ExprNodeUtility.getEvaluators(criteriaExpressions);
         this.exprEvaluatorContext = exprEvaluatorContext;
         numKeys = criteriaExpressions.length;
     }
@@ -183,7 +187,7 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
         Object[] values = new Object[numKeys];
         for (int i = 0; i < numKeys; i++)
         {
-            values[i] = criteriaExpressions[i].evaluate(eventsPerStream, true, exprEvaluatorContext);
+            values[i] = criteriaExpressionsEvals[i].evaluate(eventsPerStream, true, exprEvaluatorContext);
         }
         return new MultiKey<Object>(values);
     }

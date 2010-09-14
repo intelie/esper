@@ -128,6 +128,7 @@ public final class FilterSpecCompiler
                 {
                     andNode.addChildNode(unoptimized);
                 }
+                andNode.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, statementContext);
                 exprNode = andNode;
             }
         }
@@ -212,7 +213,7 @@ public final class FilterSpecCompiler
             ExprNode validated = node.getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
             validatedNodes.add(validated);
 
-            if ((validated.getType() != Boolean.class) && ((validated.getType() != boolean.class)))
+            if ((validated.getExprEvaluator().getType() != Boolean.class) && ((validated.getExprEvaluator().getType() != boolean.class)))
             {
                 throw new ExprValidationException("Filter expression not returning a boolean value: '" + validated.toExpressionString() + "'");
             }

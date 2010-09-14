@@ -76,13 +76,18 @@ public class AggregationServiceFactory
                 else if (!aggregateNode.getChildNodes().isEmpty())
                 {
                     // Use the evaluation node under the aggregation node to obtain the aggregation value
-                    evaluators[index] = aggregateNode.getChildNodes().get(0);
+                    evaluators[index] = aggregateNode.getChildNodes().get(0).getExprEvaluator();
                 }
                 // For aggregation that doesn't evaluate any particular sub-expression, return null on evaluation
                 else
                 {
                     evaluators[index] = new ExprEvaluator() {
                         public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                        {
+                            return null;
+                        }
+
+                        public Class getType()
                         {
                             return null;
                         }
@@ -227,13 +232,17 @@ public class AggregationServiceFactory
                 else if (!aggregateNode.getChildNodes().isEmpty())
                 {
                     // Use the evaluation node under the aggregation node to obtain the aggregation value
-                    evaluator = aggregateNode.getChildNodes().get(0);
+                    evaluator = aggregateNode.getChildNodes().get(0).getExprEvaluator();
                 }
                 // For aggregation that doesn't evaluate any particular sub-expression, return null on evaluation
                 else
                 {
                     evaluator = new ExprEvaluator() {
                         public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                        {
+                            return null;
+                        }
+                        public Class getType()
                         {
                             return null;
                         }
@@ -332,7 +341,7 @@ public class AggregationServiceFactory
         {
             if (node.isConstantResult())
             {
-                prototype[count] = node.evaluate(null, true, exprEvaluatorContext);
+                prototype[count] = node.getExprEvaluator().evaluate(null, true, exprEvaluatorContext);
             }
             count++;
         }
@@ -343,10 +352,15 @@ public class AggregationServiceFactory
                 int count = 0;
                 for (ExprNode node : exprNodes)
                 {
-                    prototype[count] = node.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                    prototype[count] = node.getExprEvaluator().evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     count++;
                 }
                 return prototype;
+            }
+
+            public Class getType()
+            {
+                return Object[].class;
             }
         };
     }

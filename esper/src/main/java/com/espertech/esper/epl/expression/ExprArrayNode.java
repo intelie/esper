@@ -26,13 +26,16 @@ import java.util.List;
 /**
  * Represents an array in a filter expressiun tree.
  */
-public class ExprArrayNode extends ExprNode
+public class ExprArrayNode extends ExprNode implements ExprEvaluator
 {
     private Class arrayReturnType;
-    private transient SimpleNumberCoercer coercer;
     private boolean mustCoerce;
     private int length;
+
+    private transient SimpleNumberCoercer coercer;
     private transient Object constantResult;
+    private transient ExprEvaluator[] evaluators;
+    
     private static final long serialVersionUID = 5533223915923867651L;
 
     /**
@@ -42,9 +45,15 @@ public class ExprArrayNode extends ExprNode
     {
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         length = this.getChildNodes().size();
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
 
         // Can be an empty array with no content
         if (this.getChildNodes().size() == 0)
@@ -57,7 +66,7 @@ public class ExprArrayNode extends ExprNode
         List<Class> comparedTypes = new LinkedList<Class>();
         for (int i = 0; i < length; i++)
         {
-            comparedTypes.add(this.getChildNodes().get(i).getType());
+            comparedTypes.add(evaluators[i].getType());
         }
 
         // Determine common denominator type
@@ -101,7 +110,8 @@ public class ExprArrayNode extends ExprNode
                 results = null;  // not using a constant result
                 break;
             }
-            results[index++] = child.evaluate(null, false, exprEvaluatorContext);
+            results[index] = evaluators[index].evaluate(null, false, exprEvaluatorContext);
+            index++;
         }
 
         // Copy constants into array and coerce, if required
@@ -152,7 +162,7 @@ public class ExprArrayNode extends ExprNode
         }
 
         int index = 0;
-        for (ExprNode child : this.getChildNodes())
+        for (ExprEvaluator child : evaluators)
         {
             Object result = child.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (result != null)

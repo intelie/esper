@@ -1,5 +1,7 @@
 package com.espertech.esper.view.ext;
 
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -18,7 +20,8 @@ public class TestSortWindowView extends TestCase
     public void setUp() throws Exception
     {
         // Set up length window view and a test child view
-        myView = new SortWindowView(null, SupportExprNodeFactory.makeIdentNodesMD("volume"), new boolean[] {false}, 5, null, false, null);
+        ExprNode[] expressions = SupportExprNodeFactory.makeIdentNodesMD("volume");
+        myView = new SortWindowView(null, expressions, ExprNodeUtility.getEvaluators(expressions), new boolean[] {false}, 5, null, false, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -77,7 +80,8 @@ public class TestSortWindowView extends TestCase
     public void testViewTwoProperties() throws Exception
     {
     	// Set up a sort windows that sorts on two properties
-    	myView = new SortWindowView(null, SupportExprNodeFactory.makeIdentNodesMD("volume", "price"), new boolean[] {false, true}, 5, null, false, null);
+        ExprNode[] expressions = SupportExprNodeFactory.makeIdentNodesMD("volume", "price");
+    	myView = new SortWindowView(null, expressions, ExprNodeUtility.getEvaluators(expressions), new boolean[] {false, true}, 5, null, false, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
         

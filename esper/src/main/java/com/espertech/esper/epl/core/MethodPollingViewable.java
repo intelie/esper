@@ -8,28 +8,25 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.collection.IterablesArrayIterator;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.db.DataCache;
 import com.espertech.esper.epl.db.PollExecStrategy;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNodeIdentifierVisitor;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.epl.spec.MethodStreamSpec;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.View;
-import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.*;
 
@@ -48,7 +45,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
     private final ExprEvaluatorContext exprEvaluatorContext;
 
     private SortedSet<Integer> requiredStreams;
-    private ExprNode[] validatedExprNodes;
+    private ExprEvaluator[] validatedExprNodes;
 
     private static final EventBean[][] NULL_ROWS;
     static {
@@ -105,15 +102,16 @@ public class MethodPollingViewable implements HistoricalEventViewable
                          SchedulingService schedulingService, String engineURI, Map<Integer, List<ExprNode>> sqlParameters) throws ExprValidationException {
         Class[] paramTypes = new Class[inputParameters.size()];
         int count = 0;
-        validatedExprNodes = new ExprNode[inputParameters.size()];
+        validatedExprNodes = new ExprEvaluator[inputParameters.size()];
         requiredStreams = new TreeSet<Integer>();
         ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);
 
         for (ExprNode exprNode : inputParameters)
         {
             ExprNode validated = exprNode.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
-            validatedExprNodes[count] = validated;
-            paramTypes[count] = validated.getType();
+            ExprEvaluator evaluator = validated.getExprEvaluator();
+            validatedExprNodes[count] = evaluator;
+            paramTypes[count] = evaluator.getType();
             count++;
 
             validated.accept(visitor);

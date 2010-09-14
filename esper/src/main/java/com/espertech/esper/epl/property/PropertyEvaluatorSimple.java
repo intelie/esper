@@ -4,6 +4,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
@@ -19,7 +20,7 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
     private static final Log log = LogFactory.getLog(PropertyEvaluatorSimple.class);
     private final EventPropertyGetter getter;
     private final FragmentEventType fragmentEventType;
-    private final ExprNode filter;
+    private final ExprEvaluator filter;
     private final String propertyName;
 
     /**
@@ -29,7 +30,7 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
      * @param filter optional where-clause expression
      * @param propertyName the property name
      */
-    public PropertyEvaluatorSimple(EventPropertyGetter getter, FragmentEventType fragmentEventType, ExprNode filter, String propertyName)
+    public PropertyEvaluatorSimple(EventPropertyGetter getter, FragmentEventType fragmentEventType, ExprEvaluator filter, String propertyName)
     {
         this.fragmentEventType = fragmentEventType;
         this.getter = getter;
@@ -87,7 +88,7 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
      * Returns the filter.
      * @return filter
      */
-    public ExprNode getFilter()
+    public ExprEvaluator getFilter()
     {
         return filter;
     }
@@ -106,10 +107,6 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
         if ((other.getFilter() == null) && (this.getFilter() == null))
         {
             return true;
-        }
-        if ((other.getFilter() != null) && (this.getFilter() != null))
-        {
-            return (ExprNodeUtility.deepEquals(other.getFilter(), this.getFilter()));
         }
         return false;
     }

@@ -8,11 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.util.JavaClassHelper;
 
 /**
  * Represents the leaving() aggregate function is an expression tree.
@@ -37,7 +35,7 @@ public class ExprLeavingAggNode extends ExprAggregateNode
             throw new ExprValidationException(message);
         }
 
-        return new ExprLeavingAddNodeFactory();
+        return new ExprLeavingAggNodeFactory();
     }
 
     protected String getAggregationFunctionName()

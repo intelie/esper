@@ -19,13 +19,15 @@ import java.util.Map;
 /**
  * Represents a lesser or greater then (</<=/>/>=) expression in a filter expression tree.
  */
-public class ExprRelationalOpAllAnyNode extends ExprNode
+public class ExprRelationalOpAllAnyNode extends ExprNode implements ExprEvaluator
 {
     private final RelationalOpEnum relationalOpEnum;
     private final boolean isAll;
     private boolean hasCollectionOrArray;
 
     private RelationalOpEnum.Computer computer;
+    private transient ExprEvaluator[] evaluators;
+
     private static final long serialVersionUID = -9212002972361997109L;
 
     /**
@@ -37,6 +39,11 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
     {
         this.relationalOpEnum = relationalOpEnum;
         this.isAll = isAll;
+    }
+
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
     }
 
     public boolean isConstantResult()
@@ -69,8 +76,9 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
         {
             throw new IllegalStateException("Group relational op node must have 1 or more child nodes");
         }
+        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
 
-        Class typeOne = JavaClassHelper.getBoxedType(this.getChildNodes().get(0).getType());
+        Class typeOne = JavaClassHelper.getBoxedType(evaluators[0].getType());
 
         // collections, array or map not supported
         if ((typeOne.isArray()) || (JavaClassHelper.isImplementsInterface(typeOne, Collection.class)) || (JavaClassHelper.isImplementsInterface(typeOne, Map.class)))
@@ -83,7 +91,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
         hasCollectionOrArray = false;
         for (int i = 0; i < this.getChildNodes().size() - 1; i++)
         {
-            Class propType = this.getChildNodes().get(i + 1).getType();
+            Class propType = evaluators[i + 1].getType();
             if (propType.isArray())
             {
                 hasCollectionOrArray = true;
@@ -142,7 +150,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
             return false;
         }
 
-        Object valueLeft = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object valueLeft = evaluators[0].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         int len = this.getChildNodes().size() - 1;
 
         if (hasCollectionOrArray)
@@ -151,7 +159,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
             boolean hasRows = false;
             for (int i = 1; i <= len; i++)
             {
-                Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object valueRight = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (valueRight == null)
                 {
@@ -319,7 +327,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
             boolean hasRows = false;
             for (int i = 1; i <= len; i++)
             {
-                Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                Object valueRight = evaluators[i].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 hasRows = true;
 
                 if (valueRight != null)

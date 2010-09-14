@@ -15,6 +15,7 @@ import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.agg.AggregationService;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
@@ -35,7 +36,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
     private final SelectExprProcessor selectExprProcessor;
     private final OrderByProcessor orderByProcessor;
     private final AggregationService aggregationService;
-    private final ExprNode optionalHavingNode;
+    private final ExprEvaluator optionalHavingNode;
     private final boolean isSelectRStream;
     private final boolean isUnidirectional;
     private final ExprEvaluatorContext exprEvaluatorContext;
@@ -53,7 +54,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
     public ResultSetProcessorAggregateAll(SelectExprProcessor selectExprProcessor,
                                           OrderByProcessor orderByProcessor,
                                           AggregationService aggregationService,
-                                          ExprNode optionalHavingNode,
+                                          ExprEvaluator optionalHavingNode,
                                           boolean isSelectRStream,
                                           boolean isUnidirectional,
                                           ExprEvaluatorContext exprEvaluatorContext)
@@ -228,7 +229,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
      * Returns the optional having expression.
      * @return having expression node
      */
-    public ExprNode getOptionalHavingNode()
+    public ExprEvaluator getOptionalHavingNode()
     {
         return optionalHavingNode;
     }

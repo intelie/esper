@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.view.ViewSupport;
@@ -31,6 +32,8 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
 
     private final ExprNode expressionX;
     private final ExprNode expressionY;
+    private final ExprEvaluator expressionXEval;
+    private final ExprEvaluator expressionYEval;
     private final EventBean[] eventsPerStream = new EventBean[1];
 
     /**
@@ -61,7 +64,9 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     {
         this.statementContext = statementContext;
         this.expressionX = expressionX;
+        this.expressionXEval = expressionX.getExprEvaluator();
         this.expressionY = expressionY;
+        this.expressionYEval = expressionY.getExprEvaluator();
         this.eventType = eventType;
         this.additionalProps = additionalProps;
     }
@@ -84,8 +89,8 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
             for (int i = 0; i < newData.length; i++)
             {
                 eventsPerStream[0] = newData[i];
-                double X = ((Number) expressionX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
-                double Y = ((Number) expressionY.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double X = ((Number) expressionXEval.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double Y = ((Number) expressionYEval.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 statisticsBean.addPoint(X, Y);
             }
 
@@ -105,8 +110,8 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
             for (int i = 0; i < oldData.length; i++)
             {
                 eventsPerStream[0] = oldData[i];
-                double X = ((Number) expressionX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
-                double Y = ((Number) expressionY.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double X = ((Number) expressionXEval.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double Y = ((Number) expressionYEval.evaluate(eventsPerStream, true, statementContext)).doubleValue();
                 statisticsBean.removePoint(X, Y);
             }
         }

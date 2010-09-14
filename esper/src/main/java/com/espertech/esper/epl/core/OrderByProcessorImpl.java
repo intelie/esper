@@ -8,16 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.agg.AggregationService;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.OrderByItem;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.MultiKeyComparator;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.MultiKeyCollatingComparator;
+import com.espertech.esper.util.MultiKeyComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,8 +29,8 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 
 	private static final Log log = LogFactory.getLog(OrderByProcessorImpl.class);
 
-	private final List<OrderByItem> orderByList;
-	private final List<ExprNode> groupByNodes;
+	private final OrderByElement[] orderBy;
+	private final ExprEvaluator[] groupByNodes;
 	private final boolean needsGroupByKeys;
 	private final AggregationService aggregationService;
 
@@ -61,22 +59,21 @@ public class OrderByProcessorImpl implements OrderByProcessor {
                                   boolean isSortUsingCollator)
             throws ExprValidationException
     {
-		this.orderByList = orderByList;
-		this.groupByNodes = groupByNodes;
+		this.orderBy = toElementArray(orderByList);
+		this.groupByNodes = ExprNodeUtility.getEvaluators(groupByNodes);
 		this.needsGroupByKeys = needsGroupByKeys;
 		this.aggregationService = aggregationService;
 
-        comparator = getComparator(orderByList, isSortUsingCollator);
+        comparator = getComparator(orderBy, isSortUsingCollator);
     }
 
     public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object[] values = new Object[orderByList.size()];
+        Object[] values = new Object[orderBy.length];
         int count = 0;
-        for (OrderByItem sortPair : orderByList)
+        for (OrderByElement sortPair : orderBy)
         {
-            ExprNode sortNode = sortPair.getExprNode();
-            values[count++] = sortNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            values[count++] = sortPair.expr.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         return new MultiKeyUntyped(values);
@@ -95,13 +92,12 @@ public class OrderByProcessorImpl implements OrderByProcessor {
         EventBean[] evalEventsPerStream = new EventBean[1];
         for (EventBean event : generatingEvents)
         {
-            Object[] values = new Object[orderByList.size()];
+            Object[] values = new Object[orderBy.length];
             int countTwo = 0;
             evalEventsPerStream[0] = event;
-            for (OrderByItem sortPair : orderByList)
+            for (OrderByElement sortPair : orderBy)
             {
-                ExprNode sortNode = sortPair.getExprNode();
-                values[countTwo++] = sortNode.evaluate(evalEventsPerStream, isNewData, exprEvaluatorContext);
+                values[countTwo++] = sortPair.expr.evaluate(evalEventsPerStream, isNewData, exprEvaluatorContext);
             }
 
             sortProperties[count] = new MultiKeyUntyped(values);
@@ -189,12 +185,11 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 				aggregationService.setCurrentAccess(groupByKeys[count]);
 			}
 
-			Object[] values = new Object[orderByList.size()];
+			Object[] values = new Object[orderBy.length];
 			int countTwo = 0;
-			for (OrderByItem sortPair : orderByList)
+			for (OrderByElement sortPair : orderBy)
 			{
-				ExprNode sortNode = sortPair.getExprNode();
-				values[countTwo++] = sortNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+				values[countTwo++] = sortPair.expr.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 			}
 
 			sortProperties[count] = new MultiKeyUntyped(values);
@@ -205,10 +200,10 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 
 	private MultiKeyUntyped generateGroupKey(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
 	{
-		Object[] keys = new Object[groupByNodes.size()];
+		Object[] keys = new Object[groupByNodes.length];
 
 		int count = 0;
-		for (ExprNode exprNode : groupByNodes)
+		for (ExprEvaluator exprNode : groupByNodes)
 		{
 			keys[count] = exprNode.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 			count++;
@@ -282,12 +277,12 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 
     /**
      * Returns a comparator for order items that may sort string values using Collator.
-     * @param orderByList order-by items
+     * @param orderBy order-by items
      * @param isSortUsingCollator true for Collator string sorting
      * @return comparator
      * @throws ExprValidationException if the return type of order items cannot be determined
      */
-    protected static Comparator<MultiKeyUntyped> getComparator(List<OrderByItem> orderByList, boolean isSortUsingCollator) throws ExprValidationException
+    protected static Comparator<MultiKeyUntyped> getComparator(OrderByElement[] orderBy, boolean isSortUsingCollator) throws ExprValidationException
     {
         Comparator<MultiKeyUntyped> comparator;
 
@@ -295,11 +290,11 @@ public class OrderByProcessorImpl implements OrderByProcessor {
         {
             // determine String types
             boolean hasStringTypes = false;
-            boolean stringTypes[] = new boolean[orderByList.size()];
+            boolean stringTypes[] = new boolean[orderBy.length];
             int count = 0;
-            for (OrderByItem item : orderByList)
+            for (OrderByElement item : orderBy)
             {
-                if (item.getExprNode().getType() == String.class)
+                if (item.expr.getType() == String.class)
                 {
                     hasStringTypes = true;
                     stringTypes[count] = true;
@@ -309,29 +304,49 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 
             if (!hasStringTypes)
             {
-                comparator = new MultiKeyComparator(getIsDescendingValues(orderByList));
+                comparator = new MultiKeyComparator(getIsDescendingValues(orderBy));
             }
             else
             {
-                comparator = new MultiKeyCollatingComparator(getIsDescendingValues(orderByList), stringTypes);
+                comparator = new MultiKeyCollatingComparator(getIsDescendingValues(orderBy), stringTypes);
             }
         }
         else
         {
-            comparator = new MultiKeyComparator(getIsDescendingValues(orderByList));
+            comparator = new MultiKeyComparator(getIsDescendingValues(orderBy));
         }
 
         return comparator;
     }
 
-	private static boolean[] getIsDescendingValues(List<OrderByItem> orderByList)
+	private static boolean[] getIsDescendingValues(OrderByElement[] orderBy)
 	{
-		boolean[] isDescendingValues  = new boolean[orderByList.size()];
+		boolean[] isDescendingValues  = new boolean[orderBy.length];
 		int count = 0;
-		for(OrderByItem pair : orderByList)
+		for(OrderByElement pair : orderBy)
 		{
-			isDescendingValues[count++] = pair.isDescending();
+			isDescendingValues[count++] = pair.isDescending;
 		}
 		return isDescendingValues;
 	}
+
+    private OrderByElement[] toElementArray(List<OrderByItem> orderByList) {
+        OrderByElement[] elements = new OrderByElement[orderByList.size()];
+        int count = 0;
+        for (OrderByItem item : orderByList) {
+            elements[count++] = new OrderByElement(item.getExprNode().getExprEvaluator(), item.isDescending());
+        }
+        return elements;
+    }
+
+    public static class OrderByElement
+    {
+        private ExprEvaluator expr;
+        private boolean isDescending;
+
+        public OrderByElement(ExprEvaluator expr, boolean descending) {
+            this.expr = expr;
+            isDescending = descending;
+        }
+    }
 }

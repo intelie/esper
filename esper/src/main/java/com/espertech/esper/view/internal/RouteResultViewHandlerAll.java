@@ -6,6 +6,7 @@ import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.core.ResultSetProcessor;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
@@ -18,7 +19,7 @@ public class RouteResultViewHandlerAll implements RouteResultViewHandler
     private final boolean[] isNamedWindowInsert;
     private final EPStatementHandle epStatementHandle;
     private final ResultSetProcessor[] processors;
-    private final ExprNode[] whereClauses;
+    private final ExprEvaluator[] whereClauses;
     private final EventBean[] eventsPerStream = new EventBean[1];
     private final StatementContext statementContext;
 
@@ -30,7 +31,7 @@ public class RouteResultViewHandlerAll implements RouteResultViewHandler
      * @param whereClauses where clauses
      * @param statementContext statement services
      */
-    public RouteResultViewHandlerAll(EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, boolean[] isNamedWindowInsert, ResultSetProcessor[] processors, ExprNode[] whereClauses, StatementContext statementContext)
+    public RouteResultViewHandlerAll(EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, boolean[] isNamedWindowInsert, ResultSetProcessor[] processors, ExprEvaluator[] whereClauses, StatementContext statementContext)
     {
         this.internalEventRouter = internalEventRouter;
         this.isNamedWindowInsert = isNamedWindowInsert;

@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
  */
-public class ExprMathNode extends ExprNode
+public class ExprMathNode extends ExprNode implements ExprEvaluator
 {
     private final MathArithTypeEnum mathArithTypeEnum;
     private final boolean isIntegerDivision;
@@ -30,6 +30,8 @@ public class ExprMathNode extends ExprNode
 
     private MathArithTypeEnum.Computer arithTypeEnumComputer;
     private Class resultType;
+    private transient ExprEvaluator evaluatorLeft;
+    private transient ExprEvaluator evaluatorRight;
     private static final long serialVersionUID = 6479683588602862158L;
 
     /**
@@ -45,6 +47,11 @@ public class ExprMathNode extends ExprNode
         this.isDivisionByZeroReturnsNull = isDivisionByZeroReturnsNull;
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
@@ -54,7 +61,7 @@ public class ExprMathNode extends ExprNode
 
         for (ExprNode child : this.getChildNodes())
         {
-            Class childType = child.getType();
+            Class childType = child.getExprEvaluator().getType();
             if (!JavaClassHelper.isNumeric(childType))
             {
                 throw new ExprValidationException("Implicit conversion from datatype '" +
@@ -64,8 +71,11 @@ public class ExprMathNode extends ExprNode
         }
 
         // Determine result type, set up compute function
-        Class childTypeOne = this.getChildNodes().get(0).getType();
-        Class childTypeTwo = this.getChildNodes().get(1).getType();
+        evaluatorLeft = this.getChildNodes().get(0).getExprEvaluator();
+        evaluatorRight = this.getChildNodes().get(1).getExprEvaluator();
+
+        Class childTypeOne = evaluatorLeft.getType();
+        Class childTypeTwo = evaluatorRight.getType();
 
         if (childTypeOne.equals(childTypeTwo))
         {
@@ -99,10 +109,14 @@ public class ExprMathNode extends ExprNode
     
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Object valueChildOne = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-        Object valueChildTwo = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        Object valueChildOne = evaluatorLeft.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        if (valueChildOne == null)
+        {
+            return null;
+        }
 
-        if ((valueChildOne == null) || (valueChildTwo == null))
+        Object valueChildTwo = evaluatorRight.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        if (valueChildTwo == null)
         {
             return null;
         }

@@ -273,7 +273,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             if (matchUntilNode.getLowerBounds() != null) {
                 ExprNode validated = matchUntilNode.getLowerBounds().getValidatedSubtree(streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
                 matchUntilNode.setLowerBounds(validated);
-                if ((validated.getType() == null) || (!JavaClassHelper.isNumeric(validated.getType()))) {
+                if ((validated.getExprEvaluator().getType() == null) || (!JavaClassHelper.isNumeric(validated.getExprEvaluator().getType()))) {
                     throw new ExprValidationException(message);
                 }
             }
@@ -281,7 +281,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             if (matchUntilNode.getUpperBounds() != null) {
                 ExprNode validated = matchUntilNode.getUpperBounds().getValidatedSubtree(streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
                 matchUntilNode.setUpperBounds(validated);
-                if ((validated.getType() == null) || (!JavaClassHelper.isNumeric(validated.getType()))) {
+                if ((validated.getExprEvaluator().getType() == null) || (!JavaClassHelper.isNumeric(validated.getExprEvaluator().getType()))) {
                     throw new ExprValidationException(message);
                 }
             }

@@ -8,12 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.collection.FlushedEventBuffer;
-import com.espertech.esper.collection.OneEventCollection;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.FlushedEventBuffer;
+import com.espertech.esper.collection.OneEventCollection;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.property.PropertyEvaluator;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.StatementStopCallback;
@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Represents a consumer of a named window that selects from a named window via a from-clause.
@@ -33,7 +32,7 @@ import java.util.List;
 public class NamedWindowConsumerView extends ViewSupport implements StatementStopCallback
 {
     private static final Log log = LogFactory.getLog(NamedWindowConsumerView.class);
-    private final List<ExprNode> filterList;
+    private final ExprEvaluator[] filterList;
     private final EventType eventType;
     private final NamedWindowTailView tailView;
     private final ExprEvaluatorContext exprEvaluatorContext;
@@ -49,7 +48,7 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
      * @param filterList is a list of filter expressions
      * @param exprEvaluatorContext context for expression evalauation
      */
-    public NamedWindowConsumerView(List<ExprNode> filterList,
+    public NamedWindowConsumerView(ExprEvaluator[] filterList,
                                    PropertyEvaluator optPropertyEvaluator,
                                    EventType eventType,
                                    StatementStopService statementStopService,
@@ -80,7 +79,7 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
         }
 
         // if we have a filter for the named window,
-        if (!filterList.isEmpty())
+        if (filterList.length != 0)
         {
             newData = passFilter(newData, true, exprEvaluatorContext);
             oldData = passFilter(oldData, false, exprEvaluatorContext);
@@ -125,7 +124,7 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
         {
             eventPerStream[0] = event;
             boolean pass = true;
-            for (ExprNode filter : filterList)
+            for (ExprEvaluator filter : filterList)
             {
                 Boolean result = (Boolean) filter.evaluate(eventPerStream, isNewData, exprEvaluatorContext);
                 if ((result != null) && (!result))

@@ -11,9 +11,9 @@ package com.espertech.esper.view.std;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -28,6 +28,7 @@ import java.util.*;
 public final class GroupByViewReclaimAged extends ViewSupport implements CloneableView, GroupByView
 {
     private final ExprNode[] criteriaExpressions;
+    private final ExprEvaluator[] criteriaEvaluators;
     private final StatementContext statementContext;
     private final long reclaimMaxAge;
     private final long reclaimFrequency;
@@ -46,10 +47,14 @@ public final class GroupByViewReclaimAged extends ViewSupport implements Cloneab
      * @param reclaimMaxAge age after which to reclaim group
      * @param reclaimFrequency frequency in which to check for groups to reclaim
      */
-    public GroupByViewReclaimAged(StatementContext statementContext, ExprNode[] criteriaExpressions, double reclaimMaxAge, double reclaimFrequency)
+    public GroupByViewReclaimAged(StatementContext statementContext,
+                                  ExprNode[] criteriaExpressions,
+                                  ExprEvaluator[] criteriaEvaluators,
+                                  double reclaimMaxAge, double reclaimFrequency)
     {
         this.statementContext = statementContext;
         this.criteriaExpressions = criteriaExpressions;
+        this.criteriaEvaluators = criteriaEvaluators;
         this.reclaimMaxAge = (long) (reclaimMaxAge * 1000d);
         this.reclaimFrequency = (long) (reclaimFrequency * 1000d);
 
@@ -62,7 +67,7 @@ public final class GroupByViewReclaimAged extends ViewSupport implements Cloneab
 
     public View cloneView(StatementContext statementContext)
     {
-        return new GroupByViewReclaimAged(statementContext, criteriaExpressions, reclaimMaxAge, reclaimFrequency);
+        return new GroupByViewReclaimAged(statementContext, criteriaExpressions, criteriaEvaluators, reclaimMaxAge, reclaimFrequency);
     }
 
     /**
@@ -107,9 +112,9 @@ public final class GroupByViewReclaimAged extends ViewSupport implements Cloneab
 
             Object[] groupByValues = new Object[criteriaExpressions.length];
             eventsPerStream[0] = event;
-            for (int i = 0; i < criteriaExpressions.length; i++)
+            for (int i = 0; i < criteriaEvaluators.length; i++)
             {
-                groupByValues[i] = criteriaExpressions[i].evaluate(eventsPerStream, true, statementContext);
+                groupByValues[i] = criteriaEvaluators[i].evaluate(eventsPerStream, true, statementContext);
             }
             MultiKey<Object> groupByValuesKey = new MultiKey<Object>(groupByValues);
 
@@ -166,9 +171,9 @@ public final class GroupByViewReclaimAged extends ViewSupport implements Cloneab
         // Get values for group-by, construct MultiKey
         Object[] groupByValues = new Object[criteriaExpressions.length];
         eventsPerStream[0] = event;
-        for (int i = 0; i < criteriaExpressions.length; i++)
+        for (int i = 0; i < criteriaEvaluators.length; i++)
         {
-            groupByValues[i] = criteriaExpressions[i].evaluate(eventsPerStream, true, statementContext);
+            groupByValues[i] = criteriaEvaluators[i].evaluate(eventsPerStream, true, statementContext);
         }
         MultiKey<Object> groupByValuesKey = new MultiKey<Object>(groupByValues);
 

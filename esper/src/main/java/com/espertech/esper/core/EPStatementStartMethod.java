@@ -642,7 +642,7 @@ public class EPStatementStartMethod
             if (statementSpec.getCreateWindowDesc().getInsertFilter() != null)
             {
                 EventBean[] eventsPerStream = new EventBean[1];
-                ExprNode filter = statementSpec.getCreateWindowDesc().getInsertFilter();
+                ExprEvaluator filter = statementSpec.getCreateWindowDesc().getInsertFilter().getExprEvaluator();
                 for (Iterator<EventBean> it = sourceWindow.getTailView().iterator(); it.hasNext();)
                 {
                     EventBean candidate = it.next();
@@ -687,7 +687,7 @@ public class EPStatementStartMethod
             // Evaluate assignment expression
             StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new String[0], new boolean[0], services.getEngineURI(), false);
             ExprNode validated = createDesc.getAssignment().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
-            value = validated.evaluate(null, true, statementContext);
+            value = validated.getExprEvaluator().evaluate(null, true, statementContext);
         }
 
         // Create variable
@@ -1231,7 +1231,8 @@ public class EPStatementStartMethod
             }
         });
 
-        JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
+        ExprEvaluator filterEval = statementSpec.getFilterRootNode() == null ? null : statementSpec.getFilterRootNode().getExprEvaluator();
+        JoinSetFilter filter = new JoinSetFilter(filterEval);
         OutputProcessView indicatorView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec,
                 statementContext, services.getInternalEventRouter());
 
@@ -1339,7 +1340,7 @@ public class EPStatementStartMethod
                 outputLimitWhenNode = outputLimitWhenNode.getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                 statementSpec.getOutputLimitSpec().setWhenExpressionNode(outputLimitWhenNode);
 
-                if (JavaClassHelper.getBoxedType(outputLimitWhenNode.getType()) != Boolean.class)
+                if (JavaClassHelper.getBoxedType(outputLimitWhenNode.getExprEvaluator().getType()) != Boolean.class)
                 {
                     throw new ExprValidationException("The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value");
                 }
@@ -1476,7 +1477,7 @@ public class EPStatementStartMethod
         // Add filter view that evaluates the filter expression
         if (statementSpec.getFilterRootNode() != null)
         {
-            FilterExprView filterView = new FilterExprView(statementSpec.getFilterRootNode(), statementContext);
+            FilterExprView filterView = new FilterExprView(statementSpec.getFilterRootNode().getExprEvaluator(), statementContext);
             finalView.addView(filterView);
             finalView = filterView;
         }
@@ -1671,7 +1672,7 @@ public class EPStatementStartMethod
             if (filterExpr != null)
             {
                 filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
-                if (JavaClassHelper.getBoxedType(filterExpr.getType()) != Boolean.class)
+                if (JavaClassHelper.getBoxedType(filterExpr.getExprEvaluator().getType()) != Boolean.class)
                 {
                     throw new ExprValidationException("Subselect filter expression must return a boolean value");
                 }
@@ -1703,9 +1704,10 @@ public class EPStatementStartMethod
             {
                 subselect.setStrategy(new TableLookupStrategyNullRow());
                 subselect.setFilterExpr(null);      // filter not evaluated by subselect expression as not correlated
+                ExprEvaluator filterExprEval = (filterExpr == null) ? null : filterExpr.getExprEvaluator();
 
                 if (!correlatedSubquery) {
-                    SubselectAggregatorView aggregatorView = new SubselectAggregatorView(aggregationService, filterExpr, statementContext);
+                    SubselectAggregatorView aggregatorView = new SubselectAggregatorView(aggregationService, filterExprEval, statementContext);
                     subselectView.addView(aggregatorView);
                     subselectView = aggregatorView;
                     eventIndex = null;
@@ -1717,7 +1719,7 @@ public class EPStatementStartMethod
                     subselect.setFilterExpr(null);  // this will be evaluated in the preprocessor
                     eventIndex = indexPair.getFirst();
 
-                    SubselectAggregationPreprocessor preprocessor = new SubselectAggregationPreprocessor(aggregationService, filterExpr);
+                    SubselectAggregationPreprocessor preprocessor = new SubselectAggregationPreprocessor(aggregationService, filterExpr.getExprEvaluator());
                     subselect.setSubselectAggregationPreprocessor(preprocessor);
                 }
             }
@@ -1726,8 +1728,9 @@ public class EPStatementStartMethod
                 // Determine indexing of the filter expression
                 Pair<EventTable, TableLookupStrategy> indexPair = determineSubqueryIndex(filterExpr, eventType,
                         outerEventTypes, subselectTypeService);
+                ExprEvaluator filterExprEval = (filterExpr == null) ? null : filterExpr.getExprEvaluator();
                 subselect.setStrategy(indexPair.getSecond());
-                subselect.setFilterExpr(filterExpr);
+                subselect.setFilterExpr(filterExprEval);
                 eventIndex = indexPair.getFirst();
             }
 

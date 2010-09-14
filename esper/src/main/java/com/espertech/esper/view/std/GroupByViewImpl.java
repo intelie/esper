@@ -14,6 +14,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.event.EventBeanUtility;
@@ -44,6 +45,7 @@ import java.util.*;
 public final class GroupByViewImpl extends ViewSupport implements CloneableView, GroupByView
 {
     private final ExprNode[] criteriaExpressions;
+    private final ExprEvaluator[] criteriaEvaluators;
     private final StatementContext statementContext;
     private EventBean[] eventsPerStream = new EventBean[1];
 
@@ -57,10 +59,11 @@ public final class GroupByViewImpl extends ViewSupport implements CloneableView,
      * @param criteriaExpressions is the fields from which to pull the values to group by
      * @param statementContext contains required view services
      */
-    public GroupByViewImpl(StatementContext statementContext, ExprNode[] criteriaExpressions)
+    public GroupByViewImpl(StatementContext statementContext, ExprNode[] criteriaExpressions, ExprEvaluator[] criteriaEvaluators)
     {
         this.statementContext = statementContext;
         this.criteriaExpressions = criteriaExpressions;
+        this.criteriaEvaluators = criteriaEvaluators;
 
         propertyNames = new String[criteriaExpressions.length];
         for (int i = 0; i < criteriaExpressions.length; i++)
@@ -71,7 +74,7 @@ public final class GroupByViewImpl extends ViewSupport implements CloneableView,
 
     public View cloneView(StatementContext statementContext)
     {
-        return new GroupByViewImpl(statementContext, criteriaExpressions);
+        return new GroupByViewImpl(statementContext, criteriaExpressions, criteriaEvaluators);
     }
 
     /**
@@ -105,9 +108,9 @@ public final class GroupByViewImpl extends ViewSupport implements CloneableView,
 
             Object[] groupByValues = new Object[criteriaExpressions.length];
             eventsPerStream[0] = event;
-            for (int i = 0; i < criteriaExpressions.length; i++)
+            for (int i = 0; i < criteriaEvaluators.length; i++)
             {
-                groupByValues[i] = criteriaExpressions[i].evaluate(eventsPerStream, true, statementContext);
+                groupByValues[i] = criteriaEvaluators[i].evaluate(eventsPerStream, true, statementContext);
             }
             MultiKey<Object> groupByValuesKey = new MultiKey<Object>(groupByValues);
 
@@ -160,9 +163,9 @@ public final class GroupByViewImpl extends ViewSupport implements CloneableView,
         // Get values for group-by, construct MultiKey
         Object[] groupByValues = new Object[criteriaExpressions.length];
         eventsPerStream[0] = event;
-        for (int i = 0; i < criteriaExpressions.length; i++)
+        for (int i = 0; i < criteriaEvaluators.length; i++)
         {
-            groupByValues[i] = criteriaExpressions[i].evaluate(eventsPerStream, true, statementContext);
+            groupByValues[i] = criteriaEvaluators[i].evaluate(eventsPerStream, true, statementContext);
         }
         MultiKey<Object> groupByValuesKey = new MultiKey<Object>(groupByValues);
 

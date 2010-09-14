@@ -47,7 +47,7 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
 
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price"}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
-        assertEquals(double.class, factory.getEventType().getPropertyType(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.getName()));
+        assertEquals(Double.class, factory.getEventType().getPropertyType(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.getName()));
 
         try
         {

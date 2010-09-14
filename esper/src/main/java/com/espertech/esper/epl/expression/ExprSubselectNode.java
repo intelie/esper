@@ -10,10 +10,10 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.lookup.TableLookupStrategy;
 import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
-import com.espertech.esper.epl.core.StreamTypeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * Represents a subselect in an expression tree.
  */
-public abstract class ExprSubselectNode extends ExprNode
+public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprSubselectNode.class);
 
@@ -31,11 +31,12 @@ public abstract class ExprSubselectNode extends ExprNode
      * The validated select clause.
      */
     protected ExprNode selectClause;
+    protected ExprEvaluator selectClauseEvaluator;
 
     /**
      * The validate filter expression.
      */
-    protected ExprNode filterExpr;
+    protected ExprEvaluator filterExpr;
 
     /**
      * The event type generated for wildcard selects.
@@ -74,12 +75,13 @@ public abstract class ExprSubselectNode extends ExprNode
         this.statementSpecRaw = statementSpec;
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
+
     public boolean isConstantResult()
     {
-        if (selectClause != null)
-        {
-            return selectClause.isConstantResult();
-        }
         return false;
     }
 
@@ -108,6 +110,7 @@ public abstract class ExprSubselectNode extends ExprNode
     public void setSelectClause(ExprNode selectClause)
     {
         this.selectClause = selectClause;
+        this.selectClauseEvaluator = selectClause.getExprEvaluator();
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
@@ -142,7 +145,7 @@ public abstract class ExprSubselectNode extends ExprNode
      * Sets the validated filter expression, or null if there is none.
      * @param filterExpr is the filter
      */
-    public void setFilterExpr(ExprNode filterExpr)
+    public void setFilterExpr(ExprEvaluator filterExpr)
     {
         this.filterExpr = filterExpr;
     }
@@ -196,7 +199,7 @@ public abstract class ExprSubselectNode extends ExprNode
      * Returns filter expr or null if none.
      * @return filter
      */
-    public ExprNode getFilterExpr()
+    public ExprEvaluator getFilterExpr()
     {
         return filterExpr;
     }

@@ -11,9 +11,10 @@ import com.espertech.esper.client.EventBean;
  * A placeholder expression for view/pattern object parameters that allow
  * sorting expression values ascending or descending.
  */
-public class ExprOrderedExpr extends ExprNode
+public class ExprOrderedExpr extends ExprNode implements ExprEvaluator
 {
     private final boolean isDescending;
+    private transient ExprEvaluator evaluator;
     private static final long serialVersionUID = -3140402807682771591L;
 
     /**
@@ -35,6 +36,11 @@ public class ExprOrderedExpr extends ExprNode
         return inner;
     }
 
+    public ExprEvaluator getExprEvaluator()
+    {
+        return this;
+    }
+
     public boolean isConstantResult()
     {
         return getChildNodes().get(0).isConstantResult();
@@ -52,17 +58,18 @@ public class ExprOrderedExpr extends ExprNode
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
+        evaluator = getChildNodes().get(0).getExprEvaluator();
         // always valid
     }
 
     public Class getType()
     {
-        return getChildNodes().get(0).getType();
+        return getChildNodes().get(0).getExprEvaluator().getType();
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        return getChildNodes().get(0).evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+        return evaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
     }
 
     /**

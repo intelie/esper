@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.support.epl.SupportExprNodeUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.SupportExprNode;
 
@@ -100,7 +101,7 @@ public class TestExprEqualsNode extends TestCase
         assertTrue((Boolean)equalsNodes[3].evaluate(null, false, null));
     }
 
-    public void testEvaluateNotEquals()
+    public void testEvaluateNotEquals() throws Exception
     {
         equalsNodes[0] = makeNode(true, false, true);
         assertTrue((Boolean)equalsNodes[0].evaluate(null, false, null));
@@ -128,19 +129,21 @@ public class TestExprEqualsNode extends TestCase
         assertEquals("true = false", equalsNodes[0].toExpressionString());
     }
 
-    private ExprEqualsNode makeNode(Object valueLeft, Object valueRight, boolean isNot)
+    private ExprEqualsNode makeNode(Object valueLeft, Object valueRight, boolean isNot) throws Exception
     {
         ExprEqualsNode equalsNode = new ExprEqualsNode(isNot);
         equalsNode.addChildNode(new SupportExprNode(valueLeft));
         equalsNode.addChildNode(new SupportExprNode(valueRight));
+        SupportExprNodeUtil.validate(equalsNode);
         return equalsNode;
     }
 
-    private ExprEqualsNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight, boolean isNot)
+    private ExprEqualsNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight, boolean isNot) throws Exception
     {
         ExprEqualsNode equalsNode = new ExprEqualsNode(isNot);
         equalsNode.addChildNode(new SupportExprNode(valueLeft, typeLeft));
         equalsNode.addChildNode(new SupportExprNode(valueRight, typeRight));
+        SupportExprNodeUtil.validate(equalsNode);
         return equalsNode;
     }
 

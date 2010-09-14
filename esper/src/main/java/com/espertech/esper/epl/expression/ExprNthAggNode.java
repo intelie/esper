@@ -8,11 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.util.JavaClassHelper;
 
 /**
  * Represents the nth(...) and aggregate function is an expression tree.
@@ -43,10 +41,10 @@ public class ExprNthAggNode extends ExprAggregateNode
             throw new ExprValidationException(message);
         }
 
-        Number num = (Number) second.evaluate(null, true, exprEvaluatorContext);
+        Number num = (Number) second.getExprEvaluator().evaluate(null, true, exprEvaluatorContext);
         int size = num.intValue();
 
-        return new ExprNthAggNodeFactory(first.getType(), size, super.isDistinct);
+        return new ExprNthAggNodeFactory(first.getExprEvaluator().getType(), size, super.isDistinct);
     }
 
     protected String getAggregationFunctionName()

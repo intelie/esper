@@ -8,10 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.variable.VariableService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,6 +26,7 @@ public class ExprNodeAdapter
     private static final Log log = LogFactory.getLog(ExprNodeAdapter.class);
 
     private final ExprNode exprNode;
+    private final ExprEvaluator exprNodeEval;
     private final EventBean[] prototype;
     private final VariableService variableService;
 
@@ -47,6 +49,7 @@ public class ExprNodeAdapter
     public ExprNodeAdapter(ExprNode exprNode, EventBean[] prototype, VariableService variableService)
     {
         this.exprNode = exprNode;
+        this.exprNodeEval = exprNode.getExprEvaluator();
         this.variableService = variableService;
         if (prototype == null)
         {
@@ -74,7 +77,7 @@ public class ExprNodeAdapter
         eventsPerStream[0] = event;
 
         try {
-            Boolean result = (Boolean) exprNode.evaluate(eventsPerStream, true, exprEvaluatorContext);
+            Boolean result = (Boolean) exprNodeEval.evaluate(eventsPerStream, true, exprEvaluatorContext);
             if (result == null)
             {
                 return false;

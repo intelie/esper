@@ -62,7 +62,7 @@ public class MergeViewFactory implements ViewFactory
         Class[] fieldTypes = new Class[criteriaExpressions.length];
         for (int i = 0; i < fieldTypes.length; i++)
         {
-            fieldTypes[i] = criteriaExpressions[i].getType();
+            fieldTypes[i] = criteriaExpressions[i].getExprEvaluator().getType();
         }
 
         // Determine the final event type that the merge view generates

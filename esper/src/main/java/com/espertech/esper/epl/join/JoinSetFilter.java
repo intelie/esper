@@ -10,24 +10,24 @@ package com.espertech.esper.epl.join;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-import java.util.Set;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Processes join tuple set by filtering out tuples.
  */
 public class JoinSetFilter implements JoinSetProcessor
 {
-    private ExprNode filterExprNode;
+    private ExprEvaluator filterExprNode;
 
     /**
      * Ctor.
      * @param filterExprNode - filter tree
      */
-    public JoinSetFilter(ExprNode filterExprNode)
+    public JoinSetFilter(ExprEvaluator filterExprNode)
     {
         this.filterExprNode = filterExprNode;
     }
@@ -53,7 +53,7 @@ public class JoinSetFilter implements JoinSetProcessor
      * @param isNewData - true to indicate filter new data (istream) and not old data (rstream)
      * @param exprEvaluatorContext expression evaluation context
      */
-    protected static void filter(ExprNode filterExprNode, Set<MultiKey<EventBean>> events, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
+    protected static void filter(ExprEvaluator filterExprNode, Set<MultiKey<EventBean>> events, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         for (Iterator<MultiKey<EventBean>> it = events.iterator(); it.hasNext();)
         {

@@ -104,7 +104,7 @@ public class InternalEventRouterImpl implements InternalEventRouter
                 throw new ExprValidationException("Property '" + assignment.getVariableName() + "' is not available for write access");
             }
 
-            wideners[i] = TypeWidenerFactory.getCheckPropertyAssignType(assignment.getExpression().toExpressionString(), assignment.getExpression().getType(),
+            wideners[i] = TypeWidenerFactory.getCheckPropertyAssignType(assignment.getExpression().toExpressionString(), assignment.getExpression().getExprEvaluator().getType(),
                     writableProperty.getPropertyType(), assignment.getVariableName());
             properties.add(assignment.getVariableName());
         }

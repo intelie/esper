@@ -1,6 +1,8 @@
 package com.espertech.esper.core;
 
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.event.EventBeanWriter;
 import com.espertech.esper.util.TypeWidener;
 
@@ -11,8 +13,8 @@ public class InternalEventRouterEntry
 {
     private final int priority;
     private final boolean isDrop;
-    private final ExprNode optionalWhereClause;
-    private final ExprNode[] assignments;
+    private final ExprEvaluator optionalWhereClause;
+    private final ExprEvaluator[] assignments;
     private final EventBeanWriter writer;
     private final TypeWidener[] wideners;
     private final InternalRoutePreprocessView outputView;
@@ -31,8 +33,8 @@ public class InternalEventRouterEntry
     {
         this.priority = priority;
         this.isDrop = drop;
-        this.optionalWhereClause = optionalWhereClause;
-        this.assignments = assignments;
+        this.optionalWhereClause = optionalWhereClause == null ? null : optionalWhereClause.getExprEvaluator();
+        this.assignments = ExprNodeUtility.getEvaluators(assignments);
         this.writer = writer;
         this.wideners = wideners;
         this.outputView = outputView;
@@ -60,7 +62,7 @@ public class InternalEventRouterEntry
      * Returns the where-clause or null if none defined
      * @return where-clause
      */
-    public ExprNode getOptionalWhereClause()
+    public ExprEvaluator getOptionalWhereClause()
     {
         return optionalWhereClause;
     }
@@ -69,7 +71,7 @@ public class InternalEventRouterEntry
      * Returns the expressions providing values for assignment.
      * @return assignment expressions
      */
-    public ExprNode[] getAssignments()
+    public ExprEvaluator[] getAssignments()
     {
         return assignments;
     }

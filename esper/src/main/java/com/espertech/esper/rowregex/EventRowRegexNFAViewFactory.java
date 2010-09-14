@@ -240,7 +240,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             }
             ExprNode validated = validateMeasureClause(measureItem.getExpr(), typeServiceMeasure, variablesMultiple, variablesSingle, statementContext);
             measureItem.setExpr(validated);
-            rowTypeDef.put(measureItem.getName(), validated.getType());
+            rowTypeDef.put(measureItem.getName(), validated.getExprEvaluator().getType());
             validated.accept(streamRefVisitorNonAgg);
         }
 

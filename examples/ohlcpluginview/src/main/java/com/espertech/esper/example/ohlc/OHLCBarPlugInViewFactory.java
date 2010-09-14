@@ -30,10 +30,10 @@ public class OHLCBarPlugInViewFactory extends ViewFactorySupport
         timestampExpression = validatedNodes[0];
         valueExpression = validatedNodes[1];
 
-        if ((timestampExpression.getType() != long.class) && (timestampExpression.getType() != Long.class)) {
+        if ((timestampExpression.getExprEvaluator().getType() != long.class) && (timestampExpression.getExprEvaluator().getType() != Long.class)) {
             throw new ViewParameterException("View requires long-typed timestamp values in parameter 1");
         }
-        if ((valueExpression.getType() != double.class) && (valueExpression.getType() != Double.class)) {
+        if ((valueExpression.getExprEvaluator().getType() != double.class) && (valueExpression.getExprEvaluator().getType() != Double.class)) {
             throw new ViewParameterException("View requires double-typed values for in parameter 2");
         }
     }

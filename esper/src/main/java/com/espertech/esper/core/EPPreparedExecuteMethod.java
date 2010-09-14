@@ -11,19 +11,26 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.core.*;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.epl.core.ResultSetProcessor;
+import com.espertech.esper.epl.core.ResultSetProcessorFactory;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.core.StreamTypeServiceImpl;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.join.JoinSetComposer;
 import com.espertech.esper.epl.named.NamedWindowProcessor;
-import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.event.*;
-import com.espertech.esper.view.Viewable;
+import com.espertech.esper.epl.spec.NamedWindowConsumerStreamSpec;
+import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
+import com.espertech.esper.epl.spec.StatementSpecCompiled;
+import com.espertech.esper.epl.spec.StreamSpecCompiled;
+import com.espertech.esper.event.EventBeanReader;
+import com.espertech.esper.event.EventBeanReaderDefaultImpl;
+import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
+import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -234,11 +241,12 @@ public class EPPreparedExecuteMethod
     {
         EventBean[] eventsPerStream = new EventBean[1];
         List<EventBean> filteredSnapshot = new ArrayList<EventBean>();
+        ExprEvaluator[] evaluators = ExprNodeUtility.getEvaluators(filterExpressions);
         for (EventBean row : snapshot)
         {
             boolean pass = true;
             eventsPerStream[0] = row;
-            for (ExprNode filter : filterExpressions)
+            for (ExprEvaluator filter : evaluators)
             {
                 Boolean result = (Boolean) filter.evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if (result != null)

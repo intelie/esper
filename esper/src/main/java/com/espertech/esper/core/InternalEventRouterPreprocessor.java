@@ -1,7 +1,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.event.EventBeanCopyMethod;
 import org.apache.commons.logging.Log;
@@ -80,7 +80,7 @@ public class InternalEventRouterPreprocessor
         for (int i = 0; i < entries.length; i++)
         {
             InternalEventRouterEntry entry = entries[i];
-            ExprNode whereClause = entry.getOptionalWhereClause();
+            ExprEvaluator whereClause = entry.getOptionalWhereClause();
             if (whereClause != null)
             {
                 Boolean result = (Boolean) whereClause.evaluate(eventsPerStream, true, exprEvaluatorContext);

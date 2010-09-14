@@ -20,12 +20,12 @@ import java.util.Iterator;
 public class ExprPreviousEvalWindow implements ExprPreviousEval
 {
     private final int streamNumber;
-    private final ExprNode evalNode;
+    private final ExprEvaluator evalNode;
     private final Class componentType;
     private final RandomAccessByIndexGetter randomAccessGetter;
     private final RelativeAccessByEventNIndexMap relativeAccessGetter;
 
-    public ExprPreviousEvalWindow(int streamNumber, ExprNode evalNode, Class componentType, RandomAccessByIndexGetter randomAccessGetter, RelativeAccessByEventNIndexMap relativeAccessGetter)
+    public ExprPreviousEvalWindow(int streamNumber, ExprEvaluator evalNode, Class componentType, RandomAccessByIndexGetter randomAccessGetter, RelativeAccessByEventNIndexMap relativeAccessGetter)
     {
         this.streamNumber = streamNumber;
         this.evalNode = evalNode;

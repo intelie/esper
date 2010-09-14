@@ -8,12 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.agg.AggregationValidationContext;
-import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
 
 /**
  * Represents a custom aggregation function in an expresson tree.
@@ -50,9 +49,9 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
             if (child.isConstantResult())
             {
                 isConstant[count] = true;
-                constant[count] = child.evaluate(null, true, exprEvaluatorContext);
+                constant[count] = child.getExprEvaluator().evaluate(null, true, exprEvaluatorContext);
             }
-            parameterTypes[count] = child.getType();
+            parameterTypes[count] = child.getExprEvaluator().getType();
             expressions[count] = child;
             
             count++;
@@ -75,7 +74,7 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
         Class childType = null;
         if (this.getChildNodes().size() > 0)
         {
-            childType = this.getChildNodes().get(0).getType();
+            childType = this.getChildNodes().get(0).getExprEvaluator().getType();
         }
 
         return new ExprPlugInAggFunctionNodeFactory(aggregationSupport, super.isDistinct(), childType);

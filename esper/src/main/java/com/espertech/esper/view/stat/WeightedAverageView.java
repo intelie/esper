@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
@@ -33,7 +34,9 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
     private final EventType eventType;
     private final StatementContext statementContext;
     private final ExprNode fieldNameX;
+    private final ExprEvaluator fieldNameXEvaluator;
     private final ExprNode fieldNameWeight;
+    private final ExprEvaluator fieldNameWeightEvaluator;
     private final StatViewAdditionalProps additionalProps;
 
     private EventBean[] eventsPerStream = new EventBean[1];
@@ -56,7 +59,9 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
     public WeightedAverageView(StatementContext statementContext, ExprNode fieldNameX, ExprNode fieldNameWeight, EventType eventType, StatViewAdditionalProps additionalProps)
     {
         this.fieldNameX = fieldNameX;
+        this.fieldNameXEvaluator = fieldNameX.getExprEvaluator();
         this.fieldNameWeight = fieldNameWeight;
+        this.fieldNameWeightEvaluator = fieldNameWeight.getExprEvaluator();
         this.statementContext = statementContext;
         this.eventType = eventType;
         this.additionalProps = additionalProps;
@@ -95,8 +100,8 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
             for (int i = 0; i < newData.length; i++)
             {
                 eventsPerStream[0] = newData[i];
-                double point = ((Number) fieldNameX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
-                double weight = ((Number) fieldNameWeight.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double point = ((Number) fieldNameXEvaluator.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double weight = ((Number) fieldNameWeightEvaluator.evaluate(eventsPerStream, true, statementContext)).doubleValue();
 
                 if (Double.valueOf(sumXtimesW).isNaN())
                 {
@@ -126,8 +131,8 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
             for (int i = 0; i < oldData.length; i++)
             {
                 eventsPerStream[0] = oldData[i];
-                double point = ((Number) fieldNameX.evaluate(eventsPerStream, true, statementContext)).doubleValue();
-                double weight = ((Number) fieldNameWeight.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double point = ((Number) fieldNameXEvaluator.evaluate(eventsPerStream, true, statementContext)).doubleValue();
+                double weight = ((Number) fieldNameWeightEvaluator.evaluate(eventsPerStream, true, statementContext)).doubleValue();
 
                 sumXtimesW -= point * weight;
                 sumW -= weight;

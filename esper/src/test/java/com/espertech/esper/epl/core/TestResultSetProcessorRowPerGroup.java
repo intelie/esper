@@ -1,8 +1,8 @@
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.spec.SelectClauseStreamCompiledSpec;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.SupportAggregationService;
@@ -14,8 +14,6 @@ import com.espertech.esper.support.event.SupportEventBeanFactory;
 import junit.framework.TestCase;
 
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.HashSet;
 
 public class TestResultSetProcessorRowPerGroup extends TestCase
@@ -31,9 +29,9 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
         SelectExprProcessor selectProcessor = factory.getEvaluator();
         supportAggregationService = new SupportAggregationService();
 
-        List<ExprNode> groupKeyNodes = new LinkedList<ExprNode>();
-        groupKeyNodes.add(SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0"));
-        groupKeyNodes.add(SupportExprNodeFactory.makeIdentNode("intBoxed", "s0"));
+        ExprEvaluator[] groupKeyNodes = new ExprEvaluator[2];
+        groupKeyNodes[0] = SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0").getExprEvaluator();
+        groupKeyNodes[1] = SupportExprNodeFactory.makeIdentNode("intBoxed", "s0").getExprEvaluator();
 
         processor = new ResultSetProcessorRowPerGroup(selectProcessor, null, supportAggregationService, groupKeyNodes, null, true, false, null, null);
     }

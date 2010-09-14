@@ -43,7 +43,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         {
             return rawEventType.getUnderlyingType();
         }
-        return selectClause.getType();
+        return selectClause.getExprEvaluator().getType();
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
@@ -105,7 +105,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
 
         if (selectClause != null)
         {
-            result = selectClause.evaluate(events, true, exprEvaluatorContext);
+            result = selectClauseEvaluator.evaluate(events, true, exprEvaluatorContext);
         }
         else
         {

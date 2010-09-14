@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
@@ -132,7 +133,7 @@ public interface PatternStateFactory
      * @param expressions distinct-value expressions 
      * @return state node
      */
-    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, List<ExprNode> expressions, MatchedEventConvertor convertor);
+    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, ExprEvaluator[] expressions, MatchedEventConvertor convertor);
 
     /**
      * Makes an or-state node.

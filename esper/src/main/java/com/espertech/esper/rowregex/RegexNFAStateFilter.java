@@ -1,6 +1,7 @@
 package com.espertech.esper.rowregex;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
@@ -9,7 +10,7 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
  */
 public class RegexNFAStateFilter extends RegexNFAStateBase implements RegexNFAState
 {
-    private ExprNode exprNode;
+    private ExprEvaluator exprNode;
 
     /**
      * Ctor.
@@ -22,7 +23,7 @@ public class RegexNFAStateFilter extends RegexNFAStateBase implements RegexNFASt
     public RegexNFAStateFilter(String nodeNum, String variableName, int streamNum, boolean multiple, ExprNode exprNode)
     {
         super(nodeNum, variableName, streamNum, multiple, null);
-        this.exprNode = exprNode;
+        this.exprNode = exprNode.getExprEvaluator();
     }
 
     public boolean matches(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
@@ -37,7 +38,7 @@ public class RegexNFAStateFilter extends RegexNFAStateBase implements RegexNFASt
 
     public String toString()
     {
-        return "FilterEvent(" + exprNode.toExpressionString() + ")";
+        return "FilterEvent";
     }
 
 }

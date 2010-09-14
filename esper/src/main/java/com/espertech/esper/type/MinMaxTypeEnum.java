@@ -9,8 +9,8 @@
 package com.espertech.esper.type;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.SimpleNumberBigDecimalCoercer;
 import com.espertech.esper.util.SimpleNumberBigIntegerCoercer;
 
@@ -69,13 +69,13 @@ public enum MinMaxTypeEnum
      */
     public static class MinComputerDoubleCoerce implements Computer
     {
-        private ExprNode[] childNodes;
+        private ExprEvaluator[] childNodes;
 
         /**
          * Ctor.
          * @param childNodes array of expression nodes
          */
-        public MinComputerDoubleCoerce(ExprNode[] childNodes)
+        public MinComputerDoubleCoerce(ExprEvaluator[] childNodes)
         {
             this.childNodes = childNodes;
         }
@@ -120,13 +120,13 @@ public enum MinMaxTypeEnum
      */
     public static class MaxComputerDoubleCoerce implements Computer
     {
-        private ExprNode[] childNodes;
+        private ExprEvaluator[] childNodes;
 
         /**
          * Ctor.
          * @param childNodes array of expression nodes
          */
-        public MaxComputerDoubleCoerce(ExprNode[] childNodes)
+        public MaxComputerDoubleCoerce(ExprEvaluator[] childNodes)
         {
             this.childNodes = childNodes;
         }
@@ -171,7 +171,7 @@ public enum MinMaxTypeEnum
      */
     public static class ComputerBigIntCoerce implements Computer
     {
-        private ExprNode[] childNodes;
+        private ExprEvaluator[] childNodes;
         private SimpleNumberBigIntegerCoercer[] convertors;
         private boolean isMax;
 
@@ -181,7 +181,7 @@ public enum MinMaxTypeEnum
          * @param convertors convertors to BigInteger
          * @param isMax true if max, false if min
          */
-        public ComputerBigIntCoerce(ExprNode[] childNodes, SimpleNumberBigIntegerCoercer[] convertors, boolean isMax)
+        public ComputerBigIntCoerce(ExprEvaluator[] childNodes, SimpleNumberBigIntegerCoercer[] convertors, boolean isMax)
         {
             this.childNodes = childNodes;
             this.convertors = convertors;
@@ -234,7 +234,7 @@ public enum MinMaxTypeEnum
      */
     public static class ComputerBigDecCoerce implements Computer
     {
-        private ExprNode[] childNodes;
+        private ExprEvaluator[] childNodes;
         private SimpleNumberBigDecimalCoercer[] convertors;
         private boolean isMax;
 
@@ -244,7 +244,7 @@ public enum MinMaxTypeEnum
          * @param convertors convertors to BigDecimal
          * @param isMax true if max, false if min
          */
-        public ComputerBigDecCoerce(ExprNode[] childNodes, SimpleNumberBigDecimalCoercer[] convertors, boolean isMax)
+        public ComputerBigDecCoerce(ExprEvaluator[] childNodes, SimpleNumberBigDecimalCoercer[] convertors, boolean isMax)
         {
             this.childNodes = childNodes;
             this.convertors = convertors;

@@ -39,7 +39,6 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
 import com.espertech.esper.view.Viewable;
-import com.espertech.esper.view.BatchingDataWindowView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -258,7 +257,7 @@ public class NamedWindowRootView extends ViewSupport
         // If the analysis revealed no join columns, must use the brute-force full table scan
         if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
         {
-            return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyTableScan(joinExpr, dataWindowContents), null);
+            return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyTableScan(joinExpr.getExprEvaluator(), dataWindowContents), null);
         }
 
         // Build a set of index descriptors with property name and coercion type
@@ -312,7 +311,7 @@ public class NamedWindowRootView extends ViewSupport
             lookupStrategy = new IndexedTableLookupStrategyCoercing(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table, coercionTypes);
         }
 
-        return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyIndexed(joinExpr, lookupStrategy), table);
+        return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyIndexed(joinExpr.getExprEvaluator(), lookupStrategy), table);
     }
 
     public void setParent(Viewable parent)

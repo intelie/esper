@@ -9,19 +9,19 @@
 package com.espertech.esper.epl.named;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-import java.util.Set;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Determine events to be deleted from a named window using the where-clause and full table scan.
  */
 public class LookupStrategyTableScan implements LookupStrategy
 {
-    private final ExprNode joinExpr;
+    private final ExprEvaluator joinExpr;
     private final EventBean[] eventsPerStream;
     private final Iterable<EventBean> iterableNamedWindow;
 
@@ -30,7 +30,7 @@ public class LookupStrategyTableScan implements LookupStrategy
      * @param joinExpr is the where clause
      * @param iterable is the named window's data window iterator
      */
-    public LookupStrategyTableScan(ExprNode joinExpr, Iterable<EventBean> iterable)
+    public LookupStrategyTableScan(ExprEvaluator joinExpr, Iterable<EventBean> iterable)
     {
         this.joinExpr = joinExpr;
         this.eventsPerStream = new EventBean[2];

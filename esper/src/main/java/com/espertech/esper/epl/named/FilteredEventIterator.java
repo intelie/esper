@@ -8,11 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-import java.util.List;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -23,7 +22,7 @@ import java.util.NoSuchElementException;
 public class FilteredEventIterator implements Iterator<EventBean>
 {
     private final Iterator<EventBean> parent;
-    private final List<ExprNode> filterList;
+    private final ExprEvaluator[] filterList;
     private final EventBean[] eventPerStream = new EventBean[1];
     private final ExprEvaluatorContext exprEvaluatorContext;
     private EventBean next;
@@ -34,7 +33,7 @@ public class FilteredEventIterator implements Iterator<EventBean>
      * @param parent is the iterator supplying the events to apply the filter on
      * @param exprEvaluatorContext context for expression evalauation
      */
-    public FilteredEventIterator(List<ExprNode> filters, Iterator<EventBean> parent, ExprEvaluatorContext exprEvaluatorContext)
+    public FilteredEventIterator(ExprEvaluator[] filters, Iterator<EventBean> parent, ExprEvaluatorContext exprEvaluatorContext)
     {
         this.parent = parent;
         this.filterList = filters;
@@ -66,7 +65,7 @@ public class FilteredEventIterator implements Iterator<EventBean>
 
     private void getNext()
     {
-        if ((filterList == null) || (filterList.isEmpty()))
+        if ((filterList == null) || (filterList.length == 0))
         {
             if (parent.hasNext())
             {
@@ -85,7 +84,7 @@ public class FilteredEventIterator implements Iterator<EventBean>
 
             eventPerStream[0] = next;
             boolean pass = true;
-            for (ExprNode filter : filterList)
+            for (ExprEvaluator filter : filterList)
             {
                 Boolean result = (Boolean) filter.evaluate(eventPerStream, true, exprEvaluatorContext);
                 if ((result != null) && (!result))

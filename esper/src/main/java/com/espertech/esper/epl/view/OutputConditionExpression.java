@@ -8,22 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
-import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNodeIdentifierVisitor;
-import com.espertech.esper.epl.expression.ExprNodeVariableVisitor;
-import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.variable.VariableChangeCallback;
 import com.espertech.esper.epl.variable.VariableReadWritePackage;
 import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
+import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.StatementStopCallback;
 import org.apache.commons.logging.Log;
@@ -41,6 +38,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
 {
     private static final Log log = LogFactory.getLog(OutputConditionExpression.class);
     private final ExprNode whenExpressionNode;
+    private final ExprEvaluator whenExpressionNodeEval;
     private final OutputCallback outputCallback;
     private final ScheduleSlot scheduleSlot;
     private final StatementContext context;
@@ -69,6 +67,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
             throws ExprValidationException
     {
         this.whenExpressionNode = whenExpressionNode;
+        this.whenExpressionNodeEval = whenExpressionNode.getExprEvaluator();
         this.outputCallback = outputCallback;
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
         this.context = context;
@@ -172,7 +171,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
         }
 
         boolean result = false;
-        Boolean output = (Boolean) whenExpressionNode.evaluate(eventsPerStream, true, context);
+        Boolean output = (Boolean) whenExpressionNodeEval.evaluate(eventsPerStream, true, context);
         if ((output != null) && (output))
         {
             result = true;

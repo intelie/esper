@@ -55,6 +55,8 @@ public class BindProcessor
                 for (int i = 0; i < typesPerStream.length; i++)
                 {
                     final int streamNum = i;
+                    final Class returnType = typesPerStream[streamNum].getUnderlyingType();
+                    
                     expressions.add(new ExprEvaluator() {
 
                         public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
@@ -69,8 +71,13 @@ public class BindProcessor
                                 return null;
                             }
                         }
+
+                        public Class getType()
+                        {
+                            return returnType;
+                        }
                     });
-                    types.add(typesPerStream[streamNum].getUnderlyingType());
+                    types.add(returnType);
                     columnNames.add(streamNames[streamNum]);
                 }
             }
@@ -79,6 +86,8 @@ public class BindProcessor
             else if (element instanceof SelectClauseStreamCompiledSpec)
             {
                 final SelectClauseStreamCompiledSpec streamSpec = (SelectClauseStreamCompiledSpec) element;
+                final Class returnType = typesPerStream[streamSpec.getStreamNumber()].getUnderlyingType();
+
                 expressions.add(new ExprEvaluator() {
 
                     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
@@ -93,8 +102,13 @@ public class BindProcessor
                             return null;
                         }
                     }
+
+                    public Class getType()
+                    {
+                        return returnType;
+                    }
                 });
-                types.add(typesPerStream[streamSpec.getStreamNumber()].getUnderlyingType());
+                types.add(returnType);
                 columnNames.add(streamNames[streamSpec.getStreamNumber()]);
             }
 
@@ -102,8 +116,9 @@ public class BindProcessor
             else if (element instanceof SelectClauseExprCompiledSpec)
             {
                 SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
-                expressions.add(expr.getSelectExpression());
-                types.add(expr.getSelectExpression().getType());
+                ExprEvaluator evaluator = expr.getSelectExpression().getExprEvaluator();
+                expressions.add(evaluator);
+                types.add(evaluator.getType());
                 if (expr.getAssignedName() != null)
                 {
                     columnNames.add(expr.getAssignedName());
