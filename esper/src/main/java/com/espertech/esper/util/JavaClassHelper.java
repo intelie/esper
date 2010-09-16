@@ -1489,4 +1489,14 @@ public class JavaClassHelper
     {
         return Array.newInstance(resultType, 0).getClass();
     }
+
+    public static String getClassNameFullyQualPretty(Class clazz) {
+        if (clazz == null) {
+            return "null";
+        }
+        if (clazz.isArray()) {
+            return clazz.getComponentType().getName() + "(Array)";
+        }
+        return clazz.getName();
+    }
 }

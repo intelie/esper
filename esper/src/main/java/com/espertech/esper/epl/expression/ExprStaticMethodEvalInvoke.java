@@ -9,17 +9,11 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.*;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.schedule.TimeProvider;
-import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
 
 public class ExprStaticMethodEvalInvoke implements ExprEvaluator
 {
@@ -29,21 +23,28 @@ public class ExprStaticMethodEvalInvoke implements ExprEvaluator
 	private final FastMethod staticMethod;
     private final ExprEvaluator[] childEvals;
     private final boolean isConstantParameters;
+    private final ExprDotEval[] chainEval;
 
     private boolean isCachedResult;
     private Object cachedResult;
 
-    public ExprStaticMethodEvalInvoke(String classOrPropertyName, FastMethod staticMethod, ExprEvaluator[] childEvals, boolean constantParameters)
+    public ExprStaticMethodEvalInvoke(String classOrPropertyName, FastMethod staticMethod, ExprEvaluator[] childEvals, boolean constantParameters, ExprDotEval[] chainEval)
     {
         this.classOrPropertyName = classOrPropertyName;
         this.staticMethod = staticMethod;
         this.childEvals = childEvals;
         isConstantParameters = constantParameters;
+        this.chainEval = chainEval;
     }
 
     public Class getType()
     {
-        return staticMethod.getReturnType();
+        if (chainEval.length == 0) {
+            return staticMethod.getReturnType();
+        }
+        else {
+            return chainEval[chainEval.length - 1].getResultType();
+        }
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
@@ -69,6 +70,17 @@ public class ExprStaticMethodEvalInvoke implements ExprEvaluator
             {
                 cachedResult = result;
                 isCachedResult = true;
+            }
+
+            if (chainEval.length == 0) {
+                return result;
+            }
+
+            for (int i = 0; i < chainEval.length; i++) {
+                result = chainEval[i].evaluate(result, eventsPerStream, isNewData, exprEvaluatorContext);
+                if (result == null) {
+                    return result;
+                }
             }
             return result;
 		}

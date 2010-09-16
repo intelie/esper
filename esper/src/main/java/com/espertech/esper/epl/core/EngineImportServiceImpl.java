@@ -9,7 +9,6 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.ConfigurationMethodRef;
-import com.espertech.esper.epl.agg.AggregationAccessType;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.util.JavaClassHelper;
@@ -155,7 +154,7 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         catch (EngineNoSuchMethodException e)
         {
-            throw convert(clazz, methodName, paramTypes, e);
+            throw convert(clazz, methodName, paramTypes, e, false);
         }
     }
 
@@ -302,21 +301,28 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         catch (EngineNoSuchMethodException e)
         {
-            throw convert(clazz, methodName, paramTypes, e);
+            throw convert(clazz, methodName, paramTypes, e, true);
         }
     }
 
-    private EngineImportException convert(Class clazz, String methodName, Class[] paramTypes, EngineNoSuchMethodException e)
+    private EngineImportException convert(Class clazz, String methodName, Class[] paramTypes, EngineNoSuchMethodException e, boolean isInstance)
     {
         String expected = JavaClassHelper.getParameterAsString(paramTypes);
-        String message;
+        String message = "Could not find ";
+        if (!isInstance) {
+            message += "static ";
+        }
+        else {
+            message += "instance ";
+        }
+
         if (paramTypes.length > 0)
         {
-            message = "Could not find static method named '" + methodName + "' in class '" + clazz.getName() + "' with matching parameter number and expected parameter type(s) '" + expected + "'";
+            message += "method named '" + methodName + "' in class '" + JavaClassHelper.getClassNameFullyQualPretty(clazz) + "' with matching parameter number and expected parameter type(s) '" + expected + "'";
         }
         else
         {
-            message = "Could not find static method named '" + methodName + "' in class '" + clazz.getName() + "' taking no parameters";
+            message += "method named '" + methodName + "' in class '" + JavaClassHelper.getClassNameFullyQualPretty(clazz) + "' taking no parameters";
         }
 
         if (e.getNearestMissMethod() != null)

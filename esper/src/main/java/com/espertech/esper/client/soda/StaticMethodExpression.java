@@ -8,22 +8,21 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
+import com.espertech.esper.collection.Pair;
+
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Static method call consists of a class name and method name.
  */
 public class StaticMethodExpression extends ExpressionBase
 {
-    private String className;
-    private String method;
     private static final long serialVersionUID = -8876482797010708113L;
 
-    /**
-     * Ctor.
-     */
-    public StaticMethodExpression() {
-    }
+    private String className;
+    private List<Pair<String, List<Expression>>> chain = new ArrayList<Pair<String, List<Expression>>>();
 
     /**
      * Ctor.
@@ -34,30 +33,35 @@ public class StaticMethodExpression extends ExpressionBase
     public StaticMethodExpression(String className, String method, Object[] parameters)
     {
         this.className = className;
-        this.method = method;
-        
+
+        List<Expression> parameterList = new ArrayList<Expression>();
         for (int i = 0; i < parameters.length; i++)
         {
             if (parameters[i] instanceof Expression)
             {
-                this.getChildren().add((Expression)parameters[i]);
+                parameterList.add((Expression)parameters[i]);
             }
             else
             {
-                this.getChildren().add(new ConstantExpression(parameters[i]));
+                parameterList.add(new ConstantExpression(parameters[i]));
             }
         }
+        chain.add(new Pair<String, List<Expression>>(method, parameterList));
+    }
+
+    public List<Pair<String, List<Expression>>> getChain()
+    {
+        return chain;
     }
 
     /**
      * Ctor.
      * @param className class name providing the static method
-     * @param method method name
      */
-    public StaticMethodExpression(String className, String method)
+    public StaticMethodExpression(String className, List<Pair<String, List<Expression>>> chain)
     {
         this.className = className;
-        this.method = method;
+        this.chain = chain;
     }
 
     public ExpressionPrecedenceEnum getPrecedence()
@@ -68,19 +72,7 @@ public class StaticMethodExpression extends ExpressionBase
     public void toPrecedenceFreeEPL(StringWriter writer)
     {
         writer.write(className);
-        writer.write('.');
-        writer.write(method);
-        writer.write('(');
-
-        String delimiter = "";
-        for (Expression child : this.getChildren())
-        {
-            writer.write(delimiter);
-            child.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            delimiter = ", ";
-        }
-
-        writer.write(')');
+        DotExpression.renderChain(chain, writer);
     }
 
     /**
@@ -99,23 +91,5 @@ public class StaticMethodExpression extends ExpressionBase
     public void setClassName(String className)
     {
         this.className = className;
-    }
-
-    /**
-     * Returns the method name.
-     * @return method name
-     */
-    public String getMethod()
-    {
-        return method;
-    }
-
-    /**
-     * Sets the method name.
-     * @param method method name
-     */
-    public void setMethod(String method)
-    {
-        this.method = method;
     }
 }

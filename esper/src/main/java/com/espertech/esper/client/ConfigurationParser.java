@@ -8,14 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+import com.espertech.esper.client.soda.StreamSelector;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.type.StringPatternSet;
+import com.espertech.esper.type.StringPatternSetLike;
+import com.espertech.esper.type.StringPatternSetRegex;
 import com.espertech.esper.util.DOMElementIterator;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.event.EventAdapterException;
-import com.espertech.esper.client.soda.StreamSelector;
-import com.espertech.esper.type.StringPatternSet;
-import com.espertech.esper.type.StringPatternSetRegex;
-import com.espertech.esper.type.StringPatternSetLike;
-import com.espertech.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -28,17 +27,17 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * Parser for configuration XML.
@@ -1243,6 +1242,12 @@ class ConfigurationParser {
         {
             boolean extendedAggregation = Boolean.parseBoolean(extendedAggregationStr);
             configuration.getEngineDefaults().getExpression().setExtendedAggregation(extendedAggregation);
+        }
+        String duckTypingStr = getOptionalAttribute(parentElement, "ducktyping");
+        if (duckTypingStr != null)
+        {
+            boolean duckTyping = Boolean.parseBoolean(duckTypingStr);
+            configuration.getEngineDefaults().getExpression().setDuckTyping(duckTyping);
         }
     }
 

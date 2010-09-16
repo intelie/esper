@@ -1172,8 +1172,10 @@ public class TestEPLTreeWalker extends TestCase
 
         SelectClauseExprRawSpec spec = getSelectExprSpec(walker.getStatementSpec(), 0);
         ExprStaticMethodNode staticMethod = (ExprStaticMethodNode) spec.getSelectExpression();
-        assertEquals("MyClass", staticMethod.getClassOrPropertyName());
-        assertEquals("someFunc", staticMethod.getMethodName());
+        assertEquals("MyClass", staticMethod.getClassName());
+        assertEquals("someFunc", staticMethod.getChainSpec().get(0).getName());
+        assertEquals(1, staticMethod.getChainSpec().get(0).getParameters().size());
+        assertEquals("1", staticMethod.getChainSpec().get(0).getParameters().get(0).toExpressionString());
     }
 
     public void testWalkDBJoinStatement() throws Exception

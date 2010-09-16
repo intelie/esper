@@ -265,6 +265,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case WINDOW_AGGREG:
                 leaveAggregate(node);
                 break;
+            case DOT_EXPR:
+            	leaveDotExpr(node);
+                break;
             case LIB_FUNC_CHAIN:
             	leaveLibFunction(node);
                 break;
@@ -1770,7 +1773,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.getReferencedVariables().add(propertyName);
     }
 
-    private void leaveLibFunctionOld(Tree node)
+    private void leaveLibFunctionOld(Tree parent, Tree node)
     {
     	log.debug(".leaveLibFunctionOld");
 
@@ -1784,8 +1787,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
         if (node.getChild(0).getType() == CLASS_IDENT)
         {
             String className = node.getChild(0).getText();
-            String methodName = node.getChild(1).getText();
-            astExprNodeMap.put(node, new ExprStaticMethodNode(className, methodName,  configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
+            List<ExprChainedSpec> chained = getLibFuncChain(parent);
+            astExprNodeMap.put(node, new ExprStaticMethodNode(className, chained, configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
             return;
         }
 
@@ -1823,6 +1826,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
         throw new IllegalStateException("Unknown method named '" + childNodeText + "' could not be resolved");
     }
 
+    private void leaveDotExpr(Tree node)
+    {
+    	log.debug(".leaveDotExpr");
+        List<ExprChainedSpec> chainSpec = getLibFuncChain(node);
+        astExprNodeMap.put(node, new ExprDotNode(chainSpec, configurationInformation.getEngineDefaults().getExpression().isDuckTyping()));
+    }
+
     private void leaveLibFunction(Tree node)
     {
     	log.debug(".leaveLibFunction");
@@ -1830,53 +1840,16 @@ public class EPLTreeWalker extends EsperEPL2Ast
         // Single chain can include a class name or property name.
         // As the current node does not generate any expression for this 1-element chain, forward expression to this node.
         if (node.getChildCount() == 1) {
-            leaveLibFunctionOld(node.getChild(0));
+            leaveLibFunctionOld(node, node.getChild(0));
             mapChildASTToChildExprNode(node.getChild(0));
             ExprNode generated = astExprNodeMap.remove(node.getChild(0));
             astExprNodeMap.put(node, generated);
             return;
         }
-        throw new IllegalArgumentException("Lib chain not handled");
 
-        /*
-        List<ExprChainedSpec> chained = new ArrayList<ExprChainedSpec>();
-        for (int i = 0; i < node.getChildCount(); i++) {
-            Tree chainElement = node.getChild(i);
-
-            if (chainElement.getChild(0).getType() == EVENT_PROP_EXPR) {
-                String eventProperty = ASTFilterSpecHelper.getPropertyName(chainElement.getChild(0), 0);
-                chained.add(new ExprChainedSpec(eventProperty));
-            }
-
-            int count = 0;
-            String className = null;
-            if (chainElement.getChild(count).getType() == CLASS_IDENT) {
-                className = ASTConstantHelper.removeTicks(chainElement.getChild(count).getText());
-            }
-            count++;
-
-            String methodName = ASTConstantHelper.removeTicks(chainElement.getChild(count).getText());
-            count++;
-
-            List<ExprNode> parameters = new ArrayList<ExprNode>();
-            for (int exprNum = count; exprNum < chainElement.getChildCount(); exprNum++) {
-                ExprNode parameter = astExprNodeMap.remove(chainElement.getChild(exprNum));
-                parameters.add(parameter);
-            }
-            chained.add(new ExprChainedSpec(methodName, parameters, className));
-        }
-
-        /*
-        if (node.getChild(0).getType() == CLASS_IDENT)
-        {
-            String className = node.getChild(0).getText();
-            String methodName = (node.getChild(1).getText());
-            astExprNodeMap.put(node, new ExprStaticMethodNode(className, methodName,  configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
-            return;
-        }
-        */
-
-        //astExprNodeMap.put(node, new ExprChainedNode(chained));
+        String className = node.getChild(0).getChild(0).getText();
+        List<ExprChainedSpec> chained = this.getLibFuncChain(node);
+        astExprNodeMap.put(node, new ExprStaticMethodNode(className, chained, configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
     }
 
     private boolean handleAdditionalKnownFunc(Tree node)
@@ -2780,6 +2753,34 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
         return true;
+    }
+
+    private List<ExprChainedSpec> getLibFuncChain(Tree parent) {
+
+        List<ExprChainedSpec> chained = new ArrayList<ExprChainedSpec>();
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            Tree chainElement = parent.getChild(i);
+            if (chainElement.getType() != LIB_FUNCTION) {
+                continue;
+            }
+
+            int count = 0;
+            if (chainElement.getChild(0).getType() == CLASS_IDENT)
+            {
+                count++;
+            }
+
+            String methodName = ASTConstantHelper.removeTicks(chainElement.getChild(count).getText());
+            count++;
+
+            List<ExprNode> parameters = new ArrayList<ExprNode>();
+            for (int exprNum = count; exprNum < chainElement.getChildCount(); exprNum++) {
+                ExprNode parameter = astExprNodeMap.remove(chainElement.getChild(exprNum));
+                parameters.add(parameter);
+            }
+            chained.add(new ExprChainedSpec(methodName, parameters));
+        }
+        return chained;
     }
 
     private static final Log log = LogFactory.getLog(EPLTreeWalker.class);

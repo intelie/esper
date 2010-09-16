@@ -146,6 +146,14 @@ public abstract class ExprAggregateNode extends ExprNode implements ExprEvaluato
         // exist at that level
         TreeMap<Integer, List<ExprAggregateNode>> aggregateExprPerLevel = new TreeMap<Integer, List<ExprAggregateNode>>();
 
+        if (topNode instanceof ExprNodeInnerNodeProvider) {
+            ExprNodeInnerNodeProvider parameterized = (ExprNodeInnerNodeProvider) topNode;
+            List<ExprNode> additionalNodes = parameterized.getAdditionalNodes();
+            for (ExprNode additionalNode : additionalNodes) {
+                recursiveAggregateEnter(additionalNode, aggregateExprPerLevel, 1);
+            }
+        }
+
         // Recursively enter all aggregate functions and their level into map
         recursiveAggregateEnter(topNode, aggregateExprPerLevel, 1);
 
@@ -200,6 +208,14 @@ public abstract class ExprAggregateNode extends ExprNode implements ExprEvaluato
         // ask all child nodes to enter themselves
         for (ExprNode node : currentNode.getChildNodes())
         {
+            // handle expression nodes in which have additional expression nodes as part of their parameterization and not as child nodes
+            if (node instanceof ExprNodeInnerNodeProvider) {
+                ExprNodeInnerNodeProvider parameterized = (ExprNodeInnerNodeProvider) node;
+                List<ExprNode> additionalNodes = parameterized.getAdditionalNodes();
+                for (ExprNode additionalNode : additionalNodes) {
+                    recursiveAggregateEnter(additionalNode, aggregateExprPerLevel, currentLevel + 1);
+                }
+            }
             recursiveAggregateEnter(node, aggregateExprPerLevel, currentLevel + 1);
         }
 

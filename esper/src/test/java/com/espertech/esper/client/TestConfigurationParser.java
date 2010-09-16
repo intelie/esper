@@ -76,6 +76,7 @@ public class TestConfigurationParser extends TestCase
         assertTrue(config.getEngineDefaults().getExpression().isSelfSubselectPreeval());
         assertTrue(config.getEngineDefaults().getExpression().isUdfCache());
         assertTrue(config.getEngineDefaults().getExpression().isExtendedAggregation());
+        assertFalse(config.getEngineDefaults().getExpression().isDuckTyping());
         assertNull(config.getEngineDefaults().getExceptionHandling().getHandlerFactories());
 
         ConfigurationEventTypeXMLDOM domType = new ConfigurationEventTypeXMLDOM();
@@ -338,6 +339,7 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getExpression().isSelfSubselectPreeval());
         assertFalse(config.getEngineDefaults().getExpression().isUdfCache());
         assertFalse(config.getEngineDefaults().getExpression().isExtendedAggregation());
+        assertTrue(config.getEngineDefaults().getExpression().isDuckTyping());
         assertEquals(2, config.getEngineDefaults().getExceptionHandling().getHandlerFactories().size());
         assertEquals("my.company.cep.LoggingExceptionHandlerFactory", config.getEngineDefaults().getExceptionHandling().getHandlerFactories().get(0));
         assertEquals("my.company.cep.AlertExceptionHandlerFactory", config.getEngineDefaults().getExceptionHandling().getHandlerFactories().get(1));

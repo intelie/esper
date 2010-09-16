@@ -1229,7 +1229,7 @@ public class StatementSpecMapper
         else if (expr instanceof StaticMethodExpression)
         {
             StaticMethodExpression method = (StaticMethodExpression) expr;
-            return new ExprStaticMethodNode(method.getClassName(), method.getMethod(),
+            return new ExprStaticMethodNode(method.getClassName(), mapChains(method.getChain(), mapContext),
                     mapContext.getConfiguration().getEngineDefaults().getExpression().isUdfCache());
         }
         else if (expr instanceof MinProjectionExpression)
@@ -1437,6 +1437,11 @@ public class StatementSpecMapper
 
             return new ExprAccessAggNode(type, base.isWildcard(), base.getStreamWildcard());
         }
+        else if (expr instanceof DotExpression) {
+            DotExpression base = (DotExpression) expr;
+            return new ExprDotNode(mapChains(base.getChain(), mapContext),
+                    mapContext.getConfiguration().getEngineDefaults().getExpression().isDuckTyping());
+        }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
 
@@ -1635,7 +1640,7 @@ public class StatementSpecMapper
         else if (expr instanceof ExprStaticMethodNode)
         {
             ExprStaticMethodNode node = (ExprStaticMethodNode) expr;
-            return new StaticMethodExpression(node.getClassOrPropertyName(), node.getMethodName());
+            return new StaticMethodExpression(node.getClassName(), unmapChains(node.getChainSpec(), unmapContext));
         }
         else if (expr instanceof ExprMinMaxAggrNode)
         {
@@ -1831,6 +1836,15 @@ public class StatementSpecMapper
             ape.setWildcard(accessNode.isWildcard());
             ape.setStreamWildcard(accessNode.getStreamWildcard());
             return ape;
+        }
+        else if (expr instanceof ExprDotNode)
+        {
+            ExprDotNode dotNode = (ExprDotNode) expr;
+            DotExpression dotExpr = new DotExpression();
+            for (ExprChainedSpec chain : dotNode.getChainSpec()) {
+                dotExpr.add(chain.getName(), unmapExpressionDeep(chain.getParameters(), unmapContext));
+            }
+            return dotExpr;
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
@@ -2328,5 +2342,21 @@ public class StatementSpecMapper
                 listExp.add(rawSqlExpr.getFilterRootNode());
             }
         }
+    }
+    
+    private static List<ExprChainedSpec> mapChains(List<Pair<String, List<Expression>>> pairs, StatementSpecMapContext mapContext) {
+        List<ExprChainedSpec> chains = new ArrayList<ExprChainedSpec>();
+        for (Pair<String, List<Expression>> chain : pairs) {
+            chains.add(new ExprChainedSpec(chain.getFirst(), mapExpressionDeep(chain.getSecond(), mapContext)));
+        }
+        return chains;
+    }
+
+    private static List<Pair<String, List<Expression>>> unmapChains(List<ExprChainedSpec> pairs, StatementSpecUnMapContext unmapContext) {
+        List<Pair<String, List<Expression>>> result = new ArrayList<Pair<String, List<Expression>>>();
+        for (ExprChainedSpec chain : pairs) {
+            result.add(new Pair<String, List<Expression>>(chain.getName(), unmapExpressionDeep(chain.getParameters(), unmapContext)));
+        }
+        return result;
     }
 }

@@ -425,6 +425,7 @@ valueExpr
 	|	subSelectInExpr
 	| 	subSelectRowExpr 
 	| 	subSelectExistsExpr
+	|	dotExpr
 	;
 
 valueExprWithTime
@@ -561,6 +562,10 @@ arithmeticExpr
 	| 	^(a=CONCAT valueExpr valueExpr (valueExpr)*) { leaveNode($a); }
 	;
 	
+dotExpr
+	:	^(d=DOT_EXPR valueExpr libFunctionWithClass*) { leaveNode($d); }
+	;
+
 libFuncChain
 	:  	^(l=LIB_FUNC_CHAIN libFunctionWithClass libOrPropFunction*) { leaveNode($l); }
 	;

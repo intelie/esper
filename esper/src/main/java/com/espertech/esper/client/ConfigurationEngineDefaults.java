@@ -1009,6 +1009,7 @@ public class ConfigurationEngineDefaults implements Serializable
         private boolean udfCache;
         private boolean selfSubselectPreeval;
         private boolean extendedAggregation;
+        private boolean duckTyping;
 
         /**
          * Ctor.
@@ -1129,6 +1130,16 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setExtendedAggregation(boolean extendedAggregation)
         {
             this.extendedAggregation = extendedAggregation;
+        }
+
+        public boolean isDuckTyping()
+        {
+            return duckTyping;
+        }
+
+        public void setDuckTyping(boolean duckTyping)
+        {
+            this.duckTyping = duckTyping;
         }
     }
 

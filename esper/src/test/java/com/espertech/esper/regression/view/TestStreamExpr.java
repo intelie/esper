@@ -258,10 +258,10 @@ public class TestStreamExpr extends TestCase
 
     public void testInvalidSelect()
     {
-        tryInvalid("select s0.abc() from " + SupportBean.class.getName() + " as s0",
-                   "Error starting statement: Could not find static method named 'abc' in class 'com.espertech.esper.support.bean.SupportBean' taking no parameters [select s0.abc() from com.espertech.esper.support.bean.SupportBean as s0]");
-
         tryInvalid("select s0.getString(1,2,3) from " + SupportBean.class.getName() + " as s0", null);
+
+        tryInvalid("select s0.abc() from " + SupportBean.class.getName() + " as s0",
+                   "Error starting statement: Could not find instance method named 'abc' in class 'com.espertech.esper.support.bean.SupportBean' taking no parameters [select s0.abc() from com.espertech.esper.support.bean.SupportBean as s0]");
     }
 
     private void tryInvalid(String clause, String message)

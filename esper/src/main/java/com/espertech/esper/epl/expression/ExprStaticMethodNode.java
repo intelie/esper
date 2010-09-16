@@ -17,48 +17,49 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Represents an invocation of a static library method in the expression tree.
  */
-public class ExprStaticMethodNode extends ExprNode
+public class ExprStaticMethodNode extends ExprNode implements ExprNodeInnerNodeProvider
 {
     private static final Log log = LogFactory.getLog(ExprStaticMethodNode.class);
-
-	private final String classOrPropertyName;
-	private final String methodName;
-    private final boolean isUseCache;
-
-    private ExprEvaluator evaluator;
-    private boolean isReturnsConstantResult;
     private static final long serialVersionUID = -2237283743896280252L;
+
+    private final String className;
+    private final List<ExprChainedSpec> chainSpec;
+    
+    private transient final boolean isUseCache;
+    private transient boolean isReturnsConstantResult;
+    private transient ExprEvaluator evaluator;
 
     /**
 	 * Ctor.
-	 * @param classOrPropertyName - the declaring class for the method that this node will invoke
-	 * @param methodName - the name of the method that this node will invoke
+	 * @param chainSpec - the class and name of the method that this node will invoke plus parameters
      * @param isUseCache - configuration whether to use cache
 	 */
-	public ExprStaticMethodNode(String classOrPropertyName, String methodName, boolean isUseCache)
+	public ExprStaticMethodNode(String className, List<ExprChainedSpec> chainSpec, boolean isUseCache)
 	{
-		if(classOrPropertyName == null)
-		{
-			throw new NullPointerException("Class name is null");
-		}
-		if(methodName == null)
-		{
-			throw new NullPointerException("Method name is null");
-		}
-
-		this.classOrPropertyName = classOrPropertyName;
-		this.methodName = methodName;
+        this.className = className;
+		this.chainSpec = chainSpec;
         this.isUseCache = isUseCache;
     }
 
-    public ExprEvaluator getExprEvaluator()
-    {
+    @Override
+    public ExprEvaluator getExprEvaluator() {
         return evaluator;
+    }
+
+    public String getClassName()
+    {
+        return className;
+    }
+
+    public List<ExprChainedSpec> getChainSpec()
+    {
+        return chainSpec;
     }
 
     @Override
@@ -67,39 +68,11 @@ public class ExprStaticMethodNode extends ExprNode
         return isReturnsConstantResult;
     }
 
-    /**
-     * Returns the class name.
-	 * @return the class that declared the static method
-	 */
-	public String getClassOrPropertyName() {
-		return classOrPropertyName;
-	}
-
-	/**
-     * Returns the method name.
-	 * @return the name of the method
-	 */
-	public String getMethodName() {
-		return methodName;
-	}
-
 	public String toExpressionString()
 	{
         StringBuilder buffer = new StringBuilder();
-		buffer.append(classOrPropertyName);
-		buffer.append('.');
-		buffer.append(methodName);
-
-		buffer.append('(');
-		String appendString = "";
-		for(ExprNode child : getChildNodes())
-		{
-			buffer.append(appendString);
-			buffer.append(child.toExpressionString());
-			appendString = ", ";
-		}
-		buffer.append(')');
-
+		buffer.append(className);
+        ExprNodeUtility.toExpressionString(chainSpec, buffer);
 		return buffer.toString();
 	}
 
@@ -109,35 +82,33 @@ public class ExprStaticMethodNode extends ExprNode
 		{
 			return false;
 		}
-        ExprStaticMethodNode otherNode = (ExprStaticMethodNode) node;
-        return classOrPropertyName.equals(otherNode.classOrPropertyName) && methodName.equals(otherNode.methodName);
+        ExprStaticMethodNode other = (ExprStaticMethodNode) node;
+        if (other.chainSpec.size() != this.chainSpec.size()) {
+            return false;
+        }
+        for (int i = 0; i < chainSpec.size(); i++) {
+            if (!(this.chainSpec.get(i).equals(other.chainSpec.get(i)))) {
+                return false;
+            }
+        }
+        return other.className.equals(this.className);
 	}
 
 	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
 	{
-        // See if the class name
-        PropertyResolutionDescriptor classPropertyResoltion = null;
-        try
-        {
-            classPropertyResoltion = streamTypeService.resolveByPropertyName(classOrPropertyName);
-        }
-        catch (StreamTypesException e) {
-            // expected, may actually be a class name
-        }
+        ExprNodeUtility.validate(chainSpec, streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext);
 
-        if (classPropertyResoltion != null) {
-            evaluator = validatePropertyMethod(methodName, classPropertyResoltion);
-            return;
-        }
+        // get first chain item
+        List<ExprChainedSpec> chainList = new ArrayList<ExprChainedSpec>(chainSpec);
+        ExprChainedSpec firstItem = chainList.remove(0);
 
-		// Get the types of the childNodes
-		List<ExprNode> childNodes = this.getChildNodes();
-		Class[] paramTypes = new Class[childNodes.size()];
+		// Get the types of the parameters for the first invocation
+		Class[] paramTypes = new Class[firstItem.getParameters().size()];
+        ExprEvaluator[] childEvals = new ExprEvaluator[firstItem.getParameters().size()];
 		int count = 0;
         
         boolean allConstants = true;
-        ExprEvaluator[] childEvals = new ExprEvaluator[childNodes.size()];
-        for(ExprNode childNode : childNodes)
+        for(ExprNode childNode : firstItem.getParameters())
 		{
             ExprEvaluator eval = childNode.getExprEvaluator();
             childEvals[count] = eval;
@@ -149,34 +120,39 @@ public class ExprStaticMethodNode extends ExprNode
             }
         }
         boolean isConstantParameters = allConstants && isUseCache;
-        isReturnsConstantResult = isConstantParameters; 
+        isReturnsConstantResult = isConstantParameters && chainList.isEmpty();
 
         // Try to resolve the method
+        FastMethod staticMethod;
 		try
 		{
-			Method method = methodResolutionService.resolveMethod(classOrPropertyName, methodName, paramTypes);
+			Method method = methodResolutionService.resolveMethod(className, firstItem.getName(), paramTypes);
 			FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
-			FastMethod staticMethod = declaringClass.getMethod(method);
-            this.evaluator = new ExprStaticMethodEvalInvoke(classOrPropertyName, staticMethod, childEvals, isConstantParameters);
+			staticMethod = declaringClass.getMethod(method);
 		}
 		catch(Exception e)
 		{
 			throw new ExprValidationException(e.getMessage());
 		}
+
+        ExprDotEval[] eval = ExprDotNodeUtility.getChainEvaluators(staticMethod.getReturnType(), chainList, methodResolutionService, false);
+        evaluator = new ExprStaticMethodEvalInvoke(className, staticMethod, childEvals, isConstantParameters, eval);
 	}
 
-    private ExprEvaluator validatePropertyMethod(String methodName, PropertyResolutionDescriptor classPropertyResoltion)
-            throws ExprValidationException
+    public void accept(ExprNodeVisitor visitor)
     {
-        // There are two built-in methods:
-        //   size() - returns array size
-        //   get(index) - returns array index
-        if (methodName.toLowerCase().equals("size")) {
-            if (classPropertyResoltion.getPropertyType().isArray()) {
-                return new ExprIdentEvalSize(classPropertyResoltion.getStreamNum(), classPropertyResoltion.getStreamEventType().getGetter(classPropertyResoltion.getPropertyName()));
+        super.accept(visitor);
+
+        // visit all parameters
+        for (ExprChainedSpec chain : this.chainSpec) {
+            for (ExprNode param : chain.getParameters()) {
+                param.accept(visitor);
             }
         }
-        // TODO
-        throw new ExprValidationException("TODO");
+    }
+
+    @Override
+    public List<ExprNode> getAdditionalNodes() {
+        return ExprNodeUtility.collectChainParameters(chainSpec);
     }
 }

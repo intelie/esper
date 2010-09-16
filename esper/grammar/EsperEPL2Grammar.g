@@ -190,6 +190,7 @@ tokens
 	CONCAT;	
 	LIB_FUNCTION;
 	LIB_FUNC_CHAIN;
+	DOT_EXPR;
 	UNARY_MINUS;
 	TIME_PERIOD;
 	ARRAY_EXPR;
@@ -1198,7 +1199,9 @@ unaryExpression
 	: MINUS eventProperty -> ^(UNARY_MINUS eventProperty)
 	| constant
 	| substitution
-	| LPAREN! expression RPAREN!
+	| LPAREN expression RPAREN (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	    -> {$d != null}? ^(DOT_EXPR expression libFunctionNoClass+)
+	    -> expression
 	| eventPropertyOrLibFunction
 	| (builtinFunc) => (builtinFunc)
 	| arrayExpression
@@ -1306,15 +1309,10 @@ eventPropertyOrLibFunction
 	;
 	
 libFunction
-	: libFunctionWithClass (DOT libFunctionChained)*
-	  -> ^(LIB_FUNC_CHAIN libFunctionWithClass libFunctionChained*)
+	: libFunctionWithClass (DOT libFunctionNoClass)*
+	  -> ^(LIB_FUNC_CHAIN libFunctionWithClass libFunctionNoClass*)
 	;
-	
-libFunctionChained
-	: (eventPropertyAtomic) => eventPropertyAtomic 
-	| libFunctionNoClass
-	;
-	
+		
 libFunctionWithClass
 	: (classIdentifierNonGreedy DOT)? funcIdent LPAREN (libFunctionArgs)? RPAREN
 	  -> ^(LIB_FUNCTION classIdentifierNonGreedy? funcIdent libFunctionArgs?)

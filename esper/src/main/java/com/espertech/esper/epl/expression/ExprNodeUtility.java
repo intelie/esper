@@ -9,13 +9,14 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.schedule.TimeProvider;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Utility functions around handling expressions.
@@ -203,6 +204,22 @@ public class ExprNodeUtility
         return true;
     }
 
+    public static boolean deepEquals(List<ExprNode> one, List<ExprNode> two)
+    {
+        if (one.size() != two.size())
+        {
+            return false;
+        }
+        for (int i = 0; i < one.size(); i++)
+        {
+            if (!ExprNodeUtility.deepEquals(one.get(i), two.get(i)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Check if the expression is minimal: does not have a subselect, aggregation and does not need view resources
      * @param expression to inspect
@@ -231,5 +248,43 @@ public class ExprNodeUtility
             return "an aggregation function";
         }
         return null;
+    }
+
+    protected static void toExpressionString(List<ExprChainedSpec> chainSpec, StringBuilder buffer)
+    {
+        for (ExprChainedSpec element : chainSpec) {
+            buffer.append(".");
+            buffer.append(element.getName());
+            buffer.append("(");
+
+            String delimiter = "";
+            for (ExprNode param : element.getParameters()) {
+                buffer.append(delimiter);
+                delimiter = ", ";
+                buffer.append(param.toExpressionString());
+            }
+            buffer.append(")");
+        }
+    }
+
+
+    public static void validate(List<ExprChainedSpec> chainSpec, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException {
+
+        // validate all parameters
+        for (ExprChainedSpec chainElement : chainSpec) {
+            List<ExprNode> validated = new ArrayList<ExprNode>();
+            for (ExprNode expr : chainElement.getParameters()) {
+                validated.add(expr.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext));
+            }
+            chainElement.setParameters(validated);
+        }
+    }
+
+    public static List<ExprNode> collectChainParameters(List<ExprChainedSpec> chainSpec) {
+        List<ExprNode> result = new ArrayList<ExprNode>();
+        for (ExprChainedSpec chainElement : chainSpec) {
+            result.addAll(chainElement.getParameters());
+        }
+        return result;
     }
 }

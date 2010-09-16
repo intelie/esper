@@ -12,13 +12,15 @@ import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
-import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.MetaDefItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Superclass for filter nodes in a filter expression tree. Allow
@@ -124,7 +126,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
     private ExprNode resolveInstanceMethod(ExprStaticMethodNode staticMethodNode, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException existingException, ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
-        String streamName = staticMethodNode.getClassOrPropertyName();
+        String streamName = staticMethodNode.getClassName();
 
         boolean streamFound = false;
         for (String name : streamTypeService.getStreamNames())
@@ -135,9 +137,10 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             }
         }
 
-        String methodName = staticMethodNode.getMethodName();
+        ExprChainedSpec chainSpec = staticMethodNode.getChainSpec().get(0);
+        String methodName = chainSpec.getName();
         ExprStreamInstanceMethodNode exprStream = new ExprStreamInstanceMethodNode(streamName, methodName);
-        for (ExprNode childNode : staticMethodNode.getChildNodes())
+        for (ExprNode childNode : chainSpec.getParameters())
         {
             exprStream.addChildNode(childNode);
         }
@@ -297,8 +300,9 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
         // If there is a class name, assume a static method is possible
         if (parse.getClassName() != null)
         {
-            ExprNode result = new ExprStaticMethodNode(parse.getClassName(), parse.getMethodName(), methodResolutionService.isUdfCache());
-            result.addChildNode(new ExprConstantNode(parse.getArgString()));
+            List<ExprNode> parameters = Collections.singletonList((ExprNode) new ExprConstantNode(parse.getArgString()));
+            List<ExprChainedSpec> chain = Collections.singletonList(new ExprChainedSpec(parse.getMethodName(), parameters));
+            ExprNode result = new ExprStaticMethodNode(parse.getClassName(), chain, methodResolutionService.isUdfCache());
 
             // Validate
             try

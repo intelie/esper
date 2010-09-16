@@ -1,10 +1,13 @@
 package com.espertech.esper.epl.expression;
 
-import java.lang.reflect.Method;
-
-import junit.framework.TestCase;
-import com.espertech.esper.util.MethodResolver;
 import com.espertech.esper.epl.core.*;
+import com.espertech.esper.util.MethodResolver;
+import junit.framework.TestCase;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestExprStaticMethodNode extends TestCase
 {
@@ -40,9 +43,7 @@ public class TestExprStaticMethodNode extends TestCase
 
     public void testMaxIntInt() throws Exception
     {
-        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max", true);
-        root.addChildNode(intThree);
-        root.addChildNode(intFive);
+        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", makeSpec("max", intThree, intFive), true);
         validate(root);
 
         Integer result = Math.max(3,5);
@@ -52,11 +53,8 @@ public class TestExprStaticMethodNode extends TestCase
     public void testIntegerInt() throws Exception
     {
         Method staticMethod = this.getClass().getMethod("staticIntMethod", Integer.class);
-        ExprStaticMethodNode parent = new ExprStaticMethodNode(this.getClass().getName(), "staticIntMethod",  true);
-        ExprNode child = new ExprStaticMethodNode("Math", "max", true);
-        child.addChildNode(intThree);
-        child.addChildNode(intFive);
-        parent.addChildNode(child);
+        ExprNode child = new ExprStaticMethodNode("Math", makeSpec("max", intThree, intFive), true);
+        ExprStaticMethodNode parent = new ExprStaticMethodNode(this.getClass().getName(), makeSpec("staticIntMethod", child), true);
         validate(parent);
 
         int result = Math.max(3, 5);
@@ -65,9 +63,7 @@ public class TestExprStaticMethodNode extends TestCase
 
     public void testMaxIntShort() throws Exception
     {
-        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max",true);
-        root.addChildNode(intThree);
-        root.addChildNode(shortNine);
+        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", makeSpec("max",intThree, shortNine), true);
         validate(root);
 
         short nine = 9;
@@ -77,9 +73,7 @@ public class TestExprStaticMethodNode extends TestCase
 
     public void testMaxDoubleInt() throws Exception
     {
-        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max", true);
-        root.addChildNode(doubleEight);
-        root.addChildNode(intFive);
+        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", makeSpec("max", doubleEight, intFive), true);
         validate(root);
 
         Double result = Math.max(8d,5);
@@ -88,9 +82,7 @@ public class TestExprStaticMethodNode extends TestCase
 
     public void testMaxDoubleDouble() throws Exception
     {
-        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "max", true);
-        root.addChildNode(doubleEight);
-        root.addChildNode(doubleFour);
+        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", makeSpec("max", doubleEight, doubleFour), true);
         validate(root);
 
         Double result = Math.max(8d,4d);
@@ -100,9 +92,7 @@ public class TestExprStaticMethodNode extends TestCase
     public void testPowDoubleDouble() throws Exception
     {
         Method pow = Math.class.getMethod("pow", double.class, double.class);
-        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", "pow", true);
-        root.addChildNode(doubleEight);
-        root.addChildNode(doubleFour);
+        ExprStaticMethodNode root = new ExprStaticMethodNode("Math", makeSpec("pow", doubleEight, doubleFour), true);
         validate(root);
 
         Double result = Math.pow(8d,4d);
@@ -112,8 +102,7 @@ public class TestExprStaticMethodNode extends TestCase
     public void testValueOfInt() throws Exception
     {
         Method valueOf = Integer.class.getMethod("valueOf", String.class);
-        ExprStaticMethodNode root = new ExprStaticMethodNode("Integer", "valueOf", true);
-        root.addChildNode(stringTen);
+        ExprStaticMethodNode root = new ExprStaticMethodNode("Integer", makeSpec("valueOf", stringTen), true);
         validate(root);
 
         Integer result = Integer.valueOf("10");
@@ -123,6 +112,13 @@ public class TestExprStaticMethodNode extends TestCase
     private void validate(ExprNode node) throws Exception
     {
         node.getValidatedSubtree(streamTypeService, methodResolutionService, null, null, null, null);
+    }
+
+    private List<ExprChainedSpec> makeSpec(String method, ExprNode...expr)
+    {
+        List<ExprChainedSpec> chained = new ArrayList<ExprChainedSpec>();
+        chained.add(new ExprChainedSpec(method, Arrays.asList(expr)));
+        return chained;
     }
 
     public void nonstaticMethod(){}
