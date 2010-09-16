@@ -137,14 +137,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             }
         }
 
-        ExprChainedSpec chainSpec = staticMethodNode.getChainSpec().get(0);
-        String methodName = chainSpec.getName();
-        ExprStreamInstanceMethodNode exprStream = new ExprStreamInstanceMethodNode(streamName, methodName);
-        for (ExprNode childNode : chainSpec.getParameters())
-        {
-            exprStream.addChildNode(childNode);
-        }
-
+        ExprStreamInstanceMethodNode exprStream = new ExprStreamInstanceMethodNode(streamName, staticMethodNode.getChainSpec());
         try
         {
             exprStream.validate(streamTypeService, methodResolutionService, null, null, null, exprEvaluatorContext);

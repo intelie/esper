@@ -20,6 +20,9 @@ Major API or EPL changes
   - Support for correlated aggregation in subqueries
   - New feature allows registering an exception handler that is called when any continous-query statement exception occurs
   - Statistics views and size view now accept additional expressions as parameters for returning values pertaining to the last-applied event 
+  - Support for chained method invocations on events in streams and for library static methods
+  - Support for registering row functions
+  - Support for dot-syntax in the form of "(expression).method(...).method(...)" and duck typing
 
 Changes in version 3.5.0
 ------------------------

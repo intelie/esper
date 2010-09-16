@@ -229,8 +229,6 @@ public class TestFirstLastAllAggregation extends TestCase {
     public void testTypeAndColNameAndEquivalency() {
         epService.getEPAdministrator().getConfiguration().addImport(SupportStaticMethodLib.class.getName());
 
-        /*
-        TODO
         String epl = "select " +
                 "first(sa.doublePrimitive + sa.intPrimitive), " +
                 "first(sa.intPrimitive), " +
@@ -264,8 +262,8 @@ public class TestFirstLastAllAggregation extends TestCase {
         runAssertionType(false);
 
         stmt.destroy();
-         */
-        String epl = "select " +
+
+        epl = "select " +
                 "first(sa.doublePrimitive + sa.intPrimitive) as f1, " +
                 "first(sa.intPrimitive) as f2, " +
                 "window(sa.*) as w1, " +
@@ -273,7 +271,7 @@ public class TestFirstLastAllAggregation extends TestCase {
                 "from SupportBean.win:length(2) as sa " +
                 "having SupportStaticMethodLib.alwaysTrue({first(sa.doublePrimitive + sa.intPrimitive), " +
                 "first(sa.intPrimitive), window(sa.*), last(*)})";
-        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
 
         runAssertionType(true);

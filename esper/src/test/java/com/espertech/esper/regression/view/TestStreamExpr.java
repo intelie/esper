@@ -1,13 +1,11 @@
 package com.espertech.esper.regression.view;
 
+import com.espertech.esper.support.bean.*;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBeanComplexProps;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -19,12 +17,52 @@ import java.util.Map;
 public class TestStreamExpr extends TestCase
 {
     private EPServiceProvider epService;
+    private SupportUpdateListener listener;
 
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+        listener = new SupportUpdateListener();
+    }
+
+    public void testChainedParameterized() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportChainTop", SupportChainTop.class);
+
+        String subexpr="top.getChildOne(\"abc\", 10).getChildTwo(\"append\")";
+        String epl = "select " +
+                subexpr +
+                " from SupportChainTop as top";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        runAssertionChainedParam(stmt, subexpr);
+
+        listener.reset();
+        stmt.destroy();
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
+        assertEquals(epl, model.toEPL());
+        stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        runAssertionChainedParam(stmt, subexpr);
+    }
+
+    private void runAssertionChainedParam(EPStatement stmt, String subexpr) {
+
+        Object[][] rows = new Object[][] {
+                {subexpr, SupportChainChildTwo.class}
+                };
+        for (int i = 0; i < rows.length; i++) {
+            EventPropertyDescriptor prop = stmt.getEventType().getPropertyDescriptors()[i];
+            assertEquals(rows[i][0], prop.getPropertyName());
+            assertEquals(rows[i][1], prop.getPropertyType());
+        }
+
+        epService.getEPRuntime().sendEvent(new SupportChainTop());
+        Object result = listener.assertOneGetNewAndReset().get(subexpr);
+        assertEquals("abcappend", ((SupportChainChildTwo)result).getText());
     }
 
     public void testStreamFunction()

@@ -10,6 +10,10 @@ import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class TestExprStreamInstanceMethodNode extends TestCase
 {
     private ExprStreamInstanceMethodNode node;
@@ -17,7 +21,7 @@ public class TestExprStreamInstanceMethodNode extends TestCase
 
     public void setUp()
     {
-        node = new ExprStreamInstanceMethodNode("s0", "getIntPrimitive");
+        node = new ExprStreamInstanceMethodNode("s0", makeSpec("getIntPrimitive"));
         streamTypeService = new SupportStreamTypeSvc3Stream();
     }
 
@@ -50,8 +54,8 @@ public class TestExprStreamInstanceMethodNode extends TestCase
         assertEquals(0, node.getStreamId());
         assertEquals(int.class, node.getType());
 
-        tryInvalidValidate(new ExprStreamInstanceMethodNode("s0", "dummy"));
-        tryInvalidValidate(new ExprStreamInstanceMethodNode("dummy", "getString()"));
+        tryInvalidValidate(new ExprStreamInstanceMethodNode("s0", makeSpec("dummy")));
+        tryInvalidValidate(new ExprStreamInstanceMethodNode("dummy", makeSpec("getString()")));
     }
 
     public void testEvaluate() throws Exception
@@ -66,12 +70,12 @@ public class TestExprStreamInstanceMethodNode extends TestCase
     public void testEqualsNode() throws Exception
     {
         SupportExprNodeFactory.validate3Stream(node);
-        ExprNode other = new ExprStreamInstanceMethodNode("s0", "getIntPrimitive");
+        ExprNode other = new ExprStreamInstanceMethodNode("s0", makeSpec("getIntPrimitive"));
         SupportExprNodeFactory.validate3Stream(other);
         
         assertTrue(node.equalsNode(other));
-        assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s1", "getIntPrimitive")));
-        assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s0", "xxx")));
+        assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s1", makeSpec("getIntPrimitive"))));
+        assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s0", makeSpec("xxx"))));
         assertFalse(node.equalsNode(new ExprStreamUnderlyingNode("xxx", false)));
     }
 
@@ -93,6 +97,13 @@ public class TestExprStreamInstanceMethodNode extends TestCase
         {
             // expected
         }
+    }
+
+    private List<ExprChainedSpec> makeSpec(String method, ExprNode...expr)
+    {
+        List<ExprChainedSpec> chained = new ArrayList<ExprChainedSpec>();
+        chained.add(new ExprChainedSpec(method, Arrays.asList(expr)));
+        return chained;
     }
 
     private static final Log log = LogFactory.getLog(TestExprStreamInstanceMethodNode.class);

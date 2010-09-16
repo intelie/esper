@@ -535,6 +535,12 @@ where address('work').streetName = 'Park Ave']]></programlisting>
 				Instance methods may also be invoked on event instances by specifying a stream name, as shown below:
 			</para>
 			<programlisting><![CDATA[select myevent.computeSomething() as result from MyEvent as myevent]]></programlisting>
+
+			<para>
+				Chaining instance methods is supported as this example shows:
+			</para>
+			<programlisting><![CDATA[select myevent.getComputerFor('books', 'movies').calculate() as result 
+from MyEvent as myevent]]></programlisting>
 		</sect2>
 
 		<sect2 id="event-properties-parameterized">

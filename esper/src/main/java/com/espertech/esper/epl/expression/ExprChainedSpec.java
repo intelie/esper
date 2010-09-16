@@ -54,11 +54,7 @@ public class ExprChainedSpec implements Serializable
         {
             return false;
         }
-        if (ExprNodeUtility.deepEquals(parameters, that.parameters)) {
-            return false;
-        }
-
-        return true;
+        return ExprNodeUtility.deepEquals(parameters, that.parameters);
     }
 
     @Override
