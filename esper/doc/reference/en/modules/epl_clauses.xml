@@ -1408,6 +1408,16 @@ from ProductEvent as prod, OrderEvent as ord]]></programlisting>
 			</para>
             <programlisting><![CDATA[select ord.computeTotal(prod.getMultiplier()) from ProductEvent as prod, OrderEvent as ord]]></programlisting>
 
+			<para>
+				Instance methods may also be chained: Your EPL may invoke a method on the result returned by a method invocation.
+			</para>
+
+			<para>
+				Assume that your product event exposes a method <literal>getZone</literal> which returns a zone object. Assume that the Zone class declares a method <literal>checkZone</literal>.
+				This example statement invokes a method chain:
+			</para>
+            <programlisting><![CDATA[select prod.getZone().checkZone("zone 1") from ProductEvent as prod]]></programlisting>
+
 		</sect2>
 
     </sect1>

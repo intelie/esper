@@ -136,6 +136,10 @@ class ConfigurationParser {
             {
                 handlePlugInAggregation(configuration, element);
             }
+            else if (nodeName.equals("plugin-singlerow-function"))
+            {
+                handlePlugInSingleRow(configuration, element);
+            }
             else if (nodeName.equals("plugin-pattern-guard"))
             {
                 handlePlugInPatternGuard(configuration, element);
@@ -567,6 +571,14 @@ class ConfigurationParser {
         String name = element.getAttributes().getNamedItem("name").getTextContent();
         String functionClassName = element.getAttributes().getNamedItem("function-class").getTextContent();
         configuration.addPlugInAggregationFunction(name, functionClassName);
+    }
+
+    private static void handlePlugInSingleRow(Configuration configuration, Element element)
+    {
+        String name = element.getAttributes().getNamedItem("name").getTextContent();
+        String functionClassName = element.getAttributes().getNamedItem("function-class").getTextContent();
+        String functionMethodName = element.getAttributes().getNamedItem("function-method").getTextContent();
+        configuration.addPlugInSingleRowFunction(name, functionClassName, functionMethodName);
     }
 
     private static void handlePlugInPatternGuard(Configuration configuration, Element element)

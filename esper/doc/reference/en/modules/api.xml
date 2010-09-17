@@ -701,7 +701,7 @@ finally {
 				</listitem>
 				<listitem>
 					<para>
-						Add a plug-in aggregation function, plug-in event type, plug-in type resolution URIs.
+						Add a plug-in aggregation function, plug-in single row function, plug-in event type, plug-in event type resolution URIs.
 					</para>
 				</listitem>
 				<listitem>

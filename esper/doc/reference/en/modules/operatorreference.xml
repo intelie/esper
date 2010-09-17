@@ -205,6 +205,64 @@
 			<programlisting><![CDATA[select * from RFIDEvent where Filter.myFilter(zone, {1,2,3})]]></programlisting>
 		</sect1>
 
+		<sect1 id="epl-operator-ref-dot">
+			<title>Dot Operator</title>
+			
+			<indexterm><primary>dot operator</primary></indexterm>
+			<indexterm><primary>operators</primary><secondary>dot (period)</secondary></indexterm>
+			<indexterm><primary>duck typing</primary></indexterm>
+			<para>
+				You can use the dot operator to invoke a method on the result of an expression. The dot operator uses the dot (<literal>.</literal>) or period character.
+			</para>
+
+			<para>
+				The synopsis for the dot operator is as follows
+			</para>
+			<synopsis>(<emphasis>expression</emphasis>).<emphasis>method</emphasis>([<emphasis>parameter</emphasis> [,...]])[.<emphasis>method</emphasis>(...)][...]</synopsis>
+
+			<para>
+				The expression to evaluate by the dot operator is in parenthesis. After the dot character follows the method name and method parameters in parenthesis.
+			</para>
+
+			<para>
+				You may use the dot operator when your expression returns an object that you want to invoke a method on. The dot operator allows duck typing and convenient array and collection access methods.
+			</para>
+			
+			<para>
+				This example statement invokes the <literal>getZones</literal> method of the RFID event class by referring to the stream name assigned in the <literal>from</literal>-clause:
+			</para>
+			<programlisting><![CDATA[select (rfid).getZones() from RFIDEvent as rfid]]></programlisting>
+
+			<para>
+				The <literal>size()</literal> method can be used to return the array length or collection size. Use the <literal>get</literal> method to return the value at a given index for an array or collection.
+			</para>
+			
+			<para>
+			  The next statement selects array size and returns the last array element:
+			</para>
+			<programlisting><![CDATA[select (arrayproperty).size() as arraySize, 
+  (arrayproperty).get((arrayproperty).size - 1) as lastInArray 
+  from ProductEvent]]></programlisting>
+			
+			<sect2 id="epl-operator-ref-dot-duck">
+				<title>Duck Typing</title>
+				
+				<para>
+				   Duck typing is when the engine checks at runtime for the existence of a method regardless of object class inheritance hierarchies. This can be useful, for example, when a dynamic property returns an object which may or may not provide a method to return the desired value.
+				</para>
+				
+				<para>
+				  Duck typing is disabled in the default configuration to consistently enforce strong typing. Please enable duck typing via engine expression settings as described in <xref linkend="config-engine-expression"/>.
+				</para>
+				
+				<para>
+				  The statement below selects a dynamic property by name <literal>productDesc</literal> and invokes the <literal>getCounter()</literal> method if that method exists on the property value, or returns the null value if the method does not exist for the dynamic property value of if the dynamic property value itself is null:
+				</para>
+				<programlisting><![CDATA[select (productDesc?).getCounter() as arraySize from ProductEvent]]></programlisting>
+			</sect2>
+
+		</sect1>		
+
 		<sect1 id="epl-operator-ref-keyword-in">
 			<title>The '<literal>in</literal>' Keyword</title>
 

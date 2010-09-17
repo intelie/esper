@@ -54,12 +54,6 @@ public class TestStaticFunctions extends TestCase
                 new Object[] {SupportChainTop.make().getChildOne("abc",1).getChildTwo("def").getText()});
     }
 
-    // TODO test configure named method
-    // TODO doc static method chain
-    // TODO doc stream.chain
-    // TODO doc dot syntax (expr) stream.chain + duck typing
-
-
     public void testEscape() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addImport(SupportStaticMethodLib.class.getName());

@@ -10,6 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.agg.*;
 import com.espertech.esper.type.MinMaxTypeEnum;
 import com.espertech.esper.schedule.TimeProvider;
@@ -102,6 +103,11 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
     public AggregationSupport resolveAggregation(String functionName) throws EngineImportUndefinedException, EngineImportException
     {
         return engineImportService.resolveAggregation(functionName);
+    }
+
+    public Pair<Class, String> resolveSingleRow(String functionName) throws EngineImportUndefinedException, EngineImportException
+    {
+        return engineImportService.resolveSingleRow(functionName);
     }
 
     public AggregationMethod makeSumAggregator(Class type)

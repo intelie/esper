@@ -89,6 +89,12 @@ public interface ConfigurationInformation
     public List<ConfigurationPlugInAggregationFunction> getPlugInAggregationFunctions();
 
     /**
+     * Returns a list of configured plug-in single-row functions.
+     * @return list of configured single-row functions
+     */
+    public List<ConfigurationPlugInSingleRowFunction> getPlugInSingleRowFunctions();
+
+    /**
      * Returns a list of configured plug-ins for pattern observers and guards.
      * @return list of pattern plug-ins
      */

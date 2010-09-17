@@ -1788,7 +1788,7 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
 			<sect3 id="config-engine-expression-udfcache" revision="1">
 				<title>User-Defined Function or Static Method Cache</title>
 				<para>
-					By default Esper caches the result of an user-defined function if the parameter set to that function is empty or all parameters are constant values.
+					By default Esper caches the result of an user-defined function if the parameter set to that function is empty or all parameters are constant values. Custom plug-in single-row function results are not cached.
 				</para>
 	
 				<para>
@@ -1820,6 +1820,23 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
 				<programlisting><![CDATA[<engine-settings>
   <defaults>
     <expression extend-agg="true"/>
+  </defaults>
+</engine-settings>]]></programlisting>			
+			</sect3>
+
+			<sect3 id="config-engine-expression-ducktype" revision="1">
+				<title>Duck Typing</title>
+				<para>
+					By default Esper validates method references when using the dot operator syntax at time of statement creation. With duck typing, the engine resolves method references at runtime.
+				</para>
+	
+				<para>
+					 The XML configuration as below sets the same as the default value:
+				</para>
+	
+				<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <expression ducktyping="false"/>
   </defaults>
 </engine-settings>]]></programlisting>			
 			</sect3>

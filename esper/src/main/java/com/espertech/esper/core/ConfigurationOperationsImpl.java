@@ -92,6 +92,18 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
+    public void addPlugInSingleRowFunction(String functionName, String className, String methodName) throws ConfigurationException
+    {
+        try
+        {
+            engineImportService.addSingleRow(functionName, className, methodName);
+        }
+        catch (EngineImportException e)
+        {
+            throw new ConfigurationException(e.getMessage(), e);
+        }
+    }
+
     public void addImport(String importName)
     {
         try

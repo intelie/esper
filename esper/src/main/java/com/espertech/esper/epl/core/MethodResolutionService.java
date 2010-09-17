@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.agg.AggregationAccess;
 import com.espertech.esper.type.MinMaxTypeEnum;
 import com.espertech.esper.collection.MultiKeyUntyped;
@@ -74,6 +75,15 @@ public interface MethodResolutionService
      * @throws EngineImportException if there was an error resolving class information
      */
     public AggregationSupport resolveAggregation(String functionName) throws EngineImportUndefinedException, EngineImportException;
+
+    /**
+     * Used at statement compile-time to try and resolve a given function name into an
+     * single-row function. Matches function name case-neutral.
+     * @param functionName is the function name
+     * @throws EngineImportUndefinedException if the function is not a configured single-row function
+     * @throws EngineImportException if the function providing class could not be loaded or doesn't match
+     */
+    public Pair<Class, String> resolveSingleRow(String functionName) throws EngineImportUndefinedException, EngineImportException;
 
     /**
      * Makes a new plug-in aggregation instance by name.

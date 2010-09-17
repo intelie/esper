@@ -252,6 +252,17 @@ public class TestConfigurationParser extends TestCase
         assertEquals("com.mycompany.MyMatrixAggregationMethod1", pluginAgg.getFunctionClassName());
         assertEquals("func2", pluginAgg.getName());
 
+        // assert plug-in singlerow function loaded
+        assertEquals(2, config.getPlugInSingleRowFunctions().size());
+        ConfigurationPlugInSingleRowFunction pluginSingleRow = config.getPlugInSingleRowFunctions().get(0);
+        assertEquals("com.mycompany.MyMatrixSingleRowMethod0", pluginSingleRow.getFunctionClassName());
+        assertEquals("method1", pluginSingleRow.getFunctionMethodName());
+        assertEquals("func3", pluginSingleRow.getName());
+        pluginSingleRow = config.getPlugInSingleRowFunctions().get(1);
+        assertEquals("com.mycompany.MyMatrixSingleRowMethod1", pluginSingleRow.getFunctionClassName());
+        assertEquals("func4", pluginSingleRow.getName());
+        assertEquals("method2", pluginSingleRow.getFunctionMethodName());
+
         // assert plug-in guard objects loaded
         assertEquals(4, config.getPlugInPatternObjects().size());
         ConfigurationPlugInPatternObject pluginPattern = config.getPlugInPatternObjects().get(0);

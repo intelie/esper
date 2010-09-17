@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.ConfigurationMethodRef;
@@ -42,6 +43,15 @@ public interface EngineImportService
     public void addAggregation(String functionName, String aggregationClass) throws EngineImportException;
 
     /**
+     * Add an single-row function.
+     * @param functionName is the name of the function to make known.
+     * @param singleRowFuncClass is the class that provides the single row function
+     * @param methodName is the name of the public static method provided by the class that provides the single row function
+     * @throws EngineImportException throw if format or information is invalid
+     */
+    public void addSingleRow(String functionName, String singleRowFuncClass, String methodName) throws EngineImportException;
+
+    /**
      * Used at statement compile-time to try and resolve a given function name into an
      * aggregation method. Matches function name case-neutral.
      * @param functionName is the function name
@@ -50,6 +60,15 @@ public interface EngineImportService
      * @throws EngineImportException if the aggregation providing class could not be loaded or doesn't match
      */
     public AggregationSupport resolveAggregation(String functionName) throws EngineImportUndefinedException, EngineImportException;
+
+    /**
+     * Used at statement compile-time to try and resolve a given function name into an
+     * single-row function. Matches function name case-neutral.
+     * @param functionName is the function name
+     * @throws EngineImportUndefinedException if the function is not a configured single-row function
+     * @throws EngineImportException if the function providing class could not be loaded or doesn't match
+     */
+    public Pair<Class, String> resolveSingleRow(String functionName) throws EngineImportUndefinedException, EngineImportException;
 
     /**
      * Resolves a given class, method and list of parameter types to a static method.

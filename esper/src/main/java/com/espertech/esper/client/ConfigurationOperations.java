@@ -33,16 +33,27 @@ public interface ConfigurationOperations
     public void addEventTypeAutoName(String packageName);
 
     /**
-     * Adds a plug-in aggregation function given a function name and an aggregation class name.
+     * Adds a plug-in aggregation function given a EPL function name and an aggregation class name.
      * <p>
      * The aggregation class must extends the base class {@link com.espertech.esper.epl.agg.AggregationSupport}.
      * <p>
      * The same function name cannot be added twice.
-     * @param functionName is the new aggregation function name
+     * @param functionName is the new aggregation function name for use in EPL
      * @param aggregationClassName is the fully-qualified class name of the class implementing the aggregation function
-     * @throws ConfigurationException is thrown to indicate a problem adding aggregation function
+     * @throws ConfigurationException is thrown to indicate a problem adding the aggregation function
      */
     public void addPlugInAggregationFunction(String functionName, String aggregationClassName) throws ConfigurationException;
+
+    /**
+     * Adds a plug-in single-row function given a EPL function name, a class name and a method name.
+     * <p>
+     * The same function name cannot be added twice.
+     * @param functionName is the new single-row function name for use in EPL
+     * @param className is the fully-qualified class name of the class implementing the single-row function
+     * @param methodName is the public static method provided by the class that implements the single-row function
+     * @throws ConfigurationException is thrown to indicate a problem adding the single-row function
+     */
+    public void addPlugInSingleRowFunction(String functionName, String className, String methodName) throws ConfigurationException;
 
     /**
      * Adds a package or class to the list of automatically-imported classes and packages.

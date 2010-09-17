@@ -17,12 +17,9 @@ import junit.framework.TestCase;
 public class TestAggregationFunctionPlugIn extends TestCase
 {
     private EPServiceProvider epService;
-    private SupportUpdateListener testListener;
 
     public void setUp()
     {
-        testListener = new SupportUpdateListener();
-
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addPlugInAggregationFunction("concatstring", MyConcatAggregationFunction.class.getName());
         configuration.addPlugInAggregationFunction("totalup", MyInnerAggFunction.class.getName());
@@ -327,7 +324,8 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testInvalid()
     {
-        tryInvalid("select xxx(id) from A ", "Error in expression: Unknown method named 'xxx' could not be resolved [select xxx(id) from A ]");
+        tryInvalid("select xxx(id) from A ",
+                "Error in expression: Unknown single-row function or aggregation function named 'xxx' could not be resolved [select xxx(id) from A ]");
     }
 
     private void tryInvalid(String stmtText, String expectedMsg)

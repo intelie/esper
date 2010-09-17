@@ -12,6 +12,7 @@
 				<xs:element ref="esper:database-reference" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:plugin-view" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:plugin-aggregation-function" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="esper:plugin-singlerow-function" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:plugin-pattern-guard" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:plugin-pattern-observer" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:plugin-event-representation" minOccurs="0" maxOccurs="unbounded"/>
@@ -301,6 +302,13 @@
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="function-class" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="plugin-singlerow-function">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="function-class" type="xs:string" use="required"/>
+			<xs:attribute name="function-method" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="plugin-pattern-guard">

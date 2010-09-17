@@ -11,6 +11,7 @@ package com.espertech.esper.epl.parse;
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPAdministratorHelper;
 import com.espertech.esper.epl.agg.AggregationAccessType;
@@ -1798,6 +1799,31 @@ public class EPLTreeWalker extends EsperEPL2Ast
             isDistinct = true;
         }
 
+        // try plug-in single-row function
+        try
+        {
+            Pair<Class, String> classMethodPair = engineImportService.resolveSingleRow(childNodeText);
+            List<ExprChainedSpec> spec = new ArrayList<ExprChainedSpec>();
+            List<ExprNode> childExpressions = new ArrayList<ExprNode>();
+            for (int i = 0; i < node.getChildCount(); i++) {
+                ExprNode exprnode = astExprNodeMap.remove(node.getChild(i));
+                if (exprnode != null) {
+                    childExpressions.add(exprnode);
+                }
+            }
+            spec.add(new ExprChainedSpec(classMethodPair.getSecond(), childExpressions));
+            astExprNodeMap.put(node, new ExprPlugInSingleRowNode(childNodeText, classMethodPair.getFirst(), spec, false));
+            return;
+        }
+        catch (EngineImportUndefinedException e)
+        {
+            // Not an single-row function
+        }
+        catch (EngineImportException e)
+        {
+            throw new IllegalStateException("Error resolving single-row function: " + e.getMessage(), e);
+        }
+
         // try plug-in aggregation function
         try
         {
@@ -1823,7 +1849,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             return;
         }
 
-        throw new IllegalStateException("Unknown method named '" + childNodeText + "' could not be resolved");
+        throw new IllegalStateException("Unknown single-row function or aggregation function named '" + childNodeText + "' could not be resolved");
     }
 
     private void leaveDotExpr(Tree node)
@@ -1849,6 +1875,25 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         String className = node.getChild(0).getChild(0).getText();
         List<ExprChainedSpec> chained = this.getLibFuncChain(node);
+
+        // try plug-in single-row function
+        try
+        {
+            Pair<Class, String> classMethodPair = engineImportService.resolveSingleRow(className);
+            chained.get(0).setName(classMethodPair.getSecond());
+            astExprNodeMap.put(node, new ExprPlugInSingleRowNode(className, classMethodPair.getFirst(), chained, false));
+            return;
+        }
+        catch (EngineImportUndefinedException e)
+        {
+            // Not an single-row function
+        }
+        catch (EngineImportException e)
+        {
+            throw new IllegalStateException("Error resolving single-row function: " + e.getMessage(), e);
+        }
+
+        // resolve as a static method invocation
         astExprNodeMap.put(node, new ExprStaticMethodNode(className, chained, configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
     }
 

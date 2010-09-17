@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+import com.espertech.esper.client.annotation.Name;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -16,8 +17,6 @@ import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
-
-import com.espertech.esper.client.annotation.Name;
 
 /**
  * An instance of <tt>Configuration</tt> allows the application
@@ -116,6 +115,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected List<ConfigurationPlugInAggregationFunction> plugInAggregationFunctions;
 
     /**
+     * List of configured plug-in single-row functions.
+     */
+    protected List<ConfigurationPlugInSingleRowFunction> plugInSingleRowFunctions;
+
+    /**
      * List of adapter loaders.
      */
     protected List<ConfigurationPluginLoader> pluginLoaders;
@@ -196,6 +200,15 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         entry.setFunctionClassName(aggregationClassName);
         entry.setName(functionName);
         plugInAggregationFunctions.add(entry);
+    }
+
+    public void addPlugInSingleRowFunction(String functionName, String className, String methodName) throws ConfigurationException
+    {
+        ConfigurationPlugInSingleRowFunction entry = new ConfigurationPlugInSingleRowFunction();
+        entry.setFunctionClassName(className);
+        entry.setFunctionMethodName(methodName);
+        entry.setName(functionName);
+        plugInSingleRowFunctions.add(entry);
     }
 
     /**
@@ -412,6 +425,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     public List<ConfigurationPlugInAggregationFunction> getPlugInAggregationFunctions()
     {
         return plugInAggregationFunctions;
+    }
+
+    public List<ConfigurationPlugInSingleRowFunction> getPlugInSingleRowFunctions()
+    {
+        return plugInSingleRowFunctions;
     }
 
     public List<ConfigurationPlugInPatternObject> getPlugInPatternObjects()
@@ -866,6 +884,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInViews = new ArrayList<ConfigurationPlugInView>();
         pluginLoaders = new ArrayList<ConfigurationPluginLoader>();
         plugInAggregationFunctions = new ArrayList<ConfigurationPlugInAggregationFunction>();
+        plugInSingleRowFunctions = new ArrayList<ConfigurationPlugInSingleRowFunction>();
         plugInPatternObjects = new ArrayList<ConfigurationPlugInPatternObject>();
         engineDefaults = new ConfigurationEngineDefaults();
         eventTypeAutoNamePackages = new LinkedHashSet<String>();

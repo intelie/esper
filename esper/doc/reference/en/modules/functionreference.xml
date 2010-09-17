@@ -16,6 +16,10 @@
 		</para>
 			
 		<para>
+			You may also register your own single-row function name with the engine so that your EPL statements become less cluttered. This is described in detail in <xref linkend="custom-singlerow-function"/>. Single-row functions that return an object can be chained.
+		</para>
+
+		<para>
 			Esper auto-imports the following Java library packages:
 		</para>
 
@@ -1232,9 +1236,13 @@ group by symbol</programlisting>
 		<indexterm><primary>functions</primary><secondary>user-defined</secondary></indexterm>
 		<indexterm><primary>UDF</primary><secondary>user-defined function</secondary></indexterm>
 		 <para>
-			 A user-defined function (UDF) can be invoked anywhere as an expression itself or within an expresson. The function must simply be a public static method
+			 A user-defined function (UDF) is a single-row function that can be invoked anywhere as an expression itself or within an expresson. The function must simply be a public static method
 			 that the classloader can resolve at statement creation time. The engine resolves the function reference at statement creation time and verifies parameter types.
 		 </para>
+
+		<para>
+			You may register your own single-row function name for the user-defined function so that your EPL statements are less cluttered. This is described in detail in <xref linkend="custom-singlerow-function"/>. 
+		</para>
 
 		 <para>
 			 User-defined functions can be also be invoked on instances of an event: Please see <xref linkend="epl-from-clause-stream-name"/> to invoke event instance methods on a named stream.
@@ -1265,6 +1273,16 @@ from StockTick.win:time(30 sec)]]></programlisting>
 			 The following statement is a simple pattern that looks for events of type E1 that are followed by events of type E2. It assigns the tags "e1" and "e2" that the function can use to assemble a final event for output:
 		 </para> 
 		<programlisting><![CDATA[select MyLib.mapEvents(e1, e2) from pattern [every e1=E1 -> e2=E2]]]></programlisting>
+
+		 <para>
+			 User-defined functions may also be chained: If a user-defined function returns an object then the object can itself be the target of the next function call and so on.
+		 </para> 
+
+		 <para>
+			 Assume that there is a <literal>calculator</literal> function in the <literal>MyLib</literal> class that returns a class which provides the <literal>search</literal> method taking two parameters. The EPL
+			 that takes the result of the <literal>calculator</literal> function and that calls the <literal>search</literal> method on the result and returns its return value is shown below:
+		 </para> 
+		<programlisting><![CDATA[select MyLib.calculator().search(zonevariable, zone) from RFIDEvent]]]></programlisting>
 
 		 <para>
 			 A user-defined function should be implemented thread-safe. 

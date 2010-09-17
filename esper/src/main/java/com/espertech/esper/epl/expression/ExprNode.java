@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
@@ -308,6 +309,36 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             }
 
             return result;
+        }
+
+        // There is no class name, try a single-row function
+        String functionName = parse.getMethodName();
+        try
+        {
+            Pair<Class, String> classMethodPair = methodResolutionService.resolveSingleRow(functionName);
+            List<ExprNode> params = Collections.singletonList((ExprNode) new ExprConstantNode(parse.getArgString()));
+            List<ExprChainedSpec> chain = Collections.singletonList(new ExprChainedSpec(classMethodPair.getSecond(), params));
+            ExprNode result = new ExprPlugInSingleRowNode(functionName, classMethodPair.getFirst(), chain, false);
+
+            // Validate
+            try
+            {
+                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+            }
+            catch (RuntimeException e)
+            {
+                throw new ExprValidationException("Plug-in aggregation function '" + parse.getMethodName() + "' failed validation: " + e.getMessage());
+            }
+
+            return result;
+        }
+        catch (EngineImportUndefinedException e)
+        {
+            // Not an single-row function
+        }
+        catch (EngineImportException e)
+        {
+            throw new IllegalStateException("Error resolving single-row function: " + e.getMessage(), e);
         }
 
         // There is no class name, try an aggregation function

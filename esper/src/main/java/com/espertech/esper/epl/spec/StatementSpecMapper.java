@@ -15,7 +15,9 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPAdministratorHelper;
 import com.espertech.esper.epl.agg.AggregationAccessType;
 import com.espertech.esper.epl.agg.AggregationSupport;
+import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.core.EngineImportUndefinedException;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
@@ -1359,6 +1361,25 @@ public class StatementSpecMapper
             }
             return new ExprConstantNode(node.getConstant());
         }
+        else if (expr instanceof SingleRowMethodExpression) {
+            SingleRowMethodExpression single = (SingleRowMethodExpression) expr;
+            if ((single.getChain() == null) || (single.getChain().size() == 0)) {
+                throw new IllegalArgumentException("Single row method expression requires one or more method calls");
+            }
+            List<ExprChainedSpec> chain = mapChains(single.getChain(), mapContext);
+            String functionName = chain.get(0).getName();
+            Pair<Class, String> pair;
+            try
+            {
+                pair = mapContext.getEngineImportService().resolveSingleRow(functionName);
+            }
+            catch (Exception e)
+            {
+                throw new IllegalArgumentException("Function name '" + functionName + "' cannot be resolved to a single-row function: " + e.getMessage(), e);
+            }
+            chain.get(0).setName(pair.getSecond());
+            return new ExprPlugInSingleRowNode(functionName, pair.getFirst(), chain, false);
+        }
         else if (expr instanceof PlugInProjectionExpression)
         {
             PlugInProjectionExpression node = (PlugInProjectionExpression) expr;
@@ -1736,6 +1757,13 @@ public class StatementSpecMapper
         {
             ExprPlugInAggFunctionNode node = (ExprPlugInAggFunctionNode) expr;
             return new PlugInProjectionExpression(node.getAggregationFunctionName(), node.isDistinct());
+        }
+        else if (expr instanceof ExprPlugInSingleRowNode)
+        {
+            ExprPlugInSingleRowNode node = (ExprPlugInSingleRowNode) expr;
+            List<Pair<String, List<Expression>>> chain = unmapChains(node.getChainSpec(), unmapContext);
+            chain.get(0).setFirst(node.getFunctionName());  // starts with actual function name not mapped on
+            return new SingleRowMethodExpression(chain);
         }
         else if (expr instanceof ExprInstanceofNode)
         {

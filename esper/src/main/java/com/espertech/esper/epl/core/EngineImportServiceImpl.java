@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.ConfigurationMethodRef;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.util.JavaClassHelper;
@@ -29,8 +30,10 @@ import java.util.Map;
 public class EngineImportServiceImpl implements EngineImportService
 {
     private static final Log log = LogFactory.getLog(EngineImportServiceImpl.class);
+    
 	private final List<String> imports;
     private final Map<String, String> aggregationFunctions;
+    private final Map<String, Pair<String, String>> singleRowFunctions;
     private final Map<String, ConfigurationMethodRef> methodInvocationRef;
     private final boolean allowExtendedAggregationFunc;
 
@@ -42,6 +45,7 @@ public class EngineImportServiceImpl implements EngineImportService
     {
         imports = new ArrayList<String>();
         aggregationFunctions = new HashMap<String, String>();
+        singleRowFunctions = new HashMap<String, Pair<String, String>>();
         methodInvocationRef = new HashMap<String, ConfigurationMethodRef>();
         this.allowExtendedAggregationFunc = allowExtendedAggregationFunc;
     }
@@ -80,6 +84,10 @@ public class EngineImportServiceImpl implements EngineImportService
         {
             throw new EngineImportException("Aggregation function by name '" + functionName + "' is already defined");
         }
+        if (singleRowFunctions.containsKey(functionName))
+        {
+            throw new EngineImportException("Single-row function by name '" + functionName + "' is already defined");
+        }
         if(!isFunctionName(functionName))
         {
             throw new EngineImportException("Invalid aggregation function name '" + functionName + "'");
@@ -91,6 +99,28 @@ public class EngineImportServiceImpl implements EngineImportService
         aggregationFunctions.put(functionName.toLowerCase(), aggregationClass);
     }
 
+    public void addSingleRow(String functionName, String singleRowFuncClass, String methodName) throws EngineImportException
+    {
+        Pair<String, String> existing = singleRowFunctions.get(functionName);
+        if (existing != null)
+        {
+            throw new EngineImportException("Single-Row function by name '" + functionName + "' is already defined");
+        }
+        if (aggregationFunctions.containsKey(functionName))
+        {
+            throw new EngineImportException("Aggregation function by name '" + functionName + "' is already defined");
+        }
+        if(!isFunctionName(functionName))
+        {
+            throw new EngineImportException("Invalid single-row function name '" + functionName + "'");
+        }
+        if(!isClassName(singleRowFuncClass))
+        {
+            throw new EngineImportException("Invalid class name for aggregation '" + singleRowFuncClass + "'");
+        }
+        singleRowFunctions.put(functionName.toLowerCase(), new Pair<String, String>(singleRowFuncClass, methodName));
+    }
+
     public AggregationSupport resolveAggregation(String name) throws EngineImportException, EngineImportUndefinedException
     {
         String className = aggregationFunctions.get(name);
@@ -100,7 +130,7 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         if (className == null)
         {
-            throw new EngineImportUndefinedException("Aggregation function named '" + name + "' is not defined");
+            throw new EngineImportUndefinedException("A function named '" + name + "' is not defined");
         }
 
         Class clazz;
@@ -125,7 +155,7 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         catch (IllegalAccessException e)
         {
-            throw new EngineImportException("Illegal access instatiating aggregation class by name '" + className + "'", e);
+            throw new EngineImportException("Illegal access instatiating aggregation function class by name '" + className + "'", e);
         }
 
         if (!(object instanceof AggregationSupport))
@@ -133,6 +163,31 @@ public class EngineImportServiceImpl implements EngineImportService
             throw new EngineImportException("Aggregation class by name '" + className + "' does not subclass AggregationSupport");
         }
         return (AggregationSupport) object;
+    }
+
+    public Pair<Class, String> resolveSingleRow(String name) throws EngineImportException, EngineImportUndefinedException
+    {
+        Pair<String, String> pair = singleRowFunctions.get(name);
+        if (pair == null)
+        {
+            pair = singleRowFunctions.get(name.toLowerCase());
+        }
+        if (pair == null)
+        {
+            throw new EngineImportUndefinedException("A function named '" + name + "' is not defined");
+        }
+
+        Class clazz;
+        try
+        {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            clazz = Class.forName(pair.getFirst(), true, cl);
+        }
+        catch (ClassNotFoundException ex)
+        {
+            throw new EngineImportException("Could not load single-row function class by name '" + pair.getFirst() + "'", ex);
+        }
+        return new Pair<Class, String>(clazz, pair.getSecond());
     }
 
     public Method resolveMethod(String className, String methodName, Class[] paramTypes)

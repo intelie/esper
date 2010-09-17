@@ -418,6 +418,11 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             {
                 engineImportService.addAggregation(config.getName(), config.getFunctionClassName());
             }
+
+            for (ConfigurationPlugInSingleRowFunction config : configSnapshot.getPlugInSingleRowFunctions())
+            {
+                engineImportService.addSingleRow(config.getName(), config.getFunctionClassName(), config.getFunctionMethodName());
+            }
         }
         catch (EngineImportException ex)
         {

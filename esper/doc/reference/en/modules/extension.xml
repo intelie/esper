@@ -2,9 +2,89 @@
 
     <title>Extension and Plug-in</title>
 
+    <sect1 id="custom-singlerow-function" revision="1">
+        <title>Custom Single-Row Functions</title>
+        
+		<indexterm><primary>plug-in</primary><secondary>single-row function</secondary></indexterm>
+		<indexterm><primary>single-row functions</primary><secondary>custom plug-in</secondary></indexterm>
+        <para>
+			Single-row functions return a single value. They are not expected to aggregate rows but instead should be stateless functions. These functions can appear in any expressions and can be passed any number of parameters.
+        </para>
+
+        <para>
+			The following steps are required to develop and use a custom single-row function with Esper. 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement a class providing one or more public static methods accepting the number and type of parameters as required.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Register the single-row function class and method name with the engine by supplying a function name, via the engine configuration file or the configuration API.
+				</para>
+			</listitem>
+		</orderedlist>
+
+		<sect2 id="custom-singlerow-implementing" revision="1">
+			<title>Implementing a Single-Row Function</title>
+			
+			<para>
+				Single-row function classes have no further requirement then provide a public static method.
+			</para>
+
+			<para>
+				The following sample single-row function simply computes a percentage value based on two number values. 
+			</para>
+
+			<para>
+				This sample class provides a public static method by name <literal>computePercent</literal> to return a percentage value:
+			</para>
+			<programlisting><![CDATA[public class MyUtilityClass {
+  public static double computePercent(double amount, double total) {
+    return amount / total * 100;
+  }
+}]]></programlisting>
+		</sect2>
+
+		<sect2 id="custom-single-row-config" revision="1">
+			<title>Configuring the Single-Row Function Name</title>
+			
+			<para>
+				The class name of the class, the method name and the function name of the new single-row function must be added to the engine configuration via the configuration API or using the XML configuration file. The configuration shown below is XML however the same options are available through the runtime and static configuration API:
+			</para>
+		
+			<programlisting><![CDATA[<esper-configuration
+  <plugin-singlerow-function name="percent" 
+    function-class="mycompany.MyUtilityClass" function-method="computePercent" />
+</esper-configuration>]]></programlisting>
+
+			<para>
+				Note that the function name and method name need not be the same.
+			</para>
+
+			<para>
+				The new single-row function is now ready to use in a statement:
+			</para>		
+			<programlisting><![CDATA[select percent(50,100) from MyEvent]]></programlisting>
+
+			<para>
+				If the single-row function returns an object that provides further functions, you may chain function calls.
+			</para>
+			
+			<para>
+				The following demonstrates a chained single-row function. The example assumes that a single-row function by name <literal>calculator</literal> returns an object that provides the <literal>add</literal> function which accepts two parameters:
+			</para>
+			<programlisting><![CDATA[select calculator().add(5, amount) from MyEvent]]></programlisting>
+		</sect2>
+	</sect1>
+
     <sect1 id="custom-views" revision="1">
         <title>Custom View Implementation</title>
         
+		<indexterm><primary>plug-in</primary><secondary>custom view</secondary></indexterm>
 		<indexterm><primary>views</primary><secondary>custom plug-in view</secondary></indexterm>
 		<indexterm><primary>data window views</primary><secondary>custom plug-in view</secondary></indexterm>
         <para>
@@ -319,6 +399,7 @@ public EventType getEventType() {
     <sect1 id="custom-aggregation-function" revision="1">
         <title>Custom Aggregation Functions</title>
         
+		<indexterm><primary>plug-in</primary><secondary>custom aggregation function</secondary></indexterm>
 		<indexterm><primary>aggregation functions</primary><secondary>custom plug-in</secondary></indexterm>
         <para>
 			Aggregation functions aggregate event property values or expression results obtained from one or more streams. Examples for built-in aggregation functions are <literal>count(*)</literal>, <literal>sum(price * volume)</literal> or <literal>avg(distinct volume)</literal>.
@@ -344,7 +425,7 @@ public EventType getEventType() {
 			</listitem>
 			<listitem>
 				<para>
-					Register the aggregation function class with the engine by supplying a function name, via the engine configuration file or the configuration API.
+					Register the aggregation function class with the engine by supplying a function name, via the engine configuration file or the runtime and static configuration API.
 				</para>
 			</listitem>
 		</orderedlist>
@@ -458,7 +539,7 @@ public EventType getEventType() {
 		</sect2>
 
 		<sect2 id="custom-aggregation-config" revision="1">
-			<title>Configuring Aggregation Function Name</title>
+			<title>Configuring the Aggregation Function Name</title>
 			
 			<para>
 				The aggregation function class name as well as the function name for the new aggregation function must be added to the engine configuration via the configuration API or using the XML configuration file. The configuration shown below is XML however the same options are available through the configuration API:
@@ -511,6 +592,7 @@ public EventType getEventType() {
     <sect1 id="custom-pattern-guard" revision="1">
         <title>Custom Pattern Guard</title>
         
+		<indexterm><primary>plug-in</primary><secondary>custom pattern guard</secondary></indexterm>
 		<indexterm><primary>pattern guard</primary><secondary>custom plug-in</secondary></indexterm>
         <para>
 			Pattern guards are pattern objects that control the lifecycle of the guarded sub-expression, and can filter the events fired by the subexpression. 
@@ -694,6 +776,7 @@ public EventType getEventType() {
     <sect1 id="custom-pattern-observer" revision="1">
         <title>Custom Pattern Observer</title>
         
+		<indexterm><primary>plug-in</primary><secondary>custom pattern observer</secondary></indexterm>
 		<indexterm><primary>pattern observer</primary><secondary>custom plug-in</secondary></indexterm>
 
         <para>
@@ -883,7 +966,7 @@ public EventType getEventType() {
     <sect1 id="custom-event-representation" revision="1">
         <title>Custom Event Representation</title>
         
-		<indexterm><primary>plug-in event representation</primary></indexterm>
+		<indexterm><primary>plug-in</primary><secondary>custom event representation</secondary></indexterm>
 		<indexterm><primary>event representation</primary><secondary>custom</secondary></indexterm>
 		    
 		<para>
