@@ -17,6 +17,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 /**
  * Represents a variable in an expression tree.
  */
@@ -65,6 +67,10 @@ public class ExprVariableNode extends ExprNode implements ExprEvaluator
     public String getVariableName()
     {
         return variableName;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

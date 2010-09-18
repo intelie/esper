@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Map;
 
 /**
  * Expression representing a time period.
@@ -114,6 +115,10 @@ public class ExprTimePeriod extends ExprNode implements ExprEvaluator
         {
             validate(childNode);
         }
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     private void validate(ExprNode expression) throws ExprValidationException

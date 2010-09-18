@@ -67,6 +67,10 @@ public class ExprEqualsAllAnyNode extends ExprNode implements ExprEvaluator
         return isAll;
     }
 
+    public Map<String, Object> getEventType() {
+        return null;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         // Must have 2 child nodes

@@ -30,8 +30,10 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
     /**
      * The validated select clause.
      */
-    protected ExprNode selectClause;
-    protected ExprEvaluator selectClauseEvaluator;
+    protected ExprNode[] selectClause;
+    protected ExprEvaluator[] selectClauseEvaluator;
+
+    protected String[] selectAsNames;
 
     /**
      * The validate filter expression.
@@ -48,7 +50,6 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
     private StatementSpecCompiled statementSpecCompiled;
     private TableLookupStrategy strategy;
     private SubselectAggregationPreprocessor subselectAggregationPreprocessor;
-    private String selectAsName;
 
     private static Set<EventBean> singleNullRowEventSet = new HashSet<EventBean>();
     static
@@ -107,10 +108,10 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
      * Sets the validate select clause
      * @param selectClause is the expression representing the select clause
      */
-    public void setSelectClause(ExprNode selectClause)
+    public void setSelectClause(ExprNode[] selectClause)
     {
         this.selectClause = selectClause;
-        this.selectClauseEvaluator = selectClause.getExprEvaluator();
+        this.selectClauseEvaluator = ExprNodeUtility.getEvaluators(selectClause);
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
@@ -134,11 +135,11 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
 
     /**
      * Supplies the name of the select expression as-tag
-     * @param selectAsName is the as-name
+     * @param selectAsNames is the as-name(s)
      */
-    public void setSelectAsName(String selectAsName)
+    public void setSelectAsNames(String[] selectAsNames)
     {
-        this.selectAsName = selectAsName;
+        this.selectAsNames = selectAsNames;
     }
 
     /**
@@ -152,15 +153,15 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
 
     public String toExpressionString()
     {
-        if (selectAsName != null)
+        if ((selectAsNames != null) && (selectAsNames[0] != null))
         {
-            return selectAsName;
+            return selectAsNames[0];
         }
         if (selectClause == null)
         {
             return "*";
         }
-        return selectClause.toExpressionString();
+        return selectClause[0].toExpressionString();
     }
 
     public boolean equalsNode(ExprNode node)
@@ -190,7 +191,7 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
      * Returns the select clause or null if none.
      * @return clause
      */
-    public ExprNode getSelectClause()
+    public ExprNode[] getSelectClause()
     {
         return selectClause;
     }

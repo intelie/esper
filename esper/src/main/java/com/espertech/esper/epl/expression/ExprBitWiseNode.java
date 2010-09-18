@@ -19,6 +19,8 @@ import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Map;
+
 /**
  * Represents the bit-wise operators in an expression tree.
  */
@@ -104,6 +106,10 @@ public class ExprBitWiseNode extends ExprNode implements ExprEvaluator {
     public Class getType()
     {
         return resultType;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

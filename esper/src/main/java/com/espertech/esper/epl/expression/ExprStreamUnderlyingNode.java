@@ -16,6 +16,8 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 /**
  * Represents an stream selector that returns the streams underlying event, or null if undefined.
  */
@@ -60,6 +62,10 @@ public class ExprStreamUnderlyingNode extends ExprNode implements ExprEvaluator
     public String getStreamName()
     {
         return streamName;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

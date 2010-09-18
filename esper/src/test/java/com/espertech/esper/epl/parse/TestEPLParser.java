@@ -151,7 +151,6 @@ public class TestEPLParser extends TestCase
         assertIsInvalid("select (select a) from x");
         assertIsInvalid("select (select a from X group by b) from x");
         assertIsInvalid("select (select a from X, Y) from x");
-        assertIsInvalid("select (select a,b from X) from x");
         assertIsInvalid("select (select a from ) from x");
         assertIsInvalid("select (select from X) from x");
         assertIsInvalid("select * from x where (select q from pattern [A->B])");
@@ -486,6 +485,7 @@ public class TestEPLParser extends TestCase
 
         // subqueries
         assertIsValid("select (select a from B) from x");
+        assertIsValid("select (select a, b,c from B) from x");
         assertIsValid("select (select a||b||c from B) from x");
         assertIsValid("select (select 3*222 from B) from x");
         assertIsValid("select (select 3*222 from B.win:length(100)) from x");

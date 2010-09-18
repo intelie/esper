@@ -27,6 +27,10 @@
 				</para>
 			</listitem>
 		</orderedlist>
+		
+		<para>
+			You may not override a built-in function with a single-row function provided by you. The single-row function you register must have a different name then any of the built-in functions.
+		</para>
 
 		<sect2 id="custom-singlerow-implementing" revision="1">
 			<title>Implementing a Single-Row Function</title>
@@ -431,7 +435,7 @@ public EventType getEventType() {
 		</orderedlist>
 
         <para>
-			The code for the example aggregation function as shown in this chapter can be found in the test source folder in the package <literal>com.espertech.esper.regression.client</literal> by the name <literal>MyConcatAggregationFunction</literal>. The sample function simply concatenates string-type values.
+			The code for the example aggregation function as shown in this chapter can be found in the runtime configuration example in the package <literal>com.espertech.esper.example.runtimeconfig</literal> by the name <literal>MyConcatAggregationFunction</literal>. The sample function simply concatenates string-type values.
         </para>
 
 		<sect2 id="custom-aggregation-implementing" revision="1">
@@ -497,8 +501,9 @@ public EventType getEventType() {
 				Since the example concatenation function requires string types, it implements a type check:
 			</para>
 			<programlisting><![CDATA[public void validate(AggregationValidationContext validationContext) {
-  if (validationContext.getParameterTypes()[0] != String.class) {
-    throw new IllegalArgumentException("Concat aggregation requires a String parameter");
+  if ((validationContext.getParameterTypes().length != 1) ||
+    (validationContext.getParameterTypes()[0] != String.class)) {
+    throw new IllegalArgumentException("Concat aggregation requires a single parameter of type String");
   }
 }]]></programlisting>
 
@@ -530,6 +535,14 @@ public EventType getEventType() {
 }]]></programlisting>
 
 			<para>
+				For on-demand queries the aggregation function must support resetting its value to empty or start values. Implement the <literal>clear</literal> function to reset the value as shown below:
+			</para>
+			<programlisting><![CDATA[public void clear() {
+  builder = new StringBuilder();
+  delimiter = "";
+}]]></programlisting>			
+			
+			<para>
 				Finally, the engine obtains the current aggregation value by means of the <literal>getValue</literal> method:
 			</para>
 			<programlisting><![CDATA[public Object getValue() {
@@ -547,7 +560,7 @@ public EventType getEventType() {
 		
 			<programlisting><![CDATA[<esper-configuration
   <plugin-aggregation-function name="concat" 
-    function-class="com.espertech.esper.regression.client.MyConcatAggregationFunction" />
+    function-class="com.espertech.esper.example.runtimeconfig.MyConcatAggregationFunction" />
 </esper-configuration>]]></programlisting>
 
 			<para>

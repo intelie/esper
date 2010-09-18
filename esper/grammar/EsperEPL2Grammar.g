@@ -1228,7 +1228,7 @@ subQueryExpr
 @init  { paraphrases.push("subquery"); }
 @after { paraphrases.pop(); }
 	:	LPAREN! 
-		SELECT! DISTINCT? selectionListElement
+		SELECT! DISTINCT? selectionList
 	    FROM! subSelectFilterExpr
 	    (WHERE! whereClause)?
 	    RPAREN!

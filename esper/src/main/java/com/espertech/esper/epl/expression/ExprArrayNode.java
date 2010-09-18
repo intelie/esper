@@ -22,6 +22,7 @@ import com.espertech.esper.util.SimpleNumberCoercerFactory;
 import java.lang.reflect.Array;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an array in a filter expressiun tree.
@@ -145,6 +146,10 @@ public class ExprArrayNode extends ExprNode implements ExprEvaluator
     public Class getType()
     {
         return Array.newInstance(arrayReturnType, 0).getClass();
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

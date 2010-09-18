@@ -18,6 +18,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,6 +41,10 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
     public Class getType()
     {
         return Boolean.class;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

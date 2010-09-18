@@ -11,6 +11,8 @@ import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Map;
+
 /**
  * Expression for use within crontab to specify a range.
  * <p>
@@ -53,6 +55,10 @@ public class ExprNumberSetRange extends ExprNode implements ExprEvaluator
         {
             throw new ExprValidationException("Range operator requires integer-type parameters");
         }
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public Class getType()

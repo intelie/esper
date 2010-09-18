@@ -15,13 +15,11 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.schedule.TimeProvider;
-import net.sf.cglib.reflect.FastClass;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an invocation of a instance method on an event of a given stream in the expression tree.
@@ -64,6 +62,11 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
     public boolean isConstantResult()
     {
         return false;
+    }
+
+    @Override
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
 	/**

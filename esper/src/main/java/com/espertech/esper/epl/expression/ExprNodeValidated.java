@@ -7,6 +7,8 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 /**
  * A placeholder for another expression node that has been validated already.
  */
@@ -46,6 +48,10 @@ public class ExprNodeValidated extends ExprNode implements ExprEvaluator
             return inner.equalsNode(((ExprNodeValidated) node).inner);
         }
         return inner.equalsNode(node);
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

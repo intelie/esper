@@ -91,6 +91,9 @@ public class AggregationServiceFactory
                         {
                             return null;
                         }
+                        public Map<String, Object> getEventType() {
+                            return null;
+                        }
                     };
                 }
 
@@ -246,6 +249,9 @@ public class AggregationServiceFactory
                         {
                             return null;
                         }
+                        public Map<String, Object> getEventType() {
+                            return null;
+                        }
                     };
                 }
                 AggregationMethod aggregator = aggregateNode.getFactory().getPrototypeAggregator(methodResolutionService);
@@ -362,6 +368,9 @@ public class AggregationServiceFactory
             {
                 return Object[].class;
             }
+            public Map<String, Object> getEventType() {
+                return null;
+            }                                                
         };
     }
 

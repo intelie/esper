@@ -110,6 +110,14 @@
 						</entry>
 					</row>
 					<row>
+						<entry><xref linkend="examples-runtimeconfig"/></entry>
+						<entry>
+							<para>
+								Example code to demonstrate various key runtime configuration options such as adding event types on-the-fly, adding new variables, adding plug-in single-row and aggregation functions and adding variant streams and revision type definition.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry><xref linkend="examples-servershell"/></entry>
 						<entry>
 							<para>
@@ -236,6 +244,18 @@ where Observation[0].Command = 'READ_PALLET_TAGS_ONLY'
 group by ID]]></programlisting>
 
     </sect1>
+
+    <sect1 id="examples-runtimeconfig">
+        <title>Runtime Configuration</title>
+
+		<para>
+			This example demonstrates various key runtime configuration options such as adding event types on-the-fly, adding new variables, adding plug-in single-row and aggregation functions and adding variant streams and revision type definition.
+		</para>
+
+		<para>
+			The classes for this example live in package <literal>com.espertech.esper.example.runtimeconfig</literal>. 
+		</para>
+	</sect1>
 
     <sect1 id="examples-servershell">
         <title>JMS Server Shell and Client</title>

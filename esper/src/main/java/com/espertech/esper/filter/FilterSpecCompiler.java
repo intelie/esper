@@ -307,8 +307,8 @@ public final class FilterSpecCompiler
                 SelectClauseExprCompiledSpec compiled = (SelectClauseExprCompiledSpec) element;
                 ExprNode selectExpression = compiled.getSelectExpression();
                 selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
-                subselect.setSelectClause(selectExpression);
-                subselect.setSelectAsName(compiled.getAssignedName());
+                subselect.setSelectClause(new ExprNode[] {selectExpression});
+                subselect.setSelectAsNames(new String[] {compiled.getAssignedName()});
 
                 // handle aggregation
                 List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();

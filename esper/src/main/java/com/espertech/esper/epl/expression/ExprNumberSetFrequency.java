@@ -11,6 +11,8 @@ import com.espertech.esper.type.FrequencyParameter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Map;
+
 /**
  * Expression for use within crontab to specify a frequency.
  */
@@ -57,6 +59,10 @@ public class ExprNumberSetFrequency extends ExprNode implements ExprEvaluator
     public Class getType()
     {
         return FrequencyParameter.class;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

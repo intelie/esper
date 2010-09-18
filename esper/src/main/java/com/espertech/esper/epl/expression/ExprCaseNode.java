@@ -23,6 +23,7 @@ import com.espertech.esper.util.SimpleNumberCoercer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the case-when-then-else control flow function is an expression tree.
@@ -64,6 +65,10 @@ public class ExprCaseNode extends ExprNode implements ExprEvaluator
     public boolean isCase2()
     {
         return isCase2;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService_, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

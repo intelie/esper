@@ -18,6 +18,7 @@ import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
@@ -107,6 +108,10 @@ public class ExprMathNode extends ExprNode implements ExprEvaluator
         return false;
     }
     
+    public Map<String, Object> getEventType() {
+        return null;
+    }
+
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object valueChildOne = evaluatorLeft.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);

@@ -15,6 +15,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 /**
  * Represents the EXISTS(property) function in an expression tree.
  */
@@ -48,6 +50,10 @@ public class ExprPropertyExistsNode extends ExprNode implements ExprEvaluator
         }
 
         identNode = (ExprIdentNode) this.getChildNodes().get(0);
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public boolean isConstantResult()

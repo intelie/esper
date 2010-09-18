@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 public class ExprStaticMethodEvalInvoke implements ExprEvaluator
 {
@@ -45,6 +46,10 @@ public class ExprStaticMethodEvalInvoke implements ExprEvaluator
         else {
             return chainEval[chainEval.length - 1].getResultType();
         }
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

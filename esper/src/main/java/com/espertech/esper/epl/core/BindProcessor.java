@@ -20,6 +20,7 @@ import com.espertech.esper.client.EventType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Works in conjunction with {@link SelectExprResultProcessor} to present
@@ -76,6 +77,10 @@ public class BindProcessor
                         {
                             return returnType;
                         }
+
+                        public Map<String, Object> getEventType() {
+                            return null;
+                        }
                     });
                     types.add(returnType);
                     columnNames.add(streamNames[streamNum]);
@@ -106,6 +111,10 @@ public class BindProcessor
                     public Class getType()
                     {
                         return returnType;
+                    }
+
+                    public Map<String, Object> getEventType() {
+                        return null;
                     }
                 });
                 types.add(returnType);

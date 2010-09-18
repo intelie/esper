@@ -13,6 +13,8 @@ import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Map;
+
 /**
  * Expression for a parameter within a crontab.
  * <p>
@@ -66,6 +68,10 @@ public class ExprNumberSetCronParam extends ExprNode implements ExprEvaluator
             return true;
         }
         return this.getChildNodes().get(0).isConstantResult();
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public boolean equalsNode(ExprNode node)

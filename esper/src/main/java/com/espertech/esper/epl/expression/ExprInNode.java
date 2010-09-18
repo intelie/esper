@@ -60,6 +60,10 @@ public class ExprInNode extends ExprNode implements ExprEvaluator
         return isNotIn;
     }
 
+    public Map<String, Object> getEventType() {
+        return null;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)

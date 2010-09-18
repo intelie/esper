@@ -11,6 +11,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 public class SupportExprNode extends ExprNode implements ExprEvaluator
 {
     private static int validateCount;
@@ -40,6 +42,10 @@ public class SupportExprNode extends ExprNode implements ExprEvaluator
     {
         this.value = value;
         this.type = type;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public ExprEvaluator getExprEvaluator()

@@ -16,6 +16,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.Set;
 
 public class ExprAccessAggNode extends ExprAggregateNode
@@ -62,6 +63,9 @@ public class ExprAccessAggNode extends ExprAggregateNode
                 {
                     return returnType;
                 }
+                public Map<String, Object> getEventType() {
+                    return null;
+                }
             };
             istreamOnly = getIstreamOnly(streamTypeService, 0);
             if ((accessType == AggregationAccessType.WINDOW) && istreamOnly && !streamTypeService.isOnDemandStreams()) {
@@ -95,6 +99,9 @@ public class ExprAccessAggNode extends ExprAggregateNode
                 {
                     return returnType;
                 }
+                public Map<String, Object> getEventType() {
+                    return null;
+                }                                                    
             };
             this.getChildNodes().add(0, new ExprStreamUnderlyingNode(streamWildcard, false, streamNum, resultType));
         }

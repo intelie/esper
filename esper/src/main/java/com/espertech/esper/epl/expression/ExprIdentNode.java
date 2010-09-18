@@ -18,6 +18,8 @@ import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.LevenshteinDistance;
 
+import java.util.Map;
+
 /**
  * Represents an stream property identifier in a filter expressiun tree.
  */
@@ -74,6 +76,10 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
     public ExprEvaluator getExprEvaluator()
     {
         return this;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     /**

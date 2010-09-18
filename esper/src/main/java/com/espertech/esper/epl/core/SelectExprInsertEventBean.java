@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -115,6 +116,10 @@ public class SelectExprInsertEventBean
                 {
                     return returnType;
                 }
+
+                public Map<String, Object> getEventType() {
+                    return null;
+                }
             };
 
             // add
@@ -205,6 +210,10 @@ public class SelectExprInsertEventBean
                         {
                             return returnType;
                         }
+
+                        public Map<String, Object> getEventType() {
+                            return null;
+                        }
                     };
                 }
                 else if (!(columnType instanceof Class))
@@ -280,6 +289,9 @@ public class SelectExprInsertEventBean
                         public Class getType()
                         {
                             return propertyType;
+                        }
+                        public Map<String, Object> getEventType() {
+                            return null;
                         }
                     };
                     break;

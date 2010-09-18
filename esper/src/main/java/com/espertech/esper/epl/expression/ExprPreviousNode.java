@@ -20,6 +20,8 @@ import com.espertech.esper.view.ViewCapDataWindowAccess;
 import com.espertech.esper.view.window.RandomAccessByIndexGetter;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndexMap;
 
+import java.util.Map;
+
 /**
  * Represents the 'prev' previous event function in an expression node tree.
  */
@@ -44,6 +46,10 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
     public ExprEvaluator getExprEvaluator()
     {
         return this;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

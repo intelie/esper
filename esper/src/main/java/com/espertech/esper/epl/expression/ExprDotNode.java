@@ -16,6 +16,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an Dot-operator expression, for use when "(expression).method(...).method(...)"
@@ -125,6 +126,10 @@ public class ExprDotNode extends ExprNode implements ExprEvaluator, ExprNodeInne
 		buffer.append(")");
         ExprNodeUtility.toExpressionString(chainSpec, buffer);
 		return buffer.toString();
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public boolean equalsNode(ExprNode node)

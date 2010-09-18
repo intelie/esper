@@ -10,6 +10,8 @@ import com.espertech.esper.rowregex.RegexPartitionStateRandomAccessGetter;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 
+import java.util.Map;
+
 /**
  * Represents the 'prev' previous event function in match-recognize "define" item.
  */
@@ -60,6 +62,10 @@ public class ExprPreviousMatchRecognizeNode extends ExprNode implements ExprEval
     public ExprEvaluator getExprEvaluator()
     {
         return this;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     /**

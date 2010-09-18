@@ -15,6 +15,8 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
  */
@@ -35,6 +37,10 @@ public class ExprConcatNode extends ExprNode implements ExprEvaluator
     public ExprEvaluator getExprEvaluator()
     {
         return this;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

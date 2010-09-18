@@ -16,6 +16,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 
+import java.util.Map;
+
 /**
  * Represents a NOT expression in an expression tree.
  */
@@ -48,6 +50,10 @@ public class ExprNotNode extends ExprNode implements ExprEvaluator
     public Class getType()
     {
         return Boolean.class;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public boolean isConstantResult()

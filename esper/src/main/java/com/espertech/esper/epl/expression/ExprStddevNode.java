@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
@@ -44,7 +45,6 @@ public class ExprStddevNode extends ExprAggregateNode
 
         return true;
     }
-
 
     protected String getAggregationFunctionName()
     {

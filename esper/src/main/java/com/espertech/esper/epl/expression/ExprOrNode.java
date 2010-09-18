@@ -16,6 +16,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 
+import java.util.Map;
+
 /**
  * Represents an OR expression in a filter expression tree.
  */
@@ -57,6 +59,10 @@ public class ExprOrNode extends ExprNode implements ExprEvaluator
     public boolean isConstantResult()
     {
         return false;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

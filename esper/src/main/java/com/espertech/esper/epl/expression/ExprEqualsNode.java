@@ -19,6 +19,8 @@ import com.espertech.esper.util.SimpleNumberCoercer;
 import com.espertech.esper.util.SimpleNumberCoercerFactory;
 import com.espertech.esper.util.CoercionException;
 
+import java.util.Map;
+
 /**
  * Represents an equals (=) comparator in a filter expressiun tree.
  */
@@ -123,6 +125,10 @@ public class ExprEqualsNode extends ExprNode implements ExprEvaluator
     public Class getType()
     {
         return Boolean.class;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

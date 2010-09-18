@@ -22,6 +22,7 @@ import com.espertech.esper.util.SimpleNumberCoercerFactory;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Represents the between-clause function in an expression tree.
@@ -87,6 +88,10 @@ public class ExprBetweenNode extends ExprNode implements ExprEvaluator
     public boolean isNotBetween()
     {
         return isNotBetween;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException

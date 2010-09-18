@@ -21,6 +21,7 @@ import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.NativeEventType;
 import com.espertech.esper.event.WrapperEventType;
+import com.espertech.esper.event.map.MapEventBean;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
@@ -164,7 +165,31 @@ public class SelectExprProcessorHelper
         {
             ExprNode expr = selectionList.get(i).getSelectExpression();
             expressionNodes[i] = expr.getExprEvaluator();
-            expressionReturnTypes[i] = expressionNodes[i].getType();
+            Map<String, Object> eventTypeExpr = expressionNodes[i].getEventType();
+            if (eventTypeExpr == null) {
+                expressionReturnTypes[i] = expressionNodes[i].getType();
+            }
+            else {
+                final ExprEvaluator innerExprEvaluator = expr.getExprEvaluator();
+                final MapEventType mapType = new MapEventType(null, "abc", eventAdapterService, eventTypeExpr, null, null); // TODO
+                ExprEvaluator evaluatorFragment = new ExprEvaluator() {
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                    {
+                        Map<String, Object> values = (Map<String, Object>) innerExprEvaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                        return new MapEventBean(values, mapType);                        
+                    }
+                    public Class getType()
+                    {
+                        return Map.class;
+                    }
+                    public Map<String, Object> getEventType() {
+                        return null;
+                    }
+                };
+
+                expressionReturnTypes[i] = mapType;
+                expressionNodes[i] = evaluatorFragment;
+            }
         }
 
         // Get column names
@@ -272,6 +297,10 @@ public class SelectExprProcessorHelper
                     {
                         return returnType;
                     }
+                    @Override
+                    public Map<String, Object> getEventType() {
+                        return null;
+                    }
                 };
                 expressionNodes[i] = evaluatorFragment;
             }
@@ -297,7 +326,11 @@ public class SelectExprProcessorHelper
                     public Class getType()
                     {
                         return returnType;
-                    }                    
+                    }
+
+                    public Map<String, Object> getEventType() {
+                        return null;
+                    }
                 };
 
                 expressionNodes[i] = evaluatorFragment;
@@ -338,6 +371,10 @@ public class SelectExprProcessorHelper
                 public Class getType()
                 {
                     return returnType;
+                }
+
+                public Map<String, Object> getEventType() {
+                    return null;
                 }
             };
 

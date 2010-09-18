@@ -33,6 +33,7 @@
 		<module>ohlcpluginview</module>
 		<module>qos_sla</module>
 		<module>rfidassetzone</module>
+		<module>runtimeconfig</module>
 		<module>servershell</module>
 		<module>stockticker</module>
 		<module>terminalsvc</module>

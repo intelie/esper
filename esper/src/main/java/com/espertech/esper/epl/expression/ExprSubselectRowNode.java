@@ -8,16 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.spec.StatementSpecRaw;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.spec.StatementSpecRaw;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,7 +45,21 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         {
             return rawEventType.getUnderlyingType();
         }
-        return selectClause.getExprEvaluator().getType();
+        if (selectClause.length == 1) {
+            return selectClause[0].getExprEvaluator().getType();
+        }
+        return null;
+    }
+
+    public Map<String, Object> getEventType() {
+        if ((selectClause != null) && (selectClause.length > 1)) {
+            Map<String, Object> type = new HashMap<String, Object>();
+            for (int i = 0; i < selectClause.length; i++) {
+                type.put(selectAsNames[i], selectClause[i].getExprEvaluator().getType());
+            }
+            return type;
+        }
+        return null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
@@ -105,7 +121,17 @@ public class ExprSubselectRowNode extends ExprSubselectNode
 
         if (selectClause != null)
         {
-            result = selectClauseEvaluator.evaluate(events, true, exprEvaluatorContext);
+            if (selectClause.length == 1) {
+                result = selectClauseEvaluator[0].evaluate(events, true, exprEvaluatorContext);
+            }
+            else {
+                Map<String, Object> map = new HashMap<String, Object>();
+                for (int i = 0; i < selectClauseEvaluator.length; i++) {
+                    Object resultEntry = selectClauseEvaluator[i].evaluate(events, true, exprEvaluatorContext);
+                    map.put(this.selectAsNames[i], resultEntry);
+                }
+                result = map;
+            }
         }
         else
         {

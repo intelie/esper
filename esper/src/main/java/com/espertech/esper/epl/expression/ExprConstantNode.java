@@ -15,6 +15,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 /**
  * Represents a constant in an expressiun tree.
  */
@@ -76,6 +78,10 @@ public class ExprConstantNode extends ExprNode implements ExprEvaluator
     public boolean isConstantResult()
     {
         return true;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     /**

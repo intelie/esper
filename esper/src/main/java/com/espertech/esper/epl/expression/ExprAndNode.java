@@ -16,6 +16,8 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 /**
  * Represents an And-condition.
  */
@@ -57,6 +59,10 @@ public class ExprAndNode extends ExprNode implements ExprEvaluator
     public boolean isConstantResult()
     {
         return false;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public Class getType()

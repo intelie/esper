@@ -16,6 +16,7 @@ import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,4 +69,8 @@ public class ExprSubselectInNode extends ExprSubselectNode
     {
         return subselectEvalStrategy.evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
     }
+
+    public Map<String, Object> getEventType() {
+        return null;
+    }                                        
 }

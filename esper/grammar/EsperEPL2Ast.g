@@ -486,7 +486,7 @@ subSelectInQueryExpr
 	;
 	
 subQueryExpr 
-	:	DISTINCT? selectionListElement subSelectFilterExpr (whereClause[true])?
+	:	DISTINCT? selectionList subSelectFilterExpr (whereClause[true])?
 	;
 	
 subSelectFilterExpr

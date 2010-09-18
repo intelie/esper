@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2010-09-15 19:29:12
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2010-09-17 13:37:33
 
   package com.espertech.esper.epl.generated;
   import java.util.Stack;
@@ -8566,11 +8566,11 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "subQueryExpr"
-    // EsperEPL2Ast.g:488:1: subQueryExpr : ( DISTINCT )? selectionListElement subSelectFilterExpr ( whereClause[true] )? ;
+    // EsperEPL2Ast.g:488:1: subQueryExpr : ( DISTINCT )? selectionList subSelectFilterExpr ( whereClause[true] )? ;
     public final void subQueryExpr() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:489:2: ( ( DISTINCT )? selectionListElement subSelectFilterExpr ( whereClause[true] )? )
-            // EsperEPL2Ast.g:489:4: ( DISTINCT )? selectionListElement subSelectFilterExpr ( whereClause[true] )?
+            // EsperEPL2Ast.g:489:2: ( ( DISTINCT )? selectionList subSelectFilterExpr ( whereClause[true] )? )
+            // EsperEPL2Ast.g:489:4: ( DISTINCT )? selectionList subSelectFilterExpr ( whereClause[true] )?
             {
             // EsperEPL2Ast.g:489:4: ( DISTINCT )?
             int alt153=2;
@@ -8590,8 +8590,8 @@ public class EsperEPL2Ast extends TreeParser {
 
             }
 
-            pushFollow(FOLLOW_selectionListElement_in_subQueryExpr3197);
-            selectionListElement();
+            pushFollow(FOLLOW_selectionList_in_subQueryExpr3197);
+            selectionList();
 
             state._fsp--;
 
@@ -8600,7 +8600,7 @@ public class EsperEPL2Ast extends TreeParser {
 
             state._fsp--;
 
-            // EsperEPL2Ast.g:489:55: ( whereClause[true] )?
+            // EsperEPL2Ast.g:489:48: ( whereClause[true] )?
             int alt154=2;
             int LA154_0 = input.LA(1);
 
@@ -8609,7 +8609,7 @@ public class EsperEPL2Ast extends TreeParser {
             }
             switch (alt154) {
                 case 1 :
-                    // EsperEPL2Ast.g:489:56: whereClause[true]
+                    // EsperEPL2Ast.g:489:49: whereClause[true]
                     {
                     pushFollow(FOLLOW_whereClause_in_subQueryExpr3202);
                     whereClause(true);
@@ -14305,7 +14305,7 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_IN_SUBSELECT_QUERY_EXPR_in_subSelectInQueryExpr3176 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_subQueryExpr_in_subSelectInQueryExpr3178 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_DISTINCT_in_subQueryExpr3194 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000000006000000L,0x0000000000000040L});
-    public static final BitSet FOLLOW_selectionListElement_in_subQueryExpr3197 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_selectionList_in_subQueryExpr3197 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
     public static final BitSet FOLLOW_subSelectFilterExpr_in_subQueryExpr3199 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000004000L});
     public static final BitSet FOLLOW_whereClause_in_subQueryExpr3202 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_STREAM_EXPR_in_subSelectFilterExpr3220 = new BitSet(new long[]{0x0000000000000004L});

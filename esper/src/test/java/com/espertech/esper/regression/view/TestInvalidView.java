@@ -211,7 +211,7 @@ public class TestInvalidView extends TestCase
 
         // function not known
         exceptionText = getStatementExceptionView("select gogglex(1) from " + EVENT_NUM + ".win:length(1)");
-        assertEquals("Error in expression: Unknown method named 'gogglex' could not be resolved [select gogglex(1) from com.espertech.esper.support.bean.SupportBean_N.win:length(1)]", exceptionText);
+        assertEquals("Error in expression: Unknown single-row function or aggregation function named 'gogglex' could not be resolved [select gogglex(1) from com.espertech.esper.support.bean.SupportBean_N.win:length(1)]", exceptionText);
 
         // insert into column name incorrect
         epService.getEPAdministrator().createEPL("insert into Xyz select 1 as dodi from java.lang.String");

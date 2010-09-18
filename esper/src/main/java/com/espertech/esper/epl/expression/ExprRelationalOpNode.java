@@ -17,6 +17,8 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Map;
+
 /**
  * Represents a lesser or greater then (</<=/>/>=) expression in a filter expression tree.
  */
@@ -45,7 +47,11 @@ public class ExprRelationalOpNode extends ExprNode implements ExprEvaluator
     {
         return false;
     }
-    
+
+    public Map<String, Object> getEventType() {
+        return null;
+    }
+
     /**
      * Returns the type of relational op used.
      * @return enum with relational op type

@@ -7,6 +7,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.client.EventBean;
 
+import java.util.Map;
+
 /**
  * A placeholder expression for view/pattern object parameters that allow
  * sorting expression values ascending or descending.
@@ -24,6 +26,10 @@ public class ExprOrderedExpr extends ExprNode implements ExprEvaluator
     public ExprOrderedExpr(boolean descending)
     {
         isDescending = descending;
+    }
+
+    public Map<String, Object> getEventType() {
+        return null;
     }
 
     public String toExpressionString()

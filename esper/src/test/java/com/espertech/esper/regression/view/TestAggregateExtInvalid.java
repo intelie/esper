@@ -16,7 +16,7 @@ public class TestAggregateExtInvalid extends TestCase {
         epService.initialize();
 
         tryInvalid("select rate(10) from SupportBean",
-                "Error in expression: Unknown method named 'rate' could not be resolved [select rate(10) from SupportBean]");
+                "Error in expression: Unknown single-row function or aggregation function named 'rate' could not be resolved [select rate(10) from SupportBean]");
     }
 
     private void tryInvalid(String epl, String message) {

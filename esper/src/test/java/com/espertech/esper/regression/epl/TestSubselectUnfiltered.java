@@ -160,9 +160,6 @@ public class TestSubselectUnfiltered extends TestCase {
         tryInvalid("select (select dummy from S1.std:lastevent()) as idS1 from S0",
                    "Error starting statement: Property named 'dummy' is not valid in any stream [select (select dummy from S1.std:lastevent()) as idS1 from S0]");
 
-        tryInvalid("select (select id, id from S1) as idS1 from S0",
-                   "Incorrect syntax near ',' expecting 'from' but found a comma ',' at line 1 column 17, please check the subquery within the select clause [select (select id, id from S1) as idS1 from S0]");
-
         tryInvalid("select (select id from S1.std:lastevent() group by id) as idS1 from S0",
                    "Incorrect syntax near 'group' (a reserved keyword) expecting a closing parenthesis ')' but found 'group' at line 1 column 42, please check the subquery within the select clause [select (select id from S1.std:lastevent() group by id) as idS1 from S0]");
 

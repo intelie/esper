@@ -1608,47 +1608,63 @@ public class EPStatementStartMethod
             // Validate select expression
             SelectClauseSpecCompiled selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
             AggregationService aggregationService = null;
+            List<ExprNode> selectExpressions = new ArrayList<ExprNode>();
+            List<String> assignedNames = new ArrayList<String>();
             if (selectClauseSpec.getSelectExprList().size() > 0)
             {
-                SelectClauseElementCompiled element = selectClauseSpec.getSelectExprList().get(0);
-                if (element instanceof SelectClauseExprCompiledSpec)
-                {
-                    // validate
-                    SelectClauseExprCompiledSpec compiled = (SelectClauseExprCompiledSpec) element;
-                    ExprNode selectExpression = compiled.getSelectExpression();
-                    selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
-                    subselect.setSelectClause(selectExpression);
-                    subselect.setSelectAsName(compiled.getAssignedName());
+                List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
 
-                    // handle aggregation
-                    List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
-                    ExprAggregateNode.getAggregatesBottomUp(selectExpression, aggExprNodes);
-                    if (aggExprNodes.size() > 0)
+                for (int i = 0; i < selectClauseSpec.getSelectExprList().size(); i++) {
+                    SelectClauseElementCompiled element = selectClauseSpec.getSelectExprList().get(i);
+
+                    if (element instanceof SelectClauseExprCompiledSpec)
                     {
-                        List<ExprAggregateNode> havingAgg = Collections.emptyList();
-                        List<ExprAggregateNode> orderByAgg = Collections.emptyList();
-                        aggregationService = AggregationServiceFactory.getService(aggExprNodes, havingAgg, orderByAgg, false, statementContext.getMethodResolutionService(), statementContext, annotations, statementContext.getVariableService(), statementContext.getStatementStopService(), false, statementSpec.getFilterRootNode(), statementSpec.getHavingExprRootNode());
+                        // validate
+                        SelectClauseExprCompiledSpec compiled = (SelectClauseExprCompiledSpec) element;
+                        ExprNode selectExpression = compiled.getSelectExpression();
+                        selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
 
-                        // Other stream properties, if there is aggregation, cannot be under aggregation.
-                        for (ExprAggregateNode aggNode : aggExprNodes)
+                        selectExpressions.add(selectExpression);
+                        assignedNames.add(compiled.getAssignedName());
+
+                        // handle aggregation
+                        ExprAggregateNode.getAggregatesBottomUp(selectExpression, aggExprNodes);
+
+                        if (aggExprNodes.size() > 0)
                         {
-                            List<Pair<Integer, String>> propertiesNodesAggregated = getExpressionProperties(aggNode, true);
-                            for (Pair<Integer, String> pair : propertiesNodesAggregated)
+                            // This stream (stream 0) properties must either all be under aggregation, or all not be.
+                            List<Pair<Integer, String>> propertiesNotAggregated = getExpressionProperties(selectExpression, false);
+                            for (Pair<Integer, String> pair : propertiesNotAggregated)
                             {
-                                if (pair.getFirst() != 0)
+                                if (pair.getFirst() == 0)
                                 {
-                                    throw new ExprValidationException("Subselect aggregation functions cannot aggregate across correlated properties");
+                                    throw new ExprValidationException("Subselect properties must all be within aggregation functions");
                                 }
                             }
                         }
+                    }
+                }   // end of for loop
 
-                        // This stream (stream 0) properties must either all be under aggregation, or all not be.
-                        List<Pair<Integer, String>> propertiesNotAggregated = getExpressionProperties(selectExpression, false);
-                        for (Pair<Integer, String> pair : propertiesNotAggregated)
+                if (!selectExpressions.isEmpty()) {
+                    subselect.setSelectClause(selectExpressions.toArray(new ExprNode[selectExpressions.size()]));
+                    subselect.setSelectAsNames(assignedNames.toArray(new String[assignedNames.size()]));
+                }
+
+                if (aggExprNodes.size() > 0)
+                {
+                    List<ExprAggregateNode> havingAgg = Collections.emptyList();
+                    List<ExprAggregateNode> orderByAgg = Collections.emptyList();
+                    aggregationService = AggregationServiceFactory.getService(aggExprNodes, havingAgg, orderByAgg, false, statementContext.getMethodResolutionService(), statementContext, annotations, statementContext.getVariableService(), statementContext.getStatementStopService(), false, statementSpec.getFilterRootNode(), statementSpec.getHavingExprRootNode());
+
+                    // Other stream properties, if there is aggregation, cannot be under aggregation.
+                    for (ExprAggregateNode aggNode : aggExprNodes)
+                    {
+                        List<Pair<Integer, String>> propertiesNodesAggregated = getExpressionProperties(aggNode, true);
+                        for (Pair<Integer, String> pair : propertiesNodesAggregated)
                         {
-                            if (pair.getFirst() == 0)
+                            if (pair.getFirst() != 0)
                             {
-                                throw new ExprValidationException("Subselect properties must all be within aggregation functions");
+                                throw new ExprValidationException("Subselect aggregation functions cannot aggregate across correlated properties");
                             }
                         }
                     }

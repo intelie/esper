@@ -54,7 +54,7 @@ public class SubselectEvalStrategyFactory
         Class typeTwo;
         if (subselectExpression.getSelectClause() != null)
         {
-            typeTwo = subselectExpression.getSelectClause().getExprEvaluator().getType();
+            typeTwo = subselectExpression.getSelectClause()[0].getExprEvaluator().getType();
         }
         else
         {
@@ -82,7 +82,7 @@ public class SubselectEvalStrategyFactory
             Class compareType = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
             RelationalOpEnum.Computer computer = relationalOp.getComputer(compareType, typeOne, typeTwo);
 
-            ExprEvaluator selectClause = subselectExpression.getSelectClause() == null ? null : subselectExpression.getSelectClause().getExprEvaluator();
+            ExprEvaluator selectClause = subselectExpression.getSelectClause() == null ? null : subselectExpression.getSelectClause()[0].getExprEvaluator();
             ExprEvaluator filterExpr = subselectExpression.getFilterExpr();
             if (isAny)
             {
@@ -119,7 +119,7 @@ public class SubselectEvalStrategyFactory
         }
 
         ExprEvaluator value = valueExpr.getExprEvaluator();
-        ExprEvaluator select = subselectExpression.getSelectClause() == null ? null : subselectExpression.getSelectClause().getExprEvaluator();
+        ExprEvaluator select = subselectExpression.getSelectClause() == null ? null : subselectExpression.getSelectClause()[0].getExprEvaluator();
         ExprEvaluator filter = subselectExpression.getFilterExpr() == null ? null : subselectExpression.getFilterExpr();
         if (isAll)
         {

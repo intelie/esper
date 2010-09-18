@@ -90,6 +90,11 @@ public abstract class ExprAggregateNode extends ExprNode implements ExprEvaluato
         return false;
     }
 
+    @Override
+    public Map<String, Object> getEventType() {
+        return null;
+    }
+    
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
         aggregationMethodFactory = validateAggregationChild(streamTypeService, methodResolutionService, exprEvaluatorContext);
