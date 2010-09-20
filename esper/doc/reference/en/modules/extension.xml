@@ -31,6 +31,10 @@
 		<para>
 			You may not override a built-in function with a single-row function provided by you. The single-row function you register must have a different name then any of the built-in functions.
 		</para>
+		
+		<para>
+			An example single-row function can also be found in the examples under the runtime configuration example.
+		</para>
 
 		<sect2 id="custom-singlerow-implementing" revision="1">
 			<title>Implementing a Single-Row Function</title>
@@ -346,14 +350,14 @@ public EventType getEventType() {
 			</para>
 		
 			<programlisting><![CDATA[<esper-configuration
-  <plugin-view namespace="custom" name="trendspotter" 
-      factory-class="com.espertech.esper.regression.view.MyTrendSpotterViewFactory" /> 
+  <plugin-view namespace="custom" name="ohlc" 
+      factory-class="com.espertech.esper.example.ohlc.OHLCBarPlugInViewFactory" /> 
 </esper-configuration>]]></programlisting>
 
 			<para>
 				The new view is now ready to use in a statement:
 			</para>		
-			<programlisting><![CDATA[select * from StockTick.custom:trendspotter(price)]]></programlisting>
+			<programlisting><![CDATA[select * from StockTick.custom:ohlc(timestamp, price)]]></programlisting>
 
 			<para>
 				Note that the view must implement additional interfaces if it acts as a data window view, or works in a grouping context, as discussed in more detail below.

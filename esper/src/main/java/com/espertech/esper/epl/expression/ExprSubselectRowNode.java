@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,7 +54,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
 
     public Map<String, Object> getEventType() {
         if ((selectClause != null) && (selectClause.length > 1)) {
-            Map<String, Object> type = new HashMap<String, Object>();
+            Map<String, Object> type = new LinkedHashMap<String, Object>();
             for (int i = 0; i < selectClause.length; i++) {
                 type.put(selectAsNames[i], selectClause[i].getExprEvaluator().getType());
             }

@@ -21,7 +21,6 @@ import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.NativeEventType;
 import com.espertech.esper.event.WrapperEventType;
-import com.espertech.esper.event.map.MapEventBean;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
@@ -164,6 +163,7 @@ public class SelectExprProcessorHelper
         for (int i = 0; i < selectionList.size(); i++)
         {
             ExprNode expr = selectionList.get(i).getSelectExpression();
+            String assignedName = selectionList.get(i).getAssignedName();
             expressionNodes[i] = expr.getExprEvaluator();
             Map<String, Object> eventTypeExpr = expressionNodes[i].getEventType();
             if (eventTypeExpr == null) {
@@ -171,12 +171,15 @@ public class SelectExprProcessorHelper
             }
             else {
                 final ExprEvaluator innerExprEvaluator = expr.getExprEvaluator();
-                final MapEventType mapType = new MapEventType(null, "abc", eventAdapterService, eventTypeExpr, null, null); // TODO
+                final EventType mapType = eventAdapterService.createAnonymousMapType(eventTypeExpr);
                 ExprEvaluator evaluatorFragment = new ExprEvaluator() {
                     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                     {
                         Map<String, Object> values = (Map<String, Object>) innerExprEvaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                        return new MapEventBean(values, mapType);                        
+                        if (values == null) {
+                            values = Collections.emptyMap();
+                        }
+                        return eventAdapterService.adaptorForTypedMap(values, mapType);
                     }
                     public Class getType()
                     {

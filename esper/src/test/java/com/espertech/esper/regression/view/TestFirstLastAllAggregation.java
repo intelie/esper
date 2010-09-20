@@ -240,7 +240,7 @@ public class TestFirstLastAllAggregation extends TestCase {
         Object[][] rows = new Object[][] {
                 {"first((sa.doublePrimitive+sa.intPrimitive))", Double.class},
                 {"first(sa.intPrimitive)", int.class},
-                {"window(sa.*)", SupportBean.class},
+                {"window(sa.*)", SupportBean[].class},
                 {"last(*)", SupportBean.class},
                 };
         for (int i = 0; i < rows.length; i++) {

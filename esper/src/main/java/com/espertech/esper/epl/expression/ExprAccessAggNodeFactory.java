@@ -10,6 +10,7 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.epl.agg.*;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.util.JavaClassHelper;
 
 public class ExprAccessAggNodeFactory implements AggregationMethodFactory
 {
@@ -34,7 +35,12 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
 
     public Class getResultType()
     {
-        return resultType;
+        if (accessType == AggregationAccessType.WINDOW) {
+            return JavaClassHelper.getArrayType(resultType);
+        }
+        else {
+            return resultType;
+        }
     }
 
     public AggregationSpec getSpec(boolean isMatchRecognize)
@@ -85,7 +91,7 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
                 return new AggregationAccessorLast(streamNum, childNode);
             }
             else if (accessType == AggregationAccessType.WINDOW) {
-                return new AggregationAccessorAll(streamNum, childNode);
+                return new AggregationAccessorAll(streamNum, childNode, resultType);
             }
         }
         throw new IllegalStateException("Access type is undefined or not known as code '" + accessType + "'");
