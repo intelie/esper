@@ -30,10 +30,6 @@ public class TestSubselectMulticolumn extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    // TODO doc subquery returns single row multiple columns
-    // TODO doc subquery returns multiple rows
-    // TODO doc subquery correlation with aggregation is indexed, ordered delivery
-
     public void testInvalid() {
 
         String epl = "select (select string, sum(intPrimitive) from SupportBean.std:lastevent() as sb) from S0";

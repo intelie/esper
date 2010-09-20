@@ -373,18 +373,10 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
 
         ExprIdentNode other = (ExprIdentNode) node;
 
-        if (this.streamNum == -1)
-        {
-            throw new IllegalStateException("ExprIdentNode has not been validated");
-        }
-
-        if ((other.streamNum != this.streamNum) ||
-            (!(other.resolvedPropertyName.equals(this.resolvedPropertyName))))
-        {
+        if (streamOrPropertyName != null ? !streamOrPropertyName.equals(other.streamOrPropertyName) : other.streamOrPropertyName != null)
             return false;
-        }
-
-
+        if (unresolvedPropertyName != null ? !unresolvedPropertyName.equals(other.unresolvedPropertyName) : other.unresolvedPropertyName != null)
+            return false;
         return true;
     }
 }

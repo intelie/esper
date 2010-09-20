@@ -650,28 +650,20 @@ select symbol, sum(price) from StockTickEvent.std:groupwin(symbol).win:length(5)
 				</para>
 
 				<para>
-					By putting the <literal>std:groupwin</literal> grouped-window view in position after the length window, we can change the semantics of the query. The query now returns the total price per symbol for only the last 10 events across all symbols. Here the engine allocates only one length window for all events:
+					Without the <literal>std:groupwin</literal> declaration query the same query returns the total price per symbol for only the last 10 events across all symbols. Here the engine allocates only one length window for all events:
 				</para>
 	
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.win:length(10).std:groupwin(symbol)]]></programlisting>
+				<programlisting><![CDATA[select sum(price) from StockTickEvent.win:length(10)]]></programlisting>
 
 				<para>
-					We have learned that by placing the <literal>std:groupwin</literal> grouped-window view before other views, these other views become part of the grouped set of views. The engine dynamically allocates a new view instance for each subview, every time it encounters a new group key such as a new value for symbol. Therefore, in <literal>std:groupwin(symbol).win:length(10)</literal> the engine allocates a new length window for each distinct symbol. However in <literal>win:length(10).std:groupwin(symbol)</literal> the engine maintains a single length window.
+					We have learned that by placing the <literal>std:groupwin</literal> grouped-window view before other views, these other views become part of the grouped set of views. The engine dynamically allocates a new view instance for each subview, every time it encounters a new group key such as a new value for symbol. Therefore, in <literal>std:groupwin(symbol).win:length(10)</literal> the engine allocates a new length window for each distinct symbol. However in <literal>win:length(10)</literal> alone the engine maintains a single length window.
 				</para>
 
 				<para>
-					Multiple <literal>std:groupwin</literal> grouped-window views can also be used in the same statement. The statement below groups by symbol and feed. As the statement declares the length window after the <literal>std:groupwin</literal> grouped-window view for symbols, the engine allocates a new length window per symbol however reports total price per symbol and feed. The query results are total price per symbol and feed for the last 100 events per symbol (and not per feed).
+					Last, we consider a grouped data window for two group criteria. Here, the query results are total price per symbol and feed for the last 100 events per symbol and feed.
 				</para>
 
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol).win:length(100)
-.std:groupwin(feed)]]></programlisting>
-
-				<para>
-					Last, we consider the permutation where the length window is declared after the grouped data window. Here, the query results are total price per symbol and feed for the last 100 events per symbol and feed.
-				</para>
-
-				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol, feed)
-.win:length(100)]]></programlisting>
+				<programlisting><![CDATA[select sum(price) from StockTickEvent.std:groupwin(symbol, feed).win:length(100)]]></programlisting>
     
 				<para>
 					For advanced users: There is an optional view that can control how the <literal>std:groupwin</literal> grouped-window view gets evaluated and that view is the <literal>std:merge</literal> view. 
