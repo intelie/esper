@@ -163,7 +163,6 @@ public class SelectExprProcessorHelper
         for (int i = 0; i < selectionList.size(); i++)
         {
             ExprNode expr = selectionList.get(i).getSelectExpression();
-            String assignedName = selectionList.get(i).getAssignedName();
             expressionNodes[i] = expr.getExprEvaluator();
             Map<String, Object> eventTypeExpr = expressionNodes[i].getEventType();
             if (eventTypeExpr == null) {

@@ -2721,7 +2721,7 @@ where tick.symbol = news.symbol]]></programlisting>
   where zoneId = RFID.zoneId) as name from RFIDEvent]]></programlisting>
 
 		<para>
-			Note that when a simple or correlated subquery returns multiple rows, the engine returns a <literal>null</literal> value as the subquery result. To limit the number of events returned by a subquery consider using one of the views <literal>std:lastevent</literal>, <literal>std:unique</literal> and <literal>std:groupwin</literal>.
+			Note that when a simple or correlated subquery returns multiple rows, the engine returns a <literal>null</literal> value as the subquery result. To limit the number of events returned by a subquery consider using one of the views <literal>std:lastevent</literal>, <literal>std:unique</literal> and <literal>std:groupwin</literal> or aggregation functions or the multi-row and multi-column selects as described below.
 		</para>
 
 		<para>
@@ -2751,8 +2751,16 @@ where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())
 		</para>
 		
 		<para>
-			As the sub-select expression is evaluated first, the query above actually never fires for the GOOG symbol, only for other symbols that have a price higher then the current maximum for GOOG. As a sidenote, the <literal>insert into</literal> clause can also be handy to compute aggregation results for use in multiple subqueries.
+			When using aggregation functions in a correlated subselect the engine computes the aggregation based on data window or named window contents matching the where-clause.
 		</para>
+		
+		<para>
+			The following example compares the quantity value provided by the current order event against the total quantity of all order events in the last 1 hour for the same client.
+		</para>
+		<programlisting><![CDATA[select * from OrderEvent oe
+where qty > 
+  (select sum(qty) from OrderEvent.win:time(1 hour) pd 
+  where pd.client = oe.client)]]></programlisting>
 
 		<para>
 			Filter expressions in a pattern or stream may also employ subqueries. Subqueries can be uncorrelated or can be correlated to properties of the stream or to properties of tagged events in a pattern. Subqueries may reference named windows as well.
@@ -2811,12 +2819,6 @@ select * from pattern [
 					<listitem>
 						<para>
 							The properties of the subselect stream must all be within aggregation functions.
-						</para>
-					</listitem>
-					<listitem>
-						<para>
-							The <literal>where</literal> clause cannot be used to correlate between the subselect stream and the enclosing stream, since the engine would otherwise be forced to re-evaluate 
-							the aggregation considering all events in the subselect-stream data window, which would likely be a very expensive operation.
 						</para>
 					</listitem>
 				</orderedlist>
@@ -2972,6 +2974,77 @@ select * from pattern [
 
 			<para>
 				The above query compares ProductOrder event's quantity value with all rows from the MinimumQuantity stream of events and returns only those ProductOrder events that have a quantity that is less then all of the minimum quantity values of the MinimumQuantity events.
+			</para>
+		</sect2>
+
+		<sect2 id="epl-subqueries-multicolumn">
+			<title>Multi-Column Selection</title>
+
+			<para>
+				Your subquery may select multiple columns in the <literal>select</literal> clause including multiple aggregated values from a data window or named window.
+			</para>
+			
+			<para>
+				The following example is a correlated subquery that selects wildcard and in addition selects the <literal>bid</literal> and <literal>offer</literal> properties of the last <literal>MarketData</literal> event for the same symbol as the arriving <literal>OrderEvent</literal>:
+			</para>
+
+			<programlisting><![CDATA[select *,
+  (select bid, offer from MarketData.std:unique(symbol) as md 
+   where md.symbol = oe.symbol) as bidoffer
+from OrderEvent oe]]></programlisting>
+
+			<para>
+				Output events for the above query contain all properties of the original <literal>OrderEvent</literal> event. In addition each output event contains a <literal>bidoffer</literal> nested property that itself contains the <literal>bid</literal> and <literal>offer</literal> properties. You may retrieve the bid and offer from output events directly via the <literal>bidoffer.bid</literal> property name syntax for nested properties.  
+			</para>
+
+			<para>
+				The next example is similar to the above query but instead selects aggregations and selects from a named window by name <literal>OrderNamedWindow</literal> (creation not shown here). For each arriving <literal>OrderEvent</literal> it selects the total quantity and count of all order events for the same client, as currently held by the named window:
+			</para>
+			<programlisting><![CDATA[select *,
+  (select sum(qty) as sumPrice, count(*) as countRows 
+   from OrderNamedWindow as onw
+   where onw.client = oe.client) as pastOrderTotals
+from OrderEvent as oe]]></programlisting>
+
+			<para>
+				Output events for the above query contain all properties of the original <literal>OrderEvent</literal> event. In addition each output event contains a <literal>pastOrderTotals</literal> nested property that itself contains the <literal>sumPrice</literal> and <literal>countRows</literal> properties. 
+			</para>
+		</sect2>
+
+		<sect2 id="epl-subqueries-multirow">
+			<title>Multi-Row Selection</title>
+
+			<para>
+				While a subquery cannot change the cardinality of the selected stream, a subquery can return multiple values from the selected data window or named window. This section shows examples of the <literal>window</literal> aggregation function in subselects. 
+			</para>
+			
+			<para>
+				Consider using an inner join, outer join or unidirectional join instead to achieve a 1-to-many cardinality in the number of output events.
+			</para>
+
+			<para>
+				The next example is an uncorrelated subquery that selects all current <literal>ZoneEvent</literal> events considering the last <literal>ZoneEvent</literal> per zone for each arriving <literal>RFIDEvent</literal>.
+			</para>
+			<programlisting><![CDATA[select assetId,
+ (select window(z.*) as winzones from ZoneEvent.std:unique(zone) as z) as zones
+ from RFIDEvent]]></programlisting>
+
+			<para>
+				Output events for the above query contain two properties: the <literal>assetId</literal> property and the <literal>zones</literal> property. The latter property is a nested property that contains the <literal>winzones</literal> property. You may retrieve the zones from output events directly via the <literal>zones.winzones</literal> property name syntax for nested properties.  
+			</para>
+
+			<para>
+				In this example for a correlated subquery against a named window we assume that the <literal>OrderNamedWindow</literal> has been created and contains order events. The query returns for each <literal>MarketData</literal> event
+				the list of order ids for orders with the same symbol:
+			</para>
+			<programlisting><![CDATA[select price,
+ (select window(orderId) as winorders 
+  from OrderNamedWindow onw 
+  where onw.symbol = md.symbol) as orderIds
+ from MarketData md]]></programlisting>
+
+			<para>
+				Output events for the above query contain two properties: the <literal>price</literal> property and the <literal>orderIds</literal> property. The latter property is a nested property that contains the <literal>winorders</literal> property of type array. 
 			</para>
 		</sect2>
     </sect1>

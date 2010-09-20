@@ -1610,6 +1610,8 @@ public class EPStatementStartMethod
             AggregationService aggregationService = null;
             List<ExprNode> selectExpressions = new ArrayList<ExprNode>();
             List<String> assignedNames = new ArrayList<String>();
+            boolean isWildcard = false;
+            boolean isStreamWildcard = false;
             if (selectClauseSpec.getSelectExprList().size() > 0)
             {
                 List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
@@ -1643,11 +1645,29 @@ public class EPStatementStartMethod
                             }
                         }
                     }
+                    else if (element instanceof SelectClauseElementWildcard) {
+                        isWildcard = true;
+                    }
+                    else if (element instanceof SelectClauseStreamCompiledSpec) {
+                        isStreamWildcard = true;
+                    }
                 }   // end of for loop
 
                 if (!selectExpressions.isEmpty()) {
                     subselect.setSelectClause(selectExpressions.toArray(new ExprNode[selectExpressions.size()]));
                     subselect.setSelectAsNames(assignedNames.toArray(new String[assignedNames.size()]));
+                    if (isWildcard || isStreamWildcard) {
+                        throw new ExprValidationException("Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns.");
+                    }
+                    if (selectExpressions.size() > 1 && !subselect.isAllowMultiColumnSelect()) {
+                        throw new ExprValidationException("Subquery multi-column select is not allowed in this context.");
+                    }
+                    if ((selectExpressions.size() > 1 && aggExprNodes.size() > 0)) {
+                        // all properties must be aggregated
+                        if (!ExprNodeUtility.getNonAggregatedProps(selectExpressions).isEmpty()) {
+                            throw new ExprValidationException("Subquery with multi-column select requires that either all or none of the selected columns are under aggregation.");
+                        }
+                    }
                 }
 
                 if (aggExprNodes.size() > 0)

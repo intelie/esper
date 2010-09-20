@@ -300,6 +300,10 @@ public final class FilterSpecCompiler
         SelectClauseSpecCompiled selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
         if (selectClauseSpec.getSelectExprList().size() > 0)
         {
+            if (selectClauseSpec.getSelectExprList().size() > 1) {
+                throw new ExprValidationException("Subquery multi-column select is not allowed in this context.");
+            }
+
             SelectClauseElementCompiled element = selectClauseSpec.getSelectExprList().get(0);
             if (element instanceof SelectClauseExprCompiledSpec)
             {

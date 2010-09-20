@@ -67,6 +67,8 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
      */
     public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
 
+    public abstract boolean isAllowMultiColumnSelect();
+
     /**
      * Ctor.
      * @param statementSpec is the lookup statement spec from the parser, unvalidated

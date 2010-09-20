@@ -72,5 +72,10 @@ public class ExprSubselectInNode extends ExprSubselectNode
 
     public Map<String, Object> getEventType() {
         return null;
-    }                                        
+    }
+
+    @Override
+    public boolean isAllowMultiColumnSelect() {
+        return false;
+    }    
 }

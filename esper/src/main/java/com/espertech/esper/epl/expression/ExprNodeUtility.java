@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
@@ -23,6 +24,36 @@ import java.util.*;
  */
 public class ExprNodeUtility
 {
+    public static Set<Pair<Integer, String>> getNonAggregatedProps(List<ExprNode> exprNodes)
+    {
+        // Determine all event properties in the clause
+        Set<Pair<Integer, String>> nonAggProps = new HashSet<Pair<Integer, String>>();
+        for (ExprNode node : exprNodes)
+        {
+            ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(false);
+            node.accept(visitor);
+            List<Pair<Integer, String>> propertiesNode = visitor.getExprProperties();
+            nonAggProps.addAll(propertiesNode);
+        }
+
+        return nonAggProps;
+    }
+
+    public static Set<Pair<Integer, String>> getAggregatedProperties(List<ExprAggregateNode> aggregateNodes)
+    {
+        // Get a list of properties being aggregated in the clause.
+        Set<Pair<Integer, String>> propertiesAggregated = new HashSet<Pair<Integer, String>>();
+        for (ExprNode selectAggExprNode : aggregateNodes)
+        {
+            ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);
+            selectAggExprNode.accept(visitor);
+            List<Pair<Integer, String>> properties = visitor.getExprProperties();
+            propertiesAggregated.addAll(properties);
+        }
+
+        return propertiesAggregated;
+    }
+
     public static ExprEvaluator[] getEvaluators(ExprNode[] exprNodes) {
         if (exprNodes == null) {
             return null;

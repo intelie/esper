@@ -85,4 +85,9 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
 
         return false;
     }
+
+    @Override
+    public boolean isAllowMultiColumnSelect() {
+        return false;
+    }    
 }

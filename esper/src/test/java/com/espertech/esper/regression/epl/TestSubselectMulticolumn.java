@@ -30,44 +30,32 @@ public class TestSubselectMulticolumn extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    // TODO test stream select, wildcard
-    // TODO test filter spec select expression
-    // TODO validate only aggregation or only non-aggregation
-    // TODO test non-row functions such as "in"
-    // TODO test column alias not duplicates
     // TODO doc subquery returns single row multiple columns
     // TODO doc subquery returns multiple rows
     // TODO doc subquery correlation with aggregation is indexed, ordered delivery
 
-    public void testWildcardAndColumns()
-    {
-        String stmtText = "select " +
-                "(select *, intPrimitive*2 as val2 from SupportBean.std:lastevent()) as subrow " +
-                "from S0 as s0";
-        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
-        stmt.addListener(listener);
-
-        String[] fields = "subrow.v1,subrow.v2".split(",");
-
-        /*
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
-        EventBean event = listener.assertOneGetNewAndReset();
-        ArrayAssertionUtil.assertProps(event, fields, new Object[] {null, null});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 10});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E2", 20));
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(3));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 20});
-        */
-    }
-
     public void testInvalid() {
 
-        // TODO
+        String epl = "select (select string, sum(intPrimitive) from SupportBean.std:lastevent() as sb) from S0";
+        tryInvalid(epl, "Error starting statement: Subquery with multi-column select requires that either all or none of the selected columns are under aggregation. [select (select string, sum(intPrimitive) from SupportBean.std:lastevent() as sb) from S0]");
 
+        epl = "select (select string, string from SupportBean.std:lastevent() as sb) from S0";
+        tryInvalid(epl, "Error starting statement: Column 1 in subquery does not have a unique column name assigned [select (select string, string from SupportBean.std:lastevent() as sb) from S0]");
+
+        epl = "select * from S0(p00 = (select string, string from SupportBean.std:lastevent() as sb))";
+        tryInvalid(epl, "Subquery multi-column select is not allowed in this context. [select * from S0(p00 = (select string, string from SupportBean.std:lastevent() as sb))]");
+
+        epl = "select exists(select sb.* as v1, intPrimitive*2 as v3 from SupportBean.std:lastevent() as sb) as subrow from S0 as s0";
+        tryInvalid(epl, "Error starting statement: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select exists(select sb.* as v1, intPrimitive*2 as v3 from SupportBean.std:lastevent() as sb) as subrow from S0 as s0]");
+
+        epl = "select (select sb.* as v1, intPrimitive*2 as v3 from SupportBean.std:lastevent() as sb) as subrow from S0 as s0";
+        tryInvalid(epl, "Error starting statement: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select (select sb.* as v1, intPrimitive*2 as v3 from SupportBean.std:lastevent() as sb) as subrow from S0 as s0]");
+
+        epl = "select (select *, intPrimitive from SupportBean.std:lastevent() as sb) as subrow from S0 as s0";
+        tryInvalid(epl, "Error starting statement: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select (select *, intPrimitive from SupportBean.std:lastevent() as sb) as subrow from S0 as s0]");
+
+        epl = "select * from S0(p00 in (select string, string from SupportBean.std:lastevent() as sb))";
+        tryInvalid(epl, "Subquery multi-column select is not allowed in this context. [select * from S0(p00 in (select string, string from SupportBean.std:lastevent() as sb))]");
     }
 
     private void tryInvalid(String epl, String message) {

@@ -95,4 +95,9 @@ public class ExprSubselectAllSomeAnyNode extends ExprSubselectNode
     {
         return evalStrategy.evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
     }
+
+    @Override
+    public boolean isAllowMultiColumnSelect() {
+        return false;
+    }    
 }
