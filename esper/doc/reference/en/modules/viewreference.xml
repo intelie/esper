@@ -660,6 +660,15 @@ select symbol, sum(price) from StockTickEvent.std:groupwin(symbol).win:length(5)
 				</para>
 
 				<para>
+					The <literal>std:groupwin</literal> can be used with multiple data window views to achieve a grouped intersection or union policy.
+				</para>
+
+				<para>
+					The next query retains the last 4 events per symbol and only those events that are also not older then 10 seconds:
+				</para>
+				<programlisting><![CDATA[select * from StockTickEvent.std:groupwin(symbol).win:length(4).win:time(10)]]></programlisting>
+
+				<para>
 					Last, we consider a grouped data window for two group criteria. Here, the query results are total price per symbol and feed for the last 100 events per symbol and feed.
 				</para>
 
