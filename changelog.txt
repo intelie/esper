@@ -1,7 +1,7 @@
 Esper Changelog
 ===================
 
-Changes in version 4.0.0
+Changes in version 4.1.0
 ------------------------
 Major API or EPL changes
   - Requires a Java 6 runtime (JDK6 or JRE6)

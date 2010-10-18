@@ -1,9 +1,9 @@
 <project>
-	<modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.1.0</modelVersion>
 	<name>Esper Examples</name>
 	<groupId>com.espertech</groupId>
 	<artifactId>esper_examples</artifactId>
-	<version>4.0.0</version>
+	<version>4.1.0</version>
 	<packaging>pom</packaging>
 	<description>Esper CEP ESP engine for Java examples</description>
 	<repositories>
@@ -45,7 +45,7 @@
 			<dependency>
 				<groupId>com.espertech</groupId>
 				<artifactId>esper</artifactId>
-				<version>4.0.0</version>
+				<version>4.1.0</version>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>

@@ -1,9 +1,9 @@
 <project>
-	<modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.1.0</modelVersion>
 	<name>Esper</name>
 	<groupId>com.espertech</groupId>
 	<artifactId>esper</artifactId>
-	<version>4.0.0</version>
+	<version>4.1.0</version>
 	<packaging>jar</packaging>
 	<inceptionYear>2005</inceptionYear>
 	<url>http://esper.codehaus.org</url>
