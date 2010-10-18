@@ -1,0 +1,48 @@
+package com.espertech.esper.core.deploy;
+
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.List;
+
+public class TestEPLModuleUtil extends TestCase
+{
+    private static Log log = LogFactory.getLog(TestEPLModuleUtil.class);
+
+    public void testParse() {
+
+        Object[][] testdata = new Object[][] {
+                {"/* Comment One */ select * from A;\n" +
+                 "/* Comment Two */  select   *  from  B ;\n",
+                 new EPLModuleParseItem[] {
+                    new EPLModuleParseItem("/* Comment One */ select * from A", 1, 0, 33),
+                    new EPLModuleParseItem("/* Comment Two */  select   *  from  B", 2, 34, 73)},
+                },
+                
+                {"select /* Comment One\n\r; */ *, ';', \";\" from A order by x;; ;\n\n \n;\n" +
+                 "/* Comment Two */  select   *  from  B ;\n",
+                new EPLModuleParseItem[] {
+                   new EPLModuleParseItem("select /* Comment One\n\r; */ *, ';', \";\" from A order by x", 1, 0, 57),
+                   new EPLModuleParseItem("/* Comment Two */  select   *  from  B", 6, 63, 102)},
+                }
+        };
+
+        for (int i = 0; i < testdata.length; i++) {
+            String input = (String) testdata[i][0];
+            EPLModuleParseItem[] expected = (EPLModuleParseItem[]) testdata[i][1];
+            List<EPLModuleParseItem> result = EPLModuleUtil.parse(input);
+
+            assertEquals(expected.length, result.size());
+            for (int j = 0; j < expected.length; j++) {
+                String message = "failed at item " + i + " and segment " + j;
+                assertEquals(message, expected[j].getExpression(), result.get(j).getExpression());
+                assertEquals(message, expected[j].getLineNum(), result.get(j).getLineNum());
+                assertEquals(message, expected[j].getStartChar(), result.get(j).getStartChar());
+                assertEquals(message, expected[j].getEndChar(), result.get(j).getEndChar());
+            }
+        }
+    }
+}
