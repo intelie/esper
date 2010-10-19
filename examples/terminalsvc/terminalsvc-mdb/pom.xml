@@ -1,5 +1,5 @@
 <project>
-	<modelVersion>4.1.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 	<name>Esper Examples TerminalSvc - MDB</name>
 	<artifactId>example-terminalsvc-mdb</artifactId>
 	<groupId>com.espertech</groupId>

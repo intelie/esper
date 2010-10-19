@@ -1,5 +1,5 @@
 <project>
-	<modelVersion>4.1.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 	<name>EsperIO-HTTP</name>
 	<groupId>com.espertech</groupId>
 	<artifactId>esperio-http</artifactId>

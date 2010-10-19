@@ -1,5 +1,5 @@
 <project>
-	<modelVersion>4.1.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.espertech</groupId>
 		<artifactId>esper_examples</artifactId>
