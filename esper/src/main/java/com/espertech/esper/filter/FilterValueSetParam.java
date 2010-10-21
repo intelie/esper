@@ -12,7 +12,7 @@ package com.espertech.esper.filter;
  * This interface represents one filter parameter in an {@link FilterValueSet} filter specification.
  * <p> Each filtering parameter has an property name and operator type, and a value to filter for.
  */
-public interface FilterValueSetParam
+public interface FilterValueSetParam implements Serializable
 {
     /**
      * Returns the property name for the filter parameter.
