@@ -13,6 +13,8 @@ package com.espertech.esper.client.time;
  */
 public final class TimerControlEvent extends TimerEvent
 {
+    private static final long serialVersionUID = -5204351618041414666L;
+    
     /**
      * Constants controlling the clocking.
      */

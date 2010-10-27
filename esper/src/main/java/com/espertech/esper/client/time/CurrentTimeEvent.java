@@ -17,6 +17,8 @@ import java.util.Date;
  */
 public final class CurrentTimeEvent extends TimerEvent
 {
+    private static final long serialVersionUID = -145001725701558269L;
+    
     private final long timeInMillis;
 
     /**

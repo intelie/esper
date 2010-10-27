@@ -8,9 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.client.time;
 
+import java.io.Serializable;
+
 /**
  * Abstract base class marker for events that control time keeping by an event stream processor instance.
  */
-public abstract class TimerEvent
+public abstract class TimerEvent implements Serializable
 {
 }
