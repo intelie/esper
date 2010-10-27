@@ -1,11 +1,9 @@
 package com.espertech.esper.regression.epl;
 
-import com.espertech.esper.support.bean.SupportBean_A;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 
@@ -76,23 +74,25 @@ public class TestNamedWindowUpdate extends TestCase
         ArrayAssertionUtil.assertPropsPerRow(events, "string,intPrimitive".split(","), new Object[][] {{"E1", 2}, {"E2", 300}});
     }
 
-    public void testSubquery()
+    public void testSubclass()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select * from " + SupportBeanAbstractSub.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
         // create insert into
-        String stmtTextInsertOne = "insert into MyWindow select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
+        String stmtTextInsertOne = "insert into MyWindow select * from " + SupportBeanAbstractSub.class.getName();
         epService.getEPAdministrator().createEPL(stmtTextInsertOne);
 
-        // create consumer
-        String stmtTextSelectOne = "select irstream * from MyWindow";
-        epService.getEPAdministrator().createEPL(stmtTextSelectOne);
-
         // create update
-        String stmtTextUpdate = "on " + SupportMarketDataBean.class + " update MyWindow set a='new' where a='old'";
-        epService.getEPAdministrator().createEPL(stmtTextSelectOne);
+        String stmtTextUpdate = "on " + SupportBean.class.getName() + " update MyWindow set v1=string, v2=string";
+        epService.getEPAdministrator().createEPL(stmtTextUpdate);
+        
+        epService.getEPRuntime().sendEvent(new SupportBeanAbstractSub("value2"));
+        listenerWindow.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listenerWindow.getLastNewData()[0], new String[] {"v1", "v2"}, new Object[] {"E1", "E1"});
     }
 }
