@@ -1,5 +1,6 @@
 package com.espertech.esper.regression.client;
 
+import com.espertech.esper.collection.Pair;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.collection.UniformPair;
@@ -40,6 +41,7 @@ public class TestSubscriberBind extends TestCase
         EventBean event = listener.assertOneGetNewAndReset();
         assertEquals("E1", event.get("string"));
         assertEquals(1, event.get("intPrimitive"));
+        assertTrue(event.getUnderlying() instanceof Pair);
 
         for (String property : stmt.getEventType().getPropertyNames())
         {
