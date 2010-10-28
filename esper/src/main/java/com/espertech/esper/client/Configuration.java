@@ -635,6 +635,10 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         throw new UnsupportedOperationException("Map type update is only available in runtime configuration");
     }
 
+    public void replaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config) throws ConfigurationException {
+        throw new UnsupportedOperationException("XML type update is only available in runtime configuration");
+    }
+
     public Set<String> getEventTypeNameUsedBy(String name)
     {
         throw new UnsupportedOperationException("Get event type by name is only available in runtime configuration");

@@ -391,4 +391,23 @@ public interface ConfigurationOperations
      * @throws ConfigurationException thrown to indicate that the remove operation failed
      */
     public boolean removeVariable(String name, boolean force) throws ConfigurationException;
+
+    /**
+     * Rebuild the XML event type based on changed type informaton, please read below for limitations.
+     * <p>
+     * Your application must ensure that the rebuild type information is compatible
+     * with existing EPL statements and existing events.
+     * <p>
+     * The method can be used to change XPath expressions of existing attributes and to reload the schema and to add attributes.
+     * <p>
+     * It is not recommended to remove attributes, change attribute type or change the root element name or namespace,
+     * or to change type configuration other then as above.
+     * <p>
+     * If an existing EPL statement exists that refers to the event type then changes to the event type
+     * do not become visible for those existing statements.
+     * @param xmlEventTypeName the name of the XML event type
+     * @param config the new type configuration
+     * @throws ConfigurationException thrown when the type information change failed
+     */
+    public void replaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config) throws ConfigurationException;
 }
