@@ -65,7 +65,6 @@ public class TestSchemaXMLEventReplace extends TestCase
             new EventPropertyDescriptor("customProp", Double.class, null, false, false, false, false, false),
             new EventPropertyDescriptor("countProp", Double.class, null, false, false, false, false, false),
            }, type.getPropertyDescriptors());
-
     }
 
     private static final Log log = LogFactory.getLog(TestSchemaXMLEventReplace.class);
