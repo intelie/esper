@@ -135,7 +135,7 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         tryInvalid("Error starting statement: Event type named 'xmltype' has already been declared with differing column name or type information: Type by name 'xmltype' is not a compatible type [insert into xmltype select 1 from SupportBean]", text);
 
         text = "insert into MyMap(dummy) select 1 from SupportBean";
-        tryInvalid("Error starting statement: Column 'dummy' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into MyMap(dummy) select 1 from SupportBean]", text);
+        tryInvalid("Error starting statement: Event type named 'MyMap' has already been declared with differing column name or type information: Type by name 'MyMap' expects 10 properties but receives 1 properties [insert into MyMap(dummy) select 1 from SupportBean]", text);
 
         // setter throws exception
         String stmtTextOne = "insert into SupportBeanErrorTestingTwo(value) select 'E1' from MyMap";
