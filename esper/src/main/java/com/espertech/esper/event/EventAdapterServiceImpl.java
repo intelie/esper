@@ -511,26 +511,43 @@ public class EventAdapterServiceImpl implements EventAdapterService
      */
     public synchronized EventType addXMLDOMType(String eventTypeName, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel)
     {
+        return addXMLDOMType(eventTypeName, configurationEventTypeXMLDOM, optionalSchemaModel, false);
+    }
+
+    public EventType replaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel) {
+        return addXMLDOMType(xmlEventTypeName, config, schemaModel, true);
+    }
+
+    /**
+     * Add a configured XML DOM event type.
+     * @param eventTypeName is the name name of the event type
+     * @param configurationEventTypeXMLDOM configures the event type schema and namespace and XPath
+     * property information.
+     */
+    private synchronized EventType addXMLDOMType(String eventTypeName, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel, boolean allowOverrideExisting)
+    {
         if (configurationEventTypeXMLDOM.getRootElementName() == null)
         {
             throw new EventAdapterException("Required root element name has not been supplied");
         }
 
-        EventType existingType = nameToTypeMap.get(eventTypeName);
-        if (existingType != null)
-        {
-            String message = "Event type named '" + eventTypeName + "' has already been declared with differing column name or type information";
-            if (!(existingType instanceof BaseXMLEventType))
+        if (!allowOverrideExisting) {
+            EventType existingType = nameToTypeMap.get(eventTypeName);
+            if (existingType != null)
             {
-                throw new EventAdapterException(message);
-            }
-            ConfigurationEventTypeXMLDOM config = ((BaseXMLEventType) existingType).getConfigurationEventTypeXMLDOM();
-            if (!config.equals(configurationEventTypeXMLDOM))
-            {
-                throw new EventAdapterException(message);
-            }
+                String message = "Event type named '" + eventTypeName + "' has already been declared with differing column name or type information";
+                if (!(existingType instanceof BaseXMLEventType))
+                {
+                    throw new EventAdapterException(message);
+                }
+                ConfigurationEventTypeXMLDOM config = ((BaseXMLEventType) existingType).getConfigurationEventTypeXMLDOM();
+                if (!config.equals(configurationEventTypeXMLDOM))
+                {
+                    throw new EventAdapterException(message);
+                }
 
-            return existingType;
+                return existingType;
+            }
         }
 
         EventTypeMetadata metadata = EventTypeMetadata.createXMLType(eventTypeName, configurationEventTypeXMLDOM.getSchemaResource() == null);

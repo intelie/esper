@@ -63,6 +63,9 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
 
     private String xPathFunctionResolver;
     private String xPathVariableResolver;
+
+    private boolean updateStoredType;    // For use with EsperHA to enable new type configuration to overwrite an existing type configuration
+
     private static final long serialVersionUID = -7488596902855838072L;
 
     /**
@@ -383,6 +386,30 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     public void setXPathVariableResolver(String xPathVariableResolver)
     {
         this.xPathVariableResolver = xPathVariableResolver;
+    }
+
+    /**
+     * Indicator for use with EsperHA, false by default to indicate that stored type information takes
+     * precedence over configuration type information provided at engine initialization time. Set to true to indicate that
+     * configuration type information takes precedence over stored type information.
+     * @return indicator is false (the default) to indicate that stored type information takes precedence over configuration type information
+     */
+    public boolean isUpdateStoredType() {
+        return updateStoredType;
+    }
+
+    /**
+     * Indicator for use with EsperHA, false by default to indicate that stored type information takes
+     * precedence over configuration type information provided at engine initialization time. Set to true to indicate that
+     * configuration type information takes precedence over stored type information.
+     * <p>
+     * When setting this flag to true care should be taken about the compatibility of the supplied XML type
+     * configuration information and the existing EPL statements and stored events, if any. For more information
+     * please consult {@link ConfigurationOperations#replaceXMLEventType}.
+     * @param updateStoredType set to false (the default) to indicate that stored type information takes precedence over configuration type information
+     */
+    public void setUpdateStoredType(boolean updateStoredType) {
+        this.updateStoredType = updateStoredType;
     }
 
     /**

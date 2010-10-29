@@ -322,6 +322,30 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
+    public void replaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config) throws ConfigurationException {
+        SchemaModel schemaModel = null;
+        if (config.getSchemaResource() != null)
+        {
+            try
+            {
+                schemaModel = XSDSchemaMapper.loadAndMap(config.getSchemaResource(), 2);
+            }
+            catch (Exception ex)
+            {
+                throw new ConfigurationException(ex.getMessage(), ex);
+            }
+        }
+
+        try
+        {
+            eventAdapterService.replaceXMLEventType(xmlEventTypeName, config, schemaModel);
+        }
+        catch (EventAdapterException e)
+        {
+            throw new ConfigurationException("Error updating Map event type: " + e.getMessage(), e);
+        }
+    }
+
     public void setMetricsReportingInterval(String stmtGroupName, long newInterval)
     {
         try
