@@ -9,6 +9,9 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.client.EventBean;
 import junit.framework.TestCase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TestNamedWindowExecuteQuery extends TestCase
 {
     private EPServiceProvider epService;
@@ -27,6 +30,74 @@ public class TestNamedWindowExecuteQuery extends TestCase
         epService.getEPAdministrator().createEPL(namedWin);
         String insert = "insert into MyWindow select * from SupportBean";
         epService.getEPAdministrator().createEPL(insert);
+    }
+
+    public void testIt() {
+            
+    }
+
+    public void testNamedWindowJoinWhere() throws Exception
+    {
+        epService.getEPAdministrator().createEPL("create window Win1.win:keepall() (key String, keyJoin String)");
+        epService.getEPAdministrator().createEPL("create window Win2.win:keepall() (keyJoin String, value double)");
+        String queryAgg = "select w1.key, sum(value) from Win1 w1, Win2 w2 WHERE w1.keyJoin = w2.keyJoin GROUP BY w1.key order by w1.key";
+        String[] fieldsAgg = "w1.key,sum(value)".split(",");
+        String queryNoagg = "select w1.key, w2.value from Win1 w1, Win2 w2 where w1.keyJoin = w2.keyJoin and value = 1 order by w1.key";
+        String[] fieldsNoagg = "w1.key,w2.value".split(",");
+
+        EventBean[] result = epService.getEPRuntime().executeQuery(queryAgg).getArray();
+        assertEquals(0, result.length);
+        result = epService.getEPRuntime().executeQuery(queryNoagg).getArray();
+        assertNull(result);
+
+        sendWin1Event("key1", "keyJoin1");
+
+        result = epService.getEPRuntime().executeQuery(queryAgg).getArray();
+        assertEquals(0, result.length);
+        result = epService.getEPRuntime().executeQuery(queryNoagg).getArray();
+        assertNull(result);
+
+        sendWin2Event("keyJoin1", 1d);
+
+        result = epService.getEPRuntime().executeQuery(queryAgg).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(result, fieldsAgg, new Object[][] {{"key1", 1d}});
+        result = epService.getEPRuntime().executeQuery(queryNoagg).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(result, fieldsNoagg, new Object[][] {{"key1", 1d}});
+
+        sendWin2Event("keyJoin2", 2d);
+
+        result = epService.getEPRuntime().executeQuery(queryAgg).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(result, fieldsAgg, new Object[][] {{"key1", 1d}});
+        result = epService.getEPRuntime().executeQuery(queryNoagg).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(result, fieldsNoagg, new Object[][] {{"key1", 1d}});
+
+        sendWin1Event("key2", "keyJoin2");
+
+        result = epService.getEPRuntime().executeQuery(queryAgg).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(result, fieldsAgg, new Object[][] {{"key1", 1d}, {"key2", 2d}});
+        result = epService.getEPRuntime().executeQuery(queryNoagg).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(result, fieldsNoagg, new Object[][] {{"key1", 1d}});
+
+        sendWin2Event("keyJoin2", 1d);
+
+        result = epService.getEPRuntime().executeQuery(queryAgg).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(result, fieldsAgg, new Object[][] {{"key1", 1d}, {"key2", 3d}});
+        result = epService.getEPRuntime().executeQuery(queryNoagg).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(result, fieldsNoagg, new Object[][] {{"key1", 1d}, {"key2", 1d}});
+    }
+
+    private void sendWin1Event(String key, String keyJoin) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("key", key);
+        event.put("keyJoin", keyJoin);
+        epService.getEPRuntime().sendEvent(event, "Win1");
+    }
+
+    private void sendWin2Event(String keyJoin, double value) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("keyJoin", keyJoin);
+        event.put("value", value);
+        epService.getEPRuntime().sendEvent(event, "Win2");
     }
 
     public void testExecuteSimple() throws Exception

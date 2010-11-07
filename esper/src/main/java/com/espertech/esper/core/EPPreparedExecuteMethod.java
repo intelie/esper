@@ -19,6 +19,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.join.JoinSetComposer;
+import com.espertech.esper.epl.join.JoinSetFilter;
 import com.espertech.esper.epl.named.NamedWindowProcessor;
 import com.espertech.esper.epl.spec.NamedWindowConsumerStreamSpec;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
@@ -47,6 +48,7 @@ public class EPPreparedExecuteMethod
     private final ResultSetProcessor resultSetProcessor;
     private final NamedWindowProcessor[] processors;
     private final JoinSetComposer joinComposer;
+    private final JoinSetFilter joinFilter;
     private final ExprEvaluatorContext exprEvaluatorContext;
     private EventBeanReader eventBeanReader;
     private final FilterSpecCompiled[] filters;
@@ -141,10 +143,17 @@ public class EPPreparedExecuteMethod
                 viewablePerStream[i] = processors[i].getTailView();
             }
             joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult, statementContext);
+            if (statementSpec.getFilterRootNode() != null) {
+                joinFilter = new JoinSetFilter(statementSpec.getFilterRootNode().getExprEvaluator());
+            }
+            else {
+                joinFilter = null;
+            }
         }
         else
         {
             joinComposer = null;
+            joinFilter = null;
         }
     }
 
@@ -199,6 +208,9 @@ public class EPPreparedExecuteMethod
                 newDataPerStream[i] = snapshots[i].toArray(new EventBean[snapshots[i].size()]);
             }
             UniformPair<Set<MultiKey<EventBean>>> result = joinComposer.join(newDataPerStream, oldDataPerStream, exprEvaluatorContext);
+            if (joinFilter != null) {
+                joinFilter.process(result.getFirst(), null, exprEvaluatorContext);
+            }
             results = resultSetProcessor.processJoinResult(result.getFirst(), null, true);
         }
 

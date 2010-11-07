@@ -131,7 +131,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                 count++;
             }
         }
-        if (!oldEvents.isEmpty())
+        if (oldEvents != null && !oldEvents.isEmpty())
         {
             // apply old data to aggregates
             int count = 0;
@@ -438,7 +438,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
     private MultiKeyUntyped[] generateGroupKeys(Set<MultiKey<EventBean>> resultSet, Map<MultiKeyUntyped, EventBean[]> eventPerKey, boolean isNewData)
     {
-        if (resultSet.isEmpty())
+        if (resultSet == null || resultSet.isEmpty())
         {
             return null;
         }

@@ -19,7 +19,7 @@ import java.util.Iterator;
 public interface EPOnDemandQueryResult
 {
     /**
-     * Returns an array representing query result rows.
+     * Returns an array representing query result rows, may return a null value or empty array to indicate an empty result set.
      * @return result array
      */
     public EventBean[] getArray();
