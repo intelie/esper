@@ -64,6 +64,9 @@ public class MapMaptypedPropertyGetter implements MapEventPropertyGetter
         Object value = get(eventBean);
         if (!(value instanceof Map))
         {
+            if (value instanceof EventBean) {
+                return value;
+            }
             return null;
         }
         Map mapTypedSubEvent = (Map) value;
