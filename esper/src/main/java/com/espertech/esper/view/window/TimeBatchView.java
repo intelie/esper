@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Arrays;
 
+import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,10 +26,6 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.view.BatchingDataWindowView;
-import com.espertech.esper.view.CloneableView;
-import com.espertech.esper.view.View;
-import com.espertech.esper.view.ViewSupport;
 
 /**
  * A data view that aggregates events in a stream and releases them in one batch at every specified time interval.
@@ -45,7 +42,7 @@ import com.espertech.esper.view.ViewSupport;
  * If there are no events in the current and prior batch, the view will not invoke the update method of child views.
  * In that case also, no next callback is scheduled with the scheduling service until the next event arrives.
  */
-public final class TimeBatchView extends ViewSupport implements CloneableView, BatchingDataWindowView
+public final class TimeBatchView extends ViewSupport implements CloneableView, BatchingDataWindowView, StoppableView
 {
     // View parameters
     private final TimeBatchViewFactory timeBatchViewFactory;
@@ -56,6 +53,7 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, B
     private final boolean isStartEager;
     private final ViewUpdatedCollection viewUpdatedCollection;
     private final ScheduleSlot scheduleSlot;
+    private EPStatementHandleCallback handle;
 
     // Current running parameters
     private Long currentReferencePoint;
@@ -311,7 +309,7 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, B
                 TimeBatchView.this.sendBatch();
             }
         };
-        EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
+        handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
         statementContext.getSchedulingService().add(afterMSec, handle, scheduleSlot);
     }
 
@@ -347,6 +345,12 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, B
         }
         return solution;
     }
+
+    public void stop() {
+        if (handle != null) {
+            statementContext.getSchedulingService().remove(handle, scheduleSlot);
+        }
+    }    
 
     private static final Log log = LogFactory.getLog(TimeBatchView.class);
 }

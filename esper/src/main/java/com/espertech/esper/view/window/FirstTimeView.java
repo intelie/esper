@@ -28,12 +28,13 @@ import java.util.LinkedHashSet;
 /**
  *
  */
-public final class FirstTimeView extends ViewSupport implements CloneableView, BatchingDataWindowView
+public final class FirstTimeView extends ViewSupport implements CloneableView, BatchingDataWindowView, StoppableView
 {
     private final FirstTimeViewFactory timeFirstViewFactory;
     private final StatementContext statementContext;
     private final long msecIntervalSize;
     private final ScheduleSlot scheduleSlot;
+    private EPStatementHandleCallback handle;
 
     // Current running parameters
     private LinkedHashSet<EventBean> events = new LinkedHashSet<EventBean>();
@@ -170,8 +171,14 @@ public final class FirstTimeView extends ViewSupport implements CloneableView, B
                 FirstTimeView.this.isClosed = true;
             }
         };
-        EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
+        handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
         statementContext.getSchedulingService().add(afterMSec, handle, scheduleSlot);
+    }
+
+    public void stop() {
+    	if (handle != null) {
+        	statementContext.getSchedulingService().remove(handle, scheduleSlot);
+        }
     }
 
     private static final Log log = LogFactory.getLog(TimeBatchViewRStream.class);

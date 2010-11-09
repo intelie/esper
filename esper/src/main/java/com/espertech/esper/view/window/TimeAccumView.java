@@ -8,10 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.CloneableView;
-import com.espertech.esper.view.View;
-import com.espertech.esper.view.DataWindowView;
+import com.espertech.esper.view.*;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.EPStatementHandleCallback;
@@ -40,7 +37,7 @@ import org.apache.commons.logging.Log;
  * The view is continuous, the insert stream consists of arriving events. The remove stream
  * only posts current window contents when no more events arrive for a given timer interval.
  */
-public final class TimeAccumView extends ViewSupport implements CloneableView, DataWindowView
+public final class TimeAccumView extends ViewSupport implements CloneableView, DataWindowView, StoppableView
 {
     // View parameters
     private final TimeAccumViewFactory factory;
@@ -224,6 +221,12 @@ public final class TimeAccumView extends ViewSupport implements CloneableView, D
     public final String toString()
     {
         return this.getClass().getName() + " msecIntervalSize=" + msecIntervalSize;
+    }
+
+    public void stop() {
+    	if (handle != null) {
+        	statementContext.getSchedulingService().remove(handle, scheduleSlot);
+        }
     }
 
     private static final Log log = LogFactory.getLog(TimeAccumView.class);

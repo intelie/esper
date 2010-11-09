@@ -18,10 +18,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.view.CloneableView;
-import com.espertech.esper.view.DataWindowView;
-import com.espertech.esper.view.View;
-import com.espertech.esper.view.ViewSupport;
+import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,7 +38,7 @@ import java.util.*;
  * The view accepts 2 parameters. The first parameter is the field name to get the event timestamp value from,
  * the second parameter defines the interval size.
  */
-public final class TimeOrderView extends ViewSupport implements DataWindowView, CloneableView
+public final class TimeOrderView extends ViewSupport implements DataWindowView, CloneableView, StoppableView
 {
     private final StatementContext statementContext;
     private final TimeOrderViewFactory timeOrderViewFactory;
@@ -385,6 +382,12 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".expire Scheduled new callback for now plus msec=" + callbackWait);
+        }
+    }
+
+    public void stop() {
+    	if (handle != null) {
+        	statementContext.getSchedulingService().remove(handle, scheduleSlot);
         }
     }
 

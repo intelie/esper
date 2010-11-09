@@ -28,7 +28,7 @@ import java.util.Arrays;
 /**
  * Same as the {@link TimeBatchView}, this view also supports fast-remove from the batch for remove stream events.
  */
-public final class TimeBatchViewRStream extends ViewSupport implements CloneableView, BatchingDataWindowView
+public final class TimeBatchViewRStream extends ViewSupport implements CloneableView, BatchingDataWindowView, StoppableView
 {
     // View parameters
     private final TimeBatchViewFactory timeBatchViewFactory;
@@ -38,6 +38,7 @@ public final class TimeBatchViewRStream extends ViewSupport implements Cloneable
     private final ScheduleSlot scheduleSlot;
     private final boolean isForceOutput;
     private final boolean isStartEager;
+    private EPStatementHandleCallback handle;
 
     // Current running parameters
     private Long currentReferencePoint;
@@ -290,8 +291,14 @@ public final class TimeBatchViewRStream extends ViewSupport implements Cloneable
                 TimeBatchViewRStream.this.sendBatch();
             }
         };
-        EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
+        handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
         statementContext.getSchedulingService().add(afterMSec, handle, scheduleSlot);
+    }
+
+    public void stop() {
+        if (handle != null) {
+            statementContext.getSchedulingService().remove(handle, scheduleSlot);
+        }
     }
 
     private static final Log log = LogFactory.getLog(TimeBatchViewRStream.class);

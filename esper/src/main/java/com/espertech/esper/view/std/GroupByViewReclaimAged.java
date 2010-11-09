@@ -18,6 +18,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.StoppableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
@@ -241,6 +242,9 @@ public final class GroupByViewReclaimAged extends ViewSupport implements Cloneab
             for (View view : entry.getSubviews()) {
                 view.setParent(null);
                 recursiveMergeViewRemove(view);
+                if (view instanceof StoppableView) {
+                    ((StoppableView) view).stop();
+                }
             }
         }
     }
@@ -248,6 +252,9 @@ public final class GroupByViewReclaimAged extends ViewSupport implements Cloneab
     private void recursiveMergeViewRemove(View view)
     {
         for (View child : view.getViews()) {
+            if (child instanceof StoppableView) {
+                ((StoppableView) child).stop();
+            }
             if (child instanceof MergeView) {
                 MergeView mergeView = (MergeView) child;
                 mergeView.removeParentView(view);

@@ -78,7 +78,7 @@ public class GroupByViewFactory implements ViewFactory
                     throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' value '" + hintValueFrequency + "' could not be parsed as a double value");
                 }
             }
-            if (reclaimMaxAge < 100) {
+            if (reclaimMaxAge < 0.100) {
                 log.warn("Reclaim max age parameter is less then 100 milliseconds, are your sure?");
             }
 

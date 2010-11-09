@@ -36,7 +36,7 @@ import java.util.Arrays;
  * <p>
  * The view starts the first interval when the view is created.
  */
-public final class TimeLengthBatchView extends ViewSupport implements CloneableView, BatchingDataWindowView
+public final class TimeLengthBatchView extends ViewSupport implements CloneableView, BatchingDataWindowView, StoppableView
 {
     private static final Log log = LogFactory.getLog(TimeLengthBatchView.class);
 
@@ -306,5 +306,11 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
         };
         handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
         statementContext.getSchedulingService().add(msecIntervalSize, handle, scheduleSlot);
+    }
+
+    public void stop() {
+        if (handle != null) {
+            statementContext.getSchedulingService().remove(handle, scheduleSlot);
+        }
     }
 }

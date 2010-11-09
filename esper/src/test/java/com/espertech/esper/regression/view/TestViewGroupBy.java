@@ -2,6 +2,7 @@ package com.espertech.esper.regression.view;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -40,37 +41,36 @@ public class TestViewGroupBy extends TestCase
         epService.initialize();
     }
 
-    public void testIhg() throws Exception {
-        String module = "create variable integer SUMMARY_OUTPUT_TIME=60;\n" +
-                "create variant schema GuestSummaryData as *;\n" +
-                "\n" +
-                "insert into GuestSummaryData\n" +
-                "select esbEvent.sourceIP as ipAddresses from \n" +
-                "EsbServiceRequestEvent.win:time_length_batch(100, SUMMARY_OUTPUT_TIME) as esbEvent, \n" +
-                "TransactionEvent.win:time_length_batch(100, SUMMARY_OUTPUT_TIME) as txnEvent where\n" +
-                "cast(txnEvent.transactionId, string)=esbEvent.transactionId and\n" +
-                "esbEvent.destination='todo';\n" +
-                "\n" +
-                "insert into SummaryData\n" +
-                "select *\n" +
-                "from GuestSummaryData.win:time_length_batch(100, SUMMARY_OUTPUT_TIME*2);\n" +
-                "\n" +
-                "@Name('DashboardApp-PersistableSummaryData')\n" +
-                "@Description('persist summary data')\n" +
-                "select *\n" +
-                "from SummaryData.win:time_length_batch(90, 2000);";
-        
-        Map<String, Object> defEsb = new HashMap<String, Object>();
-        defEsb.put("sourceIP", "string");
-        defEsb.put("transactionId", "string");
-        defEsb.put("destination", "string");
-        epService.getEPAdministrator().getConfiguration().addEventType("EsbServiceRequestEvent", defEsb);
+    public void testReclaimTimeWindow()
+    {
+        sendTimer(0);
 
-        Map<String, Object> defTxn = new HashMap<String, Object>();
-        defTxn.put("transactionId", "string");
-        epService.getEPAdministrator().getConfiguration().addEventType("TransactionEvent", defTxn);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("@Hint('reclaim_group_aged=30,reclaim_group_freq=5') " +
+                "select longPrimitive, count(*) from SupportBean.std:groupwin(string).win:time(3000000)");
 
-        epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(module, null, null, null);
+        for (int i = 0; i < 10; i++)
+        {
+            SupportBean event = new SupportBean(Integer.toString(i), i);
+            epService.getEPRuntime().sendEvent(event);
+        }
+
+        EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
+        int handleCountBefore = spi.getSchedulingService().getScheduleHandleCount();
+        assertEquals(10, handleCountBefore);
+
+        sendTimer(1000000);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+
+        int handleCountAfter = spi.getSchedulingService().getScheduleHandleCount();
+        assertEquals(1, handleCountAfter);
+    }
+
+    private void sendTimer(long timeInMSec)
+    {
+        CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
+        EPRuntime runtime = epService.getEPRuntime();
+        runtime.sendEvent(event);
     }
 
     public void testReclaimAgedHint() {

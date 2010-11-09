@@ -20,10 +20,7 @@ import com.espertech.esper.schedule.ScheduleAdjustmentCallback;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.view.CloneableView;
-import com.espertech.esper.view.DataWindowView;
-import com.espertech.esper.view.View;
-import com.espertech.esper.view.ViewSupport;
+import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,7 +38,7 @@ import java.util.Iterator;
  * as the system-time-based timeWindow moves on. However child views receive updates containing new data
  * as soon as the new data arrives.
  */
-public final class TimeWindowView extends ViewSupport implements CloneableView, DataWindowView, ScheduleAdjustmentCallback
+public final class TimeWindowView extends ViewSupport implements CloneableView, DataWindowView, ScheduleAdjustmentCallback, StoppableView
 {
     private final TimeWindowViewFactory timeWindowViewFactory;
     private final long millisecondsBeforeExpiry;
@@ -243,6 +240,12 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
     public boolean isEmpty()
     {
         return timeWindow.isEmpty();
+    }
+
+    public void stop() {
+        if (handle != null) {
+            statementContext.getSchedulingService().remove(handle, scheduleSlot);
+        }
     }
 
     private static final Log log = LogFactory.getLog(TimeWindowView.class);
