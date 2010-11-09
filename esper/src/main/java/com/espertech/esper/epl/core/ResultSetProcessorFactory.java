@@ -302,7 +302,7 @@ public class ResultSetProcessorFactory
         // Construct the processor for evaluating the select clause
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(stmtContext.getDynamicReferenceEventTypes());
         SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, statementSpecCompiled.getForClauseSpec(), typeService, stmtContext.getEventAdapterService(), stmtContext.getStatementResultService(), stmtContext.getValueAddEventService(), selectExprEventTypeRegistry, stmtContext.getMethodResolutionService(), stmtContext,
-                stmtContext.getVariableService(), stmtContext.getTimeProvider(), stmtContext.getEngineURI());
+                stmtContext.getVariableService(), stmtContext.getTimeProvider(), stmtContext.getEngineURI(), stmtContext.getStatementId());
 
         // Get a list of event properties being aggregated in the select clause, if any
         Set<Pair<Integer, String>> propertiesGroupBy = getGroupByProperties(groupByNodes);

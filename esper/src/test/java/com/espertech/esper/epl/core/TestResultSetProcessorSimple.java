@@ -26,7 +26,7 @@ public class TestResultSetProcessorSimple extends TestCase
     {
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
 
-        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(SupportSelectExprFactory.makeNoAggregateSelectList(), Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null, null);
+        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(SupportSelectExprFactory.makeNoAggregateSelectList(), Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null, null, null);
         selectExprProcessor = factory.getEvaluator();
         orderByProcessor = null;
 

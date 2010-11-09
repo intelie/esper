@@ -38,8 +38,8 @@ public class PropertyEvaluatorFactory
                                                   MethodResolutionService methodResolutionService,
                                                   final TimeProvider timeProvider,
                                                   VariableService variableService,
-                                                  String engineURI
-                                                  )
+                                                  String engineURI,
+                                                  String statementId)
             throws ExprValidationException
     {
         int length = spec.getAtoms().size();
@@ -185,7 +185,7 @@ public class PropertyEvaluatorFactory
             Arrays.fill(isIStreamOnly, true);
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(whereTypes, whereStreamNames, isIStreamOnly, engineURI, false);
 
-            SelectExprProcessor selectExpr = SelectExprProcessorFactory.getProcessor(cumulativeSelectClause, false, null, null, streamTypeService, eventAdapterService, null, null, null, methodResolutionService, validateContext, variableService, timeProvider,engineURI);
+            SelectExprProcessor selectExpr = SelectExprProcessorFactory.getProcessor(cumulativeSelectClause, false, null, null, streamTypeService, eventAdapterService, null, null, null, methodResolutionService, validateContext, variableService, timeProvider,engineURI,statementId);
             return new PropertyEvaluatorSelect(selectExpr, accumulative);
         }
     }

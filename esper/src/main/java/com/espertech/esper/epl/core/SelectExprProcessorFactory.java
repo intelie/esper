@@ -61,10 +61,11 @@ public class SelectExprProcessorFactory
                                                    ExprEvaluatorContext exprEvaluatorContext,
                                                    VariableService variableService,
                                                    TimeProvider timeProvider,
-                                                   String engineURI)
+                                                   String engineURI,
+                                                   String statementId)
         throws ExprValidationException
     {
-        SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
+        SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext, statementId);
 
         // Handle binding as an optional service
         if (statementResultService != null)
@@ -119,7 +120,8 @@ public class SelectExprProcessorFactory
                                                    ValueAddEventService valueAddEventService,
                                                    SelectExprEventTypeRegistry selectExprEventTypeRegistry,
                                                    MethodResolutionService methodResolutionService,
-                                                   ExprEvaluatorContext exprEvaluatorContext)
+                                                   ExprEvaluatorContext exprEvaluatorContext,
+                                                   String statementId)
         throws ExprValidationException
     {
         // Wildcard not allowed when insert into specifies column order
@@ -153,7 +155,7 @@ public class SelectExprProcessorFactory
         List<SelectClauseExprCompiledSpec> expressionList = getExpressions(selectionList);
         List<SelectClauseStreamCompiledSpec> streamWildcards = getStreamWildcards(selectionList);
 
-        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
+        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext, statementId);
         SelectExprProcessor processor = factory.getEvaluator();
 
         // add reference to the type obtained

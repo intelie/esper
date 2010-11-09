@@ -91,4 +91,31 @@ public class TestVariantStreamAny extends TestCase
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("s1", 100, 1000L, "f1"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"s1", "f1", 1000L});
     }
+
+    public void testAnyTypeStaggered()
+    {
+        // test insert into staggered with map
+        ConfigurationVariantStream configVariantStream = new ConfigurationVariantStream();
+        configVariantStream.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
+        epService.getEPAdministrator().getConfiguration().addVariantStream("VarStream", configVariantStream);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportMarketDataBean", SupportMarketDataBean.class);
+
+        epService.getEPAdministrator().createEPL("insert into MyStream select string, intPrimitive from SupportBean");
+        epService.getEPAdministrator().createEPL("insert into VarStream select string as abc from MyStream");
+        epService.getEPAdministrator().createEPL("@Name('Target') select * from VarStream.win:keepall()");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+
+        EventBean[] arr = ArrayAssertionUtil.iteratorToArray(epService.getEPAdministrator().getStatement("Target").iterator());
+        ArrayAssertionUtil.assertPropsPerRow(arr, new String[] {"abc"}, new Object[][] {{"E1"}});
+
+        epService.getEPAdministrator().createEPL("insert into MyStream2 select feed from SupportMarketDataBean");
+        epService.getEPAdministrator().createEPL("insert into VarStream select feed as abc from MyStream2");
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("IBM", 1, 1L, "E2"));
+
+        arr = ArrayAssertionUtil.iteratorToArray(epService.getEPAdministrator().getStatement("Target").iterator());
+        ArrayAssertionUtil.assertPropsPerRow(arr, new String[] {"abc"}, new Object[][] {{"E1"}, {"E2"}});
+    }
 }

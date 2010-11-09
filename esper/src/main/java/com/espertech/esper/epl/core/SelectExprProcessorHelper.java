@@ -48,6 +48,7 @@ public class SelectExprProcessorHelper
     private final SelectExprEventTypeRegistry selectExprEventTypeRegistry;
     private final MethodResolutionService methodResolutionService;
     private final ExprEvaluatorContext exprEvaluatorContext;
+    private final String statementId;
 
     /**
      * Ctor.
@@ -71,7 +72,8 @@ public class SelectExprProcessorHelper
                                    ValueAddEventService valueAddEventService,
                                    SelectExprEventTypeRegistry selectExprEventTypeRegistry,
                                    MethodResolutionService methodResolutionService,
-                                   ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+                                   ExprEvaluatorContext exprEvaluatorContext,
+                                   String statementId) throws ExprValidationException
     {
         this.selectionList = selectionList;
         this.selectedStreams = selectedStreams;
@@ -83,6 +85,7 @@ public class SelectExprProcessorHelper
         this.valueAddEventService = valueAddEventService;
         this.selectExprEventTypeRegistry = selectExprEventTypeRegistry;
         this.methodResolutionService = methodResolutionService;
+        this.statementId = statementId;
     }
 
     public SelectExprProcessor getEvaluator() throws ExprValidationException {
@@ -622,7 +625,14 @@ public class SelectExprProcessorHelper
             {
                 if (vaeProcessor != null)
                 {
-                    resultEventType = eventAdapterService.createAnonymousMapType(selPropertyTypes);
+                    // Use an anonymous type if the target is not a variant stream
+                    if (valueAddEventService.getValueAddProcessor(insertIntoDesc.getEventTypeName()) == null) {
+                        resultEventType = eventAdapterService.createAnonymousMapType(selPropertyTypes);
+                    }
+                    else {
+                        String statementName = "stmt_" + statementId + "_insert";
+                        resultEventType = eventAdapterService.addNestableMapType(statementName, selPropertyTypes, null, false, false, false, false, true);
+                    }
                 }
                 else
                 {
