@@ -3,6 +3,7 @@ package com.espertech.esper.view.internal;
 import com.espertech.esper.collection.RefCountedSet;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.view.StoppableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
 import com.espertech.esper.view.CloneableView;
@@ -20,7 +21,7 @@ import java.util.List;
  * The view is parameterized by two or more data windows. From an external viewpoint, the
  * view retains all events that is in any of the data windows (a union).
  */
-public class UnionView extends ViewSupport implements LastPostObserver, CloneableView
+public class UnionView extends ViewSupport implements LastPostObserver, CloneableView, StoppableView
 {
     private static final Log log = LogFactory.getLog(UnionView.class);
 
@@ -224,4 +225,13 @@ public class UnionView extends ViewSupport implements LastPostObserver, Cloneabl
             updateChildren(null, removed);
         }
     }
+
+    @Override
+    public void stop() {
+        for (View view : views) {
+            if (view instanceof StoppableView) {
+                ((StoppableView) view).stop();
+            }
+        }
+    }    
 }

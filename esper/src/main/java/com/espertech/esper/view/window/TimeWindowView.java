@@ -246,6 +246,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
         if (handle != null) {
             statementContext.getSchedulingService().remove(handle, scheduleSlot);
         }
+        statementContext.getScheduleAdjustmentService().removeCallback(this);
     }
 
     private static final Log log = LogFactory.getLog(TimeWindowView.class);

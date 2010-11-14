@@ -1,5 +1,7 @@
 package com.espertech.esper.schedule;
 
+import com.espertech.esper.view.window.TimeWindowView;
+
 import java.util.Set;
 import java.util.HashSet;
 
@@ -29,5 +31,9 @@ public class ScheduleAdjustmentService
         {
             callback.adjust(delta);
         }
+    }
+
+    public void removeCallback(TimeWindowView callback) {
+        callbacks.remove(callback);
     }
 }

@@ -5,6 +5,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.RefCountedSet;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.StoppableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
@@ -22,7 +23,7 @@ import java.util.List;
  * The view is parameterized by two or more data windows. From an external viewpoint, the
  * view retains all events that is in any of the data windows (a union).
  */
-public class UnionAsymetricView extends ViewSupport implements LastPostObserver, CloneableView
+public class UnionAsymetricView extends ViewSupport implements LastPostObserver, CloneableView, StoppableView
 {
     private static final Log log = LogFactory.getLog(UnionAsymetricView.class);
 
@@ -300,4 +301,13 @@ public class UnionAsymetricView extends ViewSupport implements LastPostObserver,
             updateChildren(null, removed);
         }
     }
+
+    @Override
+    public void stop() {
+        for (View view : views) {
+            if (view instanceof StoppableView) {
+                ((StoppableView) view).stop();
+            }
+        }
+    }    
 }

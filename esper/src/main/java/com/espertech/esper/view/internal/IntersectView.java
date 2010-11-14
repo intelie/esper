@@ -4,6 +4,7 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.StoppableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
@@ -18,7 +19,7 @@ import java.util.*;
  * view retains all events that is in all of the data windows at the same time (an intersection)
  * and removes all events that leave any of the data windows.
  */
-public class IntersectView extends ViewSupport implements LastPostObserver, CloneableView
+public class IntersectView extends ViewSupport implements LastPostObserver, CloneableView, StoppableView
 {
     private static final Log log = LogFactory.getLog(IntersectView.class);
 
@@ -185,5 +186,14 @@ public class IntersectView extends ViewSupport implements LastPostObserver, Clon
         }
 
         updateChildren(null, oldEvents);
+    }
+
+    @Override
+    public void stop() {
+        for (View view : views) {
+            if (view instanceof StoppableView) {
+                ((StoppableView) view).stop();
+            }
+        }
     }
 }
