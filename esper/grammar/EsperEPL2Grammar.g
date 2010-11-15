@@ -120,6 +120,9 @@ tokens
 	AFTER='after';	
 	FOR='for';	
 	WHILE='while';	
+	USING='using';
+	MERGE='merge';
+	MATCHED='matched';
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -254,6 +257,8 @@ tokens
 	CREATE_SCHEMA_EXPR_QUAL;
 	CREATE_SCHEMA_EXPR_INH;
 	VARIANT_LIST;
+	MERGE_UPD;
+	MERGE_INS;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -499,6 +504,8 @@ tokens
 	parserTokenParaphases.put(AFTER, "'after'");
 	parserTokenParaphases.put(FOR, "'for'");
 	parserTokenParaphases.put(WHILE, "'while'");
+	parserTokenParaphases.put(MERGE, "'merge'");
+	parserTokenParaphases.put(MATCHED, "'matched'");
 
 	parserKeywordSet = new java.util.TreeSet<String>(parserTokenParaphases.values());
     }
@@ -613,7 +620,8 @@ eplExpression
 	|	createVariableExpr
 	|	createSchemaExpr
 	|	onExpr
-	|	updateExpr) forExpr?
+	|	updateExpr
+	|	mergeExpr) forExpr?
 	;
 	
 selectExpr
@@ -647,6 +655,26 @@ updateExpr
 		-> ^(UPDATE_EXPR classIdentifier $i? onSetAssignment+ whereClause?)
 	;
 
+mergeExpr
+	:	MERGE INTO IDENT (AS i=IDENT | i=IDENT)?
+		USING onStreamExpr
+		ON expression
+		(mergeMatched | mergeUnmatched)+
+		-> ^(MERGE IDENT $i? onStreamExpr mergeMatched* mergeUnmatched* ^(INNERJOIN_EXPR expression))
+	;
+	
+mergeMatched
+	:	WHEN MATCHED THEN
+		UPDATE SET onSetAssignment (COMMA onSetAssignment)* 
+		-> ^(MERGE_UPD onSetAssignment+)
+	;
+
+mergeUnmatched
+	:	WHEN NOT_EXPR MATCHED THEN
+		INSERT (LPAREN columnList RPAREN)? SELECT selectionList
+		-> ^(MERGE_INS columnList? selectionList)
+	;	
+	
 onSelectExpr	
 @init  { paraphrases.push("on-select clause"); }
 @after { paraphrases.pop(); }
@@ -1637,6 +1665,8 @@ keywordAllowedIdent returns [String result]
 		|FIRST { $result = "first"; }
 		|LAST { $result = "last"; }
 		|WHILE { $result = "while"; }
+		|MERGE { $result = "merge"; }
+		|MATCHED { $result = "matched"; }
 		|UNIDIRECTIONAL { $result = "unidirectional"; }
 		|RETAINUNION { $result = "retain-union"; }
 		|RETAININTERSECTION { $result = "retain-intersection"; }

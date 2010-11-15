@@ -77,7 +77,7 @@ startEPLExpressionRule
 	;
 
 eplExpressionRule
-	:	(selectExpr | createWindowExpr | createIndexExpr | createVariableExpr | createSchemaExpr | onExpr | updateExpr) forExpr?		 
+	:	(selectExpr | createWindowExpr | createIndexExpr | createVariableExpr | createSchemaExpr | onExpr | updateExpr | mergeExpr) forExpr?		 
 	;
 
 onExpr 
@@ -88,6 +88,18 @@ onExpr
 	
 onStreamExpr
 	:	^(s=ON_STREAM (eventFilterExpr | patternInclusionExpression) IDENT? { leaveNode($s); })
+	;
+
+mergeExpr
+	:	^(u=MERGE IDENT IDENT? onStreamExpr mergeMatched* mergeUnmatched* ^(INNERJOIN_EXPR valueExpr) { leaveNode($u); })
+	;
+
+mergeMatched
+	:	^(m=MERGE_UPD onSetAssignment+ { leaveNode($m); })
+	;
+
+mergeUnmatched
+	:	^(um=MERGE_INS exprCol? selectionList { leaveNode($um); })
 	;
 	
 updateExpr

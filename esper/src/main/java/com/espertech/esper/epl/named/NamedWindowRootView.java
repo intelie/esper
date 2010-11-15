@@ -16,6 +16,7 @@ import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.core.ResultSetProcessor;
+import com.espertech.esper.epl.core.SelectExprEventTypeRegistry;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.plan.FilterExprAnalyzer;
@@ -27,6 +28,7 @@ import com.espertech.esper.epl.lookup.IndexedTableLookupStrategyCoercing;
 import com.espertech.esper.epl.lookup.JoinedPropDesc;
 import com.espertech.esper.epl.lookup.TableLookupStrategy;
 import com.espertech.esper.epl.spec.OnTriggerDesc;
+import com.espertech.esper.epl.spec.OnTriggerMergeDesc;
 import com.espertech.esper.epl.spec.OnTriggerType;
 import com.espertech.esper.epl.spec.OnTriggerWindowUpdateDesc;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
@@ -217,6 +219,11 @@ public class NamedWindowRootView extends ViewSupport
         {
             OnTriggerWindowUpdateDesc desc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
             return new NamedWindowOnUpdateView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc);
+        }
+        else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_MERGE)
+        {
+            OnTriggerMergeDesc desc = (OnTriggerMergeDesc) onTriggerDesc;
+            return new NamedWindowOnMergeView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc, filterEventType);
         }
         else
         {

@@ -51,6 +51,7 @@ import com.espertech.esper.rowregex.EventRowRegexNFAViewFactory;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.util.StopCallback;
+import com.espertech.esper.util.UuidGenerator;
 import com.espertech.esper.view.*;
 import com.espertech.esper.view.internal.BufferView;
 import com.espertech.esper.view.internal.RouteResultView;
@@ -299,7 +300,6 @@ public class EPStatementStartMethod
             EventType namedWindowType = processor.getNamedWindowType();
             statementContext.getDynamicReferenceEventTypes().add(onTriggerDesc.getWindowName());
 
-
             String namedWindowName = onTriggerDesc.getOptionalAsName();
             if (namedWindowName == null)
             {
@@ -325,6 +325,61 @@ public class EPStatementStartMethod
                     ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
                     assignment.setExpression(validated);
                     validateNoAggregations(validated, "Aggregation functions may not be used within an on-update-clause");
+                }
+            }
+            if (onTriggerDesc instanceof OnTriggerMergeDesc) {
+                OnTriggerMergeDesc mergeDesc = (OnTriggerMergeDesc) onTriggerDesc;
+                if (mergeDesc.getUpdate() != null) {
+                    for (OnTriggerSetAssignment assignment : mergeDesc.getUpdate().getAssignments())
+                    {
+                        ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+                        assignment.setExpression(validated);
+                        validateNoAggregations(validated, "Aggregation functions may not be used within an merge-clause");
+                    }
+                }
+                if (mergeDesc.getInsert() != null) {
+                    List<SelectClauseElementCompiled> compiledSelect = new ArrayList<SelectClauseElementCompiled>();
+                    StreamTypeService streamTypeService = new StreamTypeServiceImpl(streamEventType, streamSpec.getOptionalStreamName(), true, statementContext.getEngineURI());
+                    for (SelectClauseElementRaw raw : mergeDesc.getInsert().getSelectClause())
+                    {
+                        if (raw instanceof SelectClauseStreamRawSpec)
+                        {
+                            SelectClauseStreamRawSpec rawStreamSpec = (SelectClauseStreamRawSpec) raw;
+                            if (rawStreamSpec.getStreamName().equals(streamSpec.getOptionalStreamName()))
+                            {
+                                throw new ExprValidationException("Stream by name '" + rawStreamSpec.getStreamName() + "' was not found");
+                            }
+                            SelectClauseStreamCompiledSpec streamSelectSpec = new SelectClauseStreamCompiledSpec(rawStreamSpec.getStreamName(), rawStreamSpec.getOptionalAsName());
+                            streamSelectSpec.setStreamNumber(1);
+                            compiledSelect.add(streamSelectSpec);
+                        }
+                        else if (raw instanceof SelectClauseExprRawSpec)
+                        {
+                            SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
+                            ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
+                            String resultName = exprSpec.getOptionalAsName();
+                            if (resultName == null)
+                            {
+                                resultName = exprCompiled.toExpressionString();
+                            }
+                            compiledSelect.add(new SelectClauseExprCompiledSpec(exprCompiled, resultName));
+
+                            String isMinimal = ExprNodeUtility.isMinimalExpression(exprCompiled);
+                            if (isMinimal != null)
+                            {
+                                throw new ExprValidationException("Expression in a merge-selection may not utilize " + isMinimal);
+                            }
+                        }
+                        else if (raw instanceof SelectClauseElementWildcard)
+                        {
+                            compiledSelect.add(new SelectClauseElementWildcard());
+                        }
+                        else
+                        {
+                            throw new IllegalStateException("Unknown select clause item:" + raw);
+                        }
+                    }
+                    mergeDesc.getInsert().setSelectClauseCompiled(compiledSelect);
                 }
             }
 

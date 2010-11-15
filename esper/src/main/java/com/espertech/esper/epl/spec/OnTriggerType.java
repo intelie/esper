@@ -36,5 +36,10 @@ public enum OnTriggerType
     /**
      * For on-update triggers that update an event in a named window when a triggering event arrives.
      */
-    ON_UPDATE    
+    ON_UPDATE,
+
+    /**
+     * For on-merge triggers that insert/update an event in a named window when a triggering event arrives.
+     */
+    ON_MERGE
 }

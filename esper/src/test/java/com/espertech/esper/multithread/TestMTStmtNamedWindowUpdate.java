@@ -46,7 +46,7 @@ public class TestMTStmtNamedWindowUpdate extends TestCase
         engine.initialize();
 
         // setup statements
-        engine.getEPAdministrator().createEPL("@RowLevelLocking create window MyWindow.std:unique(string, intPrimitive) as select * from SupportBean");
+        engine.getEPAdministrator().createEPL("create window MyWindow.std:unique(string, intPrimitive) as select * from SupportBean");
         engine.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean(boolPrimitive = true)");
         engine.getEPAdministrator().createEPL("on SupportBean(boolPrimitive = false) sb " +
                 "update MyWindow win set intBoxed = win.intBoxed + 1, doublePrimitive = win.doublePrimitive + sb.doublePrimitive" +
