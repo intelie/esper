@@ -256,6 +256,10 @@ public class SelectClause implements Serializable
         this.selectList = selectList;
     }
 
+    public void addElements(List<SelectClauseElement> selectClauseElements) {
+        selectList.addAll(selectClauseElements);
+    }
+
     /**
      * Renders the clause in textual representation.
      * @param writer to output to

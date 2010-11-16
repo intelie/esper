@@ -231,6 +231,7 @@ tokens
 	ON_DELETE_EXPR;
 	ON_SELECT_EXPR;
 	ON_UPDATE_EXPR;
+	ON_MERGE_EXPR;
 	ON_SELECT_INSERT_EXPR;
 	ON_SELECT_INSERT_OUTPUT;
 	ON_EXPR_FROM;
@@ -620,8 +621,7 @@ eplExpression
 	|	createVariableExpr
 	|	createSchemaExpr
 	|	onExpr
-	|	updateExpr
-	|	mergeExpr) forExpr?
+	|	updateExpr) forExpr?
 	;
 	
 selectExpr
@@ -639,8 +639,8 @@ selectExpr
 	
 onExpr 
 	:	ON onStreamExpr
-		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ outputClauseInsert?)? | onSetExpr | onUpdateExpr )
-		-> ^(ON_EXPR onStreamExpr onDeleteExpr? onSelectExpr? onSelectInsertExpr* outputClauseInsert? onSetExpr? onUpdateExpr?)
+		(onDeleteExpr | onSelectExpr (onSelectInsertExpr+ outputClauseInsert?)? | onSetExpr | onUpdateExpr | onMergeExpr)
+		-> ^(ON_EXPR onStreamExpr onDeleteExpr? onSelectExpr? onSelectInsertExpr* outputClauseInsert? onSetExpr? onUpdateExpr? onMergeExpr?)
 	;
 	
 onStreamExpr
@@ -655,12 +655,11 @@ updateExpr
 		-> ^(UPDATE_EXPR classIdentifier $i? onSetAssignment+ whereClause?)
 	;
 
-mergeExpr
-	:	MERGE INTO IDENT (AS i=IDENT | i=IDENT)?
-		USING onStreamExpr
-		ON expression
+onMergeExpr
+	:	MERGE INTO? n=IDENT (AS i=IDENT | i=IDENT)?
+		(WHERE whereClause)?		
 		(mergeMatched | mergeUnmatched)+
-		-> ^(MERGE IDENT $i? onStreamExpr mergeMatched* mergeUnmatched* ^(INNERJOIN_EXPR expression))
+		-> ^(ON_MERGE_EXPR $n $i? mergeMatched* mergeUnmatched* whereClause?)
 	;
 	
 mergeMatched

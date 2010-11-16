@@ -481,9 +481,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case FOR:
                 leaveForClause(node);
                 break;
-            case MERGE:
-                leaveMergeClause(node);
-                break;
             case MERGE_UPD:
                 leaveMergeUpdClause(node);
                 break;
@@ -745,15 +742,19 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 typeChildNode = childNode;
                 isOnDelete = true;
             }
-            if (childNode.getType() == ON_SELECT_EXPR)
+            else if (childNode.getType() == ON_SELECT_EXPR)
             {
                 typeChildNode = childNode;
             }
-            if (childNode.getType() == ON_UPDATE_EXPR)
+            else if (childNode.getType() == ON_UPDATE_EXPR)
             {
                 typeChildNode = childNode;
             }
-            if (childNode.getType() == ON_SET_EXPR)
+            else if (childNode.getType() == ON_SET_EXPR)
+            {
+                typeChildNode = childNode;
+            }
+            else if (childNode.getType() == ON_MERGE_EXPR)
             {
                 typeChildNode = childNode;
             }
@@ -763,7 +764,17 @@ public class EPLTreeWalker extends EsperEPL2Ast
             throw new IllegalStateException("Could not determine on-expr type");
         }
 
-        if (typeChildNode.getType() != ON_SET_EXPR)
+        if (typeChildNode.getType() == ON_MERGE_EXPR) {
+            String windowName = typeChildNode.getChild(0).getText();
+            String asName = null;
+            if (typeChildNode.getChild(1).getType() == IDENT) {
+                asName = typeChildNode.getChild(1).getText();
+            }
+
+            OnTriggerMergeDesc desc = new OnTriggerMergeDesc(windowName, asName, mergeInstructions == null ? Collections.<OnTriggerMergeItem>emptyList() : mergeInstructions);
+            statementSpec.setOnTriggerDesc(desc);            
+        }
+        else if (typeChildNode.getType() != ON_SET_EXPR)
         {
             // The ON_EXPR_FROM contains the window name
             UniformPair<String> windowName = getWindowName(typeChildNode);
@@ -849,21 +860,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
         String ident = node.getChild(0).getText();
         List<ExprNode> expressions = getExprNodes(node, 1);
         statementSpec.getForClauseSpec().getClauses().add(new ForClauseItemSpec(ident, expressions));
-    }
-
-    private void leaveMergeClause(Tree node)
-    {
-        log.debug(".leaveMergeClause");
-        String windowName = node.getChild(0).getText();
-        String asName = null;
-        if (node.getChild(1).getType() == IDENT) {
-            asName = node.getChild(1).getText();
-        }
-
-        OnTriggerMergeDesc desc = new OnTriggerMergeDesc(windowName, asName, mergeInstructions == null ? Collections.<OnTriggerMergeItem>emptyList() : mergeInstructions);
-        ExprNode whereClause = getRemoveFirstByType(node, INNERJOIN_EXPR);
-        statementSpec.setFilterRootNode(whereClause);
-        statementSpec.setOnTriggerDesc(desc);
     }
 
     private void leaveMergeUpdClause(Tree node)

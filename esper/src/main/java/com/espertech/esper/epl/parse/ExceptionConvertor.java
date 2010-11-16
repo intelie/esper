@@ -203,7 +203,12 @@ public class ExceptionConvertor
         {
             EarlyExitException ee = (EarlyExitException) e;
             char c = (char) ee.c;
-            message = "Incorrect syntax near " + token + positionInfo + " unexpected character '" + c + "', check for an invalid identifier";
+            if (c == 65535) {
+                message = "Unexpected end of input string, check for an invalid identifier or missing additional keywords near " + token + positionInfo + " ";
+            }
+            else {
+                message = "Incorrect syntax near " + token + positionInfo + " unexpected character '" + c + "', check for an invalid identifier or missing additional keywords";
+            }
         }
 
         return new UniformPair<String>(message, expression);

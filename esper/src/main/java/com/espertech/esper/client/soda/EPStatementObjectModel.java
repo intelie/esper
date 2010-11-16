@@ -387,6 +387,12 @@ public class EPStatementObjectModel implements Serializable
                 OnSetClause onSet = (OnSetClause) onExpr;
                 onSet.toEPL(writer);
             }
+            else if (onExpr instanceof OnMergeClause)
+            {
+                OnMergeClause merge= (OnMergeClause) onExpr;
+                merge.toEPL(writer, whereClause);
+                displayWhereClause = false;
+            }
             else
             {
                 OnInsertSplitStreamClause split = (OnInsertSplitStreamClause) onExpr;

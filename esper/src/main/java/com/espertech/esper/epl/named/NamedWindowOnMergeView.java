@@ -109,11 +109,11 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
         if (!newData.isEmpty() || !oldData.isEmpty())
         {
             // Events to delete are indicated via old data
-            this.rootView.update(newData.toArray(), oldData.toArray());
+            this.rootView.update(newData.isEmpty() ? null : newData.toArray(), oldData.isEmpty() ? null : oldData.toArray());
 
             // The on-delete listeners receive the events deleted, but only if there is interest
             if (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic()) {
-                updateChildren(newData.toArray(), oldData.toArray());
+                updateChildren(newData.isEmpty() ? null : newData.toArray(), oldData.isEmpty() ? null : oldData.toArray());
             }
         }
 
