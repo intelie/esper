@@ -65,8 +65,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
     private List<SelectClauseElementRaw> propertySelectRaw;
     private PropertyEvalSpec propertyEvalSpec;
-    private OnTriggerMergeInsertDesc mergeInsert;
-    private OnTriggerMergeUpdateDesc mergeUpdate;
+    private List<OnTriggerMergeItem> mergeInstructions;
 
     private final EngineImportService engineImportService;
     private final VariableService variableService;
@@ -860,8 +859,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
         if (node.getChild(1).getType() == IDENT) {
             asName = node.getChild(1).getText();
         }
-        
-        OnTriggerMergeDesc desc = new OnTriggerMergeDesc(windowName, asName, this.mergeInsert, this.mergeUpdate);
+
+        OnTriggerMergeDesc desc = new OnTriggerMergeDesc(windowName, asName, mergeInstructions == null ? Collections.<OnTriggerMergeItem>emptyList() : mergeInstructions);
         ExprNode whereClause = getRemoveFirstByType(node, INNERJOIN_EXPR);
         statementSpec.setFilterRootNode(whereClause);
         statementSpec.setOnTriggerDesc(desc);
@@ -870,8 +869,23 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveMergeUpdClause(Tree node)
     {
         log.debug(".leaveMergeUpdClause");
-        List<OnTriggerSetAssignment> sets = getOnTriggerSetAssignments(node, astExprNodeMap);
-        mergeUpdate = new OnTriggerMergeUpdateDesc(sets);
+
+        if (mergeInstructions == null) {
+            mergeInstructions = new ArrayList<OnTriggerMergeItem>();
+        }
+        ExprNode filterSpec = null;
+        if ((node.getChild(0).getType() != INSERT) && (node.getChild(0).getType() != DELETE)) {
+            filterSpec = ASTUtil.getRemoveExpr(node.getChild(0), astExprNodeMap);
+        }
+
+        boolean isDelete = ASTUtil.findFirstNode(node, DELETE) != null;
+        if (isDelete) {
+            mergeInstructions.add(new OnTriggerMergeItemDelete(filterSpec));
+        }
+        else {
+            List<OnTriggerSetAssignment> sets = getOnTriggerSetAssignments(node, astExprNodeMap);
+            mergeInstructions.add(new OnTriggerMergeItemUpdate(sets, filterSpec));
+        }
     }
 
     private void leaveMergeInsClause(Tree node)
@@ -885,7 +899,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         List<SelectClauseElementRaw> expressions = new ArrayList<SelectClauseElementRaw>(statementSpec.getSelectClauseSpec().getSelectExprList());
         statementSpec.getSelectClauseSpec().getSelectExprList().clear();
-        mergeInsert = new OnTriggerMergeInsertDesc(columsList, expressions);
+        if (mergeInstructions == null) {
+            mergeInstructions = new ArrayList<OnTriggerMergeItem>();
+        }
+        mergeInstructions.add(new OnTriggerMergeItemInsert(columsList, expressions));
     }
 
     private void leaveUpdateExpr(Tree node)

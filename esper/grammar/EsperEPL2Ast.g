@@ -95,7 +95,7 @@ mergeExpr
 	;
 
 mergeMatched
-	:	^(m=MERGE_UPD onSetAssignment+ { leaveNode($m); })
+	:	^(m=MERGE_UPD valueExpr? UPDATE? DELETE? onSetAssignment* { leaveNode($m); })
 	;
 
 mergeUnmatched

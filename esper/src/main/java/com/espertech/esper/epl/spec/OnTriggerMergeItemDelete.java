@@ -10,21 +10,23 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
 
-import java.util.List;
-
 /**
- * Specification for the merge statement insert-part.
+ * Specification for the merge statement delete-part.
  */
-public class OnTriggerMergeUpdateDesc
+public class OnTriggerMergeItemDelete implements OnTriggerMergeItem
 {
-    private List<OnTriggerSetAssignment> assignments;
+    private ExprNode optionalMatchCond;
 
-    public OnTriggerMergeUpdateDesc(List<OnTriggerSetAssignment> assignments) {
-        this.assignments = assignments;
+    public OnTriggerMergeItemDelete(ExprNode optionalMatchCond) {
+        this.optionalMatchCond = optionalMatchCond;
     }
 
-    public List<OnTriggerSetAssignment> getAssignments() {
-        return assignments;
+    public ExprNode getOptionalMatchCond() {
+        return optionalMatchCond;
+    }
+
+    public void setOptionalMatchCond(ExprNode optionalMatchCond) {
+        this.optionalMatchCond = optionalMatchCond;
     }
 }
 

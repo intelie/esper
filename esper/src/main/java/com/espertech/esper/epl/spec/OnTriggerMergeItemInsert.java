@@ -13,13 +13,13 @@ import java.util.List;
 /**
  * Specification for the merge statement insert-part.
  */
-public class OnTriggerMergeInsertDesc
+public class OnTriggerMergeItemInsert implements OnTriggerMergeItem
 {
     private final List<String> columns;
     private final List<SelectClauseElementRaw> selectClause;
     private List<SelectClauseElementCompiled> selectClauseCompiled;
 
-    public OnTriggerMergeInsertDesc(List<String> columns, List<SelectClauseElementRaw> selectClause) {
+    public OnTriggerMergeItemInsert(List<String> columns, List<SelectClauseElementRaw> selectClause) {
         this.columns = columns;
         this.selectClause = selectClause;
     }

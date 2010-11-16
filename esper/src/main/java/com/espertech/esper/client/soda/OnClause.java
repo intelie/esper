@@ -80,4 +80,6 @@ public abstract class OnClause implements Serializable
     {
         return OnSetClause.create(variableName, expression);
     }
+
+    
 }

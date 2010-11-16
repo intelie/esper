@@ -8,22 +8,33 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.epl.expression.ExprNode;
+
 import java.util.List;
 
 /**
- * Specification for the merge statement.
+ * Specification for the merge statement update-part.
  */
-public class OnTriggerMergeDesc extends OnTriggerWindowDesc
+public class OnTriggerMergeItemUpdate implements OnTriggerMergeItem
 {
-    private List<OnTriggerMergeItem> items;
+    private ExprNode optionalMatchCond;
+    private List<OnTriggerSetAssignment> assignments;
 
-    public OnTriggerMergeDesc(String windowName, String optionalAsName, List<OnTriggerMergeItem> items) {
-        super(windowName, optionalAsName, OnTriggerType.ON_MERGE);
-        this.items = items;
+    public OnTriggerMergeItemUpdate(List<OnTriggerSetAssignment> assignments, ExprNode optionalMatchCond) {
+        this.assignments = assignments;
+        this.optionalMatchCond = optionalMatchCond;
     }
 
-    public List<OnTriggerMergeItem> getItems() {
-        return items;
+    public List<OnTriggerSetAssignment> getAssignments() {
+        return assignments;
+    }
+
+    public ExprNode getOptionalMatchCond() {
+        return optionalMatchCond;
+    }
+
+    public void setOptionalMatchCond(ExprNode optionalMatchCond) {
+        this.optionalMatchCond = optionalMatchCond;
     }
 }
 

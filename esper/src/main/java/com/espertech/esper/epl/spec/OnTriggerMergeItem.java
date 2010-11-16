@@ -8,22 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import java.util.List;
-
 /**
- * Specification for the merge statement.
+ * Specification for the merge statement insert/update/delete-part.
  */
-public class OnTriggerMergeDesc extends OnTriggerWindowDesc
+public interface OnTriggerMergeItem
 {
-    private List<OnTriggerMergeItem> items;
-
-    public OnTriggerMergeDesc(String windowName, String optionalAsName, List<OnTriggerMergeItem> items) {
-        super(windowName, optionalAsName, OnTriggerType.ON_MERGE);
-        this.items = items;
-    }
-
-    public List<OnTriggerMergeItem> getItems() {
-        return items;
-    }
 }
 

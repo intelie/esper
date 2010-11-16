@@ -664,9 +664,12 @@ mergeExpr
 	;
 	
 mergeMatched
-	:	WHEN MATCHED THEN
-		UPDATE SET onSetAssignment (COMMA onSetAssignment)* 
-		-> ^(MERGE_UPD onSetAssignment+)
+	:	WHEN MATCHED (AND_EXPR expression)? THEN
+		(
+		  (i=UPDATE SET onSetAssignment (COMMA onSetAssignment)*)
+		| d=DELETE 		
+		)
+		-> ^(MERGE_UPD expression? $i? $d? onSetAssignment*)
 	;
 
 mergeUnmatched
