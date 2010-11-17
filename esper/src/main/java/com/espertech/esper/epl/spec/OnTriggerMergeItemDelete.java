@@ -13,20 +13,10 @@ import com.espertech.esper.epl.expression.ExprNode;
 /**
  * Specification for the merge statement delete-part.
  */
-public class OnTriggerMergeItemDelete implements OnTriggerMergeItem
+public class OnTriggerMergeItemDelete extends OnTriggerMergeItem
 {
-    private ExprNode optionalMatchCond;
-
     public OnTriggerMergeItemDelete(ExprNode optionalMatchCond) {
-        this.optionalMatchCond = optionalMatchCond;
-    }
-
-    public ExprNode getOptionalMatchCond() {
-        return optionalMatchCond;
-    }
-
-    public void setOptionalMatchCond(ExprNode optionalMatchCond) {
-        this.optionalMatchCond = optionalMatchCond;
+        super(optionalMatchCond);
     }
 }
 

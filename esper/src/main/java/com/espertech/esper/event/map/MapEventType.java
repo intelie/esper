@@ -873,6 +873,13 @@ public class MapEventType implements EventTypeSPI
             String propName = entry.getKey();
             Object setTwoType = setTwo.get(entry.getKey());
             Object setOneType = entry.getValue();
+            // allow null for nested event types
+            if ((setOneType instanceof String || setOneType instanceof EventType) && setTwoType == null) {
+                continue;
+            }
+            if ((setTwoType instanceof String || setTwoType instanceof EventType) && setOneType == null) {
+                continue;
+            }
             if (((setTwoType == null) && (setOneType != null)) ||
                  (setTwoType != null) && (setOneType == null))
             {

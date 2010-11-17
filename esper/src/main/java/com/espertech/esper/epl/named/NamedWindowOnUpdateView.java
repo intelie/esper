@@ -55,7 +55,7 @@ public class NamedWindowOnUpdateView extends NamedWindowOnExprBaseView
         super(statementStopService, lookupStrategy, removeStreamView, exprEvaluatorContext);
         this.statementResultService = statementResultService;
         eventTypeSPI = (EventTypeSPI) removeStreamView.getEventType();
-        updateHelper = NamedWindowUpdateHelper.make(eventTypeSPI, onTriggerDesc.getAssignments());
+        updateHelper = NamedWindowUpdateHelper.make(eventTypeSPI, onTriggerDesc.getAssignments(), onTriggerDesc.getOptionalAsName());
     }
 
     public void handleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)

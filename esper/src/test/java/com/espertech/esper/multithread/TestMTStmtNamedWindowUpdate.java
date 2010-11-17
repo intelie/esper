@@ -23,8 +23,8 @@ public class TestMTStmtNamedWindowUpdate extends TestCase
 {
     private static final Log log = LogFactory.getLog(TestMTStmtNamedWindowUpdate.class);
 
-    public final static int NUM_STRINGS = 1;
-    public final static int NUM_INTS = 1;
+    public final static int NUM_STRINGS = 100;
+    public final static int NUM_INTS = 10;
 
     private EPServiceProvider engine;
 
@@ -33,7 +33,7 @@ public class TestMTStmtNamedWindowUpdate extends TestCase
         engine.initialize();
     }
 
-    public void testOrderedDeliverySuspend() throws Exception
+    public void testConcurrentUpdate() throws Exception
     {
         trySend(5, 10000);
     }
@@ -90,8 +90,7 @@ public class TestMTStmtNamedWindowUpdate extends TestCase
                 MultiKeyUntyped key = new MultiKeyUntyped(item.getString(), item.getIntval());
                 UpdateTotals total = totals.get(key);
                 if (total == null) {
-                    total = new UpdateTotals(0, 0);
-                    totals.put(key, total);
+                    throw new RuntimeException("Totals not found for key " + key);
                 }
                 total.setNum(total.getNum() + 1);
                 total.setSum(total.getSum() + item.getDoublePrimitive());
@@ -111,8 +110,8 @@ public class TestMTStmtNamedWindowUpdate extends TestCase
         }
 
         assertEquals(totalUpdates, numThreads * numEventsPerThread);
-        long deltaTime = endTime - startTime;
-        System.out.println("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
+        //long deltaTime = endTime - startTime;
+        //System.out.println("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
     }
 
     private static class UpdateTotals {

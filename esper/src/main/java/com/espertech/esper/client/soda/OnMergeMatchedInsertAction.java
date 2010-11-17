@@ -16,13 +16,23 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
 {
     private List<String> columnNames = Collections.emptyList();
     private List<SelectClauseElement> selectList = Collections.emptyList();
+    private Expression optionalCondition;
 
-    public OnMergeMatchedInsertAction(List<String> columnNames, List<SelectClauseElement> selectList) {
+    public OnMergeMatchedInsertAction(List<String> columnNames, List<SelectClauseElement> selectList, Expression optionalCondition) {
         this.columnNames = columnNames;
         this.selectList = selectList;
+        this.optionalCondition = optionalCondition;
     }
 
     public OnMergeMatchedInsertAction() {
+    }
+
+    public Expression getOptionalCondition() {
+        return optionalCondition;
+    }
+
+    public void setOptionalCondition(Expression optionalCondition) {
+        this.optionalCondition = optionalCondition;
     }
 
     public List<String> getColumnNames() {
@@ -43,7 +53,13 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
 
     @Override
     public void toEPL(StringWriter writer) {
-        writer.write("when not matched then insert");
+        writer.write("when not matched");
+
+        if (optionalCondition != null) {
+            writer.write(" and ");
+            optionalCondition.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+        }
+        writer.write(" then insert");
 
         if (columnNames.size() > 0)
         {
@@ -65,6 +81,5 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
             element.toEPLElement(writer);
             delimiter = ", ";
         }
-        writer.write(' ');
     }
 }

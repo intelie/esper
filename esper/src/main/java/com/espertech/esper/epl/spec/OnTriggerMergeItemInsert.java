@@ -8,18 +8,21 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.epl.expression.ExprNode;
+
 import java.util.List;
 
 /**
  * Specification for the merge statement insert-part.
  */
-public class OnTriggerMergeItemInsert implements OnTriggerMergeItem
+public class OnTriggerMergeItemInsert extends OnTriggerMergeItem
 {
     private final List<String> columns;
     private final List<SelectClauseElementRaw> selectClause;
     private List<SelectClauseElementCompiled> selectClauseCompiled;
 
-    public OnTriggerMergeItemInsert(List<String> columns, List<SelectClauseElementRaw> selectClause) {
+    public OnTriggerMergeItemInsert(ExprNode optionalMatchCond, List<String> columns, List<SelectClauseElementRaw> selectClause) {
+        super(optionalMatchCond);
         this.columns = columns;
         this.selectClause = selectClause;
     }

@@ -5,19 +5,10 @@ import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-public class NamedWindowOnMergeActionDel implements NamedWindowOnMergeAction {
-    private final ExprEvaluator optionalFilter;
+public class NamedWindowOnMergeActionDel extends NamedWindowOnMergeAction {
 
     public NamedWindowOnMergeActionDel(ExprEvaluator optionalFilter) {
-        this.optionalFilter = optionalFilter;
-    }
-
-    public boolean isApplies(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
-        if (optionalFilter == null) {
-            return true;
-        }
-        Object result = optionalFilter.evaluate(eventsPerStream, true, context);
-        return result != null && (Boolean) result;
+        super(optionalFilter);
     }
 
     @Override

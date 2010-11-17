@@ -912,37 +912,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
         }
         if (spec.getOnTriggerDesc() != null) {
-            if (spec.getOnTriggerDesc() instanceof OnTriggerWindowUpdateDesc) {
-                OnTriggerWindowUpdateDesc updates = (OnTriggerWindowUpdateDesc) spec.getOnTriggerDesc();
-                for (OnTriggerSetAssignment assignment : updates.getAssignments())
-                {
-                    assignment.getExpression().accept(visitor);
-                }
-            }
-            else if (spec.getOnTriggerDesc() instanceof OnTriggerSetDesc) {
-                OnTriggerSetDesc sets = (OnTriggerSetDesc) spec.getOnTriggerDesc();
-                for (OnTriggerSetAssignment assignment : sets.getAssignments())
-                {
-                    assignment.getExpression().accept(visitor);
-                }
-            }
-            else if (spec.getOnTriggerDesc() instanceof OnTriggerSplitStreamDesc) {
-                OnTriggerSplitStreamDesc splits = (OnTriggerSplitStreamDesc) spec.getOnTriggerDesc();
-                for (OnTriggerSplitStream split : splits.getSplitStreams())
-                {
-                    if (split.getWhereClause() != null) {
-                        split.getWhereClause().accept(visitor);
-                    }
-                    if (split.getSelectClause().getSelectExprList() != null) {
-                        for (SelectClauseElementRaw element : split.getSelectClause().getSelectExprList()) {
-                            if (element instanceof SelectClauseExprRawSpec) {
-                                SelectClauseExprRawSpec selectExpr = (SelectClauseExprRawSpec) element;
-                                selectExpr.getSelectExpression().accept(visitor);
-                            }
-                        }
-                    }
-                }
-            }
+            visitSubselectOnTrigger(spec.getOnTriggerDesc(), visitor);
         }
         // Determine pattern-filter subqueries
         for (StreamSpecRaw streamSpecRaw : spec.getStreamSpecs()) {
@@ -1090,6 +1060,66 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getForClauseSpec(),
                 spec.getSqlParameters()
                 );
+    }
+
+    private static void visitSubselectOnTrigger(OnTriggerDesc onTriggerDesc, ExprNodeSubselectVisitor visitor) {
+        if (onTriggerDesc instanceof OnTriggerWindowUpdateDesc) {
+            OnTriggerWindowUpdateDesc updates = (OnTriggerWindowUpdateDesc) onTriggerDesc;
+            for (OnTriggerSetAssignment assignment : updates.getAssignments())
+            {
+                assignment.getExpression().accept(visitor);
+            }
+        }
+        else if (onTriggerDesc instanceof OnTriggerSetDesc) {
+            OnTriggerSetDesc sets = (OnTriggerSetDesc) onTriggerDesc;
+            for (OnTriggerSetAssignment assignment : sets.getAssignments())
+            {
+                assignment.getExpression().accept(visitor);
+            }
+        }
+        else if (onTriggerDesc instanceof OnTriggerSplitStreamDesc) {
+            OnTriggerSplitStreamDesc splits = (OnTriggerSplitStreamDesc) onTriggerDesc;
+            for (OnTriggerSplitStream split : splits.getSplitStreams())
+            {
+                if (split.getWhereClause() != null) {
+                    split.getWhereClause().accept(visitor);
+                }
+                if (split.getSelectClause().getSelectExprList() != null) {
+                    for (SelectClauseElementRaw element : split.getSelectClause().getSelectExprList()) {
+                        if (element instanceof SelectClauseExprRawSpec) {
+                            SelectClauseExprRawSpec selectExpr = (SelectClauseExprRawSpec) element;
+                            selectExpr.getSelectExpression().accept(visitor);
+                        }
+                    }
+                }
+            }
+        }
+        else if (onTriggerDesc instanceof OnTriggerMergeDesc) {
+            OnTriggerMergeDesc merge = (OnTriggerMergeDesc) onTriggerDesc;
+            for (OnTriggerMergeItem item : merge.getItems())
+            {
+                if (item.getOptionalMatchCond() != null) {
+                    item.getOptionalMatchCond().accept(visitor);
+                }
+
+                if (item instanceof OnTriggerMergeItemUpdate) {
+                    OnTriggerMergeItemUpdate update = (OnTriggerMergeItemUpdate) item;
+                    for (OnTriggerSetAssignment assignment : update.getAssignments())
+                    {
+                        assignment.getExpression().accept(visitor);
+                    }
+                }
+                if (item instanceof OnTriggerMergeItemInsert) {
+                    OnTriggerMergeItemInsert insert = (OnTriggerMergeItemInsert) item;
+                    for (SelectClauseElementRaw element : insert.getSelectClause()) {
+                        if (element instanceof SelectClauseExprRawSpec) {
+                            SelectClauseExprRawSpec selectExpr = (SelectClauseExprRawSpec) element;
+                            selectExpr.getSelectExpression().accept(visitor);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

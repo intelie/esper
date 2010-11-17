@@ -15,26 +15,17 @@ import java.util.List;
 /**
  * Specification for the merge statement update-part.
  */
-public class OnTriggerMergeItemUpdate implements OnTriggerMergeItem
+public class OnTriggerMergeItemUpdate extends OnTriggerMergeItem
 {
-    private ExprNode optionalMatchCond;
     private List<OnTriggerSetAssignment> assignments;
 
-    public OnTriggerMergeItemUpdate(List<OnTriggerSetAssignment> assignments, ExprNode optionalMatchCond) {
+    public OnTriggerMergeItemUpdate(ExprNode optionalMatchCond, List<OnTriggerSetAssignment> assignments) {
+        super(optionalMatchCond);
         this.assignments = assignments;
-        this.optionalMatchCond = optionalMatchCond;
     }
 
     public List<OnTriggerSetAssignment> getAssignments() {
         return assignments;
-    }
-
-    public ExprNode getOptionalMatchCond() {
-        return optionalMatchCond;
-    }
-
-    public void setOptionalMatchCond(ExprNode optionalMatchCond) {
-        this.optionalMatchCond = optionalMatchCond;
     }
 }
 

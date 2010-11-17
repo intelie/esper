@@ -8,10 +8,25 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.epl.expression.ExprNode;
+
 /**
  * Specification for the merge statement insert/update/delete-part.
  */
-public interface OnTriggerMergeItem
+public abstract class OnTriggerMergeItem
 {
+    private ExprNode optionalMatchCond;
+
+    protected OnTriggerMergeItem(ExprNode optionalMatchCond) {
+        this.optionalMatchCond = optionalMatchCond;
+    }
+
+    public ExprNode getOptionalMatchCond() {
+        return optionalMatchCond;
+    }
+
+    public void setOptionalMatchCond(ExprNode optionalMatchCond) {
+        this.optionalMatchCond = optionalMatchCond;
+    }
 }
 

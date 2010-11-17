@@ -51,7 +51,10 @@ public class NaturalEventBean implements EventBean, DecoratingEventBean
     }
 
     public Object getUnderlying() {
-        return Object[].class;
+        if (optionalSynthetic != null) {
+            return optionalSynthetic.getUnderlying();
+        }
+        return natural;
     }
 
     public EventBean getUnderlyingEvent()

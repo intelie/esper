@@ -33,9 +33,9 @@ public class StmtNamedWindowUpdateCallable implements Callable<StmtNamedWindowUp
             Random random = new Random();
             for (int loop = 0; loop < numRepeats; loop++)
             {
-                String string = Integer.toString(random.nextInt() % TestMTStmtNamedWindowUpdate.NUM_STRINGS);
-                int intPrimitive = random.nextInt() % TestMTStmtNamedWindowUpdate.NUM_INTS;
-                int doublePrimitive = random.nextInt() % 10;
+                String string = Integer.toString(Math.abs(random.nextInt()) % TestMTStmtNamedWindowUpdate.NUM_STRINGS);
+                int intPrimitive = Math.abs(random.nextInt()) % TestMTStmtNamedWindowUpdate.NUM_INTS;
+                int doublePrimitive = Math.abs(random.nextInt()) % 10;
                 sendEvent(string, intPrimitive, doublePrimitive);
             }
         }

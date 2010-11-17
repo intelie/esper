@@ -47,7 +47,8 @@ public class NamedWindowUpdateHelper
     }
 
     public static NamedWindowUpdateHelper make(EventTypeSPI eventTypeSPI,
-                                        List<OnTriggerSetAssignment> assignments)
+                                        List<OnTriggerSetAssignment> assignments,
+                                        String namedWindowAlias)
             throws ExprValidationException
     {
         // validate expression, obtain wideners
@@ -61,19 +62,31 @@ public class NamedWindowUpdateHelper
         for (int i = 0; i < assignments.size(); i++)
         {
             OnTriggerSetAssignment assignment = assignments.get(i);
+            String propertyName = assignment.getVariableName(); 
             expressions[i] = assignment.getExpression().getExprEvaluator();
-            EventPropertyDescriptor writableProperty = eventTypeSPI.getWritableProperty(assignment.getVariableName());
+            EventPropertyDescriptor writableProperty = eventTypeSPI.getWritableProperty(propertyName);
 
             if (writableProperty == null)
             {
-                throw new ExprValidationException("Property '" + assignment.getVariableName() + "' is not available for write access");
+                int indexDot = propertyName.indexOf(".");
+                if ((namedWindowAlias != null) || (indexDot != -1)) {
+                    String prefix = propertyName.substring(0, indexDot);
+                    String name = propertyName.substring(indexDot + 1);
+                    if (prefix.equals(namedWindowAlias)) {
+                        writableProperty = eventTypeSPI.getWritableProperty(name);
+                        propertyName = name;
+                    }
+                }
+                if (writableProperty == null) {
+                    throw new ExprValidationException("Property '" + propertyName + "' is not available for write access");
+                }
             }
-            writers[i] = eventTypeSPI.getWriter(assignment.getVariableName());
+            writers[i] = eventTypeSPI.getWriter(propertyName);
             notNullableField[i] = writableProperty.getPropertyType().isPrimitive();
 
-            properties.add(assignment.getVariableName());
+            properties.add(propertyName);
             wideners[i] = TypeWidenerFactory.getCheckPropertyAssignType(assignment.getExpression().toExpressionString(), assignment.getExpression().getExprEvaluator().getType(),
-                    writableProperty.getPropertyType(), assignment.getVariableName());
+                    writableProperty.getPropertyType(), propertyName);
         }
         String[] propertyNames = properties.toArray(new String[properties.size()]);
 

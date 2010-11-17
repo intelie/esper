@@ -259,7 +259,8 @@ public class StatementSpecMapper
                     OnTriggerMergeItemInsert insert = (OnTriggerMergeItemInsert) item;
                     List<String> columnNames = new ArrayList<String>(insert.getColumns());
                     List<SelectClauseElement> select = unmapSelectClauseElements(insert.getSelectClause(), unmapContext);
-                    action = new OnMergeMatchedInsertAction(columnNames, select);
+                    Expression optionalCondition = insert.getOptionalMatchCond() == null ? null : unmapExpressionDeep(insert.getOptionalMatchCond(), unmapContext);
+                    action = new OnMergeMatchedInsertAction(columnNames, select, optionalCondition);
                 }
                 else {
                     throw new IllegalArgumentException("Unrecognized merged action type '" + item.getClass() + "'");
@@ -676,13 +677,14 @@ public class StatementSpecMapper
                         assignments.add(new OnTriggerSetAssignment(pair.getName(), expr));
                     }
                     ExprNode optionalCondition = update.getOptionalCondition() == null ? null : mapExpressionDeep(update.getOptionalCondition(), mapContext);
-                    item = new OnTriggerMergeItemUpdate(assignments, optionalCondition);
+                    item = new OnTriggerMergeItemUpdate(optionalCondition, assignments);
                 }
                 else if (action instanceof OnMergeMatchedInsertAction) {
                     OnMergeMatchedInsertAction insert = (OnMergeMatchedInsertAction) action;
                     List<String> columnNames = new ArrayList<String>(insert.getColumnNames());
                     List<SelectClauseElementRaw> select = mapSelectClauseElements(insert.getSelectList(), mapContext);
-                    item = new OnTriggerMergeItemInsert(columnNames, select);
+                    ExprNode optionalCondition = insert.getOptionalCondition() == null ? null : mapExpressionDeep(insert.getOptionalCondition(), mapContext);
+                    item = new OnTriggerMergeItemInsert(optionalCondition, columnNames, select);
                 }
                 else {
                     throw new IllegalArgumentException("Unrecognized merged action type '" + action.getClass() + "'");

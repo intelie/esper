@@ -509,17 +509,20 @@ public class EPStatementStartMethod
             else if (item instanceof OnTriggerMergeItemInsert) {
                 OnTriggerMergeItemInsert insert = (OnTriggerMergeItemInsert) item;
                 List<SelectClauseElementCompiled> compiledSelect = new ArrayList<SelectClauseElementCompiled>();
+                if (insert.getOptionalMatchCond() != null) {
+                    insert.setOptionalMatchCond(validateExprNoAgg(insert.getOptionalMatchCond(), twoStreamTypeSvc, statementContext, exprNodeErrorMessage));
+                }
                 for (SelectClauseElementRaw raw : insert.getSelectClause())
                 {
                     if (raw instanceof SelectClauseStreamRawSpec)
                     {
                         SelectClauseStreamRawSpec rawStreamSpec = (SelectClauseStreamRawSpec) raw;
-                        if (rawStreamSpec.getStreamName().equals(selectTypeService.getStreamNames()[0]))
+                        if (!rawStreamSpec.getStreamName().equals(selectTypeService.getStreamNames()[0]))
                         {
                             throw new ExprValidationException("Stream by name '" + rawStreamSpec.getStreamName() + "' was not found");
                         }
                         SelectClauseStreamCompiledSpec streamSelectSpec = new SelectClauseStreamCompiledSpec(rawStreamSpec.getStreamName(), rawStreamSpec.getOptionalAsName());
-                        streamSelectSpec.setStreamNumber(1);
+                        streamSelectSpec.setStreamNumber(0);
                         compiledSelect.add(streamSelectSpec);
                     }
                     else if (raw instanceof SelectClauseExprRawSpec)
@@ -532,12 +535,7 @@ public class EPStatementStartMethod
                             resultName = exprCompiled.toExpressionString();
                         }
                         compiledSelect.add(new SelectClauseExprCompiledSpec(exprCompiled, resultName));
-
-                        String isMinimal = ExprNodeUtility.isMinimalExpression(exprCompiled);
-                        if (isMinimal != null)
-                        {
-                            throw new ExprValidationException("Expression in a merge-selection may not utilize " + isMinimal);
-                        }
+                        validateNoAggregations(exprCompiled, "Expression in a merge-selection may not utilize aggregation functions");
                     }
                     else if (raw instanceof SelectClauseElementWildcard)
                     {
@@ -2014,12 +2012,5 @@ public class EPStatementStartMethod
         ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(visitAggregateNodes);
         exprNode.accept(visitor);
         return visitor.getExprProperties();
-    }
-
-    private String getNull(Object value) {
-        if (value == null) {
-            return "-";
-        }
-        return value.toString();
     }
 }

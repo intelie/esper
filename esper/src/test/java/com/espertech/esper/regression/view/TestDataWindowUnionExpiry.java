@@ -579,11 +579,11 @@ public class TestDataWindowUnionExpiry extends TestCase
         init(false);
         String text = null;
 
-        text = "select string from SupportBean.std:groupwin(string).std:groupwin(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union";
-        tryInvalid(text, "Error starting statement: Multiple group-by views are not allowed in conjuntion with multiple data windows [select string from SupportBean.std:groupwin(string).std:groupwin(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union]");
-
         text = "select string from SupportBean.std:groupwin(string).std:unique(string).std:merge(intPrimitive) retain-union";
         tryInvalid(text, "Error starting statement: Error attaching view to parent view: Group by view for this merge view could not be found among parent views [select string from SupportBean.std:groupwin(string).std:unique(string).std:merge(intPrimitive) retain-union]");
+
+        text = "select string from SupportBean.std:groupwin(string).std:groupwin(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union";
+        tryInvalid(text, "Error starting statement: Multiple group-by views are not allowed in conjuntion with multiple data windows [select string from SupportBean.std:groupwin(string).std:groupwin(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union]");
     }
 
     public void testValidLegacy()

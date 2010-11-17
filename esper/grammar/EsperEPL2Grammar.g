@@ -672,9 +672,9 @@ mergeMatched
 	;
 
 mergeUnmatched
-	:	WHEN NOT_EXPR MATCHED THEN
+	:	WHEN NOT_EXPR MATCHED (AND_EXPR expression)? THEN
 		INSERT (LPAREN columnList RPAREN)? SELECT selectionList
-		-> ^(MERGE_INS columnList? selectionList)
+		-> ^(MERGE_INS selectionList columnList? expression?)
 	;	
 	
 onSelectExpr	
@@ -1024,8 +1024,9 @@ methodJoinExpression
 viewExpression
 @init  { paraphrases.push("view specifications"); }
 @after { paraphrases.pop(); }
-	:	ns=IDENT COLON nm=IDENT LPAREN expressionWithTimeList? RPAREN
-		-> ^(VIEW_EXPR $ns $nm expressionWithTimeList?)
+	:	ns=IDENT COLON (i=IDENT|m=MERGE) LPAREN expressionWithTimeList? RPAREN
+		-> {m != null}? ^(VIEW_EXPR $ns ^(IDENT["merge"]) expressionWithTimeList?)
+		-> ^(VIEW_EXPR $ns $i expressionWithTimeList?)
 	;
 
 groupByListExpr

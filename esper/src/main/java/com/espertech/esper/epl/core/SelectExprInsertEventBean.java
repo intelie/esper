@@ -10,6 +10,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventBeanManufactureException;
 import com.espertech.esper.event.EventBeanManufacturer;
 import com.espertech.esper.event.WriteablePropertyDescriptor;
+import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.util.TypeWidener;
 import com.espertech.esper.util.TypeWidenerFactory;
 import org.apache.commons.logging.Log;
@@ -49,6 +50,14 @@ public class SelectExprInsertEventBean
         if (writableProps == null)
         {
             return null;    // no writable properties, not a writable type, proceed
+        }
+        // For map event types this class does not handle fragment inserts; all fragments are required however and must be explicit
+        if (eventType instanceof MapEventType) {
+            for (EventPropertyDescriptor prop : eventType.getPropertyDescriptors()) {
+                if (prop.isFragment()) {
+                    return null;
+                }
+            }
         }
         return new SelectExprInsertEventBean(eventType, writableProps);
     }

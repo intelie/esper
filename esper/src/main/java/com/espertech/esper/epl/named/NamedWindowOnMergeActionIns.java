@@ -1,0 +1,24 @@
+package com.espertech.esper.epl.named;
+
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.OneEventCollection;
+import com.espertech.esper.epl.core.SelectExprProcessor;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+
+public class NamedWindowOnMergeActionIns extends NamedWindowOnMergeAction {
+    private SelectExprProcessor insertHelper;
+    private EventBean[] eventsPerStream = new EventBean[1];
+
+    public NamedWindowOnMergeActionIns(ExprEvaluator optionalFilter, SelectExprProcessor insertHelper) {
+        super(optionalFilter);
+        this.insertHelper = insertHelper;
+    }
+
+    public void apply(EventBean matchingEvent, EventBean[] allEventsPerStream, OneEventCollection newData, OneEventCollection oldData, ExprEvaluatorContext exprEvaluatorContext) {
+        eventsPerStream[0] = allEventsPerStream[1];
+        EventBean event = insertHelper.process(eventsPerStream, true, true);
+        newData.add(event);
+        eventsPerStream[0] = null;
+    }
+}

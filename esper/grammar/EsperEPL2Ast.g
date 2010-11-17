@@ -91,7 +91,7 @@ onStreamExpr
 	;
 
 onMergeExpr
-	:	^(m=ON_MERGE_EXPR IDENT IDENT? mergeMatched* mergeUnmatched* whereClause[true])
+	:	^(m=ON_MERGE_EXPR IDENT IDENT? mergeMatched* mergeUnmatched* whereClause[true]?)
 	;
 
 mergeMatched
@@ -99,7 +99,7 @@ mergeMatched
 	;
 
 mergeUnmatched
-	:	^(um=MERGE_INS exprCol? selectionList { leaveNode($um); })
+	:	^(um=MERGE_INS selectionList exprCol? valueExpr? { leaveNode($um); })
 	;
 	
 updateExpr

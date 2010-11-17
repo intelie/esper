@@ -880,7 +880,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         else {
             List<OnTriggerSetAssignment> sets = getOnTriggerSetAssignments(node, astExprNodeMap);
-            mergeInstructions.add(new OnTriggerMergeItemUpdate(sets, filterSpec));
+            mergeInstructions.add(new OnTriggerMergeItemUpdate(filterSpec, sets));
         }
     }
 
@@ -888,17 +888,25 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveMergeInsClause");
 
+        ExprNode filterSpec = null;
+        for (int i = 0; i < node.getChildCount(); i++) {
+            filterSpec = ASTUtil.getRemoveExpr(node.getChild(i), astExprNodeMap);
+        }
+
         List<String> columsList = Collections.emptyList();
-        if (node.getChild(0).getType() == EXPRCOL) {
-            columsList = getIdentList(node.getChild(0));
+        for (int i = 0; i < node.getChildCount(); i++) {
+            if (node.getChild(i).getType() == EXPRCOL) {
+                columsList = getIdentList(node.getChild(i));
+            }
         }
 
         List<SelectClauseElementRaw> expressions = new ArrayList<SelectClauseElementRaw>(statementSpec.getSelectClauseSpec().getSelectExprList());
         statementSpec.getSelectClauseSpec().getSelectExprList().clear();
+
         if (mergeInstructions == null) {
             mergeInstructions = new ArrayList<OnTriggerMergeItem>();
         }
-        mergeInstructions.add(new OnTriggerMergeItemInsert(columsList, expressions));
+        mergeInstructions.add(new OnTriggerMergeItemInsert(filterSpec, columsList, expressions));
     }
 
     private void leaveUpdateExpr(Tree node)
