@@ -1430,13 +1430,14 @@ such event metadata and event data into one of the built-in event representation
         </para>
 
         <para>
-			  The second means to update events is the <literal>on-update</literal> clause, for use with named windows only, as further described in <xref linkend="named_update"/>. On-update
-			  can be used to update individual properties of events held in a named window.
+			  The second means to update events is the <literal>on-merge</literal> and <literal>on-update</literal> clauses, for use with named windows only, as further described in <xref linkend="named_upsert"/> and <xref linkend="named_update"/>. On-merge
+			  is similar to the SQL <literal>merge</literal> clause and provides what is known as an "Upsert" operation: Update existing events or if no existing event(s) are found then insert a new event, all in one atomic operation provided by a single EPL statement. 
+			  On-update can be used to update individual properties of events held in a named window.
         </para>
 
         <para>
-			  The third means to handle updating events is the revision event types, for use with named windows only, as further described in <xref linkend="named_versioning"/>. With revision event types one can declare multiple different event types and then
-			  have the engine present a merged event type that contains a superset of properties of all merged types, and have the engine merge events as they arrive.
+			  The third means to handle updating events is the revision event types, for use with named windows only, as further described in <xref linkend="named_versioning"/>. With revision event types one can declare, via configuration only, multiple different event types and then
+			  have the engine present a merged event type that contains a superset of properties of all merged types, and have the engine merge events as they arrive without additional EPL statements.
         </para>
 
 		<para>

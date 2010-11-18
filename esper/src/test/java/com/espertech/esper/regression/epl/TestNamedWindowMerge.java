@@ -5,13 +5,9 @@ import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.regression.view.TestFilterPropertySimple;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.bookexample.BookDesc;
 import com.espertech.esper.support.bean.bookexample.OrderBean;
-import com.espertech.esper.support.bean.bookexample.OrderItem;
-import com.espertech.esper.support.bean.bookexample.Review;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.util.SupportSubscriber;
 import com.espertech.esper.support.util.SupportSubscriberMRD;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
@@ -36,6 +32,55 @@ public class TestNamedWindowMerge extends TestCase {
         epService.initialize();
         nwListener = new SupportUpdateListener();
         mergeListener = new SupportUpdateListener();
+    }
+
+    public void testDocExample() throws Exception {
+
+        String baseModule = "create schema OrderEvent as (orderId string, productId string, price double, quantity int, deletedFlag boolean)";
+        epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(baseModule, null, null, null);
+
+        String appModuleOne = "create schema ProductTotalRec as (productId string, totalPrice double);" +
+                "" +
+                "@Name('nwProd') create window ProductWindow.std:unique(productId) as ProductTotalRec;" +
+                "" +
+                "on OrderEvent oe\n" +
+                "merge ProductWindow pw\n" +
+                "where pw.productId = oe.productId\n" +
+                "when matched\n" +
+                "then update set totalPrice = totalPrice + oe.price\n" +
+                "when not matched\n" +
+                "then insert select productId, price as totalPrice;";
+        epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(appModuleOne, null, null, null);
+        
+        String appModuleTwo = "@Name('nwOrd') create window OrderWindow.win:keepall() as OrderEvent;" +
+                "" +
+                "on OrderEvent oe\n" +
+                "  merge OrderWindow pw\n" +
+                "  where pw.orderId = oe.orderId\n" +
+                "  when not matched \n" +
+                "    then insert select *\n" +
+                "  when matched and oe.deletedFlag=true\n" +
+                "    then delete\n" +
+                "  when matched\n" +
+                "    then update set pw.quantity = oe.quantity, pw.price = oe.price";
+
+        epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(appModuleTwo, null, null, null);
+
+        sendOrderEvent("O1", "P1", 10, 100, false);
+        sendOrderEvent("O1", "P1", 11, 200, false);
+        sendOrderEvent("O2", "P2", 3, 300, false);
+        ArrayAssertionUtil.assertEqualsAnyOrder(epService.getEPAdministrator().getStatement("nwProd").iterator(), "productId,totalPrice".split(","), new Object[][] {{"P1", 21d}, {"P2", 3d}});
+        ArrayAssertionUtil.assertEqualsAnyOrder(epService.getEPAdministrator().getStatement("nwOrd").iterator(), "orderId,quantity".split(","), new Object[][] {{"O1", 200}, {"O2", 300}});
+    }
+
+    private void sendOrderEvent(String orderId, String productId, double price, int quantity, boolean deletedFlag) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("orderId", orderId);
+        event.put("productId", productId);
+        event.put("price", price);
+        event.put("quantity", quantity);
+        event.put("deletedFlag", deletedFlag);
+        epService.getEPRuntime().sendEvent(event, "OrderEvent");
     }
 
     public void testTypeReference() {
@@ -192,6 +237,12 @@ public class TestNamedWindowMerge extends TestCase {
     public void testInvalid() {
         String epl;        
         epService.getEPAdministrator().createEPL("create window MergeWindow.std:unique(string) as SupportBean");
+
+        epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then update set intPrimitive = 1";
+        tryInvalid(epl, "Incorrect syntax near 'update' (a reserved keyword) expecting 'insert' but found 'update' at line 1 column 97 [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then update set intPrimitive = 1]");
+
+        epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when matched then insert select *";
+        tryInvalid(epl, "Incorrect syntax near 'insert' (a reserved keyword) at line 1 column 93 [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when matched then insert select *]");
 
         epl = "on SupportBean as up merge MergeWindow as mv";
         tryInvalid(epl, "Unexpected end of input string, check for an invalid identifier or missing additional keywords near 'mv' at line 1 column 42  [on SupportBean as up merge MergeWindow as mv]");
