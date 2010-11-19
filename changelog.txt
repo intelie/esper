@@ -4,6 +4,11 @@ Esper Changelog
 Changes in version 4.1.0
 ------------------------
 Major API or EPL changes
+- Support for on-merge (upsert)
+
+Changes in version 4.0.0
+------------------------
+Major API or EPL changes
   - Requires a Java 6 runtime (JDK6 or JRE6)
   - The following dependent jar files are upgraded:
        Required: ANTLR version upgrade from 3.1.1 to 3.2

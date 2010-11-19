@@ -1870,9 +1870,28 @@ public class EPStatementStartMethod
 
                 // preload view for stream
                 ArrayList<EventBean> eventsInWindow = new ArrayList<EventBean>();
-                for(Iterator<EventBean> it = consumerView.iterator(); it.hasNext();)
-                {
-                    eventsInWindow.add(it.next());
+                if (namedSpec.getFilterExpressions() != null) {
+                    EventBean[] events = new EventBean[1];
+                    for (EventBean event : consumerView) {
+                        events[0] = event;
+                        boolean add = true;
+                        for (ExprNode filter : namedSpec.getFilterExpressions()) {
+                            Object result = filter.getExprEvaluator().evaluate(events, true, statementContext);
+                            if ((result == null) || (!((Boolean) result))) {
+                                add = false;
+                                break;
+                            }
+                        }
+                        if (add) {
+                            eventsInWindow.add(events[0]);
+                        }
+                    }
+                }
+                else {
+                    for(Iterator<EventBean> it = consumerView.iterator(); it.hasNext();)
+                    {
+                        eventsInWindow.add(it.next());
+                    }
                 }
                 EventBean[] newEvents = eventsInWindow.toArray(new EventBean[eventsInWindow.size()]);
                 ((View)viewableRoot).update(newEvents, null); // fill view
