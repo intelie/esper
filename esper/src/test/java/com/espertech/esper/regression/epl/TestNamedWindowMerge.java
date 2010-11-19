@@ -487,6 +487,18 @@ public class TestNamedWindowMerge extends TestCase {
 
         sendSupportBeanEvent(false, "E99", 2, 3); // insert via merge
         ArrayAssertionUtil.assertEqualsAnyOrder(namedWindowStmt.iterator(), fields, new Object[][] {{"E99", 2, 3}});
+
+        // Test ambiguous columns.
+        epService.getEPAdministrator().createEPL("create schema TypeOne (id long, mylong long, mystring long)");
+        epService.getEPAdministrator().createEPL("create window MyNamedWindow.std:unique(id) as select * from TypeOne");
+
+        // The "and not matched" should not complain if "mystring" is ambiguous.
+        // The "insert" should not complain as column names have been provided.
+        epl =  "on TypeOne as t1 merge MyNamedWindow nm where nm.id = t1.id\n" +
+                "  when not matched and mystring = 0 then insert select *\n" +
+                "  when not matched then insert (id, mylong, mystring) select 0L, 0L, 0L\n" +
+                " ";
+        epService.getEPAdministrator().createEPL(epl);
     }
 
     private void runAssertion(EPStatement namedWindowStmt, String[] fields) {

@@ -658,8 +658,12 @@ updateExpr
 onMergeExpr
 	:	MERGE INTO? n=IDENT (AS i=IDENT | i=IDENT)?
 		(WHERE whereClause)?		
-		(mergeMatched | mergeUnmatched)+
-		-> ^(ON_MERGE_EXPR $n $i? mergeMatched* mergeUnmatched* whereClause?)
+		mergeItem+
+		-> ^(ON_MERGE_EXPR $n $i? mergeItem+ whereClause?)
+	;
+
+mergeItem
+	:	(mergeMatched | mergeUnmatched)
 	;
 	
 mergeMatched

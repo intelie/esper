@@ -10,6 +10,8 @@ package com.espertech.esper.epl.named;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.soda.SelectClauseElement;
+import com.espertech.esper.client.soda.SelectClauseExpression;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.core.StatementContext;
@@ -74,7 +76,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
 
         if ((matchingEvents == null) || (matchingEvents.length == 0)){
             for (EventBean triggerEvent : triggerEvents) {
-                eventsPerStream[1] = triggerEvent;
+                eventsPerStream[0] = triggerEvent;
                 for (NamedWindowOnMergeAction action : insertActions) {
                     if (!action.isApplies(eventsPerStream, super.getExprEvaluatorContext())) {
                         continue;

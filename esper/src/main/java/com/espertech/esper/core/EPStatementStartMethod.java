@@ -485,7 +485,7 @@ public class EPStatementStartMethod
         return validated;
     }
 
-    private void validateMergeDesc(OnTriggerMergeDesc mergeDesc, StatementContext statementContext, StreamTypeService twoStreamTypeSvc, StreamTypeService selectTypeService)
+    private void validateMergeDesc(OnTriggerMergeDesc mergeDesc, StatementContext statementContext, StreamTypeService twoStreamTypeSvc, StreamTypeService singleStreamTypeSvc)
         throws ExprValidationException
     {
         String exprNodeErrorMessage = "Aggregation functions may not be used within an merge-clause";
@@ -510,14 +510,15 @@ public class EPStatementStartMethod
                 OnTriggerMergeItemInsert insert = (OnTriggerMergeItemInsert) item;
                 List<SelectClauseElementCompiled> compiledSelect = new ArrayList<SelectClauseElementCompiled>();
                 if (insert.getOptionalMatchCond() != null) {
-                    insert.setOptionalMatchCond(validateExprNoAgg(insert.getOptionalMatchCond(), twoStreamTypeSvc, statementContext, exprNodeErrorMessage));
+                    insert.setOptionalMatchCond(validateExprNoAgg(insert.getOptionalMatchCond(), singleStreamTypeSvc, statementContext, exprNodeErrorMessage));
                 }
+                int colIndex = 0;
                 for (SelectClauseElementRaw raw : insert.getSelectClause())
                 {
                     if (raw instanceof SelectClauseStreamRawSpec)
                     {
                         SelectClauseStreamRawSpec rawStreamSpec = (SelectClauseStreamRawSpec) raw;
-                        if (!rawStreamSpec.getStreamName().equals(selectTypeService.getStreamNames()[0]))
+                        if (!rawStreamSpec.getStreamName().equals(singleStreamTypeSvc.getStreamNames()[0]))
                         {
                             throw new ExprValidationException("Stream by name '" + rawStreamSpec.getStreamName() + "' was not found");
                         }
@@ -528,11 +529,16 @@ public class EPStatementStartMethod
                     else if (raw instanceof SelectClauseExprRawSpec)
                     {
                         SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                        ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(selectTypeService, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
+                        ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(singleStreamTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
                         String resultName = exprSpec.getOptionalAsName();
                         if (resultName == null)
                         {
-                            resultName = exprCompiled.toExpressionString();
+                            if (insert.getColumns().size() > colIndex) {
+                                resultName = insert.getColumns().get(colIndex);
+                            }
+                            else {
+                                resultName = exprCompiled.toExpressionString();
+                            }
                         }
                         compiledSelect.add(new SelectClauseExprCompiledSpec(exprCompiled, resultName));
                         validateNoAggregations(exprCompiled, "Expression in a merge-selection may not utilize aggregation functions");
@@ -545,6 +551,7 @@ public class EPStatementStartMethod
                     {
                         throw new IllegalStateException("Unknown select clause item:" + raw);
                     }
+                    colIndex++;
                 }
                 insert.setSelectClauseCompiled(compiledSelect);
             }

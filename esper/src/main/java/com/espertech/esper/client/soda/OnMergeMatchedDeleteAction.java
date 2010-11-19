@@ -12,6 +12,8 @@ import java.io.StringWriter;
 
 public class OnMergeMatchedDeleteAction implements OnMergeMatchedAction
 {
+    private static final long serialVersionUID = 0L;
+
     private Expression optionalCondition;
 
     public OnMergeMatchedDeleteAction(Expression optionalCondition) {

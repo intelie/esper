@@ -14,6 +14,8 @@ import java.util.List;
 
 public class OnMergeMatchedUpdateAction implements OnMergeMatchedAction
 {
+    private static final long serialVersionUID = 0L;
+
     private List<AssignmentPair> assignments = Collections.emptyList();
     private Expression optionalCondition;
 

@@ -91,7 +91,11 @@ onStreamExpr
 	;
 
 onMergeExpr
-	:	^(m=ON_MERGE_EXPR IDENT IDENT? mergeMatched* mergeUnmatched* whereClause[true]?)
+	:	^(m=ON_MERGE_EXPR IDENT IDENT? mergeItem+ whereClause[true]?)
+	;
+	
+mergeItem
+	:	(mergeMatched | mergeUnmatched)
 	;
 
 mergeMatched

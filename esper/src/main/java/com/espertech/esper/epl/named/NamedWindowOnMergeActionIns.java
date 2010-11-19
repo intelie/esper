@@ -15,10 +15,8 @@ public class NamedWindowOnMergeActionIns extends NamedWindowOnMergeAction {
         this.insertHelper = insertHelper;
     }
 
-    public void apply(EventBean matchingEvent, EventBean[] allEventsPerStream, OneEventCollection newData, OneEventCollection oldData, ExprEvaluatorContext exprEvaluatorContext) {
-        eventsPerStream[0] = allEventsPerStream[1];
+    public void apply(EventBean matchingEvent, EventBean[] eventsPerStream, OneEventCollection newData, OneEventCollection oldData, ExprEvaluatorContext exprEvaluatorContext) {
         EventBean event = insertHelper.process(eventsPerStream, true, true);
         newData.add(event);
-        eventsPerStream[0] = null;
     }
 }

@@ -35,6 +35,15 @@ public class EPStatementObjectModelHelper
             writer.write(constant.toString());
             writer.write('\"');
         }
+        else if (constant instanceof Long) {
+            writer.write(constant.toString() + "L");
+        }
+        else if (constant instanceof Double) {
+            writer.write(constant.toString() + "d");
+        }
+        else if (constant instanceof Float) {
+            writer.write(constant.toString() + "f");
+        }
         else
         {
             writer.write(constant.toString());

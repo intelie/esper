@@ -14,6 +14,8 @@ import java.util.List;
 
 public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
 {
+    private static final long serialVersionUID = 0L;
+
     private List<String> columnNames = Collections.emptyList();
     private List<SelectClauseElement> selectList = Collections.emptyList();
     private Expression optionalCondition;
