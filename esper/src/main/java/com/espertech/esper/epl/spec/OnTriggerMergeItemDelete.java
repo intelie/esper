@@ -15,6 +15,8 @@ import com.espertech.esper.epl.expression.ExprNode;
  */
 public class OnTriggerMergeItemDelete extends OnTriggerMergeItem
 {
+    private static final long serialVersionUID = 8183386154578818969L;
+
     public OnTriggerMergeItemDelete(ExprNode optionalMatchCond) {
         super(optionalMatchCond);
     }

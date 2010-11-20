@@ -13,6 +13,8 @@ package com.espertech.esper.filter;
  */
 public class FilterValueSetParamImpl implements FilterValueSetParam
 {
+    private static final long serialVersionUID = 6010018248791276406L;
+    
     private final String propertyName;
     private final FilterOperator filterOperator;
     private final Object filterValue;

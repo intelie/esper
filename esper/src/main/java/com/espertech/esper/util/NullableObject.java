@@ -18,6 +18,8 @@ import java.io.Serializable;
  */
 public class NullableObject<T> implements Serializable
 {
+    private static final long serialVersionUID = 4345362826746027878L;
+
     private T object;
 
     /**

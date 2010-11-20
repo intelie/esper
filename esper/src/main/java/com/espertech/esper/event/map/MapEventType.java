@@ -872,13 +872,18 @@ public class MapEventType implements EventTypeSPI
         {
             String propName = entry.getKey();
             Object setTwoType = setTwo.get(entry.getKey());
+            boolean setTwoTypeFound = setTwo.containsKey(entry.getKey());
             Object setOneType = entry.getValue();
+
             // allow null for nested event types
             if ((setOneType instanceof String || setOneType instanceof EventType) && setTwoType == null) {
                 continue;
             }
             if ((setTwoType instanceof String || setTwoType instanceof EventType) && setOneType == null) {
                 continue;
+            }
+            if (!setTwoTypeFound) {
+                return "The property '" + propName + "' is not provided but required";
             }
             if (((setTwoType == null) && (setOneType != null)) ||
                  (setTwoType != null) && (setOneType == null))
@@ -1403,7 +1408,7 @@ public class MapEventType implements EventTypeSPI
     {
         if (!(otherType instanceof MapEventType))
         {
-            return "Type by name '" + otherType.getName() + "' is not a compatible type";
+            return "Type by name '" + otherType.getName() + "' is not a compatible type (target type underlying is '" + otherType.getUnderlyingType().getSimpleName() + "')";
         }
 
         MapEventType other = (MapEventType) otherType;

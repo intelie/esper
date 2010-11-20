@@ -679,6 +679,7 @@ public class SelectExprProcessorHelper
         }
         catch (EventAdapterException ex)
         {
+            log.debug("Exception provided by event adapter: " + ex.getMessage(), ex);
             throw new ExprValidationException(ex.getMessage());
         }
     }

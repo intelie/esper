@@ -17,6 +17,8 @@ import java.util.List;
  */
 public class OnTriggerMergeItemInsert extends OnTriggerMergeItem
 {
+    private static final long serialVersionUID = -657179063417985357L;
+    
     private final List<String> columns;
     private final List<SelectClauseElementRaw> selectClause;
     private List<SelectClauseElementCompiled> selectClauseCompiled;

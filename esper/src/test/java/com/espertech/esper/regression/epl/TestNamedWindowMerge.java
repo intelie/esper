@@ -237,6 +237,11 @@ public class TestNamedWindowMerge extends TestCase {
     public void testInvalid() {
         String epl;        
         epService.getEPAdministrator().createEPL("create window MergeWindow.std:unique(string) as SupportBean");
+        epService.getEPAdministrator().createEPL("create schema ABCSchema as (val int)");
+        epService.getEPAdministrator().createEPL("create window ABCWindow.win:keepall() as ABCSchema");
+
+        epl = "on SupportBean_A as up merge ABCWindow as mv when not matched then insert (col) select 1";
+        tryInvalid(epl, "Error starting statement: Exception encountered in when-not-matched (clause 1): Event type named 'ABCWindow' has already been declared with differing column name or type information: The property 'val' is not provided but required [on SupportBean_A as up merge ABCWindow as mv when not matched then insert (col) select 1]");
 
         epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then update set intPrimitive = 1";
         tryInvalid(epl, "Incorrect syntax near 'update' (a reserved keyword) expecting 'insert' but found 'update' at line 1 column 97 [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then update set intPrimitive = 1]");
@@ -257,7 +262,7 @@ public class TestNamedWindowMerge extends TestCase {
         tryInvalid(epl, "Error starting statement: Property named 'boolPrimitive' is ambigous as is valid for more then one stream [on SupportBean as up merge MergeWindow as mv where boolPrimitive=true when not matched then insert select *]");
 
         epl = "on SupportBean as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive";
-        tryInvalid(epl, "Error starting statement: Event type named 'MergeWindow' has already been declared with differing column name or type information: Type by name 'MergeWindow' is not a compatible type [on SupportBean as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive]");
+        tryInvalid(epl, "Error starting statement: Exception encountered in when-not-matched (clause 1): Event type named 'MergeWindow' has already been declared with differing column name or type information: Type by name 'MergeWindow' is not a compatible type (target type underlying is 'SupportBean') [on SupportBean as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive]");
 
         epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive";
         tryInvalid(epl, "Error starting statement: Property named 'intPrimitive' is not valid in any stream [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive]");

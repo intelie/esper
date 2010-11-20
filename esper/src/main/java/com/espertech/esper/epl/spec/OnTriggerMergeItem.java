@@ -10,10 +10,12 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
 
+import java.io.Serializable;
+
 /**
  * Specification for the merge statement insert/update/delete-part.
  */
-public abstract class OnTriggerMergeItem
+public abstract class OnTriggerMergeItem implements Serializable
 {
     private ExprNode optionalMatchCond;
 

@@ -138,24 +138,33 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
         updateDeleteActions = new ArrayList<NamedWindowOnMergeAction>();
         insertActions = new ArrayList<NamedWindowOnMergeAction>();
 
+        int count = 1;
         for (OnTriggerMergeItem item : onTriggerDesc.getItems()) {
-            if (item instanceof OnTriggerMergeItemInsert) {
-                OnTriggerMergeItemInsert insertDesc = (OnTriggerMergeItemInsert) item;
-                insertActions.add(setupInsert(insertDesc, triggeringEventType, statementContext));
+            try {
+                if (item instanceof OnTriggerMergeItemInsert) {
+                    OnTriggerMergeItemInsert insertDesc = (OnTriggerMergeItemInsert) item;
+                    insertActions.add(setupInsert(insertDesc, triggeringEventType, statementContext));
+                }
+                else if (item instanceof OnTriggerMergeItemUpdate) {
+                    OnTriggerMergeItemUpdate updateDesc = (OnTriggerMergeItemUpdate) item;
+                    NamedWindowUpdateHelper updateHelper = NamedWindowUpdateHelper.make(eventTypeSPI, updateDesc.getAssignments(), onTriggerDesc.getOptionalAsName());
+                    ExprEvaluator filterEval = updateDesc.getOptionalMatchCond() == null ? null : updateDesc.getOptionalMatchCond().getExprEvaluator();
+                    updateDeleteActions.add(new NamedWindowOnMergeActionUpd(filterEval, updateHelper));
+                }
+                else if (item instanceof OnTriggerMergeItemDelete) {
+                    OnTriggerMergeItemDelete deleteDesc = (OnTriggerMergeItemDelete) item;
+                    ExprEvaluator filterEval = deleteDesc.getOptionalMatchCond() == null ? null : deleteDesc.getOptionalMatchCond().getExprEvaluator();
+                    updateDeleteActions.add(new NamedWindowOnMergeActionDel(filterEval));
+                }
+                else {
+                    throw new IllegalArgumentException("Invalid type of merge item '" + item.getClass() + "'");
+                }
+                count++;
             }
-            else if (item instanceof OnTriggerMergeItemUpdate) {
-                OnTriggerMergeItemUpdate updateDesc = (OnTriggerMergeItemUpdate) item;
-                NamedWindowUpdateHelper updateHelper = NamedWindowUpdateHelper.make(eventTypeSPI, updateDesc.getAssignments(), onTriggerDesc.getOptionalAsName());
-                ExprEvaluator filterEval = updateDesc.getOptionalMatchCond() == null ? null : updateDesc.getOptionalMatchCond().getExprEvaluator();
-                updateDeleteActions.add(new NamedWindowOnMergeActionUpd(filterEval, updateHelper));
-            }
-            else if (item instanceof OnTriggerMergeItemDelete) {
-                OnTriggerMergeItemDelete deleteDesc = (OnTriggerMergeItemDelete) item;
-                ExprEvaluator filterEval = deleteDesc.getOptionalMatchCond() == null ? null : deleteDesc.getOptionalMatchCond().getExprEvaluator();
-                updateDeleteActions.add(new NamedWindowOnMergeActionDel(filterEval));
-            }
-            else {
-                throw new IllegalArgumentException("Invalid type of merge item '" + item.getClass() + "'");
+            catch (ExprValidationException ex) {
+                boolean isNot = item instanceof OnTriggerMergeItemInsert;
+                String message = "Exception encountered in when-" + (isNot?"not-":"") + "matched (clause " + count + "): " + ex.getMessage();
+                throw new ExprValidationException(message, ex);
             }
         }
     }
