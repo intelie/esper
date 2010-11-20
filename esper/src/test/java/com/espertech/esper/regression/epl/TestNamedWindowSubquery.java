@@ -16,7 +16,6 @@ public class TestNamedWindowSubquery extends TestCase
     private SupportUpdateListener listenerWindow;
     private SupportUpdateListener listenerStmtOne;
     private SupportUpdateListener listenerStmtTwo;
-    private SupportUpdateListener listenerStmtThree;
     private SupportUpdateListener listenerStmtDelete;
 
     public void setUp()
@@ -27,11 +26,64 @@ public class TestNamedWindowSubquery extends TestCase
         listenerWindow = new SupportUpdateListener();
         listenerStmtOne = new SupportUpdateListener();
         listenerStmtTwo = new SupportUpdateListener();
-        listenerStmtThree = new SupportUpdateListener();
         listenerStmtDelete = new SupportUpdateListener();
     }
 
-    public void testSubquery()
+    public void testCorrelatedUnfiltered() {
+
+        String[] fields = "id,details.string,details.intPrimitive".split(",");
+
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("ABean", SupportBean_S0.class);
+        epService.getEPAdministrator().createEPL("create window MyWindow.std:unique(string) as select * from SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select status.*, (select * from MyWindow where string = ABean.p00) as details" +
+                    " from ABean as status");
+        stmt.addListener(listenerStmtOne);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 20));
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 30));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E1"));
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {1, "E1", 10});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2, "E2"));
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {2, "E2", 20});
+    }
+
+    public void testCorrelatedFilteredLateStart()
+    {
+        SupportUpdateListener listener = new SupportUpdateListener();
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("S0", SupportBean_S0.class);
+
+        epService.getEPAdministrator().createEPL("create window SupportWindow.win:keepall() as select * from SupportBean");
+        epService.getEPAdministrator().createEPL("insert into SupportWindow select * from SupportBean");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", -2));
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select (select intPrimitive from SupportWindow(intPrimitive<0) sw where s0.p00=sw.string) as val from S0 s0");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(10, "E1"));
+        assertEquals(null, listener.assertOneGetNewAndReset().get("val"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(20, "E2"));
+        assertEquals(-2, listener.assertOneGetNewAndReset().get("val"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", -3));
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 4));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(-3, "E3"));
+        assertEquals(-3, listener.assertOneGetNewAndReset().get("val"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(20, "E4"));
+        assertEquals(null, listener.assertOneGetNewAndReset().get("val"));
+    }
+
+    public void testUncorrelatedSubquery()
     {
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
@@ -152,22 +204,6 @@ public class TestNamedWindowSubquery extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1}, {"E3", 4}, {"E2", 5}});
     }
 
-    public void testCorrelatedSubquerySelect() {
-
-        // ESPER-452
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventType("ABean", SupportBean_S0.class);
-        epService.getEPAdministrator().createEPL("create window MyWindow.std:unique(string) as select * from SupportBean");
-        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select status.*, (select * from MyWindow where string = ABean.p00) as details" +
-                    " from ABean(p01='good') as status");
-        stmt.addListener(listenerStmtOne);
-        
-        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E1", "good"));
-        assertTrue(listenerStmtOne.isInvoked());
-    }
-
     public void testSubqueryDeleteInsertReplace()
     {
         String fields[] = new String[] {"key", "value"};
@@ -215,7 +251,7 @@ public class TestNamedWindowSubquery extends TestCase
         }
     }
 
-    public void testSubqueryAggregation()
+    public void testUncorrelatedSubqueryAggregation()
     {
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, longPrimitive as b from " + SupportBean.class.getName();
