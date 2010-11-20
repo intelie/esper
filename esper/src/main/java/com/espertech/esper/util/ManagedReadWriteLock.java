@@ -25,27 +25,27 @@ public class ManagedReadWriteLock
     /**
      * Acquire text.
      */
-    protected final static String ACQUIRE_TEXT  = "Acquire ";
+    public final static String ACQUIRE_TEXT  = "Acquire ";
 
     /**
      * Acquired text.
      */
-    protected final static String ACQUIRED_TEXT = "Got     ";
+    public final static String ACQUIRED_TEXT = "Got     ";
 
     /**
      * Acquired text.
      */
-    protected final static String TRY_TEXT      = "Trying  ";
+    public final static String TRY_TEXT      = "Trying  ";
 
     /**
      * Release text.
      */
-    protected final static String RELEASE_TEXT  = "Release ";
+    public final static String RELEASE_TEXT  = "Release ";
 
     /**
      * Released text.
      */
-    protected final static String RELEASED_TEXT = "Freed   ";
+    public final static String RELEASED_TEXT = "Freed   ";
 
     private final ReentrantReadWriteLock lock;
     private final String name;

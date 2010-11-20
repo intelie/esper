@@ -705,6 +705,7 @@
 	<xs:element name="execution">
 		<xs:complexType>
 			<xs:attribute name="prioritized" type="xs:boolean" use="optional"/>
+			<xs:attribute name="fairlock" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stmtgroup">

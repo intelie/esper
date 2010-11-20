@@ -8,21 +8,22 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.core.EPStatementHandle;
+import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.named.NamedWindowIndexRepository;
+import com.espertech.esper.epl.named.NamedWindowRootView;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.view.StatementStopCallback;
+import com.espertech.esper.view.StatementStopService;
+import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.event.*;
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.view.StatementStopService;
-import com.espertech.esper.view.StatementStopCallback;
-import com.espertech.esper.view.Viewable;
-import com.espertech.esper.epl.named.NamedWindowRootView;
-import com.espertech.esper.epl.named.NamedWindowIndexRepository;
-import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.core.EPStatementHandle;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.*;
 
@@ -243,7 +244,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
     public Collection<EventBean> getSnapshot(EPStatementHandle createWindowStmtHandle, Viewable parent)
     {
-        createWindowStmtHandle.getStatementLock().acquireLock(null);
+        createWindowStmtHandle.getStatementLock().acquireReadLock();
         try
         {
             Iterator<EventBean> it = parent.iterator();
@@ -263,7 +264,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
         }
         finally
         {
-            createWindowStmtHandle.getStatementLock().releaseLock(null);
+            createWindowStmtHandle.getStatementLock().releaseReadLock();
         }
     }
 

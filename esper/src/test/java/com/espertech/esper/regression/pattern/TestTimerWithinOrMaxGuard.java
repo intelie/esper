@@ -24,7 +24,7 @@ public class TestTimerWithinOrMaxGuard extends TestCase implements SupportBeanCo
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:withinmax(1999 msec, 10)");
         testCaseList.addTest(testCase);
 
-        String text = "select * from pattern [b=" + EVENT_B_CLASS + "(id = \"B3\") where timer:withinmax(10.001, 1)]";
+        String text = "select * from pattern [b=" + EVENT_B_CLASS + "(id = \"B3\") where timer:withinmax(10.001d, 1)]";
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);

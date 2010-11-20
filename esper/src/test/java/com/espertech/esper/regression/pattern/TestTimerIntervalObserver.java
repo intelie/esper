@@ -25,10 +25,10 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         testCase.add("B1");
         testCaseList.addTest(testCase);
 
-        String text = "select * from pattern [timer:interval(1.999)]";
+        String text = "select * from pattern [timer:interval(1.999d)]";
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
-        PatternExpr pattern = Patterns.timerInterval(1.999);
+        PatternExpr pattern = Patterns.timerInterval(1.999d);
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(text, model.toEPL());

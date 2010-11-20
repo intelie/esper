@@ -1270,6 +1270,12 @@ class ConfigurationParser {
             boolean isPrioritized = Boolean.parseBoolean(prioritizedStr);
             configuration.getEngineDefaults().getExecution().setPrioritized(isPrioritized);
         }
+        String fairlockStr = getOptionalAttribute(parentElement, "fairlock");
+        if (fairlockStr != null)
+        {
+            boolean isFairlock = Boolean.parseBoolean(fairlockStr);
+            configuration.getEngineDefaults().getExecution().setFairlock(isFairlock);
+        }
     }
 
     private static void handleExceptionHandling(Configuration configuration, Element parentElement)

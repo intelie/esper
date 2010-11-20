@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.view.stream;
 
+import com.espertech.esper.core.StatementLock;
 import com.espertech.esper.view.EventStream;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.core.EPStatementHandle;
-import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
@@ -39,7 +39,7 @@ public interface StreamFactoryService
      * @param isNamedWindowTrigger if a named window or trigger querying from named window
      * @return event stream representing active filter
      */
-    public Pair<EventStream, ManagedLock> createStream(final String statementId, FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
+    public Pair<EventStream, StatementLock> createStream(final String statementId, FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
                                     boolean isJoin, boolean isSubSelect, ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger);
 
     /**

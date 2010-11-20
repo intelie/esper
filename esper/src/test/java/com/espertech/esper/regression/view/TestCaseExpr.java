@@ -382,7 +382,7 @@ public class TestCaseExpr extends TestCase
     {
        String caseExpr = "select case intPrimitive " +
                  "when 1 then null " +
-                 "when 2 then 1.0 " +
+                 "when 2 then 1.0d " +
                  "when 3 then null " +
                  "else 2 " +
                  "end as p1 from " + SupportBean.class.getName() + ".win:length(100)";
@@ -408,7 +408,7 @@ public class TestCaseExpr extends TestCase
     {
        String caseExpr = "select case intPrimitive " +
                  "when 1 then null " +
-                 "when 2 then 1.0 " +
+                 "when 2 then 1.0d " +
                  "when 3 then null " +
                  "else 2 " +
                  "end as p1 from " + SupportBean.class.getName() + ".win:length(100)";

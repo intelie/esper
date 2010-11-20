@@ -8,20 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.view.stream;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.RefCountedMap;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.EPStatementHandleCallback;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.core.StatementLock;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterValueSet;
 import com.espertech.esper.view.EventStream;
 import com.espertech.esper.view.ZeroDepthStream;
-import com.espertech.esper.util.ManagedLock;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -87,7 +87,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * @param epStatementHandle is the statement resource lock
      * @return newly createdStatement event stream, not reusing existing instances
      */
-    public Pair<EventStream, ManagedLock> createStream(final String statementId, final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect, final ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger)
+    public Pair<EventStream, StatementLock> createStream(final String statementId, final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect, final ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger)
     {
         if (log.isDebugEnabled())
         {
@@ -118,7 +118,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
                 log.debug(".createStream filter already found");
                 eventStreamsRefCounted.reference(filterSpec);
                 // We return the lock of the statement first establishing the stream to use that as the new statement's lock
-                return new Pair<EventStream, ManagedLock>(pair.getFirst(), pair.getSecond().getEpStatementHandle().getStatementLock());
+                return new Pair<EventStream, StatementLock>(pair.getFirst(), pair.getSecond().getEpStatementHandle().getStatementLock());
             }
         }
 
@@ -188,7 +188,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
         FilterValueSet filterValues = filterSpec.getValueSet(null);
         filterService.add(filterValues, handle);
 
-        return new Pair<EventStream, ManagedLock>(eventStream, null);
+        return new Pair<EventStream, StatementLock>(eventStream, null);
     }
 
     /**

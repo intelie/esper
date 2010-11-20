@@ -1860,7 +1860,7 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
 				</para>
 
 				<para>
-					 The XML configuration is as follows:
+					 The XML configuration to enable the flag, which is disabled by default, is as follows:
 				</para>
 	
 				<programlisting><![CDATA[<engine-settings>
@@ -1875,6 +1875,30 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
 	
 				<programlisting><![CDATA[Configuration config = new Configuration();
 config.getEngineDefaults().getExecution().setPrioritized(true);]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-engine-execution-fairlock" revision="1">
+				<title>Fair Locking</title>
+				<para>
+					By default Esper configures statement-level locks without fair locking. If your application is multi-threaded and performs very frequent reads via iterator or fire-and-forget queries, you may need to set this flag to prevent lock starvation in the face of concurrent reads and writes. Please consult the Java API documentation under <literal>ReentrantReadWriteLock</literal> and <emphasis>Fair Mode</emphasis> for more information.
+				</para>
+		
+				<para>
+					 The XML configuration to enable fair locking, which is disabled by default, is as follows:
+				</para>
+	
+				<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <execution fairlock="true"/>
+  </defaults>
+</engine-settings>]]></programlisting>
+			
+				<para>
+				 The API to change the setting:
+				</para>
+	
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getExecution().setFairlock(true);]]></programlisting>
 			</sect3>
 		</sect2>
 

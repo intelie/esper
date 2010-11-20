@@ -232,7 +232,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         // Set variable version and acquire the lock first
-        statementContext.getEpStatementHandle().getStatementLock().acquireLock(null);
+        statementContext.getEpStatementHandle().getStatementLock().acquireReadLock();
         try
         {
             statementContext.getVariableService().setLocalVersion();
@@ -249,7 +249,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
         catch (RuntimeException ex)
         {
-            statementContext.getEpStatementHandle().getStatementLock().releaseLock(null);
+            statementContext.getEpStatementHandle().getStatementLock().releaseReadLock();
             throw ex;
         }
     }
@@ -307,7 +307,7 @@ public class EPStatementImpl implements EPStatementSPI
             throw new IllegalStateException("Statement is in destroyed state");
         }
 
-        statementContext.getEpStatementHandle().getStatementLock().acquireLock(null);
+        statementContext.getEpStatementHandle().getStatementLock().acquireReadLock();
         try
         {
             // Add listener - listener not receiving events from this statement, as the statement is locked
@@ -368,7 +368,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
         finally
         {
-            statementContext.getEpStatementHandle().getStatementLock().releaseLock(null);
+            statementContext.getEpStatementHandle().getStatementLock().releaseReadLock();
         }
     }
 

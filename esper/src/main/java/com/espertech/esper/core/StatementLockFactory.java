@@ -8,8 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.util.ManagedLock;
-
 /**
  * Factory for the managed lock that provides statement resource protection.
  */
@@ -21,5 +19,5 @@ public interface StatementLockFactory
      * @param expressionText is the statement expression text
      * @return lock
      */
-    public ManagedLock getStatementLock(String statementName, String expressionText);
+    public StatementLock getStatementLock(String statementName, String expressionText);
 }

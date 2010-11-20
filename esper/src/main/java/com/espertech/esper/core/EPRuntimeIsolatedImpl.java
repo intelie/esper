@@ -619,7 +619,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
      */
     public void processStatementFilterMultiple(EPStatementHandle handle, ArrayDeque<FilterHandleCallback> callbackList, EventBean event)
     {
-        handle.getStatementLock().acquireLock(unisolatedServices.getStatementLockFactory());
+        handle.getStatementLock().acquireWriteLock(unisolatedServices.getStatementLockFactory());
         try
         {
             if (handle.isHasVariables())
@@ -675,7 +675,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
         }
         finally
         {
-            handle.getStatementLock().releaseLock(unisolatedServices.getStatementLockFactory());
+            handle.getStatementLock().releaseWriteLock(unisolatedServices.getStatementLockFactory());
         }
     }
 
@@ -687,7 +687,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
      */
     public void processStatementFilterSingle(EPStatementHandle handle, EPStatementHandleCallback handleCallback, EventBean event)
     {
-        handle.getStatementLock().acquireLock(unisolatedServices.getStatementLockFactory());
+        handle.getStatementLock().acquireWriteLock(unisolatedServices.getStatementLockFactory());
         try
         {
             if (handle.isHasVariables())
@@ -706,7 +706,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
         }
         finally
         {
-            handleCallback.getEpStatementHandle().getStatementLock().releaseLock(unisolatedServices.getStatementLockFactory());
+            handleCallback.getEpStatementHandle().getStatementLock().releaseWriteLock(unisolatedServices.getStatementLockFactory());
         }
     }
 

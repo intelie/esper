@@ -31,7 +31,10 @@ import com.espertech.esper.schedule.ScheduleHandle;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.timer.TimerCallback;
-import com.espertech.esper.util.*;
+import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.util.MetricUtil;
+import com.espertech.esper.util.ThreadLogUtil;
+import com.espertech.esper.util.UuidGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -876,7 +879,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      */
     public static void processStatementScheduleMultiple(EPStatementHandle handle, Object callbackObject, EPServicesContext services, ExprEvaluatorContext exprEvaluatorContext)
     {
-        handle.getStatementLock().acquireLock(services.getStatementLockFactory());
+        handle.getStatementLock().acquireWriteLock(services.getStatementLockFactory());
         try
         {
             if (handle.isHasVariables())
@@ -906,7 +909,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
         finally
         {
-            handle.getStatementLock().releaseLock(services.getStatementLockFactory());
+            handle.getStatementLock().releaseWriteLock(services.getStatementLockFactory());
         }
     }
 
@@ -918,8 +921,8 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      */
     public static void processStatementScheduleSingle(EPStatementHandleCallback handle, EPServicesContext services,ExprEvaluatorContext exprEvaluatorContext)
     {
-        ManagedLock statementLock = handle.getEpStatementHandle().getStatementLock();
-        statementLock.acquireLock(services.getStatementLockFactory());
+        StatementLock statementLock = handle.getEpStatementHandle().getStatementLock();
+        statementLock.acquireWriteLock(services.getStatementLockFactory());
         try
         {
             if (handle.getEpStatementHandle().isHasVariables())
@@ -936,7 +939,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
         finally
         {
-            handle.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
+            handle.getEpStatementHandle().getStatementLock().releaseWriteLock(services.getStatementLockFactory());
         }
     }
 
@@ -949,7 +952,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      */
     public void processStatementFilterMultiple(EPStatementHandle handle, ArrayDeque<FilterHandleCallback> callbackList, EventBean event, long version)
     {
-        handle.getStatementLock().acquireLock(services.getStatementLockFactory());
+        handle.getStatementLock().acquireWriteLock(services.getStatementLockFactory());
         try
         {
             if (handle.isHasVariables())
@@ -1013,7 +1016,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
         finally
         {
-            handle.getStatementLock().releaseLock(services.getStatementLockFactory());
+            handle.getStatementLock().releaseWriteLock(services.getStatementLockFactory());
         }
     }
 
@@ -1032,7 +1035,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      */
     public void processStatementFilterSingle(EPStatementHandle handle, EPStatementHandleCallback handleCallback, EventBean event, long version)
     {
-        handle.getStatementLock().acquireLock(services.getStatementLockFactory());
+        handle.getStatementLock().acquireWriteLock(services.getStatementLockFactory());
         try
         {
             if (handle.isHasVariables())
@@ -1059,7 +1062,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
         finally
         {
-            handleCallback.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
+            handleCallback.getEpStatementHandle().getStatementLock().releaseWriteLock(services.getStatementLockFactory());
         }
     }
 

@@ -8,10 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.util.MetaDefItem;
-import com.espertech.esper.util.ManagedLock;
-import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
+import com.espertech.esper.util.ManagedReadWriteLock;
+import com.espertech.esper.util.MetaDefItem;
 
 import java.io.Serializable;
 
@@ -28,7 +28,7 @@ public class EPStatementHandle implements MetaDefItem, Serializable
     private final String statementName;
     private final String statementId;
     private final String statementText;
-    private transient ManagedLock statementLock = null;
+    private transient StatementLock statementLock = null;
     private final int hashCode;
     private transient EPStatementDispatch optionalDispatchable;
     // handles self-join (ie. statement where from-clause lists the same event type or a super-type more then once)
@@ -53,7 +53,7 @@ public class EPStatementHandle implements MetaDefItem, Serializable
      * @param preemptive true for drop after done
      * @param statementFilterVersion filter version
      */
-    public EPStatementHandle(String statementId, String statementName, String statementText, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive, StatementFilterVersion statementFilterVersion)
+    public EPStatementHandle(String statementId, String statementName, String statementText, StatementLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle, int priority, boolean preemptive, StatementFilterVersion statementFilterVersion)
     {
         this.statementId = statementId;
         this.statementName = statementName;
@@ -126,7 +126,7 @@ public class EPStatementHandle implements MetaDefItem, Serializable
      * Returns statement resource lock.
      * @return lock
      */
-    public ManagedLock getStatementLock()
+    public StatementLock getStatementLock()
     {
         return statementLock;
     }
@@ -144,7 +144,7 @@ public class EPStatementHandle implements MetaDefItem, Serializable
      * Sets the lock to use for the statement.
      * @param statementLock statement lock
      */
-    public void setStatementLock(ManagedLock statementLock)
+    public void setStatementLock(StatementLock statementLock)
     {
         this.statementLock = statementLock;
     }

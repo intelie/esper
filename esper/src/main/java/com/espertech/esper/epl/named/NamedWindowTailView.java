@@ -203,7 +203,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
             return coll.iterator();
         }
 
-        createWindowStmtHandle.getStatementLock().acquireLock(null);
+        createWindowStmtHandle.getStatementLock().acquireReadLock();
         try
         {
             Iterator<EventBean> it = parent.iterator();
@@ -220,7 +220,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         }
         finally
         {
-            createWindowStmtHandle.getStatementLock().releaseLock(null);
+            createWindowStmtHandle.getStatementLock().releaseReadLock();
         }
     }
 
@@ -236,7 +236,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
             return revisionProcessor.getSnapshot(createWindowStmtHandle, parent);
         }
 
-        createWindowStmtHandle.getStatementLock().acquireLock(null);
+        createWindowStmtHandle.getStatementLock().acquireReadLock();
         try
         {
             if (filter != null) {
@@ -259,7 +259,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         }
         finally
         {
-            createWindowStmtHandle.getStatementLock().releaseLock(null);
+            createWindowStmtHandle.getStatementLock().releaseReadLock();
         }
     }
 

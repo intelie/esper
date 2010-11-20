@@ -11,16 +11,12 @@ package com.espertech.esper.adapter;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.core.EPServiceProviderSPI;
-import com.espertech.esper.core.EPStatementHandle;
-import com.espertech.esper.core.EPStatementHandleCallback;
-import com.espertech.esper.core.StatementFilterVersion;
+import com.espertech.esper.core.*;
 import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.filter.FilterValueSet;
-import com.espertech.esper.util.ManagedLockImpl;
 
 import java.util.LinkedList;
 
@@ -101,7 +97,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
 
         String name = "subscription:" + subscriptionName;
         StatementMetricHandle metricsHandle = spi.getMetricReportingService().getStatementHandle(name, name);
-        EPStatementHandle statementHandle = new EPStatementHandle(name, name, name, new ManagedLockImpl(name), name, false, metricsHandle, 0, false, new StatementFilterVersion());
+        EPStatementHandle statementHandle = new EPStatementHandle(name, name, name, new StatementRWLockImpl(name, false), name, false, metricsHandle, 0, false, new StatementFilterVersion());
         EPStatementHandleCallback registerHandle = new EPStatementHandleCallback(statementHandle, this);
         spi.getFilterService().add(fvs, registerHandle);
     }

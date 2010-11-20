@@ -22,7 +22,6 @@ import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingServiceSPI;
-import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.view.StatementStopServiceImpl;
 import com.espertech.esper.view.ViewEnumHelper;
 import com.espertech.esper.view.ViewResolutionService;
@@ -73,7 +72,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
         ScheduleBucket scheduleBucket = engineServices.getSchedulingMgmtService().allocateBucket();
 
         // Create a lock for the statement
-        ManagedLock statementResourceLock;
+        StatementLock statementResourceLock;
 
         // For on-delete statements, use the create-named-window statement lock
         if ((optOnTriggerDesc != null) && (optOnTriggerDesc instanceof OnTriggerWindowDesc))

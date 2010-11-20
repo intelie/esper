@@ -30,7 +30,7 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(1999 msec)");
         testCaseList.addTest(testCase);
 
-        String text = "select * from pattern [b=" + EVENT_B_CLASS + "(id = \"B3\") where timer:within(10.001)]";
+        String text = "select * from pattern [b=" + EVENT_B_CLASS + "(id = \"B3\") where timer:within(10.001d)]";
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);

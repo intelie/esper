@@ -1165,6 +1165,7 @@ public class ConfigurationEngineDefaults implements Serializable
     public static class Execution implements Serializable
     {
         private boolean prioritized;
+        private boolean fairlock;
         private static final long serialVersionUID = 0L;
 
         /**
@@ -1193,6 +1194,14 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setPrioritized(boolean prioritized)
         {
             this.prioritized = prioritized;
+        }
+
+        public boolean isFairlock() {
+            return fairlock;
+        }
+
+        public void setFairlock(boolean fairlock) {
+            this.fairlock = fairlock;
         }
     }
 
