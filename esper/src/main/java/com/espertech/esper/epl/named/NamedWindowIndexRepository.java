@@ -111,7 +111,7 @@ public class NamedWindowIndexRepository
      * If the table is no longer used, discard it and no longer update events into the index.
      * @param table to remove a reference to
      */
-    public void removeTableReference(EventTable table)
+    public void removeTableReference(PropertyIndexedEventTable table)
     {
         for (Map.Entry<MultiKey<IndexedPropDesc>, Pair<PropertyIndexedEventTable, Integer>> entry : tableIndexes.entrySet())
         {

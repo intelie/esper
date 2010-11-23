@@ -11,7 +11,9 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-public class TestNamedWindowSubqCorrelIndex extends TestCase
+import java.util.HashMap;
+
+public class TestPerfNamedWindowSubquery extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listenerStmtOne;
@@ -22,16 +24,11 @@ public class TestNamedWindowSubqCorrelIndex extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventType("ABean", SupportBean_S0.class);
         listenerStmtOne = new SupportUpdateListener();
     }
 
     public void testNoShare() {
         runAssertion(false, false, false);
-    }
-
-    public void testNoShareCreate() {
-        runAssertion(false, false, true);
     }
 
     public void testShare() {
@@ -51,51 +48,55 @@ public class TestNamedWindowSubqCorrelIndex extends TestCase
     }
 
     private void runAssertion(boolean enableIndexShareCreate, boolean disableIndexShareConsumer, boolean createExplicitIndex) {
-        String createEpl = "create window MyWindow.std:unique(string) as select * from SupportBean";
+        epService.getEPAdministrator().createEPL("create schema EventSchema(e0 string, e1 int, e2 string)");
+
+        String createEpl = "create window MyWindow.win:keepall() as select * from SupportBean";
         if (enableIndexShareCreate) {
             createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
         }
         epService.getEPAdministrator().createEPL(createEpl);
         epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
 
-        EPStatement stmtIndex = null;
         if (createExplicitIndex) {
-            stmtIndex = epService.getEPAdministrator().createEPL("create index MyIndex on MyWindow (string)");
+            epService.getEPAdministrator().createEPL("create index MyIndex on MyWindow (string)");
         }
 
-        String consumeEpl = "select status.*, (select * from MyWindow where string = ABean.p00) as details from ABean as status";
+        String consumeEpl = "select e0, (select string from MyWindow where intPrimitive = es.e1 and string = es.e2) as val from EventSchema as es";
         if (disableIndexShareConsumer) {
             consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
         }
         EPStatement consumeStmt = epService.getEPAdministrator().createEPL(consumeEpl);
         consumeStmt.addListener(listenerStmtOne);
 
-        String[] fields = "id,details.string,details.intPrimitive".split(",");
+        String[] fields = "e0,val".split(",");
 
-        epService.getEPRuntime().sendEvent(new SupportBean("E1", 10));
-        epService.getEPRuntime().sendEvent(new SupportBean("E2", 20));
-        epService.getEPRuntime().sendEvent(new SupportBean("E3", 30));
+        // test once
+        epService.getEPRuntime().sendEvent(new SupportBean("WX", 10));
+        sendEvent("E1", 10, "WX");
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1", "WX"});
 
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E1"));
-        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {1, "E1", 10});
-
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(2, "E2"));
-        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {2, "E2", 20});
-
-        // test late start
-        consumeStmt.destroy();
-        consumeStmt = epService.getEPAdministrator().createEPL(consumeEpl);
-        consumeStmt.addListener(listenerStmtOne);
-
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E1"));
-        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {1, "E1", 10});
-
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(2, "E2"));
-        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {2, "E2", 20});
-
-        if (stmtIndex != null) {
-            stmtIndex.destroy();
+        // preload
+        for (int i = 0; i < 10000; i++) {
+            epService.getEPRuntime().sendEvent(new SupportBean("W" + i, i));
         }
-        consumeStmt.destroy();
+        
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            sendEvent("E" + i, i, "W" + i);
+            ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E" + i, "W" + i});
+        }
+        long endTime = System.currentTimeMillis();
+        long delta = endTime - startTime;
+        assertTrue("delta=" + delta, delta < 500);
+
+        epService.getEPAdministrator().destroyAllStatements();
+    }
+
+    private void sendEvent(String e0, int e1, String e2) {
+        HashMap<String, Object> event = new HashMap<String, Object>();
+        event.put("e0", e0);
+        event.put("e1", e1);
+        event.put("e2", e2);
+        epService.getEPRuntime().sendEvent(event, "EventSchema");
     }
 }

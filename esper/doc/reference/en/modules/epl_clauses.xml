@@ -3047,6 +3047,58 @@ from OrderEvent as oe]]></programlisting>
 				Output events for the above query contain two properties: the <literal>price</literal> property and the <literal>orderIds</literal> property. The latter property is a nested property that contains the <literal>winorders</literal> property of type array. 
 			</para>
 		</sect2>
+
+		<sect2 id="epl-subqueries-hints">
+			<title>Hints Related to Subqueries</title>
+
+			<para>
+				The following hints are available to tune performance and memory use of subqueries that select from named windows.
+			</para>
+			
+			<para>
+				Named windows are globally-visible data windows. As such an application may create explicit indexes as discussed in <xref linkend="named_explicit_index"/>. The engine may also elect to create implicit indexes (no create-index EPL required) for index-based lookup of rows when executing <literal>on-select</literal>, <literal>on-merge</literal>, <literal>on-update</literal> and <literal>on-delete</literal> statements and for statements that subquery a named window.
+			</para>
+			
+			<para>
+				By default and without specifying a hint, each statement that subqueries a named window also maintains its own index for looking up events held by the named window. The engine maintains the index by consuming the named window insert and remove stream. When the statement is destroyed it releases that index.
+			</para>
+
+			<para>
+				Specify the <literal>@Hint('enable_window_subquery_indexshare')</literal> hint to enable subquery index sharing for named windows. When using this hint, indexes for subqueries are maintained by the named window itself (and not each statement), are shared between one or more statements and may also utilize explicit indexes. Specify the hint once as part of the <literal>create window</literal> statement.
+			</para>
+
+			<para>
+				This sample EPL statement creates a named window with subquery index sharing enabled:
+			</para>
+			<programlisting><![CDATA[@Hint('enable_window_subquery_indexshare')
+create window AllOrdersNamedWindow.win:keepall() as OrderMapEventType]]></programlisting>
+
+			<para>
+				When subquery index sharing is enabled, performance may increase as named window stream consumption is no longer needed. You may also expect reduced memory use especially if a large number of EPL statements perform similar subqueries against a named window. Subquery index sharing may require additional short-lived object creation and may slightly increase lock held time for named windows. 
+			</para>
+
+			<para>
+				The following statement performs a correlated subquery against the named window above. When a settlement event arrives it select the order detail for the same order id as provided by the settlement event:
+			</para>
+			<programlisting><![CDATA[select 
+  (select * from AllOrdersNamedWindow as onw 
+    where onw.orderId = se.orderId) as orderDetail
+  from SettlementEvent as se]]></programlisting>
+  
+			  <para>
+				  With subquery index sharing enabled the engine maintains an index of order events by order id for the named window, and shares that index between additional statements until the time all utilizing statements are destroyed.
+			  </para>
+			
+			<para>
+				You may disable subquery index sharing for a specific statement by specifying the <literal>@Hint('disable_window_subquery_indexshare')</literal> hint, as this example shows, causing the statement to maintain its own index:
+			</para>
+			<programlisting><![CDATA[@Hint('disable_window_subquery_indexshare')
+select 
+  (select * from AllOrdersNamedWindow as onw 
+    where onw.orderId = se.orderId) as orderDetail
+  from SettlementEvent as se]]></programlisting>
+			
+		</sect2>
     </sect1>
 
 	<sect1 id="histdata_overview" revision="1">
@@ -3653,6 +3705,10 @@ where asset.assetid = desc.assetid]]></programlisting>
 			In addition, columns of a named window are allowed to hold events themselves, as further explained in <xref linkend="insert-into-eventasproperty"/> and <xref linkend="named-insertinto-eventasproperty"/>.
 		</para>
 
+		<para>
+			To tune subquery performance when the subquery selects from a named window, consider the hints discussed in <xref linkend="epl-subqueries-hints"/>.
+		</para>	
+
 		<sect2 id="named_create" revision="1">
 			<title>Creating Named Windows: the <literal>Create Window</literal> clause</title>
 			
@@ -3822,17 +3878,10 @@ insert into OrdersWindow select * from ServiceProductEvent]]></programlisting>
 insert into OrdersWindow select * from MerchandiseProductEvent]]></programlisting>
 
 			<para>
-				To avoid duplicate events stored in a named window, use a subquery to test whether an event already exists in the named window:
+				To avoid duplicate events inserted in a named window and atomically check if a row already exists, use <literal>on-merge</literal> as outlined in <xref linkend="named_upsert"/>. An example:
 			</para>
-			<programlisting><![CDATA[insert into OrdersWindow
-select * from ServiceProductEvent as spe
-where not exists (select * from OrdersWindow as win where win.id = spe.id)]]></programlisting>
-
-			<para>
-				A statement that removes events from a named window via the <literal>on delete</literal> clause and a statement that inserts events into a named window via the <literal>insert into</literal> can be combined to replace events in the named window, by creating the two statements in the order as indicated by the sample (create in this order):
-			</para>
-			<programlisting><![CDATA[on ServiceProductEvent as spe delete from OrdersWindow as win where win.id = spe.id]]></programlisting>
-			<programlisting><![CDATA[insert into OrdersWindow select * from ServiceProductEvent]]></programlisting>
+			<programlisting><![CDATA[on ServiceProductEvent as spe merge OrdersWindow as win
+where win.id = spe.id when not matched then insert select *]]></programlisting>
 
 			<sect3 id="named-insertinto-decorated" revision="1">
 				<title>Named Windows Holding Decorated Events</title>

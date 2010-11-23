@@ -11,10 +11,7 @@ package com.espertech.esper.epl.lookup;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.core.StatementLock;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Index lookup strategy for subqueries.
@@ -34,7 +31,12 @@ public class IndexedTableLookupStrategyLocking implements TableLookupStrategy
         statementLock.acquireReadLock();
         try {
             Collection<EventBean> result = inner.lookup(events);
-            return new ArrayDeque<EventBean>(result);
+            if (result != null) {
+                return new ArrayDeque<EventBean>(result);
+            }
+            else {
+                return Collections.emptyList();
+            }
         }
         finally {
             statementLock.releaseReadLock();

@@ -466,7 +466,7 @@ public class NamedWindowRootView extends ViewSupport
      */
     public void removeExplicitIndex(String indexName)
     {
-        EventTable table = explicitIndexes.remove(indexName);
+        PropertyIndexedEventTable table = explicitIndexes.remove(indexName);
         if (table != null) {
             indexRepository.removeTableReference(table);
         }
@@ -504,6 +504,7 @@ public class NamedWindowRootView extends ViewSupport
         EventType[] types = new EventType[table.getPropertyNames().length];
         int[] streamNumbers = new int[table.getPropertyNames().length];
         String[] keyProps = new String[table.getPropertyNames().length];
+        Class[] coercionTypes = new Class[table.getPropertyNames().length];
 
         for (int i = 0; i < table.getPropertyNames().length; i++) {
             String indexedProp = table.getPropertyNames()[i];
@@ -514,11 +515,18 @@ public class NamedWindowRootView extends ViewSupport
                     types[i] = eventTypesPerStream[joinPlan.getKeyStreamId()];
                     streamNumbers[i] = joinPlan.getKeyStreamId();
                     keyProps[i] = joinPlan.getKeyPropName();
+                    coercionTypes[i] = joinPlan.getCoercionType();
                 }
             }
         }
 
-        IndexedTableLookupStrategy strategy = new IndexedTableLookupStrategy(types, streamNumbers, keyProps, table);
+        IndexedTableLookupStrategy strategy;
+        if (!joinDesc.isMustCoerce()) {
+            strategy = new IndexedTableLookupStrategy(types, streamNumbers, keyProps, table);
+        }
+        else {
+            strategy = new IndexedTableLookupStrategyCoercing(types, streamNumbers, keyProps, table, coercionTypes);
+        }
         IndexedTableLookupStrategyLocking locking = new IndexedTableLookupStrategyLocking(strategy, statementResourceLock);
         tablePerSingleLookup.put(locking, table);
         indexRepository.addTableReference(table);
@@ -526,7 +534,7 @@ public class NamedWindowRootView extends ViewSupport
         return locking;
     }
 
-    public TableLookupStrategy addTableGetStrategy(JoinedPropPlan joinDesc, EventType[] eventTypePerStream) {
+    private TableLookupStrategy addTableGetStrategy(JoinedPropPlan joinDesc, EventType[] eventTypePerStream) {
 
         Collection<JoinedPropDesc> propsJoined = joinDesc.getJoinProps().values();
         JoinedPropDesc[] propsJoinedArr = propsJoined.toArray(new JoinedPropDesc[propsJoined.size()]);

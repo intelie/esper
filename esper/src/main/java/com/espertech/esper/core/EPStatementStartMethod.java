@@ -1994,7 +1994,7 @@ public class EPStatementStartMethod
                 Class coercionType = indexedPropType;
                 if (keyPropType != indexedPropType)
                 {
-                    coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, keyPropType);
+                    coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, indexedPropType);
                     mustCoerce = true;
                 }
 

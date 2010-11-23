@@ -46,7 +46,9 @@ public class PropertyIndTableCoerceAdd extends PropertyIndexedEventTable
         coercers = new SimpleNumberCoercer[coercionType.length];
         for (int i = 0; i < coercionType.length; i++)
         {
-            coercers[i] = SimpleNumberCoercerFactory.getCoercer(null, coercionType[i]);
+            if (JavaClassHelper.isNumeric(coercionType[i])) {
+                coercers[i] = SimpleNumberCoercerFactory.getCoercer(null, coercionType[i]);
+            }
         }
     }
 

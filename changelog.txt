@@ -5,6 +5,7 @@ Changes in version 4.1.0
 ------------------------
 Major API or EPL changes
 - Support for on-merge (upsert)
+- Subqueries against named windows may share index
 
 Changes in version 4.0.0
 ------------------------
