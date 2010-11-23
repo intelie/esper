@@ -13,6 +13,7 @@ import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.lookup.TableLookupStrategy;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -48,7 +49,7 @@ public class LookupStrategyIndexed implements LookupStrategy
             eventsPerStream[1] = newEvent;
 
             // use index to find match
-            Set<EventBean> matches = tableLookupStrategy.lookup(eventsPerStream);
+            Collection<EventBean> matches = tableLookupStrategy.lookup(eventsPerStream);
             if ((matches == null) || (matches.isEmpty()))
             {
                 continue;

@@ -17,6 +17,7 @@ import com.espertech.esper.epl.spec.StatementSpecRaw;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
      * @param exprEvaluatorContext context for expression evalauation
      * @return evaluation result
      */
-    public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
+    public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
 
     public abstract boolean isAllowMultiColumnSelect();
 
@@ -118,7 +119,7 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
-        Set<EventBean> matchingEvents = strategy.lookup(eventsPerStream);
+        Collection<EventBean> matchingEvents = strategy.lookup(eventsPerStream);
         if (subselectAggregationPreprocessor != null) {
             subselectAggregationPreprocessor.evaluate(eventsPerStream, matchingEvents, exprEvaluatorContext);
             matchingEvents = singleNullRowEventSet;

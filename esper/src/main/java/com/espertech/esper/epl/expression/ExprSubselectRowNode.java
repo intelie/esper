@@ -76,7 +76,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
     {
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (matchingEvents == null)
         {

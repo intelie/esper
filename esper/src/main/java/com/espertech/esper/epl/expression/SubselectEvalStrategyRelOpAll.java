@@ -3,7 +3,7 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.type.RelationalOpEnum;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Strategy for subselects with ">/</<=/>= ALL".
@@ -30,7 +30,7 @@ public class SubselectEvalStrategyRelOpAll implements SubselectEvalStrategy
         this.filterExpr = filterExpr;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         // Evaluate the value expression
         Object valueLeft = valueExpr.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);

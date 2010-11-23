@@ -19,8 +19,8 @@ import com.espertech.esper.type.RelationalOpEnum;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Represents a subselect in an expression tree.
@@ -91,7 +91,7 @@ public class ExprSubselectAllSomeAnyNode extends ExprSubselectNode
         evalStrategy = SubselectEvalStrategyFactory.createStrategy(this, isNot, isAll, !isAll, relationalOp);
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         return evalStrategy.evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
     }

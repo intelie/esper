@@ -4,7 +4,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.SimpleNumberCoercer;
 import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Strategy for subselects with "=/!=/<> ANY".
@@ -44,7 +44,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
         this.selectClauseExpr = selectClauseExpr;
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         if ((matchingEvents == null) || (matchingEvents.size() == 0))
         {

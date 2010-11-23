@@ -18,8 +18,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Represents an exists-subselect in an expression tree.
@@ -51,7 +51,7 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
     {
     }
 
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
+    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
         if (matchingEvents == null)
         {

@@ -9,21 +9,35 @@
 package com.espertech.esper.epl.lookup;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.core.StatementLock;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Strategy for looking up, in some sort of table or index, or a set of events, potentially based on the
- * events properties, and returning a set of matched events.
+ * Index lookup strategy for subqueries.
  */
-public interface TableLookupStrategy
+public class IndexedTableLookupStrategyLocking implements TableLookupStrategy
 {
-    /**
-     * Returns matched events for a set of events to look up for. Never returns an empty result set,
-     * always returns null to indicate no results.
-     * @param events to look up
-     * @return set of matching events, or null if none matching
-     */
-    public Collection<EventBean> lookup(EventBean[] events);
+    private final TableLookupStrategy inner;
+    private final StatementLock statementLock;
+
+    public IndexedTableLookupStrategyLocking(TableLookupStrategy inner, StatementLock statementLock) {
+        this.inner = inner;
+        this.statementLock = statementLock;
+    }
+
+    @Override
+    public Collection<EventBean> lookup(EventBean[] events) {
+        statementLock.acquireReadLock();
+        try {
+            Collection<EventBean> result = inner.lookup(events);
+            return new ArrayDeque<EventBean>(result);
+        }
+        finally {
+            statementLock.releaseReadLock();
+        }
+    }
 }

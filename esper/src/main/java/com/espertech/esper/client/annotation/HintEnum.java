@@ -29,7 +29,26 @@ public enum HintEnum
      * For use with group-by and std:groupwin, reclaim groups for unbound streams based on time, this number is the frequency in seconds at which a sweep occurs for aged
      * groups, if not provided then the sweep frequency is the same number as the age.
      */
-    RECLAIM_GROUP_FREQ("RECLAIM_GROUP_FREQ", true, true);
+    RECLAIM_GROUP_FREQ("RECLAIM_GROUP_FREQ", true, true),
+
+    /**
+     * For use with create-named-window statements only, to indicate that statements that subquery the named window
+     * use named window data structures (unless the subquery statement specifies below DISBABLE hint and as listed below).
+     * <p>
+     * By default and if this hint is not specified or subqueries specify a stream filter on a named window,
+     * subqueries use statement-local data structures representing named window contents (table, index).
+     * Such data structure is maintained by consuming the named window insert and remove stream.
+     */
+    ENABLE_WINDOW_SUBQUERY_INDEXSHARE("ENABLE_WINDOW_SUBQUERY_INDEXSHARE", false, false),
+
+    /**
+     * If ENABLE_WINDOW_SUBQUERY_INDEXSHARE is not specified for a named window (the default) then this instruction is ignored.
+     * <p>
+     * For use with statements that subquery a named window and that benefit from a statement-local data structure representing named window contents (table, index),
+     * maintained through consuming the named window insert and remove stream.
+     * <p>
+     */
+    DISABLE_WINDOW_SUBQUERY_INDEXSHARE("DISABLE_WINDOW_SUBQUERY_INDEXSHARE", false, false);
 
     private final String value;
     private final boolean acceptsParameters;

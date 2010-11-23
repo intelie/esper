@@ -8,13 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.epl.lookup;
 
-import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 
 import java.util.Arrays;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Index lookup strategy for subqueries.
@@ -84,7 +84,7 @@ public class IndexedTableLookupStrategy implements TableLookupStrategy
         return index;
     }
 
-    public Set<EventBean> lookup(EventBean[] eventsPerStream)
+    public Collection<EventBean> lookup(EventBean[] eventsPerStream)
     {
         Object[] keys = getKeys(eventsPerStream);
         return index.lookup(keys);

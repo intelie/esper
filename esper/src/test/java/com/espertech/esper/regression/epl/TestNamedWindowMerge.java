@@ -230,8 +230,10 @@ public class TestNamedWindowMerge extends TestCase {
 
         sendMyInnerSchemaEvent("X4", "Y4", 11);
         Object[][] result = subscriber.getInsertStreamList().get(0);
-        assertEquals("X4", result[0][0]);
-        assertEquals("Y4", ((Map) result[0][1]).get("in1"));
+        Map map = (Map) result[0][0];
+        assertEquals("X4", map.get("c1"));
+        EventBean event = (EventBean) map.get("c2");
+        assertEquals("Y4", event.get("in1"));
     }
 
     public void testInvalid() {

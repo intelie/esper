@@ -129,10 +129,10 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
 
         epService.getEPAdministrator().createEPL("insert into ABCStream select *, 1+1 from SupportBean");
         text = "insert into ABCStream(string) select 'E1' from MyMap";
-        tryInvalid("Error starting statement: Event type named 'ABCStream' has already been declared with differing column name or type information: Type by name 'ABCStream' is not a compatible type [insert into ABCStream(string) select 'E1' from MyMap]", text);
+        tryInvalid("Error starting statement: Event type named 'ABCStream' has already been declared with differing column name or type information: Type by name 'ABCStream' is not a compatible type (target type underlying is 'Pair') [insert into ABCStream(string) select 'E1' from MyMap]", text);
 
         text = "insert into xmltype select 1 from SupportBean";
-        tryInvalid("Error starting statement: Event type named 'xmltype' has already been declared with differing column name or type information: Type by name 'xmltype' is not a compatible type [insert into xmltype select 1 from SupportBean]", text);
+        tryInvalid("Error starting statement: Event type named 'xmltype' has already been declared with differing column name or type information: Type by name 'xmltype' is not a compatible type (target type underlying is 'Node') [insert into xmltype select 1 from SupportBean]", text);
 
         text = "insert into MyMap(dummy) select 1 from SupportBean";
         tryInvalid("Error starting statement: Event type named 'MyMap' has already been declared with differing column name or type information: Type by name 'MyMap' expects 10 properties but receives 1 properties [insert into MyMap(dummy) select 1 from SupportBean]", text);

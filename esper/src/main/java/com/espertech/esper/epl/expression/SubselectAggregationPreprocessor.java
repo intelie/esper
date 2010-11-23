@@ -3,6 +3,7 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.agg.AggregationService;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class SubselectAggregationPreprocessor {
@@ -15,7 +16,7 @@ public class SubselectAggregationPreprocessor {
         this.filterExpr = filterExpr;
     }
 
-    public void evaluate(EventBean[] eventsPerStream, Set<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
+    public void evaluate(EventBean[] eventsPerStream, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
 
         aggregationService.clearResults();
 
