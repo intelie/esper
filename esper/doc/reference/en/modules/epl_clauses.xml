@@ -3052,6 +3052,14 @@ from OrderEvent as oe]]></programlisting>
 			<title>Hints Related to Subqueries</title>
 
 			<para>
+				The following hints are available to tune performance and memory use of subqueries.
+			</para>
+
+			<para>
+				Use the <literal>@Hint('set_noindex')</literal> hint for a statement that utilizes one or more subqueries. It instructs the engine to always perform a full table scan. The engine does not build an implicit index or use an explicitly-created index when this hint is provided. Use of the hint may result in reduced memory use but poor statement performance.
+			</para>
+
+			<para>
 				The following hints are available to tune performance and memory use of subqueries that select from named windows.
 			</para>
 			

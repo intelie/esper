@@ -48,7 +48,13 @@ public enum HintEnum
      * maintained through consuming the named window insert and remove stream.
      * <p>
      */
-    DISABLE_WINDOW_SUBQUERY_INDEXSHARE("DISABLE_WINDOW_SUBQUERY_INDEXSHARE", false, false);
+    DISABLE_WINDOW_SUBQUERY_INDEXSHARE("DISABLE_WINDOW_SUBQUERY_INDEXSHARE", false, false),
+
+    /**
+     * For use with subqueries and on-select, on-merge, on-update and on-delete to specify the query engine neither
+     * build an implicit index nor use an existing index, always performing a full table scan.
+     */
+    SET_NOINDEX("SET_NOINDEX", false, false);
 
     private final String value;
     private final boolean acceptsParameters;

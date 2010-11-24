@@ -1649,6 +1649,7 @@ public class EPStatementStartMethod
     private void startSubSelect(SubSelectStreamCollection subSelectStreamDesc, String[] outerStreamNames, EventType[] outerEventTypesSelect, String[] outerEventTypeNamees, List<StopCallback> stopCallbacks, Annotation[] annotations)
             throws ExprValidationException
     {
+        boolean fullTableScan = HintEnum.SET_NOINDEX.getHint(annotations) != null;
         for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
         {
             StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
@@ -1850,7 +1851,7 @@ public class EPStatementStartMethod
                 }
                 else {
                     Pair<EventTable, TableLookupStrategy> indexPair = determineSubqueryIndex(filterExpr, eventType,
-                            outerEventTypes, subselectTypeService);
+                            outerEventTypes, subselectTypeService, fullTableScan);
                     subselect.setStrategy(indexPair.getSecond());
                     subselect.setFilterExpr(null);  // this will be evaluated in the preprocessor
                     eventIndex = indexPair.getFirst();
@@ -1863,7 +1864,7 @@ public class EPStatementStartMethod
             {
                 // Determine indexing of the filter expression
                 Pair<EventTable, TableLookupStrategy> indexPair = determineSubqueryIndex(filterExpr, eventType,
-                        outerEventTypes, subselectTypeService);
+                        outerEventTypes, subselectTypeService, fullTableScan);
                 ExprEvaluator filterExprEval = (filterExpr == null) ? null : filterExpr.getExprEvaluator();
                 subselect.setStrategy(indexPair.getSecond());
                 subselect.setFilterExpr(filterExprEval);
@@ -1878,7 +1879,7 @@ public class EPStatementStartMethod
                     NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
                     if (processor.isEnableSubqueryIndexShare()) {
                         JoinedPropPlan joinedPropPlan = getJoinProps(filterExpr, outerEventTypes, subselectTypeService);
-                        namedWindowSubqueryLookup = processor.getRootView().getAddSubqueryLookupStrategy(outerEventTypesSelect, joinedPropPlan);
+                        namedWindowSubqueryLookup = processor.getRootView().getAddSubqueryLookupStrategy(outerEventTypesSelect, joinedPropPlan, fullTableScan);
                         subselect.setStrategy(namedWindowSubqueryLookup);
                         stopCallbacks.add(new NamedWindowSubqueryStopCallback(processor, namedWindowSubqueryLookup));
                     }
@@ -2009,11 +2010,12 @@ public class EPStatementStartMethod
     private Pair<EventTable, TableLookupStrategy> determineSubqueryIndex(ExprNode filterExpr,
                                                                                  EventType viewableEventType,
                                                                                  EventType[] outerEventTypes,
-                                                                                 StreamTypeService subselectTypeService)
+                                                                                 StreamTypeService subselectTypeService,
+                                                                                 boolean fullTableScan)
             throws ExprValidationException
     {
         // No filter expression means full table scan
-        if (filterExpr == null)
+        if ((filterExpr == null) || fullTableScan)
         {
             UnindexedEventTable table = new UnindexedEventTable(0);
             FullTableScanLookupStrategy strategy = new FullTableScanLookupStrategy(table);

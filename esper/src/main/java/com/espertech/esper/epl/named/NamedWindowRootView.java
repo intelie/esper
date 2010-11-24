@@ -480,15 +480,15 @@ public class NamedWindowRootView extends ViewSupport
         isChildBatching = batchView;
     }
 
-    public TableLookupStrategy getAddSubqueryLookupStrategy(EventType[] eventTypesPerStream, JoinedPropPlan joinDesc) {
+    public TableLookupStrategy getAddSubqueryLookupStrategy(EventType[] eventTypesPerStream, JoinedPropPlan joinDesc, boolean fullTableScan) {
+        // if there are no join criteria to use, return default copy strategy
+        if (fullTableScan || joinDesc.getJoinProps().isEmpty()) {
+            return new FullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
+        }
+
         Map<String, Class> indexedCols = new LinkedHashMap<String, Class>();
         for (Map.Entry<String, JoinedPropDesc> entry : joinDesc.getJoinProps().entrySet()) {
             indexedCols.put(entry.getValue().getIndexPropName(), entry.getValue().getCoercionType());
-        }
-
-        // if there are no join criteria to use, return default copy strategy
-        if (joinDesc.getJoinProps().isEmpty()) {
-            return new FullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
         }
 
         // find matching table that could be used

@@ -27,30 +27,38 @@ public class TestNamedWindowSubqCorrelIndex extends TestCase
     }
 
     public void testNoShare() {
-        runAssertion(false, false, false);
+        runAssertion(false, false, false, false);
+    }
+
+    public void testNoShareSetnoindex() {
+        runAssertion(false, false, false, true);
     }
 
     public void testNoShareCreate() {
-        runAssertion(false, false, true);
+        runAssertion(false, false, true, false);
     }
 
     public void testShare() {
-        runAssertion(true, false, false);
+        runAssertion(true, false, false, false);
     }
 
     public void testShareCreate() {
-        runAssertion(true, false, true);
+        runAssertion(true, false, true, false);
+    }
+
+    public void testShareCreateSetnoindex() {
+        runAssertion(true, false, true, true);
     }
 
     public void testDisableShare() {
-        runAssertion(true, true, false);
+        runAssertion(true, true, false, false);
     }
 
     public void testDisableShareCreate() {
-        runAssertion(true, true, true);
+        runAssertion(true, true, true, false);
     }
 
-    private void runAssertion(boolean enableIndexShareCreate, boolean disableIndexShareConsumer, boolean createExplicitIndex) {
+    private void runAssertion(boolean enableIndexShareCreate, boolean disableIndexShareConsumer, boolean createExplicitIndex, boolean setNoindex) {
         String createEpl = "create window MyWindow.std:unique(string) as select * from SupportBean";
         if (enableIndexShareCreate) {
             createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
@@ -66,6 +74,9 @@ public class TestNamedWindowSubqCorrelIndex extends TestCase
         String consumeEpl = "select status.*, (select * from MyWindow where string = ABean.p00) as details from ABean as status";
         if (disableIndexShareConsumer) {
             consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
+        }
+        if (setNoindex) {
+            consumeEpl = "@Hint('set_noindex') " + consumeEpl;
         }
         EPStatement consumeStmt = epService.getEPAdministrator().createEPL(consumeEpl);
         consumeStmt.addListener(listenerStmtOne);
