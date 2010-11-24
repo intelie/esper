@@ -124,7 +124,7 @@
 			</listitem>
 			<listitem>
 				<para>
-					LOG4J and Apache commons logging are logging components. This open source software is under the Apache license. The Apache 2.0 license is in the lib directory.
+					Apache commons logging is a logging API that works together with LOG4J and other logging APIs. While Apache commons logging is required, the LOG4J log component is not required and can be replaced with SLF4J or other loggers. This open source software is under the Apache license. The Apache 2.0 license is in the lib directory.
 				</para>
 			</listitem>
 		</itemizedlist>
