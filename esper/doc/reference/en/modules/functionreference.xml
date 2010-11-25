@@ -194,6 +194,15 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 							</para>
 						</entry>
 					</row>
+					<row>
+					  <entry><synopsis>typeof(<emphasis>expression</emphasis>)</synopsis></entry>
+						<entry>
+							<para>
+								If expression is a stream name, returns the event type name of the evaluated event, often used with variant streams. 
+								If expression is a property name or expression, returns the name of the expression result type.
+							</para>
+						</entry>
+					</row>
 				</tbody>
 			</tgroup>
 		</table>
@@ -795,6 +804,63 @@ from Trade.std:groupwin(symbol).win:length(10)</programlisting>
 			<programlisting>select average, prior(1, average) 
     from TradeAverages.win:time_batch(1 min).stat:uni(volume)</programlisting>
 	
+		</sect2>
+
+		<sect2 id="epl-single-row-function-typeof">
+			<title>The <literal>Type-Of</literal> Function</title>
+
+			<indexterm><primary>type-of function</primary></indexterm>
+			<indexterm><primary>functions</primary><secondary>type-of</secondary></indexterm>
+			<para>
+				The <literal>typeof</literal> function, when parameterized by a stream name, returns the event type name of the evaluated event which can be useful with variant streams. When parameterized by an expression or property name, the function returns the type name of the expression result or <literal>null</literal> if the expression result is null.
+			</para>
+
+			<para>
+				In summary, the function determines the return type of the expression at runtime by evaluating the expression and returns the type name of the expression result.
+			</para>
+
+			<para>
+				The <literal>typeof</literal> function is often used in conjunction with variant streams. A variant stream is a predefined stream into which events of multiple disparate event types can be inserted. The <literal>typeof</literal> function, when passed a stream name alias, returns the name of the event type of each event in the stream.
+			</para>
+			
+			<para>
+			    The following example elaborates on the use of variant streams with <literal>typeof</literal>. The first statement declares a variant stream <literal>SequencePatternStream</literal>:
+			</para>
+			<programlisting><![CDATA[create variant schema SequencePatternStream as *]]></programlisting>
+
+			<para>
+			    The next statement inserts all order events and is followed by a statement to insert all product events: 
+			</para>
+			<programlisting><![CDATA[insert into SequencePatternStream select * from OrderEvent;]]></programlisting>
+			<programlisting><![CDATA[insert into SequencePatternStream select * from PriceEvent;]]></programlisting>
+			
+			<para>
+				This example statement returns the event type name for each event in the variant stream:
+			</para>
+			<programlisting><![CDATA[select typeof(sps) from SequencePatternStream as sps]]></programlisting>
+
+			<para>
+				The next example statement detects a pattern by utilizing the <literal>typeof</literal> function to find pairs of order event immediately followed by product event:
+			</para>
+			<programlisting><![CDATA[select * from SequencePatternStream match_recognize(
+  measures A as a, B as b
+  pattern (A B)
+  define A as typeof(A) = "OrderEvent",
+         B as typeof(B) = "ProductEvent"
+  )]]></programlisting>
+
+			<para>
+				When passing a property name to the <literal>typeof</literal> function, the function evaluates whether the property type is event type (a fragment event type). If the property type is event type, the function returns the type name of the event in the property value or <literal>null</literal> if not provided. 
+				If the property type is not event type, the function returns the simple class name of the property value.
+			</para>
+			
+			<para>
+				When passing an expression to the <literal>typeof</literal> function, the function evaluates the expression and returns the simple class name of the expression result value or <literal>null</literal> if the expression result value is null.
+			</para>
+			<para>
+				This example statement returns the simple class name of the value of the dynamic property <literal>prop</literal> of events in stream <literal>MyStream</literal>, or a <literal>null</literal> value if the property is not found for an event or the property value itself is <literal>null</literal>:
+			</para>
+			<programlisting><![CDATA[select typeof(prop?) from MyStream]]></programlisting>
 		</sect2>
 	</sect1>		
 	

@@ -1416,6 +1416,10 @@ public class StatementSpecMapper
             InstanceOfExpression node = (InstanceOfExpression) expr;
             return new ExprInstanceofNode(node.getTypeNames());
         }
+        else if (expr instanceof TypeOfExpression)
+        {
+            return new ExprTypeofNode();
+        }
         else if (expr instanceof CastExpression)
         {
             CastExpression node = (CastExpression) expr;
@@ -1863,6 +1867,10 @@ public class StatementSpecMapper
         {
             ExprInstanceofNode node = (ExprInstanceofNode) expr;
             return new InstanceOfExpression(node.getClassIdentifiers());
+        }
+        else if (expr instanceof ExprTypeofNode)
+        {
+            return new TypeOfExpression();
         }
         else if (expr instanceof ExprCastNode)
         {

@@ -85,6 +85,7 @@ tokens
 	WEEKDAY='weekday';
 	LW='lastweekday';
 	INSTANCEOF='instanceof';
+	TYPEOF='typeof';
 	CAST='cast';
 	CURRENT_TIMESTAMP='current_timestamp';
 	DELETE='delete';
@@ -469,6 +470,7 @@ tokens
 	parserTokenParaphases.put(WEEKDAY, "'weekday'");
 	parserTokenParaphases.put(LW, "'lastweekday'");
 	parserTokenParaphases.put(INSTANCEOF, "'instanceof'");
+	parserTokenParaphases.put(TYPEOF, "'typeof'");
 	parserTokenParaphases.put(CAST, "'cast'");
 	parserTokenParaphases.put(CURRENT_TIMESTAMP, "'current_timestamp'");
 	parserTokenParaphases.put(DELETE, "'delete'");
@@ -1307,6 +1309,7 @@ builtinFunc
 	// MIN and MAX can also be "Math.min" static function and "min(price)" aggregation function and "min(a, b, c...)" built-in function
 	// therefore handled in code via libFunction as below
 	| INSTANCEOF^ LPAREN! expression COMMA! classIdentifier (COMMA! classIdentifier)* RPAREN!
+	| TYPEOF^ LPAREN! expression RPAREN!
 	| CAST^ LPAREN! expression (COMMA! | AS!) classIdentifier RPAREN!
 	| EXISTS^ LPAREN! eventProperty RPAREN!
 	| CURRENT_TIMESTAMP^ (LPAREN! RPAREN!)?
@@ -1687,6 +1690,7 @@ keywordAllowedIdent returns [String result]
 		|WEEKDAY { $result = "weekday"; }
 		|LW { $result = "lastweekday"; }
 		|INSTANCEOF { $result = "instanceof"; }
+		|TYPEOF { $result = "typeof"; }
 		|CAST { $result = "cast"; }
 		|SNAPSHOT { $result = "snapshot"; }
 		|VARIABLE { $result = "variable"; }		

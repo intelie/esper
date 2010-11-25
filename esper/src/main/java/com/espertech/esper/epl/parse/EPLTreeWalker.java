@@ -384,6 +384,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case INSTANCEOF:
                 leaveInstanceOf(node);
                 break;
+            case TYPEOF:
+                leaveTypeOf(node);
+                break;
             case EXISTS:
                 leaveExists(node);
                 break;
@@ -1031,6 +1034,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
         String idents[] = classes.toArray(new String[classes.size()]);
         ExprInstanceofNode instanceofNode = new ExprInstanceofNode(idents);
         astExprNodeMap.put(node, instanceofNode);
+    }
+
+    private void leaveTypeOf(Tree node)
+    {
+        log.debug(".leaveTypeOf");
+        ExprTypeofNode typeofNode = new ExprTypeofNode();
+        astExprNodeMap.put(node, typeofNode);
     }
 
     private void leaveExists(Tree node)

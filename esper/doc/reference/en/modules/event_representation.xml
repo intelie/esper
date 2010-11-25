@@ -315,6 +315,11 @@
                     The <literal>instanceof</literal> function checks whether the value of a dynamic property (or the value of an expression) is of any of the given types.
                 </para>
 			</listitem>
+			<listitem>
+				<para>
+                    The <literal>typeof</literal> function returns the string type name of a dynamic property.
+                </para>
+			</listitem>
 		</itemizedlist>
 
 		<para>

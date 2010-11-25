@@ -553,6 +553,7 @@ builtinFunc
 	| 	^(f=PREVIOUSWINDOW valueExpr) { leaveNode($f); }
 	| 	^(f=PRIOR c=NUM_INT eventPropertyExpr[true]) {leaveNode($c); leaveNode($f);}
 	| 	^(f=INSTANCEOF valueExpr CLASS_IDENT (CLASS_IDENT)*) { leaveNode($f); }
+	| 	^(f=TYPEOF valueExpr) { leaveNode($f); }
 	| 	^(f=CAST valueExpr CLASS_IDENT) { leaveNode($f); }
 	| 	^(f=EXISTS eventPropertyExpr[true]) { leaveNode($f); }
 	|	^(f=CURRENT_TIMESTAMP {}) { leaveNode($f); }

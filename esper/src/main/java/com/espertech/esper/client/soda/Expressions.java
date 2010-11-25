@@ -125,6 +125,26 @@ public class Expressions implements Serializable
     }
 
     /**
+     * Type-of function, returns the event type name or result type as a string of a stream name, property or expression.
+     * @param expression to evaluate and return it's result type as a string
+     * @return expression
+     */
+    public static TypeOfExpression typeOf(Expression expression)
+    {
+        return new TypeOfExpression(expression);
+    }
+
+    /**
+     * Type-of function, returns the event type name or result type as a string of a stream name, property or expression.
+     * @param propertyName returns the property to evaluate and return its event type name or property class type
+     * @return expression
+     */
+    public static TypeOfExpression typeOf(String propertyName)
+    {
+        return new TypeOfExpression(getPropExpr(propertyName));
+    }
+
+    /**
      * Plug-in aggregation function.
      * @param functionName is the function name
      * @param moreExpressions provides the values to aggregate
