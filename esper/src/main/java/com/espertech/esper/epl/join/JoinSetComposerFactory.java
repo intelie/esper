@@ -46,6 +46,7 @@ public interface JoinSetComposerFactory
                                                    Viewable[] streamViews,
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                    StreamJoinAnalysisResult joinAnalysisResult,
-                                                   ExprEvaluatorContext exprEvaluatorContext)
+                                                   ExprEvaluatorContext exprEvaluatorContext,
+                                                   boolean queryPlanLogging)
             throws ExprValidationException;
 }

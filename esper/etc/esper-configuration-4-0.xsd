@@ -477,6 +477,7 @@
 			<xs:sequence maxOccurs="unbounded" minOccurs="0">
 				<xs:choice>
 					<xs:element ref="esper:execution-path" minOccurs="0"/>
+					<xs:element ref="esper:query-plan" minOccurs="0"/>
 					<xs:element ref="esper:timer-debug" minOccurs="0"/>
 				</xs:choice>
 			</xs:sequence>
@@ -510,6 +511,11 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="execution-path">
+		<xs:complexType>
+			<xs:attribute name="enabled" type="xs:boolean" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="query-plan">
 		<xs:complexType>
 			<xs:attribute name="enabled" type="xs:boolean" use="required"/>
 		</xs:complexType>

@@ -1066,6 +1066,12 @@ class ConfigurationParser {
                 Boolean value = Boolean.parseBoolean(valueText);
                 configuration.getEngineDefaults().getLogging().setEnableTimerDebug(value);
             }
+            if (subElement.getNodeName().equals("query-plan"))
+            {
+                String valueText = getRequiredAttribute(subElement, "enabled");
+                Boolean value = Boolean.parseBoolean(valueText);
+                configuration.getEngineDefaults().getLogging().setEnableQueryPlan(value);
+            }
         }
     }
 

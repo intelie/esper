@@ -779,6 +779,7 @@ public class ConfigurationEngineDefaults implements Serializable
     {
         private boolean enableExecutionDebug;
         private boolean enableTimerDebug;
+        private boolean enableQueryPlan;
         private static final long serialVersionUID = -8129836306582810327L;
 
         /**
@@ -788,6 +789,7 @@ public class ConfigurationEngineDefaults implements Serializable
         {
             enableExecutionDebug = false;
             enableTimerDebug = true;
+            enableQueryPlan = false;
         }
 
         /**
@@ -832,6 +834,22 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setEnableTimerDebug(boolean enableTimerDebug)
         {
             this.enableTimerDebug = enableTimerDebug;
+        }
+
+        /**
+         * Returns indicator whether query plan logging is enabled or not.
+         * @return indicator
+         */
+        public boolean isEnableQueryPlan() {
+            return enableQueryPlan;
+        }
+
+        /**
+         * Set indicator whether query plan logging is enabled, by default it is disabled.
+         * @param enableQueryPlan indicator
+         */
+        public void setEnableQueryPlan(boolean enableQueryPlan) {
+            this.enableQueryPlan = enableQueryPlan;
         }
     }
 

@@ -1490,6 +1490,48 @@ config.getEngineDefaults().getLogging().setEnableTimerDebug(false);]]></programl
 				<para>
 					Note: this is a configuration option that applies to all engine instances of a given Java module or VM.
 				</para>
+
+				<para>
+					The XML snippet is:
+				</para>
+				<programlisting><![CDATA[<esper-configuration>
+  <engine-settings>
+    <defaults>
+      <logging>
+        <execution-path enabled="true"/>
+        <timer-debug enabled="false"/>
+    </logging>
+    </defaults>
+  </engine-settings>
+</esper-configuration>]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-engine-logging-queryplan" revision="1">
+				<title>Query Plan Logging</title>
+
+				<para>
+				   By default, the engine does not produce query plan output unless logging at debug-level. 
+				   To enable query plan logging, set this option in the configuration. When enabled, the engine reports, at INFO level, any query plans under the log name <literal>com.espertech.esper.queryplan</literal>.
+				</para>
+
+				<para>
+					The API to use to enable query plan logging is shown here:
+				</para>
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getLogging().setEnableQueryPlan(true);]]></programlisting>
+
+				<para>
+					The XML snippet is:
+				</para>
+				<programlisting><![CDATA[<esper-configuration>
+  <engine-settings>
+    <defaults>
+      <logging>
+        <query-plan enabled="true"/>
+    </logging>
+    </defaults>
+  </engine-settings>
+</esper-configuration>]]></programlisting>
 			</sect3>
 		</sect2>
 

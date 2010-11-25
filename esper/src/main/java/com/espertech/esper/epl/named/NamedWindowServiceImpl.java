@@ -37,6 +37,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
     private final ExceptionHandlingService exceptionHandlingService;
     private final boolean isPrioritized;
     private final ManagedReadWriteLock eventProcessingRWLock;
+    private final boolean enableQueryPlanLog;
 
     private ThreadLocal<List<NamedWindowConsumerDispatchUnit>> threadLocal = new ThreadLocal<List<NamedWindowConsumerDispatchUnit>>()
     {
@@ -61,7 +62,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
      * @param isPrioritized if the engine is running with prioritized execution
      */
     public NamedWindowServiceImpl(StatementLockFactory statementLockFactory, VariableService variableService, boolean isPrioritized,
-                                  ManagedReadWriteLock eventProcessingRWLock, ExceptionHandlingService exceptionHandlingService)
+                                  ManagedReadWriteLock eventProcessingRWLock, ExceptionHandlingService exceptionHandlingService, boolean enableQueryPlanLog)
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();
         this.windowStatementLocks = new HashMap<String, StatementLock>();
@@ -71,6 +72,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         this.isPrioritized = isPrioritized;
         this.eventProcessingRWLock = eventProcessingRWLock;
         this.exceptionHandlingService = exceptionHandlingService;
+        this.enableQueryPlanLog = enableQueryPlanLog;
     }
 
     public void destroy()
@@ -111,7 +113,9 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processor;
     }
 
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized, ExprEvaluatorContext exprEvaluatorContext, Annotation[] annotations) throws ViewProcessingException
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService,
+                                             ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized,
+                                             ExprEvaluatorContext exprEvaluatorContext, Annotation[] annotations) throws ViewProcessingException
     {
         if (processors.containsKey(name))
         {
@@ -124,7 +128,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         }
 
         boolean isEnableSubqueryIndexShare = HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE.getHint(annotations) != null;
-        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName, isPrioritized, exprEvaluatorContext, statementResourceLock, isEnableSubqueryIndexShare);
+        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName, isPrioritized, exprEvaluatorContext, statementResourceLock, isEnableSubqueryIndexShare, enableQueryPlanLog);
         processors.put(name, processor);
 
         if (!observers.isEmpty())

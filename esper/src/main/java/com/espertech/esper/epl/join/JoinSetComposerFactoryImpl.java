@@ -17,6 +17,7 @@ import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.type.OuterJoinType;
+import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.DependencyGraph;
 import com.espertech.esper.view.HistoricalEventViewable;
@@ -33,6 +34,8 @@ import java.util.List;
  */
 public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
 {
+    private static final Log queryPlanLog = LogFactory.getLog(AuditPath.QUERYPLAN_LOG);
+
     /**
      * Builds join tuple composer.
      * @param outerJoinDescList - list of descriptors for outer join criteria
@@ -52,7 +55,8 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    Viewable[] streamViews,
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                    StreamJoinAnalysisResult streamJoinAnalysisResult,
-                                                   ExprEvaluatorContext exprEvaluatorContext)
+                                                   ExprEvaluatorContext exprEvaluatorContext,
+                                                   boolean queryPlanLogging)
             throws ExprValidationException
     {
         // Determine if there is a historical stream, and what dependencies exist
@@ -76,7 +80,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         // Handle a join with a database or other historical data source for 2 streams
         if ((hasHistorical) && (streamViews.length == 2))
         {
-            return makeComposerHistorical2Stream(outerJoinDescList, optionalFilterNode, streamTypes, streamViews, exprEvaluatorContext);
+            return makeComposerHistorical2Stream(outerJoinDescList, optionalFilterNode, streamTypes, streamViews, exprEvaluatorContext, queryPlanLogging);
         }
 
         // Query graph for graph relationships between streams/historicals
@@ -117,6 +121,9 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
 
         QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, queryGraph, streamNames,
                 hasHistorical, isHistorical, historicalDependencyGraph, historicalStreamIndexLists, exprEvaluatorContext);
+        if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+            queryPlanLog.info("Query plan: " + queryPlan);
+        }
 
         // Build indexes
         QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
@@ -196,7 +203,8 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    ExprNode optionalFilterNode,
                                                    EventType[] streamTypes,
                                                    Viewable[] streamViews,
-                                                   ExprEvaluatorContext exprEvaluatorContext)
+                                                   ExprEvaluatorContext exprEvaluatorContext,
+                                                   boolean queryPlanLogging)
             throws ExprValidationException
     {
         QueryStrategy[] queryStrategies;

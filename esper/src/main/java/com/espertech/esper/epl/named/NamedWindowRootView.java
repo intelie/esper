@@ -29,6 +29,7 @@ import com.espertech.esper.filter.FilterOperator;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.filter.FilterSpecParamConstant;
+import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.StatementStopService;
@@ -47,6 +48,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class NamedWindowRootView extends ViewSupport
 {
+    private static final Log queryPlanLog = LogFactory.getLog(AuditPath.QUERYPLAN_LOG);
     private static final Log log = LogFactory.getLog(NamedWindowRootView.class);
 
     private EventType namedWindowEventType;
@@ -56,6 +58,7 @@ public class NamedWindowRootView extends ViewSupport
     private final Map<TableLookupStrategy, PropertyIndexedEventTable> tablePerSingleLookup;
     private final ValueAddEventProcessor revisionProcessor;
     private final ConcurrentHashMap<String, PropertyIndexedEventTable> explicitIndexes;
+    private final boolean queryPlanLogging;
     private boolean isChildBatching;
     private StatementLock statementResourceLock;
 
@@ -63,7 +66,7 @@ public class NamedWindowRootView extends ViewSupport
      * Ctor.
      * @param revisionProcessor handle update events if supplied, or null if not handling revisions
      */
-    public NamedWindowRootView(ValueAddEventProcessor revisionProcessor, StatementLock statementResourceLock)
+    public NamedWindowRootView(ValueAddEventProcessor revisionProcessor, StatementLock statementResourceLock, boolean queryPlanLogging)
     {
         this.indexRepository = new NamedWindowIndexRepository();
         this.tablePerMultiLookup = new HashMap<LookupStrategy, PropertyIndexedEventTable>();
@@ -71,6 +74,7 @@ public class NamedWindowRootView extends ViewSupport
         this.explicitIndexes = new ConcurrentHashMap<String, PropertyIndexedEventTable>();
         this.revisionProcessor = revisionProcessor;
         this.statementResourceLock = statementResourceLock;
+        this.queryPlanLogging = queryPlanLogging;
     }
 
     /**
@@ -372,6 +376,9 @@ public class NamedWindowRootView extends ViewSupport
 
         PropertyIndexedEventTable tableFound = findTable(keysAndTypes);
         if (tableFound == null) {
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("no index found");
+            }
             return null;    // indicates table scan
         }
 
@@ -385,6 +392,9 @@ public class NamedWindowRootView extends ViewSupport
             }
         }
 
+        if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+            queryPlanLog.info("index lookup, using keys " + Arrays.toString(tableFound.getPropertyNames()));
+        }
         Set<EventBean> result = tableFound.lookup(keyValues);
         if (result != null) {
             return result;
@@ -483,6 +493,9 @@ public class NamedWindowRootView extends ViewSupport
     public TableLookupStrategy getAddSubqueryLookupStrategy(EventType[] eventTypesPerStream, JoinedPropPlan joinDesc, boolean fullTableScan) {
         // if there are no join criteria to use, return default copy strategy
         if (fullTableScan || joinDesc.getJoinProps().isEmpty()) {
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("shared, full table scan");
+            }
             return new FullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
         }
 
@@ -496,8 +509,11 @@ public class NamedWindowRootView extends ViewSupport
 
         // no matching existing table found, add new one
         if (table == null) {
-            TableLookupStrategy strategy = addTableGetStrategy(joinDesc, eventTypesPerStream);
-            return new IndexedTableLookupStrategyLocking(strategy, statementResourceLock);
+            Pair<TableLookupStrategy, String> strategy = addTableGetStrategy(joinDesc, eventTypesPerStream);
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("new sharable index, " + strategy.getSecond());
+            }
+            return new IndexedTableLookupStrategyLocking(strategy.getFirst(), statementResourceLock);
         }
 
         // build strategy based on existing table
@@ -505,6 +521,7 @@ public class NamedWindowRootView extends ViewSupport
         int[] streamNumbers = new int[table.getPropertyNames().length];
         String[] keyProps = new String[table.getPropertyNames().length];
         Class[] coercionTypes = new Class[table.getPropertyNames().length];
+        String[] indexProps = new String[table.getPropertyNames().length];
 
         for (int i = 0; i < table.getPropertyNames().length; i++) {
             String indexedProp = table.getPropertyNames()[i];
@@ -512,6 +529,7 @@ public class NamedWindowRootView extends ViewSupport
             for (Map.Entry<String, JoinedPropDesc> entry : joinDesc.getJoinProps().entrySet()) {
                 JoinedPropDesc joinPlan = entry.getValue();
                 if (entry.getValue().getIndexPropName().equals(indexedProp)) {
+                    indexProps[i] = indexedProp;
                     types[i] = eventTypesPerStream[joinPlan.getKeyStreamId()];
                     streamNumbers[i] = joinPlan.getKeyStreamId();
                     keyProps[i] = joinPlan.getKeyPropName();
@@ -521,20 +539,25 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         IndexedTableLookupStrategy strategy;
+        String message = "index lookup on " + Arrays.toString(indexProps) + " based on " + Arrays.toString(keyProps);
         if (!joinDesc.isMustCoerce()) {
             strategy = new IndexedTableLookupStrategy(types, streamNumbers, keyProps, table);
         }
         else {
             strategy = new IndexedTableLookupStrategyCoercing(types, streamNumbers, keyProps, table, coercionTypes);
+            message = "coerced " + message;
         }
         IndexedTableLookupStrategyLocking locking = new IndexedTableLookupStrategyLocking(strategy, statementResourceLock);
         tablePerSingleLookup.put(locking, table);
         indexRepository.addTableReference(table);
         
+        if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+            queryPlanLog.info("existing index, " + message);
+        }
         return locking;
     }
 
-    private TableLookupStrategy addTableGetStrategy(JoinedPropPlan joinDesc, EventType[] eventTypePerStream) {
+    private Pair<TableLookupStrategy, String> addTableGetStrategy(JoinedPropPlan joinDesc, EventType[] eventTypePerStream) {
 
         Collection<JoinedPropDesc> propsJoined = joinDesc.getJoinProps().values();
         JoinedPropDesc[] propsJoinedArr = propsJoined.toArray(new JoinedPropDesc[propsJoined.size()]);
@@ -557,6 +580,7 @@ public class NamedWindowRootView extends ViewSupport
 
         // create the strategy
         TableLookupStrategy lookupStrategy;
+        String message = "index lookup on " + Arrays.toString(indexPropertiesJoin) + " based on " + Arrays.toString(keyPropertiesJoin);
         if (!joinDesc.isMustCoerce())
         {
             lookupStrategy = new IndexedTableLookupStrategy(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table);
@@ -564,8 +588,9 @@ public class NamedWindowRootView extends ViewSupport
         else
         {
             lookupStrategy = new IndexedTableLookupStrategyCoercing(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table, coercionTypes);
+            message = "coerced " + message;
         }
-        return lookupStrategy;
+        return new Pair<TableLookupStrategy, String>(lookupStrategy, message);
     }
 
     public void removeSubqueryLookupStrategy(TableLookupStrategy namedWindowSubqueryLookup) {

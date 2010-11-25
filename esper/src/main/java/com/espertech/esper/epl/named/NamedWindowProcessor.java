@@ -48,14 +48,14 @@ public class NamedWindowProcessor
      * @param isPrioritized if the engine is running with prioritized execution
      * @param exprEvaluatorContext context for expression evalauation
      */
-    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized, ExprEvaluatorContext exprEvaluatorContext, StatementLock statementResourceLock, boolean isEnableSubqueryIndexShare)
+    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized, ExprEvaluatorContext exprEvaluatorContext, StatementLock statementResourceLock, boolean isEnableSubqueryIndexShare, boolean enableQueryPlanLog)
     {
         this.eventType = eventType;
         this.eplExpression = eplExpression;
         this.statementName = statementName;
         this.isEnableSubqueryIndexShare = isEnableSubqueryIndexShare;
 
-        rootView = new NamedWindowRootView(revisionProcessor, statementResourceLock);
+        rootView = new NamedWindowRootView(revisionProcessor, statementResourceLock, enableQueryPlanLog);
         tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService, revisionProcessor, isPrioritized, exprEvaluatorContext);
         rootView.setDataWindowContents(tailView);   // for iteration used for delete without index
     }

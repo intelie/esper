@@ -49,6 +49,7 @@ import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.PatternMatchCallback;
 import com.espertech.esper.pattern.PatternStopCallback;
 import com.espertech.esper.rowregex.EventRowRegexNFAViewFactory;
+import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.StopCallback;
 import com.espertech.esper.view.*;
@@ -67,10 +68,12 @@ import java.util.*;
 public class EPStatementStartMethod
 {
     private static final Log log = LogFactory.getLog(EPStatementStartMethod.class);
+    private static final Log queryPlanLog = LogFactory.getLog(AuditPath.QUERYPLAN_LOG);
 
     private final StatementSpecCompiled statementSpec;
     private final EPServicesContext services;
     private final StatementContext statementContext;
+    private final boolean queryPlanLogging;
 
     /**
      * Ctor.
@@ -86,6 +89,10 @@ public class EPStatementStartMethod
         this.statementSpec = statementSpec;
         this.services = services;
         this.statementContext = statementContext;
+        this.queryPlanLogging = services.getConfigSnapshot().getEngineDefaults().getLogging().isEnableQueryPlan();
+        if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+            queryPlanLog.info("Query plans for statement '" + statementContext.getStatementName() + "' expression '" + statementContext.getExpression() + "'");
+        }
     }
 
     /**
@@ -1311,7 +1318,7 @@ public class EPStatementStartMethod
             throws ExprValidationException
     {
         // Handle joins
-        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, joinAnalysisResult, statementContext);
+        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, joinAnalysisResult, statementContext, queryPlanLogging);
 
         stopCallbacks.add(new StopCallback(){
             public void stop()
@@ -1650,8 +1657,13 @@ public class EPStatementStartMethod
             throws ExprValidationException
     {
         boolean fullTableScan = HintEnum.SET_NOINDEX.getHint(annotations) != null;
+        int subqueryNum = 0;
         for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
         {
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("For statement '" + statementContext.getStatementName() + "' subquery " + subqueryNum);
+            }
+
             StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
             StreamSpecCompiled filterStreamSpec = statementSpec.getStreamSpecs().get(0);
 
@@ -1948,6 +1960,8 @@ public class EPStatementStartMethod
                         }
                     }
                 }
+
+                subqueryNum++;
             }
 
             // hook up subselect viewable and event table
@@ -2019,6 +2033,9 @@ public class EPStatementStartMethod
         {
             UnindexedEventTable table = new UnindexedEventTable(0);
             FullTableScanLookupStrategy strategy = new FullTableScanLookupStrategy(table);
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("local buf, full table scan");
+            }
             return new Pair<EventTable, TableLookupStrategy>(table, strategy);
         }
 
@@ -2038,18 +2055,27 @@ public class EPStatementStartMethod
                 PropertyIndexedEventTable table = new PropertyIndexedEventTable(0, viewableEventType, indexedProps, coercionTypes);
                 TableLookupStrategy strategy = new IndexedTableLookupStrategy( outerEventTypes,
                         keyStreamNums, keyProps, table);
+                if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                    queryPlanLog.info("local index, index lookup on " + Arrays.toString(indexedProps) + " based on " + Arrays.toString(keyProps));
+                }
                 return new Pair<EventTable, TableLookupStrategy>(table, strategy);
             }
             else
             {                
                 PropertyIndTableCoerceAdd table = new PropertyIndTableCoerceAdd(0, viewableEventType, indexedProps, coercionTypes);
                 TableLookupStrategy strategy = new IndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
+                if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                    queryPlanLog.info("local index, coerced index lookup on " + Arrays.toString(indexedProps) + " based on " + Arrays.toString(keyProps));
+                }
                 return new Pair<EventTable, TableLookupStrategy>(table, strategy);
             }
         }
         else
         {
             UnindexedEventTable table = new UnindexedEventTable(0);
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("local buf, full table scan");
+            }
             return new Pair<EventTable, TableLookupStrategy>(table, new FullTableScanLookupStrategy(table));
         }
     }

@@ -25,6 +25,7 @@ public class TestJoinMapType extends TestCase
         config.addEventType("MapS0", typeInfo);
         config.addEventType("MapS1", typeInfo);
 
+        config.getEngineDefaults().getLogging().setEnableQueryPlan(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();

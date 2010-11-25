@@ -65,6 +65,7 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getViewResources().isAllowMultipleExpiryPolicies());
         assertFalse(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
         assertTrue(config.getEngineDefaults().getLogging().isEnableTimerDebug());
+        assertFalse(config.getEngineDefaults().getLogging().isEnableQueryPlan());
         assertEquals(15000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
         assertEquals(ConfigurationEngineDefaults.TimeSourceType.MILLI, config.getEngineDefaults().getTimeSource().getTimeSourceType());
         assertFalse(config.getEngineDefaults().getExecution().isPrioritized());
@@ -316,6 +317,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC, config.getEngineDefaults().getEventMeta().getDefaultAccessorStyle());
         assertTrue(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
         assertFalse(config.getEngineDefaults().getLogging().isEnableTimerDebug());
+        assertTrue(config.getEngineDefaults().getLogging().isEnableQueryPlan());
         assertEquals(30000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
         assertEquals(StreamSelector.RSTREAM_ISTREAM_BOTH, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
 

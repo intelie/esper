@@ -30,6 +30,7 @@ import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
+import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +42,7 @@ import java.util.*;
  */
 public class EPPreparedExecuteMethod
 {
+    private static final Log queryPlanLog = LogFactory.getLog(AuditPath.QUERYPLAN_LOG);
     private static final Log log = LogFactory.getLog(EPPreparedExecuteMethod.class);
 
     private final StatementSpecCompiled statementSpec;
@@ -64,6 +66,11 @@ public class EPPreparedExecuteMethod
                                 StatementContext statementContext)
             throws ExprValidationException
     {
+        boolean queryPlanLogging = services.getConfigSnapshot().getEngineDefaults().getLogging().isEnableQueryPlan();
+        if (queryPlanLogging) {
+            queryPlanLog.info("Query plans for Fire-and-forget query '" + statementContext.getExpression() + "'");
+        }
+
         this.statementSpec = statementSpec;
         this.exprEvaluatorContext = statementContext;
 
@@ -140,7 +147,7 @@ public class EPPreparedExecuteMethod
             {
                 viewablePerStream[i] = processors[i].getTailView();
             }
-            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult, statementContext);
+            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult, statementContext, queryPlanLogging);
         }
         else
         {

@@ -38,6 +38,7 @@ public class TestDatabaseJoin extends TestCase
         configDB.setConnectionAutoCommit(true);
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getLogging().setEnableQueryPlan(true);
         configuration.addDatabaseReference("MyDB", configDB);
 
         epService = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
