@@ -2253,6 +2253,10 @@ config.addVariantStream("OutgoingEvent", variant);]]></programlisting>
 					</row>
 				</tbody>
 			</tgroup>
+			
+			<para>
+				Apache Commons Logging uses an automatic discovery mechanism to find a log framework that it will delegate to.  If your application has another component using logback, please inspect you logback configuration and add <literal>com.espertech</literal>.
+			</para>
 		</table>
 		
 		<sect2 id="configuration-logging-log4j">		
