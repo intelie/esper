@@ -136,7 +136,7 @@ public class EsperIODBAdapter
 
             String[] values = new String[upsert.getValues().size()];
             int[] valueTypes = new int[upsert.getValues().size()];
-            EventPropertyGetter[] valueGetters = new EventPropertyGetter[upsert.getKeys().size()];
+            EventPropertyGetter[] valueGetters = new EventPropertyGetter[upsert.getValues().size()];
 
             index = 0;
             for (Column value : upsert.getValues()) {
