@@ -930,7 +930,8 @@ public class EPStatementStartMethod
                 DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
                 SQLColumnTypeConversion typeConversionHook = (SQLColumnTypeConversion) JavaClassHelper.getAnnotationHook(statementSpec.getAnnotations(), HookType.SQLCOL, SQLColumnTypeConversion.class, statementContext.getMethodResolutionService());
                 SQLOutputRowConversion outputRowConversionHook = (SQLOutputRowConversion) JavaClassHelper.getAnnotationHook(statementSpec.getAnnotations(), HookType.SQLROW, SQLOutputRowConversion.class, statementContext.getMethodResolutionService());
-                HistoricalEventViewable historicalEventViewable = DatabasePollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle(), typeConversionHook, outputRowConversionHook);
+                HistoricalEventViewable historicalEventViewable = DatabasePollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle(), typeConversionHook, outputRowConversionHook,
+                        statementContext.getConfigSnapshot().getEngineDefaults().getLogging().isEnableJDBC());
                 unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.getEventType(), new LinkedList<ViewFactory>());
                 eventStreamParentViewable[i] = historicalEventViewable;
                 stopCallbacks.add(historicalEventViewable);

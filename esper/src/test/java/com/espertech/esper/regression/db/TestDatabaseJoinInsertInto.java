@@ -28,6 +28,7 @@ public class TestDatabaseJoinInsertInto extends TestCase
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
 
+        configuration.getEngineDefaults().getLogging().setEnableJDBC(true);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
     }

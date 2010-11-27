@@ -15,6 +15,7 @@ import com.espertech.esper.client.hook.*;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.bean.BeanEventType;
+import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.DatabaseTypeBinding;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
@@ -29,6 +30,8 @@ import java.util.Date;
  */
 public class PollExecStrategyDBQuery implements PollExecStrategy
 {
+    private static final Log jdbcPerfLog = LogFactory.getLog(AuditPath.JDBC_LOG);
+
     private static final Log log = LogFactory.getLog(PollExecStrategyDBQuery.class);
     private final EventAdapterService eventAdapterService;
     private final String preparedStatementText;
@@ -37,6 +40,7 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
     private final EventType eventType;
     private final SQLColumnTypeConversion columnTypeConversionHook;
     private final SQLOutputRowConversion outputRowConversionHook;
+    private final boolean enableJDBCLogging;
 
     private Pair<Connection, PreparedStatement> resources;
 
@@ -56,7 +60,8 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
                                    String preparedStatementText,
                                    Map<String, DBOutputTypeDesc> outputTypes,
                                    SQLColumnTypeConversion columnTypeConversionHook,
-                                   SQLOutputRowConversion outputRowConversionHook)
+                                   SQLOutputRowConversion outputRowConversionHook,
+                                   boolean enableJDBCLogging)
     {
         this.eventAdapterService = eventAdapterService;
         this.eventType = eventType;
@@ -65,6 +70,7 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
         this.outputTypes = outputTypes;
         this.columnTypeConversionHook = columnTypeConversionHook;
         this.outputRowConversionHook = outputRowConversionHook;
+        this.enableJDBCLogging = enableJDBCLogging;
     }
 
     public void start()
@@ -141,13 +147,30 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
 
         // execute
         ResultSet resultSet;
-        try
-        {
-             resultSet = preparedStatement.executeQuery();
+        if (enableJDBCLogging && jdbcPerfLog.isInfoEnabled()) {
+            long startTimeNS = System.nanoTime();
+            long startTimeMS = System.currentTimeMillis();
+            try
+            {
+                 resultSet = preparedStatement.executeQuery();
+            }
+            catch (SQLException ex)
+            {
+                throw new EPException("Error executing statement '" + preparedStatementText + '\'', ex);
+            }
+            long endTimeNS = System.nanoTime();
+            long endTimeMS = System.currentTimeMillis();
+            jdbcPerfLog.info("Statement '" + preparedStatementText + "' delta nanosec " + (endTimeNS - startTimeNS) + " delta msec " + (endTimeMS - startTimeMS));
         }
-        catch (SQLException ex)
-        {
-            throw new EPException("Error executing statement '" + preparedStatementText + '\'', ex);
+        else {
+            try
+            {
+                 resultSet = preparedStatement.executeQuery();
+            }
+            catch (SQLException ex)
+            {
+                throw new EPException("Error executing statement '" + preparedStatementText + '\'', ex);
+            }
         }
 
         // generate events for result set
@@ -219,6 +242,10 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
         catch (SQLException ex)
         {
             throw new EPException("Error reading results for statement '" + preparedStatementText + '\'', ex);
+        }
+
+        if (enableJDBCLogging && jdbcPerfLog.isInfoEnabled()) {
+            jdbcPerfLog.info("Statement '" + preparedStatementText + "' " + rows.size() + " rows");
         }
 
         try

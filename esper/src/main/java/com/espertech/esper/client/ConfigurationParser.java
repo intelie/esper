@@ -1072,6 +1072,12 @@ class ConfigurationParser {
                 Boolean value = Boolean.parseBoolean(valueText);
                 configuration.getEngineDefaults().getLogging().setEnableQueryPlan(value);
             }
+            if (subElement.getNodeName().equals("jdbc"))
+            {
+                String valueText = getRequiredAttribute(subElement, "enabled");
+                Boolean value = Boolean.parseBoolean(valueText);
+                configuration.getEngineDefaults().getLogging().setEnableJDBC(value);
+            }
         }
     }
 

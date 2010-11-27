@@ -32,7 +32,7 @@ public class TestPollExecStrategyDBQuery extends TestCase
         propertiesOut.put("myvarchar", new DBOutputTypeDesc(Types.VARCHAR, null, null));
 
         dbPollExecStrategy = new PollExecStrategyDBQuery(SupportEventAdapterService.getService(),
-                resultEventType, connectionCache, sql, propertiesOut, null, null);
+                resultEventType, connectionCache, sql, propertiesOut, null, null, false);
     }
 
     public void testPoll()

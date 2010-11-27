@@ -56,6 +56,28 @@ public class TestGroupByEventPerGroup extends TestCase
         runAssertion(fields);
     }
 
+    public void testUnboundStreamIterate()
+    {
+        // After the oldest group is 60 second old, reclaim group older then  30 seconds
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL("select string, count(*) from SupportBean group by string");
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("G1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("G2", 10));
+        EventBean[] events = ArrayAssertionUtil.iteratorToArray(stmtOne.iterator());
+        assertEquals(1, events.length);
+
+        stmtOne.destroy();
+        stmtOne = epService.getEPAdministrator().createEPL("select string, count(*) from SupportBean group by string output snapshot every 2 events");
+        stmtOne.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("G1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBean("G2", 10));
+        events = ArrayAssertionUtil.iteratorToArray(stmtOne.iterator());
+        assertEquals(1, events.length);
+    }
+
     public void testUnboundStreamUnlimitedKey()
     {
         // ESPER-396 Unbound stream and aggregating/grouping by unlimited key (i.e. timestamp) configurable state drop

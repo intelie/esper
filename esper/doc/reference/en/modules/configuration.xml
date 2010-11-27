@@ -1533,6 +1533,34 @@ config.getEngineDefaults().getLogging().setEnableQueryPlan(true);]]></programlis
   </engine-settings>
 </esper-configuration>]]></programlisting>
 			</sect3>
+
+			<sect3 id="config-engine-logging-jdbc" revision="1">
+				<title>JDBC Logging</title>
+
+				<para>
+				   By default, the engine does not measure JDBC query execution times or report the number of rows returned from a JDBC query through logging. 
+				   To enable JDBC logging, set this option in the configuration. When enabled, the engine reports, at INFO level, any JDBC query performance and number of rows returned under the log name <literal>com.espertech.esper.jdbc</literal>.
+				</para>
+
+				<para>
+					The API to use to enable query plan logging is shown here:
+				</para>
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getLogging().setEnableJDBC(true);]]></programlisting>
+
+				<para>
+					The XML snippet is:
+				</para>
+				<programlisting><![CDATA[<esper-configuration>
+  <engine-settings>
+    <defaults>
+      <logging>
+        <jdbc enabled="true"/>
+    </logging>
+    </defaults>
+  </engine-settings>
+</esper-configuration>]]></programlisting>
+			</sect3>
 		</sect2>
 
 		<sect2 id="config-engine-variables" revision="1">
@@ -2220,6 +2248,10 @@ config.addVariantStream("OutgoingEvent", variant);]]></programlisting>
 		</para>
 
 		<para>
+			Apache Commons Logging uses an automatic discovery mechanism to find a log framework that it will delegate to.  If your application has another component using logback, please inspect you logback configuration and add <literal>com.espertech</literal>.
+		</para>
+
+		<para>
 		   The next table explains the log levels:
 		</para>
 
@@ -2254,9 +2286,6 @@ config.addVariantStream("OutgoingEvent", variant);]]></programlisting>
 				</tbody>
 			</tgroup>
 			
-			<para>
-				Apache Commons Logging uses an automatic discovery mechanism to find a log framework that it will delegate to.  If your application has another component using logback, please inspect you logback configuration and add <literal>com.espertech</literal>.
-			</para>
 		</table>
 		
 		<sect2 id="configuration-logging-log4j">		

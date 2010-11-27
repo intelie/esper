@@ -59,7 +59,8 @@ public class DatabasePollingViewableFactory
                                                  EventAdapterService eventAdapterService,
                                                  EPStatementHandle epStatementHandle,
                                                  SQLColumnTypeConversion columnTypeConversionHook,
-                                                 SQLOutputRowConversion outputRowConversionHook)
+                                                 SQLOutputRowConversion outputRowConversionHook,
+                                                 boolean enableJDBCLogging)
             throws ExprValidationException
     {
         // Parse the SQL for placeholders and text fragments
@@ -254,7 +255,7 @@ public class DatabasePollingViewableFactory
         }
 
         PollExecStrategyDBQuery dbPollStrategy = new PollExecStrategyDBQuery(eventAdapterService,
-                eventType, connectionCache, preparedStatementText, queryMetaData.getOutputParameters(), columnTypeConversionHook, outputRowConversionHook);
+                eventType, connectionCache, preparedStatementText, queryMetaData.getOutputParameters(), columnTypeConversionHook, outputRowConversionHook, enableJDBCLogging);
 
         return new DatabasePollingViewable(streamNumber, queryMetaData.getInputParameters(), dbPollStrategy, dataCache, eventType);
     }

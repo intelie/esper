@@ -780,6 +780,7 @@ public class ConfigurationEngineDefaults implements Serializable
         private boolean enableExecutionDebug;
         private boolean enableTimerDebug;
         private boolean enableQueryPlan;
+        private boolean enableJDBC;
         private static final long serialVersionUID = -8129836306582810327L;
 
         /**
@@ -790,6 +791,7 @@ public class ConfigurationEngineDefaults implements Serializable
             enableExecutionDebug = false;
             enableTimerDebug = true;
             enableQueryPlan = false;
+            enableJDBC = false;
         }
 
         /**
@@ -850,6 +852,22 @@ public class ConfigurationEngineDefaults implements Serializable
          */
         public void setEnableQueryPlan(boolean enableQueryPlan) {
             this.enableQueryPlan = enableQueryPlan;
+        }
+
+        /**
+         * Returns an indicator whether JDBC query reporting is enabled.
+         * @return indicator
+         */
+        public boolean isEnableJDBC() {
+            return enableJDBC;
+        }
+
+        /**
+         * Set the indicator whether JDBC query reporting is enabled.
+         * @param enableJDBC set to true for JDBC query reorting enabled
+         */
+        public void setEnableJDBC(boolean enableJDBC) {
+            this.enableJDBC = enableJDBC;
         }
     }
 
