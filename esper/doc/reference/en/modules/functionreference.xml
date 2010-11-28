@@ -861,6 +861,10 @@ from Trade.std:groupwin(symbol).win:length(10)</programlisting>
 				This example statement returns the simple class name of the value of the dynamic property <literal>prop</literal> of events in stream <literal>MyStream</literal>, or a <literal>null</literal> value if the property is not found for an event or the property value itself is <literal>null</literal>:
 			</para>
 			<programlisting><![CDATA[select typeof(prop?) from MyStream]]></programlisting>
+			
+			<para>
+			    When using subclasses or interface implementations as event classes or when using Map-event type inheritance, the function returns the event type name provided when the class or Map-type event was registered, or if the event type was not registered, the function returns the fully-qualified class name.
+			</para>
 		</sect2>
 	</sect1>		
 	
