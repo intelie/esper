@@ -29,6 +29,7 @@ import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.timer.TimerCallback;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
+import com.espertech.esper.util.Version;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -302,6 +303,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
      */
     protected void doInitialize()
     {
+        log.info("Initializing engine URI '" + engineURI + "' version " + Version.VERSION);
+        
         // This setting applies to all engines in a given VM
         ExecutionPathDebugLog.setDebugEnabled(configSnapshot.getEngineDefaults().getLogging().isEnableExecutionDebug());
         ExecutionPathDebugLog.setTimerDebugEnabled(configSnapshot.getEngineDefaults().getLogging().isEnableTimerDebug());
