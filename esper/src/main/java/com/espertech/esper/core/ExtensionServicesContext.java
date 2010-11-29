@@ -23,4 +23,6 @@ public interface ExtensionServicesContext
      * Invoked to destroy the extension services, when an existing engine is initialized.
      */
     public void destroy();
+    
+    public boolean isHAEnabled();
 }
