@@ -31,6 +31,7 @@ public class SupportConfigFactory
         {
             config = new Configuration();
             config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+            config.getEngineDefaults().getExceptionHandling().addClass(SupportExceptionHandlerFactoryRethrow.class);
         }
         return config;
     }

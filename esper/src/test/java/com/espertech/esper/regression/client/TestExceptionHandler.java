@@ -1,18 +1,14 @@
 package com.espertech.esper.regression.client;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.hook.ExceptionHandler;
 import com.espertech.esper.client.hook.ExceptionHandlerContext;
 import com.espertech.esper.client.hook.ExceptionHandlerFactoryContext;
-import com.espertech.esper.core.EPServiceProviderSPI;
-import com.espertech.esper.core.StatementLifecycleEvent;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.agg.AggregationValidationContext;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.*;
 import junit.framework.TestCase;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class TestExceptionHandler extends TestCase
@@ -23,6 +19,7 @@ public class TestExceptionHandler extends TestCase
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         // add same factory twice
+        config.getEngineDefaults().getExceptionHandling().getHandlerFactories().clear();
         config.getEngineDefaults().getExceptionHandling().addClass(SupportExceptionHandlerFactory.class);
         config.getEngineDefaults().getExceptionHandling().addClass(SupportExceptionHandlerFactory.class);
         config.addEventType("SupportBean", SupportBean.class);
@@ -52,6 +49,30 @@ public class TestExceptionHandler extends TestCase
         assertEquals(epl, ehc.getEpl());
         assertEquals("ABCName", ehc.getStatementName());
         assertEquals("Sample exception", ehc.getThrowable().getMessage());
+    }
+
+    /**
+     * Ensure the support configuration has an exception handler that rethrows exceptions.
+     */
+    public void testSupportConfigHandlerRethrow()
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventType("SupportBean", SupportBean.class);
+        config.addPlugInAggregationFunction("myinvalidagg", InvalidAggTest.class.getName());
+
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
+        epService.getEPAdministrator().createEPL(epl);
+
+        try {
+            epService.getEPRuntime().sendEvent(new SupportBean());
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
     }
 
     public static class InvalidAggTest extends AggregationSupport {
