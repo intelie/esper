@@ -234,6 +234,9 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     {
         if (engine != null)
         {
+            EPServiceEngine engineToDestroy = engine;
+            engine = null;
+
             for (EPServiceStateListener listener : serviceListeners)
             {
                 try
@@ -246,7 +249,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
                 }
             }
 
-            engine.getServices().getTimerService().stopInternalClock(false);
+            engineToDestroy.getServices().getTimerService().stopInternalClock(false);
             // Give the timer thread a little moment to catch up
             try
             {
@@ -258,14 +261,14 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             }
 
             // plugin-loaders - destroy in opposite order
-            List<ConfigurationPluginLoader> pluginLoaders = engine.getServices().getConfigSnapshot().getPluginLoaders();
+            List<ConfigurationPluginLoader> pluginLoaders = engineToDestroy.getServices().getConfigSnapshot().getPluginLoaders();
             if (!pluginLoaders.isEmpty()) {
                 List<ConfigurationPluginLoader> reversed = new ArrayList<ConfigurationPluginLoader>(pluginLoaders);
                 Collections.reverse(reversed);
                 for (ConfigurationPluginLoader config : reversed) {
                     PluginLoader plugin;
                     try {
-                        plugin = (PluginLoader) engine.getServices().getEngineEnvContext().lookup("plugin-loader/" + config.getLoaderName());
+                        plugin = (PluginLoader) engineToDestroy.getServices().getEngineEnvContext().lookup("plugin-loader/" + config.getLoaderName());
                         plugin.destroy();
                     }
                     catch (NamingException e) {
@@ -276,15 +279,13 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
                     }
                 }
             }
-            
-            engine.getRuntime().destroy();
-            engine.getAdmin().destroy();
-            engine.getServices().destroy();
 
-            engine.getServices().initialize();
+            engineToDestroy.getRuntime().destroy();
+            engineToDestroy.getAdmin().destroy();
+            engineToDestroy.getServices().destroy();
+
+            engineToDestroy.getServices().initialize();
         }
-
-        engine = null;
     }
 
     public boolean isDestroyed()
