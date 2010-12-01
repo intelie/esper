@@ -368,7 +368,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
         EventType existingType = nameToTypeMap.get(eventTypeName);
         if (existingType != null)
         {
-            if (existingType.getUnderlyingType().getName().equals(fullyQualClassName))
+            if ((existingType.getUnderlyingType().getName().equals(fullyQualClassName)) ||
+                (existingType.getUnderlyingType().getSimpleName().equals(fullyQualClassName)))
             {
                 if (log.isDebugEnabled())
                 {
