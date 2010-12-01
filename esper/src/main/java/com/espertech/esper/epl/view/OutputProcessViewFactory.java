@@ -64,8 +64,13 @@ public class OutputProcessViewFactory
         boolean isDistinct = statementSpec.getSelectClauseSpec().isDistinct();
         boolean isGrouped = statementSpec.getGroupByExpressions() != null && !statementSpec.getGroupByExpressions().isEmpty();
 
-        if ((outputLimitSpec != null) && (outputLimitSpec.getAfterTimePeriodExpr() != null)) {
-            outputLimitSpec.getAfterTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
+        if (outputLimitSpec != null) {
+            if (outputLimitSpec.getAfterTimePeriodExpr() != null) {
+                outputLimitSpec.getAfterTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
+            }
+            if (outputLimitSpec.getTimePeriodExpr() != null) {
+                outputLimitSpec.getTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
+            }
         }
 
         OutputProcessView outputProcessView;

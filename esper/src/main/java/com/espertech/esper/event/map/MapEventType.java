@@ -77,7 +77,7 @@ public class MapEventType implements EventTypeSPI
         this.optionalSuperTypes = optionalSuperTypes;
         if (optionalDeepSupertypes == null)
         {
-            this.optionalDeepSupertypes = Collections.EMPTY_SET;
+            this.optionalDeepSupertypes = Collections.emptySet();
         }
         else
         {
@@ -747,46 +747,6 @@ public class MapEventType implements EventTypeSPI
     }
 
     /**
-     * Compares two sets of properties and determines if they are the same, allowing for
-     * boxed/unboxed types.
-     * @param setOne is the first set of properties
-     * @param setTwo is the second set of properties
-     * @return true if the property set is equivalent, false if not
-     */
-    public static boolean isEqualsProperties(Map<String, Class> setOne, Map<String, Class> setTwo)
-    {
-        // Should have the same number of properties
-        if (setOne.size() != setTwo.size())
-        {
-            return false;
-        }
-
-        // Compare property by property
-        for (Map.Entry<String, Class> entry : setOne.entrySet())
-        {
-            Class otherClass = setTwo.get(entry.getKey());
-            Class thisClass = entry.getValue();
-            if (((otherClass == null) && (thisClass != null)) ||
-                 (otherClass != null) && (thisClass == null))
-            {
-                return false;
-            }
-            if (otherClass == null)
-            {
-                continue;
-            }
-            Class boxedOther = JavaClassHelper.getBoxedType(otherClass);
-            Class boxedThis = JavaClassHelper.getBoxedType(thisClass);
-            if (!boxedOther.equals(boxedThis))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Adds additional properties that do not yet exist on the given type.
      * <p.
      * Ignores properties already present. Allows nesting.
@@ -937,6 +897,15 @@ public class MapEventType implements EventTypeSPI
                     String setOneEventType = (String) setOneType;
                     EventType setTwoEventType = (EventType) setTwoType;
                     return "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" + setOneEventType + "' but receives event type '" + setTwoEventType.getName() + "'";
+                }
+            }
+            else if ((setTwoType instanceof String) && (setOneType instanceof String))
+            {
+                if (!setTwoType.equals(setOneType))
+                {
+                    String setOneEventType = (String) setOneType;
+                    String setTwoEventType = (String) setTwoType;
+                    return "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" + setOneEventType + "' but receives event type '" + setTwoEventType + "'";
                 }
             }
             else
