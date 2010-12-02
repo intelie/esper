@@ -71,6 +71,16 @@ public class TestNamedWindowMerge extends TestCase {
         sendOrderEvent("O2", "P2", 3, 300, false);
         ArrayAssertionUtil.assertEqualsAnyOrder(epService.getEPAdministrator().getStatement("nwProd").iterator(), "productId,totalPrice".split(","), new Object[][] {{"P1", 21d}, {"P2", 3d}});
         ArrayAssertionUtil.assertEqualsAnyOrder(epService.getEPAdministrator().getStatement("nwOrd").iterator(), "orderId,quantity".split(","), new Object[][] {{"O1", 200}, {"O2", 300}});
+
+        String module = "create schema StreetCarCountSchema (streetid string, carcount int);" +
+                "    create schema StreetChangeEvent (streetid string, action string);" +
+                "    create window StreetCarCountWindow.std:unique(streetid) as StreetCarCountSchema;" +
+                "    on StreetChangeEvent ce merge StreetCarCountWindow w where ce.streetid = w.streetid\n" +
+                "    when not matched and ce.action = 'ENTER' then insert select streetid, 1 as carcount\n" +
+                "    when matched and ce.action = 'ENTER' then update set carcount = carcount + 1\n" +
+                "    when matched and ce.action = 'LEAVE' then update set carcount = carcount - 1;" +
+                "    select * from StreetCarCountWindow;";
+        epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(module, null, null, null);
     }
 
     private void sendOrderEvent(String orderId, String productId, double price, int quantity, boolean deletedFlag) {

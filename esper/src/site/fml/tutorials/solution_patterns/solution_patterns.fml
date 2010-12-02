@@ -1702,6 +1702,42 @@ from Volatility.std:groupwin(id).win:length(2)</pre></div>
 
       </answer>
     </faq>
+
+    <faq id="insert_update_count">
+      <question>We have an event stream for cars entering and leaving streets and want a car count per street? How do I insert or update and keep a count?</question>
+      <answer>
+        <p>
+      	  A solution is to have a named window holding the count per street and use the on-merge clause to atomically merge the indicator stream.
+        </p>
+        <p>
+          Define the schema to hold the car count:
+        </p>
+	<div class="source"><pre>create schema StreetCarCountSchema (streetid string, carcount int)</pre></div>
+	
+        <p>
+          Define the schema for the arriving events indicating whether cars enter or leave a street:
+        </p>
+	<div class="source"><pre>create schema StreetChangeEvent (streetid string, action string);</pre></div>
+
+        <p>
+          Define a named window based on the schema to hold the count per street:
+        </p>
+	<div class="source"><pre>create window StreetCarCountWindow.std:unique(streetid) as StreetCarCountSchema</pre></div>
+
+        <p>
+          Merge the arriving data with a named window entry:	  
+        </p>
+	<div class="source"><pre>on StreetChangeEvent ce merge StreetCarCountWindow w where ce.streetid = w.streetid
+when not matched and ce.action = 'ENTER' then insert select streetid, 1 as carcount
+when matched and ce.action = 'ENTER' then update set carcount = carcount + 1
+when matched and ce.action = 'LEAVE' then update set carcount = carcount - 1</pre></div>
+
+        <p>
+	  Output the current count when it changes:
+        </p>
+	<div class="source"><pre>select * from StreetCarCountWindow</pre></div>
+      </answer>
+    </faq>
   </part>
 
 </faqs>
