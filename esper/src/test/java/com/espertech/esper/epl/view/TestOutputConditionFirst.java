@@ -37,7 +37,7 @@ public class TestOutputConditionFirst extends TestCase
 	
 	public void testUpdateTime() throws Exception
 	{
-        ExprTimePeriod timePeriodValid = new ExprTimePeriod(false, false, false, true, false);
+        ExprTimePeriod timePeriodValid = new ExprTimePeriod(false, false, false, false, false, false, true, false);
         timePeriodValid.addChildNode(new ExprConstantNode(TEST_INTERVAL_MSEC/1000d));
         SupportExprNodeUtil.validate(timePeriodValid);
 

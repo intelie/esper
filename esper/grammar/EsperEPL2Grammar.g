@@ -95,6 +95,12 @@ tokens
 	UNTIL='until';
 	AT='at';
 	INDEX='index';
+	TIMEPERIOD_YEAR='year';
+	TIMEPERIOD_YEARS='years';
+	TIMEPERIOD_MONTH='month';
+	TIMEPERIOD_MONTHS='months';
+	TIMEPERIOD_WEEK='week';
+	TIMEPERIOD_WEEKS='weeks';
 	TIMEPERIOD_DAY='day';
 	TIMEPERIOD_DAYS='days';
 	TIMEPERIOD_HOUR='hour';
@@ -198,6 +204,9 @@ tokens
 	UNARY_MINUS;
 	TIME_PERIOD;
 	ARRAY_EXPR;
+	YEAR_PART;
+	MONTH_PART;
+	WEEK_PART;
 	DAY_PART;
 	HOUR_PART;
 	MINUTE_PART;
@@ -481,6 +490,12 @@ tokens
 	parserTokenParaphases.put(INDEX, "'index'");
 	parserTokenParaphases.put(UNTIL, "'until'");
 	parserTokenParaphases.put(AT, "'at'");
+	parserTokenParaphases.put(TIMEPERIOD_YEAR, "'year'");
+	parserTokenParaphases.put(TIMEPERIOD_YEARS, "'years'");
+	parserTokenParaphases.put(TIMEPERIOD_MONTH, "'month'");
+	parserTokenParaphases.put(TIMEPERIOD_MONTHS, "'months'");
+	parserTokenParaphases.put(TIMEPERIOD_WEEK, "'week'");
+	parserTokenParaphases.put(TIMEPERIOD_WEEKS, "'weeks'");
 	parserTokenParaphases.put(TIMEPERIOD_DAY, "'day'");
 	parserTokenParaphases.put(TIMEPERIOD_DAYS, "'days'");
 	parserTokenParaphases.put(TIMEPERIOD_HOUR, "'hour'");
@@ -1719,13 +1734,34 @@ escapableIdent
 timePeriod 	
 	:	
 	(	
-		dayPart hourPart? minutePart? secondPart? millisecondPart?
+		yearPart monthPart? weekPart? dayPart? hourPart? minutePart? secondPart? millisecondPart?
+	|	monthPart weekPart? dayPart? hourPart? minutePart? secondPart? millisecondPart?
+	|	weekPart dayPart? hourPart? minutePart? secondPart? millisecondPart?
+	|	dayPart hourPart? minutePart? secondPart? millisecondPart?
 	|	hourPart minutePart? secondPart? millisecondPart?
 	|	minutePart secondPart? millisecondPart?
 	|	secondPart millisecondPart?
 	|	millisecondPart
 	)
-		-> ^(TIME_PERIOD dayPart? hourPart? minutePart? secondPart? millisecondPart?)
+		-> ^(TIME_PERIOD yearPart? monthPart? weekPart? dayPart? hourPart? minutePart? secondPart? millisecondPart?)
+	;
+
+yearPart
+	:	(number|i=IDENT|substitution) (TIMEPERIOD_YEARS | TIMEPERIOD_YEAR)
+		-> {i!= null}? ^(YEAR_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
+		-> ^(YEAR_PART number? substitution?)
+	;
+
+monthPart
+	:	(number|i=IDENT|substitution) (TIMEPERIOD_MONTHS | TIMEPERIOD_MONTH)
+		-> {i!= null}? ^(MONTH_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
+		-> ^(MONTH_PART number? substitution?)
+	;
+
+weekPart
+	:	(number|i=IDENT|substitution) (TIMEPERIOD_WEEKS | TIMEPERIOD_WEEK)
+		-> {i!= null}? ^(WEEK_PART ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
+		-> ^(WEEK_PART number? substitution?)
 	;
 
 dayPart

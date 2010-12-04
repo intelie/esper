@@ -1072,37 +1072,52 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveTimePeriod");
 
-        ExprNode nodes[] = new ExprNode[5];
+        ExprNode nodes[] = new ExprNode[8];
         for (int i = 0; i < node.getChildCount(); i++)
         {
             Tree child = node.getChild(i);
             if (child.getType() == MILLISECOND_PART)
             {
-                nodes[4] = astExprNodeMap.remove(child.getChild(0));
+                nodes[7] = astExprNodeMap.remove(child.getChild(0));
             }
             if (child.getType() == SECOND_PART)
             {
-                nodes[3] = astExprNodeMap.remove(child.getChild(0));
+                nodes[6] = astExprNodeMap.remove(child.getChild(0));
             }
             if (child.getType() == MINUTE_PART)
             {
-                nodes[2] = astExprNodeMap.remove(child.getChild(0));
+                nodes[5] = astExprNodeMap.remove(child.getChild(0));
             }
             if (child.getType() == HOUR_PART)
             {
-                nodes[1] = astExprNodeMap.remove(child.getChild(0));
+                nodes[4] = astExprNodeMap.remove(child.getChild(0));
             }
             if (child.getType() == DAY_PART)
+            {
+                nodes[3] = astExprNodeMap.remove(child.getChild(0));
+            }
+            if (child.getType() == WEEK_PART)
+            {
+                nodes[2] = astExprNodeMap.remove(child.getChild(0));
+            }
+            if (child.getType() == MONTH_PART)
+            {
+                nodes[1] = astExprNodeMap.remove(child.getChild(0));
+            }
+            if (child.getType() == YEAR_PART)
             {
                 nodes[0] = astExprNodeMap.remove(child.getChild(0));
             }
         }
-        ExprTimePeriod timeNode = new ExprTimePeriod(nodes[0] != null, nodes[1]!= null, nodes[2]!= null, nodes[3]!= null, nodes[4]!= null);
+        ExprTimePeriod timeNode = new ExprTimePeriod(nodes[0] != null, nodes[1]!= null, nodes[2]!= null, nodes[3]!= null, nodes[4]!= null, nodes[5]!= null, nodes[6]!= null, nodes[7]!= null);
         if (nodes[0] != null) timeNode.addChildNode(nodes[0]);
         if (nodes[1] != null) timeNode.addChildNode(nodes[1]);
         if (nodes[2] != null) timeNode.addChildNode(nodes[2]);
         if (nodes[3] != null) timeNode.addChildNode(nodes[3]);
         if (nodes[4] != null) timeNode.addChildNode(nodes[4]);
+        if (nodes[5] != null) timeNode.addChildNode(nodes[5]);
+        if (nodes[6] != null) timeNode.addChildNode(nodes[6]);
+        if (nodes[7] != null) timeNode.addChildNode(nodes[7]);
         astExprNodeMap.put(node, timeNode);
     }
 

@@ -1436,7 +1436,7 @@ public class StatementSpecMapper
         else if (expr instanceof TimePeriodExpression)
         {
             TimePeriodExpression tpe = (TimePeriodExpression) expr;
-            return new ExprTimePeriod(tpe.isHasDays(), tpe.isHasHours(), tpe.isHasMinutes(), tpe.isHasSeconds(), tpe.isHasMilliseconds());
+            return new ExprTimePeriod(tpe.isHasYears(), tpe.isHasMonths(), tpe.isHasWeeks(), tpe.isHasDays(), tpe.isHasHours(), tpe.isHasMinutes(), tpe.isHasSeconds(), tpe.isHasMilliseconds());
         }
         else if (expr instanceof CompareListExpression)
         {
@@ -1895,7 +1895,7 @@ public class StatementSpecMapper
         else if (expr instanceof ExprTimePeriod)
         {
             ExprTimePeriod node = (ExprTimePeriod) expr;
-            return new TimePeriodExpression(node.isHasDay(), node.isHasHour(), node.isHasMinute(), node.isHasSecond(), node.isHasMillisecond());
+            return new TimePeriodExpression(node.isHasYear(), node.isHasMonth(), node.isHasWeek(), node.isHasDay(), node.isHasHour(), node.isHasMinute(), node.isHasSecond(), node.isHasMillisecond());
         }
         else if (expr instanceof ExprNumberSetWildcard)
         {

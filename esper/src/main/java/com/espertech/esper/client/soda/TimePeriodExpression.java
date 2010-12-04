@@ -7,6 +7,9 @@ import java.io.StringWriter;
  */
 public class TimePeriodExpression extends ExpressionBase
 {
+    private boolean hasYears;
+    private boolean hasMonths;
+    private boolean hasWeeks;
     private boolean hasDays;
     private boolean hasHours;
     private boolean hasMinutes;
@@ -18,6 +21,22 @@ public class TimePeriodExpression extends ExpressionBase
      * Ctor.
      */
     public TimePeriodExpression() {
+    }
+
+    /**
+     * Ctor.
+     * @param hasDays flag to indicate that a day-part expression exists
+     * @param hasHours flag to indicate that a hour-part expression exists
+     * @param hasMinutes flag to indicate that a minute-part expression exists
+     * @param hasSeconds flag to indicate that a seconds-part expression exists
+     * @param hasMilliseconds flag to indicate that a millisec-part expression exists
+     */
+    public TimePeriodExpression(boolean hasYears, boolean hasMonths, boolean hasWeeks, boolean hasDays, boolean hasHours, boolean hasMinutes, boolean hasSeconds, boolean hasMilliseconds)
+    {
+        this(hasDays, hasHours, hasMinutes, hasSeconds, hasMilliseconds);
+        this.hasYears = hasYears;
+        this.hasMonths = hasMonths;
+        this.hasWeeks = hasWeeks;
     }
 
     /**
@@ -45,7 +64,40 @@ public class TimePeriodExpression extends ExpressionBase
      * @param secondsExpr expression returning seconds value, or null if no such part
      * @param millisecondsExpr expression returning millisec value, or null if no such part
      */
+    public TimePeriodExpression(Expression yearsExpr, Expression monthsExpr, Expression weeksExpr, Expression daysExpr, Expression hoursExpr, Expression minutesExpr, Expression secondsExpr, Expression millisecondsExpr)
+    {
+        if (yearsExpr != null)
+        {
+            hasYears = true;
+            this.addChild(yearsExpr);
+        }
+        if (monthsExpr != null)
+        {
+            hasMonths = true;
+            this.addChild(monthsExpr);
+        }
+        if (weeksExpr != null)
+        {
+            hasWeeks = true;
+            this.addChild(weeksExpr);
+        }
+        addExpr(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
+    }
+
+    /**
+     * Ctor.
+     * @param daysExpr expression returning days value, or null if no such part
+     * @param hoursExpr expression returning hours value, or null if no such part
+     * @param minutesExpr expression returning minutes value, or null if no such part
+     * @param secondsExpr expression returning seconds value, or null if no such part
+     * @param millisecondsExpr expression returning millisec value, or null if no such part
+     */
     public TimePeriodExpression(Expression daysExpr, Expression hoursExpr, Expression minutesExpr, Expression secondsExpr, Expression millisecondsExpr)
+    {
+        addExpr(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
+    }
+
+    private void addExpr(Expression daysExpr, Expression hoursExpr, Expression minutesExpr, Expression secondsExpr, Expression millisecondsExpr)
     {
         if (daysExpr != null)
         {
@@ -164,6 +216,54 @@ public class TimePeriodExpression extends ExpressionBase
         this.hasMilliseconds = hasMilliseconds;
     }
 
+    /**
+     * Returns true if a subexpression exists that is a year-part.
+     * @return indicator for presence of part
+     */
+    public boolean isHasYears() {
+        return hasYears;
+    }
+
+    /**
+     * Set to true if a subexpression exists that is a year-part.
+     * @param hasYears for presence of part
+     */
+    public void setHasYears(boolean hasYears) {
+        this.hasYears = hasYears;
+    }
+
+    /**
+     * Returns true if a subexpression exists that is a month-part.
+     * @return indicator for presence of part
+     */
+    public boolean isHasMonths() {
+        return hasMonths;
+    }
+
+    /**
+     * Set to true if a subexpression exists that is a month-part.
+     * @param hasMonths for presence of part
+     */
+    public void setHasMonths(boolean hasMonths) {
+        this.hasMonths = hasMonths;
+    }
+
+    /**
+     * Returns true if a subexpression exists that is a weeks-part.
+     * @return indicator for presence of part
+     */
+    public boolean isHasWeeks() {
+        return hasWeeks;
+    }
+
+    /**
+     * Set to true if a subexpression exists that is a weeks-part.
+     * @param hasWeeks for presence of part
+     */
+    public void setHasWeeks(boolean hasWeeks) {
+        this.hasWeeks = hasWeeks;
+    }
+
     public ExpressionPrecedenceEnum getPrecedence() {
         return ExpressionPrecedenceEnum.UNARY;
     }
@@ -171,8 +271,32 @@ public class TimePeriodExpression extends ExpressionBase
     public void toPrecedenceFreeEPL(StringWriter writer) {
         String delimiter = "";
         int countExpr = 0;
+        if (hasYears)
+        {
+            this.getChildren().get(countExpr).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            writer.append(" years");
+            delimiter = " ";
+            countExpr++;
+        }
+        if (hasMonths)
+        {
+            writer.write(delimiter);
+            this.getChildren().get(countExpr).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            writer.append(" months");
+            delimiter = " ";
+            countExpr++;
+        }
+        if (hasWeeks)
+        {
+            writer.write(delimiter);
+            this.getChildren().get(countExpr).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            writer.append(" weeks");
+            delimiter = " ";
+            countExpr++;
+        }
         if (hasDays)
         {
+            writer.write(delimiter);
             this.getChildren().get(countExpr).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.append(" days");
             delimiter = " ";

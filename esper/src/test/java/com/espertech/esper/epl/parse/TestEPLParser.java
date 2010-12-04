@@ -406,6 +406,7 @@ public class TestEPLParser extends TestCase
         assertIsValid("select * from x.win:time(5 hour)");
         assertIsValid("select * from x.win:time(5 days)");
         assertIsValid("select * from x.win:time(5 day)");
+        assertIsValid("select * from x.win:time(3 years 1 month 2 weeks 5 days 2 hours 88 minutes 1 seconds 9.8 milliseconds)");
         assertIsValid("select * from x.win:time(5 days 2 hours 88 minutes 1 seconds 9.8 milliseconds)");
         assertIsValid("select * from x.win:time(5 day 2 hour 88 minute 1 second 9.8 millisecond)");
         assertIsValid("select * from x.win:time(5 days 2 hours 88 minutes 1 seconds)");

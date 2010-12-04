@@ -465,7 +465,14 @@ public class TestFromClauseMethod extends TestCase
                 " method:com.espertech.esper.support.epl.SupportStaticMethodLib.throwExceptionBeanReturn()";
 
         epService.getEPAdministrator().createEPL(joinStatement);
-        sendBeanEvent("E1");
+
+        try {
+            sendBeanEvent("E1");
+            fail(); // default test configuration rethrows this exception
+        }
+        catch (EPException ex) {
+            // fine
+        }
     }
 
     public void testInvalid()

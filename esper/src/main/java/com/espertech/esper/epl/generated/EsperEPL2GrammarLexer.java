@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Grammar.g 2010-11-25 22:56:10
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Grammar.g 2010-12-05 08:28:45
 
   package com.espertech.esper.epl.generated;
 
@@ -10,343 +10,352 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 public class EsperEPL2GrammarLexer extends Lexer {
-    public static final int CRONTAB_LIMIT_EXPR=178;
-    public static final int FLOAT_SUFFIX=339;
-    public static final int STAR=282;
-    public static final int DOT_EXPR=186;
-    public static final int NUMERIC_PARAM_LIST=118;
+    public static final int CRONTAB_LIMIT_EXPR=184;
+    public static final int FLOAT_SUFFIX=348;
+    public static final int STAR=291;
+    public static final int DOT_EXPR=192;
+    public static final int NUMERIC_PARAM_LIST=124;
     public static final int ISTREAM=60;
-    public static final int MOD=300;
-    public static final int LIB_FUNC_CHAIN=185;
-    public static final int OUTERJOIN_EXPR=160;
-    public static final int CREATE_COL_TYPE_LIST=236;
-    public static final int MERGE_INS=252;
-    public static final int BSR=321;
-    public static final int LIB_FUNCTION=184;
+    public static final int MOD=309;
+    public static final int OUTERJOIN_EXPR=166;
+    public static final int LIB_FUNC_CHAIN=191;
+    public static final int CREATE_COL_TYPE_LIST=245;
+    public static final int MONTH_PART=197;
+    public static final int MERGE_INS=261;
+    public static final int BSR=330;
+    public static final int LIB_FUNCTION=190;
     public static final int EOF=-1;
-    public static final int TIMEPERIOD_MILLISECONDS=99;
-    public static final int FULL_OUTERJOIN_EXPR=164;
-    public static final int MATCHREC_PATTERN_CONCAT=264;
-    public static final int INC=314;
-    public static final int LNOT=310;
-    public static final int RPAREN=277;
+    public static final int TIMEPERIOD_MILLISECONDS=105;
+    public static final int FULL_OUTERJOIN_EXPR=170;
+    public static final int MATCHREC_PATTERN_CONCAT=273;
+    public static final int INC=323;
+    public static final int LNOT=319;
+    public static final int RPAREN=286;
     public static final int CREATE=4;
-    public static final int STRING_LITERAL=287;
-    public static final int BSR_ASSIGN=322;
-    public static final int CAST_EXPR=215;
-    public static final int MATCHES=110;
-    public static final int USING=114;
-    public static final int STREAM_EXPR=159;
-    public static final int TIMEPERIOD_SECONDS=96;
-    public static final int NOT_EQUAL=292;
+    public static final int STRING_LITERAL=296;
+    public static final int BSR_ASSIGN=331;
+    public static final int CAST_EXPR=224;
+    public static final int MATCHES=116;
+    public static final int USING=120;
+    public static final int STREAM_EXPR=165;
+    public static final int TIMEPERIOD_SECONDS=102;
+    public static final int NOT_EQUAL=301;
     public static final int METADATASQL=68;
-    public static final int EVENT_FILTER_PROPERTY_EXPR=127;
-    public static final int LAST_AGGREG=243;
+    public static final int EVENT_FILTER_PROPERTY_EXPR=133;
+    public static final int LAST_AGGREG=252;
     public static final int REGEXP=9;
-    public static final int MATCHED=116;
-    public static final int FOLLOWED_BY_EXPR=121;
-    public static final int FOLLOWED_BY=304;
-    public static final int HOUR_PART=191;
-    public static final int RBRACK=281;
-    public static final int MATCHREC_PATTERN_NESTED=266;
-    public static final int MATCH_UNTIL_RANGE_CLOSED=234;
-    public static final int GE=296;
-    public static final int METHOD_JOIN_EXPR=230;
+    public static final int MATCHED=122;
+    public static final int FOLLOWED_BY_EXPR=127;
+    public static final int FOLLOWED_BY=313;
+    public static final int HOUR_PART=200;
+    public static final int RBRACK=290;
+    public static final int MATCHREC_PATTERN_NESTED=275;
+    public static final int MATCH_UNTIL_RANGE_CLOSED=243;
+    public static final int GE=305;
+    public static final int METHOD_JOIN_EXPR=239;
     public static final int ASC=57;
     public static final int IN_SET=6;
-    public static final int EVENT_FILTER_EXPR=126;
-    public static final int PATTERN_EVERY_DISTINCT_EXPR=125;
+    public static final int EVENT_FILTER_EXPR=132;
+    public static final int PATTERN_EVERY_DISTINCT_EXPR=131;
     public static final int ELSE=30;
-    public static final int MINUS_ASSIGN=315;
-    public static final int EVENT_FILTER_NOT_IN=137;
-    public static final int INSERTINTO_STREAM_NAME=203;
-    public static final int NUM_DOUBLE=260;
-    public static final int UNARY_MINUS=187;
-    public static final int TIMEPERIOD_MILLISEC=97;
-    public static final int LCURLY=301;
+    public static final int MINUS_ASSIGN=324;
+    public static final int EVENT_FILTER_NOT_IN=143;
+    public static final int INSERTINTO_STREAM_NAME=212;
+    public static final int NUM_DOUBLE=269;
+    public static final int TIMEPERIOD_MILLISEC=103;
+    public static final int UNARY_MINUS=193;
+    public static final int LCURLY=310;
     public static final int RETAINUNION=64;
-    public static final int DBWHERE_CLAUSE=201;
+    public static final int DBWHERE_CLAUSE=210;
     public static final int MEDIAN=23;
     public static final int EVENTS=51;
     public static final int AND_EXPR=12;
-    public static final int EVENT_FILTER_NOT_RANGE=135;
+    public static final int EVENT_FILTER_NOT_RANGE=141;
     public static final int GROUP=44;
-    public static final int EMAILAT=330;
-    public static final int WS=331;
-    public static final int SUBSELECT_GROUP_EXPR=207;
-    public static final int ON_SELECT_INSERT_EXPR=225;
+    public static final int EMAILAT=339;
+    public static final int WS=340;
+    public static final int SUBSELECT_GROUP_EXPR=216;
+    public static final int YEAR_PART=196;
+    public static final int ON_SELECT_INSERT_EXPR=234;
     public static final int TYPEOF=78;
-    public static final int ESCAPECHAR=305;
-    public static final int EXPRCOL=182;
-    public static final int SL_COMMENT=332;
-    public static final int NULL_TYPE=259;
-    public static final int MATCH_UNTIL_RANGE_HALFOPEN=232;
-    public static final int GT=294;
-    public static final int BNOT=311;
-    public static final int WHERE_EXPR=146;
+    public static final int ESCAPECHAR=314;
+    public static final int EXPRCOL=188;
+    public static final int SL_COMMENT=341;
+    public static final int NULL_TYPE=268;
+    public static final int MATCH_UNTIL_RANGE_HALFOPEN=241;
+    public static final int GT=303;
+    public static final int BNOT=320;
+    public static final int WHERE_EXPR=152;
     public static final int END=33;
-    public static final int INNERJOIN_EXPR=161;
-    public static final int LAND=328;
-    public static final int NOT_REGEXP=198;
-    public static final int MATCH_UNTIL_EXPR=231;
-    public static final int EVENT_PROP_EXPR=168;
-    public static final int LBRACK=280;
-    public static final int VIEW_EXPR=143;
-    public static final int MERGE_UPD=251;
-    public static final int ANNOTATION=239;
-    public static final int LONG_TYPE=254;
-    public static final int EVENT_FILTER_PROPERTY_EXPR_ATOM=128;
-    public static final int MATCHREC_PATTERN=262;
-    public static final int ON_MERGE_EXPR=224;
-    public static final int TIMEPERIOD_SEC=94;
-    public static final int TICKED_STRING_LITERAL=306;
-    public static final int ON_SELECT_EXPR=222;
-    public static final int MINUTE_PART=192;
-    public static final int PATTERN_NOT_EXPR=124;
-    public static final int SQL_NE=291;
+    public static final int INNERJOIN_EXPR=167;
+    public static final int LAND=337;
+    public static final int NOT_REGEXP=207;
+    public static final int MATCH_UNTIL_EXPR=240;
+    public static final int EVENT_PROP_EXPR=174;
+    public static final int LBRACK=289;
+    public static final int VIEW_EXPR=149;
+    public static final int MERGE_UPD=260;
+    public static final int ANNOTATION=248;
+    public static final int LONG_TYPE=263;
+    public static final int EVENT_FILTER_PROPERTY_EXPR_ATOM=134;
+    public static final int MATCHREC_PATTERN=271;
+    public static final int ON_MERGE_EXPR=233;
+    public static final int TIMEPERIOD_SEC=100;
+    public static final int TICKED_STRING_LITERAL=315;
+    public static final int ON_SELECT_EXPR=231;
+    public static final int MINUTE_PART=201;
+    public static final int PATTERN_NOT_EXPR=130;
+    public static final int SQL_NE=300;
     public static final int SUM=18;
-    public static final int HexDigit=337;
-    public static final int UPDATE_EXPR=245;
-    public static final int LPAREN=276;
-    public static final int IN_SUBSELECT_EXPR=209;
+    public static final int HexDigit=346;
+    public static final int UPDATE_EXPR=254;
+    public static final int LPAREN=285;
+    public static final int IN_SUBSELECT_EXPR=218;
     public static final int AT=86;
     public static final int AS=17;
     public static final int OR_EXPR=11;
-    public static final int BOOLEAN_TRUE=100;
+    public static final int BOOLEAN_TRUE=106;
     public static final int THEN=32;
-    public static final int MATCHREC_INTERVAL=268;
-    public static final int NOT_IN_RANGE=205;
-    public static final int OFFSET=104;
+    public static final int MATCHREC_INTERVAL=277;
+    public static final int NOT_IN_RANGE=214;
+    public static final int TIMEPERIOD_MONTH=90;
+    public static final int OFFSET=110;
     public static final int AVG=19;
     public static final int LEFT=38;
-    public static final int SECOND_PART=193;
+    public static final int SECOND_PART=202;
     public static final int PREVIOUS=69;
     public static final int PREVIOUSWINDOW=72;
-    public static final int MATCH_RECOGNIZE=106;
-    public static final int IDENT=275;
-    public static final int DATABASE_JOIN_EXPR=145;
-    public static final int BXOR=290;
-    public static final int PLUS=284;
+    public static final int MATCH_RECOGNIZE=112;
+    public static final int IDENT=284;
+    public static final int DATABASE_JOIN_EXPR=151;
+    public static final int BXOR=299;
+    public static final int PLUS=293;
     public static final int CASE2=29;
-    public static final int TIMEPERIOD_DAY=88;
-    public static final int CREATE_SCHEMA_EXPR=247;
+    public static final int TIMEPERIOD_DAY=94;
+    public static final int CREATE_SCHEMA_EXPR=256;
     public static final int EXISTS=74;
-    public static final int EVENT_PROP_INDEXED=171;
-    public static final int CREATE_INDEX_EXPR=216;
-    public static final int TIMEPERIOD_MILLISECOND=98;
-    public static final int EVAL_NOTEQUALS_EXPR=152;
-    public static final int MATCH_UNTIL_RANGE_HALFCLOSED=233;
-    public static final int CREATE_VARIABLE_EXPR=229;
+    public static final int EVENT_PROP_INDEXED=177;
+    public static final int CREATE_INDEX_EXPR=225;
+    public static final int TIMEPERIOD_MILLISECOND=104;
+    public static final int EVAL_NOTEQUALS_EXPR=158;
+    public static final int MATCH_UNTIL_RANGE_HALFCLOSED=242;
+    public static final int CREATE_VARIABLE_EXPR=238;
     public static final int LIKE=8;
     public static final int OUTER=35;
-    public static final int MATCHREC_DEFINE=269;
+    public static final int MATCHREC_DEFINE=278;
     public static final int BY=43;
-    public static final int ARRAY_PARAM_LIST=122;
-    public static final int RIGHT_OUTERJOIN_EXPR=163;
-    public static final int NUMBERSETSTAR=238;
-    public static final int LAST_OPERATOR=212;
-    public static final int PATTERN_FILTER_EXPR=123;
-    public static final int MERGE=115;
-    public static final int EVAL_AND_EXPR=149;
-    public static final int LEFT_OUTERJOIN_EXPR=162;
-    public static final int EPL_EXPR=261;
-    public static final int GROUP_BY_EXPR=165;
+    public static final int ARRAY_PARAM_LIST=128;
+    public static final int RIGHT_OUTERJOIN_EXPR=169;
+    public static final int NUMBERSETSTAR=247;
+    public static final int LAST_OPERATOR=221;
+    public static final int PATTERN_FILTER_EXPR=129;
+    public static final int MERGE=121;
+    public static final int EVAL_AND_EXPR=155;
+    public static final int LEFT_OUTERJOIN_EXPR=168;
+    public static final int EPL_EXPR=270;
+    public static final int GROUP_BY_EXPR=171;
     public static final int SET=83;
     public static final int RIGHT=39;
     public static final int HAVING=45;
     public static final int INSTANCEOF=77;
     public static final int MIN=21;
-    public static final int EVENT_PROP_SIMPLE=169;
-    public static final int MINUS=298;
-    public static final int SEMI=329;
-    public static final int STAR_ASSIGN=317;
+    public static final int EVENT_PROP_SIMPLE=175;
+    public static final int MINUS=307;
+    public static final int SEMI=338;
+    public static final int STAR_ASSIGN=326;
     public static final int PREVIOUSCOUNT=71;
-    public static final int VARIANT_LIST=250;
-    public static final int FIRST_AGGREG=242;
-    public static final int COLON=286;
-    public static final int EVAL_EQUALS_GROUP_EXPR=153;
-    public static final int BAND_ASSIGN=327;
+    public static final int VARIANT_LIST=259;
+    public static final int FIRST_AGGREG=251;
+    public static final int COLON=295;
+    public static final int EVAL_EQUALS_GROUP_EXPR=159;
+    public static final int BAND_ASSIGN=336;
     public static final int PREVIOUSTAIL=70;
     public static final int SCHEMA=62;
-    public static final int CRONTAB_LIMIT_EXPR_PARAM=179;
-    public static final int NOT_IN_SET=195;
-    public static final int VALUE_NULL=102;
-    public static final int EVENT_PROP_DYNAMIC_SIMPLE=172;
-    public static final int SL=323;
-    public static final int NOT_IN_SUBSELECT_EXPR=210;
+    public static final int CRONTAB_LIMIT_EXPR_PARAM=185;
+    public static final int NOT_IN_SET=204;
+    public static final int VALUE_NULL=108;
+    public static final int EVENT_PROP_DYNAMIC_SIMPLE=178;
+    public static final int SL=332;
+    public static final int NOT_IN_SUBSELECT_EXPR=219;
     public static final int WHEN=31;
-    public static final int GUARD_EXPR=141;
-    public static final int SR=319;
-    public static final int RCURLY=302;
-    public static final int PLUS_ASSIGN=313;
-    public static final int EXISTS_SUBSELECT_EXPR=208;
-    public static final int DAY_PART=190;
-    public static final int EVENT_FILTER_IN=136;
-    public static final int DIV=299;
-    public static final int OBJECT_PARAM_ORDERED_EXPR=120;
-    public static final int OctalEscape=336;
-    public static final int MILLISECOND_PART=194;
+    public static final int GUARD_EXPR=147;
+    public static final int SR=328;
+    public static final int RCURLY=311;
+    public static final int PLUS_ASSIGN=322;
+    public static final int EXISTS_SUBSELECT_EXPR=217;
+    public static final int DAY_PART=199;
+    public static final int EVENT_FILTER_IN=142;
+    public static final int DIV=308;
+    public static final int WEEK_PART=198;
+    public static final int OBJECT_PARAM_ORDERED_EXPR=126;
+    public static final int OctalEscape=345;
+    public static final int MILLISECOND_PART=203;
     public static final int BETWEEN=7;
     public static final int PRIOR=73;
     public static final int FIRST=52;
-    public static final int ROW_LIMIT_EXPR=103;
-    public static final int SELECTION_EXPR=156;
-    public static final int LOR=297;
-    public static final int CAST=79;
+    public static final int ROW_LIMIT_EXPR=109;
+    public static final int SELECTION_EXPR=162;
     public static final int LW=76;
-    public static final int WILDCARD_SELECT=202;
-    public static final int LT=293;
-    public static final int EXPONENT=338;
-    public static final int PATTERN_INCL_EXPR=144;
-    public static final int WHILE=113;
-    public static final int ORDER_BY_EXPR=166;
-    public static final int BOOL_TYPE=258;
-    public static final int ANNOTATION_ARRAY=240;
-    public static final int MOD_ASSIGN=318;
+    public static final int CAST=79;
+    public static final int LOR=306;
+    public static final int WILDCARD_SELECT=211;
+    public static final int LT=302;
+    public static final int EXPONENT=347;
+    public static final int PATTERN_INCL_EXPR=150;
+    public static final int WHILE=119;
+    public static final int ORDER_BY_EXPR=172;
+    public static final int BOOL_TYPE=267;
+    public static final int ANNOTATION_ARRAY=249;
+    public static final int MOD_ASSIGN=327;
     public static final int CASE=28;
-    public static final int IN_SUBSELECT_QUERY_EXPR=211;
+    public static final int IN_SUBSELECT_QUERY_EXPR=220;
     public static final int COUNT=26;
-    public static final int EQUALS=278;
+    public static final int EQUALS=287;
     public static final int RETAININTERSECTION=65;
-    public static final int WINDOW_AGGREG=244;
-    public static final int DIV_ASSIGN=312;
-    public static final int SL_ASSIGN=324;
+    public static final int WINDOW_AGGREG=253;
+    public static final int DIV_ASSIGN=321;
+    public static final int SL_ASSIGN=333;
+    public static final int TIMEPERIOD_WEEKS=93;
     public static final int PATTERN=66;
     public static final int SQL=67;
     public static final int FULL=40;
     public static final int WEEKDAY=75;
-    public static final int MATCHREC_AFTER_SKIP=267;
+    public static final int MATCHREC_AFTER_SKIP=276;
     public static final int ESCAPE=10;
     public static final int INSERT=54;
-    public static final int ON_UPDATE_EXPR=223;
-    public static final int ARRAY_EXPR=189;
-    public static final int CREATE_COL_TYPE=237;
+    public static final int ON_UPDATE_EXPR=232;
+    public static final int ARRAY_EXPR=195;
+    public static final int CREATE_COL_TYPE=246;
     public static final int LAST=53;
-    public static final int BOOLEAN_FALSE=101;
-    public static final int EVAL_NOTEQUALS_GROUP_EXPR=154;
+    public static final int BOOLEAN_FALSE=107;
+    public static final int EVAL_NOTEQUALS_GROUP_EXPR=160;
     public static final int SELECT=27;
     public static final int INTO=55;
-    public static final int EVENT_FILTER_BETWEEN=138;
-    public static final int TIMEPERIOD_SECOND=95;
+    public static final int EVENT_FILTER_BETWEEN=144;
+    public static final int TIMEPERIOD_SECOND=101;
     public static final int COALESCE=22;
-    public static final int FLOAT_TYPE=255;
-    public static final int SUBSELECT_EXPR=206;
-    public static final int ANNOTATION_VALUE=241;
-    public static final int CONCAT=183;
-    public static final int NUMERIC_PARAM_RANGE=117;
-    public static final int CLASS_IDENT=140;
-    public static final int MATCHREC_PATTERN_ALTER=265;
-    public static final int ON_EXPR=219;
-    public static final int CREATE_WINDOW_EXPR=217;
-    public static final int PROPERTY_SELECTION_STREAM=130;
-    public static final int ON_DELETE_EXPR=221;
+    public static final int FLOAT_TYPE=264;
+    public static final int SUBSELECT_EXPR=215;
+    public static final int ANNOTATION_VALUE=250;
+    public static final int NUMERIC_PARAM_RANGE=123;
+    public static final int CONCAT=189;
+    public static final int CLASS_IDENT=146;
+    public static final int MATCHREC_PATTERN_ALTER=274;
+    public static final int ON_EXPR=228;
+    public static final int CREATE_WINDOW_EXPR=226;
+    public static final int PROPERTY_SELECTION_STREAM=136;
+    public static final int ON_DELETE_EXPR=230;
     public static final int ON=41;
-    public static final int NUM_LONG=307;
-    public static final int TIME_PERIOD=188;
-    public static final int DOUBLE_TYPE=256;
+    public static final int NUM_LONG=316;
+    public static final int TIME_PERIOD=194;
+    public static final int DOUBLE_TYPE=265;
     public static final int DELETE=81;
-    public static final int INT_TYPE=253;
-    public static final int MATCHREC_PARTITION=273;
-    public static final int EVAL_BITWISE_EXPR=148;
+    public static final int INT_TYPE=262;
+    public static final int MATCHREC_PARTITION=282;
+    public static final int EVAL_BITWISE_EXPR=154;
     public static final int EVERY_EXPR=14;
-    public static final int ORDER_ELEMENT_EXPR=167;
-    public static final int TIMEPERIOD_HOURS=91;
+    public static final int ORDER_ELEMENT_EXPR=173;
+    public static final int TIMEPERIOD_HOURS=97;
     public static final int VARIABLE=84;
-    public static final int SUBSTITUTION=214;
+    public static final int SUBSTITUTION=223;
     public static final int UNTIL=85;
-    public static final int STRING_TYPE=257;
-    public static final int ON_SET_EXPR=228;
-    public static final int MATCHREC_DEFINE_ITEM=270;
-    public static final int NUM_INT=303;
+    public static final int STRING_TYPE=266;
+    public static final int ON_SET_EXPR=237;
+    public static final int MATCHREC_DEFINE_ITEM=279;
+    public static final int NUM_INT=312;
     public static final int STDDEV=24;
-    public static final int CREATE_SCHEMA_EXPR_INH=249;
-    public static final int ON_EXPR_FROM=227;
-    public static final int NUM_FLOAT=308;
+    public static final int CREATE_SCHEMA_EXPR_INH=258;
+    public static final int ON_EXPR_FROM=236;
+    public static final int NUM_FLOAT=317;
     public static final int FROM=34;
     public static final int DISTINCT=46;
-    public static final int PROPERTY_SELECTION_ELEMENT_EXPR=129;
+    public static final int PROPERTY_SELECTION_ELEMENT_EXPR=135;
     public static final int OUTPUT=50;
-    public static final int EscapeSequence=334;
-    public static final int WEEKDAY_OPERATOR=213;
+    public static final int EscapeSequence=343;
+    public static final int WEEKDAY_OPERATOR=222;
     public static final int WHERE=16;
-    public static final int DEC=316;
+    public static final int DEC=325;
     public static final int INNER=36;
-    public static final int NUMERIC_PARAM_FREQUENCY=119;
-    public static final int BXOR_ASSIGN=325;
-    public static final int AFTER_LIMIT_EXPR=177;
+    public static final int NUMERIC_PARAM_FREQUENCY=125;
+    public static final int BXOR_ASSIGN=334;
+    public static final int AFTER_LIMIT_EXPR=183;
     public static final int ORDER=56;
     public static final int SNAPSHOT=82;
-    public static final int EVENT_PROP_DYNAMIC_MAPPED=174;
-    public static final int EVENT_FILTER_PARAM=133;
+    public static final int EVENT_PROP_DYNAMIC_MAPPED=180;
+    public static final int EVENT_FILTER_PARAM=139;
     public static final int IRSTREAM=61;
-    public static final int UPDATE=105;
+    public static final int UPDATE=111;
     public static final int MAX=20;
-    public static final int FOR=112;
-    public static final int ON_STREAM=220;
-    public static final int DEFINE=108;
-    public static final int TIMEPERIOD_DAYS=89;
-    public static final int EVENT_FILTER_RANGE=134;
+    public static final int FOR=118;
+    public static final int ON_STREAM=229;
+    public static final int DEFINE=114;
+    public static final int TIMEPERIOD_YEARS=89;
+    public static final int TIMEPERIOD_DAYS=95;
+    public static final int EVENT_FILTER_RANGE=140;
     public static final int INDEX=87;
-    public static final int ML_COMMENT=333;
-    public static final int EVENT_PROP_DYNAMIC_INDEXED=173;
-    public static final int BOR_ASSIGN=326;
-    public static final int COMMA=274;
-    public static final int WHEN_LIMIT_EXPR=180;
-    public static final int PARTITION=109;
+    public static final int ML_COMMENT=342;
+    public static final int EVENT_PROP_DYNAMIC_INDEXED=179;
+    public static final int BOR_ASSIGN=335;
+    public static final int COMMA=283;
+    public static final int WHEN_LIMIT_EXPR=186;
+    public static final int PARTITION=115;
     public static final int IS=42;
-    public static final int TIMEPERIOD_LIMIT_EXPR=176;
+    public static final int TIMEPERIOD_LIMIT_EXPR=182;
     public static final int SOME=49;
+    public static final int TIMEPERIOD_HOUR=96;
     public static final int ALL=47;
-    public static final int TIMEPERIOD_HOUR=90;
-    public static final int MATCHREC_MEASURE_ITEM=272;
-    public static final int BOR=283;
-    public static final int EQUAL=309;
-    public static final int EVENT_FILTER_NOT_BETWEEN=139;
-    public static final int IN_RANGE=204;
-    public static final int DOT=279;
+    public static final int MATCHREC_MEASURE_ITEM=281;
+    public static final int BOR=292;
+    public static final int EQUAL=318;
+    public static final int EVENT_FILTER_NOT_BETWEEN=145;
+    public static final int IN_RANGE=213;
+    public static final int DOT=288;
     public static final int CURRENT_TIMESTAMP=80;
-    public static final int MATCHREC_MEASURES=271;
+    public static final int MATCHREC_MEASURES=280;
+    public static final int TIMEPERIOD_WEEK=92;
     public static final int EVERY_DISTINCT_EXPR=15;
-    public static final int PROPERTY_WILDCARD_SELECT=131;
-    public static final int INSERTINTO_EXPR=181;
-    public static final int HAVING_EXPR=147;
+    public static final int PROPERTY_WILDCARD_SELECT=137;
+    public static final int INSERTINTO_EXPR=187;
+    public static final int HAVING_EXPR=153;
     public static final int UNIDIRECTIONAL=63;
-    public static final int MATCH_UNTIL_RANGE_BOUNDED=235;
-    public static final int EVAL_EQUALS_EXPR=151;
-    public static final int TIMEPERIOD_MINUTES=93;
+    public static final int MATCH_UNTIL_RANGE_BOUNDED=244;
+    public static final int EVAL_EQUALS_EXPR=157;
+    public static final int TIMEPERIOD_MINUTES=99;
     public static final int RSTREAM=59;
-    public static final int NOT_LIKE=197;
-    public static final int EVENT_LIMIT_EXPR=175;
-    public static final int TIMEPERIOD_MINUTE=92;
-    public static final int NOT_BETWEEN=196;
-    public static final int EVAL_OR_EXPR=150;
-    public static final int ON_SELECT_INSERT_OUTPUT=226;
-    public static final int AFTER=111;
-    public static final int MEASURES=107;
-    public static final int MATCHREC_PATTERN_ATOM=263;
-    public static final int BAND=289;
-    public static final int QUOTED_STRING_LITERAL=288;
+    public static final int NOT_LIKE=206;
+    public static final int EVENT_LIMIT_EXPR=181;
+    public static final int TIMEPERIOD_MINUTE=98;
+    public static final int NOT_BETWEEN=205;
+    public static final int EVAL_OR_EXPR=156;
+    public static final int ON_SELECT_INSERT_OUTPUT=235;
+    public static final int AFTER=117;
+    public static final int MEASURES=113;
+    public static final int MATCHREC_PATTERN_ATOM=272;
+    public static final int BAND=298;
+    public static final int QUOTED_STRING_LITERAL=297;
     public static final int JOIN=37;
     public static final int ANY=48;
     public static final int NOT_EXPR=13;
-    public static final int QUESTION=285;
-    public static final int OBSERVER_EXPR=142;
-    public static final int EVENT_FILTER_IDENT=132;
-    public static final int CREATE_SCHEMA_EXPR_QUAL=248;
-    public static final int EVENT_PROP_MAPPED=170;
-    public static final int UnicodeEscape=335;
+    public static final int QUESTION=294;
+    public static final int OBSERVER_EXPR=148;
+    public static final int EVENT_FILTER_IDENT=138;
+    public static final int CREATE_SCHEMA_EXPR_QUAL=257;
+    public static final int EVENT_PROP_MAPPED=176;
+    public static final int UnicodeEscape=344;
+    public static final int TIMEPERIOD_YEAR=88;
     public static final int AVEDEV=25;
-    public static final int DBSELECT_EXPR=199;
-    public static final int SELECTION_ELEMENT_EXPR=157;
-    public static final int CREATE_WINDOW_SELECT_EXPR=218;
+    public static final int DBSELECT_EXPR=208;
+    public static final int TIMEPERIOD_MONTHS=91;
+    public static final int SELECTION_ELEMENT_EXPR=163;
+    public static final int CREATE_WINDOW_SELECT_EXPR=227;
     public static final int WINDOW=5;
-    public static final int ON_SET_EXPR_ITEM=246;
+    public static final int ON_SET_EXPR_ITEM=255;
     public static final int DESC=58;
-    public static final int SELECTION_STREAM=158;
-    public static final int SR_ASSIGN=320;
-    public static final int DBFROM_CLAUSE=200;
-    public static final int LE=295;
-    public static final int EVAL_IDENT=155;
+    public static final int SELECTION_STREAM=164;
+    public static final int SR_ASSIGN=329;
+    public static final int DBFROM_CLAUSE=209;
+    public static final int LE=304;
+    public static final int EVAL_IDENT=161;
 
       protected void mismatch(IntStream input, int ttype, BitSet follow) throws RecognitionException {
         throw new MismatchedTokenException(ttype, input);  
@@ -2129,13 +2138,139 @@ public class EsperEPL2GrammarLexer extends Lexer {
     }
     // $ANTLR end "INDEX"
 
+    // $ANTLR start "TIMEPERIOD_YEAR"
+    public final void mTIMEPERIOD_YEAR() throws RecognitionException {
+        try {
+            int _type = TIMEPERIOD_YEAR;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // EsperEPL2Grammar.g:115:17: ( 'year' )
+            // EsperEPL2Grammar.g:115:19: 'year'
+            {
+            match("year"); if (state.failed) return ;
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "TIMEPERIOD_YEAR"
+
+    // $ANTLR start "TIMEPERIOD_YEARS"
+    public final void mTIMEPERIOD_YEARS() throws RecognitionException {
+        try {
+            int _type = TIMEPERIOD_YEARS;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // EsperEPL2Grammar.g:116:18: ( 'years' )
+            // EsperEPL2Grammar.g:116:20: 'years'
+            {
+            match("years"); if (state.failed) return ;
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "TIMEPERIOD_YEARS"
+
+    // $ANTLR start "TIMEPERIOD_MONTH"
+    public final void mTIMEPERIOD_MONTH() throws RecognitionException {
+        try {
+            int _type = TIMEPERIOD_MONTH;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // EsperEPL2Grammar.g:117:18: ( 'month' )
+            // EsperEPL2Grammar.g:117:20: 'month'
+            {
+            match("month"); if (state.failed) return ;
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "TIMEPERIOD_MONTH"
+
+    // $ANTLR start "TIMEPERIOD_MONTHS"
+    public final void mTIMEPERIOD_MONTHS() throws RecognitionException {
+        try {
+            int _type = TIMEPERIOD_MONTHS;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // EsperEPL2Grammar.g:118:19: ( 'months' )
+            // EsperEPL2Grammar.g:118:21: 'months'
+            {
+            match("months"); if (state.failed) return ;
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "TIMEPERIOD_MONTHS"
+
+    // $ANTLR start "TIMEPERIOD_WEEK"
+    public final void mTIMEPERIOD_WEEK() throws RecognitionException {
+        try {
+            int _type = TIMEPERIOD_WEEK;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // EsperEPL2Grammar.g:119:17: ( 'week' )
+            // EsperEPL2Grammar.g:119:19: 'week'
+            {
+            match("week"); if (state.failed) return ;
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "TIMEPERIOD_WEEK"
+
+    // $ANTLR start "TIMEPERIOD_WEEKS"
+    public final void mTIMEPERIOD_WEEKS() throws RecognitionException {
+        try {
+            int _type = TIMEPERIOD_WEEKS;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // EsperEPL2Grammar.g:120:18: ( 'weeks' )
+            // EsperEPL2Grammar.g:120:20: 'weeks'
+            {
+            match("weeks"); if (state.failed) return ;
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "TIMEPERIOD_WEEKS"
+
     // $ANTLR start "TIMEPERIOD_DAY"
     public final void mTIMEPERIOD_DAY() throws RecognitionException {
         try {
             int _type = TIMEPERIOD_DAY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:115:16: ( 'day' )
-            // EsperEPL2Grammar.g:115:18: 'day'
+            // EsperEPL2Grammar.g:121:16: ( 'day' )
+            // EsperEPL2Grammar.g:121:18: 'day'
             {
             match("day"); if (state.failed) return ;
 
@@ -2155,8 +2290,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_DAYS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:116:17: ( 'days' )
-            // EsperEPL2Grammar.g:116:19: 'days'
+            // EsperEPL2Grammar.g:122:17: ( 'days' )
+            // EsperEPL2Grammar.g:122:19: 'days'
             {
             match("days"); if (state.failed) return ;
 
@@ -2176,8 +2311,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_HOUR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:117:17: ( 'hour' )
-            // EsperEPL2Grammar.g:117:19: 'hour'
+            // EsperEPL2Grammar.g:123:17: ( 'hour' )
+            // EsperEPL2Grammar.g:123:19: 'hour'
             {
             match("hour"); if (state.failed) return ;
 
@@ -2197,8 +2332,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_HOURS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:118:18: ( 'hours' )
-            // EsperEPL2Grammar.g:118:20: 'hours'
+            // EsperEPL2Grammar.g:124:18: ( 'hours' )
+            // EsperEPL2Grammar.g:124:20: 'hours'
             {
             match("hours"); if (state.failed) return ;
 
@@ -2218,8 +2353,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_MINUTE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:119:19: ( 'minute' )
-            // EsperEPL2Grammar.g:119:21: 'minute'
+            // EsperEPL2Grammar.g:125:19: ( 'minute' )
+            // EsperEPL2Grammar.g:125:21: 'minute'
             {
             match("minute"); if (state.failed) return ;
 
@@ -2239,8 +2374,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_MINUTES;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:120:20: ( 'minutes' )
-            // EsperEPL2Grammar.g:120:22: 'minutes'
+            // EsperEPL2Grammar.g:126:20: ( 'minutes' )
+            // EsperEPL2Grammar.g:126:22: 'minutes'
             {
             match("minutes"); if (state.failed) return ;
 
@@ -2260,8 +2395,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_SEC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:121:16: ( 'sec' )
-            // EsperEPL2Grammar.g:121:18: 'sec'
+            // EsperEPL2Grammar.g:127:16: ( 'sec' )
+            // EsperEPL2Grammar.g:127:18: 'sec'
             {
             match("sec"); if (state.failed) return ;
 
@@ -2281,8 +2416,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_SECOND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:122:19: ( 'second' )
-            // EsperEPL2Grammar.g:122:21: 'second'
+            // EsperEPL2Grammar.g:128:19: ( 'second' )
+            // EsperEPL2Grammar.g:128:21: 'second'
             {
             match("second"); if (state.failed) return ;
 
@@ -2302,8 +2437,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_SECONDS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:123:20: ( 'seconds' )
-            // EsperEPL2Grammar.g:123:22: 'seconds'
+            // EsperEPL2Grammar.g:129:20: ( 'seconds' )
+            // EsperEPL2Grammar.g:129:22: 'seconds'
             {
             match("seconds"); if (state.failed) return ;
 
@@ -2323,8 +2458,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_MILLISEC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:124:21: ( 'msec' )
-            // EsperEPL2Grammar.g:124:23: 'msec'
+            // EsperEPL2Grammar.g:130:21: ( 'msec' )
+            // EsperEPL2Grammar.g:130:23: 'msec'
             {
             match("msec"); if (state.failed) return ;
 
@@ -2344,8 +2479,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_MILLISECOND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:125:24: ( 'millisecond' )
-            // EsperEPL2Grammar.g:125:26: 'millisecond'
+            // EsperEPL2Grammar.g:131:24: ( 'millisecond' )
+            // EsperEPL2Grammar.g:131:26: 'millisecond'
             {
             match("millisecond"); if (state.failed) return ;
 
@@ -2365,8 +2500,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TIMEPERIOD_MILLISECONDS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:126:25: ( 'milliseconds' )
-            // EsperEPL2Grammar.g:126:27: 'milliseconds'
+            // EsperEPL2Grammar.g:132:25: ( 'milliseconds' )
+            // EsperEPL2Grammar.g:132:27: 'milliseconds'
             {
             match("milliseconds"); if (state.failed) return ;
 
@@ -2386,8 +2521,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BOOLEAN_TRUE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:127:14: ( 'true' )
-            // EsperEPL2Grammar.g:127:16: 'true'
+            // EsperEPL2Grammar.g:133:14: ( 'true' )
+            // EsperEPL2Grammar.g:133:16: 'true'
             {
             match("true"); if (state.failed) return ;
 
@@ -2407,8 +2542,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BOOLEAN_FALSE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:128:15: ( 'false' )
-            // EsperEPL2Grammar.g:128:17: 'false'
+            // EsperEPL2Grammar.g:134:15: ( 'false' )
+            // EsperEPL2Grammar.g:134:17: 'false'
             {
             match("false"); if (state.failed) return ;
 
@@ -2428,8 +2563,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = VALUE_NULL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:129:12: ( 'null' )
-            // EsperEPL2Grammar.g:129:14: 'null'
+            // EsperEPL2Grammar.g:135:12: ( 'null' )
+            // EsperEPL2Grammar.g:135:14: 'null'
             {
             match("null"); if (state.failed) return ;
 
@@ -2449,8 +2584,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = ROW_LIMIT_EXPR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:130:16: ( 'limit' )
-            // EsperEPL2Grammar.g:130:18: 'limit'
+            // EsperEPL2Grammar.g:136:16: ( 'limit' )
+            // EsperEPL2Grammar.g:136:18: 'limit'
             {
             match("limit"); if (state.failed) return ;
 
@@ -2470,8 +2605,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = OFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:131:8: ( 'offset' )
-            // EsperEPL2Grammar.g:131:10: 'offset'
+            // EsperEPL2Grammar.g:137:8: ( 'offset' )
+            // EsperEPL2Grammar.g:137:10: 'offset'
             {
             match("offset"); if (state.failed) return ;
 
@@ -2491,8 +2626,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = UPDATE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:132:8: ( 'update' )
-            // EsperEPL2Grammar.g:132:10: 'update'
+            // EsperEPL2Grammar.g:138:8: ( 'update' )
+            // EsperEPL2Grammar.g:138:10: 'update'
             {
             match("update"); if (state.failed) return ;
 
@@ -2512,8 +2647,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MATCH_RECOGNIZE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:133:17: ( 'match_recognize' )
-            // EsperEPL2Grammar.g:133:19: 'match_recognize'
+            // EsperEPL2Grammar.g:139:17: ( 'match_recognize' )
+            // EsperEPL2Grammar.g:139:19: 'match_recognize'
             {
             match("match_recognize"); if (state.failed) return ;
 
@@ -2533,8 +2668,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MEASURES;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:134:10: ( 'measures' )
-            // EsperEPL2Grammar.g:134:12: 'measures'
+            // EsperEPL2Grammar.g:140:10: ( 'measures' )
+            // EsperEPL2Grammar.g:140:12: 'measures'
             {
             match("measures"); if (state.failed) return ;
 
@@ -2554,8 +2689,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = DEFINE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:135:8: ( 'define' )
-            // EsperEPL2Grammar.g:135:10: 'define'
+            // EsperEPL2Grammar.g:141:8: ( 'define' )
+            // EsperEPL2Grammar.g:141:10: 'define'
             {
             match("define"); if (state.failed) return ;
 
@@ -2575,8 +2710,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = PARTITION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:136:11: ( 'partition' )
-            // EsperEPL2Grammar.g:136:13: 'partition'
+            // EsperEPL2Grammar.g:142:11: ( 'partition' )
+            // EsperEPL2Grammar.g:142:13: 'partition'
             {
             match("partition"); if (state.failed) return ;
 
@@ -2596,8 +2731,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MATCHES;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:137:9: ( 'matches' )
-            // EsperEPL2Grammar.g:137:11: 'matches'
+            // EsperEPL2Grammar.g:143:9: ( 'matches' )
+            // EsperEPL2Grammar.g:143:11: 'matches'
             {
             match("matches"); if (state.failed) return ;
 
@@ -2617,8 +2752,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = AFTER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:138:7: ( 'after' )
-            // EsperEPL2Grammar.g:138:9: 'after'
+            // EsperEPL2Grammar.g:144:7: ( 'after' )
+            // EsperEPL2Grammar.g:144:9: 'after'
             {
             match("after"); if (state.failed) return ;
 
@@ -2638,8 +2773,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = FOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:139:5: ( 'for' )
-            // EsperEPL2Grammar.g:139:7: 'for'
+            // EsperEPL2Grammar.g:145:5: ( 'for' )
+            // EsperEPL2Grammar.g:145:7: 'for'
             {
             match("for"); if (state.failed) return ;
 
@@ -2659,8 +2794,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = WHILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:140:7: ( 'while' )
-            // EsperEPL2Grammar.g:140:9: 'while'
+            // EsperEPL2Grammar.g:146:7: ( 'while' )
+            // EsperEPL2Grammar.g:146:9: 'while'
             {
             match("while"); if (state.failed) return ;
 
@@ -2680,8 +2815,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = USING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:141:7: ( 'using' )
-            // EsperEPL2Grammar.g:141:9: 'using'
+            // EsperEPL2Grammar.g:147:7: ( 'using' )
+            // EsperEPL2Grammar.g:147:9: 'using'
             {
             match("using"); if (state.failed) return ;
 
@@ -2701,8 +2836,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MERGE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:142:7: ( 'merge' )
-            // EsperEPL2Grammar.g:142:9: 'merge'
+            // EsperEPL2Grammar.g:148:7: ( 'merge' )
+            // EsperEPL2Grammar.g:148:9: 'merge'
             {
             match("merge"); if (state.failed) return ;
 
@@ -2722,8 +2857,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MATCHED;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:143:9: ( 'matched' )
-            // EsperEPL2Grammar.g:143:11: 'matched'
+            // EsperEPL2Grammar.g:149:9: ( 'matched' )
+            // EsperEPL2Grammar.g:149:11: 'matched'
             {
             match("matched"); if (state.failed) return ;
 
@@ -2743,8 +2878,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = FOLLOWED_BY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1796:14: ( '->' )
-            // EsperEPL2Grammar.g:1796:16: '->'
+            // EsperEPL2Grammar.g:1832:14: ( '->' )
+            // EsperEPL2Grammar.g:1832:16: '->'
             {
             match("->"); if (state.failed) return ;
 
@@ -2764,8 +2899,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = EQUALS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1797:10: ( '=' )
-            // EsperEPL2Grammar.g:1797:12: '='
+            // EsperEPL2Grammar.g:1833:10: ( '=' )
+            // EsperEPL2Grammar.g:1833:12: '='
             {
             match('='); if (state.failed) return ;
 
@@ -2784,8 +2919,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = SQL_NE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1798:10: ( '<>' )
-            // EsperEPL2Grammar.g:1798:12: '<>'
+            // EsperEPL2Grammar.g:1834:10: ( '<>' )
+            // EsperEPL2Grammar.g:1834:12: '<>'
             {
             match("<>"); if (state.failed) return ;
 
@@ -2805,8 +2940,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = QUESTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1799:11: ( '?' )
-            // EsperEPL2Grammar.g:1799:13: '?'
+            // EsperEPL2Grammar.g:1835:11: ( '?' )
+            // EsperEPL2Grammar.g:1835:13: '?'
             {
             match('?'); if (state.failed) return ;
 
@@ -2825,8 +2960,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = LPAREN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1800:10: ( '(' )
-            // EsperEPL2Grammar.g:1800:12: '('
+            // EsperEPL2Grammar.g:1836:10: ( '(' )
+            // EsperEPL2Grammar.g:1836:12: '('
             {
             match('('); if (state.failed) return ;
 
@@ -2845,8 +2980,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = RPAREN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1801:10: ( ')' )
-            // EsperEPL2Grammar.g:1801:12: ')'
+            // EsperEPL2Grammar.g:1837:10: ( ')' )
+            // EsperEPL2Grammar.g:1837:12: ')'
             {
             match(')'); if (state.failed) return ;
 
@@ -2865,8 +3000,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = LBRACK;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1802:10: ( '[' )
-            // EsperEPL2Grammar.g:1802:12: '['
+            // EsperEPL2Grammar.g:1838:10: ( '[' )
+            // EsperEPL2Grammar.g:1838:12: '['
             {
             match('['); if (state.failed) return ;
 
@@ -2885,8 +3020,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = RBRACK;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1803:10: ( ']' )
-            // EsperEPL2Grammar.g:1803:12: ']'
+            // EsperEPL2Grammar.g:1839:10: ( ']' )
+            // EsperEPL2Grammar.g:1839:12: ']'
             {
             match(']'); if (state.failed) return ;
 
@@ -2905,8 +3040,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = LCURLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1804:10: ( '{' )
-            // EsperEPL2Grammar.g:1804:12: '{'
+            // EsperEPL2Grammar.g:1840:10: ( '{' )
+            // EsperEPL2Grammar.g:1840:12: '{'
             {
             match('{'); if (state.failed) return ;
 
@@ -2925,8 +3060,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = RCURLY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1805:10: ( '}' )
-            // EsperEPL2Grammar.g:1805:12: '}'
+            // EsperEPL2Grammar.g:1841:10: ( '}' )
+            // EsperEPL2Grammar.g:1841:12: '}'
             {
             match('}'); if (state.failed) return ;
 
@@ -2945,8 +3080,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = COLON;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1806:9: ( ':' )
-            // EsperEPL2Grammar.g:1806:11: ':'
+            // EsperEPL2Grammar.g:1842:9: ( ':' )
+            // EsperEPL2Grammar.g:1842:11: ':'
             {
             match(':'); if (state.failed) return ;
 
@@ -2965,8 +3100,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = COMMA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1807:9: ( ',' )
-            // EsperEPL2Grammar.g:1807:11: ','
+            // EsperEPL2Grammar.g:1843:9: ( ',' )
+            // EsperEPL2Grammar.g:1843:11: ','
             {
             match(','); if (state.failed) return ;
 
@@ -2985,8 +3120,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = EQUAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1808:9: ( '==' )
-            // EsperEPL2Grammar.g:1808:11: '=='
+            // EsperEPL2Grammar.g:1844:9: ( '==' )
+            // EsperEPL2Grammar.g:1844:11: '=='
             {
             match("=="); if (state.failed) return ;
 
@@ -3006,8 +3141,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = LNOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1809:8: ( '!' )
-            // EsperEPL2Grammar.g:1809:10: '!'
+            // EsperEPL2Grammar.g:1845:8: ( '!' )
+            // EsperEPL2Grammar.g:1845:10: '!'
             {
             match('!'); if (state.failed) return ;
 
@@ -3026,8 +3161,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BNOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1810:8: ( '~' )
-            // EsperEPL2Grammar.g:1810:10: '~'
+            // EsperEPL2Grammar.g:1846:8: ( '~' )
+            // EsperEPL2Grammar.g:1846:10: '~'
             {
             match('~'); if (state.failed) return ;
 
@@ -3046,8 +3181,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = NOT_EQUAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1811:12: ( '!=' )
-            // EsperEPL2Grammar.g:1811:14: '!='
+            // EsperEPL2Grammar.g:1847:12: ( '!=' )
+            // EsperEPL2Grammar.g:1847:14: '!='
             {
             match("!="); if (state.failed) return ;
 
@@ -3067,8 +3202,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = DIV;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1812:7: ( '/' )
-            // EsperEPL2Grammar.g:1812:9: '/'
+            // EsperEPL2Grammar.g:1848:7: ( '/' )
+            // EsperEPL2Grammar.g:1848:9: '/'
             {
             match('/'); if (state.failed) return ;
 
@@ -3087,8 +3222,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = DIV_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1813:13: ( '/=' )
-            // EsperEPL2Grammar.g:1813:15: '/='
+            // EsperEPL2Grammar.g:1849:13: ( '/=' )
+            // EsperEPL2Grammar.g:1849:15: '/='
             {
             match("/="); if (state.failed) return ;
 
@@ -3108,8 +3243,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = PLUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1814:8: ( '+' )
-            // EsperEPL2Grammar.g:1814:10: '+'
+            // EsperEPL2Grammar.g:1850:8: ( '+' )
+            // EsperEPL2Grammar.g:1850:10: '+'
             {
             match('+'); if (state.failed) return ;
 
@@ -3128,8 +3263,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = PLUS_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1815:13: ( '+=' )
-            // EsperEPL2Grammar.g:1815:15: '+='
+            // EsperEPL2Grammar.g:1851:13: ( '+=' )
+            // EsperEPL2Grammar.g:1851:15: '+='
             {
             match("+="); if (state.failed) return ;
 
@@ -3149,8 +3284,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = INC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1816:7: ( '++' )
-            // EsperEPL2Grammar.g:1816:9: '++'
+            // EsperEPL2Grammar.g:1852:7: ( '++' )
+            // EsperEPL2Grammar.g:1852:9: '++'
             {
             match("++"); if (state.failed) return ;
 
@@ -3170,8 +3305,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MINUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1817:9: ( '-' )
-            // EsperEPL2Grammar.g:1817:11: '-'
+            // EsperEPL2Grammar.g:1853:9: ( '-' )
+            // EsperEPL2Grammar.g:1853:11: '-'
             {
             match('-'); if (state.failed) return ;
 
@@ -3190,8 +3325,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MINUS_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1818:15: ( '-=' )
-            // EsperEPL2Grammar.g:1818:17: '-='
+            // EsperEPL2Grammar.g:1854:15: ( '-=' )
+            // EsperEPL2Grammar.g:1854:17: '-='
             {
             match("-="); if (state.failed) return ;
 
@@ -3211,8 +3346,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = DEC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1819:7: ( '--' )
-            // EsperEPL2Grammar.g:1819:9: '--'
+            // EsperEPL2Grammar.g:1855:7: ( '--' )
+            // EsperEPL2Grammar.g:1855:9: '--'
             {
             match("--"); if (state.failed) return ;
 
@@ -3232,8 +3367,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = STAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1820:8: ( '*' )
-            // EsperEPL2Grammar.g:1820:10: '*'
+            // EsperEPL2Grammar.g:1856:8: ( '*' )
+            // EsperEPL2Grammar.g:1856:10: '*'
             {
             match('*'); if (state.failed) return ;
 
@@ -3252,8 +3387,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = STAR_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1821:14: ( '*=' )
-            // EsperEPL2Grammar.g:1821:16: '*='
+            // EsperEPL2Grammar.g:1857:14: ( '*=' )
+            // EsperEPL2Grammar.g:1857:16: '*='
             {
             match("*="); if (state.failed) return ;
 
@@ -3273,8 +3408,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MOD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1822:7: ( '%' )
-            // EsperEPL2Grammar.g:1822:9: '%'
+            // EsperEPL2Grammar.g:1858:7: ( '%' )
+            // EsperEPL2Grammar.g:1858:9: '%'
             {
             match('%'); if (state.failed) return ;
 
@@ -3293,8 +3428,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = MOD_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1823:13: ( '%=' )
-            // EsperEPL2Grammar.g:1823:15: '%='
+            // EsperEPL2Grammar.g:1859:13: ( '%=' )
+            // EsperEPL2Grammar.g:1859:15: '%='
             {
             match("%="); if (state.failed) return ;
 
@@ -3314,8 +3449,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = SR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1824:6: ( '>>' )
-            // EsperEPL2Grammar.g:1824:8: '>>'
+            // EsperEPL2Grammar.g:1860:6: ( '>>' )
+            // EsperEPL2Grammar.g:1860:8: '>>'
             {
             match(">>"); if (state.failed) return ;
 
@@ -3335,8 +3470,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = SR_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1825:12: ( '>>=' )
-            // EsperEPL2Grammar.g:1825:14: '>>='
+            // EsperEPL2Grammar.g:1861:12: ( '>>=' )
+            // EsperEPL2Grammar.g:1861:14: '>>='
             {
             match(">>="); if (state.failed) return ;
 
@@ -3356,8 +3491,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BSR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1826:7: ( '>>>' )
-            // EsperEPL2Grammar.g:1826:9: '>>>'
+            // EsperEPL2Grammar.g:1862:7: ( '>>>' )
+            // EsperEPL2Grammar.g:1862:9: '>>>'
             {
             match(">>>"); if (state.failed) return ;
 
@@ -3377,8 +3512,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BSR_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1827:13: ( '>>>=' )
-            // EsperEPL2Grammar.g:1827:15: '>>>='
+            // EsperEPL2Grammar.g:1863:13: ( '>>>=' )
+            // EsperEPL2Grammar.g:1863:15: '>>>='
             {
             match(">>>="); if (state.failed) return ;
 
@@ -3398,8 +3533,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = GE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1828:6: ( '>=' )
-            // EsperEPL2Grammar.g:1828:8: '>='
+            // EsperEPL2Grammar.g:1864:6: ( '>=' )
+            // EsperEPL2Grammar.g:1864:8: '>='
             {
             match(">="); if (state.failed) return ;
 
@@ -3419,8 +3554,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = GT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1829:6: ( '>' )
-            // EsperEPL2Grammar.g:1829:8: '>'
+            // EsperEPL2Grammar.g:1865:6: ( '>' )
+            // EsperEPL2Grammar.g:1865:8: '>'
             {
             match('>'); if (state.failed) return ;
 
@@ -3439,8 +3574,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = SL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1830:6: ( '<<' )
-            // EsperEPL2Grammar.g:1830:8: '<<'
+            // EsperEPL2Grammar.g:1866:6: ( '<<' )
+            // EsperEPL2Grammar.g:1866:8: '<<'
             {
             match("<<"); if (state.failed) return ;
 
@@ -3460,8 +3595,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = SL_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1831:12: ( '<<=' )
-            // EsperEPL2Grammar.g:1831:14: '<<='
+            // EsperEPL2Grammar.g:1867:12: ( '<<=' )
+            // EsperEPL2Grammar.g:1867:14: '<<='
             {
             match("<<="); if (state.failed) return ;
 
@@ -3481,8 +3616,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = LE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1832:6: ( '<=' )
-            // EsperEPL2Grammar.g:1832:8: '<='
+            // EsperEPL2Grammar.g:1868:6: ( '<=' )
+            // EsperEPL2Grammar.g:1868:8: '<='
             {
             match("<="); if (state.failed) return ;
 
@@ -3502,8 +3637,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = LT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1833:6: ( '<' )
-            // EsperEPL2Grammar.g:1833:8: '<'
+            // EsperEPL2Grammar.g:1869:6: ( '<' )
+            // EsperEPL2Grammar.g:1869:8: '<'
             {
             match('<'); if (state.failed) return ;
 
@@ -3522,8 +3657,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BXOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1834:8: ( '^' )
-            // EsperEPL2Grammar.g:1834:10: '^'
+            // EsperEPL2Grammar.g:1870:8: ( '^' )
+            // EsperEPL2Grammar.g:1870:10: '^'
             {
             match('^'); if (state.failed) return ;
 
@@ -3542,8 +3677,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BXOR_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1835:14: ( '^=' )
-            // EsperEPL2Grammar.g:1835:16: '^='
+            // EsperEPL2Grammar.g:1871:14: ( '^=' )
+            // EsperEPL2Grammar.g:1871:16: '^='
             {
             match("^="); if (state.failed) return ;
 
@@ -3563,8 +3698,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1836:6: ( '|' )
-            // EsperEPL2Grammar.g:1836:8: '|'
+            // EsperEPL2Grammar.g:1872:6: ( '|' )
+            // EsperEPL2Grammar.g:1872:8: '|'
             {
             match('|'); if (state.failed) return ;
 
@@ -3583,8 +3718,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BOR_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1837:13: ( '|=' )
-            // EsperEPL2Grammar.g:1837:15: '|='
+            // EsperEPL2Grammar.g:1873:13: ( '|=' )
+            // EsperEPL2Grammar.g:1873:15: '|='
             {
             match("|="); if (state.failed) return ;
 
@@ -3604,8 +3739,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = LOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1838:6: ( '||' )
-            // EsperEPL2Grammar.g:1838:8: '||'
+            // EsperEPL2Grammar.g:1874:6: ( '||' )
+            // EsperEPL2Grammar.g:1874:8: '||'
             {
             match("||"); if (state.failed) return ;
 
@@ -3625,8 +3760,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1839:8: ( '&' )
-            // EsperEPL2Grammar.g:1839:10: '&'
+            // EsperEPL2Grammar.g:1875:8: ( '&' )
+            // EsperEPL2Grammar.g:1875:10: '&'
             {
             match('&'); if (state.failed) return ;
 
@@ -3645,8 +3780,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = BAND_ASSIGN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1840:14: ( '&=' )
-            // EsperEPL2Grammar.g:1840:16: '&='
+            // EsperEPL2Grammar.g:1876:14: ( '&=' )
+            // EsperEPL2Grammar.g:1876:16: '&='
             {
             match("&="); if (state.failed) return ;
 
@@ -3666,8 +3801,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = LAND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1841:8: ( '&&' )
-            // EsperEPL2Grammar.g:1841:10: '&&'
+            // EsperEPL2Grammar.g:1877:8: ( '&&' )
+            // EsperEPL2Grammar.g:1877:10: '&&'
             {
             match("&&"); if (state.failed) return ;
 
@@ -3687,8 +3822,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = SEMI;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1842:8: ( ';' )
-            // EsperEPL2Grammar.g:1842:10: ';'
+            // EsperEPL2Grammar.g:1878:8: ( ';' )
+            // EsperEPL2Grammar.g:1878:10: ';'
             {
             match(';'); if (state.failed) return ;
 
@@ -3707,8 +3842,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = DOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1843:7: ( '.' )
-            // EsperEPL2Grammar.g:1843:9: '.'
+            // EsperEPL2Grammar.g:1879:7: ( '.' )
+            // EsperEPL2Grammar.g:1879:9: '.'
             {
             match('.'); if (state.failed) return ;
 
@@ -3727,8 +3862,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = NUM_LONG;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1844:10: ( '\\u18FF' )
-            // EsperEPL2Grammar.g:1844:12: '\\u18FF'
+            // EsperEPL2Grammar.g:1880:10: ( '\\u18FF' )
+            // EsperEPL2Grammar.g:1880:12: '\\u18FF'
             {
             match('\u18FF'); if (state.failed) return ;
 
@@ -3747,8 +3882,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = NUM_DOUBLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1845:12: ( '\\u18FE' )
-            // EsperEPL2Grammar.g:1845:14: '\\u18FE'
+            // EsperEPL2Grammar.g:1881:12: ( '\\u18FE' )
+            // EsperEPL2Grammar.g:1881:14: '\\u18FE'
             {
             match('\u18FE'); if (state.failed) return ;
 
@@ -3767,8 +3902,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = NUM_FLOAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1846:11: ( '\\u18FD' )
-            // EsperEPL2Grammar.g:1846:13: '\\u18FD'
+            // EsperEPL2Grammar.g:1882:11: ( '\\u18FD' )
+            // EsperEPL2Grammar.g:1882:13: '\\u18FD'
             {
             match('\u18FD'); if (state.failed) return ;
 
@@ -3787,8 +3922,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = ESCAPECHAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1847:12: ( '\\\\' )
-            // EsperEPL2Grammar.g:1847:14: '\\\\'
+            // EsperEPL2Grammar.g:1883:12: ( '\\\\' )
+            // EsperEPL2Grammar.g:1883:14: '\\\\'
             {
             match('\\'); if (state.failed) return ;
 
@@ -3807,8 +3942,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = EMAILAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1848:10: ( '@' )
-            // EsperEPL2Grammar.g:1848:12: '@'
+            // EsperEPL2Grammar.g:1884:10: ( '@' )
+            // EsperEPL2Grammar.g:1884:12: '@'
             {
             match('@'); if (state.failed) return ;
 
@@ -3827,10 +3962,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1851:4: ( ( ' ' | '\\t' | '\\f' | ( '\\r' | '\\n' ) )+ )
-            // EsperEPL2Grammar.g:1851:6: ( ' ' | '\\t' | '\\f' | ( '\\r' | '\\n' ) )+
+            // EsperEPL2Grammar.g:1887:4: ( ( ' ' | '\\t' | '\\f' | ( '\\r' | '\\n' ) )+ )
+            // EsperEPL2Grammar.g:1887:6: ( ' ' | '\\t' | '\\f' | ( '\\r' | '\\n' ) )+
             {
-            // EsperEPL2Grammar.g:1851:6: ( ' ' | '\\t' | '\\f' | ( '\\r' | '\\n' ) )+
+            // EsperEPL2Grammar.g:1887:6: ( ' ' | '\\t' | '\\f' | ( '\\r' | '\\n' ) )+
             int cnt1=0;
             loop1:
             do {
@@ -3889,12 +4024,12 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1865:2: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\n' | '\\r' ( '\\n' )? )? )
-            // EsperEPL2Grammar.g:1865:4: '//' (~ ( '\\n' | '\\r' ) )* ( '\\n' | '\\r' ( '\\n' )? )?
+            // EsperEPL2Grammar.g:1901:2: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\n' | '\\r' ( '\\n' )? )? )
+            // EsperEPL2Grammar.g:1901:4: '//' (~ ( '\\n' | '\\r' ) )* ( '\\n' | '\\r' ( '\\n' )? )?
             {
             match("//"); if (state.failed) return ;
 
-            // EsperEPL2Grammar.g:1866:3: (~ ( '\\n' | '\\r' ) )*
+            // EsperEPL2Grammar.g:1902:3: (~ ( '\\n' | '\\r' ) )*
             loop2:
             do {
                 int alt2=2;
@@ -3907,7 +4042,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1866:4: ~ ( '\\n' | '\\r' )
+            	    // EsperEPL2Grammar.g:1902:4: ~ ( '\\n' | '\\r' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -3928,7 +4063,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 }
             } while (true);
 
-            // EsperEPL2Grammar.g:1866:19: ( '\\n' | '\\r' ( '\\n' )? )?
+            // EsperEPL2Grammar.g:1902:19: ( '\\n' | '\\r' ( '\\n' )? )?
             int alt4=3;
             int LA4_0 = input.LA(1);
 
@@ -3940,17 +4075,17 @@ public class EsperEPL2GrammarLexer extends Lexer {
             }
             switch (alt4) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1866:20: '\\n'
+                    // EsperEPL2Grammar.g:1902:20: '\\n'
                     {
                     match('\n'); if (state.failed) return ;
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1866:25: '\\r' ( '\\n' )?
+                    // EsperEPL2Grammar.g:1902:25: '\\r' ( '\\n' )?
                     {
                     match('\r'); if (state.failed) return ;
-                    // EsperEPL2Grammar.g:1866:29: ( '\\n' )?
+                    // EsperEPL2Grammar.g:1902:29: ( '\\n' )?
                     int alt3=2;
                     int LA3_0 = input.LA(1);
 
@@ -3959,7 +4094,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     }
                     switch (alt3) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1866:30: '\\n'
+                            // EsperEPL2Grammar.g:1902:30: '\\n'
                             {
                             match('\n'); if (state.failed) return ;
 
@@ -3993,12 +4128,12 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = ML_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1872:5: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // EsperEPL2Grammar.g:1872:9: '/*' ( options {greedy=false; } : . )* '*/'
+            // EsperEPL2Grammar.g:1908:5: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // EsperEPL2Grammar.g:1908:9: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); if (state.failed) return ;
 
-            // EsperEPL2Grammar.g:1872:14: ( options {greedy=false; } : . )*
+            // EsperEPL2Grammar.g:1908:14: ( options {greedy=false; } : . )*
             loop5:
             do {
                 int alt5=2;
@@ -4023,7 +4158,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                 switch (alt5) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1872:42: .
+            	    // EsperEPL2Grammar.g:1908:42: .
             	    {
             	    matchAny(); if (state.failed) return ;
 
@@ -4056,11 +4191,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = TICKED_STRING_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1876:5: ( '`' ( EscapeSequence | ~ ( '\\`' | '\\\\' ) )* '`' )
-            // EsperEPL2Grammar.g:1876:9: '`' ( EscapeSequence | ~ ( '\\`' | '\\\\' ) )* '`'
+            // EsperEPL2Grammar.g:1912:5: ( '`' ( EscapeSequence | ~ ( '\\`' | '\\\\' ) )* '`' )
+            // EsperEPL2Grammar.g:1912:9: '`' ( EscapeSequence | ~ ( '\\`' | '\\\\' ) )* '`'
             {
             match('`'); if (state.failed) return ;
-            // EsperEPL2Grammar.g:1876:13: ( EscapeSequence | ~ ( '\\`' | '\\\\' ) )*
+            // EsperEPL2Grammar.g:1912:13: ( EscapeSequence | ~ ( '\\`' | '\\\\' ) )*
             loop6:
             do {
                 int alt6=3;
@@ -4076,14 +4211,14 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                 switch (alt6) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1876:15: EscapeSequence
+            	    // EsperEPL2Grammar.g:1912:15: EscapeSequence
             	    {
             	    mEscapeSequence(); if (state.failed) return ;
 
             	    }
             	    break;
             	case 2 :
-            	    // EsperEPL2Grammar.g:1876:32: ~ ( '\\`' | '\\\\' )
+            	    // EsperEPL2Grammar.g:1912:32: ~ ( '\\`' | '\\\\' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='_')||(input.LA(1)>='a' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -4121,11 +4256,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = QUOTED_STRING_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1880:5: ( '\\'' ( EscapeSequence | ~ ( '\\'' | '\\\\' ) )* '\\'' )
-            // EsperEPL2Grammar.g:1880:9: '\\'' ( EscapeSequence | ~ ( '\\'' | '\\\\' ) )* '\\''
+            // EsperEPL2Grammar.g:1916:5: ( '\\'' ( EscapeSequence | ~ ( '\\'' | '\\\\' ) )* '\\'' )
+            // EsperEPL2Grammar.g:1916:9: '\\'' ( EscapeSequence | ~ ( '\\'' | '\\\\' ) )* '\\''
             {
             match('\''); if (state.failed) return ;
-            // EsperEPL2Grammar.g:1880:14: ( EscapeSequence | ~ ( '\\'' | '\\\\' ) )*
+            // EsperEPL2Grammar.g:1916:14: ( EscapeSequence | ~ ( '\\'' | '\\\\' ) )*
             loop7:
             do {
                 int alt7=3;
@@ -4141,14 +4276,14 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1880:16: EscapeSequence
+            	    // EsperEPL2Grammar.g:1916:16: EscapeSequence
             	    {
             	    mEscapeSequence(); if (state.failed) return ;
 
             	    }
             	    break;
             	case 2 :
-            	    // EsperEPL2Grammar.g:1880:33: ~ ( '\\'' | '\\\\' )
+            	    // EsperEPL2Grammar.g:1916:33: ~ ( '\\'' | '\\\\' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -4186,11 +4321,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = STRING_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1884:5: ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' )
-            // EsperEPL2Grammar.g:1884:8: '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"'
+            // EsperEPL2Grammar.g:1920:5: ( '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"' )
+            // EsperEPL2Grammar.g:1920:8: '\"' ( EscapeSequence | ~ ( '\\\\' | '\"' ) )* '\"'
             {
             match('\"'); if (state.failed) return ;
-            // EsperEPL2Grammar.g:1884:12: ( EscapeSequence | ~ ( '\\\\' | '\"' ) )*
+            // EsperEPL2Grammar.g:1920:12: ( EscapeSequence | ~ ( '\\\\' | '\"' ) )*
             loop8:
             do {
                 int alt8=3;
@@ -4206,14 +4341,14 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                 switch (alt8) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1884:14: EscapeSequence
+            	    // EsperEPL2Grammar.g:1920:14: EscapeSequence
             	    {
             	    mEscapeSequence(); if (state.failed) return ;
 
             	    }
             	    break;
             	case 2 :
-            	    // EsperEPL2Grammar.g:1884:31: ~ ( '\\\\' | '\"' )
+            	    // EsperEPL2Grammar.g:1920:31: ~ ( '\\\\' | '\"' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -4249,11 +4384,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
     // $ANTLR start "EscapeSequence"
     public final void mEscapeSequence() throws RecognitionException {
         try {
-            // EsperEPL2Grammar.g:1888:16: ( '\\\\' ( 'n' | 'r' | 't' | 'b' | 'f' | '\"' | '\\'' | '\\\\' | UnicodeEscape | OctalEscape | . ) )
-            // EsperEPL2Grammar.g:1888:18: '\\\\' ( 'n' | 'r' | 't' | 'b' | 'f' | '\"' | '\\'' | '\\\\' | UnicodeEscape | OctalEscape | . )
+            // EsperEPL2Grammar.g:1924:16: ( '\\\\' ( 'n' | 'r' | 't' | 'b' | 'f' | '\"' | '\\'' | '\\\\' | UnicodeEscape | OctalEscape | . ) )
+            // EsperEPL2Grammar.g:1924:18: '\\\\' ( 'n' | 'r' | 't' | 'b' | 'f' | '\"' | '\\'' | '\\\\' | UnicodeEscape | OctalEscape | . )
             {
             match('\\'); if (state.failed) return ;
-            // EsperEPL2Grammar.g:1889:3: ( 'n' | 'r' | 't' | 'b' | 'f' | '\"' | '\\'' | '\\\\' | UnicodeEscape | OctalEscape | . )
+            // EsperEPL2Grammar.g:1925:3: ( 'n' | 'r' | 't' | 'b' | 'f' | '\"' | '\\'' | '\\\\' | UnicodeEscape | OctalEscape | . )
             int alt9=11;
             int LA9_0 = input.LA(1);
 
@@ -4313,77 +4448,77 @@ public class EsperEPL2GrammarLexer extends Lexer {
             }
             switch (alt9) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1889:5: 'n'
+                    // EsperEPL2Grammar.g:1925:5: 'n'
                     {
                     match('n'); if (state.failed) return ;
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1890:5: 'r'
+                    // EsperEPL2Grammar.g:1926:5: 'r'
                     {
                     match('r'); if (state.failed) return ;
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1891:5: 't'
+                    // EsperEPL2Grammar.g:1927:5: 't'
                     {
                     match('t'); if (state.failed) return ;
 
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Grammar.g:1892:5: 'b'
+                    // EsperEPL2Grammar.g:1928:5: 'b'
                     {
                     match('b'); if (state.failed) return ;
 
                     }
                     break;
                 case 5 :
-                    // EsperEPL2Grammar.g:1893:5: 'f'
+                    // EsperEPL2Grammar.g:1929:5: 'f'
                     {
                     match('f'); if (state.failed) return ;
 
                     }
                     break;
                 case 6 :
-                    // EsperEPL2Grammar.g:1894:5: '\"'
+                    // EsperEPL2Grammar.g:1930:5: '\"'
                     {
                     match('\"'); if (state.failed) return ;
 
                     }
                     break;
                 case 7 :
-                    // EsperEPL2Grammar.g:1895:5: '\\''
+                    // EsperEPL2Grammar.g:1931:5: '\\''
                     {
                     match('\''); if (state.failed) return ;
 
                     }
                     break;
                 case 8 :
-                    // EsperEPL2Grammar.g:1896:5: '\\\\'
+                    // EsperEPL2Grammar.g:1932:5: '\\\\'
                     {
                     match('\\'); if (state.failed) return ;
 
                     }
                     break;
                 case 9 :
-                    // EsperEPL2Grammar.g:1897:5: UnicodeEscape
+                    // EsperEPL2Grammar.g:1933:5: UnicodeEscape
                     {
                     mUnicodeEscape(); if (state.failed) return ;
 
                     }
                     break;
                 case 10 :
-                    // EsperEPL2Grammar.g:1898:5: OctalEscape
+                    // EsperEPL2Grammar.g:1934:5: OctalEscape
                     {
                     mOctalEscape(); if (state.failed) return ;
 
                     }
                     break;
                 case 11 :
-                    // EsperEPL2Grammar.g:1899:5: .
+                    // EsperEPL2Grammar.g:1935:5: .
                     {
                     matchAny(); if (state.failed) return ;
 
@@ -4404,7 +4539,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
     // $ANTLR start "OctalEscape"
     public final void mOctalEscape() throws RecognitionException {
         try {
-            // EsperEPL2Grammar.g:1905:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
+            // EsperEPL2Grammar.g:1941:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
             int alt10=3;
             int LA10_0 = input.LA(1);
 
@@ -4452,25 +4587,25 @@ public class EsperEPL2GrammarLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1905:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
+                    // EsperEPL2Grammar.g:1941:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
                     {
                     match('\\'); if (state.failed) return ;
-                    // EsperEPL2Grammar.g:1905:14: ( '0' .. '3' )
-                    // EsperEPL2Grammar.g:1905:15: '0' .. '3'
+                    // EsperEPL2Grammar.g:1941:14: ( '0' .. '3' )
+                    // EsperEPL2Grammar.g:1941:15: '0' .. '3'
                     {
                     matchRange('0','3'); if (state.failed) return ;
 
                     }
 
-                    // EsperEPL2Grammar.g:1905:25: ( '0' .. '7' )
-                    // EsperEPL2Grammar.g:1905:26: '0' .. '7'
+                    // EsperEPL2Grammar.g:1941:25: ( '0' .. '7' )
+                    // EsperEPL2Grammar.g:1941:26: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
                     }
 
-                    // EsperEPL2Grammar.g:1905:36: ( '0' .. '7' )
-                    // EsperEPL2Grammar.g:1905:37: '0' .. '7'
+                    // EsperEPL2Grammar.g:1941:36: ( '0' .. '7' )
+                    // EsperEPL2Grammar.g:1941:37: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
@@ -4480,18 +4615,18 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1906:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
+                    // EsperEPL2Grammar.g:1942:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
                     {
                     match('\\'); if (state.failed) return ;
-                    // EsperEPL2Grammar.g:1906:14: ( '0' .. '7' )
-                    // EsperEPL2Grammar.g:1906:15: '0' .. '7'
+                    // EsperEPL2Grammar.g:1942:14: ( '0' .. '7' )
+                    // EsperEPL2Grammar.g:1942:15: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
                     }
 
-                    // EsperEPL2Grammar.g:1906:25: ( '0' .. '7' )
-                    // EsperEPL2Grammar.g:1906:26: '0' .. '7'
+                    // EsperEPL2Grammar.g:1942:25: ( '0' .. '7' )
+                    // EsperEPL2Grammar.g:1942:26: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
@@ -4501,11 +4636,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Grammar.g:1907:9: '\\\\' ( '0' .. '7' )
+                    // EsperEPL2Grammar.g:1943:9: '\\\\' ( '0' .. '7' )
                     {
                     match('\\'); if (state.failed) return ;
-                    // EsperEPL2Grammar.g:1907:14: ( '0' .. '7' )
-                    // EsperEPL2Grammar.g:1907:15: '0' .. '7'
+                    // EsperEPL2Grammar.g:1943:14: ( '0' .. '7' )
+                    // EsperEPL2Grammar.g:1943:15: '0' .. '7'
                     {
                     matchRange('0','7'); if (state.failed) return ;
 
@@ -4525,8 +4660,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
     // $ANTLR start "HexDigit"
     public final void mHexDigit() throws RecognitionException {
         try {
-            // EsperEPL2Grammar.g:1911:10: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
-            // EsperEPL2Grammar.g:1911:12: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
+            // EsperEPL2Grammar.g:1947:10: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+            // EsperEPL2Grammar.g:1947:12: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' )
             {
             if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
                 input.consume();
@@ -4550,8 +4685,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
     // $ANTLR start "UnicodeEscape"
     public final void mUnicodeEscape() throws RecognitionException {
         try {
-            // EsperEPL2Grammar.g:1915:5: ( '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit )
-            // EsperEPL2Grammar.g:1915:9: '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit
+            // EsperEPL2Grammar.g:1951:5: ( '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit )
+            // EsperEPL2Grammar.g:1951:9: '\\\\' 'u' HexDigit HexDigit HexDigit HexDigit
             {
             match('\\'); if (state.failed) return ;
             match('u'); if (state.failed) return ;
@@ -4573,8 +4708,8 @@ public class EsperEPL2GrammarLexer extends Lexer {
         try {
             int _type = IDENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // EsperEPL2Grammar.g:1922:2: ( ( 'a' .. 'z' | '_' | '$' ) ( 'a' .. 'z' | '_' | '0' .. '9' | '$' )* )
-            // EsperEPL2Grammar.g:1922:4: ( 'a' .. 'z' | '_' | '$' ) ( 'a' .. 'z' | '_' | '0' .. '9' | '$' )*
+            // EsperEPL2Grammar.g:1958:2: ( ( 'a' .. 'z' | '_' | '$' ) ( 'a' .. 'z' | '_' | '0' .. '9' | '$' )* )
+            // EsperEPL2Grammar.g:1958:4: ( 'a' .. 'z' | '_' | '$' ) ( 'a' .. 'z' | '_' | '0' .. '9' | '$' )*
             {
             if ( input.LA(1)=='$'||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
                 input.consume();
@@ -4586,7 +4721,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // EsperEPL2Grammar.g:1922:23: ( 'a' .. 'z' | '_' | '0' .. '9' | '$' )*
+            // EsperEPL2Grammar.g:1958:23: ( 'a' .. 'z' | '_' | '0' .. '9' | '$' )*
             loop11:
             do {
                 int alt11=2;
@@ -4642,7 +4777,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
             CommonToken f4=null;
 
             boolean isDecimal=false; Token t=null;
-            // EsperEPL2Grammar.g:1929:5: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )
+            // EsperEPL2Grammar.g:1965:5: ( '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )? | ( '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )? )
             int alt28=2;
             int LA28_0 = input.LA(1);
 
@@ -4661,13 +4796,13 @@ public class EsperEPL2GrammarLexer extends Lexer {
             }
             switch (alt28) {
                 case 1 :
-                    // EsperEPL2Grammar.g:1929:9: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+                    // EsperEPL2Grammar.g:1965:9: '.' ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
                     {
                     match('.'); if (state.failed) return ;
                     if ( state.backtracking==0 ) {
                       _type = DOT;
                     }
-                    // EsperEPL2Grammar.g:1930:13: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
+                    // EsperEPL2Grammar.g:1966:13: ( ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )? )?
                     int alt15=2;
                     int LA15_0 = input.LA(1);
 
@@ -4676,9 +4811,9 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     }
                     switch (alt15) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1930:15: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
+                            // EsperEPL2Grammar.g:1966:15: ( '0' .. '9' )+ ( EXPONENT )? (f1= FLOAT_SUFFIX )?
                             {
-                            // EsperEPL2Grammar.g:1930:15: ( '0' .. '9' )+
+                            // EsperEPL2Grammar.g:1966:15: ( '0' .. '9' )+
                             int cnt12=0;
                             loop12:
                             do {
@@ -4692,7 +4827,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                                 switch (alt12) {
                             	case 1 :
-                            	    // EsperEPL2Grammar.g:1930:16: '0' .. '9'
+                            	    // EsperEPL2Grammar.g:1966:16: '0' .. '9'
                             	    {
                             	    matchRange('0','9'); if (state.failed) return ;
 
@@ -4709,7 +4844,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                 cnt12++;
                             } while (true);
 
-                            // EsperEPL2Grammar.g:1930:27: ( EXPONENT )?
+                            // EsperEPL2Grammar.g:1966:27: ( EXPONENT )?
                             int alt13=2;
                             int LA13_0 = input.LA(1);
 
@@ -4718,7 +4853,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                             }
                             switch (alt13) {
                                 case 1 :
-                                    // EsperEPL2Grammar.g:1930:28: EXPONENT
+                                    // EsperEPL2Grammar.g:1966:28: EXPONENT
                                     {
                                     mEXPONENT(); if (state.failed) return ;
 
@@ -4727,7 +4862,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                             }
 
-                            // EsperEPL2Grammar.g:1930:39: (f1= FLOAT_SUFFIX )?
+                            // EsperEPL2Grammar.g:1966:39: (f1= FLOAT_SUFFIX )?
                             int alt14=2;
                             int LA14_0 = input.LA(1);
 
@@ -4736,11 +4871,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
                             }
                             switch (alt14) {
                                 case 1 :
-                                    // EsperEPL2Grammar.g:1930:40: f1= FLOAT_SUFFIX
+                                    // EsperEPL2Grammar.g:1966:40: f1= FLOAT_SUFFIX
                                     {
-                                    int f1Start2005 = getCharIndex();
+                                    int f1Start2053 = getCharIndex();
                                     mFLOAT_SUFFIX(); if (state.failed) return ;
-                                    f1 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f1Start2005, getCharIndex()-1);
+                                    f1 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f1Start2053, getCharIndex()-1);
                                     if ( state.backtracking==0 ) {
                                       t=f1;
                                     }
@@ -4770,9 +4905,9 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Grammar.g:1941:4: ( '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
+                    // EsperEPL2Grammar.g:1977:4: ( '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* ) ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
                     {
-                    // EsperEPL2Grammar.g:1941:4: ( '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
+                    // EsperEPL2Grammar.g:1977:4: ( '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )? | ( '1' .. '9' ) ( '0' .. '9' )* )
                     int alt21=2;
                     int LA21_0 = input.LA(1);
 
@@ -4791,13 +4926,13 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     }
                     switch (alt21) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1941:6: '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )?
+                            // EsperEPL2Grammar.g:1977:6: '0' ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )?
                             {
                             match('0'); if (state.failed) return ;
                             if ( state.backtracking==0 ) {
                               isDecimal = true;
                             }
-                            // EsperEPL2Grammar.g:1942:4: ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )?
+                            // EsperEPL2Grammar.g:1978:4: ( ( 'x' ) ( HexDigit )+ | ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+ | ( '0' .. '7' )+ )?
                             int alt19=4;
                             int LA19_0 = input.LA(1);
 
@@ -4819,16 +4954,16 @@ public class EsperEPL2GrammarLexer extends Lexer {
                             }
                             switch (alt19) {
                                 case 1 :
-                                    // EsperEPL2Grammar.g:1942:6: ( 'x' ) ( HexDigit )+
+                                    // EsperEPL2Grammar.g:1978:6: ( 'x' ) ( HexDigit )+
                                     {
-                                    // EsperEPL2Grammar.g:1942:6: ( 'x' )
-                                    // EsperEPL2Grammar.g:1942:7: 'x'
+                                    // EsperEPL2Grammar.g:1978:6: ( 'x' )
+                                    // EsperEPL2Grammar.g:1978:7: 'x'
                                     {
                                     match('x'); if (state.failed) return ;
 
                                     }
 
-                                    // EsperEPL2Grammar.g:1943:5: ( HexDigit )+
+                                    // EsperEPL2Grammar.g:1979:5: ( HexDigit )+
                                     int cnt16=0;
                                     loop16:
                                     do {
@@ -4894,7 +5029,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                                         switch (alt16) {
                                     	case 1 :
-                                    	    // EsperEPL2Grammar.g:1949:6: HexDigit
+                                    	    // EsperEPL2Grammar.g:1985:6: HexDigit
                                     	    {
                                     	    mHexDigit(); if (state.failed) return ;
 
@@ -4915,9 +5050,9 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                     }
                                     break;
                                 case 2 :
-                                    // EsperEPL2Grammar.g:1953:5: ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+
+                                    // EsperEPL2Grammar.g:1989:5: ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )=> ( '0' .. '9' )+
                                     {
-                                    // EsperEPL2Grammar.g:1953:50: ( '0' .. '9' )+
+                                    // EsperEPL2Grammar.g:1989:50: ( '0' .. '9' )+
                                     int cnt17=0;
                                     loop17:
                                     do {
@@ -4931,7 +5066,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                                         switch (alt17) {
                                     	case 1 :
-                                    	    // EsperEPL2Grammar.g:1953:51: '0' .. '9'
+                                    	    // EsperEPL2Grammar.g:1989:51: '0' .. '9'
                                     	    {
                                     	    matchRange('0','9'); if (state.failed) return ;
 
@@ -4952,9 +5087,9 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                     }
                                     break;
                                 case 3 :
-                                    // EsperEPL2Grammar.g:1955:6: ( '0' .. '7' )+
+                                    // EsperEPL2Grammar.g:1991:6: ( '0' .. '7' )+
                                     {
-                                    // EsperEPL2Grammar.g:1955:6: ( '0' .. '7' )+
+                                    // EsperEPL2Grammar.g:1991:6: ( '0' .. '7' )+
                                     int cnt18=0;
                                     loop18:
                                     do {
@@ -4968,7 +5103,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                                         switch (alt18) {
                                     	case 1 :
-                                    	    // EsperEPL2Grammar.g:1955:7: '0' .. '7'
+                                    	    // EsperEPL2Grammar.g:1991:7: '0' .. '7'
                                     	    {
                                     	    matchRange('0','7'); if (state.failed) return ;
 
@@ -4995,16 +5130,16 @@ public class EsperEPL2GrammarLexer extends Lexer {
                             }
                             break;
                         case 2 :
-                            // EsperEPL2Grammar.g:1957:5: ( '1' .. '9' ) ( '0' .. '9' )*
+                            // EsperEPL2Grammar.g:1993:5: ( '1' .. '9' ) ( '0' .. '9' )*
                             {
-                            // EsperEPL2Grammar.g:1957:5: ( '1' .. '9' )
-                            // EsperEPL2Grammar.g:1957:6: '1' .. '9'
+                            // EsperEPL2Grammar.g:1993:5: ( '1' .. '9' )
+                            // EsperEPL2Grammar.g:1993:6: '1' .. '9'
                             {
                             matchRange('1','9'); if (state.failed) return ;
 
                             }
 
-                            // EsperEPL2Grammar.g:1957:16: ( '0' .. '9' )*
+                            // EsperEPL2Grammar.g:1993:16: ( '0' .. '9' )*
                             loop20:
                             do {
                                 int alt20=2;
@@ -5017,7 +5152,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                                 switch (alt20) {
                             	case 1 :
-                            	    // EsperEPL2Grammar.g:1957:17: '0' .. '9'
+                            	    // EsperEPL2Grammar.g:1993:17: '0' .. '9'
                             	    {
                             	    matchRange('0','9'); if (state.failed) return ;
 
@@ -5038,7 +5173,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                     }
 
-                    // EsperEPL2Grammar.g:1959:3: ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
+                    // EsperEPL2Grammar.g:1995:3: ( ( 'l' ) | {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX ) )?
                     int alt27=3;
                     int LA27_0 = input.LA(1);
 
@@ -5050,10 +5185,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     }
                     switch (alt27) {
                         case 1 :
-                            // EsperEPL2Grammar.g:1959:5: ( 'l' )
+                            // EsperEPL2Grammar.g:1995:5: ( 'l' )
                             {
-                            // EsperEPL2Grammar.g:1959:5: ( 'l' )
-                            // EsperEPL2Grammar.g:1959:6: 'l'
+                            // EsperEPL2Grammar.g:1995:5: ( 'l' )
+                            // EsperEPL2Grammar.g:1995:6: 'l'
                             {
                             match('l'); if (state.failed) return ;
 
@@ -5066,13 +5201,13 @@ public class EsperEPL2GrammarLexer extends Lexer {
                             }
                             break;
                         case 2 :
-                            // EsperEPL2Grammar.g:1962:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
+                            // EsperEPL2Grammar.g:1998:5: {...}? ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
                             {
                             if ( !((isDecimal)) ) {
                                 if (state.backtracking>0) {state.failed=true; return ;}
                                 throw new FailedPredicateException(input, "NUM_INT", "isDecimal");
                             }
-                            // EsperEPL2Grammar.g:1963:13: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
+                            // EsperEPL2Grammar.g:1999:13: ( '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )? | EXPONENT (f3= FLOAT_SUFFIX )? | f4= FLOAT_SUFFIX )
                             int alt26=3;
                             switch ( input.LA(1) ) {
                             case '.':
@@ -5101,10 +5236,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                             switch (alt26) {
                                 case 1 :
-                                    // EsperEPL2Grammar.g:1963:17: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
+                                    // EsperEPL2Grammar.g:1999:17: '.' ( '0' .. '9' )* ( EXPONENT )? (f2= FLOAT_SUFFIX )?
                                     {
                                     match('.'); if (state.failed) return ;
-                                    // EsperEPL2Grammar.g:1963:21: ( '0' .. '9' )*
+                                    // EsperEPL2Grammar.g:1999:21: ( '0' .. '9' )*
                                     loop22:
                                     do {
                                         int alt22=2;
@@ -5117,7 +5252,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                                         switch (alt22) {
                                     	case 1 :
-                                    	    // EsperEPL2Grammar.g:1963:22: '0' .. '9'
+                                    	    // EsperEPL2Grammar.g:1999:22: '0' .. '9'
                                     	    {
                                     	    matchRange('0','9'); if (state.failed) return ;
 
@@ -5129,7 +5264,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                         }
                                     } while (true);
 
-                                    // EsperEPL2Grammar.g:1963:33: ( EXPONENT )?
+                                    // EsperEPL2Grammar.g:1999:33: ( EXPONENT )?
                                     int alt23=2;
                                     int LA23_0 = input.LA(1);
 
@@ -5138,7 +5273,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                     }
                                     switch (alt23) {
                                         case 1 :
-                                            // EsperEPL2Grammar.g:1963:34: EXPONENT
+                                            // EsperEPL2Grammar.g:1999:34: EXPONENT
                                             {
                                             mEXPONENT(); if (state.failed) return ;
 
@@ -5147,7 +5282,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                                     }
 
-                                    // EsperEPL2Grammar.g:1963:45: (f2= FLOAT_SUFFIX )?
+                                    // EsperEPL2Grammar.g:1999:45: (f2= FLOAT_SUFFIX )?
                                     int alt24=2;
                                     int LA24_0 = input.LA(1);
 
@@ -5156,11 +5291,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                     }
                                     switch (alt24) {
                                         case 1 :
-                                            // EsperEPL2Grammar.g:1963:46: f2= FLOAT_SUFFIX
+                                            // EsperEPL2Grammar.g:1999:46: f2= FLOAT_SUFFIX
                                             {
-                                            int f2Start2269 = getCharIndex();
+                                            int f2Start2317 = getCharIndex();
                                             mFLOAT_SUFFIX(); if (state.failed) return ;
-                                            f2 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f2Start2269, getCharIndex()-1);
+                                            f2 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f2Start2317, getCharIndex()-1);
                                             if ( state.backtracking==0 ) {
                                               t=f2;
                                             }
@@ -5174,10 +5309,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                     }
                                     break;
                                 case 2 :
-                                    // EsperEPL2Grammar.g:1964:17: EXPONENT (f3= FLOAT_SUFFIX )?
+                                    // EsperEPL2Grammar.g:2000:17: EXPONENT (f3= FLOAT_SUFFIX )?
                                     {
                                     mEXPONENT(); if (state.failed) return ;
-                                    // EsperEPL2Grammar.g:1964:26: (f3= FLOAT_SUFFIX )?
+                                    // EsperEPL2Grammar.g:2000:26: (f3= FLOAT_SUFFIX )?
                                     int alt25=2;
                                     int LA25_0 = input.LA(1);
 
@@ -5186,11 +5321,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                     }
                                     switch (alt25) {
                                         case 1 :
-                                            // EsperEPL2Grammar.g:1964:27: f3= FLOAT_SUFFIX
+                                            // EsperEPL2Grammar.g:2000:27: f3= FLOAT_SUFFIX
                                             {
-                                            int f3Start2296 = getCharIndex();
+                                            int f3Start2344 = getCharIndex();
                                             mFLOAT_SUFFIX(); if (state.failed) return ;
-                                            f3 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f3Start2296, getCharIndex()-1);
+                                            f3 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f3Start2344, getCharIndex()-1);
                                             if ( state.backtracking==0 ) {
                                               t=f3;
                                             }
@@ -5204,11 +5339,11 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                     }
                                     break;
                                 case 3 :
-                                    // EsperEPL2Grammar.g:1965:17: f4= FLOAT_SUFFIX
+                                    // EsperEPL2Grammar.g:2001:17: f4= FLOAT_SUFFIX
                                     {
-                                    int f4Start2320 = getCharIndex();
+                                    int f4Start2368 = getCharIndex();
                                     mFLOAT_SUFFIX(); if (state.failed) return ;
-                                    f4 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f4Start2320, getCharIndex()-1);
+                                    f4 = new CommonToken(input, Token.INVALID_TOKEN_TYPE, Token.DEFAULT_CHANNEL, f4Start2368, getCharIndex()-1);
                                     if ( state.backtracking==0 ) {
                                       t=f4;
                                     }
@@ -5250,17 +5385,17 @@ public class EsperEPL2GrammarLexer extends Lexer {
     // $ANTLR start "EXPONENT"
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // EsperEPL2Grammar.g:1982:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // EsperEPL2Grammar.g:1982:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // EsperEPL2Grammar.g:2018:2: ( ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // EsperEPL2Grammar.g:2018:4: ( 'e' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
-            // EsperEPL2Grammar.g:1982:4: ( 'e' )
-            // EsperEPL2Grammar.g:1982:5: 'e'
+            // EsperEPL2Grammar.g:2018:4: ( 'e' )
+            // EsperEPL2Grammar.g:2018:5: 'e'
             {
             match('e'); if (state.failed) return ;
 
             }
 
-            // EsperEPL2Grammar.g:1982:10: ( '+' | '-' )?
+            // EsperEPL2Grammar.g:2018:10: ( '+' | '-' )?
             int alt29=2;
             int LA29_0 = input.LA(1);
 
@@ -5287,7 +5422,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
             }
 
-            // EsperEPL2Grammar.g:1982:21: ( '0' .. '9' )+
+            // EsperEPL2Grammar.g:2018:21: ( '0' .. '9' )+
             int cnt30=0;
             loop30:
             do {
@@ -5301,7 +5436,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                 switch (alt30) {
             	case 1 :
-            	    // EsperEPL2Grammar.g:1982:22: '0' .. '9'
+            	    // EsperEPL2Grammar.g:2018:22: '0' .. '9'
             	    {
             	    matchRange('0','9'); if (state.failed) return ;
 
@@ -5330,7 +5465,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
     // $ANTLR start "FLOAT_SUFFIX"
     public final void mFLOAT_SUFFIX() throws RecognitionException {
         try {
-            // EsperEPL2Grammar.g:1988:2: ( 'f' | 'd' )
+            // EsperEPL2Grammar.g:2024:2: ( 'f' | 'd' )
             // EsperEPL2Grammar.g:
             {
             if ( input.LA(1)=='d'||input.LA(1)=='f' ) {
@@ -5353,45 +5488,45 @@ public class EsperEPL2GrammarLexer extends Lexer {
     // $ANTLR end "FLOAT_SUFFIX"
 
     public void mTokens() throws RecognitionException {
-        // EsperEPL2Grammar.g:1:8: ( CREATE | WINDOW | IN_SET | BETWEEN | LIKE | REGEXP | ESCAPE | OR_EXPR | AND_EXPR | NOT_EXPR | EVERY_EXPR | EVERY_DISTINCT_EXPR | WHERE | AS | SUM | AVG | MAX | MIN | COALESCE | MEDIAN | STDDEV | AVEDEV | COUNT | SELECT | CASE | ELSE | WHEN | THEN | END | FROM | OUTER | INNER | JOIN | LEFT | RIGHT | FULL | ON | IS | BY | GROUP | HAVING | DISTINCT | ALL | ANY | SOME | OUTPUT | EVENTS | FIRST | LAST | INSERT | INTO | ORDER | ASC | DESC | RSTREAM | ISTREAM | IRSTREAM | SCHEMA | UNIDIRECTIONAL | RETAINUNION | RETAININTERSECTION | PATTERN | SQL | METADATASQL | PREVIOUS | PREVIOUSTAIL | PREVIOUSCOUNT | PREVIOUSWINDOW | PRIOR | EXISTS | WEEKDAY | LW | INSTANCEOF | TYPEOF | CAST | CURRENT_TIMESTAMP | DELETE | SNAPSHOT | SET | VARIABLE | UNTIL | AT | INDEX | TIMEPERIOD_DAY | TIMEPERIOD_DAYS | TIMEPERIOD_HOUR | TIMEPERIOD_HOURS | TIMEPERIOD_MINUTE | TIMEPERIOD_MINUTES | TIMEPERIOD_SEC | TIMEPERIOD_SECOND | TIMEPERIOD_SECONDS | TIMEPERIOD_MILLISEC | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISECONDS | BOOLEAN_TRUE | BOOLEAN_FALSE | VALUE_NULL | ROW_LIMIT_EXPR | OFFSET | UPDATE | MATCH_RECOGNIZE | MEASURES | DEFINE | PARTITION | MATCHES | AFTER | FOR | WHILE | USING | MERGE | MATCHED | FOLLOWED_BY | EQUALS | SQL_NE | QUESTION | LPAREN | RPAREN | LBRACK | RBRACK | LCURLY | RCURLY | COLON | COMMA | EQUAL | LNOT | BNOT | NOT_EQUAL | DIV | DIV_ASSIGN | PLUS | PLUS_ASSIGN | INC | MINUS | MINUS_ASSIGN | DEC | STAR | STAR_ASSIGN | MOD | MOD_ASSIGN | SR | SR_ASSIGN | BSR | BSR_ASSIGN | GE | GT | SL | SL_ASSIGN | LE | LT | BXOR | BXOR_ASSIGN | BOR | BOR_ASSIGN | LOR | BAND | BAND_ASSIGN | LAND | SEMI | DOT | NUM_LONG | NUM_DOUBLE | NUM_FLOAT | ESCAPECHAR | EMAILAT | WS | SL_COMMENT | ML_COMMENT | TICKED_STRING_LITERAL | QUOTED_STRING_LITERAL | STRING_LITERAL | IDENT | NUM_INT )
-        int alt31=173;
+        // EsperEPL2Grammar.g:1:8: ( CREATE | WINDOW | IN_SET | BETWEEN | LIKE | REGEXP | ESCAPE | OR_EXPR | AND_EXPR | NOT_EXPR | EVERY_EXPR | EVERY_DISTINCT_EXPR | WHERE | AS | SUM | AVG | MAX | MIN | COALESCE | MEDIAN | STDDEV | AVEDEV | COUNT | SELECT | CASE | ELSE | WHEN | THEN | END | FROM | OUTER | INNER | JOIN | LEFT | RIGHT | FULL | ON | IS | BY | GROUP | HAVING | DISTINCT | ALL | ANY | SOME | OUTPUT | EVENTS | FIRST | LAST | INSERT | INTO | ORDER | ASC | DESC | RSTREAM | ISTREAM | IRSTREAM | SCHEMA | UNIDIRECTIONAL | RETAINUNION | RETAININTERSECTION | PATTERN | SQL | METADATASQL | PREVIOUS | PREVIOUSTAIL | PREVIOUSCOUNT | PREVIOUSWINDOW | PRIOR | EXISTS | WEEKDAY | LW | INSTANCEOF | TYPEOF | CAST | CURRENT_TIMESTAMP | DELETE | SNAPSHOT | SET | VARIABLE | UNTIL | AT | INDEX | TIMEPERIOD_YEAR | TIMEPERIOD_YEARS | TIMEPERIOD_MONTH | TIMEPERIOD_MONTHS | TIMEPERIOD_WEEK | TIMEPERIOD_WEEKS | TIMEPERIOD_DAY | TIMEPERIOD_DAYS | TIMEPERIOD_HOUR | TIMEPERIOD_HOURS | TIMEPERIOD_MINUTE | TIMEPERIOD_MINUTES | TIMEPERIOD_SEC | TIMEPERIOD_SECOND | TIMEPERIOD_SECONDS | TIMEPERIOD_MILLISEC | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISECONDS | BOOLEAN_TRUE | BOOLEAN_FALSE | VALUE_NULL | ROW_LIMIT_EXPR | OFFSET | UPDATE | MATCH_RECOGNIZE | MEASURES | DEFINE | PARTITION | MATCHES | AFTER | FOR | WHILE | USING | MERGE | MATCHED | FOLLOWED_BY | EQUALS | SQL_NE | QUESTION | LPAREN | RPAREN | LBRACK | RBRACK | LCURLY | RCURLY | COLON | COMMA | EQUAL | LNOT | BNOT | NOT_EQUAL | DIV | DIV_ASSIGN | PLUS | PLUS_ASSIGN | INC | MINUS | MINUS_ASSIGN | DEC | STAR | STAR_ASSIGN | MOD | MOD_ASSIGN | SR | SR_ASSIGN | BSR | BSR_ASSIGN | GE | GT | SL | SL_ASSIGN | LE | LT | BXOR | BXOR_ASSIGN | BOR | BOR_ASSIGN | LOR | BAND | BAND_ASSIGN | LAND | SEMI | DOT | NUM_LONG | NUM_DOUBLE | NUM_FLOAT | ESCAPECHAR | EMAILAT | WS | SL_COMMENT | ML_COMMENT | TICKED_STRING_LITERAL | QUOTED_STRING_LITERAL | STRING_LITERAL | IDENT | NUM_INT )
+        int alt31=179;
         switch ( input.LA(1) ) {
         case 'c':
             {
             switch ( input.LA(2) ) {
             case 'r':
                 {
-                int LA31_57 = input.LA(3);
+                int LA31_58 = input.LA(3);
 
-                if ( (LA31_57=='e') ) {
-                    int LA31_159 = input.LA(4);
+                if ( (LA31_58=='e') ) {
+                    int LA31_162 = input.LA(4);
 
-                    if ( (LA31_159=='a') ) {
-                        int LA31_256 = input.LA(5);
+                    if ( (LA31_162=='a') ) {
+                        int LA31_261 = input.LA(5);
 
-                        if ( (LA31_256=='t') ) {
-                            int LA31_351 = input.LA(6);
+                        if ( (LA31_261=='t') ) {
+                            int LA31_358 = input.LA(6);
 
-                            if ( (LA31_351=='e') ) {
-                                int LA31_434 = input.LA(7);
+                            if ( (LA31_358=='e') ) {
+                                int LA31_446 = input.LA(7);
 
-                                if ( (LA31_434=='$'||(LA31_434>='0' && LA31_434<='9')||LA31_434=='_'||(LA31_434>='a' && LA31_434<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_446=='$'||(LA31_446>='0' && LA31_446<='9')||LA31_446=='_'||(LA31_446>='a' && LA31_446<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=1;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'o':
@@ -5399,85 +5534,85 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'a':
                     {
-                    int LA31_160 = input.LA(4);
+                    int LA31_163 = input.LA(4);
 
-                    if ( (LA31_160=='l') ) {
-                        int LA31_257 = input.LA(5);
+                    if ( (LA31_163=='l') ) {
+                        int LA31_262 = input.LA(5);
 
-                        if ( (LA31_257=='e') ) {
-                            int LA31_352 = input.LA(6);
+                        if ( (LA31_262=='e') ) {
+                            int LA31_359 = input.LA(6);
 
-                            if ( (LA31_352=='s') ) {
-                                int LA31_435 = input.LA(7);
+                            if ( (LA31_359=='s') ) {
+                                int LA31_447 = input.LA(7);
 
-                                if ( (LA31_435=='c') ) {
-                                    int LA31_500 = input.LA(8);
+                                if ( (LA31_447=='c') ) {
+                                    int LA31_516 = input.LA(8);
 
-                                    if ( (LA31_500=='e') ) {
-                                        int LA31_547 = input.LA(9);
+                                    if ( (LA31_516=='e') ) {
+                                        int LA31_564 = input.LA(9);
 
-                                        if ( (LA31_547=='$'||(LA31_547>='0' && LA31_547<='9')||LA31_547=='_'||(LA31_547>='a' && LA31_547<='z')) ) {
-                                            alt31=172;
+                                        if ( (LA31_564=='$'||(LA31_564>='0' && LA31_564<='9')||LA31_564=='_'||(LA31_564>='a' && LA31_564<='z')) ) {
+                                            alt31=178;
                                         }
                                         else {
                                             alt31=19;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'u':
                     {
-                    int LA31_161 = input.LA(4);
+                    int LA31_164 = input.LA(4);
 
-                    if ( (LA31_161=='n') ) {
-                        int LA31_258 = input.LA(5);
+                    if ( (LA31_164=='n') ) {
+                        int LA31_263 = input.LA(5);
 
-                        if ( (LA31_258=='t') ) {
-                            int LA31_353 = input.LA(6);
+                        if ( (LA31_263=='t') ) {
+                            int LA31_360 = input.LA(6);
 
-                            if ( (LA31_353=='$'||(LA31_353>='0' && LA31_353<='9')||LA31_353=='_'||(LA31_353>='a' && LA31_353<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_360=='$'||(LA31_360>='0' && LA31_360<='9')||LA31_360=='_'||(LA31_360>='a' && LA31_360<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=23;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             case 'a':
                 {
-                int LA31_59 = input.LA(3);
+                int LA31_60 = input.LA(3);
 
-                if ( (LA31_59=='s') ) {
+                if ( (LA31_60=='s') ) {
                     switch ( input.LA(4) ) {
                     case 'e':
                         {
-                        int LA31_259 = input.LA(5);
+                        int LA31_264 = input.LA(5);
 
-                        if ( (LA31_259=='$'||(LA31_259>='0' && LA31_259<='9')||LA31_259=='_'||(LA31_259>='a' && LA31_259<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_264=='$'||(LA31_264>='0' && LA31_264<='9')||LA31_264=='_'||(LA31_264>='a' && LA31_264<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=25;}
@@ -5485,126 +5620,126 @@ public class EsperEPL2GrammarLexer extends Lexer {
                         break;
                     case 't':
                         {
-                        int LA31_260 = input.LA(5);
+                        int LA31_265 = input.LA(5);
 
-                        if ( (LA31_260=='$'||(LA31_260>='0' && LA31_260<='9')||LA31_260=='_'||(LA31_260>='a' && LA31_260<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_265=='$'||(LA31_265>='0' && LA31_265<='9')||LA31_265=='_'||(LA31_265>='a' && LA31_265<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=75;}
                         }
                         break;
                     default:
-                        alt31=172;}
+                        alt31=178;}
 
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'u':
                 {
-                int LA31_60 = input.LA(3);
+                int LA31_61 = input.LA(3);
 
-                if ( (LA31_60=='r') ) {
-                    int LA31_163 = input.LA(4);
+                if ( (LA31_61=='r') ) {
+                    int LA31_166 = input.LA(4);
 
-                    if ( (LA31_163=='r') ) {
-                        int LA31_261 = input.LA(5);
+                    if ( (LA31_166=='r') ) {
+                        int LA31_266 = input.LA(5);
 
-                        if ( (LA31_261=='e') ) {
-                            int LA31_356 = input.LA(6);
+                        if ( (LA31_266=='e') ) {
+                            int LA31_363 = input.LA(6);
 
-                            if ( (LA31_356=='n') ) {
-                                int LA31_437 = input.LA(7);
+                            if ( (LA31_363=='n') ) {
+                                int LA31_449 = input.LA(7);
 
-                                if ( (LA31_437=='t') ) {
-                                    int LA31_501 = input.LA(8);
+                                if ( (LA31_449=='t') ) {
+                                    int LA31_517 = input.LA(8);
 
-                                    if ( (LA31_501=='_') ) {
-                                        int LA31_548 = input.LA(9);
+                                    if ( (LA31_517=='_') ) {
+                                        int LA31_565 = input.LA(9);
 
-                                        if ( (LA31_548=='t') ) {
-                                            int LA31_576 = input.LA(10);
+                                        if ( (LA31_565=='t') ) {
+                                            int LA31_593 = input.LA(10);
 
-                                            if ( (LA31_576=='i') ) {
-                                                int LA31_592 = input.LA(11);
+                                            if ( (LA31_593=='i') ) {
+                                                int LA31_609 = input.LA(11);
 
-                                                if ( (LA31_592=='m') ) {
-                                                    int LA31_602 = input.LA(12);
+                                                if ( (LA31_609=='m') ) {
+                                                    int LA31_619 = input.LA(12);
 
-                                                    if ( (LA31_602=='e') ) {
-                                                        int LA31_610 = input.LA(13);
+                                                    if ( (LA31_619=='e') ) {
+                                                        int LA31_627 = input.LA(13);
 
-                                                        if ( (LA31_610=='s') ) {
-                                                            int LA31_617 = input.LA(14);
+                                                        if ( (LA31_627=='s') ) {
+                                                            int LA31_634 = input.LA(14);
 
-                                                            if ( (LA31_617=='t') ) {
-                                                                int LA31_621 = input.LA(15);
+                                                            if ( (LA31_634=='t') ) {
+                                                                int LA31_638 = input.LA(15);
 
-                                                                if ( (LA31_621=='a') ) {
-                                                                    int LA31_624 = input.LA(16);
+                                                                if ( (LA31_638=='a') ) {
+                                                                    int LA31_641 = input.LA(16);
 
-                                                                    if ( (LA31_624=='m') ) {
-                                                                        int LA31_627 = input.LA(17);
+                                                                    if ( (LA31_641=='m') ) {
+                                                                        int LA31_644 = input.LA(17);
 
-                                                                        if ( (LA31_627=='p') ) {
-                                                                            int LA31_629 = input.LA(18);
+                                                                        if ( (LA31_644=='p') ) {
+                                                                            int LA31_646 = input.LA(18);
 
-                                                                            if ( (LA31_629=='$'||(LA31_629>='0' && LA31_629<='9')||LA31_629=='_'||(LA31_629>='a' && LA31_629<='z')) ) {
-                                                                                alt31=172;
+                                                                            if ( (LA31_646=='$'||(LA31_646>='0' && LA31_646<='9')||LA31_646=='_'||(LA31_646>='a' && LA31_646<='z')) ) {
+                                                                                alt31=178;
                                                                             }
                                                                             else {
                                                                                 alt31=76;}
                                                                         }
                                                                         else {
-                                                                            alt31=172;}
+                                                                            alt31=178;}
                                                                     }
                                                                     else {
-                                                                        alt31=172;}
+                                                                        alt31=178;}
                                                                 }
                                                                 else {
-                                                                    alt31=172;}
+                                                                    alt31=178;}
                                                             }
                                                             else {
-                                                                alt31=172;}
+                                                                alt31=178;}
                                                         }
                                                         else {
-                                                            alt31=172;}
+                                                            alt31=178;}
                                                     }
                                                     else {
-                                                        alt31=172;}
+                                                        alt31=178;}
                                                 }
                                                 else {
-                                                    alt31=172;}
+                                                    alt31=178;}
                                             }
                                             else {
-                                                alt31=172;}
+                                                alt31=178;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -5613,37 +5748,37 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 'i':
                 {
-                int LA31_61 = input.LA(3);
+                int LA31_62 = input.LA(3);
 
-                if ( (LA31_61=='n') ) {
-                    int LA31_164 = input.LA(4);
+                if ( (LA31_62=='n') ) {
+                    int LA31_167 = input.LA(4);
 
-                    if ( (LA31_164=='d') ) {
-                        int LA31_262 = input.LA(5);
+                    if ( (LA31_167=='d') ) {
+                        int LA31_267 = input.LA(5);
 
-                        if ( (LA31_262=='o') ) {
-                            int LA31_357 = input.LA(6);
+                        if ( (LA31_267=='o') ) {
+                            int LA31_364 = input.LA(6);
 
-                            if ( (LA31_357=='w') ) {
-                                int LA31_438 = input.LA(7);
+                            if ( (LA31_364=='w') ) {
+                                int LA31_450 = input.LA(7);
 
-                                if ( (LA31_438=='$'||(LA31_438>='0' && LA31_438<='9')||LA31_438=='_'||(LA31_438>='a' && LA31_438<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_450=='$'||(LA31_450>='0' && LA31_450<='9')||LA31_450=='_'||(LA31_450>='a' && LA31_450<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=2;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'h':
@@ -5654,108 +5789,161 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     switch ( input.LA(4) ) {
                     case 'r':
                         {
-                        int LA31_263 = input.LA(5);
+                        int LA31_268 = input.LA(5);
 
-                        if ( (LA31_263=='e') ) {
-                            int LA31_358 = input.LA(6);
+                        if ( (LA31_268=='e') ) {
+                            int LA31_365 = input.LA(6);
 
-                            if ( (LA31_358=='$'||(LA31_358>='0' && LA31_358<='9')||LA31_358=='_'||(LA31_358>='a' && LA31_358<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_365=='$'||(LA31_365>='0' && LA31_365<='9')||LA31_365=='_'||(LA31_365>='a' && LA31_365<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=13;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     case 'n':
                         {
-                        int LA31_264 = input.LA(5);
+                        int LA31_269 = input.LA(5);
 
-                        if ( (LA31_264=='$'||(LA31_264>='0' && LA31_264<='9')||LA31_264=='_'||(LA31_264>='a' && LA31_264<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_269=='$'||(LA31_269>='0' && LA31_269<='9')||LA31_269=='_'||(LA31_269>='a' && LA31_269<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=27;}
                         }
                         break;
                     default:
-                        alt31=172;}
+                        alt31=178;}
 
                     }
                     break;
                 case 'i':
                     {
-                    int LA31_166 = input.LA(4);
+                    int LA31_169 = input.LA(4);
 
-                    if ( (LA31_166=='l') ) {
-                        int LA31_265 = input.LA(5);
+                    if ( (LA31_169=='l') ) {
+                        int LA31_270 = input.LA(5);
 
-                        if ( (LA31_265=='e') ) {
-                            int LA31_360 = input.LA(6);
+                        if ( (LA31_270=='e') ) {
+                            int LA31_367 = input.LA(6);
 
-                            if ( (LA31_360=='$'||(LA31_360>='0' && LA31_360<='9')||LA31_360=='_'||(LA31_360>='a' && LA31_360<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_367=='$'||(LA31_367>='0' && LA31_367<='9')||LA31_367=='_'||(LA31_367>='a' && LA31_367<='z')) ) {
+                                alt31=178;
                             }
                             else {
-                                alt31=109;}
+                                alt31=115;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             case 'e':
                 {
-                int LA31_63 = input.LA(3);
+                int LA31_64 = input.LA(3);
 
-                if ( (LA31_63=='e') ) {
-                    int LA31_167 = input.LA(4);
+                if ( (LA31_64=='e') ) {
+                    int LA31_170 = input.LA(4);
 
-                    if ( (LA31_167=='k') ) {
-                        int LA31_266 = input.LA(5);
+                    if ( (LA31_170=='k') ) {
+                        switch ( input.LA(5) ) {
+                        case 'd':
+                            {
+                            int LA31_368 = input.LA(6);
 
-                        if ( (LA31_266=='d') ) {
-                            int LA31_361 = input.LA(6);
+                            if ( (LA31_368=='a') ) {
+                                int LA31_453 = input.LA(7);
 
-                            if ( (LA31_361=='a') ) {
-                                int LA31_441 = input.LA(7);
+                                if ( (LA31_453=='y') ) {
+                                    int LA31_519 = input.LA(8);
 
-                                if ( (LA31_441=='y') ) {
-                                    int LA31_503 = input.LA(8);
-
-                                    if ( (LA31_503=='$'||(LA31_503>='0' && LA31_503<='9')||LA31_503=='_'||(LA31_503>='a' && LA31_503<='z')) ) {
-                                        alt31=172;
+                                    if ( (LA31_519=='$'||(LA31_519>='0' && LA31_519<='9')||LA31_519=='_'||(LA31_519>='a' && LA31_519<='z')) ) {
+                                        alt31=178;
                                     }
                                     else {
                                         alt31=71;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
-                        }
-                        else {
-                            alt31=172;}
+                                alt31=178;}
+                            }
+                            break;
+                        case 's':
+                            {
+                            int LA31_369 = input.LA(6);
+
+                            if ( (LA31_369=='$'||(LA31_369>='0' && LA31_369<='9')||LA31_369=='_'||(LA31_369>='a' && LA31_369<='z')) ) {
+                                alt31=178;
+                            }
+                            else {
+                                alt31=89;}
+                            }
+                            break;
+                        case '$':
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                        case '_':
+                        case 'a':
+                        case 'b':
+                        case 'c':
+                        case 'e':
+                        case 'f':
+                        case 'g':
+                        case 'h':
+                        case 'i':
+                        case 'j':
+                        case 'k':
+                        case 'l':
+                        case 'm':
+                        case 'n':
+                        case 'o':
+                        case 'p':
+                        case 'q':
+                        case 'r':
+                        case 't':
+                        case 'u':
+                        case 'v':
+                        case 'w':
+                        case 'x':
+                        case 'y':
+                        case 'z':
+                            {
+                            alt31=178;
+                            }
+                            break;
+                        default:
+                            alt31=88;}
+
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -5767,25 +5955,25 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'n':
                     {
-                    int LA31_168 = input.LA(4);
+                    int LA31_171 = input.LA(4);
 
-                    if ( (LA31_168=='e') ) {
-                        int LA31_267 = input.LA(5);
+                    if ( (LA31_171=='e') ) {
+                        int LA31_272 = input.LA(5);
 
-                        if ( (LA31_267=='r') ) {
-                            int LA31_362 = input.LA(6);
+                        if ( (LA31_272=='r') ) {
+                            int LA31_371 = input.LA(6);
 
-                            if ( (LA31_362=='$'||(LA31_362>='0' && LA31_362<='9')||LA31_362=='_'||(LA31_362>='a' && LA31_362<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_371=='$'||(LA31_371>='0' && LA31_371<='9')||LA31_371=='_'||(LA31_371>='a' && LA31_371<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=32;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 's':
@@ -5793,117 +5981,117 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     switch ( input.LA(4) ) {
                     case 'e':
                         {
-                        int LA31_268 = input.LA(5);
+                        int LA31_273 = input.LA(5);
 
-                        if ( (LA31_268=='r') ) {
-                            int LA31_363 = input.LA(6);
+                        if ( (LA31_273=='r') ) {
+                            int LA31_372 = input.LA(6);
 
-                            if ( (LA31_363=='t') ) {
-                                int LA31_443 = input.LA(7);
+                            if ( (LA31_372=='t') ) {
+                                int LA31_456 = input.LA(7);
 
-                                if ( (LA31_443=='$'||(LA31_443>='0' && LA31_443<='9')||LA31_443=='_'||(LA31_443>='a' && LA31_443<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_456=='$'||(LA31_456>='0' && LA31_456<='9')||LA31_456=='_'||(LA31_456>='a' && LA31_456<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=50;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     case 't':
                         {
-                        int LA31_269 = input.LA(5);
+                        int LA31_274 = input.LA(5);
 
-                        if ( (LA31_269=='a') ) {
-                            int LA31_364 = input.LA(6);
+                        if ( (LA31_274=='a') ) {
+                            int LA31_373 = input.LA(6);
 
-                            if ( (LA31_364=='n') ) {
-                                int LA31_444 = input.LA(7);
+                            if ( (LA31_373=='n') ) {
+                                int LA31_457 = input.LA(7);
 
-                                if ( (LA31_444=='c') ) {
-                                    int LA31_505 = input.LA(8);
+                                if ( (LA31_457=='c') ) {
+                                    int LA31_521 = input.LA(8);
 
-                                    if ( (LA31_505=='e') ) {
-                                        int LA31_550 = input.LA(9);
+                                    if ( (LA31_521=='e') ) {
+                                        int LA31_567 = input.LA(9);
 
-                                        if ( (LA31_550=='o') ) {
-                                            int LA31_577 = input.LA(10);
+                                        if ( (LA31_567=='o') ) {
+                                            int LA31_594 = input.LA(10);
 
-                                            if ( (LA31_577=='f') ) {
-                                                int LA31_593 = input.LA(11);
+                                            if ( (LA31_594=='f') ) {
+                                                int LA31_610 = input.LA(11);
 
-                                                if ( (LA31_593=='$'||(LA31_593>='0' && LA31_593<='9')||LA31_593=='_'||(LA31_593>='a' && LA31_593<='z')) ) {
-                                                    alt31=172;
+                                                if ( (LA31_610=='$'||(LA31_610>='0' && LA31_610<='9')||LA31_610=='_'||(LA31_610>='a' && LA31_610<='z')) ) {
+                                                    alt31=178;
                                                 }
                                                 else {
                                                     alt31=73;}
                                             }
                                             else {
-                                                alt31=172;}
+                                                alt31=178;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     default:
-                        alt31=172;}
+                        alt31=178;}
 
                     }
                     break;
                 case 't':
                     {
-                    int LA31_170 = input.LA(4);
+                    int LA31_173 = input.LA(4);
 
-                    if ( (LA31_170=='o') ) {
-                        int LA31_270 = input.LA(5);
+                    if ( (LA31_173=='o') ) {
+                        int LA31_275 = input.LA(5);
 
-                        if ( (LA31_270=='$'||(LA31_270>='0' && LA31_270<='9')||LA31_270=='_'||(LA31_270>='a' && LA31_270<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_275=='$'||(LA31_275>='0' && LA31_275<='9')||LA31_275=='_'||(LA31_275>='a' && LA31_275<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=51;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'd':
                     {
-                    int LA31_171 = input.LA(4);
+                    int LA31_174 = input.LA(4);
 
-                    if ( (LA31_171=='e') ) {
-                        int LA31_271 = input.LA(5);
+                    if ( (LA31_174=='e') ) {
+                        int LA31_276 = input.LA(5);
 
-                        if ( (LA31_271=='x') ) {
-                            int LA31_366 = input.LA(6);
+                        if ( (LA31_276=='x') ) {
+                            int LA31_375 = input.LA(6);
 
-                            if ( (LA31_366=='$'||(LA31_366>='0' && LA31_366<='9')||LA31_366=='_'||(LA31_366>='a' && LA31_366<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_375=='$'||(LA31_375>='0' && LA31_375<='9')||LA31_375=='_'||(LA31_375>='a' && LA31_375<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=83;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case '$':
@@ -5941,7 +6129,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 case 'y':
                 case 'z':
                     {
-                    alt31=172;
+                    alt31=178;
                     }
                     break;
                 default:
@@ -5954,37 +6142,37 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 't':
                     {
-                    int LA31_173 = input.LA(4);
+                    int LA31_176 = input.LA(4);
 
-                    if ( (LA31_173=='r') ) {
-                        int LA31_272 = input.LA(5);
+                    if ( (LA31_176=='r') ) {
+                        int LA31_277 = input.LA(5);
 
-                        if ( (LA31_272=='e') ) {
-                            int LA31_367 = input.LA(6);
+                        if ( (LA31_277=='e') ) {
+                            int LA31_376 = input.LA(6);
 
-                            if ( (LA31_367=='a') ) {
-                                int LA31_446 = input.LA(7);
+                            if ( (LA31_376=='a') ) {
+                                int LA31_459 = input.LA(7);
 
-                                if ( (LA31_446=='m') ) {
-                                    int LA31_506 = input.LA(8);
+                                if ( (LA31_459=='m') ) {
+                                    int LA31_522 = input.LA(8);
 
-                                    if ( (LA31_506=='$'||(LA31_506>='0' && LA31_506<='9')||LA31_506=='_'||(LA31_506>='a' && LA31_506<='z')) ) {
-                                        alt31=172;
+                                    if ( (LA31_522=='$'||(LA31_522>='0' && LA31_522<='9')||LA31_522=='_'||(LA31_522>='a' && LA31_522<='z')) ) {
+                                        alt31=178;
                                     }
                                     else {
                                         alt31=56;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case '$':
@@ -6025,7 +6213,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 case 'y':
                 case 'z':
                     {
-                    alt31=172;
+                    alt31=178;
                     }
                     break;
                 default:
@@ -6035,53 +6223,53 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 break;
             case 'r':
                 {
-                int LA31_66 = input.LA(3);
+                int LA31_67 = input.LA(3);
 
-                if ( (LA31_66=='s') ) {
-                    int LA31_175 = input.LA(4);
+                if ( (LA31_67=='s') ) {
+                    int LA31_178 = input.LA(4);
 
-                    if ( (LA31_175=='t') ) {
-                        int LA31_273 = input.LA(5);
+                    if ( (LA31_178=='t') ) {
+                        int LA31_278 = input.LA(5);
 
-                        if ( (LA31_273=='r') ) {
-                            int LA31_368 = input.LA(6);
+                        if ( (LA31_278=='r') ) {
+                            int LA31_377 = input.LA(6);
 
-                            if ( (LA31_368=='e') ) {
-                                int LA31_447 = input.LA(7);
+                            if ( (LA31_377=='e') ) {
+                                int LA31_460 = input.LA(7);
 
-                                if ( (LA31_447=='a') ) {
-                                    int LA31_507 = input.LA(8);
+                                if ( (LA31_460=='a') ) {
+                                    int LA31_523 = input.LA(8);
 
-                                    if ( (LA31_507=='m') ) {
-                                        int LA31_552 = input.LA(9);
+                                    if ( (LA31_523=='m') ) {
+                                        int LA31_569 = input.LA(9);
 
-                                        if ( (LA31_552=='$'||(LA31_552>='0' && LA31_552<='9')||LA31_552=='_'||(LA31_552>='a' && LA31_552<='z')) ) {
-                                            alt31=172;
+                                        if ( (LA31_569=='$'||(LA31_569>='0' && LA31_569<='9')||LA31_569=='_'||(LA31_569>='a' && LA31_569<='z')) ) {
+                                            alt31=178;
                                         }
                                         else {
                                             alt31=57;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -6090,58 +6278,58 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 'e':
                 {
-                int LA31_67 = input.LA(3);
+                int LA31_68 = input.LA(3);
 
-                if ( (LA31_67=='t') ) {
-                    int LA31_176 = input.LA(4);
+                if ( (LA31_68=='t') ) {
+                    int LA31_179 = input.LA(4);
 
-                    if ( (LA31_176=='w') ) {
-                        int LA31_274 = input.LA(5);
+                    if ( (LA31_179=='w') ) {
+                        int LA31_279 = input.LA(5);
 
-                        if ( (LA31_274=='e') ) {
-                            int LA31_369 = input.LA(6);
+                        if ( (LA31_279=='e') ) {
+                            int LA31_378 = input.LA(6);
 
-                            if ( (LA31_369=='e') ) {
-                                int LA31_448 = input.LA(7);
+                            if ( (LA31_378=='e') ) {
+                                int LA31_461 = input.LA(7);
 
-                                if ( (LA31_448=='n') ) {
-                                    int LA31_508 = input.LA(8);
+                                if ( (LA31_461=='n') ) {
+                                    int LA31_524 = input.LA(8);
 
-                                    if ( (LA31_508=='$'||(LA31_508>='0' && LA31_508<='9')||LA31_508=='_'||(LA31_508>='a' && LA31_508<='z')) ) {
-                                        alt31=172;
+                                    if ( (LA31_524=='$'||(LA31_524>='0' && LA31_524<='9')||LA31_524=='_'||(LA31_524>='a' && LA31_524<='z')) ) {
+                                        alt31=178;
                                     }
                                     else {
                                         alt31=4;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'y':
                 {
-                int LA31_68 = input.LA(3);
+                int LA31_69 = input.LA(3);
 
-                if ( (LA31_68=='$'||(LA31_68>='0' && LA31_68<='9')||LA31_68=='_'||(LA31_68>='a' && LA31_68<='z')) ) {
-                    alt31=172;
+                if ( (LA31_69=='$'||(LA31_69>='0' && LA31_69<='9')||LA31_69=='_'||(LA31_69>='a' && LA31_69<='z')) ) {
+                    alt31=178;
                 }
                 else {
                     alt31=39;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -6153,126 +6341,126 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'k':
                     {
-                    int LA31_178 = input.LA(4);
+                    int LA31_181 = input.LA(4);
 
-                    if ( (LA31_178=='e') ) {
-                        int LA31_275 = input.LA(5);
+                    if ( (LA31_181=='e') ) {
+                        int LA31_280 = input.LA(5);
 
-                        if ( (LA31_275=='$'||(LA31_275>='0' && LA31_275<='9')||LA31_275=='_'||(LA31_275>='a' && LA31_275<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_280=='$'||(LA31_280>='0' && LA31_280<='9')||LA31_280=='_'||(LA31_280>='a' && LA31_280<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=5;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'm':
                     {
-                    int LA31_179 = input.LA(4);
+                    int LA31_182 = input.LA(4);
 
-                    if ( (LA31_179=='i') ) {
-                        int LA31_276 = input.LA(5);
+                    if ( (LA31_182=='i') ) {
+                        int LA31_281 = input.LA(5);
 
-                        if ( (LA31_276=='t') ) {
-                            int LA31_371 = input.LA(6);
+                        if ( (LA31_281=='t') ) {
+                            int LA31_380 = input.LA(6);
 
-                            if ( (LA31_371=='$'||(LA31_371>='0' && LA31_371<='9')||LA31_371=='_'||(LA31_371>='a' && LA31_371<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_380=='$'||(LA31_380>='0' && LA31_380<='9')||LA31_380=='_'||(LA31_380>='a' && LA31_380<='z')) ) {
+                                alt31=178;
                             }
                             else {
-                                alt31=99;}
+                                alt31=105;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             case 'e':
                 {
-                int LA31_70 = input.LA(3);
+                int LA31_71 = input.LA(3);
 
-                if ( (LA31_70=='f') ) {
-                    int LA31_180 = input.LA(4);
+                if ( (LA31_71=='f') ) {
+                    int LA31_183 = input.LA(4);
 
-                    if ( (LA31_180=='t') ) {
-                        int LA31_277 = input.LA(5);
+                    if ( (LA31_183=='t') ) {
+                        int LA31_282 = input.LA(5);
 
-                        if ( (LA31_277=='$'||(LA31_277>='0' && LA31_277<='9')||LA31_277=='_'||(LA31_277>='a' && LA31_277<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_282=='$'||(LA31_282>='0' && LA31_282<='9')||LA31_282=='_'||(LA31_282>='a' && LA31_282<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=34;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'a':
                 {
-                int LA31_71 = input.LA(3);
+                int LA31_72 = input.LA(3);
 
-                if ( (LA31_71=='s') ) {
-                    int LA31_181 = input.LA(4);
+                if ( (LA31_72=='s') ) {
+                    int LA31_184 = input.LA(4);
 
-                    if ( (LA31_181=='t') ) {
+                    if ( (LA31_184=='t') ) {
                         switch ( input.LA(5) ) {
                         case 'w':
                             {
-                            int LA31_373 = input.LA(6);
+                            int LA31_382 = input.LA(6);
 
-                            if ( (LA31_373=='e') ) {
-                                int LA31_450 = input.LA(7);
+                            if ( (LA31_382=='e') ) {
+                                int LA31_463 = input.LA(7);
 
-                                if ( (LA31_450=='e') ) {
-                                    int LA31_509 = input.LA(8);
+                                if ( (LA31_463=='e') ) {
+                                    int LA31_525 = input.LA(8);
 
-                                    if ( (LA31_509=='k') ) {
-                                        int LA31_554 = input.LA(9);
+                                    if ( (LA31_525=='k') ) {
+                                        int LA31_571 = input.LA(9);
 
-                                        if ( (LA31_554=='d') ) {
-                                            int LA31_579 = input.LA(10);
+                                        if ( (LA31_571=='d') ) {
+                                            int LA31_596 = input.LA(10);
 
-                                            if ( (LA31_579=='a') ) {
-                                                int LA31_594 = input.LA(11);
+                                            if ( (LA31_596=='a') ) {
+                                                int LA31_611 = input.LA(11);
 
-                                                if ( (LA31_594=='y') ) {
-                                                    int LA31_604 = input.LA(12);
+                                                if ( (LA31_611=='y') ) {
+                                                    int LA31_621 = input.LA(12);
 
-                                                    if ( (LA31_604=='$'||(LA31_604>='0' && LA31_604<='9')||LA31_604=='_'||(LA31_604>='a' && LA31_604<='z')) ) {
-                                                        alt31=172;
+                                                    if ( (LA31_621=='$'||(LA31_621>='0' && LA31_621<='9')||LA31_621=='_'||(LA31_621>='a' && LA31_621<='z')) ) {
+                                                        alt31=178;
                                                     }
                                                     else {
                                                         alt31=72;}
                                                 }
                                                 else {
-                                                    alt31=172;}
+                                                    alt31=178;}
                                             }
                                             else {
-                                                alt31=172;}
+                                                alt31=178;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                             }
                             break;
                         case '$':
@@ -6313,7 +6501,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                         case 'y':
                         case 'z':
                             {
-                            alt31=172;
+                            alt31=178;
                             }
                             break;
                         default:
@@ -6321,14 +6509,14 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -6340,153 +6528,153 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'g':
                     {
-                    int LA31_182 = input.LA(4);
+                    int LA31_185 = input.LA(4);
 
-                    if ( (LA31_182=='e') ) {
-                        int LA31_279 = input.LA(5);
+                    if ( (LA31_185=='e') ) {
+                        int LA31_284 = input.LA(5);
 
-                        if ( (LA31_279=='x') ) {
-                            int LA31_375 = input.LA(6);
+                        if ( (LA31_284=='x') ) {
+                            int LA31_384 = input.LA(6);
 
-                            if ( (LA31_375=='p') ) {
-                                int LA31_451 = input.LA(7);
+                            if ( (LA31_384=='p') ) {
+                                int LA31_464 = input.LA(7);
 
-                                if ( (LA31_451=='$'||(LA31_451>='0' && LA31_451<='9')||LA31_451=='_'||(LA31_451>='a' && LA31_451<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_464=='$'||(LA31_464>='0' && LA31_464<='9')||LA31_464=='_'||(LA31_464>='a' && LA31_464<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=6;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 't':
                     {
-                    int LA31_183 = input.LA(4);
+                    int LA31_186 = input.LA(4);
 
-                    if ( (LA31_183=='a') ) {
-                        int LA31_280 = input.LA(5);
+                    if ( (LA31_186=='a') ) {
+                        int LA31_285 = input.LA(5);
 
-                        if ( (LA31_280=='i') ) {
-                            int LA31_376 = input.LA(6);
+                        if ( (LA31_285=='i') ) {
+                            int LA31_385 = input.LA(6);
 
-                            if ( (LA31_376=='n') ) {
-                                int LA31_452 = input.LA(7);
+                            if ( (LA31_385=='n') ) {
+                                int LA31_465 = input.LA(7);
 
-                                if ( (LA31_452=='-') ) {
-                                    int LA31_511 = input.LA(8);
+                                if ( (LA31_465=='-') ) {
+                                    int LA31_527 = input.LA(8);
 
-                                    if ( (LA31_511=='u') ) {
+                                    if ( (LA31_527=='u') ) {
                                         alt31=60;
                                     }
-                                    else if ( (LA31_511=='i') ) {
+                                    else if ( (LA31_527=='i') ) {
                                         alt31=61;
                                     }
                                     else {
                                         if (state.backtracking>0) {state.failed=true; return ;}
                                         NoViableAltException nvae =
-                                            new NoViableAltException("", 31, 511, input);
+                                            new NoViableAltException("", 31, 527, input);
 
                                         throw nvae;
                                     }
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             case 'i':
                 {
-                int LA31_73 = input.LA(3);
+                int LA31_74 = input.LA(3);
 
-                if ( (LA31_73=='g') ) {
-                    int LA31_184 = input.LA(4);
+                if ( (LA31_74=='g') ) {
+                    int LA31_187 = input.LA(4);
 
-                    if ( (LA31_184=='h') ) {
-                        int LA31_281 = input.LA(5);
+                    if ( (LA31_187=='h') ) {
+                        int LA31_286 = input.LA(5);
 
-                        if ( (LA31_281=='t') ) {
-                            int LA31_377 = input.LA(6);
+                        if ( (LA31_286=='t') ) {
+                            int LA31_386 = input.LA(6);
 
-                            if ( (LA31_377=='$'||(LA31_377>='0' && LA31_377<='9')||LA31_377=='_'||(LA31_377>='a' && LA31_377<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_386=='$'||(LA31_386>='0' && LA31_386<='9')||LA31_386=='_'||(LA31_386>='a' && LA31_386<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=35;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 's':
                 {
-                int LA31_74 = input.LA(3);
+                int LA31_75 = input.LA(3);
 
-                if ( (LA31_74=='t') ) {
-                    int LA31_185 = input.LA(4);
+                if ( (LA31_75=='t') ) {
+                    int LA31_188 = input.LA(4);
 
-                    if ( (LA31_185=='r') ) {
-                        int LA31_282 = input.LA(5);
+                    if ( (LA31_188=='r') ) {
+                        int LA31_287 = input.LA(5);
 
-                        if ( (LA31_282=='e') ) {
-                            int LA31_378 = input.LA(6);
+                        if ( (LA31_287=='e') ) {
+                            int LA31_387 = input.LA(6);
 
-                            if ( (LA31_378=='a') ) {
-                                int LA31_454 = input.LA(7);
+                            if ( (LA31_387=='a') ) {
+                                int LA31_467 = input.LA(7);
 
-                                if ( (LA31_454=='m') ) {
-                                    int LA31_512 = input.LA(8);
+                                if ( (LA31_467=='m') ) {
+                                    int LA31_528 = input.LA(8);
 
-                                    if ( (LA31_512=='$'||(LA31_512>='0' && LA31_512<='9')||LA31_512=='_'||(LA31_512>='a' && LA31_512<='z')) ) {
-                                        alt31=172;
+                                    if ( (LA31_528=='$'||(LA31_528>='0' && LA31_528<='9')||LA31_528=='_'||(LA31_528>='a' && LA31_528<='z')) ) {
+                                        alt31=178;
                                     }
                                     else {
                                         alt31=55;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -6495,50 +6683,50 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 's':
                 {
-                int LA31_75 = input.LA(3);
+                int LA31_76 = input.LA(3);
 
-                if ( (LA31_75=='c') ) {
-                    int LA31_186 = input.LA(4);
+                if ( (LA31_76=='c') ) {
+                    int LA31_189 = input.LA(4);
 
-                    if ( (LA31_186=='a') ) {
-                        int LA31_283 = input.LA(5);
+                    if ( (LA31_189=='a') ) {
+                        int LA31_288 = input.LA(5);
 
-                        if ( (LA31_283=='p') ) {
-                            int LA31_379 = input.LA(6);
+                        if ( (LA31_288=='p') ) {
+                            int LA31_388 = input.LA(6);
 
-                            if ( (LA31_379=='e') ) {
-                                int LA31_455 = input.LA(7);
+                            if ( (LA31_388=='e') ) {
+                                int LA31_468 = input.LA(7);
 
-                                if ( (LA31_455=='$'||(LA31_455>='0' && LA31_455<='9')||LA31_455=='_'||(LA31_455>='a' && LA31_455<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_468=='$'||(LA31_468>='0' && LA31_468<='9')||LA31_468=='_'||(LA31_468>='a' && LA31_468<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=7;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'v':
                 {
-                int LA31_76 = input.LA(3);
+                int LA31_77 = input.LA(3);
 
-                if ( (LA31_76=='e') ) {
+                if ( (LA31_77=='e') ) {
                     switch ( input.LA(4) ) {
                     case 'r':
                         {
-                        int LA31_284 = input.LA(5);
+                        int LA31_289 = input.LA(5);
 
-                        if ( (LA31_284=='y') ) {
+                        if ( (LA31_289=='y') ) {
                             switch ( input.LA(6) ) {
                             case '-':
                                 {
@@ -6584,7 +6772,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                             case 'y':
                             case 'z':
                                 {
-                                alt31=172;
+                                alt31=178;
                                 }
                                 break;
                             default:
@@ -6592,117 +6780,117 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     case 'n':
                         {
-                        int LA31_285 = input.LA(5);
+                        int LA31_290 = input.LA(5);
 
-                        if ( (LA31_285=='t') ) {
-                            int LA31_381 = input.LA(6);
+                        if ( (LA31_290=='t') ) {
+                            int LA31_390 = input.LA(6);
 
-                            if ( (LA31_381=='s') ) {
-                                int LA31_458 = input.LA(7);
+                            if ( (LA31_390=='s') ) {
+                                int LA31_471 = input.LA(7);
 
-                                if ( (LA31_458=='$'||(LA31_458>='0' && LA31_458<='9')||LA31_458=='_'||(LA31_458>='a' && LA31_458<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_471=='$'||(LA31_471>='0' && LA31_471<='9')||LA31_471=='_'||(LA31_471>='a' && LA31_471<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=47;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     default:
-                        alt31=172;}
+                        alt31=178;}
 
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'l':
                 {
-                int LA31_77 = input.LA(3);
+                int LA31_78 = input.LA(3);
 
-                if ( (LA31_77=='s') ) {
-                    int LA31_188 = input.LA(4);
+                if ( (LA31_78=='s') ) {
+                    int LA31_191 = input.LA(4);
 
-                    if ( (LA31_188=='e') ) {
-                        int LA31_286 = input.LA(5);
+                    if ( (LA31_191=='e') ) {
+                        int LA31_291 = input.LA(5);
 
-                        if ( (LA31_286=='$'||(LA31_286>='0' && LA31_286<='9')||LA31_286=='_'||(LA31_286>='a' && LA31_286<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_291=='$'||(LA31_291>='0' && LA31_291<='9')||LA31_291=='_'||(LA31_291>='a' && LA31_291<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=26;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'n':
                 {
-                int LA31_78 = input.LA(3);
+                int LA31_79 = input.LA(3);
 
-                if ( (LA31_78=='d') ) {
-                    int LA31_189 = input.LA(4);
+                if ( (LA31_79=='d') ) {
+                    int LA31_192 = input.LA(4);
 
-                    if ( (LA31_189=='$'||(LA31_189>='0' && LA31_189<='9')||LA31_189=='_'||(LA31_189>='a' && LA31_189<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_192=='$'||(LA31_192>='0' && LA31_192<='9')||LA31_192=='_'||(LA31_192>='a' && LA31_192<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=29;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'x':
                 {
-                int LA31_79 = input.LA(3);
+                int LA31_80 = input.LA(3);
 
-                if ( (LA31_79=='i') ) {
-                    int LA31_190 = input.LA(4);
+                if ( (LA31_80=='i') ) {
+                    int LA31_193 = input.LA(4);
 
-                    if ( (LA31_190=='s') ) {
-                        int LA31_288 = input.LA(5);
+                    if ( (LA31_193=='s') ) {
+                        int LA31_293 = input.LA(5);
 
-                        if ( (LA31_288=='t') ) {
-                            int LA31_383 = input.LA(6);
+                        if ( (LA31_293=='t') ) {
+                            int LA31_392 = input.LA(6);
 
-                            if ( (LA31_383=='s') ) {
-                                int LA31_459 = input.LA(7);
+                            if ( (LA31_392=='s') ) {
+                                int LA31_472 = input.LA(7);
 
-                                if ( (LA31_459=='$'||(LA31_459>='0' && LA31_459<='9')||LA31_459=='_'||(LA31_459>='a' && LA31_459<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_472=='$'||(LA31_472>='0' && LA31_472<='9')||LA31_472=='_'||(LA31_472>='a' && LA31_472<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=70;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -6714,25 +6902,25 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'd':
                     {
-                    int LA31_191 = input.LA(4);
+                    int LA31_194 = input.LA(4);
 
-                    if ( (LA31_191=='e') ) {
-                        int LA31_289 = input.LA(5);
+                    if ( (LA31_194=='e') ) {
+                        int LA31_294 = input.LA(5);
 
-                        if ( (LA31_289=='r') ) {
-                            int LA31_384 = input.LA(6);
+                        if ( (LA31_294=='r') ) {
+                            int LA31_393 = input.LA(6);
 
-                            if ( (LA31_384=='$'||(LA31_384>='0' && LA31_384<='9')||LA31_384=='_'||(LA31_384>='a' && LA31_384<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_393=='$'||(LA31_393>='0' && LA31_393<='9')||LA31_393=='_'||(LA31_393>='a' && LA31_393<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=52;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case '$':
@@ -6773,7 +6961,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 case 'y':
                 case 'z':
                     {
-                    alt31=172;
+                    alt31=178;
                     }
                     break;
                 default:
@@ -6783,64 +6971,64 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 break;
             case 'u':
                 {
-                int LA31_81 = input.LA(3);
+                int LA31_82 = input.LA(3);
 
-                if ( (LA31_81=='t') ) {
+                if ( (LA31_82=='t') ) {
                     switch ( input.LA(4) ) {
                     case 'e':
                         {
-                        int LA31_290 = input.LA(5);
+                        int LA31_295 = input.LA(5);
 
-                        if ( (LA31_290=='r') ) {
-                            int LA31_385 = input.LA(6);
+                        if ( (LA31_295=='r') ) {
+                            int LA31_394 = input.LA(6);
 
-                            if ( (LA31_385=='$'||(LA31_385>='0' && LA31_385<='9')||LA31_385=='_'||(LA31_385>='a' && LA31_385<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_394=='$'||(LA31_394>='0' && LA31_394<='9')||LA31_394=='_'||(LA31_394>='a' && LA31_394<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=31;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     case 'p':
                         {
-                        int LA31_291 = input.LA(5);
+                        int LA31_296 = input.LA(5);
 
-                        if ( (LA31_291=='u') ) {
-                            int LA31_386 = input.LA(6);
+                        if ( (LA31_296=='u') ) {
+                            int LA31_395 = input.LA(6);
 
-                            if ( (LA31_386=='t') ) {
-                                int LA31_462 = input.LA(7);
+                            if ( (LA31_395=='t') ) {
+                                int LA31_475 = input.LA(7);
 
-                                if ( (LA31_462=='$'||(LA31_462>='0' && LA31_462<='9')||LA31_462=='_'||(LA31_462>='a' && LA31_462<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_475=='$'||(LA31_475>='0' && LA31_475<='9')||LA31_475=='_'||(LA31_475>='a' && LA31_475<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=46;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     default:
-                        alt31=172;}
+                        alt31=178;}
 
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'n':
                 {
-                int LA31_82 = input.LA(3);
+                int LA31_83 = input.LA(3);
 
-                if ( (LA31_82=='$'||(LA31_82>='0' && LA31_82<='9')||LA31_82=='_'||(LA31_82>='a' && LA31_82<='z')) ) {
-                    alt31=172;
+                if ( (LA31_83=='$'||(LA31_83>='0' && LA31_83<='9')||LA31_83=='_'||(LA31_83>='a' && LA31_83<='z')) ) {
+                    alt31=178;
                 }
                 else {
                     alt31=37;}
@@ -6848,41 +7036,41 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 break;
             case 'f':
                 {
-                int LA31_83 = input.LA(3);
+                int LA31_84 = input.LA(3);
 
-                if ( (LA31_83=='f') ) {
-                    int LA31_195 = input.LA(4);
+                if ( (LA31_84=='f') ) {
+                    int LA31_198 = input.LA(4);
 
-                    if ( (LA31_195=='s') ) {
-                        int LA31_292 = input.LA(5);
+                    if ( (LA31_198=='s') ) {
+                        int LA31_297 = input.LA(5);
 
-                        if ( (LA31_292=='e') ) {
-                            int LA31_387 = input.LA(6);
+                        if ( (LA31_297=='e') ) {
+                            int LA31_396 = input.LA(6);
 
-                            if ( (LA31_387=='t') ) {
-                                int LA31_463 = input.LA(7);
+                            if ( (LA31_396=='t') ) {
+                                int LA31_476 = input.LA(7);
 
-                                if ( (LA31_463=='$'||(LA31_463>='0' && LA31_463<='9')||LA31_463=='_'||(LA31_463>='a' && LA31_463<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_476=='$'||(LA31_476>='0' && LA31_476<='9')||LA31_476=='_'||(LA31_476>='a' && LA31_476<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
-                                    alt31=100;}
+                                    alt31=106;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -6894,10 +7082,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'd':
                     {
-                    int LA31_196 = input.LA(4);
+                    int LA31_199 = input.LA(4);
 
-                    if ( (LA31_196=='$'||(LA31_196>='0' && LA31_196<='9')||LA31_196=='_'||(LA31_196>='a' && LA31_196<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_199=='$'||(LA31_199>='0' && LA31_199<='9')||LA31_199=='_'||(LA31_199>='a' && LA31_199<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=9;}
@@ -6905,17 +7093,17 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     break;
                 case 'y':
                     {
-                    int LA31_197 = input.LA(4);
+                    int LA31_200 = input.LA(4);
 
-                    if ( (LA31_197=='$'||(LA31_197>='0' && LA31_197<='9')||LA31_197=='_'||(LA31_197>='a' && LA31_197<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_200=='$'||(LA31_200>='0' && LA31_200<='9')||LA31_200=='_'||(LA31_200>='a' && LA31_200<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=44;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
@@ -6924,10 +7112,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'c':
                     {
-                    int LA31_198 = input.LA(4);
+                    int LA31_201 = input.LA(4);
 
-                    if ( (LA31_198=='$'||(LA31_198>='0' && LA31_198<='9')||LA31_198=='_'||(LA31_198>='a' && LA31_198<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_201=='$'||(LA31_201>='0' && LA31_201<='9')||LA31_201=='_'||(LA31_201>='a' && LA31_201<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=53;}
@@ -6971,7 +7159,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 case 'y':
                 case 'z':
                     {
-                    alt31=172;
+                    alt31=178;
                     }
                     break;
                 default:
@@ -6984,10 +7172,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'g':
                     {
-                    int LA31_200 = input.LA(4);
+                    int LA31_203 = input.LA(4);
 
-                    if ( (LA31_200=='$'||(LA31_200>='0' && LA31_200<='9')||LA31_200=='_'||(LA31_200>='a' && LA31_200<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_203=='$'||(LA31_203>='0' && LA31_203<='9')||LA31_203=='_'||(LA31_203>='a' && LA31_203<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=16;}
@@ -6995,61 +7183,61 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     break;
                 case 'e':
                     {
-                    int LA31_201 = input.LA(4);
+                    int LA31_204 = input.LA(4);
 
-                    if ( (LA31_201=='d') ) {
-                        int LA31_297 = input.LA(5);
+                    if ( (LA31_204=='d') ) {
+                        int LA31_302 = input.LA(5);
 
-                        if ( (LA31_297=='e') ) {
-                            int LA31_388 = input.LA(6);
+                        if ( (LA31_302=='e') ) {
+                            int LA31_397 = input.LA(6);
 
-                            if ( (LA31_388=='v') ) {
-                                int LA31_464 = input.LA(7);
+                            if ( (LA31_397=='v') ) {
+                                int LA31_477 = input.LA(7);
 
-                                if ( (LA31_464=='$'||(LA31_464>='0' && LA31_464<='9')||LA31_464=='_'||(LA31_464>='a' && LA31_464<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_477=='$'||(LA31_477>='0' && LA31_477<='9')||LA31_477=='_'||(LA31_477>='a' && LA31_477<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=22;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             case 'l':
                 {
-                int LA31_87 = input.LA(3);
+                int LA31_88 = input.LA(3);
 
-                if ( (LA31_87=='l') ) {
-                    int LA31_202 = input.LA(4);
+                if ( (LA31_88=='l') ) {
+                    int LA31_205 = input.LA(4);
 
-                    if ( (LA31_202=='$'||(LA31_202>='0' && LA31_202<='9')||LA31_202=='_'||(LA31_202>='a' && LA31_202<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_205=='$'||(LA31_205>='0' && LA31_205<='9')||LA31_205=='_'||(LA31_205>='a' && LA31_205<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=43;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 't':
                 {
-                int LA31_88 = input.LA(3);
+                int LA31_89 = input.LA(3);
 
-                if ( (LA31_88=='$'||(LA31_88>='0' && LA31_88<='9')||LA31_88=='_'||(LA31_88>='a' && LA31_88<='z')) ) {
-                    alt31=172;
+                if ( (LA31_89=='$'||(LA31_89>='0' && LA31_89<='9')||LA31_89=='_'||(LA31_89>='a' && LA31_89<='z')) ) {
+                    alt31=178;
                 }
                 else {
                     alt31=82;}
@@ -7057,35 +7245,35 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 break;
             case 'f':
                 {
-                int LA31_89 = input.LA(3);
+                int LA31_90 = input.LA(3);
 
-                if ( (LA31_89=='t') ) {
-                    int LA31_204 = input.LA(4);
+                if ( (LA31_90=='t') ) {
+                    int LA31_207 = input.LA(4);
 
-                    if ( (LA31_204=='e') ) {
-                        int LA31_299 = input.LA(5);
+                    if ( (LA31_207=='e') ) {
+                        int LA31_304 = input.LA(5);
 
-                        if ( (LA31_299=='r') ) {
-                            int LA31_389 = input.LA(6);
+                        if ( (LA31_304=='r') ) {
+                            int LA31_398 = input.LA(6);
 
-                            if ( (LA31_389=='$'||(LA31_389>='0' && LA31_389<='9')||LA31_389=='_'||(LA31_389>='a' && LA31_389<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_398=='$'||(LA31_398>='0' && LA31_398<='9')||LA31_398=='_'||(LA31_398>='a' && LA31_398<='z')) ) {
+                                alt31=178;
                             }
                             else {
-                                alt31=107;}
+                                alt31=113;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -7094,46 +7282,46 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 'o':
                 {
-                int LA31_90 = input.LA(3);
+                int LA31_91 = input.LA(3);
 
-                if ( (LA31_90=='t') ) {
-                    int LA31_205 = input.LA(4);
+                if ( (LA31_91=='t') ) {
+                    int LA31_208 = input.LA(4);
 
-                    if ( (LA31_205=='$'||(LA31_205>='0' && LA31_205<='9')||LA31_205=='_'||(LA31_205>='a' && LA31_205<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_208=='$'||(LA31_208>='0' && LA31_208<='9')||LA31_208=='_'||(LA31_208>='a' && LA31_208<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=10;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'u':
                 {
-                int LA31_91 = input.LA(3);
+                int LA31_92 = input.LA(3);
 
-                if ( (LA31_91=='l') ) {
-                    int LA31_206 = input.LA(4);
+                if ( (LA31_92=='l') ) {
+                    int LA31_209 = input.LA(4);
 
-                    if ( (LA31_206=='l') ) {
-                        int LA31_301 = input.LA(5);
+                    if ( (LA31_209=='l') ) {
+                        int LA31_306 = input.LA(5);
 
-                        if ( (LA31_301=='$'||(LA31_301>='0' && LA31_301<='9')||LA31_301=='_'||(LA31_301>='a' && LA31_301<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_306=='$'||(LA31_306>='0' && LA31_306<='9')||LA31_306=='_'||(LA31_306>='a' && LA31_306<='z')) ) {
+                            alt31=178;
                         }
                         else {
-                            alt31=98;}
+                            alt31=104;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -7142,54 +7330,54 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 'u':
                 {
-                int LA31_92 = input.LA(3);
+                int LA31_93 = input.LA(3);
 
-                if ( (LA31_92=='m') ) {
-                    int LA31_207 = input.LA(4);
+                if ( (LA31_93=='m') ) {
+                    int LA31_210 = input.LA(4);
 
-                    if ( (LA31_207=='$'||(LA31_207>='0' && LA31_207<='9')||LA31_207=='_'||(LA31_207>='a' && LA31_207<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_210=='$'||(LA31_210>='0' && LA31_210<='9')||LA31_210=='_'||(LA31_210>='a' && LA31_210<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=15;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 't':
                 {
-                int LA31_93 = input.LA(3);
+                int LA31_94 = input.LA(3);
 
-                if ( (LA31_93=='d') ) {
-                    int LA31_208 = input.LA(4);
+                if ( (LA31_94=='d') ) {
+                    int LA31_211 = input.LA(4);
 
-                    if ( (LA31_208=='d') ) {
-                        int LA31_303 = input.LA(5);
+                    if ( (LA31_211=='d') ) {
+                        int LA31_308 = input.LA(5);
 
-                        if ( (LA31_303=='e') ) {
-                            int LA31_391 = input.LA(6);
+                        if ( (LA31_308=='e') ) {
+                            int LA31_400 = input.LA(6);
 
-                            if ( (LA31_391=='v') ) {
-                                int LA31_466 = input.LA(7);
+                            if ( (LA31_400=='v') ) {
+                                int LA31_479 = input.LA(7);
 
-                                if ( (LA31_466=='$'||(LA31_466>='0' && LA31_466<='9')||LA31_466=='_'||(LA31_466>='a' && LA31_466<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_479=='$'||(LA31_479>='0' && LA31_479<='9')||LA31_479=='_'||(LA31_479>='a' && LA31_479<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=21;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'e':
@@ -7197,39 +7385,39 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'l':
                     {
-                    int LA31_209 = input.LA(4);
+                    int LA31_212 = input.LA(4);
 
-                    if ( (LA31_209=='e') ) {
-                        int LA31_304 = input.LA(5);
+                    if ( (LA31_212=='e') ) {
+                        int LA31_309 = input.LA(5);
 
-                        if ( (LA31_304=='c') ) {
-                            int LA31_392 = input.LA(6);
+                        if ( (LA31_309=='c') ) {
+                            int LA31_401 = input.LA(6);
 
-                            if ( (LA31_392=='t') ) {
-                                int LA31_467 = input.LA(7);
+                            if ( (LA31_401=='t') ) {
+                                int LA31_480 = input.LA(7);
 
-                                if ( (LA31_467=='$'||(LA31_467>='0' && LA31_467<='9')||LA31_467=='_'||(LA31_467>='a' && LA31_467<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_480=='$'||(LA31_480>='0' && LA31_480<='9')||LA31_480=='_'||(LA31_480>='a' && LA31_480<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=24;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 't':
                     {
-                    int LA31_210 = input.LA(4);
+                    int LA31_213 = input.LA(4);
 
-                    if ( (LA31_210=='$'||(LA31_210>='0' && LA31_210<='9')||LA31_210=='_'||(LA31_210>='a' && LA31_210<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_213=='$'||(LA31_213>='0' && LA31_213<='9')||LA31_213=='_'||(LA31_213>='a' && LA31_213<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=79;}
@@ -7240,22 +7428,22 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     switch ( input.LA(4) ) {
                     case 'o':
                         {
-                        int LA31_306 = input.LA(5);
+                        int LA31_311 = input.LA(5);
 
-                        if ( (LA31_306=='n') ) {
-                            int LA31_393 = input.LA(6);
+                        if ( (LA31_311=='n') ) {
+                            int LA31_402 = input.LA(6);
 
-                            if ( (LA31_393=='d') ) {
+                            if ( (LA31_402=='d') ) {
                                 switch ( input.LA(7) ) {
                                 case 's':
                                     {
-                                    int LA31_521 = input.LA(8);
+                                    int LA31_537 = input.LA(8);
 
-                                    if ( (LA31_521=='$'||(LA31_521>='0' && LA31_521<='9')||LA31_521=='_'||(LA31_521>='a' && LA31_521<='z')) ) {
-                                        alt31=172;
+                                    if ( (LA31_537=='$'||(LA31_537>='0' && LA31_537<='9')||LA31_537=='_'||(LA31_537>='a' && LA31_537<='z')) ) {
+                                        alt31=178;
                                     }
                                     else {
-                                        alt31=92;}
+                                        alt31=98;}
                                     }
                                     break;
                                 case '$':
@@ -7296,18 +7484,18 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                 case 'y':
                                 case 'z':
                                     {
-                                    alt31=172;
+                                    alt31=178;
                                     }
                                     break;
                                 default:
-                                    alt31=91;}
+                                    alt31=97;}
 
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     case '$':
@@ -7348,143 +7536,143 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     case 'y':
                     case 'z':
                         {
-                        alt31=172;
+                        alt31=178;
                         }
                         break;
                     default:
-                        alt31=90;}
+                        alt31=96;}
 
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             case 'o':
                 {
-                int LA31_95 = input.LA(3);
+                int LA31_96 = input.LA(3);
 
-                if ( (LA31_95=='m') ) {
-                    int LA31_212 = input.LA(4);
+                if ( (LA31_96=='m') ) {
+                    int LA31_215 = input.LA(4);
 
-                    if ( (LA31_212=='e') ) {
-                        int LA31_308 = input.LA(5);
+                    if ( (LA31_215=='e') ) {
+                        int LA31_313 = input.LA(5);
 
-                        if ( (LA31_308=='$'||(LA31_308>='0' && LA31_308<='9')||LA31_308=='_'||(LA31_308>='a' && LA31_308<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_313=='$'||(LA31_313>='0' && LA31_313<='9')||LA31_313=='_'||(LA31_313>='a' && LA31_313<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=45;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'c':
                 {
-                int LA31_96 = input.LA(3);
+                int LA31_97 = input.LA(3);
 
-                if ( (LA31_96=='h') ) {
-                    int LA31_213 = input.LA(4);
+                if ( (LA31_97=='h') ) {
+                    int LA31_216 = input.LA(4);
 
-                    if ( (LA31_213=='e') ) {
-                        int LA31_309 = input.LA(5);
+                    if ( (LA31_216=='e') ) {
+                        int LA31_314 = input.LA(5);
 
-                        if ( (LA31_309=='m') ) {
-                            int LA31_395 = input.LA(6);
+                        if ( (LA31_314=='m') ) {
+                            int LA31_404 = input.LA(6);
 
-                            if ( (LA31_395=='a') ) {
-                                int LA31_469 = input.LA(7);
+                            if ( (LA31_404=='a') ) {
+                                int LA31_482 = input.LA(7);
 
-                                if ( (LA31_469=='$'||(LA31_469>='0' && LA31_469<='9')||LA31_469=='_'||(LA31_469>='a' && LA31_469<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_482=='$'||(LA31_482>='0' && LA31_482<='9')||LA31_482=='_'||(LA31_482>='a' && LA31_482<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=58;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'q':
                 {
-                int LA31_97 = input.LA(3);
+                int LA31_98 = input.LA(3);
 
-                if ( (LA31_97=='l') ) {
-                    int LA31_214 = input.LA(4);
+                if ( (LA31_98=='l') ) {
+                    int LA31_217 = input.LA(4);
 
-                    if ( (LA31_214=='$'||(LA31_214>='0' && LA31_214<='9')||LA31_214=='_'||(LA31_214>='a' && LA31_214<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_217=='$'||(LA31_217>='0' && LA31_217<='9')||LA31_217=='_'||(LA31_217>='a' && LA31_217<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=63;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'n':
                 {
-                int LA31_98 = input.LA(3);
+                int LA31_99 = input.LA(3);
 
-                if ( (LA31_98=='a') ) {
-                    int LA31_215 = input.LA(4);
+                if ( (LA31_99=='a') ) {
+                    int LA31_218 = input.LA(4);
 
-                    if ( (LA31_215=='p') ) {
-                        int LA31_311 = input.LA(5);
+                    if ( (LA31_218=='p') ) {
+                        int LA31_316 = input.LA(5);
 
-                        if ( (LA31_311=='s') ) {
-                            int LA31_396 = input.LA(6);
+                        if ( (LA31_316=='s') ) {
+                            int LA31_405 = input.LA(6);
 
-                            if ( (LA31_396=='h') ) {
-                                int LA31_470 = input.LA(7);
+                            if ( (LA31_405=='h') ) {
+                                int LA31_483 = input.LA(7);
 
-                                if ( (LA31_470=='o') ) {
-                                    int LA31_524 = input.LA(8);
+                                if ( (LA31_483=='o') ) {
+                                    int LA31_540 = input.LA(8);
 
-                                    if ( (LA31_524=='t') ) {
-                                        int LA31_559 = input.LA(9);
+                                    if ( (LA31_540=='t') ) {
+                                        int LA31_576 = input.LA(9);
 
-                                        if ( (LA31_559=='$'||(LA31_559>='0' && LA31_559<='9')||LA31_559=='_'||(LA31_559>='a' && LA31_559<='z')) ) {
-                                            alt31=172;
+                                        if ( (LA31_576=='$'||(LA31_576>='0' && LA31_576<='9')||LA31_576=='_'||(LA31_576>='a' && LA31_576<='z')) ) {
+                                            alt31=178;
                                         }
                                         else {
                                             alt31=78;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -7496,10 +7684,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'x':
                     {
-                    int LA31_216 = input.LA(4);
+                    int LA31_219 = input.LA(4);
 
-                    if ( (LA31_216=='$'||(LA31_216>='0' && LA31_216<='9')||LA31_216=='_'||(LA31_216>='a' && LA31_216<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_219=='$'||(LA31_219>='0' && LA31_219<='9')||LA31_219=='_'||(LA31_219>='a' && LA31_219<='z')) ) {
+                        alt31=178;
                     }
                     else {
                         alt31=17;}
@@ -7507,76 +7695,76 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     break;
                 case 't':
                     {
-                    int LA31_217 = input.LA(4);
+                    int LA31_220 = input.LA(4);
 
-                    if ( (LA31_217=='c') ) {
-                        int LA31_313 = input.LA(5);
+                    if ( (LA31_220=='c') ) {
+                        int LA31_318 = input.LA(5);
 
-                        if ( (LA31_313=='h') ) {
+                        if ( (LA31_318=='h') ) {
                             switch ( input.LA(6) ) {
                             case '_':
                                 {
-                                int LA31_471 = input.LA(7);
+                                int LA31_484 = input.LA(7);
 
-                                if ( (LA31_471=='r') ) {
-                                    int LA31_525 = input.LA(8);
+                                if ( (LA31_484=='r') ) {
+                                    int LA31_541 = input.LA(8);
 
-                                    if ( (LA31_525=='e') ) {
-                                        int LA31_560 = input.LA(9);
+                                    if ( (LA31_541=='e') ) {
+                                        int LA31_577 = input.LA(9);
 
-                                        if ( (LA31_560=='c') ) {
-                                            int LA31_581 = input.LA(10);
+                                        if ( (LA31_577=='c') ) {
+                                            int LA31_598 = input.LA(10);
 
-                                            if ( (LA31_581=='o') ) {
-                                                int LA31_595 = input.LA(11);
+                                            if ( (LA31_598=='o') ) {
+                                                int LA31_612 = input.LA(11);
 
-                                                if ( (LA31_595=='g') ) {
-                                                    int LA31_605 = input.LA(12);
+                                                if ( (LA31_612=='g') ) {
+                                                    int LA31_622 = input.LA(12);
 
-                                                    if ( (LA31_605=='n') ) {
-                                                        int LA31_612 = input.LA(13);
+                                                    if ( (LA31_622=='n') ) {
+                                                        int LA31_629 = input.LA(13);
 
-                                                        if ( (LA31_612=='i') ) {
-                                                            int LA31_618 = input.LA(14);
+                                                        if ( (LA31_629=='i') ) {
+                                                            int LA31_635 = input.LA(14);
 
-                                                            if ( (LA31_618=='z') ) {
-                                                                int LA31_622 = input.LA(15);
+                                                            if ( (LA31_635=='z') ) {
+                                                                int LA31_639 = input.LA(15);
 
-                                                                if ( (LA31_622=='e') ) {
-                                                                    int LA31_625 = input.LA(16);
+                                                                if ( (LA31_639=='e') ) {
+                                                                    int LA31_642 = input.LA(16);
 
-                                                                    if ( (LA31_625=='$'||(LA31_625>='0' && LA31_625<='9')||LA31_625=='_'||(LA31_625>='a' && LA31_625<='z')) ) {
-                                                                        alt31=172;
+                                                                    if ( (LA31_642=='$'||(LA31_642>='0' && LA31_642<='9')||LA31_642=='_'||(LA31_642>='a' && LA31_642<='z')) ) {
+                                                                        alt31=178;
                                                                     }
                                                                     else {
-                                                                        alt31=102;}
+                                                                        alt31=108;}
                                                                 }
                                                                 else {
-                                                                    alt31=172;}
+                                                                    alt31=178;}
                                                             }
                                                             else {
-                                                                alt31=172;}
+                                                                alt31=178;}
                                                         }
                                                         else {
-                                                            alt31=172;}
+                                                            alt31=178;}
                                                     }
                                                     else {
-                                                        alt31=172;}
+                                                        alt31=178;}
                                                 }
                                                 else {
-                                                    alt31=172;}
+                                                    alt31=178;}
                                             }
                                             else {
-                                                alt31=172;}
+                                                alt31=178;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                                 }
                                 break;
                             case 'e':
@@ -7584,44 +7772,44 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                 switch ( input.LA(7) ) {
                                 case 's':
                                     {
-                                    int LA31_526 = input.LA(8);
+                                    int LA31_542 = input.LA(8);
 
-                                    if ( (LA31_526=='$'||(LA31_526>='0' && LA31_526<='9')||LA31_526=='_'||(LA31_526>='a' && LA31_526<='z')) ) {
-                                        alt31=172;
-                                    }
-                                    else {
-                                        alt31=106;}
-                                    }
-                                    break;
-                                case 'd':
-                                    {
-                                    int LA31_527 = input.LA(8);
-
-                                    if ( (LA31_527=='$'||(LA31_527>='0' && LA31_527<='9')||LA31_527=='_'||(LA31_527>='a' && LA31_527<='z')) ) {
-                                        alt31=172;
+                                    if ( (LA31_542=='$'||(LA31_542>='0' && LA31_542<='9')||LA31_542=='_'||(LA31_542>='a' && LA31_542<='z')) ) {
+                                        alt31=178;
                                     }
                                     else {
                                         alt31=112;}
                                     }
                                     break;
+                                case 'd':
+                                    {
+                                    int LA31_543 = input.LA(8);
+
+                                    if ( (LA31_543=='$'||(LA31_543>='0' && LA31_543<='9')||LA31_543=='_'||(LA31_543>='a' && LA31_543<='z')) ) {
+                                        alt31=178;
+                                    }
+                                    else {
+                                        alt31=118;}
+                                    }
+                                    break;
                                 default:
-                                    alt31=172;}
+                                    alt31=178;}
 
                                 }
                                 break;
                             default:
-                                alt31=172;}
+                                alt31=178;}
 
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
@@ -7633,22 +7821,22 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     switch ( input.LA(4) ) {
                     case 'u':
                         {
-                        int LA31_314 = input.LA(5);
+                        int LA31_319 = input.LA(5);
 
-                        if ( (LA31_314=='t') ) {
-                            int LA31_398 = input.LA(6);
+                        if ( (LA31_319=='t') ) {
+                            int LA31_407 = input.LA(6);
 
-                            if ( (LA31_398=='e') ) {
+                            if ( (LA31_407=='e') ) {
                                 switch ( input.LA(7) ) {
                                 case 's':
                                     {
-                                    int LA31_528 = input.LA(8);
+                                    int LA31_544 = input.LA(8);
 
-                                    if ( (LA31_528=='$'||(LA31_528>='0' && LA31_528<='9')||LA31_528=='_'||(LA31_528>='a' && LA31_528<='z')) ) {
-                                        alt31=172;
+                                    if ( (LA31_544=='$'||(LA31_544>='0' && LA31_544<='9')||LA31_544=='_'||(LA31_544>='a' && LA31_544<='z')) ) {
+                                        alt31=178;
                                     }
                                     else {
-                                        alt31=89;}
+                                        alt31=95;}
                                     }
                                     break;
                                 case '$':
@@ -7689,18 +7877,18 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                 case 'y':
                                 case 'z':
                                     {
-                                    alt31=172;
+                                    alt31=178;
                                     }
                                     break;
                                 default:
-                                    alt31=88;}
+                                    alt31=94;}
 
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                         }
                         break;
                     case '$':
@@ -7741,7 +7929,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     case 'y':
                     case 'z':
                         {
-                        alt31=172;
+                        alt31=178;
                         }
                         break;
                     default:
@@ -7751,40 +7939,40 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     break;
                 case 'l':
                     {
-                    int LA31_219 = input.LA(4);
+                    int LA31_222 = input.LA(4);
 
-                    if ( (LA31_219=='l') ) {
-                        int LA31_316 = input.LA(5);
+                    if ( (LA31_222=='l') ) {
+                        int LA31_321 = input.LA(5);
 
-                        if ( (LA31_316=='i') ) {
-                            int LA31_399 = input.LA(6);
+                        if ( (LA31_321=='i') ) {
+                            int LA31_408 = input.LA(6);
 
-                            if ( (LA31_399=='s') ) {
-                                int LA31_474 = input.LA(7);
+                            if ( (LA31_408=='s') ) {
+                                int LA31_487 = input.LA(7);
 
-                                if ( (LA31_474=='e') ) {
-                                    int LA31_530 = input.LA(8);
+                                if ( (LA31_487=='e') ) {
+                                    int LA31_546 = input.LA(8);
 
-                                    if ( (LA31_530=='c') ) {
-                                        int LA31_564 = input.LA(9);
+                                    if ( (LA31_546=='c') ) {
+                                        int LA31_581 = input.LA(9);
 
-                                        if ( (LA31_564=='o') ) {
-                                            int LA31_582 = input.LA(10);
+                                        if ( (LA31_581=='o') ) {
+                                            int LA31_599 = input.LA(10);
 
-                                            if ( (LA31_582=='n') ) {
-                                                int LA31_596 = input.LA(11);
+                                            if ( (LA31_599=='n') ) {
+                                                int LA31_613 = input.LA(11);
 
-                                                if ( (LA31_596=='d') ) {
+                                                if ( (LA31_613=='d') ) {
                                                     switch ( input.LA(12) ) {
                                                     case 's':
                                                         {
-                                                        int LA31_613 = input.LA(13);
+                                                        int LA31_630 = input.LA(13);
 
-                                                        if ( (LA31_613=='$'||(LA31_613>='0' && LA31_613<='9')||LA31_613=='_'||(LA31_613>='a' && LA31_613<='z')) ) {
-                                                            alt31=172;
+                                                        if ( (LA31_630=='$'||(LA31_630>='0' && LA31_630<='9')||LA31_630=='_'||(LA31_630>='a' && LA31_630<='z')) ) {
+                                                            alt31=178;
                                                         }
                                                         else {
-                                                            alt31=95;}
+                                                            alt31=101;}
                                                         }
                                                         break;
                                                     case '$':
@@ -7825,40 +8013,40 @@ public class EsperEPL2GrammarLexer extends Lexer {
                                                     case 'y':
                                                     case 'z':
                                                         {
-                                                        alt31=172;
+                                                        alt31=178;
                                                         }
                                                         break;
                                                     default:
-                                                        alt31=94;}
+                                                        alt31=100;}
 
                                                 }
                                                 else {
-                                                    alt31=172;}
+                                                    alt31=178;}
                                             }
                                             else {
-                                                alt31=172;}
+                                                alt31=178;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
@@ -7867,186 +8055,264 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'd':
                     {
-                    int LA31_220 = input.LA(4);
+                    int LA31_223 = input.LA(4);
 
-                    if ( (LA31_220=='i') ) {
-                        int LA31_317 = input.LA(5);
+                    if ( (LA31_223=='i') ) {
+                        int LA31_322 = input.LA(5);
 
-                        if ( (LA31_317=='a') ) {
-                            int LA31_400 = input.LA(6);
+                        if ( (LA31_322=='a') ) {
+                            int LA31_409 = input.LA(6);
 
-                            if ( (LA31_400=='n') ) {
-                                int LA31_475 = input.LA(7);
+                            if ( (LA31_409=='n') ) {
+                                int LA31_488 = input.LA(7);
 
-                                if ( (LA31_475=='$'||(LA31_475>='0' && LA31_475<='9')||LA31_475=='_'||(LA31_475>='a' && LA31_475<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_488=='$'||(LA31_488>='0' && LA31_488<='9')||LA31_488=='_'||(LA31_488>='a' && LA31_488<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=20;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 't':
                     {
-                    int LA31_221 = input.LA(4);
+                    int LA31_224 = input.LA(4);
 
-                    if ( (LA31_221=='a') ) {
-                        int LA31_318 = input.LA(5);
+                    if ( (LA31_224=='a') ) {
+                        int LA31_323 = input.LA(5);
 
-                        if ( (LA31_318=='d') ) {
-                            int LA31_401 = input.LA(6);
+                        if ( (LA31_323=='d') ) {
+                            int LA31_410 = input.LA(6);
 
-                            if ( (LA31_401=='a') ) {
-                                int LA31_476 = input.LA(7);
+                            if ( (LA31_410=='a') ) {
+                                int LA31_489 = input.LA(7);
 
-                                if ( (LA31_476=='t') ) {
-                                    int LA31_532 = input.LA(8);
+                                if ( (LA31_489=='t') ) {
+                                    int LA31_548 = input.LA(8);
 
-                                    if ( (LA31_532=='a') ) {
-                                        int LA31_565 = input.LA(9);
+                                    if ( (LA31_548=='a') ) {
+                                        int LA31_582 = input.LA(9);
 
-                                        if ( (LA31_565=='s') ) {
-                                            int LA31_583 = input.LA(10);
+                                        if ( (LA31_582=='s') ) {
+                                            int LA31_600 = input.LA(10);
 
-                                            if ( (LA31_583=='q') ) {
-                                                int LA31_597 = input.LA(11);
+                                            if ( (LA31_600=='q') ) {
+                                                int LA31_614 = input.LA(11);
 
-                                                if ( (LA31_597=='l') ) {
-                                                    int LA31_607 = input.LA(12);
+                                                if ( (LA31_614=='l') ) {
+                                                    int LA31_624 = input.LA(12);
 
-                                                    if ( (LA31_607=='$'||(LA31_607>='0' && LA31_607<='9')||LA31_607=='_'||(LA31_607>='a' && LA31_607<='z')) ) {
-                                                        alt31=172;
+                                                    if ( (LA31_624=='$'||(LA31_624>='0' && LA31_624<='9')||LA31_624=='_'||(LA31_624>='a' && LA31_624<='z')) ) {
+                                                        alt31=178;
                                                     }
                                                     else {
                                                         alt31=64;}
                                                 }
                                                 else {
-                                                    alt31=172;}
+                                                    alt31=178;}
                                             }
                                             else {
-                                                alt31=172;}
+                                                alt31=178;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'a':
                     {
-                    int LA31_222 = input.LA(4);
+                    int LA31_225 = input.LA(4);
 
-                    if ( (LA31_222=='s') ) {
-                        int LA31_319 = input.LA(5);
+                    if ( (LA31_225=='s') ) {
+                        int LA31_324 = input.LA(5);
 
-                        if ( (LA31_319=='u') ) {
-                            int LA31_402 = input.LA(6);
+                        if ( (LA31_324=='u') ) {
+                            int LA31_411 = input.LA(6);
 
-                            if ( (LA31_402=='r') ) {
-                                int LA31_477 = input.LA(7);
+                            if ( (LA31_411=='r') ) {
+                                int LA31_490 = input.LA(7);
 
-                                if ( (LA31_477=='e') ) {
-                                    int LA31_533 = input.LA(8);
+                                if ( (LA31_490=='e') ) {
+                                    int LA31_549 = input.LA(8);
 
-                                    if ( (LA31_533=='s') ) {
-                                        int LA31_566 = input.LA(9);
+                                    if ( (LA31_549=='s') ) {
+                                        int LA31_583 = input.LA(9);
 
-                                        if ( (LA31_566=='$'||(LA31_566>='0' && LA31_566<='9')||LA31_566=='_'||(LA31_566>='a' && LA31_566<='z')) ) {
-                                            alt31=172;
+                                        if ( (LA31_583=='$'||(LA31_583>='0' && LA31_583<='9')||LA31_583=='_'||(LA31_583>='a' && LA31_583<='z')) ) {
+                                            alt31=178;
                                         }
                                         else {
-                                            alt31=103;}
+                                            alt31=109;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'r':
                     {
-                    int LA31_223 = input.LA(4);
+                    int LA31_226 = input.LA(4);
 
-                    if ( (LA31_223=='g') ) {
-                        int LA31_320 = input.LA(5);
+                    if ( (LA31_226=='g') ) {
+                        int LA31_325 = input.LA(5);
 
-                        if ( (LA31_320=='e') ) {
-                            int LA31_403 = input.LA(6);
+                        if ( (LA31_325=='e') ) {
+                            int LA31_412 = input.LA(6);
 
-                            if ( (LA31_403=='$'||(LA31_403>='0' && LA31_403<='9')||LA31_403=='_'||(LA31_403>='a' && LA31_403<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_412=='$'||(LA31_412>='0' && LA31_412<='9')||LA31_412=='_'||(LA31_412>='a' && LA31_412<='z')) ) {
+                                alt31=178;
                             }
                             else {
-                                alt31=111;}
+                                alt31=117;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
+                }
+                break;
+            case 'o':
+                {
+                int LA31_103 = input.LA(3);
+
+                if ( (LA31_103=='n') ) {
+                    int LA31_227 = input.LA(4);
+
+                    if ( (LA31_227=='t') ) {
+                        int LA31_326 = input.LA(5);
+
+                        if ( (LA31_326=='h') ) {
+                            switch ( input.LA(6) ) {
+                            case 's':
+                                {
+                                int LA31_492 = input.LA(7);
+
+                                if ( (LA31_492=='$'||(LA31_492>='0' && LA31_492<='9')||LA31_492=='_'||(LA31_492>='a' && LA31_492<='z')) ) {
+                                    alt31=178;
+                                }
+                                else {
+                                    alt31=87;}
+                                }
+                                break;
+                            case '$':
+                            case '0':
+                            case '1':
+                            case '2':
+                            case '3':
+                            case '4':
+                            case '5':
+                            case '6':
+                            case '7':
+                            case '8':
+                            case '9':
+                            case '_':
+                            case 'a':
+                            case 'b':
+                            case 'c':
+                            case 'd':
+                            case 'e':
+                            case 'f':
+                            case 'g':
+                            case 'h':
+                            case 'i':
+                            case 'j':
+                            case 'k':
+                            case 'l':
+                            case 'm':
+                            case 'n':
+                            case 'o':
+                            case 'p':
+                            case 'q':
+                            case 'r':
+                            case 't':
+                            case 'u':
+                            case 'v':
+                            case 'w':
+                            case 'x':
+                            case 'y':
+                            case 'z':
+                                {
+                                alt31=178;
+                                }
+                                break;
+                            default:
+                                alt31=86;}
+
+                        }
+                        else {
+                            alt31=178;}
+                    }
+                    else {
+                        alt31=178;}
+                }
+                else {
+                    alt31=178;}
                 }
                 break;
             case 's':
                 {
-                int LA31_102 = input.LA(3);
+                int LA31_104 = input.LA(3);
 
-                if ( (LA31_102=='e') ) {
-                    int LA31_224 = input.LA(4);
+                if ( (LA31_104=='e') ) {
+                    int LA31_228 = input.LA(4);
 
-                    if ( (LA31_224=='c') ) {
-                        int LA31_321 = input.LA(5);
+                    if ( (LA31_228=='c') ) {
+                        int LA31_327 = input.LA(5);
 
-                        if ( (LA31_321=='$'||(LA31_321>='0' && LA31_321<='9')||LA31_321=='_'||(LA31_321>='a' && LA31_321<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_327=='$'||(LA31_327>='0' && LA31_327<='9')||LA31_327=='_'||(LA31_327>='a' && LA31_327<='z')) ) {
+                            alt31=178;
                         }
                         else {
-                            alt31=93;}
+                            alt31=99;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -8055,87 +8321,87 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 'h':
                 {
-                int LA31_103 = input.LA(3);
+                int LA31_105 = input.LA(3);
 
-                if ( (LA31_103=='e') ) {
-                    int LA31_225 = input.LA(4);
+                if ( (LA31_105=='e') ) {
+                    int LA31_229 = input.LA(4);
 
-                    if ( (LA31_225=='n') ) {
-                        int LA31_322 = input.LA(5);
+                    if ( (LA31_229=='n') ) {
+                        int LA31_328 = input.LA(5);
 
-                        if ( (LA31_322=='$'||(LA31_322>='0' && LA31_322<='9')||LA31_322=='_'||(LA31_322>='a' && LA31_322<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_328=='$'||(LA31_328>='0' && LA31_328<='9')||LA31_328=='_'||(LA31_328>='a' && LA31_328<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=28;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'y':
                 {
-                int LA31_104 = input.LA(3);
+                int LA31_106 = input.LA(3);
 
-                if ( (LA31_104=='p') ) {
-                    int LA31_226 = input.LA(4);
+                if ( (LA31_106=='p') ) {
+                    int LA31_230 = input.LA(4);
 
-                    if ( (LA31_226=='e') ) {
-                        int LA31_323 = input.LA(5);
+                    if ( (LA31_230=='e') ) {
+                        int LA31_329 = input.LA(5);
 
-                        if ( (LA31_323=='o') ) {
-                            int LA31_406 = input.LA(6);
+                        if ( (LA31_329=='o') ) {
+                            int LA31_416 = input.LA(6);
 
-                            if ( (LA31_406=='f') ) {
-                                int LA31_479 = input.LA(7);
+                            if ( (LA31_416=='f') ) {
+                                int LA31_494 = input.LA(7);
 
-                                if ( (LA31_479=='$'||(LA31_479>='0' && LA31_479<='9')||LA31_479=='_'||(LA31_479>='a' && LA31_479<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_494=='$'||(LA31_494>='0' && LA31_494<='9')||LA31_494=='_'||(LA31_494>='a' && LA31_494<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=74;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'r':
                 {
-                int LA31_105 = input.LA(3);
+                int LA31_107 = input.LA(3);
 
-                if ( (LA31_105=='u') ) {
-                    int LA31_227 = input.LA(4);
+                if ( (LA31_107=='u') ) {
+                    int LA31_231 = input.LA(4);
 
-                    if ( (LA31_227=='e') ) {
-                        int LA31_324 = input.LA(5);
+                    if ( (LA31_231=='e') ) {
+                        int LA31_330 = input.LA(5);
 
-                        if ( (LA31_324=='$'||(LA31_324>='0' && LA31_324<='9')||LA31_324=='_'||(LA31_324>='a' && LA31_324<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_330=='$'||(LA31_330>='0' && LA31_330<='9')||LA31_330=='_'||(LA31_330>='a' && LA31_330<='z')) ) {
+                            alt31=178;
                         }
                         else {
-                            alt31=96;}
+                            alt31=102;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -8144,127 +8410,127 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 'r':
                 {
-                int LA31_106 = input.LA(3);
+                int LA31_108 = input.LA(3);
 
-                if ( (LA31_106=='o') ) {
-                    int LA31_228 = input.LA(4);
+                if ( (LA31_108=='o') ) {
+                    int LA31_232 = input.LA(4);
 
-                    if ( (LA31_228=='m') ) {
-                        int LA31_325 = input.LA(5);
+                    if ( (LA31_232=='m') ) {
+                        int LA31_331 = input.LA(5);
 
-                        if ( (LA31_325=='$'||(LA31_325>='0' && LA31_325<='9')||LA31_325=='_'||(LA31_325>='a' && LA31_325<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_331=='$'||(LA31_331>='0' && LA31_331<='9')||LA31_331=='_'||(LA31_331>='a' && LA31_331<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=30;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'u':
                 {
-                int LA31_107 = input.LA(3);
+                int LA31_109 = input.LA(3);
 
-                if ( (LA31_107=='l') ) {
-                    int LA31_229 = input.LA(4);
+                if ( (LA31_109=='l') ) {
+                    int LA31_233 = input.LA(4);
 
-                    if ( (LA31_229=='l') ) {
-                        int LA31_326 = input.LA(5);
+                    if ( (LA31_233=='l') ) {
+                        int LA31_332 = input.LA(5);
 
-                        if ( (LA31_326=='$'||(LA31_326>='0' && LA31_326<='9')||LA31_326=='_'||(LA31_326>='a' && LA31_326<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_332=='$'||(LA31_332>='0' && LA31_332<='9')||LA31_332=='_'||(LA31_332>='a' && LA31_332<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=36;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'i':
                 {
-                int LA31_108 = input.LA(3);
+                int LA31_110 = input.LA(3);
 
-                if ( (LA31_108=='r') ) {
-                    int LA31_230 = input.LA(4);
+                if ( (LA31_110=='r') ) {
+                    int LA31_234 = input.LA(4);
 
-                    if ( (LA31_230=='s') ) {
-                        int LA31_327 = input.LA(5);
+                    if ( (LA31_234=='s') ) {
+                        int LA31_333 = input.LA(5);
 
-                        if ( (LA31_327=='t') ) {
-                            int LA31_410 = input.LA(6);
+                        if ( (LA31_333=='t') ) {
+                            int LA31_420 = input.LA(6);
 
-                            if ( (LA31_410=='$'||(LA31_410>='0' && LA31_410<='9')||LA31_410=='_'||(LA31_410>='a' && LA31_410<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_420=='$'||(LA31_420>='0' && LA31_420<='9')||LA31_420=='_'||(LA31_420>='a' && LA31_420<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=48;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'a':
                 {
-                int LA31_109 = input.LA(3);
+                int LA31_111 = input.LA(3);
 
-                if ( (LA31_109=='l') ) {
-                    int LA31_231 = input.LA(4);
+                if ( (LA31_111=='l') ) {
+                    int LA31_235 = input.LA(4);
 
-                    if ( (LA31_231=='s') ) {
-                        int LA31_328 = input.LA(5);
+                    if ( (LA31_235=='s') ) {
+                        int LA31_334 = input.LA(5);
 
-                        if ( (LA31_328=='e') ) {
-                            int LA31_411 = input.LA(6);
+                        if ( (LA31_334=='e') ) {
+                            int LA31_421 = input.LA(6);
 
-                            if ( (LA31_411=='$'||(LA31_411>='0' && LA31_411<='9')||LA31_411=='_'||(LA31_411>='a' && LA31_411<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_421=='$'||(LA31_421>='0' && LA31_421<='9')||LA31_421=='_'||(LA31_421>='a' && LA31_421<='z')) ) {
+                                alt31=178;
                             }
                             else {
-                                alt31=97;}
+                                alt31=103;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'o':
                 {
-                int LA31_110 = input.LA(3);
+                int LA31_112 = input.LA(3);
 
-                if ( (LA31_110=='r') ) {
-                    int LA31_232 = input.LA(4);
+                if ( (LA31_112=='r') ) {
+                    int LA31_236 = input.LA(4);
 
-                    if ( (LA31_232=='$'||(LA31_232>='0' && LA31_232<='9')||LA31_232=='_'||(LA31_232>='a' && LA31_232<='z')) ) {
-                        alt31=172;
+                    if ( (LA31_236=='$'||(LA31_236>='0' && LA31_236<='9')||LA31_236=='_'||(LA31_236>='a' && LA31_236<='z')) ) {
+                        alt31=178;
                     }
                     else {
-                        alt31=108;}
+                        alt31=114;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -8273,28 +8539,28 @@ public class EsperEPL2GrammarLexer extends Lexer {
             int LA31_15 = input.LA(2);
 
             if ( (LA31_15=='o') ) {
-                int LA31_111 = input.LA(3);
+                int LA31_113 = input.LA(3);
 
-                if ( (LA31_111=='i') ) {
-                    int LA31_233 = input.LA(4);
+                if ( (LA31_113=='i') ) {
+                    int LA31_237 = input.LA(4);
 
-                    if ( (LA31_233=='n') ) {
-                        int LA31_330 = input.LA(5);
+                    if ( (LA31_237=='n') ) {
+                        int LA31_336 = input.LA(5);
 
-                        if ( (LA31_330=='$'||(LA31_330>='0' && LA31_330<='9')||LA31_330=='_'||(LA31_330>='a' && LA31_330<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_336=='$'||(LA31_336>='0' && LA31_336<='9')||LA31_336=='_'||(LA31_336>='a' && LA31_336<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=33;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
             }
             else {
-                alt31=172;}
+                alt31=178;}
             }
             break;
         case 'g':
@@ -8302,34 +8568,34 @@ public class EsperEPL2GrammarLexer extends Lexer {
             int LA31_16 = input.LA(2);
 
             if ( (LA31_16=='r') ) {
-                int LA31_112 = input.LA(3);
+                int LA31_114 = input.LA(3);
 
-                if ( (LA31_112=='o') ) {
-                    int LA31_234 = input.LA(4);
+                if ( (LA31_114=='o') ) {
+                    int LA31_238 = input.LA(4);
 
-                    if ( (LA31_234=='u') ) {
-                        int LA31_331 = input.LA(5);
+                    if ( (LA31_238=='u') ) {
+                        int LA31_337 = input.LA(5);
 
-                        if ( (LA31_331=='p') ) {
-                            int LA31_413 = input.LA(6);
+                        if ( (LA31_337=='p') ) {
+                            int LA31_423 = input.LA(6);
 
-                            if ( (LA31_413=='$'||(LA31_413>='0' && LA31_413<='9')||LA31_413=='_'||(LA31_413>='a' && LA31_413<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_423=='$'||(LA31_423>='0' && LA31_423<='9')||LA31_423=='_'||(LA31_423>='a' && LA31_423<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=40;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
             }
             else {
-                alt31=172;}
+                alt31=178;}
             }
             break;
         case 'h':
@@ -8337,57 +8603,57 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 'a':
                 {
-                int LA31_113 = input.LA(3);
+                int LA31_115 = input.LA(3);
 
-                if ( (LA31_113=='v') ) {
-                    int LA31_235 = input.LA(4);
+                if ( (LA31_115=='v') ) {
+                    int LA31_239 = input.LA(4);
 
-                    if ( (LA31_235=='i') ) {
-                        int LA31_332 = input.LA(5);
+                    if ( (LA31_239=='i') ) {
+                        int LA31_338 = input.LA(5);
 
-                        if ( (LA31_332=='n') ) {
-                            int LA31_414 = input.LA(6);
+                        if ( (LA31_338=='n') ) {
+                            int LA31_424 = input.LA(6);
 
-                            if ( (LA31_414=='g') ) {
-                                int LA31_483 = input.LA(7);
+                            if ( (LA31_424=='g') ) {
+                                int LA31_498 = input.LA(7);
 
-                                if ( (LA31_483=='$'||(LA31_483>='0' && LA31_483<='9')||LA31_483=='_'||(LA31_483>='a' && LA31_483<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_498=='$'||(LA31_498>='0' && LA31_498<='9')||LA31_498=='_'||(LA31_498>='a' && LA31_498<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=41;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'o':
                 {
-                int LA31_114 = input.LA(3);
+                int LA31_116 = input.LA(3);
 
-                if ( (LA31_114=='u') ) {
-                    int LA31_236 = input.LA(4);
+                if ( (LA31_116=='u') ) {
+                    int LA31_240 = input.LA(4);
 
-                    if ( (LA31_236=='r') ) {
+                    if ( (LA31_240=='r') ) {
                         switch ( input.LA(5) ) {
                         case 's':
                             {
-                            int LA31_415 = input.LA(6);
+                            int LA31_425 = input.LA(6);
 
-                            if ( (LA31_415=='$'||(LA31_415>='0' && LA31_415<='9')||LA31_415=='_'||(LA31_415>='a' && LA31_415<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_425=='$'||(LA31_425>='0' && LA31_425<='9')||LA31_425=='_'||(LA31_425>='a' && LA31_425<='z')) ) {
+                                alt31=178;
                             }
                             else {
-                                alt31=87;}
+                                alt31=93;}
                             }
                             break;
                         case '$':
@@ -8428,22 +8694,22 @@ public class EsperEPL2GrammarLexer extends Lexer {
                         case 'y':
                         case 'z':
                             {
-                            alt31=172;
+                            alt31=178;
                             }
                             break;
                         default:
-                            alt31=86;}
+                            alt31=92;}
 
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -8452,49 +8718,49 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case 'i':
                 {
-                int LA31_115 = input.LA(3);
+                int LA31_117 = input.LA(3);
 
-                if ( (LA31_115=='s') ) {
-                    int LA31_237 = input.LA(4);
+                if ( (LA31_117=='s') ) {
+                    int LA31_241 = input.LA(4);
 
-                    if ( (LA31_237=='t') ) {
-                        int LA31_334 = input.LA(5);
+                    if ( (LA31_241=='t') ) {
+                        int LA31_340 = input.LA(5);
 
-                        if ( (LA31_334=='i') ) {
-                            int LA31_417 = input.LA(6);
+                        if ( (LA31_340=='i') ) {
+                            int LA31_427 = input.LA(6);
 
-                            if ( (LA31_417=='n') ) {
-                                int LA31_485 = input.LA(7);
+                            if ( (LA31_427=='n') ) {
+                                int LA31_500 = input.LA(7);
 
-                                if ( (LA31_485=='c') ) {
-                                    int LA31_536 = input.LA(8);
+                                if ( (LA31_500=='c') ) {
+                                    int LA31_553 = input.LA(8);
 
-                                    if ( (LA31_536=='t') ) {
-                                        int LA31_567 = input.LA(9);
+                                    if ( (LA31_553=='t') ) {
+                                        int LA31_584 = input.LA(9);
 
-                                        if ( (LA31_567=='$'||(LA31_567>='0' && LA31_567<='9')||LA31_567=='_'||(LA31_567>='a' && LA31_567<='z')) ) {
-                                            alt31=172;
+                                        if ( (LA31_584=='$'||(LA31_584>='0' && LA31_584<='9')||LA31_584=='_'||(LA31_584>='a' && LA31_584<='z')) ) {
+                                            alt31=178;
                                         }
                                         else {
                                             alt31=42;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 'e':
@@ -8502,99 +8768,99 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 's':
                     {
-                    int LA31_238 = input.LA(4);
+                    int LA31_242 = input.LA(4);
 
-                    if ( (LA31_238=='c') ) {
-                        int LA31_335 = input.LA(5);
+                    if ( (LA31_242=='c') ) {
+                        int LA31_341 = input.LA(5);
 
-                        if ( (LA31_335=='$'||(LA31_335>='0' && LA31_335<='9')||LA31_335=='_'||(LA31_335>='a' && LA31_335<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_341=='$'||(LA31_341>='0' && LA31_341<='9')||LA31_341=='_'||(LA31_341>='a' && LA31_341<='z')) ) {
+                            alt31=178;
                         }
                         else {
                             alt31=54;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'l':
                     {
-                    int LA31_239 = input.LA(4);
+                    int LA31_243 = input.LA(4);
 
-                    if ( (LA31_239=='e') ) {
-                        int LA31_336 = input.LA(5);
+                    if ( (LA31_243=='e') ) {
+                        int LA31_342 = input.LA(5);
 
-                        if ( (LA31_336=='t') ) {
-                            int LA31_419 = input.LA(6);
+                        if ( (LA31_342=='t') ) {
+                            int LA31_429 = input.LA(6);
 
-                            if ( (LA31_419=='e') ) {
-                                int LA31_486 = input.LA(7);
+                            if ( (LA31_429=='e') ) {
+                                int LA31_501 = input.LA(7);
 
-                                if ( (LA31_486=='$'||(LA31_486>='0' && LA31_486<='9')||LA31_486=='_'||(LA31_486>='a' && LA31_486<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_501=='$'||(LA31_501>='0' && LA31_501<='9')||LA31_501=='_'||(LA31_501>='a' && LA31_501<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
                                     alt31=77;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'f':
                     {
-                    int LA31_240 = input.LA(4);
+                    int LA31_244 = input.LA(4);
 
-                    if ( (LA31_240=='i') ) {
-                        int LA31_337 = input.LA(5);
+                    if ( (LA31_244=='i') ) {
+                        int LA31_343 = input.LA(5);
 
-                        if ( (LA31_337=='n') ) {
-                            int LA31_420 = input.LA(6);
+                        if ( (LA31_343=='n') ) {
+                            int LA31_430 = input.LA(6);
 
-                            if ( (LA31_420=='e') ) {
-                                int LA31_487 = input.LA(7);
+                            if ( (LA31_430=='e') ) {
+                                int LA31_502 = input.LA(7);
 
-                                if ( (LA31_487=='$'||(LA31_487>='0' && LA31_487<='9')||LA31_487=='_'||(LA31_487>='a' && LA31_487<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_502=='$'||(LA31_502>='0' && LA31_502<='9')||LA31_502=='_'||(LA31_502>='a' && LA31_502<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
-                                    alt31=104;}
+                                    alt31=110;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             case 'a':
                 {
-                int LA31_117 = input.LA(3);
+                int LA31_119 = input.LA(3);
 
-                if ( (LA31_117=='y') ) {
+                if ( (LA31_119=='y') ) {
                     switch ( input.LA(4) ) {
                     case 's':
                         {
-                        int LA31_338 = input.LA(5);
+                        int LA31_344 = input.LA(5);
 
-                        if ( (LA31_338=='$'||(LA31_338>='0' && LA31_338<='9')||LA31_338=='_'||(LA31_338>='a' && LA31_338<='z')) ) {
-                            alt31=172;
+                        if ( (LA31_344=='$'||(LA31_344>='0' && LA31_344<='9')||LA31_344=='_'||(LA31_344>='a' && LA31_344<='z')) ) {
+                            alt31=178;
                         }
                         else {
-                            alt31=85;}
+                            alt31=91;}
                         }
                         break;
                     case '$':
@@ -8635,19 +8901,19 @@ public class EsperEPL2GrammarLexer extends Lexer {
                     case 'y':
                     case 'z':
                         {
-                        alt31=172;
+                        alt31=178;
                         }
                         break;
                     default:
-                        alt31=84;}
+                        alt31=90;}
 
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -8659,175 +8925,175 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'i':
                     {
-                    int LA31_242 = input.LA(4);
+                    int LA31_246 = input.LA(4);
 
-                    if ( (LA31_242=='d') ) {
-                        int LA31_340 = input.LA(5);
+                    if ( (LA31_246=='d') ) {
+                        int LA31_346 = input.LA(5);
 
-                        if ( (LA31_340=='i') ) {
-                            int LA31_422 = input.LA(6);
+                        if ( (LA31_346=='i') ) {
+                            int LA31_432 = input.LA(6);
 
-                            if ( (LA31_422=='r') ) {
-                                int LA31_488 = input.LA(7);
+                            if ( (LA31_432=='r') ) {
+                                int LA31_503 = input.LA(7);
 
-                                if ( (LA31_488=='e') ) {
-                                    int LA31_539 = input.LA(8);
+                                if ( (LA31_503=='e') ) {
+                                    int LA31_556 = input.LA(8);
 
-                                    if ( (LA31_539=='c') ) {
-                                        int LA31_568 = input.LA(9);
+                                    if ( (LA31_556=='c') ) {
+                                        int LA31_585 = input.LA(9);
 
-                                        if ( (LA31_568=='t') ) {
-                                            int LA31_586 = input.LA(10);
+                                        if ( (LA31_585=='t') ) {
+                                            int LA31_603 = input.LA(10);
 
-                                            if ( (LA31_586=='i') ) {
-                                                int LA31_598 = input.LA(11);
+                                            if ( (LA31_603=='i') ) {
+                                                int LA31_615 = input.LA(11);
 
-                                                if ( (LA31_598=='o') ) {
-                                                    int LA31_608 = input.LA(12);
+                                                if ( (LA31_615=='o') ) {
+                                                    int LA31_625 = input.LA(12);
 
-                                                    if ( (LA31_608=='n') ) {
-                                                        int LA31_616 = input.LA(13);
+                                                    if ( (LA31_625=='n') ) {
+                                                        int LA31_633 = input.LA(13);
 
-                                                        if ( (LA31_616=='a') ) {
-                                                            int LA31_620 = input.LA(14);
+                                                        if ( (LA31_633=='a') ) {
+                                                            int LA31_637 = input.LA(14);
 
-                                                            if ( (LA31_620=='l') ) {
-                                                                int LA31_623 = input.LA(15);
+                                                            if ( (LA31_637=='l') ) {
+                                                                int LA31_640 = input.LA(15);
 
-                                                                if ( (LA31_623=='$'||(LA31_623>='0' && LA31_623<='9')||LA31_623=='_'||(LA31_623>='a' && LA31_623<='z')) ) {
-                                                                    alt31=172;
+                                                                if ( (LA31_640=='$'||(LA31_640>='0' && LA31_640<='9')||LA31_640=='_'||(LA31_640>='a' && LA31_640<='z')) ) {
+                                                                    alt31=178;
                                                                 }
                                                                 else {
                                                                     alt31=59;}
                                                             }
                                                             else {
-                                                                alt31=172;}
+                                                                alt31=178;}
                                                         }
                                                         else {
-                                                            alt31=172;}
+                                                            alt31=178;}
                                                     }
                                                     else {
-                                                        alt31=172;}
+                                                        alt31=178;}
                                                 }
                                                 else {
-                                                    alt31=172;}
+                                                    alt31=178;}
                                             }
                                             else {
-                                                alt31=172;}
+                                                alt31=178;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 't':
                     {
-                    int LA31_243 = input.LA(4);
+                    int LA31_247 = input.LA(4);
 
-                    if ( (LA31_243=='i') ) {
-                        int LA31_341 = input.LA(5);
+                    if ( (LA31_247=='i') ) {
+                        int LA31_347 = input.LA(5);
 
-                        if ( (LA31_341=='l') ) {
-                            int LA31_423 = input.LA(6);
+                        if ( (LA31_347=='l') ) {
+                            int LA31_433 = input.LA(6);
 
-                            if ( (LA31_423=='$'||(LA31_423>='0' && LA31_423<='9')||LA31_423=='_'||(LA31_423>='a' && LA31_423<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_433=='$'||(LA31_433>='0' && LA31_433<='9')||LA31_433=='_'||(LA31_433>='a' && LA31_433<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=81;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             case 'p':
                 {
-                int LA31_119 = input.LA(3);
+                int LA31_121 = input.LA(3);
 
-                if ( (LA31_119=='d') ) {
-                    int LA31_244 = input.LA(4);
+                if ( (LA31_121=='d') ) {
+                    int LA31_248 = input.LA(4);
 
-                    if ( (LA31_244=='a') ) {
-                        int LA31_342 = input.LA(5);
+                    if ( (LA31_248=='a') ) {
+                        int LA31_348 = input.LA(5);
 
-                        if ( (LA31_342=='t') ) {
-                            int LA31_424 = input.LA(6);
+                        if ( (LA31_348=='t') ) {
+                            int LA31_434 = input.LA(6);
 
-                            if ( (LA31_424=='e') ) {
-                                int LA31_490 = input.LA(7);
+                            if ( (LA31_434=='e') ) {
+                                int LA31_505 = input.LA(7);
 
-                                if ( (LA31_490=='$'||(LA31_490>='0' && LA31_490<='9')||LA31_490=='_'||(LA31_490>='a' && LA31_490<='z')) ) {
-                                    alt31=172;
+                                if ( (LA31_505=='$'||(LA31_505>='0' && LA31_505<='9')||LA31_505=='_'||(LA31_505>='a' && LA31_505<='z')) ) {
+                                    alt31=178;
                                 }
                                 else {
-                                    alt31=101;}
+                                    alt31=107;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             case 's':
                 {
-                int LA31_120 = input.LA(3);
+                int LA31_122 = input.LA(3);
 
-                if ( (LA31_120=='i') ) {
-                    int LA31_245 = input.LA(4);
+                if ( (LA31_122=='i') ) {
+                    int LA31_249 = input.LA(4);
 
-                    if ( (LA31_245=='n') ) {
-                        int LA31_343 = input.LA(5);
+                    if ( (LA31_249=='n') ) {
+                        int LA31_349 = input.LA(5);
 
-                        if ( (LA31_343=='g') ) {
-                            int LA31_425 = input.LA(6);
+                        if ( (LA31_349=='g') ) {
+                            int LA31_435 = input.LA(6);
 
-                            if ( (LA31_425=='$'||(LA31_425>='0' && LA31_425<='9')||LA31_425=='_'||(LA31_425>='a' && LA31_425<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_435=='$'||(LA31_435>='0' && LA31_435<='9')||LA31_435=='_'||(LA31_435>='a' && LA31_435<='z')) ) {
+                                alt31=178;
                             }
                             else {
-                                alt31=110;}
+                                alt31=116;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -8839,88 +9105,88 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 't':
                     {
-                    int LA31_246 = input.LA(4);
+                    int LA31_250 = input.LA(4);
 
-                    if ( (LA31_246=='t') ) {
-                        int LA31_344 = input.LA(5);
+                    if ( (LA31_250=='t') ) {
+                        int LA31_350 = input.LA(5);
 
-                        if ( (LA31_344=='e') ) {
-                            int LA31_426 = input.LA(6);
+                        if ( (LA31_350=='e') ) {
+                            int LA31_436 = input.LA(6);
 
-                            if ( (LA31_426=='r') ) {
-                                int LA31_492 = input.LA(7);
+                            if ( (LA31_436=='r') ) {
+                                int LA31_507 = input.LA(7);
 
-                                if ( (LA31_492=='n') ) {
-                                    int LA31_541 = input.LA(8);
+                                if ( (LA31_507=='n') ) {
+                                    int LA31_558 = input.LA(8);
 
-                                    if ( (LA31_541=='$'||(LA31_541>='0' && LA31_541<='9')||LA31_541=='_'||(LA31_541>='a' && LA31_541<='z')) ) {
-                                        alt31=172;
+                                    if ( (LA31_558=='$'||(LA31_558>='0' && LA31_558<='9')||LA31_558=='_'||(LA31_558>='a' && LA31_558<='z')) ) {
+                                        alt31=178;
                                     }
                                     else {
                                         alt31=62;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'r':
                     {
-                    int LA31_247 = input.LA(4);
+                    int LA31_251 = input.LA(4);
 
-                    if ( (LA31_247=='t') ) {
-                        int LA31_345 = input.LA(5);
+                    if ( (LA31_251=='t') ) {
+                        int LA31_351 = input.LA(5);
 
-                        if ( (LA31_345=='i') ) {
-                            int LA31_427 = input.LA(6);
+                        if ( (LA31_351=='i') ) {
+                            int LA31_437 = input.LA(6);
 
-                            if ( (LA31_427=='t') ) {
-                                int LA31_493 = input.LA(7);
+                            if ( (LA31_437=='t') ) {
+                                int LA31_508 = input.LA(7);
 
-                                if ( (LA31_493=='i') ) {
-                                    int LA31_542 = input.LA(8);
+                                if ( (LA31_508=='i') ) {
+                                    int LA31_559 = input.LA(8);
 
-                                    if ( (LA31_542=='o') ) {
-                                        int LA31_570 = input.LA(9);
+                                    if ( (LA31_559=='o') ) {
+                                        int LA31_587 = input.LA(9);
 
-                                        if ( (LA31_570=='n') ) {
-                                            int LA31_587 = input.LA(10);
+                                        if ( (LA31_587=='n') ) {
+                                            int LA31_604 = input.LA(10);
 
-                                            if ( (LA31_587=='$'||(LA31_587>='0' && LA31_587<='9')||LA31_587=='_'||(LA31_587>='a' && LA31_587<='z')) ) {
-                                                alt31=172;
+                                            if ( (LA31_604=='$'||(LA31_604>='0' && LA31_604<='9')||LA31_604=='_'||(LA31_604>='a' && LA31_604<='z')) ) {
+                                                alt31=178;
                                             }
                                             else {
-                                                alt31=105;}
+                                                alt31=111;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
@@ -8929,113 +9195,113 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case 'e':
                     {
-                    int LA31_248 = input.LA(4);
+                    int LA31_252 = input.LA(4);
 
-                    if ( (LA31_248=='v') ) {
+                    if ( (LA31_252=='v') ) {
                         switch ( input.LA(5) ) {
                         case 't':
                             {
-                            int LA31_428 = input.LA(6);
+                            int LA31_438 = input.LA(6);
 
-                            if ( (LA31_428=='a') ) {
-                                int LA31_494 = input.LA(7);
+                            if ( (LA31_438=='a') ) {
+                                int LA31_509 = input.LA(7);
 
-                                if ( (LA31_494=='i') ) {
-                                    int LA31_543 = input.LA(8);
+                                if ( (LA31_509=='i') ) {
+                                    int LA31_560 = input.LA(8);
 
-                                    if ( (LA31_543=='l') ) {
-                                        int LA31_571 = input.LA(9);
+                                    if ( (LA31_560=='l') ) {
+                                        int LA31_588 = input.LA(9);
 
-                                        if ( (LA31_571=='$'||(LA31_571>='0' && LA31_571<='9')||LA31_571=='_'||(LA31_571>='a' && LA31_571<='z')) ) {
-                                            alt31=172;
+                                        if ( (LA31_588=='$'||(LA31_588>='0' && LA31_588<='9')||LA31_588=='_'||(LA31_588>='a' && LA31_588<='z')) ) {
+                                            alt31=178;
                                         }
                                         else {
                                             alt31=66;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                             }
                             break;
                         case 'c':
                             {
-                            int LA31_429 = input.LA(6);
+                            int LA31_439 = input.LA(6);
 
-                            if ( (LA31_429=='o') ) {
-                                int LA31_495 = input.LA(7);
+                            if ( (LA31_439=='o') ) {
+                                int LA31_510 = input.LA(7);
 
-                                if ( (LA31_495=='u') ) {
-                                    int LA31_544 = input.LA(8);
+                                if ( (LA31_510=='u') ) {
+                                    int LA31_561 = input.LA(8);
 
-                                    if ( (LA31_544=='n') ) {
-                                        int LA31_572 = input.LA(9);
+                                    if ( (LA31_561=='n') ) {
+                                        int LA31_589 = input.LA(9);
 
-                                        if ( (LA31_572=='t') ) {
-                                            int LA31_589 = input.LA(10);
+                                        if ( (LA31_589=='t') ) {
+                                            int LA31_606 = input.LA(10);
 
-                                            if ( (LA31_589=='$'||(LA31_589>='0' && LA31_589<='9')||LA31_589=='_'||(LA31_589>='a' && LA31_589<='z')) ) {
-                                                alt31=172;
+                                            if ( (LA31_606=='$'||(LA31_606>='0' && LA31_606<='9')||LA31_606=='_'||(LA31_606>='a' && LA31_606<='z')) ) {
+                                                alt31=178;
                                             }
                                             else {
                                                 alt31=67;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                             }
                             break;
                         case 'w':
                             {
-                            int LA31_430 = input.LA(6);
+                            int LA31_440 = input.LA(6);
 
-                            if ( (LA31_430=='i') ) {
-                                int LA31_496 = input.LA(7);
+                            if ( (LA31_440=='i') ) {
+                                int LA31_511 = input.LA(7);
 
-                                if ( (LA31_496=='n') ) {
-                                    int LA31_545 = input.LA(8);
+                                if ( (LA31_511=='n') ) {
+                                    int LA31_562 = input.LA(8);
 
-                                    if ( (LA31_545=='d') ) {
-                                        int LA31_573 = input.LA(9);
+                                    if ( (LA31_562=='d') ) {
+                                        int LA31_590 = input.LA(9);
 
-                                        if ( (LA31_573=='o') ) {
-                                            int LA31_590 = input.LA(10);
+                                        if ( (LA31_590=='o') ) {
+                                            int LA31_607 = input.LA(10);
 
-                                            if ( (LA31_590=='w') ) {
-                                                int LA31_601 = input.LA(11);
+                                            if ( (LA31_607=='w') ) {
+                                                int LA31_618 = input.LA(11);
 
-                                                if ( (LA31_601=='$'||(LA31_601>='0' && LA31_601<='9')||LA31_601=='_'||(LA31_601>='a' && LA31_601<='z')) ) {
-                                                    alt31=172;
+                                                if ( (LA31_618=='$'||(LA31_618>='0' && LA31_618<='9')||LA31_618=='_'||(LA31_618>='a' && LA31_618<='z')) ) {
+                                                    alt31=178;
                                                 }
                                                 else {
                                                     alt31=68;}
                                             }
                                             else {
-                                                alt31=172;}
+                                                alt31=178;}
                                         }
                                         else {
-                                            alt31=172;}
+                                            alt31=178;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                             }
                             break;
                         case '$':
@@ -9074,7 +9340,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
                         case 'y':
                         case 'z':
                             {
-                            alt31=172;
+                            alt31=178;
                             }
                             break;
                         default:
@@ -9082,39 +9348,39 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 case 'i':
                     {
-                    int LA31_249 = input.LA(4);
+                    int LA31_253 = input.LA(4);
 
-                    if ( (LA31_249=='o') ) {
-                        int LA31_347 = input.LA(5);
+                    if ( (LA31_253=='o') ) {
+                        int LA31_353 = input.LA(5);
 
-                        if ( (LA31_347=='r') ) {
-                            int LA31_432 = input.LA(6);
+                        if ( (LA31_353=='r') ) {
+                            int LA31_442 = input.LA(6);
 
-                            if ( (LA31_432=='$'||(LA31_432>='0' && LA31_432<='9')||LA31_432=='_'||(LA31_432>='a' && LA31_432<='z')) ) {
-                                alt31=172;
+                            if ( (LA31_442=='$'||(LA31_442>='0' && LA31_442<='9')||LA31_442=='_'||(LA31_442>='a' && LA31_442<='z')) ) {
+                                alt31=178;
                             }
                             else {
                                 alt31=69;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                     }
                     break;
                 default:
-                    alt31=172;}
+                    alt31=178;}
 
                 }
                 break;
             default:
-                alt31=172;}
+                alt31=178;}
 
             }
             break;
@@ -9123,52 +9389,130 @@ public class EsperEPL2GrammarLexer extends Lexer {
             int LA31_21 = input.LA(2);
 
             if ( (LA31_21=='a') ) {
-                int LA31_123 = input.LA(3);
+                int LA31_125 = input.LA(3);
 
-                if ( (LA31_123=='r') ) {
-                    int LA31_250 = input.LA(4);
+                if ( (LA31_125=='r') ) {
+                    int LA31_254 = input.LA(4);
 
-                    if ( (LA31_250=='i') ) {
-                        int LA31_348 = input.LA(5);
+                    if ( (LA31_254=='i') ) {
+                        int LA31_354 = input.LA(5);
 
-                        if ( (LA31_348=='a') ) {
-                            int LA31_433 = input.LA(6);
+                        if ( (LA31_354=='a') ) {
+                            int LA31_443 = input.LA(6);
 
-                            if ( (LA31_433=='b') ) {
-                                int LA31_498 = input.LA(7);
+                            if ( (LA31_443=='b') ) {
+                                int LA31_513 = input.LA(7);
 
-                                if ( (LA31_498=='l') ) {
-                                    int LA31_546 = input.LA(8);
+                                if ( (LA31_513=='l') ) {
+                                    int LA31_563 = input.LA(8);
 
-                                    if ( (LA31_546=='e') ) {
-                                        int LA31_574 = input.LA(9);
+                                    if ( (LA31_563=='e') ) {
+                                        int LA31_591 = input.LA(9);
 
-                                        if ( (LA31_574=='$'||(LA31_574>='0' && LA31_574<='9')||LA31_574=='_'||(LA31_574>='a' && LA31_574<='z')) ) {
-                                            alt31=172;
+                                        if ( (LA31_591=='$'||(LA31_591>='0' && LA31_591<='9')||LA31_591=='_'||(LA31_591>='a' && LA31_591<='z')) ) {
+                                            alt31=178;
                                         }
                                         else {
                                             alt31=80;}
                                     }
                                     else {
-                                        alt31=172;}
+                                        alt31=178;}
                                 }
                                 else {
-                                    alt31=172;}
+                                    alt31=178;}
                             }
                             else {
-                                alt31=172;}
+                                alt31=178;}
                         }
                         else {
-                            alt31=172;}
+                            alt31=178;}
                     }
                     else {
-                        alt31=172;}
+                        alt31=178;}
                 }
                 else {
-                    alt31=172;}
+                    alt31=178;}
             }
             else {
-                alt31=172;}
+                alt31=178;}
+            }
+            break;
+        case 'y':
+            {
+            int LA31_22 = input.LA(2);
+
+            if ( (LA31_22=='e') ) {
+                int LA31_126 = input.LA(3);
+
+                if ( (LA31_126=='a') ) {
+                    int LA31_255 = input.LA(4);
+
+                    if ( (LA31_255=='r') ) {
+                        switch ( input.LA(5) ) {
+                        case 's':
+                            {
+                            int LA31_444 = input.LA(6);
+
+                            if ( (LA31_444=='$'||(LA31_444>='0' && LA31_444<='9')||LA31_444=='_'||(LA31_444>='a' && LA31_444<='z')) ) {
+                                alt31=178;
+                            }
+                            else {
+                                alt31=85;}
+                            }
+                            break;
+                        case '$':
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                        case '_':
+                        case 'a':
+                        case 'b':
+                        case 'c':
+                        case 'd':
+                        case 'e':
+                        case 'f':
+                        case 'g':
+                        case 'h':
+                        case 'i':
+                        case 'j':
+                        case 'k':
+                        case 'l':
+                        case 'm':
+                        case 'n':
+                        case 'o':
+                        case 'p':
+                        case 'q':
+                        case 'r':
+                        case 't':
+                        case 'u':
+                        case 'v':
+                        case 'w':
+                        case 'x':
+                        case 'y':
+                        case 'z':
+                            {
+                            alt31=178;
+                            }
+                            break;
+                        default:
+                            alt31=84;}
+
+                    }
+                    else {
+                        alt31=178;}
+                }
+                else {
+                    alt31=178;}
+            }
+            else {
+                alt31=178;}
             }
             break;
         case '-':
@@ -9176,33 +9520,33 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case '>':
                 {
-                alt31=113;
+                alt31=119;
                 }
                 break;
             case '=':
                 {
-                alt31=135;
+                alt31=141;
                 }
                 break;
             case '-':
                 {
-                alt31=136;
+                alt31=142;
                 }
                 break;
             default:
-                alt31=134;}
+                alt31=140;}
 
             }
             break;
         case '=':
             {
-            int LA31_23 = input.LA(2);
+            int LA31_24 = input.LA(2);
 
-            if ( (LA31_23=='=') ) {
-                alt31=125;
+            if ( (LA31_24=='=') ) {
+                alt31=131;
             }
             else {
-                alt31=114;}
+                alt31=120;}
             }
             break;
         case '<':
@@ -9210,89 +9554,89 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case '>':
                 {
-                alt31=115;
+                alt31=121;
                 }
                 break;
             case '<':
                 {
-                int LA31_131 = input.LA(3);
+                int LA31_134 = input.LA(3);
 
-                if ( (LA31_131=='=') ) {
-                    alt31=148;
+                if ( (LA31_134=='=') ) {
+                    alt31=154;
                 }
                 else {
-                    alt31=147;}
+                    alt31=153;}
                 }
                 break;
             case '=':
                 {
-                alt31=149;
+                alt31=155;
                 }
                 break;
             default:
-                alt31=150;}
+                alt31=156;}
 
             }
             break;
         case '?':
             {
-            alt31=116;
+            alt31=122;
             }
             break;
         case '(':
             {
-            alt31=117;
+            alt31=123;
             }
             break;
         case ')':
             {
-            alt31=118;
+            alt31=124;
             }
             break;
         case '[':
             {
-            alt31=119;
+            alt31=125;
             }
             break;
         case ']':
             {
-            alt31=120;
+            alt31=126;
             }
             break;
         case '{':
             {
-            alt31=121;
+            alt31=127;
             }
             break;
         case '}':
             {
-            alt31=122;
+            alt31=128;
             }
             break;
         case ':':
             {
-            alt31=123;
+            alt31=129;
             }
             break;
         case ',':
             {
-            alt31=124;
+            alt31=130;
             }
             break;
         case '!':
             {
-            int LA31_34 = input.LA(2);
+            int LA31_35 = input.LA(2);
 
-            if ( (LA31_34=='=') ) {
-                alt31=128;
+            if ( (LA31_35=='=') ) {
+                alt31=134;
             }
             else {
-                alt31=126;}
+                alt31=132;}
             }
             break;
         case '~':
             {
-            alt31=127;
+            alt31=133;
             }
             break;
         case '/':
@@ -9300,21 +9644,21 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case '=':
                 {
-                alt31=130;
+                alt31=136;
                 }
                 break;
             case '/':
                 {
-                alt31=167;
+                alt31=173;
                 }
                 break;
             case '*':
                 {
-                alt31=168;
+                alt31=174;
                 }
                 break;
             default:
-                alt31=129;}
+                alt31=135;}
 
             }
             break;
@@ -9323,39 +9667,39 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case '=':
                 {
-                alt31=132;
+                alt31=138;
                 }
                 break;
             case '+':
                 {
-                alt31=133;
+                alt31=139;
                 }
                 break;
             default:
-                alt31=131;}
+                alt31=137;}
 
             }
             break;
         case '*':
             {
-            int LA31_38 = input.LA(2);
+            int LA31_39 = input.LA(2);
 
-            if ( (LA31_38=='=') ) {
-                alt31=138;
+            if ( (LA31_39=='=') ) {
+                alt31=144;
             }
             else {
-                alt31=137;}
+                alt31=143;}
             }
             break;
         case '%':
             {
-            int LA31_39 = input.LA(2);
+            int LA31_40 = input.LA(2);
 
-            if ( (LA31_39=='=') ) {
-                alt31=140;
+            if ( (LA31_40=='=') ) {
+                alt31=146;
             }
             else {
-                alt31=139;}
+                alt31=145;}
             }
             break;
         case '>':
@@ -9366,44 +9710,44 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 switch ( input.LA(3) ) {
                 case '=':
                     {
-                    alt31=142;
+                    alt31=148;
                     }
                     break;
                 case '>':
                     {
-                    int LA31_254 = input.LA(4);
+                    int LA31_259 = input.LA(4);
 
-                    if ( (LA31_254=='=') ) {
-                        alt31=144;
+                    if ( (LA31_259=='=') ) {
+                        alt31=150;
                     }
                     else {
-                        alt31=143;}
+                        alt31=149;}
                     }
                     break;
                 default:
-                    alt31=141;}
+                    alt31=147;}
 
                 }
                 break;
             case '=':
                 {
-                alt31=145;
+                alt31=151;
                 }
                 break;
             default:
-                alt31=146;}
+                alt31=152;}
 
             }
             break;
         case '^':
             {
-            int LA31_41 = input.LA(2);
+            int LA31_42 = input.LA(2);
 
-            if ( (LA31_41=='=') ) {
-                alt31=152;
+            if ( (LA31_42=='=') ) {
+                alt31=158;
             }
             else {
-                alt31=151;}
+                alt31=157;}
             }
             break;
         case '|':
@@ -9411,16 +9755,16 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case '=':
                 {
-                alt31=154;
+                alt31=160;
                 }
                 break;
             case '|':
                 {
-                alt31=155;
+                alt31=161;
                 }
                 break;
             default:
-                alt31=153;}
+                alt31=159;}
 
             }
             break;
@@ -9429,58 +9773,58 @@ public class EsperEPL2GrammarLexer extends Lexer {
             switch ( input.LA(2) ) {
             case '=':
                 {
-                alt31=157;
+                alt31=163;
                 }
                 break;
             case '&':
                 {
-                alt31=158;
+                alt31=164;
                 }
                 break;
             default:
-                alt31=156;}
+                alt31=162;}
 
             }
             break;
         case ';':
             {
-            alt31=159;
+            alt31=165;
             }
             break;
         case '.':
             {
-            int LA31_45 = input.LA(2);
+            int LA31_46 = input.LA(2);
 
-            if ( ((LA31_45>='0' && LA31_45<='9')) ) {
-                alt31=173;
+            if ( ((LA31_46>='0' && LA31_46<='9')) ) {
+                alt31=179;
             }
             else {
-                alt31=160;}
+                alt31=166;}
             }
             break;
         case '\u18FF':
             {
-            alt31=161;
+            alt31=167;
             }
             break;
         case '\u18FE':
             {
-            alt31=162;
+            alt31=168;
             }
             break;
         case '\u18FD':
             {
-            alt31=163;
+            alt31=169;
             }
             break;
         case '\\':
             {
-            alt31=164;
+            alt31=170;
             }
             break;
         case '@':
             {
-            alt31=165;
+            alt31=171;
             }
             break;
         case '\t':
@@ -9489,22 +9833,22 @@ public class EsperEPL2GrammarLexer extends Lexer {
         case '\r':
         case ' ':
             {
-            alt31=166;
+            alt31=172;
             }
             break;
         case '`':
             {
-            alt31=169;
+            alt31=175;
             }
             break;
         case '\'':
             {
-            alt31=170;
+            alt31=176;
             }
             break;
         case '\"':
             {
-            alt31=171;
+            alt31=177;
             }
             break;
         case '$':
@@ -9512,10 +9856,9 @@ public class EsperEPL2GrammarLexer extends Lexer {
         case 'k':
         case 'q':
         case 'x':
-        case 'y':
         case 'z':
             {
-            alt31=172;
+            alt31=178;
             }
             break;
         case '0':
@@ -9529,7 +9872,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
         case '8':
         case '9':
             {
-            alt31=173;
+            alt31=179;
             }
             break;
         default:
@@ -10123,630 +10466,672 @@ public class EsperEPL2GrammarLexer extends Lexer {
                 }
                 break;
             case 84 :
-                // EsperEPL2Grammar.g:1:603: TIMEPERIOD_DAY
+                // EsperEPL2Grammar.g:1:603: TIMEPERIOD_YEAR
+                {
+                mTIMEPERIOD_YEAR(); if (state.failed) return ;
+
+                }
+                break;
+            case 85 :
+                // EsperEPL2Grammar.g:1:619: TIMEPERIOD_YEARS
+                {
+                mTIMEPERIOD_YEARS(); if (state.failed) return ;
+
+                }
+                break;
+            case 86 :
+                // EsperEPL2Grammar.g:1:636: TIMEPERIOD_MONTH
+                {
+                mTIMEPERIOD_MONTH(); if (state.failed) return ;
+
+                }
+                break;
+            case 87 :
+                // EsperEPL2Grammar.g:1:653: TIMEPERIOD_MONTHS
+                {
+                mTIMEPERIOD_MONTHS(); if (state.failed) return ;
+
+                }
+                break;
+            case 88 :
+                // EsperEPL2Grammar.g:1:671: TIMEPERIOD_WEEK
+                {
+                mTIMEPERIOD_WEEK(); if (state.failed) return ;
+
+                }
+                break;
+            case 89 :
+                // EsperEPL2Grammar.g:1:687: TIMEPERIOD_WEEKS
+                {
+                mTIMEPERIOD_WEEKS(); if (state.failed) return ;
+
+                }
+                break;
+            case 90 :
+                // EsperEPL2Grammar.g:1:704: TIMEPERIOD_DAY
                 {
                 mTIMEPERIOD_DAY(); if (state.failed) return ;
 
                 }
                 break;
-            case 85 :
-                // EsperEPL2Grammar.g:1:618: TIMEPERIOD_DAYS
+            case 91 :
+                // EsperEPL2Grammar.g:1:719: TIMEPERIOD_DAYS
                 {
                 mTIMEPERIOD_DAYS(); if (state.failed) return ;
 
                 }
                 break;
-            case 86 :
-                // EsperEPL2Grammar.g:1:634: TIMEPERIOD_HOUR
+            case 92 :
+                // EsperEPL2Grammar.g:1:735: TIMEPERIOD_HOUR
                 {
                 mTIMEPERIOD_HOUR(); if (state.failed) return ;
 
                 }
                 break;
-            case 87 :
-                // EsperEPL2Grammar.g:1:650: TIMEPERIOD_HOURS
+            case 93 :
+                // EsperEPL2Grammar.g:1:751: TIMEPERIOD_HOURS
                 {
                 mTIMEPERIOD_HOURS(); if (state.failed) return ;
 
                 }
                 break;
-            case 88 :
-                // EsperEPL2Grammar.g:1:667: TIMEPERIOD_MINUTE
+            case 94 :
+                // EsperEPL2Grammar.g:1:768: TIMEPERIOD_MINUTE
                 {
                 mTIMEPERIOD_MINUTE(); if (state.failed) return ;
 
                 }
                 break;
-            case 89 :
-                // EsperEPL2Grammar.g:1:685: TIMEPERIOD_MINUTES
+            case 95 :
+                // EsperEPL2Grammar.g:1:786: TIMEPERIOD_MINUTES
                 {
                 mTIMEPERIOD_MINUTES(); if (state.failed) return ;
 
                 }
                 break;
-            case 90 :
-                // EsperEPL2Grammar.g:1:704: TIMEPERIOD_SEC
+            case 96 :
+                // EsperEPL2Grammar.g:1:805: TIMEPERIOD_SEC
                 {
                 mTIMEPERIOD_SEC(); if (state.failed) return ;
 
                 }
                 break;
-            case 91 :
-                // EsperEPL2Grammar.g:1:719: TIMEPERIOD_SECOND
+            case 97 :
+                // EsperEPL2Grammar.g:1:820: TIMEPERIOD_SECOND
                 {
                 mTIMEPERIOD_SECOND(); if (state.failed) return ;
 
                 }
                 break;
-            case 92 :
-                // EsperEPL2Grammar.g:1:737: TIMEPERIOD_SECONDS
+            case 98 :
+                // EsperEPL2Grammar.g:1:838: TIMEPERIOD_SECONDS
                 {
                 mTIMEPERIOD_SECONDS(); if (state.failed) return ;
 
                 }
                 break;
-            case 93 :
-                // EsperEPL2Grammar.g:1:756: TIMEPERIOD_MILLISEC
+            case 99 :
+                // EsperEPL2Grammar.g:1:857: TIMEPERIOD_MILLISEC
                 {
                 mTIMEPERIOD_MILLISEC(); if (state.failed) return ;
 
                 }
                 break;
-            case 94 :
-                // EsperEPL2Grammar.g:1:776: TIMEPERIOD_MILLISECOND
+            case 100 :
+                // EsperEPL2Grammar.g:1:877: TIMEPERIOD_MILLISECOND
                 {
                 mTIMEPERIOD_MILLISECOND(); if (state.failed) return ;
 
                 }
                 break;
-            case 95 :
-                // EsperEPL2Grammar.g:1:799: TIMEPERIOD_MILLISECONDS
+            case 101 :
+                // EsperEPL2Grammar.g:1:900: TIMEPERIOD_MILLISECONDS
                 {
                 mTIMEPERIOD_MILLISECONDS(); if (state.failed) return ;
 
                 }
                 break;
-            case 96 :
-                // EsperEPL2Grammar.g:1:823: BOOLEAN_TRUE
+            case 102 :
+                // EsperEPL2Grammar.g:1:924: BOOLEAN_TRUE
                 {
                 mBOOLEAN_TRUE(); if (state.failed) return ;
 
                 }
                 break;
-            case 97 :
-                // EsperEPL2Grammar.g:1:836: BOOLEAN_FALSE
+            case 103 :
+                // EsperEPL2Grammar.g:1:937: BOOLEAN_FALSE
                 {
                 mBOOLEAN_FALSE(); if (state.failed) return ;
 
                 }
                 break;
-            case 98 :
-                // EsperEPL2Grammar.g:1:850: VALUE_NULL
+            case 104 :
+                // EsperEPL2Grammar.g:1:951: VALUE_NULL
                 {
                 mVALUE_NULL(); if (state.failed) return ;
 
                 }
                 break;
-            case 99 :
-                // EsperEPL2Grammar.g:1:861: ROW_LIMIT_EXPR
+            case 105 :
+                // EsperEPL2Grammar.g:1:962: ROW_LIMIT_EXPR
                 {
                 mROW_LIMIT_EXPR(); if (state.failed) return ;
 
                 }
                 break;
-            case 100 :
-                // EsperEPL2Grammar.g:1:876: OFFSET
+            case 106 :
+                // EsperEPL2Grammar.g:1:977: OFFSET
                 {
                 mOFFSET(); if (state.failed) return ;
 
                 }
                 break;
-            case 101 :
-                // EsperEPL2Grammar.g:1:883: UPDATE
+            case 107 :
+                // EsperEPL2Grammar.g:1:984: UPDATE
                 {
                 mUPDATE(); if (state.failed) return ;
 
                 }
                 break;
-            case 102 :
-                // EsperEPL2Grammar.g:1:890: MATCH_RECOGNIZE
+            case 108 :
+                // EsperEPL2Grammar.g:1:991: MATCH_RECOGNIZE
                 {
                 mMATCH_RECOGNIZE(); if (state.failed) return ;
 
                 }
                 break;
-            case 103 :
-                // EsperEPL2Grammar.g:1:906: MEASURES
+            case 109 :
+                // EsperEPL2Grammar.g:1:1007: MEASURES
                 {
                 mMEASURES(); if (state.failed) return ;
 
                 }
                 break;
-            case 104 :
-                // EsperEPL2Grammar.g:1:915: DEFINE
+            case 110 :
+                // EsperEPL2Grammar.g:1:1016: DEFINE
                 {
                 mDEFINE(); if (state.failed) return ;
 
                 }
                 break;
-            case 105 :
-                // EsperEPL2Grammar.g:1:922: PARTITION
+            case 111 :
+                // EsperEPL2Grammar.g:1:1023: PARTITION
                 {
                 mPARTITION(); if (state.failed) return ;
 
                 }
                 break;
-            case 106 :
-                // EsperEPL2Grammar.g:1:932: MATCHES
+            case 112 :
+                // EsperEPL2Grammar.g:1:1033: MATCHES
                 {
                 mMATCHES(); if (state.failed) return ;
 
                 }
                 break;
-            case 107 :
-                // EsperEPL2Grammar.g:1:940: AFTER
+            case 113 :
+                // EsperEPL2Grammar.g:1:1041: AFTER
                 {
                 mAFTER(); if (state.failed) return ;
 
                 }
                 break;
-            case 108 :
-                // EsperEPL2Grammar.g:1:946: FOR
+            case 114 :
+                // EsperEPL2Grammar.g:1:1047: FOR
                 {
                 mFOR(); if (state.failed) return ;
 
                 }
                 break;
-            case 109 :
-                // EsperEPL2Grammar.g:1:950: WHILE
+            case 115 :
+                // EsperEPL2Grammar.g:1:1051: WHILE
                 {
                 mWHILE(); if (state.failed) return ;
 
                 }
                 break;
-            case 110 :
-                // EsperEPL2Grammar.g:1:956: USING
+            case 116 :
+                // EsperEPL2Grammar.g:1:1057: USING
                 {
                 mUSING(); if (state.failed) return ;
 
                 }
                 break;
-            case 111 :
-                // EsperEPL2Grammar.g:1:962: MERGE
+            case 117 :
+                // EsperEPL2Grammar.g:1:1063: MERGE
                 {
                 mMERGE(); if (state.failed) return ;
 
                 }
                 break;
-            case 112 :
-                // EsperEPL2Grammar.g:1:968: MATCHED
+            case 118 :
+                // EsperEPL2Grammar.g:1:1069: MATCHED
                 {
                 mMATCHED(); if (state.failed) return ;
 
                 }
                 break;
-            case 113 :
-                // EsperEPL2Grammar.g:1:976: FOLLOWED_BY
+            case 119 :
+                // EsperEPL2Grammar.g:1:1077: FOLLOWED_BY
                 {
                 mFOLLOWED_BY(); if (state.failed) return ;
 
                 }
                 break;
-            case 114 :
-                // EsperEPL2Grammar.g:1:988: EQUALS
+            case 120 :
+                // EsperEPL2Grammar.g:1:1089: EQUALS
                 {
                 mEQUALS(); if (state.failed) return ;
 
                 }
                 break;
-            case 115 :
-                // EsperEPL2Grammar.g:1:995: SQL_NE
+            case 121 :
+                // EsperEPL2Grammar.g:1:1096: SQL_NE
                 {
                 mSQL_NE(); if (state.failed) return ;
 
                 }
                 break;
-            case 116 :
-                // EsperEPL2Grammar.g:1:1002: QUESTION
+            case 122 :
+                // EsperEPL2Grammar.g:1:1103: QUESTION
                 {
                 mQUESTION(); if (state.failed) return ;
 
                 }
                 break;
-            case 117 :
-                // EsperEPL2Grammar.g:1:1011: LPAREN
+            case 123 :
+                // EsperEPL2Grammar.g:1:1112: LPAREN
                 {
                 mLPAREN(); if (state.failed) return ;
 
                 }
                 break;
-            case 118 :
-                // EsperEPL2Grammar.g:1:1018: RPAREN
+            case 124 :
+                // EsperEPL2Grammar.g:1:1119: RPAREN
                 {
                 mRPAREN(); if (state.failed) return ;
 
                 }
                 break;
-            case 119 :
-                // EsperEPL2Grammar.g:1:1025: LBRACK
+            case 125 :
+                // EsperEPL2Grammar.g:1:1126: LBRACK
                 {
                 mLBRACK(); if (state.failed) return ;
 
                 }
                 break;
-            case 120 :
-                // EsperEPL2Grammar.g:1:1032: RBRACK
+            case 126 :
+                // EsperEPL2Grammar.g:1:1133: RBRACK
                 {
                 mRBRACK(); if (state.failed) return ;
 
                 }
                 break;
-            case 121 :
-                // EsperEPL2Grammar.g:1:1039: LCURLY
+            case 127 :
+                // EsperEPL2Grammar.g:1:1140: LCURLY
                 {
                 mLCURLY(); if (state.failed) return ;
 
                 }
                 break;
-            case 122 :
-                // EsperEPL2Grammar.g:1:1046: RCURLY
+            case 128 :
+                // EsperEPL2Grammar.g:1:1147: RCURLY
                 {
                 mRCURLY(); if (state.failed) return ;
 
                 }
                 break;
-            case 123 :
-                // EsperEPL2Grammar.g:1:1053: COLON
+            case 129 :
+                // EsperEPL2Grammar.g:1:1154: COLON
                 {
                 mCOLON(); if (state.failed) return ;
 
                 }
                 break;
-            case 124 :
-                // EsperEPL2Grammar.g:1:1059: COMMA
+            case 130 :
+                // EsperEPL2Grammar.g:1:1160: COMMA
                 {
                 mCOMMA(); if (state.failed) return ;
 
                 }
                 break;
-            case 125 :
-                // EsperEPL2Grammar.g:1:1065: EQUAL
+            case 131 :
+                // EsperEPL2Grammar.g:1:1166: EQUAL
                 {
                 mEQUAL(); if (state.failed) return ;
 
                 }
                 break;
-            case 126 :
-                // EsperEPL2Grammar.g:1:1071: LNOT
+            case 132 :
+                // EsperEPL2Grammar.g:1:1172: LNOT
                 {
                 mLNOT(); if (state.failed) return ;
 
                 }
                 break;
-            case 127 :
-                // EsperEPL2Grammar.g:1:1076: BNOT
+            case 133 :
+                // EsperEPL2Grammar.g:1:1177: BNOT
                 {
                 mBNOT(); if (state.failed) return ;
 
                 }
                 break;
-            case 128 :
-                // EsperEPL2Grammar.g:1:1081: NOT_EQUAL
+            case 134 :
+                // EsperEPL2Grammar.g:1:1182: NOT_EQUAL
                 {
                 mNOT_EQUAL(); if (state.failed) return ;
 
                 }
                 break;
-            case 129 :
-                // EsperEPL2Grammar.g:1:1091: DIV
+            case 135 :
+                // EsperEPL2Grammar.g:1:1192: DIV
                 {
                 mDIV(); if (state.failed) return ;
 
                 }
                 break;
-            case 130 :
-                // EsperEPL2Grammar.g:1:1095: DIV_ASSIGN
+            case 136 :
+                // EsperEPL2Grammar.g:1:1196: DIV_ASSIGN
                 {
                 mDIV_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 131 :
-                // EsperEPL2Grammar.g:1:1106: PLUS
+            case 137 :
+                // EsperEPL2Grammar.g:1:1207: PLUS
                 {
                 mPLUS(); if (state.failed) return ;
 
                 }
                 break;
-            case 132 :
-                // EsperEPL2Grammar.g:1:1111: PLUS_ASSIGN
+            case 138 :
+                // EsperEPL2Grammar.g:1:1212: PLUS_ASSIGN
                 {
                 mPLUS_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 133 :
-                // EsperEPL2Grammar.g:1:1123: INC
+            case 139 :
+                // EsperEPL2Grammar.g:1:1224: INC
                 {
                 mINC(); if (state.failed) return ;
 
                 }
                 break;
-            case 134 :
-                // EsperEPL2Grammar.g:1:1127: MINUS
+            case 140 :
+                // EsperEPL2Grammar.g:1:1228: MINUS
                 {
                 mMINUS(); if (state.failed) return ;
 
                 }
                 break;
-            case 135 :
-                // EsperEPL2Grammar.g:1:1133: MINUS_ASSIGN
+            case 141 :
+                // EsperEPL2Grammar.g:1:1234: MINUS_ASSIGN
                 {
                 mMINUS_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 136 :
-                // EsperEPL2Grammar.g:1:1146: DEC
+            case 142 :
+                // EsperEPL2Grammar.g:1:1247: DEC
                 {
                 mDEC(); if (state.failed) return ;
 
                 }
                 break;
-            case 137 :
-                // EsperEPL2Grammar.g:1:1150: STAR
+            case 143 :
+                // EsperEPL2Grammar.g:1:1251: STAR
                 {
                 mSTAR(); if (state.failed) return ;
 
                 }
                 break;
-            case 138 :
-                // EsperEPL2Grammar.g:1:1155: STAR_ASSIGN
+            case 144 :
+                // EsperEPL2Grammar.g:1:1256: STAR_ASSIGN
                 {
                 mSTAR_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 139 :
-                // EsperEPL2Grammar.g:1:1167: MOD
+            case 145 :
+                // EsperEPL2Grammar.g:1:1268: MOD
                 {
                 mMOD(); if (state.failed) return ;
 
                 }
                 break;
-            case 140 :
-                // EsperEPL2Grammar.g:1:1171: MOD_ASSIGN
+            case 146 :
+                // EsperEPL2Grammar.g:1:1272: MOD_ASSIGN
                 {
                 mMOD_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 141 :
-                // EsperEPL2Grammar.g:1:1182: SR
+            case 147 :
+                // EsperEPL2Grammar.g:1:1283: SR
                 {
                 mSR(); if (state.failed) return ;
 
                 }
                 break;
-            case 142 :
-                // EsperEPL2Grammar.g:1:1185: SR_ASSIGN
+            case 148 :
+                // EsperEPL2Grammar.g:1:1286: SR_ASSIGN
                 {
                 mSR_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 143 :
-                // EsperEPL2Grammar.g:1:1195: BSR
+            case 149 :
+                // EsperEPL2Grammar.g:1:1296: BSR
                 {
                 mBSR(); if (state.failed) return ;
 
                 }
                 break;
-            case 144 :
-                // EsperEPL2Grammar.g:1:1199: BSR_ASSIGN
+            case 150 :
+                // EsperEPL2Grammar.g:1:1300: BSR_ASSIGN
                 {
                 mBSR_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 145 :
-                // EsperEPL2Grammar.g:1:1210: GE
+            case 151 :
+                // EsperEPL2Grammar.g:1:1311: GE
                 {
                 mGE(); if (state.failed) return ;
 
                 }
                 break;
-            case 146 :
-                // EsperEPL2Grammar.g:1:1213: GT
+            case 152 :
+                // EsperEPL2Grammar.g:1:1314: GT
                 {
                 mGT(); if (state.failed) return ;
 
                 }
                 break;
-            case 147 :
-                // EsperEPL2Grammar.g:1:1216: SL
+            case 153 :
+                // EsperEPL2Grammar.g:1:1317: SL
                 {
                 mSL(); if (state.failed) return ;
 
                 }
                 break;
-            case 148 :
-                // EsperEPL2Grammar.g:1:1219: SL_ASSIGN
+            case 154 :
+                // EsperEPL2Grammar.g:1:1320: SL_ASSIGN
                 {
                 mSL_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 149 :
-                // EsperEPL2Grammar.g:1:1229: LE
+            case 155 :
+                // EsperEPL2Grammar.g:1:1330: LE
                 {
                 mLE(); if (state.failed) return ;
 
                 }
                 break;
-            case 150 :
-                // EsperEPL2Grammar.g:1:1232: LT
+            case 156 :
+                // EsperEPL2Grammar.g:1:1333: LT
                 {
                 mLT(); if (state.failed) return ;
 
                 }
                 break;
-            case 151 :
-                // EsperEPL2Grammar.g:1:1235: BXOR
+            case 157 :
+                // EsperEPL2Grammar.g:1:1336: BXOR
                 {
                 mBXOR(); if (state.failed) return ;
 
                 }
                 break;
-            case 152 :
-                // EsperEPL2Grammar.g:1:1240: BXOR_ASSIGN
+            case 158 :
+                // EsperEPL2Grammar.g:1:1341: BXOR_ASSIGN
                 {
                 mBXOR_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 153 :
-                // EsperEPL2Grammar.g:1:1252: BOR
+            case 159 :
+                // EsperEPL2Grammar.g:1:1353: BOR
                 {
                 mBOR(); if (state.failed) return ;
 
                 }
                 break;
-            case 154 :
-                // EsperEPL2Grammar.g:1:1256: BOR_ASSIGN
+            case 160 :
+                // EsperEPL2Grammar.g:1:1357: BOR_ASSIGN
                 {
                 mBOR_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 155 :
-                // EsperEPL2Grammar.g:1:1267: LOR
+            case 161 :
+                // EsperEPL2Grammar.g:1:1368: LOR
                 {
                 mLOR(); if (state.failed) return ;
 
                 }
                 break;
-            case 156 :
-                // EsperEPL2Grammar.g:1:1271: BAND
+            case 162 :
+                // EsperEPL2Grammar.g:1:1372: BAND
                 {
                 mBAND(); if (state.failed) return ;
 
                 }
                 break;
-            case 157 :
-                // EsperEPL2Grammar.g:1:1276: BAND_ASSIGN
+            case 163 :
+                // EsperEPL2Grammar.g:1:1377: BAND_ASSIGN
                 {
                 mBAND_ASSIGN(); if (state.failed) return ;
 
                 }
                 break;
-            case 158 :
-                // EsperEPL2Grammar.g:1:1288: LAND
+            case 164 :
+                // EsperEPL2Grammar.g:1:1389: LAND
                 {
                 mLAND(); if (state.failed) return ;
 
                 }
                 break;
-            case 159 :
-                // EsperEPL2Grammar.g:1:1293: SEMI
+            case 165 :
+                // EsperEPL2Grammar.g:1:1394: SEMI
                 {
                 mSEMI(); if (state.failed) return ;
 
                 }
                 break;
-            case 160 :
-                // EsperEPL2Grammar.g:1:1298: DOT
+            case 166 :
+                // EsperEPL2Grammar.g:1:1399: DOT
                 {
                 mDOT(); if (state.failed) return ;
 
                 }
                 break;
-            case 161 :
-                // EsperEPL2Grammar.g:1:1302: NUM_LONG
+            case 167 :
+                // EsperEPL2Grammar.g:1:1403: NUM_LONG
                 {
                 mNUM_LONG(); if (state.failed) return ;
 
                 }
                 break;
-            case 162 :
-                // EsperEPL2Grammar.g:1:1311: NUM_DOUBLE
+            case 168 :
+                // EsperEPL2Grammar.g:1:1412: NUM_DOUBLE
                 {
                 mNUM_DOUBLE(); if (state.failed) return ;
 
                 }
                 break;
-            case 163 :
-                // EsperEPL2Grammar.g:1:1322: NUM_FLOAT
+            case 169 :
+                // EsperEPL2Grammar.g:1:1423: NUM_FLOAT
                 {
                 mNUM_FLOAT(); if (state.failed) return ;
 
                 }
                 break;
-            case 164 :
-                // EsperEPL2Grammar.g:1:1332: ESCAPECHAR
+            case 170 :
+                // EsperEPL2Grammar.g:1:1433: ESCAPECHAR
                 {
                 mESCAPECHAR(); if (state.failed) return ;
 
                 }
                 break;
-            case 165 :
-                // EsperEPL2Grammar.g:1:1343: EMAILAT
+            case 171 :
+                // EsperEPL2Grammar.g:1:1444: EMAILAT
                 {
                 mEMAILAT(); if (state.failed) return ;
 
                 }
                 break;
-            case 166 :
-                // EsperEPL2Grammar.g:1:1351: WS
+            case 172 :
+                // EsperEPL2Grammar.g:1:1452: WS
                 {
                 mWS(); if (state.failed) return ;
 
                 }
                 break;
-            case 167 :
-                // EsperEPL2Grammar.g:1:1354: SL_COMMENT
+            case 173 :
+                // EsperEPL2Grammar.g:1:1455: SL_COMMENT
                 {
                 mSL_COMMENT(); if (state.failed) return ;
 
                 }
                 break;
-            case 168 :
-                // EsperEPL2Grammar.g:1:1365: ML_COMMENT
+            case 174 :
+                // EsperEPL2Grammar.g:1:1466: ML_COMMENT
                 {
                 mML_COMMENT(); if (state.failed) return ;
 
                 }
                 break;
-            case 169 :
-                // EsperEPL2Grammar.g:1:1376: TICKED_STRING_LITERAL
+            case 175 :
+                // EsperEPL2Grammar.g:1:1477: TICKED_STRING_LITERAL
                 {
                 mTICKED_STRING_LITERAL(); if (state.failed) return ;
 
                 }
                 break;
-            case 170 :
-                // EsperEPL2Grammar.g:1:1398: QUOTED_STRING_LITERAL
+            case 176 :
+                // EsperEPL2Grammar.g:1:1499: QUOTED_STRING_LITERAL
                 {
                 mQUOTED_STRING_LITERAL(); if (state.failed) return ;
 
                 }
                 break;
-            case 171 :
-                // EsperEPL2Grammar.g:1:1420: STRING_LITERAL
+            case 177 :
+                // EsperEPL2Grammar.g:1:1521: STRING_LITERAL
                 {
                 mSTRING_LITERAL(); if (state.failed) return ;
 
                 }
                 break;
-            case 172 :
-                // EsperEPL2Grammar.g:1:1435: IDENT
+            case 178 :
+                // EsperEPL2Grammar.g:1:1536: IDENT
                 {
                 mIDENT(); if (state.failed) return ;
 
                 }
                 break;
-            case 173 :
-                // EsperEPL2Grammar.g:1:1441: NUM_INT
+            case 179 :
+                // EsperEPL2Grammar.g:1:1542: NUM_INT
                 {
                 mNUM_INT(); if (state.failed) return ;
 
@@ -10759,10 +11144,10 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
     // $ANTLR start synpred1_EsperEPL2Grammar
     public final void synpred1_EsperEPL2Grammar_fragment() throws RecognitionException {   
-        // EsperEPL2Grammar.g:1953:5: ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )
-        // EsperEPL2Grammar.g:1953:6: ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX )
+        // EsperEPL2Grammar.g:1989:5: ( ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX ) )
+        // EsperEPL2Grammar.g:1989:6: ( '0' .. '9' )+ ( '.' | EXPONENT | FLOAT_SUFFIX )
         {
-        // EsperEPL2Grammar.g:1953:6: ( '0' .. '9' )+
+        // EsperEPL2Grammar.g:1989:6: ( '0' .. '9' )+
         int cnt32=0;
         loop32:
         do {
@@ -10776,7 +11161,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
             switch (alt32) {
         	case 1 :
-        	    // EsperEPL2Grammar.g:1953:7: '0' .. '9'
+        	    // EsperEPL2Grammar.g:1989:7: '0' .. '9'
         	    {
         	    matchRange('0','9'); if (state.failed) return ;
 
@@ -10793,7 +11178,7 @@ public class EsperEPL2GrammarLexer extends Lexer {
             cnt32++;
         } while (true);
 
-        // EsperEPL2Grammar.g:1953:18: ( '.' | EXPONENT | FLOAT_SUFFIX )
+        // EsperEPL2Grammar.g:1989:18: ( '.' | EXPONENT | FLOAT_SUFFIX )
         int alt33=3;
         switch ( input.LA(1) ) {
         case '.':
@@ -10822,21 +11207,21 @@ public class EsperEPL2GrammarLexer extends Lexer {
 
         switch (alt33) {
             case 1 :
-                // EsperEPL2Grammar.g:1953:19: '.'
+                // EsperEPL2Grammar.g:1989:19: '.'
                 {
                 match('.'); if (state.failed) return ;
 
                 }
                 break;
             case 2 :
-                // EsperEPL2Grammar.g:1953:23: EXPONENT
+                // EsperEPL2Grammar.g:1989:23: EXPONENT
                 {
                 mEXPONENT(); if (state.failed) return ;
 
                 }
                 break;
             case 3 :
-                // EsperEPL2Grammar.g:1953:32: FLOAT_SUFFIX
+                // EsperEPL2Grammar.g:1989:32: FLOAT_SUFFIX
                 {
                 mFLOAT_SUFFIX(); if (state.failed) return ;
 

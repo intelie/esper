@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2010-11-25 22:56:11
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2010-12-05 08:28:45
 
   package com.espertech.esper.epl.generated;
   import java.util.Stack;
@@ -13,345 +13,354 @@ import java.util.ArrayList;
 
 public class EsperEPL2Ast extends TreeParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "CREATE", "WINDOW", "IN_SET", "BETWEEN", "LIKE", "REGEXP", "ESCAPE", "OR_EXPR", "AND_EXPR", "NOT_EXPR", "EVERY_EXPR", "EVERY_DISTINCT_EXPR", "WHERE", "AS", "SUM", "AVG", "MAX", "MIN", "COALESCE", "MEDIAN", "STDDEV", "AVEDEV", "COUNT", "SELECT", "CASE", "CASE2", "ELSE", "WHEN", "THEN", "END", "FROM", "OUTER", "INNER", "JOIN", "LEFT", "RIGHT", "FULL", "ON", "IS", "BY", "GROUP", "HAVING", "DISTINCT", "ALL", "ANY", "SOME", "OUTPUT", "EVENTS", "FIRST", "LAST", "INSERT", "INTO", "ORDER", "ASC", "DESC", "RSTREAM", "ISTREAM", "IRSTREAM", "SCHEMA", "UNIDIRECTIONAL", "RETAINUNION", "RETAININTERSECTION", "PATTERN", "SQL", "METADATASQL", "PREVIOUS", "PREVIOUSTAIL", "PREVIOUSCOUNT", "PREVIOUSWINDOW", "PRIOR", "EXISTS", "WEEKDAY", "LW", "INSTANCEOF", "TYPEOF", "CAST", "CURRENT_TIMESTAMP", "DELETE", "SNAPSHOT", "SET", "VARIABLE", "UNTIL", "AT", "INDEX", "TIMEPERIOD_DAY", "TIMEPERIOD_DAYS", "TIMEPERIOD_HOUR", "TIMEPERIOD_HOURS", "TIMEPERIOD_MINUTE", "TIMEPERIOD_MINUTES", "TIMEPERIOD_SEC", "TIMEPERIOD_SECOND", "TIMEPERIOD_SECONDS", "TIMEPERIOD_MILLISEC", "TIMEPERIOD_MILLISECOND", "TIMEPERIOD_MILLISECONDS", "BOOLEAN_TRUE", "BOOLEAN_FALSE", "VALUE_NULL", "ROW_LIMIT_EXPR", "OFFSET", "UPDATE", "MATCH_RECOGNIZE", "MEASURES", "DEFINE", "PARTITION", "MATCHES", "AFTER", "FOR", "WHILE", "USING", "MERGE", "MATCHED", "NUMERIC_PARAM_RANGE", "NUMERIC_PARAM_LIST", "NUMERIC_PARAM_FREQUENCY", "OBJECT_PARAM_ORDERED_EXPR", "FOLLOWED_BY_EXPR", "ARRAY_PARAM_LIST", "PATTERN_FILTER_EXPR", "PATTERN_NOT_EXPR", "PATTERN_EVERY_DISTINCT_EXPR", "EVENT_FILTER_EXPR", "EVENT_FILTER_PROPERTY_EXPR", "EVENT_FILTER_PROPERTY_EXPR_ATOM", "PROPERTY_SELECTION_ELEMENT_EXPR", "PROPERTY_SELECTION_STREAM", "PROPERTY_WILDCARD_SELECT", "EVENT_FILTER_IDENT", "EVENT_FILTER_PARAM", "EVENT_FILTER_RANGE", "EVENT_FILTER_NOT_RANGE", "EVENT_FILTER_IN", "EVENT_FILTER_NOT_IN", "EVENT_FILTER_BETWEEN", "EVENT_FILTER_NOT_BETWEEN", "CLASS_IDENT", "GUARD_EXPR", "OBSERVER_EXPR", "VIEW_EXPR", "PATTERN_INCL_EXPR", "DATABASE_JOIN_EXPR", "WHERE_EXPR", "HAVING_EXPR", "EVAL_BITWISE_EXPR", "EVAL_AND_EXPR", "EVAL_OR_EXPR", "EVAL_EQUALS_EXPR", "EVAL_NOTEQUALS_EXPR", "EVAL_EQUALS_GROUP_EXPR", "EVAL_NOTEQUALS_GROUP_EXPR", "EVAL_IDENT", "SELECTION_EXPR", "SELECTION_ELEMENT_EXPR", "SELECTION_STREAM", "STREAM_EXPR", "OUTERJOIN_EXPR", "INNERJOIN_EXPR", "LEFT_OUTERJOIN_EXPR", "RIGHT_OUTERJOIN_EXPR", "FULL_OUTERJOIN_EXPR", "GROUP_BY_EXPR", "ORDER_BY_EXPR", "ORDER_ELEMENT_EXPR", "EVENT_PROP_EXPR", "EVENT_PROP_SIMPLE", "EVENT_PROP_MAPPED", "EVENT_PROP_INDEXED", "EVENT_PROP_DYNAMIC_SIMPLE", "EVENT_PROP_DYNAMIC_INDEXED", "EVENT_PROP_DYNAMIC_MAPPED", "EVENT_LIMIT_EXPR", "TIMEPERIOD_LIMIT_EXPR", "AFTER_LIMIT_EXPR", "CRONTAB_LIMIT_EXPR", "CRONTAB_LIMIT_EXPR_PARAM", "WHEN_LIMIT_EXPR", "INSERTINTO_EXPR", "EXPRCOL", "CONCAT", "LIB_FUNCTION", "LIB_FUNC_CHAIN", "DOT_EXPR", "UNARY_MINUS", "TIME_PERIOD", "ARRAY_EXPR", "DAY_PART", "HOUR_PART", "MINUTE_PART", "SECOND_PART", "MILLISECOND_PART", "NOT_IN_SET", "NOT_BETWEEN", "NOT_LIKE", "NOT_REGEXP", "DBSELECT_EXPR", "DBFROM_CLAUSE", "DBWHERE_CLAUSE", "WILDCARD_SELECT", "INSERTINTO_STREAM_NAME", "IN_RANGE", "NOT_IN_RANGE", "SUBSELECT_EXPR", "SUBSELECT_GROUP_EXPR", "EXISTS_SUBSELECT_EXPR", "IN_SUBSELECT_EXPR", "NOT_IN_SUBSELECT_EXPR", "IN_SUBSELECT_QUERY_EXPR", "LAST_OPERATOR", "WEEKDAY_OPERATOR", "SUBSTITUTION", "CAST_EXPR", "CREATE_INDEX_EXPR", "CREATE_WINDOW_EXPR", "CREATE_WINDOW_SELECT_EXPR", "ON_EXPR", "ON_STREAM", "ON_DELETE_EXPR", "ON_SELECT_EXPR", "ON_UPDATE_EXPR", "ON_MERGE_EXPR", "ON_SELECT_INSERT_EXPR", "ON_SELECT_INSERT_OUTPUT", "ON_EXPR_FROM", "ON_SET_EXPR", "CREATE_VARIABLE_EXPR", "METHOD_JOIN_EXPR", "MATCH_UNTIL_EXPR", "MATCH_UNTIL_RANGE_HALFOPEN", "MATCH_UNTIL_RANGE_HALFCLOSED", "MATCH_UNTIL_RANGE_CLOSED", "MATCH_UNTIL_RANGE_BOUNDED", "CREATE_COL_TYPE_LIST", "CREATE_COL_TYPE", "NUMBERSETSTAR", "ANNOTATION", "ANNOTATION_ARRAY", "ANNOTATION_VALUE", "FIRST_AGGREG", "LAST_AGGREG", "WINDOW_AGGREG", "UPDATE_EXPR", "ON_SET_EXPR_ITEM", "CREATE_SCHEMA_EXPR", "CREATE_SCHEMA_EXPR_QUAL", "CREATE_SCHEMA_EXPR_INH", "VARIANT_LIST", "MERGE_UPD", "MERGE_INS", "INT_TYPE", "LONG_TYPE", "FLOAT_TYPE", "DOUBLE_TYPE", "STRING_TYPE", "BOOL_TYPE", "NULL_TYPE", "NUM_DOUBLE", "EPL_EXPR", "MATCHREC_PATTERN", "MATCHREC_PATTERN_ATOM", "MATCHREC_PATTERN_CONCAT", "MATCHREC_PATTERN_ALTER", "MATCHREC_PATTERN_NESTED", "MATCHREC_AFTER_SKIP", "MATCHREC_INTERVAL", "MATCHREC_DEFINE", "MATCHREC_DEFINE_ITEM", "MATCHREC_MEASURES", "MATCHREC_MEASURE_ITEM", "MATCHREC_PARTITION", "COMMA", "IDENT", "LPAREN", "RPAREN", "EQUALS", "DOT", "LBRACK", "RBRACK", "STAR", "BOR", "PLUS", "QUESTION", "COLON", "STRING_LITERAL", "QUOTED_STRING_LITERAL", "BAND", "BXOR", "SQL_NE", "NOT_EQUAL", "LT", "GT", "LE", "GE", "LOR", "MINUS", "DIV", "MOD", "LCURLY", "RCURLY", "NUM_INT", "FOLLOWED_BY", "ESCAPECHAR", "TICKED_STRING_LITERAL", "NUM_LONG", "NUM_FLOAT", "EQUAL", "LNOT", "BNOT", "DIV_ASSIGN", "PLUS_ASSIGN", "INC", "MINUS_ASSIGN", "DEC", "STAR_ASSIGN", "MOD_ASSIGN", "SR", "SR_ASSIGN", "BSR", "BSR_ASSIGN", "SL", "SL_ASSIGN", "BXOR_ASSIGN", "BOR_ASSIGN", "BAND_ASSIGN", "LAND", "SEMI", "EMAILAT", "WS", "SL_COMMENT", "ML_COMMENT", "EscapeSequence", "UnicodeEscape", "OctalEscape", "HexDigit", "EXPONENT", "FLOAT_SUFFIX"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "CREATE", "WINDOW", "IN_SET", "BETWEEN", "LIKE", "REGEXP", "ESCAPE", "OR_EXPR", "AND_EXPR", "NOT_EXPR", "EVERY_EXPR", "EVERY_DISTINCT_EXPR", "WHERE", "AS", "SUM", "AVG", "MAX", "MIN", "COALESCE", "MEDIAN", "STDDEV", "AVEDEV", "COUNT", "SELECT", "CASE", "CASE2", "ELSE", "WHEN", "THEN", "END", "FROM", "OUTER", "INNER", "JOIN", "LEFT", "RIGHT", "FULL", "ON", "IS", "BY", "GROUP", "HAVING", "DISTINCT", "ALL", "ANY", "SOME", "OUTPUT", "EVENTS", "FIRST", "LAST", "INSERT", "INTO", "ORDER", "ASC", "DESC", "RSTREAM", "ISTREAM", "IRSTREAM", "SCHEMA", "UNIDIRECTIONAL", "RETAINUNION", "RETAININTERSECTION", "PATTERN", "SQL", "METADATASQL", "PREVIOUS", "PREVIOUSTAIL", "PREVIOUSCOUNT", "PREVIOUSWINDOW", "PRIOR", "EXISTS", "WEEKDAY", "LW", "INSTANCEOF", "TYPEOF", "CAST", "CURRENT_TIMESTAMP", "DELETE", "SNAPSHOT", "SET", "VARIABLE", "UNTIL", "AT", "INDEX", "TIMEPERIOD_YEAR", "TIMEPERIOD_YEARS", "TIMEPERIOD_MONTH", "TIMEPERIOD_MONTHS", "TIMEPERIOD_WEEK", "TIMEPERIOD_WEEKS", "TIMEPERIOD_DAY", "TIMEPERIOD_DAYS", "TIMEPERIOD_HOUR", "TIMEPERIOD_HOURS", "TIMEPERIOD_MINUTE", "TIMEPERIOD_MINUTES", "TIMEPERIOD_SEC", "TIMEPERIOD_SECOND", "TIMEPERIOD_SECONDS", "TIMEPERIOD_MILLISEC", "TIMEPERIOD_MILLISECOND", "TIMEPERIOD_MILLISECONDS", "BOOLEAN_TRUE", "BOOLEAN_FALSE", "VALUE_NULL", "ROW_LIMIT_EXPR", "OFFSET", "UPDATE", "MATCH_RECOGNIZE", "MEASURES", "DEFINE", "PARTITION", "MATCHES", "AFTER", "FOR", "WHILE", "USING", "MERGE", "MATCHED", "NUMERIC_PARAM_RANGE", "NUMERIC_PARAM_LIST", "NUMERIC_PARAM_FREQUENCY", "OBJECT_PARAM_ORDERED_EXPR", "FOLLOWED_BY_EXPR", "ARRAY_PARAM_LIST", "PATTERN_FILTER_EXPR", "PATTERN_NOT_EXPR", "PATTERN_EVERY_DISTINCT_EXPR", "EVENT_FILTER_EXPR", "EVENT_FILTER_PROPERTY_EXPR", "EVENT_FILTER_PROPERTY_EXPR_ATOM", "PROPERTY_SELECTION_ELEMENT_EXPR", "PROPERTY_SELECTION_STREAM", "PROPERTY_WILDCARD_SELECT", "EVENT_FILTER_IDENT", "EVENT_FILTER_PARAM", "EVENT_FILTER_RANGE", "EVENT_FILTER_NOT_RANGE", "EVENT_FILTER_IN", "EVENT_FILTER_NOT_IN", "EVENT_FILTER_BETWEEN", "EVENT_FILTER_NOT_BETWEEN", "CLASS_IDENT", "GUARD_EXPR", "OBSERVER_EXPR", "VIEW_EXPR", "PATTERN_INCL_EXPR", "DATABASE_JOIN_EXPR", "WHERE_EXPR", "HAVING_EXPR", "EVAL_BITWISE_EXPR", "EVAL_AND_EXPR", "EVAL_OR_EXPR", "EVAL_EQUALS_EXPR", "EVAL_NOTEQUALS_EXPR", "EVAL_EQUALS_GROUP_EXPR", "EVAL_NOTEQUALS_GROUP_EXPR", "EVAL_IDENT", "SELECTION_EXPR", "SELECTION_ELEMENT_EXPR", "SELECTION_STREAM", "STREAM_EXPR", "OUTERJOIN_EXPR", "INNERJOIN_EXPR", "LEFT_OUTERJOIN_EXPR", "RIGHT_OUTERJOIN_EXPR", "FULL_OUTERJOIN_EXPR", "GROUP_BY_EXPR", "ORDER_BY_EXPR", "ORDER_ELEMENT_EXPR", "EVENT_PROP_EXPR", "EVENT_PROP_SIMPLE", "EVENT_PROP_MAPPED", "EVENT_PROP_INDEXED", "EVENT_PROP_DYNAMIC_SIMPLE", "EVENT_PROP_DYNAMIC_INDEXED", "EVENT_PROP_DYNAMIC_MAPPED", "EVENT_LIMIT_EXPR", "TIMEPERIOD_LIMIT_EXPR", "AFTER_LIMIT_EXPR", "CRONTAB_LIMIT_EXPR", "CRONTAB_LIMIT_EXPR_PARAM", "WHEN_LIMIT_EXPR", "INSERTINTO_EXPR", "EXPRCOL", "CONCAT", "LIB_FUNCTION", "LIB_FUNC_CHAIN", "DOT_EXPR", "UNARY_MINUS", "TIME_PERIOD", "ARRAY_EXPR", "YEAR_PART", "MONTH_PART", "WEEK_PART", "DAY_PART", "HOUR_PART", "MINUTE_PART", "SECOND_PART", "MILLISECOND_PART", "NOT_IN_SET", "NOT_BETWEEN", "NOT_LIKE", "NOT_REGEXP", "DBSELECT_EXPR", "DBFROM_CLAUSE", "DBWHERE_CLAUSE", "WILDCARD_SELECT", "INSERTINTO_STREAM_NAME", "IN_RANGE", "NOT_IN_RANGE", "SUBSELECT_EXPR", "SUBSELECT_GROUP_EXPR", "EXISTS_SUBSELECT_EXPR", "IN_SUBSELECT_EXPR", "NOT_IN_SUBSELECT_EXPR", "IN_SUBSELECT_QUERY_EXPR", "LAST_OPERATOR", "WEEKDAY_OPERATOR", "SUBSTITUTION", "CAST_EXPR", "CREATE_INDEX_EXPR", "CREATE_WINDOW_EXPR", "CREATE_WINDOW_SELECT_EXPR", "ON_EXPR", "ON_STREAM", "ON_DELETE_EXPR", "ON_SELECT_EXPR", "ON_UPDATE_EXPR", "ON_MERGE_EXPR", "ON_SELECT_INSERT_EXPR", "ON_SELECT_INSERT_OUTPUT", "ON_EXPR_FROM", "ON_SET_EXPR", "CREATE_VARIABLE_EXPR", "METHOD_JOIN_EXPR", "MATCH_UNTIL_EXPR", "MATCH_UNTIL_RANGE_HALFOPEN", "MATCH_UNTIL_RANGE_HALFCLOSED", "MATCH_UNTIL_RANGE_CLOSED", "MATCH_UNTIL_RANGE_BOUNDED", "CREATE_COL_TYPE_LIST", "CREATE_COL_TYPE", "NUMBERSETSTAR", "ANNOTATION", "ANNOTATION_ARRAY", "ANNOTATION_VALUE", "FIRST_AGGREG", "LAST_AGGREG", "WINDOW_AGGREG", "UPDATE_EXPR", "ON_SET_EXPR_ITEM", "CREATE_SCHEMA_EXPR", "CREATE_SCHEMA_EXPR_QUAL", "CREATE_SCHEMA_EXPR_INH", "VARIANT_LIST", "MERGE_UPD", "MERGE_INS", "INT_TYPE", "LONG_TYPE", "FLOAT_TYPE", "DOUBLE_TYPE", "STRING_TYPE", "BOOL_TYPE", "NULL_TYPE", "NUM_DOUBLE", "EPL_EXPR", "MATCHREC_PATTERN", "MATCHREC_PATTERN_ATOM", "MATCHREC_PATTERN_CONCAT", "MATCHREC_PATTERN_ALTER", "MATCHREC_PATTERN_NESTED", "MATCHREC_AFTER_SKIP", "MATCHREC_INTERVAL", "MATCHREC_DEFINE", "MATCHREC_DEFINE_ITEM", "MATCHREC_MEASURES", "MATCHREC_MEASURE_ITEM", "MATCHREC_PARTITION", "COMMA", "IDENT", "LPAREN", "RPAREN", "EQUALS", "DOT", "LBRACK", "RBRACK", "STAR", "BOR", "PLUS", "QUESTION", "COLON", "STRING_LITERAL", "QUOTED_STRING_LITERAL", "BAND", "BXOR", "SQL_NE", "NOT_EQUAL", "LT", "GT", "LE", "GE", "LOR", "MINUS", "DIV", "MOD", "LCURLY", "RCURLY", "NUM_INT", "FOLLOWED_BY", "ESCAPECHAR", "TICKED_STRING_LITERAL", "NUM_LONG", "NUM_FLOAT", "EQUAL", "LNOT", "BNOT", "DIV_ASSIGN", "PLUS_ASSIGN", "INC", "MINUS_ASSIGN", "DEC", "STAR_ASSIGN", "MOD_ASSIGN", "SR", "SR_ASSIGN", "BSR", "BSR_ASSIGN", "SL", "SL_ASSIGN", "BXOR_ASSIGN", "BOR_ASSIGN", "BAND_ASSIGN", "LAND", "SEMI", "EMAILAT", "WS", "SL_COMMENT", "ML_COMMENT", "EscapeSequence", "UnicodeEscape", "OctalEscape", "HexDigit", "EXPONENT", "FLOAT_SUFFIX"
     };
-    public static final int CRONTAB_LIMIT_EXPR=178;
-    public static final int FLOAT_SUFFIX=339;
-    public static final int STAR=282;
-    public static final int DOT_EXPR=186;
-    public static final int NUMERIC_PARAM_LIST=118;
+    public static final int CRONTAB_LIMIT_EXPR=184;
+    public static final int FLOAT_SUFFIX=348;
+    public static final int STAR=291;
+    public static final int DOT_EXPR=192;
+    public static final int NUMERIC_PARAM_LIST=124;
     public static final int ISTREAM=60;
-    public static final int MOD=300;
-    public static final int LIB_FUNC_CHAIN=185;
-    public static final int OUTERJOIN_EXPR=160;
-    public static final int CREATE_COL_TYPE_LIST=236;
-    public static final int MERGE_INS=252;
-    public static final int BSR=321;
-    public static final int LIB_FUNCTION=184;
+    public static final int MOD=309;
+    public static final int OUTERJOIN_EXPR=166;
+    public static final int LIB_FUNC_CHAIN=191;
+    public static final int CREATE_COL_TYPE_LIST=245;
+    public static final int MONTH_PART=197;
+    public static final int MERGE_INS=261;
+    public static final int BSR=330;
+    public static final int LIB_FUNCTION=190;
     public static final int EOF=-1;
-    public static final int TIMEPERIOD_MILLISECONDS=99;
-    public static final int FULL_OUTERJOIN_EXPR=164;
-    public static final int MATCHREC_PATTERN_CONCAT=264;
-    public static final int INC=314;
-    public static final int LNOT=310;
-    public static final int RPAREN=277;
+    public static final int TIMEPERIOD_MILLISECONDS=105;
+    public static final int FULL_OUTERJOIN_EXPR=170;
+    public static final int MATCHREC_PATTERN_CONCAT=273;
+    public static final int INC=323;
+    public static final int LNOT=319;
+    public static final int RPAREN=286;
     public static final int CREATE=4;
-    public static final int STRING_LITERAL=287;
-    public static final int BSR_ASSIGN=322;
-    public static final int CAST_EXPR=215;
-    public static final int MATCHES=110;
-    public static final int USING=114;
-    public static final int STREAM_EXPR=159;
-    public static final int TIMEPERIOD_SECONDS=96;
-    public static final int NOT_EQUAL=292;
+    public static final int STRING_LITERAL=296;
+    public static final int BSR_ASSIGN=331;
+    public static final int CAST_EXPR=224;
+    public static final int MATCHES=116;
+    public static final int USING=120;
+    public static final int STREAM_EXPR=165;
+    public static final int TIMEPERIOD_SECONDS=102;
+    public static final int NOT_EQUAL=301;
     public static final int METADATASQL=68;
-    public static final int EVENT_FILTER_PROPERTY_EXPR=127;
-    public static final int LAST_AGGREG=243;
+    public static final int EVENT_FILTER_PROPERTY_EXPR=133;
+    public static final int LAST_AGGREG=252;
     public static final int REGEXP=9;
-    public static final int MATCHED=116;
-    public static final int FOLLOWED_BY_EXPR=121;
-    public static final int FOLLOWED_BY=304;
-    public static final int HOUR_PART=191;
-    public static final int RBRACK=281;
-    public static final int MATCHREC_PATTERN_NESTED=266;
-    public static final int MATCH_UNTIL_RANGE_CLOSED=234;
-    public static final int GE=296;
-    public static final int METHOD_JOIN_EXPR=230;
+    public static final int MATCHED=122;
+    public static final int FOLLOWED_BY_EXPR=127;
+    public static final int FOLLOWED_BY=313;
+    public static final int HOUR_PART=200;
+    public static final int RBRACK=290;
+    public static final int MATCHREC_PATTERN_NESTED=275;
+    public static final int MATCH_UNTIL_RANGE_CLOSED=243;
+    public static final int GE=305;
+    public static final int METHOD_JOIN_EXPR=239;
     public static final int ASC=57;
     public static final int IN_SET=6;
-    public static final int EVENT_FILTER_EXPR=126;
-    public static final int PATTERN_EVERY_DISTINCT_EXPR=125;
+    public static final int EVENT_FILTER_EXPR=132;
+    public static final int PATTERN_EVERY_DISTINCT_EXPR=131;
     public static final int ELSE=30;
-    public static final int MINUS_ASSIGN=315;
-    public static final int EVENT_FILTER_NOT_IN=137;
-    public static final int INSERTINTO_STREAM_NAME=203;
-    public static final int NUM_DOUBLE=260;
-    public static final int UNARY_MINUS=187;
-    public static final int TIMEPERIOD_MILLISEC=97;
-    public static final int LCURLY=301;
+    public static final int MINUS_ASSIGN=324;
+    public static final int EVENT_FILTER_NOT_IN=143;
+    public static final int INSERTINTO_STREAM_NAME=212;
+    public static final int NUM_DOUBLE=269;
+    public static final int TIMEPERIOD_MILLISEC=103;
+    public static final int UNARY_MINUS=193;
+    public static final int LCURLY=310;
     public static final int RETAINUNION=64;
-    public static final int DBWHERE_CLAUSE=201;
+    public static final int DBWHERE_CLAUSE=210;
     public static final int MEDIAN=23;
     public static final int EVENTS=51;
     public static final int AND_EXPR=12;
-    public static final int EVENT_FILTER_NOT_RANGE=135;
+    public static final int EVENT_FILTER_NOT_RANGE=141;
     public static final int GROUP=44;
-    public static final int EMAILAT=330;
-    public static final int WS=331;
-    public static final int SUBSELECT_GROUP_EXPR=207;
-    public static final int ON_SELECT_INSERT_EXPR=225;
+    public static final int EMAILAT=339;
+    public static final int WS=340;
+    public static final int SUBSELECT_GROUP_EXPR=216;
+    public static final int YEAR_PART=196;
+    public static final int ON_SELECT_INSERT_EXPR=234;
     public static final int TYPEOF=78;
-    public static final int ESCAPECHAR=305;
-    public static final int EXPRCOL=182;
-    public static final int SL_COMMENT=332;
-    public static final int NULL_TYPE=259;
-    public static final int MATCH_UNTIL_RANGE_HALFOPEN=232;
-    public static final int GT=294;
-    public static final int BNOT=311;
-    public static final int WHERE_EXPR=146;
+    public static final int ESCAPECHAR=314;
+    public static final int EXPRCOL=188;
+    public static final int SL_COMMENT=341;
+    public static final int NULL_TYPE=268;
+    public static final int MATCH_UNTIL_RANGE_HALFOPEN=241;
+    public static final int GT=303;
+    public static final int BNOT=320;
+    public static final int WHERE_EXPR=152;
     public static final int END=33;
-    public static final int INNERJOIN_EXPR=161;
-    public static final int LAND=328;
-    public static final int NOT_REGEXP=198;
-    public static final int MATCH_UNTIL_EXPR=231;
-    public static final int EVENT_PROP_EXPR=168;
-    public static final int LBRACK=280;
-    public static final int VIEW_EXPR=143;
-    public static final int MERGE_UPD=251;
-    public static final int ANNOTATION=239;
-    public static final int LONG_TYPE=254;
-    public static final int EVENT_FILTER_PROPERTY_EXPR_ATOM=128;
-    public static final int MATCHREC_PATTERN=262;
-    public static final int ON_MERGE_EXPR=224;
-    public static final int TIMEPERIOD_SEC=94;
-    public static final int TICKED_STRING_LITERAL=306;
-    public static final int ON_SELECT_EXPR=222;
-    public static final int MINUTE_PART=192;
-    public static final int PATTERN_NOT_EXPR=124;
-    public static final int SQL_NE=291;
+    public static final int INNERJOIN_EXPR=167;
+    public static final int LAND=337;
+    public static final int NOT_REGEXP=207;
+    public static final int MATCH_UNTIL_EXPR=240;
+    public static final int EVENT_PROP_EXPR=174;
+    public static final int LBRACK=289;
+    public static final int VIEW_EXPR=149;
+    public static final int MERGE_UPD=260;
+    public static final int ANNOTATION=248;
+    public static final int LONG_TYPE=263;
+    public static final int EVENT_FILTER_PROPERTY_EXPR_ATOM=134;
+    public static final int MATCHREC_PATTERN=271;
+    public static final int ON_MERGE_EXPR=233;
+    public static final int TIMEPERIOD_SEC=100;
+    public static final int TICKED_STRING_LITERAL=315;
+    public static final int ON_SELECT_EXPR=231;
+    public static final int MINUTE_PART=201;
+    public static final int PATTERN_NOT_EXPR=130;
+    public static final int SQL_NE=300;
     public static final int SUM=18;
-    public static final int HexDigit=337;
-    public static final int UPDATE_EXPR=245;
-    public static final int LPAREN=276;
-    public static final int IN_SUBSELECT_EXPR=209;
+    public static final int HexDigit=346;
+    public static final int UPDATE_EXPR=254;
+    public static final int LPAREN=285;
+    public static final int IN_SUBSELECT_EXPR=218;
     public static final int AT=86;
     public static final int AS=17;
     public static final int OR_EXPR=11;
-    public static final int BOOLEAN_TRUE=100;
+    public static final int BOOLEAN_TRUE=106;
     public static final int THEN=32;
-    public static final int MATCHREC_INTERVAL=268;
-    public static final int NOT_IN_RANGE=205;
-    public static final int OFFSET=104;
+    public static final int MATCHREC_INTERVAL=277;
+    public static final int NOT_IN_RANGE=214;
+    public static final int TIMEPERIOD_MONTH=90;
+    public static final int OFFSET=110;
     public static final int AVG=19;
     public static final int LEFT=38;
-    public static final int SECOND_PART=193;
+    public static final int SECOND_PART=202;
     public static final int PREVIOUS=69;
     public static final int PREVIOUSWINDOW=72;
-    public static final int MATCH_RECOGNIZE=106;
-    public static final int IDENT=275;
-    public static final int DATABASE_JOIN_EXPR=145;
-    public static final int BXOR=290;
-    public static final int PLUS=284;
+    public static final int MATCH_RECOGNIZE=112;
+    public static final int IDENT=284;
+    public static final int DATABASE_JOIN_EXPR=151;
+    public static final int BXOR=299;
+    public static final int PLUS=293;
     public static final int CASE2=29;
-    public static final int TIMEPERIOD_DAY=88;
-    public static final int CREATE_SCHEMA_EXPR=247;
+    public static final int TIMEPERIOD_DAY=94;
+    public static final int CREATE_SCHEMA_EXPR=256;
     public static final int EXISTS=74;
-    public static final int EVENT_PROP_INDEXED=171;
-    public static final int CREATE_INDEX_EXPR=216;
-    public static final int TIMEPERIOD_MILLISECOND=98;
-    public static final int EVAL_NOTEQUALS_EXPR=152;
-    public static final int MATCH_UNTIL_RANGE_HALFCLOSED=233;
-    public static final int CREATE_VARIABLE_EXPR=229;
+    public static final int EVENT_PROP_INDEXED=177;
+    public static final int CREATE_INDEX_EXPR=225;
+    public static final int TIMEPERIOD_MILLISECOND=104;
+    public static final int EVAL_NOTEQUALS_EXPR=158;
+    public static final int MATCH_UNTIL_RANGE_HALFCLOSED=242;
+    public static final int CREATE_VARIABLE_EXPR=238;
     public static final int LIKE=8;
     public static final int OUTER=35;
-    public static final int MATCHREC_DEFINE=269;
+    public static final int MATCHREC_DEFINE=278;
     public static final int BY=43;
-    public static final int ARRAY_PARAM_LIST=122;
-    public static final int RIGHT_OUTERJOIN_EXPR=163;
-    public static final int NUMBERSETSTAR=238;
-    public static final int LAST_OPERATOR=212;
-    public static final int PATTERN_FILTER_EXPR=123;
-    public static final int MERGE=115;
-    public static final int EVAL_AND_EXPR=149;
-    public static final int LEFT_OUTERJOIN_EXPR=162;
-    public static final int EPL_EXPR=261;
-    public static final int GROUP_BY_EXPR=165;
+    public static final int ARRAY_PARAM_LIST=128;
+    public static final int RIGHT_OUTERJOIN_EXPR=169;
+    public static final int NUMBERSETSTAR=247;
+    public static final int LAST_OPERATOR=221;
+    public static final int PATTERN_FILTER_EXPR=129;
+    public static final int MERGE=121;
+    public static final int EVAL_AND_EXPR=155;
+    public static final int LEFT_OUTERJOIN_EXPR=168;
+    public static final int EPL_EXPR=270;
+    public static final int GROUP_BY_EXPR=171;
     public static final int SET=83;
     public static final int RIGHT=39;
     public static final int HAVING=45;
     public static final int INSTANCEOF=77;
     public static final int MIN=21;
-    public static final int EVENT_PROP_SIMPLE=169;
-    public static final int MINUS=298;
-    public static final int SEMI=329;
-    public static final int STAR_ASSIGN=317;
+    public static final int EVENT_PROP_SIMPLE=175;
+    public static final int MINUS=307;
+    public static final int SEMI=338;
+    public static final int STAR_ASSIGN=326;
     public static final int PREVIOUSCOUNT=71;
-    public static final int VARIANT_LIST=250;
-    public static final int FIRST_AGGREG=242;
-    public static final int COLON=286;
-    public static final int EVAL_EQUALS_GROUP_EXPR=153;
-    public static final int BAND_ASSIGN=327;
+    public static final int VARIANT_LIST=259;
+    public static final int FIRST_AGGREG=251;
+    public static final int COLON=295;
+    public static final int EVAL_EQUALS_GROUP_EXPR=159;
+    public static final int BAND_ASSIGN=336;
     public static final int PREVIOUSTAIL=70;
     public static final int SCHEMA=62;
-    public static final int CRONTAB_LIMIT_EXPR_PARAM=179;
-    public static final int NOT_IN_SET=195;
-    public static final int VALUE_NULL=102;
-    public static final int EVENT_PROP_DYNAMIC_SIMPLE=172;
-    public static final int SL=323;
-    public static final int NOT_IN_SUBSELECT_EXPR=210;
+    public static final int CRONTAB_LIMIT_EXPR_PARAM=185;
+    public static final int NOT_IN_SET=204;
+    public static final int VALUE_NULL=108;
+    public static final int EVENT_PROP_DYNAMIC_SIMPLE=178;
+    public static final int SL=332;
+    public static final int NOT_IN_SUBSELECT_EXPR=219;
     public static final int WHEN=31;
-    public static final int GUARD_EXPR=141;
-    public static final int SR=319;
-    public static final int RCURLY=302;
-    public static final int PLUS_ASSIGN=313;
-    public static final int EXISTS_SUBSELECT_EXPR=208;
-    public static final int DAY_PART=190;
-    public static final int EVENT_FILTER_IN=136;
-    public static final int DIV=299;
-    public static final int OBJECT_PARAM_ORDERED_EXPR=120;
-    public static final int OctalEscape=336;
-    public static final int MILLISECOND_PART=194;
+    public static final int GUARD_EXPR=147;
+    public static final int SR=328;
+    public static final int RCURLY=311;
+    public static final int PLUS_ASSIGN=322;
+    public static final int EXISTS_SUBSELECT_EXPR=217;
+    public static final int DAY_PART=199;
+    public static final int EVENT_FILTER_IN=142;
+    public static final int DIV=308;
+    public static final int WEEK_PART=198;
+    public static final int OBJECT_PARAM_ORDERED_EXPR=126;
+    public static final int OctalEscape=345;
+    public static final int MILLISECOND_PART=203;
     public static final int BETWEEN=7;
     public static final int PRIOR=73;
     public static final int FIRST=52;
-    public static final int ROW_LIMIT_EXPR=103;
-    public static final int SELECTION_EXPR=156;
-    public static final int LOR=297;
-    public static final int CAST=79;
+    public static final int ROW_LIMIT_EXPR=109;
+    public static final int SELECTION_EXPR=162;
     public static final int LW=76;
-    public static final int WILDCARD_SELECT=202;
-    public static final int LT=293;
-    public static final int EXPONENT=338;
-    public static final int PATTERN_INCL_EXPR=144;
-    public static final int WHILE=113;
-    public static final int ORDER_BY_EXPR=166;
-    public static final int BOOL_TYPE=258;
-    public static final int ANNOTATION_ARRAY=240;
-    public static final int MOD_ASSIGN=318;
+    public static final int CAST=79;
+    public static final int LOR=306;
+    public static final int WILDCARD_SELECT=211;
+    public static final int LT=302;
+    public static final int EXPONENT=347;
+    public static final int PATTERN_INCL_EXPR=150;
+    public static final int WHILE=119;
+    public static final int ORDER_BY_EXPR=172;
+    public static final int BOOL_TYPE=267;
+    public static final int ANNOTATION_ARRAY=249;
+    public static final int MOD_ASSIGN=327;
     public static final int CASE=28;
-    public static final int IN_SUBSELECT_QUERY_EXPR=211;
+    public static final int IN_SUBSELECT_QUERY_EXPR=220;
     public static final int COUNT=26;
-    public static final int EQUALS=278;
+    public static final int EQUALS=287;
     public static final int RETAININTERSECTION=65;
-    public static final int WINDOW_AGGREG=244;
-    public static final int DIV_ASSIGN=312;
-    public static final int SL_ASSIGN=324;
+    public static final int WINDOW_AGGREG=253;
+    public static final int DIV_ASSIGN=321;
+    public static final int SL_ASSIGN=333;
+    public static final int TIMEPERIOD_WEEKS=93;
     public static final int PATTERN=66;
     public static final int SQL=67;
     public static final int FULL=40;
     public static final int WEEKDAY=75;
-    public static final int MATCHREC_AFTER_SKIP=267;
+    public static final int MATCHREC_AFTER_SKIP=276;
     public static final int ESCAPE=10;
     public static final int INSERT=54;
-    public static final int ON_UPDATE_EXPR=223;
-    public static final int ARRAY_EXPR=189;
-    public static final int CREATE_COL_TYPE=237;
+    public static final int ON_UPDATE_EXPR=232;
+    public static final int ARRAY_EXPR=195;
+    public static final int CREATE_COL_TYPE=246;
     public static final int LAST=53;
-    public static final int BOOLEAN_FALSE=101;
-    public static final int EVAL_NOTEQUALS_GROUP_EXPR=154;
+    public static final int BOOLEAN_FALSE=107;
+    public static final int EVAL_NOTEQUALS_GROUP_EXPR=160;
     public static final int SELECT=27;
     public static final int INTO=55;
-    public static final int EVENT_FILTER_BETWEEN=138;
-    public static final int TIMEPERIOD_SECOND=95;
+    public static final int EVENT_FILTER_BETWEEN=144;
+    public static final int TIMEPERIOD_SECOND=101;
     public static final int COALESCE=22;
-    public static final int FLOAT_TYPE=255;
-    public static final int SUBSELECT_EXPR=206;
-    public static final int ANNOTATION_VALUE=241;
-    public static final int CONCAT=183;
-    public static final int NUMERIC_PARAM_RANGE=117;
-    public static final int CLASS_IDENT=140;
-    public static final int MATCHREC_PATTERN_ALTER=265;
-    public static final int ON_EXPR=219;
-    public static final int CREATE_WINDOW_EXPR=217;
-    public static final int PROPERTY_SELECTION_STREAM=130;
-    public static final int ON_DELETE_EXPR=221;
+    public static final int FLOAT_TYPE=264;
+    public static final int SUBSELECT_EXPR=215;
+    public static final int ANNOTATION_VALUE=250;
+    public static final int NUMERIC_PARAM_RANGE=123;
+    public static final int CONCAT=189;
+    public static final int CLASS_IDENT=146;
+    public static final int MATCHREC_PATTERN_ALTER=274;
+    public static final int ON_EXPR=228;
+    public static final int CREATE_WINDOW_EXPR=226;
+    public static final int PROPERTY_SELECTION_STREAM=136;
+    public static final int ON_DELETE_EXPR=230;
     public static final int ON=41;
-    public static final int NUM_LONG=307;
-    public static final int TIME_PERIOD=188;
-    public static final int DOUBLE_TYPE=256;
+    public static final int NUM_LONG=316;
+    public static final int TIME_PERIOD=194;
+    public static final int DOUBLE_TYPE=265;
     public static final int DELETE=81;
-    public static final int INT_TYPE=253;
-    public static final int MATCHREC_PARTITION=273;
-    public static final int EVAL_BITWISE_EXPR=148;
+    public static final int INT_TYPE=262;
+    public static final int MATCHREC_PARTITION=282;
+    public static final int EVAL_BITWISE_EXPR=154;
     public static final int EVERY_EXPR=14;
-    public static final int ORDER_ELEMENT_EXPR=167;
-    public static final int TIMEPERIOD_HOURS=91;
+    public static final int ORDER_ELEMENT_EXPR=173;
+    public static final int TIMEPERIOD_HOURS=97;
     public static final int VARIABLE=84;
-    public static final int SUBSTITUTION=214;
+    public static final int SUBSTITUTION=223;
     public static final int UNTIL=85;
-    public static final int STRING_TYPE=257;
-    public static final int ON_SET_EXPR=228;
-    public static final int MATCHREC_DEFINE_ITEM=270;
-    public static final int NUM_INT=303;
+    public static final int STRING_TYPE=266;
+    public static final int ON_SET_EXPR=237;
+    public static final int MATCHREC_DEFINE_ITEM=279;
+    public static final int NUM_INT=312;
     public static final int STDDEV=24;
-    public static final int CREATE_SCHEMA_EXPR_INH=249;
-    public static final int ON_EXPR_FROM=227;
-    public static final int NUM_FLOAT=308;
+    public static final int CREATE_SCHEMA_EXPR_INH=258;
+    public static final int ON_EXPR_FROM=236;
+    public static final int NUM_FLOAT=317;
     public static final int FROM=34;
     public static final int DISTINCT=46;
-    public static final int PROPERTY_SELECTION_ELEMENT_EXPR=129;
+    public static final int PROPERTY_SELECTION_ELEMENT_EXPR=135;
     public static final int OUTPUT=50;
-    public static final int EscapeSequence=334;
-    public static final int WEEKDAY_OPERATOR=213;
+    public static final int EscapeSequence=343;
+    public static final int WEEKDAY_OPERATOR=222;
     public static final int WHERE=16;
-    public static final int DEC=316;
+    public static final int DEC=325;
     public static final int INNER=36;
-    public static final int NUMERIC_PARAM_FREQUENCY=119;
-    public static final int BXOR_ASSIGN=325;
-    public static final int AFTER_LIMIT_EXPR=177;
+    public static final int NUMERIC_PARAM_FREQUENCY=125;
+    public static final int BXOR_ASSIGN=334;
+    public static final int AFTER_LIMIT_EXPR=183;
     public static final int ORDER=56;
     public static final int SNAPSHOT=82;
-    public static final int EVENT_PROP_DYNAMIC_MAPPED=174;
-    public static final int EVENT_FILTER_PARAM=133;
+    public static final int EVENT_PROP_DYNAMIC_MAPPED=180;
+    public static final int EVENT_FILTER_PARAM=139;
     public static final int IRSTREAM=61;
-    public static final int UPDATE=105;
+    public static final int UPDATE=111;
     public static final int MAX=20;
-    public static final int FOR=112;
-    public static final int ON_STREAM=220;
-    public static final int DEFINE=108;
-    public static final int TIMEPERIOD_DAYS=89;
-    public static final int EVENT_FILTER_RANGE=134;
+    public static final int FOR=118;
+    public static final int ON_STREAM=229;
+    public static final int DEFINE=114;
+    public static final int TIMEPERIOD_YEARS=89;
+    public static final int TIMEPERIOD_DAYS=95;
+    public static final int EVENT_FILTER_RANGE=140;
     public static final int INDEX=87;
-    public static final int ML_COMMENT=333;
-    public static final int EVENT_PROP_DYNAMIC_INDEXED=173;
-    public static final int BOR_ASSIGN=326;
-    public static final int COMMA=274;
-    public static final int WHEN_LIMIT_EXPR=180;
-    public static final int PARTITION=109;
+    public static final int ML_COMMENT=342;
+    public static final int EVENT_PROP_DYNAMIC_INDEXED=179;
+    public static final int BOR_ASSIGN=335;
+    public static final int COMMA=283;
+    public static final int WHEN_LIMIT_EXPR=186;
+    public static final int PARTITION=115;
     public static final int IS=42;
-    public static final int TIMEPERIOD_LIMIT_EXPR=176;
+    public static final int TIMEPERIOD_LIMIT_EXPR=182;
     public static final int SOME=49;
+    public static final int TIMEPERIOD_HOUR=96;
     public static final int ALL=47;
-    public static final int TIMEPERIOD_HOUR=90;
-    public static final int MATCHREC_MEASURE_ITEM=272;
-    public static final int BOR=283;
-    public static final int EQUAL=309;
-    public static final int EVENT_FILTER_NOT_BETWEEN=139;
-    public static final int IN_RANGE=204;
-    public static final int DOT=279;
+    public static final int MATCHREC_MEASURE_ITEM=281;
+    public static final int BOR=292;
+    public static final int EQUAL=318;
+    public static final int EVENT_FILTER_NOT_BETWEEN=145;
+    public static final int IN_RANGE=213;
+    public static final int DOT=288;
     public static final int CURRENT_TIMESTAMP=80;
-    public static final int MATCHREC_MEASURES=271;
+    public static final int MATCHREC_MEASURES=280;
+    public static final int TIMEPERIOD_WEEK=92;
     public static final int EVERY_DISTINCT_EXPR=15;
-    public static final int PROPERTY_WILDCARD_SELECT=131;
-    public static final int INSERTINTO_EXPR=181;
-    public static final int HAVING_EXPR=147;
+    public static final int PROPERTY_WILDCARD_SELECT=137;
+    public static final int INSERTINTO_EXPR=187;
+    public static final int HAVING_EXPR=153;
     public static final int UNIDIRECTIONAL=63;
-    public static final int MATCH_UNTIL_RANGE_BOUNDED=235;
-    public static final int EVAL_EQUALS_EXPR=151;
-    public static final int TIMEPERIOD_MINUTES=93;
+    public static final int MATCH_UNTIL_RANGE_BOUNDED=244;
+    public static final int EVAL_EQUALS_EXPR=157;
+    public static final int TIMEPERIOD_MINUTES=99;
     public static final int RSTREAM=59;
-    public static final int NOT_LIKE=197;
-    public static final int EVENT_LIMIT_EXPR=175;
-    public static final int TIMEPERIOD_MINUTE=92;
-    public static final int NOT_BETWEEN=196;
-    public static final int EVAL_OR_EXPR=150;
-    public static final int ON_SELECT_INSERT_OUTPUT=226;
-    public static final int AFTER=111;
-    public static final int MEASURES=107;
-    public static final int MATCHREC_PATTERN_ATOM=263;
-    public static final int BAND=289;
-    public static final int QUOTED_STRING_LITERAL=288;
+    public static final int NOT_LIKE=206;
+    public static final int EVENT_LIMIT_EXPR=181;
+    public static final int TIMEPERIOD_MINUTE=98;
+    public static final int NOT_BETWEEN=205;
+    public static final int EVAL_OR_EXPR=156;
+    public static final int ON_SELECT_INSERT_OUTPUT=235;
+    public static final int AFTER=117;
+    public static final int MEASURES=113;
+    public static final int MATCHREC_PATTERN_ATOM=272;
+    public static final int BAND=298;
+    public static final int QUOTED_STRING_LITERAL=297;
     public static final int JOIN=37;
     public static final int ANY=48;
     public static final int NOT_EXPR=13;
-    public static final int QUESTION=285;
-    public static final int OBSERVER_EXPR=142;
-    public static final int EVENT_FILTER_IDENT=132;
-    public static final int CREATE_SCHEMA_EXPR_QUAL=248;
-    public static final int EVENT_PROP_MAPPED=170;
-    public static final int UnicodeEscape=335;
+    public static final int QUESTION=294;
+    public static final int OBSERVER_EXPR=148;
+    public static final int EVENT_FILTER_IDENT=138;
+    public static final int CREATE_SCHEMA_EXPR_QUAL=257;
+    public static final int EVENT_PROP_MAPPED=176;
+    public static final int UnicodeEscape=344;
+    public static final int TIMEPERIOD_YEAR=88;
     public static final int AVEDEV=25;
-    public static final int DBSELECT_EXPR=199;
-    public static final int SELECTION_ELEMENT_EXPR=157;
-    public static final int CREATE_WINDOW_SELECT_EXPR=218;
+    public static final int DBSELECT_EXPR=208;
+    public static final int TIMEPERIOD_MONTHS=91;
+    public static final int SELECTION_ELEMENT_EXPR=163;
+    public static final int CREATE_WINDOW_SELECT_EXPR=227;
     public static final int WINDOW=5;
-    public static final int ON_SET_EXPR_ITEM=246;
+    public static final int ON_SET_EXPR_ITEM=255;
     public static final int DESC=58;
-    public static final int SELECTION_STREAM=158;
-    public static final int SR_ASSIGN=320;
-    public static final int DBFROM_CLAUSE=200;
-    public static final int LE=295;
-    public static final int EVAL_IDENT=155;
+    public static final int SELECTION_STREAM=164;
+    public static final int SR_ASSIGN=329;
+    public static final int DBFROM_CLAUSE=209;
+    public static final int LE=304;
+    public static final int EVAL_IDENT=161;
 
     // delegates
     // delegators
@@ -13623,65 +13632,146 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "timePeriodDef"
-    // EsperEPL2Ast.g:687:1: timePeriodDef : ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart );
+    // EsperEPL2Ast.g:687:1: timePeriodDef : ( yearPart ( monthPart )? ( weekPart )? ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | monthPart ( weekPart )? ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | weekPart ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart );
     public final void timePeriodDef() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:688:2: ( dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart )
-            int alt253=5;
+            // EsperEPL2Ast.g:688:2: ( yearPart ( monthPart )? ( weekPart )? ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | monthPart ( weekPart )? ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | weekPart ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )? | hourPart ( minutePart )? ( secondPart )? ( millisecondPart )? | minutePart ( secondPart )? ( millisecondPart )? | secondPart ( millisecondPart )? | millisecondPart )
+            int alt271=8;
             switch ( input.LA(1) ) {
+            case YEAR_PART:
+                {
+                alt271=1;
+                }
+                break;
+            case MONTH_PART:
+                {
+                alt271=2;
+                }
+                break;
+            case WEEK_PART:
+                {
+                alt271=3;
+                }
+                break;
             case DAY_PART:
                 {
-                alt253=1;
+                alt271=4;
                 }
                 break;
             case HOUR_PART:
                 {
-                alt253=2;
+                alt271=5;
                 }
                 break;
             case MINUTE_PART:
                 {
-                alt253=3;
+                alt271=6;
                 }
                 break;
             case SECOND_PART:
                 {
-                alt253=4;
+                alt271=7;
                 }
                 break;
             case MILLISECOND_PART:
                 {
-                alt253=5;
+                alt271=8;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 253, 0, input);
+                    new NoViableAltException("", 271, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt253) {
+            switch (alt271) {
                 case 1 :
-                    // EsperEPL2Ast.g:688:5: dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )?
+                    // EsperEPL2Ast.g:688:5: yearPart ( monthPart )? ( weekPart )? ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )?
                     {
-                    pushFollow(FOLLOW_dayPart_in_timePeriodDef5100);
-                    dayPart();
+                    pushFollow(FOLLOW_yearPart_in_timePeriodDef5100);
+                    yearPart();
 
                     state._fsp--;
 
-                    // EsperEPL2Ast.g:688:13: ( hourPart )?
+                    // EsperEPL2Ast.g:688:14: ( monthPart )?
                     int alt243=2;
                     int LA243_0 = input.LA(1);
 
-                    if ( (LA243_0==HOUR_PART) ) {
+                    if ( (LA243_0==MONTH_PART) ) {
                         alt243=1;
                     }
                     switch (alt243) {
                         case 1 :
-                            // EsperEPL2Ast.g:688:14: hourPart
+                            // EsperEPL2Ast.g:688:15: monthPart
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriodDef5103);
+                            pushFollow(FOLLOW_monthPart_in_timePeriodDef5103);
+                            monthPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:688:27: ( weekPart )?
+                    int alt244=2;
+                    int LA244_0 = input.LA(1);
+
+                    if ( (LA244_0==WEEK_PART) ) {
+                        alt244=1;
+                    }
+                    switch (alt244) {
+                        case 1 :
+                            // EsperEPL2Ast.g:688:28: weekPart
+                            {
+                            pushFollow(FOLLOW_weekPart_in_timePeriodDef5108);
+                            weekPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:688:39: ( dayPart )?
+                    int alt245=2;
+                    int LA245_0 = input.LA(1);
+
+                    if ( (LA245_0==DAY_PART) ) {
+                        alt245=1;
+                    }
+                    switch (alt245) {
+                        case 1 :
+                            // EsperEPL2Ast.g:688:40: dayPart
+                            {
+                            pushFollow(FOLLOW_dayPart_in_timePeriodDef5113);
+                            dayPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:688:50: ( hourPart )?
+                    int alt246=2;
+                    int LA246_0 = input.LA(1);
+
+                    if ( (LA246_0==HOUR_PART) ) {
+                        alt246=1;
+                    }
+                    switch (alt246) {
+                        case 1 :
+                            // EsperEPL2Ast.g:688:51: hourPart
+                            {
+                            pushFollow(FOLLOW_hourPart_in_timePeriodDef5118);
                             hourPart();
 
                             state._fsp--;
@@ -13692,18 +13782,18 @@ public class EsperEPL2Ast extends TreeParser {
 
                     }
 
-                    // EsperEPL2Ast.g:688:25: ( minutePart )?
-                    int alt244=2;
-                    int LA244_0 = input.LA(1);
+                    // EsperEPL2Ast.g:688:62: ( minutePart )?
+                    int alt247=2;
+                    int LA247_0 = input.LA(1);
 
-                    if ( (LA244_0==MINUTE_PART) ) {
-                        alt244=1;
+                    if ( (LA247_0==MINUTE_PART) ) {
+                        alt247=1;
                     }
-                    switch (alt244) {
+                    switch (alt247) {
                         case 1 :
-                            // EsperEPL2Ast.g:688:26: minutePart
+                            // EsperEPL2Ast.g:688:63: minutePart
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriodDef5108);
+                            pushFollow(FOLLOW_minutePart_in_timePeriodDef5123);
                             minutePart();
 
                             state._fsp--;
@@ -13714,18 +13804,18 @@ public class EsperEPL2Ast extends TreeParser {
 
                     }
 
-                    // EsperEPL2Ast.g:688:39: ( secondPart )?
-                    int alt245=2;
-                    int LA245_0 = input.LA(1);
+                    // EsperEPL2Ast.g:688:76: ( secondPart )?
+                    int alt248=2;
+                    int LA248_0 = input.LA(1);
 
-                    if ( (LA245_0==SECOND_PART) ) {
-                        alt245=1;
+                    if ( (LA248_0==SECOND_PART) ) {
+                        alt248=1;
                     }
-                    switch (alt245) {
+                    switch (alt248) {
                         case 1 :
-                            // EsperEPL2Ast.g:688:40: secondPart
+                            // EsperEPL2Ast.g:688:77: secondPart
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5113);
+                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5128);
                             secondPart();
 
                             state._fsp--;
@@ -13736,18 +13826,18 @@ public class EsperEPL2Ast extends TreeParser {
 
                     }
 
-                    // EsperEPL2Ast.g:688:53: ( millisecondPart )?
-                    int alt246=2;
-                    int LA246_0 = input.LA(1);
+                    // EsperEPL2Ast.g:688:90: ( millisecondPart )?
+                    int alt249=2;
+                    int LA249_0 = input.LA(1);
 
-                    if ( (LA246_0==MILLISECOND_PART) ) {
-                        alt246=1;
+                    if ( (LA249_0==MILLISECOND_PART) ) {
+                        alt249=1;
                     }
-                    switch (alt246) {
+                    switch (alt249) {
                         case 1 :
-                            // EsperEPL2Ast.g:688:54: millisecondPart
+                            // EsperEPL2Ast.g:688:91: millisecondPart
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5118);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5133);
                             millisecondPart();
 
                             state._fsp--;
@@ -13762,25 +13852,91 @@ public class EsperEPL2Ast extends TreeParser {
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Ast.g:689:4: hourPart ( minutePart )? ( secondPart )? ( millisecondPart )?
+                    // EsperEPL2Ast.g:689:5: monthPart ( weekPart )? ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )?
                     {
-                    pushFollow(FOLLOW_hourPart_in_timePeriodDef5125);
-                    hourPart();
+                    pushFollow(FOLLOW_monthPart_in_timePeriodDef5141);
+                    monthPart();
 
                     state._fsp--;
 
-                    // EsperEPL2Ast.g:689:13: ( minutePart )?
-                    int alt247=2;
-                    int LA247_0 = input.LA(1);
+                    // EsperEPL2Ast.g:689:15: ( weekPart )?
+                    int alt250=2;
+                    int LA250_0 = input.LA(1);
 
-                    if ( (LA247_0==MINUTE_PART) ) {
-                        alt247=1;
+                    if ( (LA250_0==WEEK_PART) ) {
+                        alt250=1;
                     }
-                    switch (alt247) {
+                    switch (alt250) {
                         case 1 :
-                            // EsperEPL2Ast.g:689:14: minutePart
+                            // EsperEPL2Ast.g:689:16: weekPart
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriodDef5128);
+                            pushFollow(FOLLOW_weekPart_in_timePeriodDef5144);
+                            weekPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:689:27: ( dayPart )?
+                    int alt251=2;
+                    int LA251_0 = input.LA(1);
+
+                    if ( (LA251_0==DAY_PART) ) {
+                        alt251=1;
+                    }
+                    switch (alt251) {
+                        case 1 :
+                            // EsperEPL2Ast.g:689:28: dayPart
+                            {
+                            pushFollow(FOLLOW_dayPart_in_timePeriodDef5149);
+                            dayPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:689:38: ( hourPart )?
+                    int alt252=2;
+                    int LA252_0 = input.LA(1);
+
+                    if ( (LA252_0==HOUR_PART) ) {
+                        alt252=1;
+                    }
+                    switch (alt252) {
+                        case 1 :
+                            // EsperEPL2Ast.g:689:39: hourPart
+                            {
+                            pushFollow(FOLLOW_hourPart_in_timePeriodDef5154);
+                            hourPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:689:50: ( minutePart )?
+                    int alt253=2;
+                    int LA253_0 = input.LA(1);
+
+                    if ( (LA253_0==MINUTE_PART) ) {
+                        alt253=1;
+                    }
+                    switch (alt253) {
+                        case 1 :
+                            // EsperEPL2Ast.g:689:51: minutePart
+                            {
+                            pushFollow(FOLLOW_minutePart_in_timePeriodDef5159);
                             minutePart();
 
                             state._fsp--;
@@ -13791,18 +13947,18 @@ public class EsperEPL2Ast extends TreeParser {
 
                     }
 
-                    // EsperEPL2Ast.g:689:27: ( secondPart )?
-                    int alt248=2;
-                    int LA248_0 = input.LA(1);
+                    // EsperEPL2Ast.g:689:64: ( secondPart )?
+                    int alt254=2;
+                    int LA254_0 = input.LA(1);
 
-                    if ( (LA248_0==SECOND_PART) ) {
-                        alt248=1;
+                    if ( (LA254_0==SECOND_PART) ) {
+                        alt254=1;
                     }
-                    switch (alt248) {
+                    switch (alt254) {
                         case 1 :
-                            // EsperEPL2Ast.g:689:28: secondPart
+                            // EsperEPL2Ast.g:689:65: secondPart
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5133);
+                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5164);
                             secondPart();
 
                             state._fsp--;
@@ -13813,18 +13969,18 @@ public class EsperEPL2Ast extends TreeParser {
 
                     }
 
-                    // EsperEPL2Ast.g:689:41: ( millisecondPart )?
-                    int alt249=2;
-                    int LA249_0 = input.LA(1);
+                    // EsperEPL2Ast.g:689:78: ( millisecondPart )?
+                    int alt255=2;
+                    int LA255_0 = input.LA(1);
 
-                    if ( (LA249_0==MILLISECOND_PART) ) {
-                        alt249=1;
+                    if ( (LA255_0==MILLISECOND_PART) ) {
+                        alt255=1;
                     }
-                    switch (alt249) {
+                    switch (alt255) {
                         case 1 :
-                            // EsperEPL2Ast.g:689:42: millisecondPart
+                            // EsperEPL2Ast.g:689:79: millisecondPart
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5138);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5169);
                             millisecondPart();
 
                             state._fsp--;
@@ -13839,25 +13995,91 @@ public class EsperEPL2Ast extends TreeParser {
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Ast.g:690:4: minutePart ( secondPart )? ( millisecondPart )?
+                    // EsperEPL2Ast.g:690:5: weekPart ( dayPart )? ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )?
                     {
-                    pushFollow(FOLLOW_minutePart_in_timePeriodDef5145);
-                    minutePart();
+                    pushFollow(FOLLOW_weekPart_in_timePeriodDef5177);
+                    weekPart();
 
                     state._fsp--;
 
-                    // EsperEPL2Ast.g:690:15: ( secondPart )?
-                    int alt250=2;
-                    int LA250_0 = input.LA(1);
+                    // EsperEPL2Ast.g:690:14: ( dayPart )?
+                    int alt256=2;
+                    int LA256_0 = input.LA(1);
 
-                    if ( (LA250_0==SECOND_PART) ) {
-                        alt250=1;
+                    if ( (LA256_0==DAY_PART) ) {
+                        alt256=1;
                     }
-                    switch (alt250) {
+                    switch (alt256) {
                         case 1 :
-                            // EsperEPL2Ast.g:690:16: secondPart
+                            // EsperEPL2Ast.g:690:15: dayPart
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5148);
+                            pushFollow(FOLLOW_dayPart_in_timePeriodDef5180);
+                            dayPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:690:25: ( hourPart )?
+                    int alt257=2;
+                    int LA257_0 = input.LA(1);
+
+                    if ( (LA257_0==HOUR_PART) ) {
+                        alt257=1;
+                    }
+                    switch (alt257) {
+                        case 1 :
+                            // EsperEPL2Ast.g:690:26: hourPart
+                            {
+                            pushFollow(FOLLOW_hourPart_in_timePeriodDef5185);
+                            hourPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:690:37: ( minutePart )?
+                    int alt258=2;
+                    int LA258_0 = input.LA(1);
+
+                    if ( (LA258_0==MINUTE_PART) ) {
+                        alt258=1;
+                    }
+                    switch (alt258) {
+                        case 1 :
+                            // EsperEPL2Ast.g:690:38: minutePart
+                            {
+                            pushFollow(FOLLOW_minutePart_in_timePeriodDef5190);
+                            minutePart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:690:51: ( secondPart )?
+                    int alt259=2;
+                    int LA259_0 = input.LA(1);
+
+                    if ( (LA259_0==SECOND_PART) ) {
+                        alt259=1;
+                    }
+                    switch (alt259) {
+                        case 1 :
+                            // EsperEPL2Ast.g:690:52: secondPart
+                            {
+                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5195);
                             secondPart();
 
                             state._fsp--;
@@ -13868,18 +14090,18 @@ public class EsperEPL2Ast extends TreeParser {
 
                     }
 
-                    // EsperEPL2Ast.g:690:29: ( millisecondPart )?
-                    int alt251=2;
-                    int LA251_0 = input.LA(1);
+                    // EsperEPL2Ast.g:690:65: ( millisecondPart )?
+                    int alt260=2;
+                    int LA260_0 = input.LA(1);
 
-                    if ( (LA251_0==MILLISECOND_PART) ) {
-                        alt251=1;
+                    if ( (LA260_0==MILLISECOND_PART) ) {
+                        alt260=1;
                     }
-                    switch (alt251) {
+                    switch (alt260) {
                         case 1 :
-                            // EsperEPL2Ast.g:690:30: millisecondPart
+                            // EsperEPL2Ast.g:690:66: millisecondPart
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5153);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5200);
                             millisecondPart();
 
                             state._fsp--;
@@ -13894,25 +14116,91 @@ public class EsperEPL2Ast extends TreeParser {
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Ast.g:691:4: secondPart ( millisecondPart )?
+                    // EsperEPL2Ast.g:691:5: dayPart ( hourPart )? ( minutePart )? ( secondPart )? ( millisecondPart )?
                     {
-                    pushFollow(FOLLOW_secondPart_in_timePeriodDef5160);
-                    secondPart();
+                    pushFollow(FOLLOW_dayPart_in_timePeriodDef5208);
+                    dayPart();
 
                     state._fsp--;
 
-                    // EsperEPL2Ast.g:691:15: ( millisecondPart )?
-                    int alt252=2;
-                    int LA252_0 = input.LA(1);
+                    // EsperEPL2Ast.g:691:13: ( hourPart )?
+                    int alt261=2;
+                    int LA261_0 = input.LA(1);
 
-                    if ( (LA252_0==MILLISECOND_PART) ) {
-                        alt252=1;
+                    if ( (LA261_0==HOUR_PART) ) {
+                        alt261=1;
                     }
-                    switch (alt252) {
+                    switch (alt261) {
                         case 1 :
-                            // EsperEPL2Ast.g:691:16: millisecondPart
+                            // EsperEPL2Ast.g:691:14: hourPart
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5163);
+                            pushFollow(FOLLOW_hourPart_in_timePeriodDef5211);
+                            hourPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:691:25: ( minutePart )?
+                    int alt262=2;
+                    int LA262_0 = input.LA(1);
+
+                    if ( (LA262_0==MINUTE_PART) ) {
+                        alt262=1;
+                    }
+                    switch (alt262) {
+                        case 1 :
+                            // EsperEPL2Ast.g:691:26: minutePart
+                            {
+                            pushFollow(FOLLOW_minutePart_in_timePeriodDef5216);
+                            minutePart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:691:39: ( secondPart )?
+                    int alt263=2;
+                    int LA263_0 = input.LA(1);
+
+                    if ( (LA263_0==SECOND_PART) ) {
+                        alt263=1;
+                    }
+                    switch (alt263) {
+                        case 1 :
+                            // EsperEPL2Ast.g:691:40: secondPart
+                            {
+                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5221);
+                            secondPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:691:53: ( millisecondPart )?
+                    int alt264=2;
+                    int LA264_0 = input.LA(1);
+
+                    if ( (LA264_0==MILLISECOND_PART) ) {
+                        alt264=1;
+                    }
+                    switch (alt264) {
+                        case 1 :
+                            // EsperEPL2Ast.g:691:54: millisecondPart
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5226);
                             millisecondPart();
 
                             state._fsp--;
@@ -13927,9 +14215,174 @@ public class EsperEPL2Ast extends TreeParser {
                     }
                     break;
                 case 5 :
-                    // EsperEPL2Ast.g:692:4: millisecondPart
+                    // EsperEPL2Ast.g:692:4: hourPart ( minutePart )? ( secondPart )? ( millisecondPart )?
                     {
-                    pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5170);
+                    pushFollow(FOLLOW_hourPart_in_timePeriodDef5233);
+                    hourPart();
+
+                    state._fsp--;
+
+                    // EsperEPL2Ast.g:692:13: ( minutePart )?
+                    int alt265=2;
+                    int LA265_0 = input.LA(1);
+
+                    if ( (LA265_0==MINUTE_PART) ) {
+                        alt265=1;
+                    }
+                    switch (alt265) {
+                        case 1 :
+                            // EsperEPL2Ast.g:692:14: minutePart
+                            {
+                            pushFollow(FOLLOW_minutePart_in_timePeriodDef5236);
+                            minutePart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:692:27: ( secondPart )?
+                    int alt266=2;
+                    int LA266_0 = input.LA(1);
+
+                    if ( (LA266_0==SECOND_PART) ) {
+                        alt266=1;
+                    }
+                    switch (alt266) {
+                        case 1 :
+                            // EsperEPL2Ast.g:692:28: secondPart
+                            {
+                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5241);
+                            secondPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:692:41: ( millisecondPart )?
+                    int alt267=2;
+                    int LA267_0 = input.LA(1);
+
+                    if ( (LA267_0==MILLISECOND_PART) ) {
+                        alt267=1;
+                    }
+                    switch (alt267) {
+                        case 1 :
+                            // EsperEPL2Ast.g:692:42: millisecondPart
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5246);
+                            millisecondPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+
+                    }
+                    break;
+                case 6 :
+                    // EsperEPL2Ast.g:693:4: minutePart ( secondPart )? ( millisecondPart )?
+                    {
+                    pushFollow(FOLLOW_minutePart_in_timePeriodDef5253);
+                    minutePart();
+
+                    state._fsp--;
+
+                    // EsperEPL2Ast.g:693:15: ( secondPart )?
+                    int alt268=2;
+                    int LA268_0 = input.LA(1);
+
+                    if ( (LA268_0==SECOND_PART) ) {
+                        alt268=1;
+                    }
+                    switch (alt268) {
+                        case 1 :
+                            // EsperEPL2Ast.g:693:16: secondPart
+                            {
+                            pushFollow(FOLLOW_secondPart_in_timePeriodDef5256);
+                            secondPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+                    // EsperEPL2Ast.g:693:29: ( millisecondPart )?
+                    int alt269=2;
+                    int LA269_0 = input.LA(1);
+
+                    if ( (LA269_0==MILLISECOND_PART) ) {
+                        alt269=1;
+                    }
+                    switch (alt269) {
+                        case 1 :
+                            // EsperEPL2Ast.g:693:30: millisecondPart
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5261);
+                            millisecondPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+
+                    }
+                    break;
+                case 7 :
+                    // EsperEPL2Ast.g:694:4: secondPart ( millisecondPart )?
+                    {
+                    pushFollow(FOLLOW_secondPart_in_timePeriodDef5268);
+                    secondPart();
+
+                    state._fsp--;
+
+                    // EsperEPL2Ast.g:694:15: ( millisecondPart )?
+                    int alt270=2;
+                    int LA270_0 = input.LA(1);
+
+                    if ( (LA270_0==MILLISECOND_PART) ) {
+                        alt270=1;
+                    }
+                    switch (alt270) {
+                        case 1 :
+                            // EsperEPL2Ast.g:694:16: millisecondPart
+                            {
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5271);
+                            millisecondPart();
+
+                            state._fsp--;
+
+
+                            }
+                            break;
+
+                    }
+
+
+                    }
+                    break;
+                case 8 :
+                    // EsperEPL2Ast.g:695:4: millisecondPart
+                    {
+                    pushFollow(FOLLOW_millisecondPart_in_timePeriodDef5278);
                     millisecondPart();
 
                     state._fsp--;
@@ -13951,17 +14404,113 @@ public class EsperEPL2Ast extends TreeParser {
     // $ANTLR end "timePeriodDef"
 
 
-    // $ANTLR start "dayPart"
-    // EsperEPL2Ast.g:695:1: dayPart : ^( DAY_PART valueExpr ) ;
-    public final void dayPart() throws RecognitionException {
+    // $ANTLR start "yearPart"
+    // EsperEPL2Ast.g:698:1: yearPart : ^( YEAR_PART valueExpr ) ;
+    public final void yearPart() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:696:2: ( ^( DAY_PART valueExpr ) )
-            // EsperEPL2Ast.g:696:4: ^( DAY_PART valueExpr )
+            // EsperEPL2Ast.g:699:2: ( ^( YEAR_PART valueExpr ) )
+            // EsperEPL2Ast.g:699:4: ^( YEAR_PART valueExpr )
             {
-            match(input,DAY_PART,FOLLOW_DAY_PART_in_dayPart5184); 
+            match(input,YEAR_PART,FOLLOW_YEAR_PART_in_yearPart5292); 
 
             match(input, Token.DOWN, null); 
-            pushFollow(FOLLOW_valueExpr_in_dayPart5186);
+            pushFollow(FOLLOW_valueExpr_in_yearPart5294);
+            valueExpr();
+
+            state._fsp--;
+
+
+            match(input, Token.UP, null); 
+
+            }
+
+        }
+
+          catch (RecognitionException rex) {
+            throw rex;
+          }
+        finally {
+        }
+        return ;
+    }
+    // $ANTLR end "yearPart"
+
+
+    // $ANTLR start "monthPart"
+    // EsperEPL2Ast.g:702:1: monthPart : ^( MONTH_PART valueExpr ) ;
+    public final void monthPart() throws RecognitionException {
+        try {
+            // EsperEPL2Ast.g:703:2: ( ^( MONTH_PART valueExpr ) )
+            // EsperEPL2Ast.g:703:4: ^( MONTH_PART valueExpr )
+            {
+            match(input,MONTH_PART,FOLLOW_MONTH_PART_in_monthPart5309); 
+
+            match(input, Token.DOWN, null); 
+            pushFollow(FOLLOW_valueExpr_in_monthPart5311);
+            valueExpr();
+
+            state._fsp--;
+
+
+            match(input, Token.UP, null); 
+
+            }
+
+        }
+
+          catch (RecognitionException rex) {
+            throw rex;
+          }
+        finally {
+        }
+        return ;
+    }
+    // $ANTLR end "monthPart"
+
+
+    // $ANTLR start "weekPart"
+    // EsperEPL2Ast.g:706:1: weekPart : ^( WEEK_PART valueExpr ) ;
+    public final void weekPart() throws RecognitionException {
+        try {
+            // EsperEPL2Ast.g:707:2: ( ^( WEEK_PART valueExpr ) )
+            // EsperEPL2Ast.g:707:4: ^( WEEK_PART valueExpr )
+            {
+            match(input,WEEK_PART,FOLLOW_WEEK_PART_in_weekPart5326); 
+
+            match(input, Token.DOWN, null); 
+            pushFollow(FOLLOW_valueExpr_in_weekPart5328);
+            valueExpr();
+
+            state._fsp--;
+
+
+            match(input, Token.UP, null); 
+
+            }
+
+        }
+
+          catch (RecognitionException rex) {
+            throw rex;
+          }
+        finally {
+        }
+        return ;
+    }
+    // $ANTLR end "weekPart"
+
+
+    // $ANTLR start "dayPart"
+    // EsperEPL2Ast.g:710:1: dayPart : ^( DAY_PART valueExpr ) ;
+    public final void dayPart() throws RecognitionException {
+        try {
+            // EsperEPL2Ast.g:711:2: ( ^( DAY_PART valueExpr ) )
+            // EsperEPL2Ast.g:711:4: ^( DAY_PART valueExpr )
+            {
+            match(input,DAY_PART,FOLLOW_DAY_PART_in_dayPart5343); 
+
+            match(input, Token.DOWN, null); 
+            pushFollow(FOLLOW_valueExpr_in_dayPart5345);
             valueExpr();
 
             state._fsp--;
@@ -13984,16 +14533,16 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "hourPart"
-    // EsperEPL2Ast.g:699:1: hourPart : ^( HOUR_PART valueExpr ) ;
+    // EsperEPL2Ast.g:714:1: hourPart : ^( HOUR_PART valueExpr ) ;
     public final void hourPart() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:700:2: ( ^( HOUR_PART valueExpr ) )
-            // EsperEPL2Ast.g:700:4: ^( HOUR_PART valueExpr )
+            // EsperEPL2Ast.g:715:2: ( ^( HOUR_PART valueExpr ) )
+            // EsperEPL2Ast.g:715:4: ^( HOUR_PART valueExpr )
             {
-            match(input,HOUR_PART,FOLLOW_HOUR_PART_in_hourPart5201); 
+            match(input,HOUR_PART,FOLLOW_HOUR_PART_in_hourPart5360); 
 
             match(input, Token.DOWN, null); 
-            pushFollow(FOLLOW_valueExpr_in_hourPart5203);
+            pushFollow(FOLLOW_valueExpr_in_hourPart5362);
             valueExpr();
 
             state._fsp--;
@@ -14016,16 +14565,16 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "minutePart"
-    // EsperEPL2Ast.g:703:1: minutePart : ^( MINUTE_PART valueExpr ) ;
+    // EsperEPL2Ast.g:718:1: minutePart : ^( MINUTE_PART valueExpr ) ;
     public final void minutePart() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:704:2: ( ^( MINUTE_PART valueExpr ) )
-            // EsperEPL2Ast.g:704:4: ^( MINUTE_PART valueExpr )
+            // EsperEPL2Ast.g:719:2: ( ^( MINUTE_PART valueExpr ) )
+            // EsperEPL2Ast.g:719:4: ^( MINUTE_PART valueExpr )
             {
-            match(input,MINUTE_PART,FOLLOW_MINUTE_PART_in_minutePart5218); 
+            match(input,MINUTE_PART,FOLLOW_MINUTE_PART_in_minutePart5377); 
 
             match(input, Token.DOWN, null); 
-            pushFollow(FOLLOW_valueExpr_in_minutePart5220);
+            pushFollow(FOLLOW_valueExpr_in_minutePart5379);
             valueExpr();
 
             state._fsp--;
@@ -14048,16 +14597,16 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "secondPart"
-    // EsperEPL2Ast.g:707:1: secondPart : ^( SECOND_PART valueExpr ) ;
+    // EsperEPL2Ast.g:722:1: secondPart : ^( SECOND_PART valueExpr ) ;
     public final void secondPart() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:708:2: ( ^( SECOND_PART valueExpr ) )
-            // EsperEPL2Ast.g:708:4: ^( SECOND_PART valueExpr )
+            // EsperEPL2Ast.g:723:2: ( ^( SECOND_PART valueExpr ) )
+            // EsperEPL2Ast.g:723:4: ^( SECOND_PART valueExpr )
             {
-            match(input,SECOND_PART,FOLLOW_SECOND_PART_in_secondPart5235); 
+            match(input,SECOND_PART,FOLLOW_SECOND_PART_in_secondPart5394); 
 
             match(input, Token.DOWN, null); 
-            pushFollow(FOLLOW_valueExpr_in_secondPart5237);
+            pushFollow(FOLLOW_valueExpr_in_secondPart5396);
             valueExpr();
 
             state._fsp--;
@@ -14080,16 +14629,16 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "millisecondPart"
-    // EsperEPL2Ast.g:711:1: millisecondPart : ^( MILLISECOND_PART valueExpr ) ;
+    // EsperEPL2Ast.g:726:1: millisecondPart : ^( MILLISECOND_PART valueExpr ) ;
     public final void millisecondPart() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:712:2: ( ^( MILLISECOND_PART valueExpr ) )
-            // EsperEPL2Ast.g:712:4: ^( MILLISECOND_PART valueExpr )
+            // EsperEPL2Ast.g:727:2: ( ^( MILLISECOND_PART valueExpr ) )
+            // EsperEPL2Ast.g:727:4: ^( MILLISECOND_PART valueExpr )
             {
-            match(input,MILLISECOND_PART,FOLLOW_MILLISECOND_PART_in_millisecondPart5252); 
+            match(input,MILLISECOND_PART,FOLLOW_MILLISECOND_PART_in_millisecondPart5411); 
 
             match(input, Token.DOWN, null); 
-            pushFollow(FOLLOW_valueExpr_in_millisecondPart5254);
+            pushFollow(FOLLOW_valueExpr_in_millisecondPart5413);
             valueExpr();
 
             state._fsp--;
@@ -14112,15 +14661,15 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "substitution"
-    // EsperEPL2Ast.g:715:1: substitution : s= SUBSTITUTION ;
+    // EsperEPL2Ast.g:730:1: substitution : s= SUBSTITUTION ;
     public final void substitution() throws RecognitionException {
         CommonTree s=null;
 
         try {
-            // EsperEPL2Ast.g:716:2: (s= SUBSTITUTION )
-            // EsperEPL2Ast.g:716:4: s= SUBSTITUTION
+            // EsperEPL2Ast.g:731:2: (s= SUBSTITUTION )
+            // EsperEPL2Ast.g:731:4: s= SUBSTITUTION
             {
-            s=(CommonTree)match(input,SUBSTITUTION,FOLLOW_SUBSTITUTION_in_substitution5269); 
+            s=(CommonTree)match(input,SUBSTITUTION,FOLLOW_SUBSTITUTION_in_substitution5428); 
              leaveNode(s); 
 
             }
@@ -14138,109 +14687,109 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "constant"
-    // EsperEPL2Ast.g:719:1: constant[boolean isLeaveNode] : (c= INT_TYPE | c= LONG_TYPE | c= FLOAT_TYPE | c= DOUBLE_TYPE | c= STRING_TYPE | c= BOOL_TYPE | c= NULL_TYPE );
+    // EsperEPL2Ast.g:734:1: constant[boolean isLeaveNode] : (c= INT_TYPE | c= LONG_TYPE | c= FLOAT_TYPE | c= DOUBLE_TYPE | c= STRING_TYPE | c= BOOL_TYPE | c= NULL_TYPE );
     public final void constant(boolean isLeaveNode) throws RecognitionException {
         CommonTree c=null;
 
         try {
-            // EsperEPL2Ast.g:720:2: (c= INT_TYPE | c= LONG_TYPE | c= FLOAT_TYPE | c= DOUBLE_TYPE | c= STRING_TYPE | c= BOOL_TYPE | c= NULL_TYPE )
-            int alt254=7;
+            // EsperEPL2Ast.g:735:2: (c= INT_TYPE | c= LONG_TYPE | c= FLOAT_TYPE | c= DOUBLE_TYPE | c= STRING_TYPE | c= BOOL_TYPE | c= NULL_TYPE )
+            int alt272=7;
             switch ( input.LA(1) ) {
             case INT_TYPE:
                 {
-                alt254=1;
+                alt272=1;
                 }
                 break;
             case LONG_TYPE:
                 {
-                alt254=2;
+                alt272=2;
                 }
                 break;
             case FLOAT_TYPE:
                 {
-                alt254=3;
+                alt272=3;
                 }
                 break;
             case DOUBLE_TYPE:
                 {
-                alt254=4;
+                alt272=4;
                 }
                 break;
             case STRING_TYPE:
                 {
-                alt254=5;
+                alt272=5;
                 }
                 break;
             case BOOL_TYPE:
                 {
-                alt254=6;
+                alt272=6;
                 }
                 break;
             case NULL_TYPE:
                 {
-                alt254=7;
+                alt272=7;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 254, 0, input);
+                    new NoViableAltException("", 272, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt254) {
+            switch (alt272) {
                 case 1 :
-                    // EsperEPL2Ast.g:720:4: c= INT_TYPE
+                    // EsperEPL2Ast.g:735:4: c= INT_TYPE
                     {
-                    c=(CommonTree)match(input,INT_TYPE,FOLLOW_INT_TYPE_in_constant5285); 
+                    c=(CommonTree)match(input,INT_TYPE,FOLLOW_INT_TYPE_in_constant5444); 
                      if (isLeaveNode) leaveNode(c); 
 
                     }
                     break;
                 case 2 :
-                    // EsperEPL2Ast.g:721:4: c= LONG_TYPE
+                    // EsperEPL2Ast.g:736:4: c= LONG_TYPE
                     {
-                    c=(CommonTree)match(input,LONG_TYPE,FOLLOW_LONG_TYPE_in_constant5294); 
+                    c=(CommonTree)match(input,LONG_TYPE,FOLLOW_LONG_TYPE_in_constant5453); 
                      if (isLeaveNode) leaveNode(c); 
 
                     }
                     break;
                 case 3 :
-                    // EsperEPL2Ast.g:722:4: c= FLOAT_TYPE
+                    // EsperEPL2Ast.g:737:4: c= FLOAT_TYPE
                     {
-                    c=(CommonTree)match(input,FLOAT_TYPE,FOLLOW_FLOAT_TYPE_in_constant5303); 
+                    c=(CommonTree)match(input,FLOAT_TYPE,FOLLOW_FLOAT_TYPE_in_constant5462); 
                      if (isLeaveNode) leaveNode(c); 
 
                     }
                     break;
                 case 4 :
-                    // EsperEPL2Ast.g:723:4: c= DOUBLE_TYPE
+                    // EsperEPL2Ast.g:738:4: c= DOUBLE_TYPE
                     {
-                    c=(CommonTree)match(input,DOUBLE_TYPE,FOLLOW_DOUBLE_TYPE_in_constant5312); 
+                    c=(CommonTree)match(input,DOUBLE_TYPE,FOLLOW_DOUBLE_TYPE_in_constant5471); 
                      if (isLeaveNode) leaveNode(c); 
 
                     }
                     break;
                 case 5 :
-                    // EsperEPL2Ast.g:724:11: c= STRING_TYPE
+                    // EsperEPL2Ast.g:739:11: c= STRING_TYPE
                     {
-                    c=(CommonTree)match(input,STRING_TYPE,FOLLOW_STRING_TYPE_in_constant5328); 
+                    c=(CommonTree)match(input,STRING_TYPE,FOLLOW_STRING_TYPE_in_constant5487); 
                      if (isLeaveNode) leaveNode(c); 
 
                     }
                     break;
                 case 6 :
-                    // EsperEPL2Ast.g:725:11: c= BOOL_TYPE
+                    // EsperEPL2Ast.g:740:11: c= BOOL_TYPE
                     {
-                    c=(CommonTree)match(input,BOOL_TYPE,FOLLOW_BOOL_TYPE_in_constant5344); 
+                    c=(CommonTree)match(input,BOOL_TYPE,FOLLOW_BOOL_TYPE_in_constant5503); 
                      if (isLeaveNode) leaveNode(c); 
 
                     }
                     break;
                 case 7 :
-                    // EsperEPL2Ast.g:726:8: c= NULL_TYPE
+                    // EsperEPL2Ast.g:741:8: c= NULL_TYPE
                     {
-                    c=(CommonTree)match(input,NULL_TYPE,FOLLOW_NULL_TYPE_in_constant5357); 
+                    c=(CommonTree)match(input,NULL_TYPE,FOLLOW_NULL_TYPE_in_constant5516); 
                      if (isLeaveNode) leaveNode(c); 
 
                     }
@@ -14260,10 +14809,10 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "number"
-    // EsperEPL2Ast.g:729:1: number : ( INT_TYPE | LONG_TYPE | FLOAT_TYPE | DOUBLE_TYPE );
+    // EsperEPL2Ast.g:744:1: number : ( INT_TYPE | LONG_TYPE | FLOAT_TYPE | DOUBLE_TYPE );
     public final void number() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:730:2: ( INT_TYPE | LONG_TYPE | FLOAT_TYPE | DOUBLE_TYPE )
+            // EsperEPL2Ast.g:745:2: ( INT_TYPE | LONG_TYPE | FLOAT_TYPE | DOUBLE_TYPE )
             // EsperEPL2Ast.g:
             {
             if ( (input.LA(1)>=INT_TYPE && input.LA(1)<=DOUBLE_TYPE) ) {
@@ -14295,338 +14844,338 @@ public class EsperEPL2Ast extends TreeParser {
  
 
     public static final BitSet FOLLOW_ANNOTATION_in_annotation92 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_annotation94 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000001000L,0xE003800000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_elementValuePair_in_annotation96 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000001000L,0xE003800000000000L,0x000000000000000FL});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_annotation94 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x0700000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_elementValuePair_in_annotation96 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x0700000000000000L,0x0000000000001FC0L});
     public static final BitSet FOLLOW_elementValue_in_annotation99 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ANNOTATION_VALUE_in_elementValuePair117 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_elementValuePair119 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000001000L,0xE001800000000000L,0x000000000000000FL});
+    public static final BitSet FOLLOW_IDENT_in_elementValuePair119 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L,0x0300000000000000L,0x0000000000001FC0L});
     public static final BitSet FOLLOW_elementValue_in_elementValuePair121 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_annotation_in_elementValue148 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_ANNOTATION_ARRAY_in_elementValue156 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_elementValue_in_elementValue158 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000001000L,0xE001800000000000L,0x000000000000000FL});
+    public static final BitSet FOLLOW_elementValue_in_elementValue158 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x0300000000000000L,0x0000000000001FC0L});
     public static final BitSet FOLLOW_constant_in_elementValue169 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_CLASS_IDENT_in_elementValue179 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_EPL_EXPR_in_startEPLExpressionRule202 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_annotation_in_startEPLExpressionRule204 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0020000010000000L,0x00A080200B000000L});
+    public static final BitSet FOLLOW_annotation_in_startEPLExpressionRule204 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0800000400000000L,0x4100401600000000L,0x0000000000000001L});
     public static final BitSet FOLLOW_eplExpressionRule_in_startEPLExpressionRule208 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_selectExpr_in_eplExpressionRule225 = new BitSet(new long[]{0x0000000000000002L,0x0001000000000000L});
-    public static final BitSet FOLLOW_createWindowExpr_in_eplExpressionRule229 = new BitSet(new long[]{0x0000000000000002L,0x0001000000000000L});
-    public static final BitSet FOLLOW_createIndexExpr_in_eplExpressionRule233 = new BitSet(new long[]{0x0000000000000002L,0x0001000000000000L});
-    public static final BitSet FOLLOW_createVariableExpr_in_eplExpressionRule237 = new BitSet(new long[]{0x0000000000000002L,0x0001000000000000L});
-    public static final BitSet FOLLOW_createSchemaExpr_in_eplExpressionRule241 = new BitSet(new long[]{0x0000000000000002L,0x0001000000000000L});
-    public static final BitSet FOLLOW_onExpr_in_eplExpressionRule245 = new BitSet(new long[]{0x0000000000000002L,0x0001000000000000L});
-    public static final BitSet FOLLOW_updateExpr_in_eplExpressionRule249 = new BitSet(new long[]{0x0000000000000002L,0x0001000000000000L});
+    public static final BitSet FOLLOW_selectExpr_in_eplExpressionRule225 = new BitSet(new long[]{0x0000000000000002L,0x0040000000000000L});
+    public static final BitSet FOLLOW_createWindowExpr_in_eplExpressionRule229 = new BitSet(new long[]{0x0000000000000002L,0x0040000000000000L});
+    public static final BitSet FOLLOW_createIndexExpr_in_eplExpressionRule233 = new BitSet(new long[]{0x0000000000000002L,0x0040000000000000L});
+    public static final BitSet FOLLOW_createVariableExpr_in_eplExpressionRule237 = new BitSet(new long[]{0x0000000000000002L,0x0040000000000000L});
+    public static final BitSet FOLLOW_createSchemaExpr_in_eplExpressionRule241 = new BitSet(new long[]{0x0000000000000002L,0x0040000000000000L});
+    public static final BitSet FOLLOW_onExpr_in_eplExpressionRule245 = new BitSet(new long[]{0x0000000000000002L,0x0040000000000000L});
+    public static final BitSet FOLLOW_updateExpr_in_eplExpressionRule249 = new BitSet(new long[]{0x0000000000000002L,0x0040000000000000L});
     public static final BitSet FOLLOW_forExpr_in_eplExpressionRule252 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_ON_EXPR_in_onExpr271 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_onStreamExpr_in_onExpr273 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x00000011E0000000L});
+    public static final BitSet FOLLOW_onStreamExpr_in_onExpr273 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x000023C000000000L});
     public static final BitSet FOLLOW_onDeleteExpr_in_onExpr278 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_onUpdateExpr_in_onExpr282 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_onSelectExpr_in_onExpr286 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_onSelectInsertExpr_in_onExpr289 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000600000000L});
+    public static final BitSet FOLLOW_onSelectExpr_in_onExpr286 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000040000000000L});
+    public static final BitSet FOLLOW_onSelectInsertExpr_in_onExpr289 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x00000C0000000000L});
     public static final BitSet FOLLOW_onSelectInsertOutput_in_onExpr292 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_onSetExpr_in_onExpr299 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_onMergeExpr_in_onExpr303 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_STREAM_in_onStreamExpr325 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventFilterExpr_in_onStreamExpr328 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_patternInclusionExpression_in_onStreamExpr332 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_eventFilterExpr_in_onStreamExpr328 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_patternInclusionExpression_in_onStreamExpr332 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_onStreamExpr335 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_MERGE_EXPR_in_onMergeExpr353 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_onMergeExpr355 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x1800000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_onMergeExpr357 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x1800000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_mergeItem_in_onMergeExpr360 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x1800000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_IDENT_in_onMergeExpr355 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000030L});
+    public static final BitSet FOLLOW_IDENT_in_onMergeExpr357 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000030L});
+    public static final BitSet FOLLOW_mergeItem_in_onMergeExpr360 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000001000000L,0x0000000000000000L,0x0000000010000030L});
     public static final BitSet FOLLOW_whereClause_in_onMergeExpr363 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_mergeMatched_in_mergeItem379 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_mergeUnmatched_in_mergeItem383 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_MERGE_UPD_in_mergeMatched398 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_mergeMatched400 = new BitSet(new long[]{0x0000000000000008L,0x0000020000020000L,0x0000000000000000L,0x0040000000000000L});
-    public static final BitSet FOLLOW_UPDATE_in_mergeMatched403 = new BitSet(new long[]{0x0000000000000008L,0x0000000000020000L,0x0000000000000000L,0x0040000000000000L});
-    public static final BitSet FOLLOW_DELETE_in_mergeMatched406 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
-    public static final BitSet FOLLOW_onSetAssignment_in_mergeMatched409 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
+    public static final BitSet FOLLOW_valueExpr_in_mergeMatched400 = new BitSet(new long[]{0x0000000000000008L,0x0000800000020000L,0x0000000000000000L,0x8000000000000000L});
+    public static final BitSet FOLLOW_UPDATE_in_mergeMatched403 = new BitSet(new long[]{0x0000000000000008L,0x0000000000020000L,0x0000000000000000L,0x8000000000000000L});
+    public static final BitSet FOLLOW_DELETE_in_mergeMatched406 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x8000000000000000L});
+    public static final BitSet FOLLOW_onSetAssignment_in_mergeMatched409 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x8000000000000000L});
     public static final BitSet FOLLOW_MERGE_INS_in_mergeUnmatched427 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_selectionList_in_mergeUnmatched429 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x26C0010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_exprCol_in_mergeUnmatched431 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_selectionList_in_mergeUnmatched429 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xB0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_exprCol_in_mergeUnmatched431 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_mergeUnmatched434 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_UPDATE_EXPR_in_updateExpr453 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_updateExpr455 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_updateExpr457 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
-    public static final BitSet FOLLOW_onSetAssignment_in_updateExpr460 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x0040000000000000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_updateExpr455 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_updateExpr457 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8000000000000000L});
+    public static final BitSet FOLLOW_onSetAssignment_in_updateExpr460 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000001000000L,0x8000000000000000L});
     public static final BitSet FOLLOW_whereClause_in_updateExpr463 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_DELETE_EXPR_in_onDeleteExpr480 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_onExprFrom_in_onDeleteExpr482 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_onExprFrom_in_onDeleteExpr482 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000001000000L});
     public static final BitSet FOLLOW_whereClause_in_onDeleteExpr485 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_SELECT_EXPR_in_onSelectExpr505 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_insertIntoExpr_in_onSelectExpr507 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000000060000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_DISTINCT_in_onSelectExpr510 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000000060000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_selectionList_in_onSelectExpr513 = new BitSet(new long[]{0x0000000000000008L,0x0000008000000000L,0x00000060000C0000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_onExprFrom_in_onSelectExpr515 = new BitSet(new long[]{0x0000000000000008L,0x0000008000000000L,0x00000060000C0000L});
-    public static final BitSet FOLLOW_whereClause_in_onSelectExpr518 = new BitSet(new long[]{0x0000000000000008L,0x0000008000000000L,0x0000006000080000L});
-    public static final BitSet FOLLOW_groupByClause_in_onSelectExpr522 = new BitSet(new long[]{0x0000000000000008L,0x0000008000000000L,0x0000004000080000L});
-    public static final BitSet FOLLOW_havingClause_in_onSelectExpr525 = new BitSet(new long[]{0x0000000000000008L,0x0000008000000000L,0x0000004000000000L});
-    public static final BitSet FOLLOW_orderByClause_in_onSelectExpr528 = new BitSet(new long[]{0x0000000000000008L,0x0000008000000000L});
+    public static final BitSet FOLLOW_insertIntoExpr_in_onSelectExpr507 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000001800000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_DISTINCT_in_onSelectExpr510 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000001800000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_selectionList_in_onSelectExpr513 = new BitSet(new long[]{0x0000000000000008L,0x0000200000000000L,0x0000180003000000L,0x0000100000000000L});
+    public static final BitSet FOLLOW_onExprFrom_in_onSelectExpr515 = new BitSet(new long[]{0x0000000000000008L,0x0000200000000000L,0x0000180003000000L});
+    public static final BitSet FOLLOW_whereClause_in_onSelectExpr518 = new BitSet(new long[]{0x0000000000000008L,0x0000200000000000L,0x0000180002000000L});
+    public static final BitSet FOLLOW_groupByClause_in_onSelectExpr522 = new BitSet(new long[]{0x0000000000000008L,0x0000200000000000L,0x0000100002000000L});
+    public static final BitSet FOLLOW_havingClause_in_onSelectExpr525 = new BitSet(new long[]{0x0000000000000008L,0x0000200000000000L,0x0000100000000000L});
+    public static final BitSet FOLLOW_orderByClause_in_onSelectExpr528 = new BitSet(new long[]{0x0000000000000008L,0x0000200000000000L});
     public static final BitSet FOLLOW_rowLimitClause_in_onSelectExpr531 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_SELECT_INSERT_EXPR_in_onSelectInsertExpr551 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_insertIntoExpr_in_onSelectInsertExpr553 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000000060000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_selectionList_in_onSelectInsertExpr555 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_insertIntoExpr_in_onSelectInsertExpr553 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000001800000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_selectionList_in_onSelectInsertExpr555 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000001000000L});
     public static final BitSet FOLLOW_whereClause_in_onSelectInsertExpr557 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_SELECT_INSERT_OUTPUT_in_onSelectInsertOutput574 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_set_in_onSelectInsertOutput576 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_SET_EXPR_in_onSetExpr594 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_onSetAssignment_in_onSetExpr596 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x0040000000000000L});
-    public static final BitSet FOLLOW_onSetAssignment_in_onSetExpr599 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x0040000000000000L});
+    public static final BitSet FOLLOW_onSetAssignment_in_onSetExpr596 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000001000000L,0x8000000000000000L});
+    public static final BitSet FOLLOW_onSetAssignment_in_onSetExpr599 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000001000000L,0x8000000000000000L});
     public static final BitSet FOLLOW_whereClause_in_onSetExpr603 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_UPDATE_EXPR_in_onUpdateExpr618 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_onExprFrom_in_onUpdateExpr620 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
-    public static final BitSet FOLLOW_onSetAssignment_in_onUpdateExpr622 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x0040000000000000L});
+    public static final BitSet FOLLOW_onExprFrom_in_onUpdateExpr620 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8000000000000000L});
+    public static final BitSet FOLLOW_onSetAssignment_in_onUpdateExpr622 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000001000000L,0x8000000000000000L});
     public static final BitSet FOLLOW_whereClause_in_onUpdateExpr625 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_SET_EXPR_ITEM_in_onSetAssignment640 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_onSetAssignment642 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_onSetAssignment642 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_onSetAssignment645 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ON_EXPR_FROM_in_onExprFrom659 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_onExprFrom661 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_IDENT_in_onExprFrom661 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_onExprFrom664 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CREATE_WINDOW_EXPR_in_createWindowExpr682 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_createWindowExpr684 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000003L,0x0000000000009000L,0x0000100004000000L});
-    public static final BitSet FOLLOW_viewListExpr_in_createWindowExpr687 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000003L,0x0000000000009000L,0x0000100004000000L});
-    public static final BitSet FOLLOW_RETAINUNION_in_createWindowExpr691 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000003L,0x0000000000009000L,0x0000100004000000L});
-    public static final BitSet FOLLOW_RETAININTERSECTION_in_createWindowExpr694 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000003L,0x0000000000009000L,0x0000100004000000L});
-    public static final BitSet FOLLOW_createSelectionList_in_createWindowExpr708 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_IDENT_in_createWindowExpr684 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000003L,0x0000000000240000L,0x0020000800000000L});
+    public static final BitSet FOLLOW_viewListExpr_in_createWindowExpr687 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000003L,0x0000000000240000L,0x0020000800000000L});
+    public static final BitSet FOLLOW_RETAINUNION_in_createWindowExpr691 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000003L,0x0000000000240000L,0x0020000800000000L});
+    public static final BitSet FOLLOW_RETAININTERSECTION_in_createWindowExpr694 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000003L,0x0000000000240000L,0x0020000800000000L});
+    public static final BitSet FOLLOW_createSelectionList_in_createWindowExpr708 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
     public static final BitSet FOLLOW_CLASS_IDENT_in_createWindowExpr711 = new BitSet(new long[]{0x0040000000000008L});
     public static final BitSet FOLLOW_createColTypeList_in_createWindowExpr740 = new BitSet(new long[]{0x0040000000000008L});
     public static final BitSet FOLLOW_createWindowExprInsert_in_createWindowExpr751 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CREATE_INDEX_EXPR_in_createIndexExpr771 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_createIndexExpr773 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_createIndexExpr775 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_createIndexExpr773 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_createIndexExpr775 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x1000000000000000L});
     public static final BitSet FOLLOW_exprCol_in_createIndexExpr777 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_INSERT_in_createWindowExprInsert792 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_createWindowExprInsert794 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CREATE_WINDOW_SELECT_EXPR_in_createSelectionList811 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_createSelectionListElement_in_createSelectionList813 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000020000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_createSelectionListElement_in_createSelectionList816 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000020000000L,0x0000000000000400L});
+    public static final BitSet FOLLOW_createSelectionListElement_in_createSelectionList813 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000800000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_createSelectionListElement_in_createSelectionList816 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000800000000L,0x0000000000080000L});
     public static final BitSet FOLLOW_CREATE_COL_TYPE_LIST_in_createColTypeList835 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_createColTypeListElement_in_createColTypeList837 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000200000000000L});
-    public static final BitSet FOLLOW_createColTypeListElement_in_createColTypeList840 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000200000000000L});
+    public static final BitSet FOLLOW_createColTypeListElement_in_createColTypeList837 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
+    public static final BitSet FOLLOW_createColTypeListElement_in_createColTypeList840 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
     public static final BitSet FOLLOW_CREATE_COL_TYPE_in_createColTypeListElement855 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_createColTypeListElement857 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_createColTypeListElement859 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000001000000L});
+    public static final BitSet FOLLOW_IDENT_in_createColTypeListElement857 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_createColTypeListElement859 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
     public static final BitSet FOLLOW_LBRACK_in_createColTypeListElement861 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_WILDCARD_SELECT_in_createSelectionListElement876 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SELECTION_ELEMENT_EXPR_in_createSelectionListElement886 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_createSelectionListElement906 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_createSelectionListElement906 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_createSelectionListElement910 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_constant_in_createSelectionListElement932 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_constant_in_createSelectionListElement932 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_createSelectionListElement935 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CREATE_VARIABLE_EXPR_in_createVariableExpr971 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_createVariableExpr973 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_createVariableExpr975 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_createVariableExpr973 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_createVariableExpr975 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_createVariableExpr978 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CREATE_SCHEMA_EXPR_in_createSchemaExpr998 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_createSchemaExpr1000 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000003L,0x0000000000009000L,0x0700100004000000L});
-    public static final BitSet FOLLOW_variantList_in_createSchemaExpr1003 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0300000000000000L});
-    public static final BitSet FOLLOW_createColTypeList_in_createSchemaExpr1005 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0300000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_createSchemaExpr1000 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000003L,0x0000000000240000L,0x0020000800000000L,0x000000000000000EL});
+    public static final BitSet FOLLOW_variantList_in_createSchemaExpr1003 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000006L});
+    public static final BitSet FOLLOW_createColTypeList_in_createSchemaExpr1005 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000006L});
     public static final BitSet FOLLOW_CREATE_SCHEMA_EXPR_QUAL_in_createSchemaExpr1016 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_IDENT_in_createSchemaExpr1018 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CREATE_SCHEMA_EXPR_INH_in_createSchemaExpr1029 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_createSchemaExpr1031 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_createSchemaExpr1031 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x1000000000000000L});
     public static final BitSet FOLLOW_exprCol_in_createSchemaExpr1033 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_VARIANT_LIST_in_variantList1054 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_variantList1056 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000001000L,0x0000000000000000L,0x0000000004000000L});
-    public static final BitSet FOLLOW_insertIntoExpr_in_selectExpr1074 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0020000010000000L});
-    public static final BitSet FOLLOW_selectClause_in_selectExpr1080 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_fromClause_in_selectExpr1085 = new BitSet(new long[]{0x0000000000000002L,0x0000048000000000L,0x00178060000C0000L});
-    public static final BitSet FOLLOW_matchRecogClause_in_selectExpr1090 = new BitSet(new long[]{0x0000000000000002L,0x0000008000000000L,0x00178060000C0000L});
-    public static final BitSet FOLLOW_whereClause_in_selectExpr1097 = new BitSet(new long[]{0x0000000000000002L,0x0000008000000000L,0x0017806000080000L});
-    public static final BitSet FOLLOW_groupByClause_in_selectExpr1105 = new BitSet(new long[]{0x0000000000000002L,0x0000008000000000L,0x0017804000080000L});
-    public static final BitSet FOLLOW_havingClause_in_selectExpr1112 = new BitSet(new long[]{0x0000000000000002L,0x0000008000000000L,0x0017804000000000L});
-    public static final BitSet FOLLOW_outputLimitExpr_in_selectExpr1119 = new BitSet(new long[]{0x0000000000000002L,0x0000008000000000L,0x0000004000000000L});
-    public static final BitSet FOLLOW_orderByClause_in_selectExpr1126 = new BitSet(new long[]{0x0000000000000002L,0x0000008000000000L});
+    public static final BitSet FOLLOW_set_in_variantList1056 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_insertIntoExpr_in_selectExpr1074 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0800000400000000L});
+    public static final BitSet FOLLOW_selectClause_in_selectExpr1080 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000002000000000L});
+    public static final BitSet FOLLOW_fromClause_in_selectExpr1085 = new BitSet(new long[]{0x0000000000000002L,0x0001200000000000L,0x05E0180003000000L});
+    public static final BitSet FOLLOW_matchRecogClause_in_selectExpr1090 = new BitSet(new long[]{0x0000000000000002L,0x0000200000000000L,0x05E0180003000000L});
+    public static final BitSet FOLLOW_whereClause_in_selectExpr1097 = new BitSet(new long[]{0x0000000000000002L,0x0000200000000000L,0x05E0180002000000L});
+    public static final BitSet FOLLOW_groupByClause_in_selectExpr1105 = new BitSet(new long[]{0x0000000000000002L,0x0000200000000000L,0x05E0100002000000L});
+    public static final BitSet FOLLOW_havingClause_in_selectExpr1112 = new BitSet(new long[]{0x0000000000000002L,0x0000200000000000L,0x05E0100000000000L});
+    public static final BitSet FOLLOW_outputLimitExpr_in_selectExpr1119 = new BitSet(new long[]{0x0000000000000002L,0x0000200000000000L,0x0000100000000000L});
+    public static final BitSet FOLLOW_orderByClause_in_selectExpr1126 = new BitSet(new long[]{0x0000000000000002L,0x0000200000000000L});
     public static final BitSet FOLLOW_rowLimitClause_in_selectExpr1133 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_INSERTINTO_EXPR_in_insertIntoExpr1150 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_insertIntoExpr1152 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_insertIntoExpr1161 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0040000000000000L});
+    public static final BitSet FOLLOW_set_in_insertIntoExpr1152 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_insertIntoExpr1161 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x1000000000000000L});
     public static final BitSet FOLLOW_exprCol_in_insertIntoExpr1164 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EXPRCOL_in_exprCol1183 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_exprCol1185 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_exprCol1188 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_IDENT_in_exprCol1185 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_exprCol1188 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_SELECTION_EXPR_in_selectClause1206 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_selectClause1208 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000000060000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_DISTINCT_in_selectClause1221 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000000060000000L,0x0000000000000400L});
+    public static final BitSet FOLLOW_set_in_selectClause1208 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000001800000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_DISTINCT_in_selectClause1221 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000001800000000L,0x0000000000080000L});
     public static final BitSet FOLLOW_selectionList_in_selectClause1224 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_streamExpression_in_fromClause1238 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_streamExpression_in_fromClause1241 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000001E80000000L});
-    public static final BitSet FOLLOW_outerJoin_in_fromClause1244 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000001E80000000L});
+    public static final BitSet FOLLOW_streamExpression_in_fromClause1238 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000002000000000L});
+    public static final BitSet FOLLOW_streamExpression_in_fromClause1241 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x000007A000000000L});
+    public static final BitSet FOLLOW_outerJoin_in_fromClause1244 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x000007A000000000L});
     public static final BitSet FOLLOW_FOR_in_forExpr1264 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_forExpr1266 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_forExpr1268 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_IDENT_in_forExpr1266 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_forExpr1268 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_MATCH_RECOGNIZE_in_matchRecogClause1287 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_matchRecogPartitionBy_in_matchRecogClause1289 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000008000L});
-    public static final BitSet FOLLOW_matchRecogMeasures_in_matchRecogClause1296 = new BitSet(new long[]{0x0000800000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000840L});
-    public static final BitSet FOLLOW_ALL_in_matchRecogClause1302 = new BitSet(new long[]{0x0000800000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000840L});
-    public static final BitSet FOLLOW_matchRecogMatchesAfterSkip_in_matchRecogClause1308 = new BitSet(new long[]{0x0000800000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000840L});
-    public static final BitSet FOLLOW_matchRecogPattern_in_matchRecogClause1314 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000003000L});
-    public static final BitSet FOLLOW_matchRecogMatchesInterval_in_matchRecogClause1320 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000003000L});
+    public static final BitSet FOLLOW_matchRecogPartitionBy_in_matchRecogClause1289 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000001000000L});
+    public static final BitSet FOLLOW_matchRecogMeasures_in_matchRecogClause1296 = new BitSet(new long[]{0x0000800000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000108000L});
+    public static final BitSet FOLLOW_ALL_in_matchRecogClause1302 = new BitSet(new long[]{0x0000800000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000108000L});
+    public static final BitSet FOLLOW_matchRecogMatchesAfterSkip_in_matchRecogClause1308 = new BitSet(new long[]{0x0000800000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000108000L});
+    public static final BitSet FOLLOW_matchRecogPattern_in_matchRecogClause1314 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000600000L});
+    public static final BitSet FOLLOW_matchRecogMatchesInterval_in_matchRecogClause1320 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000600000L});
     public static final BitSet FOLLOW_matchRecogDefine_in_matchRecogClause1326 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MATCHREC_PARTITION_in_matchRecogPartitionBy1344 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_matchRecogPartitionBy1346 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_matchRecogPartitionBy1346 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_MATCHREC_AFTER_SKIP_in_matchRecogMatchesAfterSkip1363 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesAfterSkip1365 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesAfterSkip1367 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesAfterSkip1369 = new BitSet(new long[]{0x0020000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_set_in_matchRecogMatchesAfterSkip1371 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesAfterSkip1365 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesAfterSkip1367 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesAfterSkip1369 = new BitSet(new long[]{0x0020000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_set_in_matchRecogMatchesAfterSkip1371 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesAfterSkip1377 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MATCHREC_INTERVAL_in_matchRecogMatchesInterval1392 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesInterval1394 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x1000000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_matchRecogMatchesInterval1394 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000004L});
     public static final BitSet FOLLOW_timePeriod_in_matchRecogMatchesInterval1396 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MATCHREC_MEASURES_in_matchRecogMeasures1412 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_matchRecogMeasureListElement_in_matchRecogMeasures1414 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000010000L});
+    public static final BitSet FOLLOW_matchRecogMeasureListElement_in_matchRecogMeasures1414 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002000000L});
     public static final BitSet FOLLOW_MATCHREC_MEASURE_ITEM_in_matchRecogMeasureListElement1431 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_matchRecogMeasureListElement1433 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_valueExpr_in_matchRecogMeasureListElement1433 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_matchRecogMeasureListElement1435 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MATCHREC_PATTERN_in_matchRecogPattern1455 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_matchRecogPatternAlteration_in_matchRecogPattern1457 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000300L});
+    public static final BitSet FOLLOW_matchRecogPatternAlteration_in_matchRecogPattern1457 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000060000L});
     public static final BitSet FOLLOW_matchRecogPatternConcat_in_matchRecogPatternAlteration1472 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_MATCHREC_PATTERN_ALTER_in_matchRecogPatternAlteration1480 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_matchRecogPatternConcat_in_matchRecogPatternAlteration1482 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000100L});
-    public static final BitSet FOLLOW_matchRecogPatternConcat_in_matchRecogPatternAlteration1484 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000100L});
+    public static final BitSet FOLLOW_matchRecogPatternConcat_in_matchRecogPatternAlteration1482 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_matchRecogPatternConcat_in_matchRecogPatternAlteration1484 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000020000L});
     public static final BitSet FOLLOW_MATCHREC_PATTERN_CONCAT_in_matchRecogPatternConcat1502 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_matchRecogPatternUnary_in_matchRecogPatternConcat1504 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000480L});
+    public static final BitSet FOLLOW_matchRecogPatternUnary_in_matchRecogPatternConcat1504 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000090000L});
     public static final BitSet FOLLOW_matchRecogPatternNested_in_matchRecogPatternUnary1519 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_matchRecogPatternAtom_in_matchRecogPatternUnary1524 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_MATCHREC_PATTERN_NESTED_in_matchRecogPatternNested1539 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_matchRecogPatternAlteration_in_matchRecogPatternNested1541 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000034000000L});
+    public static final BitSet FOLLOW_matchRecogPatternAlteration_in_matchRecogPatternNested1541 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000006800000000L});
     public static final BitSet FOLLOW_set_in_matchRecogPatternNested1543 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MATCHREC_PATTERN_ATOM_in_matchRecogPatternAtom1572 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_matchRecogPatternAtom1574 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000034000000L});
-    public static final BitSet FOLLOW_set_in_matchRecogPatternAtom1578 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
+    public static final BitSet FOLLOW_IDENT_in_matchRecogPatternAtom1574 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000006800000000L});
+    public static final BitSet FOLLOW_set_in_matchRecogPatternAtom1578 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000004000000000L});
     public static final BitSet FOLLOW_QUESTION_in_matchRecogPatternAtom1590 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MATCHREC_DEFINE_in_matchRecogDefine1612 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_matchRecogDefineItem_in_matchRecogDefine1614 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_matchRecogDefineItem_in_matchRecogDefine1614 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000800000L});
     public static final BitSet FOLLOW_MATCHREC_DEFINE_ITEM_in_matchRecogDefineItem1631 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_matchRecogDefineItem1633 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_IDENT_in_matchRecogDefineItem1633 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_matchRecogDefineItem1635 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_selectionListElement_in_selectionList1652 = new BitSet(new long[]{0x0000400000000002L,0x0000000000000000L,0x0000000060000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_selectionListElement_in_selectionList1655 = new BitSet(new long[]{0x0000400000000002L,0x0000000000000000L,0x0000000060000000L,0x0000000000000400L});
+    public static final BitSet FOLLOW_selectionListElement_in_selectionList1652 = new BitSet(new long[]{0x0000400000000002L,0x0000000000000000L,0x0000001800000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_selectionListElement_in_selectionList1655 = new BitSet(new long[]{0x0000400000000002L,0x0000000000000000L,0x0000001800000000L,0x0000000000080000L});
     public static final BitSet FOLLOW_WILDCARD_SELECT_in_selectionListElement1671 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SELECTION_ELEMENT_EXPR_in_selectionListElement1681 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_selectionListElement1683 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_valueExpr_in_selectionListElement1683 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_selectionListElement1686 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_SELECTION_STREAM_in_selectionListElement1700 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_selectionListElement1702 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_IDENT_in_selectionListElement1702 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_selectionListElement1705 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_outerJoinIdent_in_outerJoin1724 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_LEFT_OUTERJOIN_EXPR_in_outerJoinIdent1738 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1740 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1743 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1747 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1750 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1740 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1743 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1747 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1750 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000400000000000L});
     public static final BitSet FOLLOW_RIGHT_OUTERJOIN_EXPR_in_outerJoinIdent1765 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1767 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1770 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1774 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1777 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1767 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1770 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1774 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1777 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000400000000000L});
     public static final BitSet FOLLOW_FULL_OUTERJOIN_EXPR_in_outerJoinIdent1792 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1794 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1797 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1801 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1804 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1794 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1797 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1801 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1804 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000400000000000L});
     public static final BitSet FOLLOW_INNERJOIN_EXPR_in_outerJoinIdent1819 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1821 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1824 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1828 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1831 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1821 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1824 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1828 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_outerJoinIdent1831 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000400000000000L});
     public static final BitSet FOLLOW_STREAM_EXPR_in_streamExpression1852 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventFilterExpr_in_streamExpression1855 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000008000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_patternInclusionExpression_in_streamExpression1859 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000008000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_databaseJoinExpression_in_streamExpression1863 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000008000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_methodJoinExpression_in_streamExpression1867 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000008000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_viewListExpr_in_streamExpression1871 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_eventFilterExpr_in_streamExpression1855 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000200000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_patternInclusionExpression_in_streamExpression1859 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000200000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_databaseJoinExpression_in_streamExpression1863 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000200000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_methodJoinExpression_in_streamExpression1867 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000200000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_viewListExpr_in_streamExpression1871 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_streamExpression1876 = new BitSet(new long[]{0x8000000000000008L,0x0000000000000003L});
     public static final BitSet FOLLOW_UNIDIRECTIONAL_in_streamExpression1881 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000003L});
     public static final BitSet FOLLOW_set_in_streamExpression1885 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_FILTER_EXPR_in_eventFilterExpr1909 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_eventFilterExpr1911 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_eventFilterExpr1914 = new BitSet(new long[]{0x0000000037CC23C8L,0x800000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_propertyExpression_in_eventFilterExpr1916 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_eventFilterExpr1920 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_IDENT_in_eventFilterExpr1911 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_eventFilterExpr1914 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000020L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_propertyExpression_in_eventFilterExpr1916 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_eventFilterExpr1920 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_EVENT_FILTER_PROPERTY_EXPR_in_propertyExpression1940 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_propertyExpressionAtom_in_propertyExpression1942 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_propertyExpressionAtom_in_propertyExpression1942 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000040L});
     public static final BitSet FOLLOW_EVENT_FILTER_PROPERTY_EXPR_ATOM_in_propertyExpressionAtom1961 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_propertySelectionListElement_in_propertyExpressionAtom1963 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x000001000000000EL});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_propertyExpressionAtom1966 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_propertyExpressionAtom1969 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_propertySelectionListElement_in_propertyExpressionAtom1963 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000380L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_propertyExpressionAtom1966 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000001000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_propertyExpressionAtom1969 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000001000000L});
     public static final BitSet FOLLOW_WHERE_EXPR_in_propertyExpressionAtom1973 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_propertyExpressionAtom1975 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PROPERTY_WILDCARD_SELECT_in_propertySelectionListElement1995 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_PROPERTY_SELECTION_ELEMENT_EXPR_in_propertySelectionListElement2005 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_propertySelectionListElement2007 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_valueExpr_in_propertySelectionListElement2007 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_propertySelectionListElement2010 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PROPERTY_SELECTION_STREAM_in_propertySelectionListElement2024 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_propertySelectionListElement2026 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_IDENT_in_propertySelectionListElement2026 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_propertySelectionListElement2029 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PATTERN_INCL_EXPR_in_patternInclusionExpression2050 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_exprChoice_in_patternInclusionExpression2052 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_DATABASE_JOIN_EXPR_in_databaseJoinExpression2069 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_databaseJoinExpression2071 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000180000000L});
-    public static final BitSet FOLLOW_set_in_databaseJoinExpression2073 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000180000000L});
+    public static final BitSet FOLLOW_IDENT_in_databaseJoinExpression2071 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000030000000000L});
+    public static final BitSet FOLLOW_set_in_databaseJoinExpression2073 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000030000000000L});
     public static final BitSet FOLLOW_set_in_databaseJoinExpression2081 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_METHOD_JOIN_EXPR_in_methodJoinExpression2102 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_methodJoinExpression2104 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_methodJoinExpression2106 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_methodJoinExpression2109 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_viewExpr_in_viewListExpr2123 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000008000L});
-    public static final BitSet FOLLOW_viewExpr_in_viewListExpr2126 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000008000L});
+    public static final BitSet FOLLOW_IDENT_in_methodJoinExpression2104 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_methodJoinExpression2106 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_methodJoinExpression2109 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_viewExpr_in_viewListExpr2123 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000200000L});
+    public static final BitSet FOLLOW_viewExpr_in_viewListExpr2126 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000200000L});
     public static final BitSet FOLLOW_VIEW_EXPR_in_viewExpr2143 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_viewExpr2145 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_viewExpr2147 = new BitSet(new long[]{0x0020000037CC23C8L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExprWithTime_in_viewExpr2150 = new BitSet(new long[]{0x0020000037CC23C8L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_IDENT_in_viewExpr2145 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_viewExpr2147 = new BitSet(new long[]{0x0020000037CC23C8L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExprWithTime_in_viewExpr2150 = new BitSet(new long[]{0x0020000037CC23C8L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_WHERE_EXPR_in_whereClause2172 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_whereClause2174 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_GROUP_BY_EXPR_in_groupByClause2192 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_groupByClause2194 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_groupByClause2197 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_groupByClause2194 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_groupByClause2197 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_ORDER_BY_EXPR_in_orderByClause2215 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_orderByElement_in_orderByClause2217 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_orderByElement_in_orderByClause2220 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000008000000000L});
+    public static final BitSet FOLLOW_orderByElement_in_orderByClause2217 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000200000000000L});
+    public static final BitSet FOLLOW_orderByElement_in_orderByClause2220 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000200000000000L});
     public static final BitSet FOLLOW_ORDER_ELEMENT_EXPR_in_orderByElement2240 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_orderByElement2242 = new BitSet(new long[]{0x0600000000000008L});
     public static final BitSet FOLLOW_set_in_orderByElement2244 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_HAVING_EXPR_in_havingClause2267 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_havingClause2269 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_LIMIT_EXPR_in_outputLimitExpr2287 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_outputLimitExpr2289 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0xE000000000000000L,0x0000000000080001L});
-    public static final BitSet FOLLOW_number_in_outputLimitExpr2301 = new BitSet(new long[]{0x0000000000000008L,0x0000800000000000L});
-    public static final BitSet FOLLOW_IDENT_in_outputLimitExpr2303 = new BitSet(new long[]{0x0000000000000008L,0x0000800000000000L});
+    public static final BitSet FOLLOW_set_in_outputLimitExpr2289 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x00000000100003C0L});
+    public static final BitSet FOLLOW_number_in_outputLimitExpr2301 = new BitSet(new long[]{0x0000000000000008L,0x0020000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_outputLimitExpr2303 = new BitSet(new long[]{0x0000000000000008L,0x0020000000000000L});
     public static final BitSet FOLLOW_outputLimitAfter_in_outputLimitExpr2306 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_TIMEPERIOD_LIMIT_EXPR_in_outputLimitExpr2323 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_outputLimitExpr2325 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x1000000000000000L});
-    public static final BitSet FOLLOW_timePeriod_in_outputLimitExpr2336 = new BitSet(new long[]{0x0000000000000008L,0x0000800000000000L});
+    public static final BitSet FOLLOW_set_in_outputLimitExpr2325 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_timePeriod_in_outputLimitExpr2336 = new BitSet(new long[]{0x0000000000000008L,0x0020000000000000L});
     public static final BitSet FOLLOW_outputLimitAfter_in_outputLimitExpr2338 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CRONTAB_LIMIT_EXPR_in_outputLimitExpr2354 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_outputLimitExpr2356 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_crontabLimitParameterSet_in_outputLimitExpr2367 = new BitSet(new long[]{0x0000000000000008L,0x0000800000000000L});
+    public static final BitSet FOLLOW_set_in_outputLimitExpr2356 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0200000000000000L});
+    public static final BitSet FOLLOW_crontabLimitParameterSet_in_outputLimitExpr2367 = new BitSet(new long[]{0x0000000000000008L,0x0020000000000000L});
     public static final BitSet FOLLOW_outputLimitAfter_in_outputLimitExpr2369 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_WHEN_LIMIT_EXPR_in_outputLimitExpr2385 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_outputLimitExpr2387 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_outputLimitExpr2398 = new BitSet(new long[]{0x0000000000000008L,0x0000800000000000L,0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_onSetExpr_in_outputLimitExpr2400 = new BitSet(new long[]{0x0000000000000008L,0x0000800000000000L});
+    public static final BitSet FOLLOW_set_in_outputLimitExpr2387 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_outputLimitExpr2398 = new BitSet(new long[]{0x0000000000000008L,0x0020000000000000L,0x0000000000000000L,0x0000200000000000L});
+    public static final BitSet FOLLOW_onSetExpr_in_outputLimitExpr2400 = new BitSet(new long[]{0x0000000000000008L,0x0020000000000000L});
     public static final BitSet FOLLOW_outputLimitAfter_in_outputLimitExpr2403 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_AFTER_LIMIT_EXPR_in_outputLimitExpr2416 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_outputLimitAfter_in_outputLimitExpr2418 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_AFTER_in_outputLimitAfter2433 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_timePeriod_in_outputLimitAfter2435 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0xE000000000000000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_timePeriod_in_outputLimitAfter2435 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x00000000000003C0L});
     public static final BitSet FOLLOW_number_in_outputLimitAfter2438 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_ROW_LIMIT_EXPR_in_rowLimitClause2454 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_number_in_rowLimitClause2457 = new BitSet(new long[]{0x0000000000000008L,0x0000010000000000L,0x0000000000000000L,0xE000000000000000L,0x00000000000C0001L});
-    public static final BitSet FOLLOW_IDENT_in_rowLimitClause2459 = new BitSet(new long[]{0x0000000000000008L,0x0000010000000000L,0x0000000000000000L,0xE000000000000000L,0x00000000000C0001L});
-    public static final BitSet FOLLOW_number_in_rowLimitClause2463 = new BitSet(new long[]{0x0000000000000008L,0x0000010000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_IDENT_in_rowLimitClause2465 = new BitSet(new long[]{0x0000000000000008L,0x0000010000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_COMMA_in_rowLimitClause2469 = new BitSet(new long[]{0x0000000000000008L,0x0000010000000000L});
+    public static final BitSet FOLLOW_number_in_rowLimitClause2457 = new BitSet(new long[]{0x0000000000000008L,0x0000400000000000L,0x0000000000000000L,0x0000000000000000L,0x00000000180003C0L});
+    public static final BitSet FOLLOW_IDENT_in_rowLimitClause2459 = new BitSet(new long[]{0x0000000000000008L,0x0000400000000000L,0x0000000000000000L,0x0000000000000000L,0x00000000180003C0L});
+    public static final BitSet FOLLOW_number_in_rowLimitClause2463 = new BitSet(new long[]{0x0000000000000008L,0x0000400000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_IDENT_in_rowLimitClause2465 = new BitSet(new long[]{0x0000000000000008L,0x0000400000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000008000000L});
+    public static final BitSet FOLLOW_COMMA_in_rowLimitClause2469 = new BitSet(new long[]{0x0000000000000008L,0x0000400000000000L});
     public static final BitSet FOLLOW_OFFSET_in_rowLimitClause2472 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CRONTAB_LIMIT_EXPR_PARAM_in_crontabLimitParameterSet2490 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2492 = new BitSet(new long[]{0x0020000037CC23C0L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2494 = new BitSet(new long[]{0x0020000037CC23C0L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2496 = new BitSet(new long[]{0x0020000037CC23C0L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2498 = new BitSet(new long[]{0x0020000037CC23C0L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2500 = new BitSet(new long[]{0x0020000037CC23C8L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2492 = new BitSet(new long[]{0x0020000037CC23C0L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2494 = new BitSet(new long[]{0x0020000037CC23C0L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2496 = new BitSet(new long[]{0x0020000037CC23C0L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2498 = new BitSet(new long[]{0x0020000037CC23C0L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2500 = new BitSet(new long[]{0x0020000037CC23C8L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExprWithTime_in_crontabLimitParameterSet2502 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_LT_in_relationalExpr2519 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_relationalExprValue_in_relationalExpr2521 = new BitSet(new long[]{0x0000000000000008L});
@@ -14636,34 +15185,34 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_relationalExprValue_in_relationalExpr2551 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_GE_in_relationalExpr2563 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_relationalExprValue_in_relationalExpr2565 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_valueExpr_in_relationalExprValue2587 = new BitSet(new long[]{0x0003800037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_relationalExprValue2587 = new BitSet(new long[]{0x0003800037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_relationalExprValue2597 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_relationalExprValue2612 = new BitSet(new long[]{0x0000000037CC23C2L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C00000047F078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_relationalExprValue2621 = new BitSet(new long[]{0x0000000037CC23C2L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_set_in_relationalExprValue2612 = new BitSet(new long[]{0x0000000037CC23C2L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008FE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_relationalExprValue2621 = new BitSet(new long[]{0x0000000037CC23C2L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_subSelectGroupExpr_in_relationalExprValue2626 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_EVAL_OR_EXPR_in_evalExprChoice2652 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2654 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2656 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2659 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2654 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2656 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2659 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_EVAL_AND_EXPR_in_evalExprChoice2673 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2675 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2677 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2680 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2675 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2677 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2680 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_EVAL_EQUALS_EXPR_in_evalExprChoice2694 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2696 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2696 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2698 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVAL_NOTEQUALS_EXPR_in_evalExprChoice2710 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2712 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2712 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2714 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVAL_EQUALS_GROUP_EXPR_in_evalExprChoice2726 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2728 = new BitSet(new long[]{0x0003800000000000L});
-    public static final BitSet FOLLOW_set_in_evalExprChoice2730 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C00000047F078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2739 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_set_in_evalExprChoice2730 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008FE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2739 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_subSelectGroupExpr_in_evalExprChoice2744 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVAL_NOTEQUALS_GROUP_EXPR_in_evalExprChoice2757 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2759 = new BitSet(new long[]{0x0003800000000000L});
-    public static final BitSet FOLLOW_set_in_evalExprChoice2761 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C00000047F078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2770 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_set_in_evalExprChoice2761 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008FE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2770 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_subSelectGroupExpr_in_evalExprChoice2775 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_NOT_EXPR_in_evalExprChoice2788 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_evalExprChoice2790 = new BitSet(new long[]{0x0000000000000008L});
@@ -14696,16 +15245,16 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_lastOperator_in_valueExprWithTime2974 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_weekDayOperator_in_valueExprWithTime2979 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_NUMERIC_PARAM_LIST_in_valueExprWithTime2989 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_numericParameterList_in_valueExprWithTime2991 = new BitSet(new long[]{0x0000000000000008L,0x00A0000000000000L,0x0000000000000000L,0xE000000000000000L,0x000000000000000FL});
+    public static final BitSet FOLLOW_numericParameterList_in_valueExprWithTime2991 = new BitSet(new long[]{0x0000000000000008L,0x2800000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000001FC0L});
     public static final BitSet FOLLOW_NUMBERSETSTAR_in_valueExprWithTime3002 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_timePeriod_in_valueExprWithTime3009 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_constant_in_numericParameterList3022 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_rangeOperator_in_numericParameterList3029 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_frequencyOperator_in_numericParameterList3035 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_NUMERIC_PARAM_RANGE_in_rangeOperator3051 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_constant_in_rangeOperator3054 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L,0xE000000000400000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_eventPropertyExpr_in_rangeOperator3057 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L,0xE000000000400000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_substitution_in_rangeOperator3060 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L,0xE000000000400000L,0x000000000000000FL});
+    public static final BitSet FOLLOW_constant_in_rangeOperator3054 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L,0x0000000080000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_eventPropertyExpr_in_rangeOperator3057 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L,0x0000000080000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_substitution_in_rangeOperator3060 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L,0x0000000080000000L,0x0000000000001FC0L});
     public static final BitSet FOLLOW_constant_in_rangeOperator3064 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_eventPropertyExpr_in_rangeOperator3067 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_substitution_in_rangeOperator3070 = new BitSet(new long[]{0x0000000000000008L});
@@ -14728,226 +15277,226 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_EXISTS_SUBSELECT_EXPR_in_subSelectExistsExpr3219 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_subQueryExpr_in_subSelectExistsExpr3221 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_IN_SUBSELECT_EXPR_in_subSelectInExpr3240 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_subSelectInExpr3242 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_valueExpr_in_subSelectInExpr3242 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_subSelectInQueryExpr_in_subSelectInExpr3244 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_NOT_IN_SUBSELECT_EXPR_in_subSelectInExpr3256 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_subSelectInExpr3258 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_valueExpr_in_subSelectInExpr3258 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_subSelectInQueryExpr_in_subSelectInExpr3260 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_IN_SUBSELECT_QUERY_EXPR_in_subSelectInQueryExpr3279 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_subQueryExpr_in_subSelectInQueryExpr3281 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_DISTINCT_in_subQueryExpr3297 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000000060000000L,0x0000000000000400L});
-    public static final BitSet FOLLOW_selectionList_in_subQueryExpr3300 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_subSelectFilterExpr_in_subQueryExpr3302 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_DISTINCT_in_subQueryExpr3297 = new BitSet(new long[]{0x0000400000000000L,0x0000000000000000L,0x0000001800000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_selectionList_in_subQueryExpr3300 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000002000000000L});
+    public static final BitSet FOLLOW_subSelectFilterExpr_in_subQueryExpr3302 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000001000000L});
     public static final BitSet FOLLOW_whereClause_in_subQueryExpr3305 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_STREAM_EXPR_in_subSelectFilterExpr3323 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventFilterExpr_in_subSelectFilterExpr3325 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000003L,0x0000000000008000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_viewListExpr_in_subSelectFilterExpr3328 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000003L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_eventFilterExpr_in_subSelectFilterExpr3325 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000003L,0x0000000000200000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_viewListExpr_in_subSelectFilterExpr3328 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000003L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_subSelectFilterExpr3333 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000003L});
     public static final BitSet FOLLOW_RETAINUNION_in_subSelectFilterExpr3337 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000002L});
     public static final BitSet FOLLOW_RETAININTERSECTION_in_subSelectFilterExpr3340 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CASE_in_caseExpr3360 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_caseExpr3363 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_caseExpr3363 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_CASE2_in_caseExpr3376 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_caseExpr3379 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_caseExpr3379 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_IN_SET_in_inExpr3399 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3401 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000001100000L});
-    public static final BitSet FOLLOW_set_in_inExpr3403 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3409 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61E20000FL});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3412 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61E20000FL});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3401 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000220000000L});
+    public static final BitSet FOLLOW_set_in_inExpr3403 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3409 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3C40001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3412 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3C40001FC0L});
     public static final BitSet FOLLOW_set_in_inExpr3416 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_NOT_IN_SET_in_inExpr3431 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3433 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000001100000L});
-    public static final BitSet FOLLOW_set_in_inExpr3435 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3441 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61E20000FL});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3444 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61E20000FL});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3433 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000220000000L});
+    public static final BitSet FOLLOW_set_in_inExpr3435 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3441 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3C40001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3444 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3C40001FC0L});
     public static final BitSet FOLLOW_set_in_inExpr3448 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_IN_RANGE_in_inExpr3463 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3465 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000001100000L});
-    public static final BitSet FOLLOW_set_in_inExpr3467 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3473 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3475 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002200000L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3465 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000220000000L});
+    public static final BitSet FOLLOW_set_in_inExpr3467 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3473 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3475 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
     public static final BitSet FOLLOW_set_in_inExpr3477 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_NOT_IN_RANGE_in_inExpr3492 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3494 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000001100000L});
-    public static final BitSet FOLLOW_set_in_inExpr3496 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3502 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_inExpr3504 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002200000L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3494 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000220000000L});
+    public static final BitSet FOLLOW_set_in_inExpr3496 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3502 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_inExpr3504 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
     public static final BitSet FOLLOW_set_in_inExpr3506 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_BETWEEN_in_betweenExpr3529 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3531 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3533 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3531 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3533 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_betweenExpr3535 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_NOT_BETWEEN_in_betweenExpr3546 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3548 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3550 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3553 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3548 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3550 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_betweenExpr3553 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_LIKE_in_likeExpr3573 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_likeExpr3575 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_likeExpr3577 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_likeExpr3575 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_likeExpr3577 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_likeExpr3580 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_NOT_LIKE_in_likeExpr3593 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_likeExpr3595 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_likeExpr3597 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_likeExpr3595 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_likeExpr3597 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_likeExpr3600 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_REGEXP_in_regExpExpr3619 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_regExpExpr3621 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_regExpExpr3621 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_regExpExpr3623 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_NOT_REGEXP_in_regExpExpr3634 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_regExpExpr3636 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_regExpExpr3636 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_regExpExpr3638 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_SUM_in_builtinFunc3657 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3660 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3660 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3664 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_AVG_in_builtinFunc3675 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3678 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3678 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3682 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_COUNT_in_builtinFunc3693 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3697 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3697 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3701 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MEDIAN_in_builtinFunc3715 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3718 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3718 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3722 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_STDDEV_in_builtinFunc3733 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3736 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3736 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3740 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_AVEDEV_in_builtinFunc3751 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3754 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3754 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3758 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_LAST_AGGREG_in_builtinFunc3769 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3772 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E0000CL,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_accessValueExpr_in_builtinFunc3776 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3772 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000300L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_accessValueExpr_in_builtinFunc3776 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3778 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_FIRST_AGGREG_in_builtinFunc3790 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3793 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E0000CL,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_accessValueExpr_in_builtinFunc3797 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3793 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000300L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_accessValueExpr_in_builtinFunc3797 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3799 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_WINDOW_AGGREG_in_builtinFunc3811 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3814 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E0000CL,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_DISTINCT_in_builtinFunc3814 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000300L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_accessValueExpr_in_builtinFunc3818 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_COALESCE_in_builtinFunc3830 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3832 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3834 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3837 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3832 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3834 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3837 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_PREVIOUS_in_builtinFunc3852 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3854 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3854 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3856 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PREVIOUSTAIL_in_builtinFunc3869 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3871 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3871 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3873 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PREVIOUSCOUNT_in_builtinFunc3886 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3888 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PREVIOUSWINDOW_in_builtinFunc3900 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3902 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PRIOR_in_builtinFunc3914 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_NUM_INT_in_builtinFunc3918 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_NUM_INT_in_builtinFunc3918 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
     public static final BitSet FOLLOW_eventPropertyExpr_in_builtinFunc3920 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_INSTANCEOF_in_builtinFunc3933 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3935 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_builtinFunc3937 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_builtinFunc3940 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3935 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_builtinFunc3937 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_builtinFunc3940 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000040000L});
     public static final BitSet FOLLOW_TYPEOF_in_builtinFunc3954 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_builtinFunc3956 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CAST_in_builtinFunc3968 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3970 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000001000L});
+    public static final BitSet FOLLOW_valueExpr_in_builtinFunc3970 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
     public static final BitSet FOLLOW_CLASS_IDENT_in_builtinFunc3972 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EXISTS_in_builtinFunc3984 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_eventPropertyExpr_in_builtinFunc3986 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CURRENT_TIMESTAMP_in_builtinFunc3998 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_PROPERTY_WILDCARD_SELECT_in_accessValueExpr4015 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_PROPERTY_SELECTION_STREAM_in_accessValueExpr4022 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_accessValueExpr4024 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_IDENT_in_accessValueExpr4024 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
     public static final BitSet FOLLOW_IDENT_in_accessValueExpr4026 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_valueExpr_in_accessValueExpr4032 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_ARRAY_EXPR_in_arrayExpr4049 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arrayExpr4052 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arrayExpr4052 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_PLUS_in_arithmeticExpr4073 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4075 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4075 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4077 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MINUS_in_arithmeticExpr4089 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4091 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4091 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4093 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_DIV_in_arithmeticExpr4105 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4107 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4107 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4109 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_STAR_in_arithmeticExpr4120 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4122 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4122 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4124 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MOD_in_arithmeticExpr4136 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4138 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4138 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4140 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_BAND_in_arithmeticExpr4151 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4153 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4153 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4155 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_BOR_in_arithmeticExpr4166 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4168 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4168 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4170 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_BXOR_in_arithmeticExpr4181 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4183 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4183 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4185 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_CONCAT_in_arithmeticExpr4197 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4199 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4201 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4204 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4199 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4201 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_arithmeticExpr4204 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_DOT_EXPR_in_dotExpr4224 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_dotExpr4226 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0100000000000000L});
-    public static final BitSet FOLLOW_libFunctionWithClass_in_dotExpr4228 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0100000000000000L});
+    public static final BitSet FOLLOW_valueExpr_in_dotExpr4226 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x4000000000000000L});
+    public static final BitSet FOLLOW_libFunctionWithClass_in_dotExpr4228 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x4000000000000000L});
     public static final BitSet FOLLOW_LIB_FUNC_CHAIN_in_libFuncChain4248 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_libFunctionWithClass_in_libFuncChain4250 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0100010000000000L});
-    public static final BitSet FOLLOW_libOrPropFunction_in_libFuncChain4252 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0100010000000000L});
+    public static final BitSet FOLLOW_libFunctionWithClass_in_libFuncChain4250 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x4000400000000000L});
+    public static final BitSet FOLLOW_libOrPropFunction_in_libFuncChain4252 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x4000400000000000L});
     public static final BitSet FOLLOW_LIB_FUNCTION_in_libFunctionWithClass4272 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_libFunctionWithClass4275 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_libFunctionWithClass4279 = new BitSet(new long[]{0x0000400037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_DISTINCT_in_libFunctionWithClass4282 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_libFunctionWithClass4287 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_libFunctionWithClass4275 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_libFunctionWithClass4279 = new BitSet(new long[]{0x0000400037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_DISTINCT_in_libFunctionWithClass4282 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_libFunctionWithClass4287 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_eventPropertyExpr_in_libOrPropFunction4305 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_libFunctionWithClass_in_libOrPropFunction4315 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_annotation_in_startPatternExpressionRule4330 = new BitSet(new long[]{0x000000000000D800L,0x1A00000000000000L,0x0000000000006000L,0x0000808000000000L});
+    public static final BitSet FOLLOW_annotation_in_startPatternExpressionRule4330 = new BitSet(new long[]{0x000000000000D800L,0x8000000000000000L,0x0000000000180006L,0x0101000000000000L});
     public static final BitSet FOLLOW_exprChoice_in_startPatternExpressionRule4334 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_atomicExpr_in_exprChoice4348 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_patternOp_in_exprChoice4353 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_EVERY_EXPR_in_exprChoice4363 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_exprChoice_in_exprChoice4365 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVERY_DISTINCT_EXPR_in_exprChoice4379 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_distinctExpressions_in_exprChoice4381 = new BitSet(new long[]{0x000000000000D800L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
+    public static final BitSet FOLLOW_distinctExpressions_in_exprChoice4381 = new BitSet(new long[]{0x000000000000D800L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
     public static final BitSet FOLLOW_exprChoice_in_exprChoice4383 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PATTERN_NOT_EXPR_in_exprChoice4397 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_exprChoice_in_exprChoice4399 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_GUARD_EXPR_in_exprChoice4413 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_exprChoice_in_exprChoice4415 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C08000FL});
-    public static final BitSet FOLLOW_IDENT_in_exprChoice4418 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_exprChoice4420 = new BitSet(new long[]{0x0020000037CC23C8L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExprWithTime_in_exprChoice4422 = new BitSet(new long[]{0x0020000037CC23C8L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_exprChoice_in_exprChoice4415 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3810001FC0L});
+    public static final BitSet FOLLOW_IDENT_in_exprChoice4418 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_exprChoice4420 = new BitSet(new long[]{0x0020000037CC23C8L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExprWithTime_in_exprChoice4422 = new BitSet(new long[]{0x0020000037CC23C8L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_exprChoice4427 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MATCH_UNTIL_EXPR_in_exprChoice4441 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_matchUntilRange_in_exprChoice4443 = new BitSet(new long[]{0x000000000000D800L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_exprChoice_in_exprChoice4446 = new BitSet(new long[]{0x000000000000D808L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
+    public static final BitSet FOLLOW_matchUntilRange_in_exprChoice4443 = new BitSet(new long[]{0x000000000000D800L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_exprChoice4446 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
     public static final BitSet FOLLOW_exprChoice_in_exprChoice4448 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PATTERN_EVERY_DISTINCT_EXPR_in_distinctExpressions4469 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_distinctExpressions4471 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_distinctExpressions4471 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_FOLLOWED_BY_EXPR_in_patternOp4490 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4492 = new BitSet(new long[]{0x000000000000D800L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4494 = new BitSet(new long[]{0x000000000000D808L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4497 = new BitSet(new long[]{0x000000000000D808L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4492 = new BitSet(new long[]{0x000000000000D800L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4494 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4497 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
     public static final BitSet FOLLOW_OR_EXPR_in_patternOp4513 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4515 = new BitSet(new long[]{0x000000000000D800L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4517 = new BitSet(new long[]{0x000000000000D808L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4520 = new BitSet(new long[]{0x000000000000D808L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4515 = new BitSet(new long[]{0x000000000000D800L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4517 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4520 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
     public static final BitSet FOLLOW_AND_EXPR_in_patternOp4536 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4538 = new BitSet(new long[]{0x000000000000D800L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4540 = new BitSet(new long[]{0x000000000000D808L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_exprChoice_in_patternOp4543 = new BitSet(new long[]{0x000000000000D808L,0x1A00000000000000L,0x0000000000006000L,0x0000008000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4538 = new BitSet(new long[]{0x000000000000D800L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4540 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
+    public static final BitSet FOLLOW_exprChoice_in_patternOp4543 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
     public static final BitSet FOLLOW_patternFilterExpr_in_atomicExpr4562 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_OBSERVER_EXPR_in_atomicExpr4574 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_atomicExpr4576 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_IDENT_in_atomicExpr4578 = new BitSet(new long[]{0x0020000037CC23C8L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExprWithTime_in_atomicExpr4580 = new BitSet(new long[]{0x0020000037CC23C8L,0x01E000000001F7E0L,0x3680010007E00000L,0xE01C400000777078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_IDENT_in_atomicExpr4576 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_IDENT_in_atomicExpr4578 = new BitSet(new long[]{0x0020000037CC23C8L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExprWithTime_in_atomicExpr4580 = new BitSet(new long[]{0x0020000037CC23C8L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_PATTERN_FILTER_EXPR_in_patternFilterExpr4600 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_patternFilterExpr4602 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000001000L});
-    public static final BitSet FOLLOW_CLASS_IDENT_in_patternFilterExpr4605 = new BitSet(new long[]{0x0000000037CC23C8L,0x800000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_propertyExpression_in_patternFilterExpr4607 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_patternFilterExpr4611 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_IDENT_in_patternFilterExpr4602 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_patternFilterExpr4605 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000020L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_propertyExpression_in_patternFilterExpr4607 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_patternFilterExpr4611 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_MATCH_UNTIL_RANGE_CLOSED_in_matchUntilRange4629 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_matchUntilRange4631 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_matchUntilRange4631 = new BitSet(new long[]{0x0000000037CC23C0L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_valueExpr_in_matchUntilRange4633 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_MATCH_UNTIL_RANGE_BOUNDED_in_matchUntilRange4641 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_matchUntilRange4643 = new BitSet(new long[]{0x0000000000000008L});
@@ -14956,8 +15505,8 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_MATCH_UNTIL_RANGE_HALFOPEN_in_matchUntilRange4660 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_valueExpr_in_matchUntilRange4662 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_FILTER_PARAM_in_filterParam4675 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_filterParam4677 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
-    public static final BitSet FOLLOW_valueExpr_in_filterParam4680 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0x2680010007E00000L,0xE01C000000477078L,0x00001DE61C00000FL});
+    public static final BitSet FOLLOW_valueExpr_in_filterParam4677 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExpr_in_filterParam4680 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_EQUALS_in_filterParamComparator4696 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_filterAtom_in_filterParamComparator4698 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_NOT_EQUAL_in_filterParamComparator4705 = new BitSet(new long[]{0x0000000000000004L});
@@ -14971,102 +15520,129 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_GE_in_filterParamComparator4741 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_filterAtom_in_filterParamComparator4743 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_FILTER_RANGE_in_filterParamComparator4750 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_filterParamComparator4752 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4759 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4762 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4766 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002200000L});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4769 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002200000L});
+    public static final BitSet FOLLOW_set_in_filterParamComparator4752 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4759 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4762 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4766 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4769 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
     public static final BitSet FOLLOW_set_in_filterParamComparator4772 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_FILTER_NOT_RANGE_in_filterParamComparator4783 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_filterParamComparator4785 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4792 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4795 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4799 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002200000L});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4802 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000002200000L});
+    public static final BitSet FOLLOW_set_in_filterParamComparator4785 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4792 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4795 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4799 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4802 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
     public static final BitSet FOLLOW_set_in_filterParamComparator4805 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_FILTER_IN_in_filterParamComparator4816 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_filterParamComparator4818 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4825 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000220000FL});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4828 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000220000FL});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4832 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000220000FL});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4835 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000220000FL});
+    public static final BitSet FOLLOW_set_in_filterParamComparator4818 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4825 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000440001FC0L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4828 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000440001FC0L});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4832 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000440001FC0L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4835 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000440001FC0L});
     public static final BitSet FOLLOW_set_in_filterParamComparator4839 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_FILTER_NOT_IN_in_filterParamComparator4850 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_filterParamComparator4852 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4859 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000220000FL});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4862 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000220000FL});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4866 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000220000FL});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4869 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000220000FL});
+    public static final BitSet FOLLOW_set_in_filterParamComparator4852 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4859 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000440001FC0L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4862 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000440001FC0L});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4866 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000440001FC0L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4869 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000440001FC0L});
     public static final BitSet FOLLOW_set_in_filterParamComparator4873 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_FILTER_BETWEEN_in_filterParamComparator4884 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4887 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4890 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4887 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4890 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
     public static final BitSet FOLLOW_constant_in_filterParamComparator4894 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4897 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_FILTER_NOT_BETWEEN_in_filterParamComparator4905 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_constant_in_filterParamComparator4908 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
-    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4911 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000010L,0xE000000000000000L,0x000000000000000FL});
+    public static final BitSet FOLLOW_constant_in_filterParamComparator4908 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
+    public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4911 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000400L,0x0000000000000000L,0x0000000000001FC0L});
     public static final BitSet FOLLOW_constant_in_filterParamComparator4915 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_filterIdentifier_in_filterParamComparator4918 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_constant_in_filterAtom4932 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_filterIdentifier_in_filterAtom4938 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_EVENT_FILTER_IDENT_in_filterIdentifier4949 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_filterIdentifier4951 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_IDENT_in_filterIdentifier4951 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000400000000000L});
     public static final BitSet FOLLOW_eventPropertyExpr_in_filterIdentifier4953 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_PROP_EXPR_in_eventPropertyExpr4972 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventPropertyExpr4974 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x00007E0000000000L});
-    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventPropertyExpr4977 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x00007E0000000000L});
+    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventPropertyExpr4974 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x001F800000000000L});
+    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventPropertyExpr4977 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x001F800000000000L});
     public static final BitSet FOLLOW_EVENT_PROP_SIMPLE_in_eventPropertyAtomic4996 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic4998 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_PROP_INDEXED_in_eventPropertyAtomic5005 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5007 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000800000000000L});
+    public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5007 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0100000000000000L});
     public static final BitSet FOLLOW_NUM_INT_in_eventPropertyAtomic5009 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_PROP_MAPPED_in_eventPropertyAtomic5016 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5018 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000180000000L});
+    public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5018 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000030000000000L});
     public static final BitSet FOLLOW_set_in_eventPropertyAtomic5020 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_PROP_DYNAMIC_SIMPLE_in_eventPropertyAtomic5033 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5035 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_PROP_DYNAMIC_INDEXED_in_eventPropertyAtomic5042 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5044 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000800000000000L});
+    public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5044 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0100000000000000L});
     public static final BitSet FOLLOW_NUM_INT_in_eventPropertyAtomic5046 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EVENT_PROP_DYNAMIC_MAPPED_in_eventPropertyAtomic5053 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5055 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000180000000L});
+    public static final BitSet FOLLOW_IDENT_in_eventPropertyAtomic5055 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000030000000000L});
     public static final BitSet FOLLOW_set_in_eventPropertyAtomic5057 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_TIME_PERIOD_in_timePeriod5082 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_timePeriodDef_in_timePeriod5084 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriodDef5100 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x8000000000000000L,0x0000000000000007L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriodDef5103 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000007L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5108 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000006L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5113 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5118 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriodDef5125 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000007L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5128 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000006L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5133 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5138 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5145 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000006L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5148 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5153 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5160 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5163 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5170 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DAY_PART_in_dayPart5184 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_dayPart5186 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_HOUR_PART_in_hourPart5201 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_hourPart5203 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_MINUTE_PART_in_minutePart5218 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_minutePart5220 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_SECOND_PART_in_secondPart5235 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_secondPart5237 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_MILLISECOND_PART_in_millisecondPart5252 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_millisecondPart5254 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_SUBSTITUTION_in_substitution5269 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_TYPE_in_constant5285 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LONG_TYPE_in_constant5294 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FLOAT_TYPE_in_constant5303 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DOUBLE_TYPE_in_constant5312 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_TYPE_in_constant5328 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOL_TYPE_in_constant5344 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NULL_TYPE_in_constant5357 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_yearPart_in_timePeriodDef5100 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000FE0L});
+    public static final BitSet FOLLOW_monthPart_in_timePeriodDef5103 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000FC0L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriodDef5108 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000F80L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriodDef5113 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000F00L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriodDef5118 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000E00L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5123 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000C00L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5128 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5133 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_monthPart_in_timePeriodDef5141 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000FC0L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriodDef5144 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000F80L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriodDef5149 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000F00L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriodDef5154 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000E00L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5159 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000C00L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5164 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5169 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriodDef5177 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000F80L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriodDef5180 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000F00L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriodDef5185 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000E00L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5190 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000C00L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5195 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5200 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriodDef5208 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000F00L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriodDef5211 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000E00L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5216 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000C00L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5221 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5226 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriodDef5233 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000E00L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5236 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000C00L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5241 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5246 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriodDef5253 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000C00L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5256 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5261 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriodDef5268 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5271 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriodDef5278 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_YEAR_PART_in_yearPart5292 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_valueExpr_in_yearPart5294 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_MONTH_PART_in_monthPart5309 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_valueExpr_in_monthPart5311 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_WEEK_PART_in_weekPart5326 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_valueExpr_in_weekPart5328 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_DAY_PART_in_dayPart5343 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_valueExpr_in_dayPart5345 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_HOUR_PART_in_hourPart5360 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_valueExpr_in_hourPart5362 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_MINUTE_PART_in_minutePart5377 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_valueExpr_in_minutePart5379 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_SECOND_PART_in_secondPart5394 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_valueExpr_in_secondPart5396 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_MILLISECOND_PART_in_millisecondPart5411 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_valueExpr_in_millisecondPart5413 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_SUBSTITUTION_in_substitution5428 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_TYPE_in_constant5444 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LONG_TYPE_in_constant5453 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FLOAT_TYPE_in_constant5462 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DOUBLE_TYPE_in_constant5471 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_TYPE_in_constant5487 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOL_TYPE_in_constant5503 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NULL_TYPE_in_constant5516 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_number0 = new BitSet(new long[]{0x0000000000000002L});
 
 }

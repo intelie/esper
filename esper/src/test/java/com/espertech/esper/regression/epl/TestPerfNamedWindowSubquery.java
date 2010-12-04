@@ -81,7 +81,7 @@ public class TestPerfNamedWindowSubquery extends TestCase
         }
         
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 5000; i++) {
             sendEvent("E" + i, i, "W" + i);
             ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E" + i, "W" + i});
         }

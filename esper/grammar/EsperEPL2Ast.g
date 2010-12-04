@@ -685,13 +685,28 @@ timePeriod
 	;
 	
 timePeriodDef
-	: 	dayPart (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
+	: 	yearPart (monthPart)? (weekPart)? (dayPart)? (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
+	| 	monthPart (weekPart)? (dayPart)? (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
+	| 	weekPart (dayPart)? (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
+	| 	dayPart (hourPart)? (minutePart)? (secondPart)? (millisecondPart)?
 	|	hourPart (minutePart)? (secondPart)? (millisecondPart)?
 	|	minutePart (secondPart)? (millisecondPart)?
 	|	secondPart (millisecondPart)?
 	|	millisecondPart
 	;
 	
+yearPart
+	:	^( YEAR_PART valueExpr )
+	;
+
+monthPart
+	:	^( MONTH_PART valueExpr )
+	;
+
+weekPart
+	:	^( WEEK_PART valueExpr )
+	;
+
 dayPart
 	:	^( DAY_PART valueExpr )
 	;
