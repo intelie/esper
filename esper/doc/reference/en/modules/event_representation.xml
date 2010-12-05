@@ -1521,6 +1521,10 @@ BigInteger and BigDecimal.
 		</para>
 
         <para>
+			When inserting array-typed properties into a Java or Map-type underlying event the event definition should declare the target property as an array.
+		</para>
+
+        <para>
 		    Please note the following limitations: 
 		</para>
 		<itemizedlist spacing="compact">

@@ -44,10 +44,20 @@ public class TypeWidenerFactory
             }
             else if (!JavaClassHelper.isAssignmentCompatible(columnClassBoxed, targetClassBoxed))
             {
+                String writablePropName = writeablePropertyType.getName();
+                if (writeablePropertyType.isArray()) {
+                    writablePropName = writeablePropertyType.getComponentType().getName() + "[]";
+                }
+
+                String columnTypeName = columnType.getName();
+                if (columnType.isArray()) {
+                    columnTypeName = columnType.getComponentType().getName() + "[]";
+                }
+
                 String message = "Invalid assignment of column '" + columnName +
-                        "' of type '" + columnType.getName() +
+                        "' of type '" + columnTypeName +
                         "' to event property '" + writeablePropertyName +
-                        "' typed as '" + writeablePropertyType.getName() +
+                        "' typed as '" + writablePropName +
                         "', column and parameter types mismatch";
                 throw new ExprValidationException(message);
             }

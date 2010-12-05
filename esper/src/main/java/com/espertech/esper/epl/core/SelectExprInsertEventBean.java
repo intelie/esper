@@ -16,6 +16,7 @@ import com.espertech.esper.util.TypeWidenerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -218,6 +219,40 @@ public class SelectExprInsertEventBean
                         public Class getType()
                         {
                             return returnType;
+                        }
+
+                        public Map<String, Object> getEventType() {
+                            return null;
+                        }
+                    };
+                }
+                // handle case where the select-clause contains an fragment array
+                else if (columnType instanceof EventType[])
+                {
+                    EventType columnEventType = ((EventType[]) columnType)[0];
+                    final Class componentReturnType = columnEventType.getUnderlyingType();
+                    final Class arrayReturnType = Array.newInstance(componentReturnType, 0).getClass();
+
+                    widener = TypeWidenerFactory.getCheckPropertyAssignType(columnNames[i], arrayReturnType, desc.getType(), desc.getPropertyName());
+                    final ExprEvaluator inner = evaluator;
+                    evaluator = new ExprEvaluator() {
+                        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
+                        {
+                            Object result = inner.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                            if (!(result instanceof EventBean[])) {
+                                return null;
+                            }
+                            EventBean[] events = (EventBean[]) result;
+                            Object values = Array.newInstance(componentReturnType, events.length);
+                            for (int i = 0; i < events.length; i++) {
+                                Array.set(values, i, events[i].getUnderlying());
+                            }
+                            return values;
+                        }
+
+                        public Class getType()
+                        {
+                            return componentReturnType;
                         }
 
                         public Map<String, Object> getEventType() {
