@@ -29,6 +29,7 @@ import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.schedule.ScheduleHandle;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
+import com.espertech.esper.schedule.SchedulingServiceSPI;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.timer.TimerCallback;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -1308,6 +1309,26 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     public long getCurrentTime()
     {
         return services.getSchedulingService().getTime();
+    }
+
+    public Long getNextScheduledTime() {
+        return services.getSchedulingService().getNearestTimeHandle();
+    }
+
+    public Map<String, Long> getStatementNearestSchedules() {
+        return getStatementNearestSchedulesInternal(services.getSchedulingService(), services.getStatementLifecycleSvc());
+    }
+
+    protected static Map<String, Long> getStatementNearestSchedulesInternal(SchedulingServiceSPI schedulingService, StatementLifecycleSvc statementLifecycleSvc) {
+        Map<String, Long> schedulePerStatementId = schedulingService.getStatementSchedules();
+        Map<String, Long> result = new HashMap<String, Long>();
+        for (Map.Entry<String, Long> schedule : schedulePerStatementId.entrySet()) {
+            String stmtName = statementLifecycleSvc.getStatementNameById(schedule.getKey());
+            if (stmtName != null) {
+                result.put(stmtName, schedule.getValue());
+            }
+        }
+        return result;
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);

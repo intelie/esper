@@ -2,18 +2,13 @@ package com.espertech.esper.regression.client;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.support.bean.SupportBeanConstants;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportStaticMethodLib;
-import com.espertech.esper.support.util.OccuranceAnalyzer;
-import com.espertech.esper.support.util.OccuranceResult;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class TestThreadedConfigTimer extends TestCase
 {

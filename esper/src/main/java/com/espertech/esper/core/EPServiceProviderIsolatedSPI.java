@@ -11,5 +11,5 @@ public interface EPServiceProviderIsolatedSPI extends EPServiceProviderIsolated
      * Return isolated services.
      * @return isolated services
      */
-    public EPIsolationUnitServices getIsolatedServices(); 
+    public EPIsolationUnitServices getIsolatedServices();
 }

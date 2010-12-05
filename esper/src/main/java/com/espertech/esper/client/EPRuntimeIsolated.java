@@ -58,4 +58,11 @@ public interface EPRuntimeIsolated
      * @return current engine time
      */
     public long getCurrentTime();
+
+    /**
+     * Returns the time at which the next schedule execution is expected, returns null if no schedule execution is
+     * outstanding.
+     * @return time of next schedule if any
+     */
+    public Long getNextScheduledTime();
 }

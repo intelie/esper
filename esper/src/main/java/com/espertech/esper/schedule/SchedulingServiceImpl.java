@@ -215,5 +215,39 @@ public final class SchedulingServiceImpl implements SchedulingServiceSPI
         return handleSetMap.containsKey(handle);
     }
 
+    @Override
+    public synchronized Long getNearestTimeHandle() {
+        if (timeHandleMap.isEmpty()) {
+            return null;
+        }
+        for (Map.Entry<Long, SortedMap<ScheduleSlot, ScheduleHandle>> entry : timeHandleMap.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                continue;
+            }
+            return entry.getKey();
+        }
+        return null;
+    }
+
+    @Override
+    public synchronized Map<String, Long> getStatementSchedules() {
+        if (timeHandleMap.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<String, Long> result = new HashMap<String, Long>();
+        for (Map.Entry<Long, SortedMap<ScheduleSlot, ScheduleHandle>> entry : timeHandleMap.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                continue;
+            }
+            for (Map.Entry<ScheduleSlot, ScheduleHandle> inner : entry.getValue().entrySet()) {
+                if (result.containsKey(inner.getValue().getStatementId())) {
+                    continue;
+                }
+                result.put(inner.getValue().getStatementId(), entry.getKey());
+            }
+        }
+        return result;
+    }
+
     private static final Log log = LogFactory.getLog(SchedulingServiceImpl.class);
 }

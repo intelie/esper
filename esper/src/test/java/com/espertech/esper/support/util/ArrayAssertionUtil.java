@@ -1052,4 +1052,32 @@ public class ArrayAssertionUtil
         });
         return list.toArray(new EventBean[list.size()]);
     }
+
+    public static void assertUnorderedMap(Map amap, Object[][] expected) {
+        Assert.assertEquals(expected.length, amap.size());
+
+        Set<Integer> matchNumber = new HashSet<Integer>();
+        for (Object entryObj : amap.entrySet()) {
+            Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) entryObj;
+            boolean matchFound = false;
+            for (int i = 0; i < expected.length; i++) {
+                if (matchNumber.contains(i)) {
+                    continue;
+                }
+                if (expected[i][0].equals(entry.getKey())) {
+                    matchFound = true;
+                    matchNumber.add(i);
+                    if (expected[i][1] == null && entry.getValue() == null) {
+                        continue;
+                    }
+                    if (!expected[i][1].equals(entry.getValue())) {
+                        Assert.fail("Failed to match value for key '" + entry.getKey() + "' expected '" + expected[i][i] + "' received '" + entry.getValue() + "'");
+                    }
+                }
+            }
+            if (!matchFound) {
+                Assert.fail("Failed to find key '" + entry.getKey() + "'");
+            }
+        }
+    }
 }

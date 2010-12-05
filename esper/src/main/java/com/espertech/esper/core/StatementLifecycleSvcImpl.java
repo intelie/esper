@@ -804,6 +804,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return finalStatementName;
     }
 
+    @Override
+    public String getStatementNameById(String id) {
+        EPStatementDesc desc = stmtIdToDescMap.get(id);
+        if (desc != null) {
+            return desc.getEpStatement().getName();
+        }
+        return null;
+    }
+
     public void updatedListeners(EPStatement statement, EPStatementListenerSet listeners)
     {
         log.debug(".updatedListeners No action for base implementation");

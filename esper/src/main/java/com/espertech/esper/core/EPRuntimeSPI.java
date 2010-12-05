@@ -45,4 +45,6 @@ public interface EPRuntimeSPI extends EPRuntime
     public long getRoutedExternal();
 
     public void destroy();
+
+    public Map<String, Long> getStatementNearestSchedules();
 }

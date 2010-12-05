@@ -1506,21 +1506,44 @@ runtime.sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERN
 		</para>
 
 		<programlisting><![CDATA[// Set start time at zero.
-epRuntime().sendEvent(new CurrentTimeEvent(0));
+runtime.sendEvent(new CurrentTimeEvent(0));
 
 // create a statement here
 epAdministrator.createEPL("select * from MyEvent output every 5 seconds");
 
 // move time forward 1 second
-epRuntime().sendEvent(new CurrentTimeEvent(1000));
+runtime.sendEvent(new CurrentTimeEvent(1000));
 
 // move time forward 5 seconds
-epRuntime().sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
+runtime.sendEvent(new CurrentTimeEvent(6000));]]></programlisting>
 
 		<para>
 			When sending external timer events, your application should make sure that <literal>long</literal>-type time values are ascending. That is, each long-type value should be either the same value or a larger value then the prior value provided by a <literal>CurrentTimeEvent</literal>. The engine outputs a warning if time events move back in time.
 		</para>
 		
+		<para>
+		    Your application may use the <literal>getNextScheduledTime</literal> method in <literal>EPRuntime</literal> to determine the earliest time a schedule for any statement requires evaluation.
+		</para>
+		
+		<para>
+			The following code snippet sets the current time, creates a statement and prints the next scheduled time which is 1 minute later then the current time:
+		</para>
+		<programlisting><![CDATA[// Set start time to the current time.
+runtime.sendEvent(new CurrentTimeEvent(System.currentTimeMillis()));
+
+// Create a statement.
+epService.getEPAdministrator().createEPL("select * from pattern[timer:interval(1 minute)]");
+
+// Print next schedule time
+System.out.println("Next schedule at " + new Date(runtime.getNextScheduledTime());]]></programlisting>
+
+
+		<sect4 id="api-controlling-time-spi">
+			<title>Additional Time-Related APIs</title>
+			<para>
+				Consider using the service-provider interface <literal>EPRuntimeSPI</literal> <literal>EPRuntimeIsolatedSPI</literal>. The two interfaces are service-provider interfaces that expose additional function to manage statement schedules. However the SPI interfaces should be considered an extension API and are subject to change between release versions.
+			</para>
+		</sect4>
     </sect1>
 
     <sect1 id="api-time-resolution">

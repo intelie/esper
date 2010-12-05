@@ -1,5 +1,6 @@
 package com.espertech.esper.schedule;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,4 +20,8 @@ public interface SchedulingServiceSPI extends SchedulingService
      * @param scheduleSet to apply
      */
     public void apply(ScheduleSet scheduleSet);
+
+    public Long getNearestTimeHandle();
+
+    public Map<String, Long> getStatementSchedules();    
 }

@@ -117,4 +117,6 @@ public interface StatementLifecycleSvc
      * Destroy the service.
      */
     public void destroy();
+
+    public String getStatementNameById(String key);
 }

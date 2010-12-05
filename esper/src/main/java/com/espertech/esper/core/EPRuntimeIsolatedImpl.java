@@ -1,7 +1,6 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EPRuntimeIsolated;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
@@ -25,7 +24,7 @@ import java.util.*;
 /**
  * Implementation for isolated runtime.
  */
-public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRouteDest
+public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEventRouteDest
 {
     private EPServicesContext unisolatedServices;
     private EPIsolationUnitServices services;
@@ -775,6 +774,14 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolated, InternalEventRo
     public void setInternalEventRouter(InternalEventRouter internalEventRouter)
     {
         throw new UnsupportedOperationException("Isolated runtime does not route itself");
+    }
+
+    public Long getNextScheduledTime() {
+        return services.getSchedulingService().getNearestTimeHandle();
+    }
+
+    public Map<String, Long> getStatementNearestSchedules() {
+        return EPRuntimeImpl.getStatementNearestSchedulesInternal(services.getSchedulingService(), unisolatedServices.getStatementLifecycleSvc());
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);
