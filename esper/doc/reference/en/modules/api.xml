@@ -404,22 +404,22 @@ public void updateRStream(String orderId, long count) {...}]]></programlisting>
 					<title>Delivery of Begin and End Indications</title>
 	
 					<para>
-						If your subscriber requires a notification for begin and end of event delivery, it can expose methods by name <literal>start</literal> and <literal>end</literal>. 
+						If your subscriber requires a notification for begin and end of event delivery, it can expose methods by name <literal>updateStart</literal> and <literal>updateEnd</literal>. 
 					</para>
 					
 					<para>
-						The <literal>start</literal> method must take two integer parameters that indicate the number of events of the insert stream and remove stream to be delivered. The engine invokes the <literal>start</literal> method immediately prior to delivering events to the <literal>update</literal> and <literal>updateRStream</literal> methods.
+						The <literal>updateStart</literal> method must take two integer parameters that indicate the number of events of the insert stream and remove stream to be delivered. The engine invokes the <literal>updateStart</literal> method immediately prior to delivering events to the <literal>update</literal> and <literal>updateRStream</literal> methods.
 					</para>
 
 					<para>
-						The <literal>end</literal> method must take no parameters. The engine invokes the <literal>end</literal> method immediately after delivering events to the <literal>update</literal> and <literal>updateRStream</literal> methods.
+						The <literal>updateEnd</literal> method must take no parameters. The engine invokes the <literal>updateEnd</literal> method immediately after delivering events to the <literal>update</literal> and <literal>updateRStream</literal> methods.
 					</para>
 
 					<para>
 						An example set of delivery methods:
 					</para>
 					<programlisting><![CDATA[// Called by the engine before delivering events to update methods
-public void start(int insertStreamLength, int removeStreamLength)
+public void updateStart(int insertStreamLength, int removeStreamLength)
 
 // To deliver insert stream events
 public void update(String orderId, long count) {...}
@@ -428,7 +428,7 @@ public void update(String orderId, long count) {...}
 public void updateRStream(String orderId, long count) {...}
 
 // Called by the engine after delivering events
-public void end() {...}]]></programlisting>
+public void updateEnd() {...}]]></programlisting>
 				</sect4>
 				
 		   </sect3>
