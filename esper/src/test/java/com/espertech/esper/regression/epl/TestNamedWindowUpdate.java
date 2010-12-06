@@ -24,6 +24,29 @@ public class TestNamedWindowUpdate extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
     }
 
+    public void testSubquerySelf() {
+        // ESPER-507
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+
+        // This is better done with "set intPrimitive = intPrimitive + 1"
+        String epl = "@Name(\"Self Update\")\n" +
+                "on SupportBean_A c\n" +
+                "update MyWindow s\n" +
+                "set intPrimitive = (select intPrimitive from MyWindow t where t.string = c.id) + 1\n" +
+                "where s.string = c.id";
+        epService.getEPAdministrator().createEPL(epl);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 6));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("E1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("E1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("E2"));
+        
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), "string,intPrimitive".split(","), new Object[][] {{"E1", 3}, {"E2", 7}});
+    }
+
     public void testMultipleDataWindowIntersect() {
         String stmtTextCreate = "create window MyWindow.std:unique(string).win:length(2) as select * from SupportBean";
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
