@@ -534,9 +534,9 @@ public class EventAdapterServiceImpl implements EventAdapterService
             return existingType;
         }
 
-        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(eventTypeName, isPreconfiguredStatic, configurationEventTypeXMLDOM.getSchemaResource() == null);
+        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(eventTypeName, isPreconfiguredStatic, configurationEventTypeXMLDOM.getSchemaResource() == null && configurationEventTypeXMLDOM.getSchemaText() == null);
         EventType type;
-        if (configurationEventTypeXMLDOM.getSchemaResource() == null)
+        if ((configurationEventTypeXMLDOM.getSchemaResource() == null) && (configurationEventTypeXMLDOM.getSchemaText() == null))
         {
             type = new SimpleXMLEventType(metadata, configurationEventTypeXMLDOM, this);
         }

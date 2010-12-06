@@ -10,7 +10,10 @@ import com.sun.org.apache.xerces.internal.xs.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.LSInput;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -35,13 +38,13 @@ public class XSDSchemaMapper
      * @param maxRecusiveDepth depth of maximal recursive element
      * @return model
      */
-    public static SchemaModel loadAndMap(String schemaResource, int maxRecusiveDepth)
+    public static SchemaModel loadAndMap(String schemaResource, String schemaText, int maxRecusiveDepth)
     {
         // Load schema
         XSModel model;
         try
         {
-            model = readSchemaInternal(schemaResource);
+            model = readSchemaInternal(schemaResource, schemaText);
         }
         catch (ConfigurationException ex)
         {
@@ -56,11 +59,18 @@ public class XSDSchemaMapper
         return map(model, maxRecusiveDepth);
     }
 
-    private static XSModel readSchemaInternal(String schemaResource) throws IllegalAccessException, InstantiationException, ClassNotFoundException,
+    private static XSModel readSchemaInternal(String schemaResource, String schemaText) throws IllegalAccessException, InstantiationException, ClassNotFoundException,
             ConfigurationException, URISyntaxException
     {
-        URL url = ResourceLoader.resolveClassPathOrURLResource("schema", schemaResource);
-        String uri = url.toURI().toString();
+        LSInputImpl input = null;
+        String baseURI = null;
+        if (schemaResource != null) {
+            URL url = ResourceLoader.resolveClassPathOrURLResource("schema", schemaResource);
+            baseURI = url.toURI().toString();
+        }
+        else {
+            input = new LSInputImpl(schemaText);
+        }
 
         // Uses Xerxes internal classes
         DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
@@ -75,7 +85,13 @@ public class XSDSchemaMapper
         }
         XSImplementation impl =(XSImplementation) xsImplementation; 
         XSLoader schemaLoader = impl.createXSLoader(null);
-        XSModel xsModel = schemaLoader.loadURI(uri);
+        XSModel xsModel;
+        if (input != null) {
+            xsModel = schemaLoader.load(input);
+        }
+        else {
+            xsModel = schemaLoader.loadURI(baseURI);
+        }
 
         if (xsModel == null)
         {
@@ -280,5 +296,87 @@ public class XSDSchemaMapper
     private static boolean isArray(XSParticle particle)
     {
         return particle.getMaxOccursUnbounded() || (particle.getMaxOccurs() > 1); 
+    }
+    
+    public static class LSInputImpl implements LSInput {
+
+        private String stringData;
+
+        public LSInputImpl(String stringData) {
+            this.stringData = stringData;
+        }
+
+        @Override
+        public Reader getCharacterStream() {
+            return null;  
+        }
+
+        @Override
+        public void setCharacterStream(Reader characterStream) {
+        }
+
+        @Override
+        public InputStream getByteStream() {
+            return null;  
+        }
+
+        @Override
+        public void setByteStream(InputStream byteStream) {
+        }
+
+        @Override
+        public String getStringData() {
+            return stringData;
+        }
+
+        @Override
+        public void setStringData(String stringData) {
+            this.stringData = stringData;
+        }
+
+        @Override
+        public String getSystemId() {
+            return null;  
+        }
+
+        @Override
+        public void setSystemId(String systemId) {
+        }
+
+        @Override
+        public String getPublicId() {
+            return null;  
+        }
+
+        @Override
+        public void setPublicId(String publicId) {
+        }
+
+        @Override
+        public String getBaseURI() {
+            return null;
+        }
+
+        @Override
+        public void setBaseURI(String baseURI) {
+        }
+
+        @Override
+        public String getEncoding() {
+            return null;  
+        }
+
+        @Override
+        public void setEncoding(String encoding) {
+        }
+
+        @Override
+        public boolean getCertifiedText() {
+            return false;  
+        }
+
+        @Override
+        public void setCertifiedText(boolean certifiedText) {
+        }
     }
 }

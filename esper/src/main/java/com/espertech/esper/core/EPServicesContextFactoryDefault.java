@@ -272,11 +272,11 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         for (Map.Entry<String, ConfigurationEventTypeXMLDOM> entry : xmlDOMNames.entrySet())
         {
             SchemaModel schemaModel = null;
-            if (entry.getValue().getSchemaResource() != null)
+            if ((entry.getValue().getSchemaResource() != null) || (entry.getValue().getSchemaText() != null))
             {
                 try
                 {
-                    schemaModel = XSDSchemaMapper.loadAndMap(entry.getValue().getSchemaResource(), 2);
+                    schemaModel = XSDSchemaMapper.loadAndMap(entry.getValue().getSchemaResource(), entry.getValue().getSchemaText(), 2);
                 }
                 catch (Exception ex)
                 {

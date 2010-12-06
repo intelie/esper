@@ -173,6 +173,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
         xmlDom.setXPathPropertyExpr(this.getConfigurationEventTypeXMLDOM().isXPathPropertyExpr());
         xmlDom.setXPathResolvePropertiesAbsolute(this.getConfigurationEventTypeXMLDOM().isXPathResolvePropertiesAbsolute());
         xmlDom.setSchemaResource(this.getConfigurationEventTypeXMLDOM().getSchemaResource());
+        xmlDom.setSchemaText(this.getConfigurationEventTypeXMLDOM().getSchemaText());
         xmlDom.setXPathFunctionResolver(this.getConfigurationEventTypeXMLDOM().getXPathFunctionResolver());
         xmlDom.setXPathVariableResolver(this.getConfigurationEventTypeXMLDOM().getXPathVariableResolver());
         xmlDom.setDefaultNamespace(this.getConfigurationEventTypeXMLDOM().getDefaultNamespace());

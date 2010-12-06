@@ -123,6 +123,7 @@ public class TestConfigurationParser extends TestCase
         ConfigurationEventTypeXMLDOM schemaDesc = config.getEventTypesXMLDOM().get("MySchemaXMLEventName");
         assertEquals("MySchemaEvent", schemaDesc.getRootElementName());
         assertEquals("MySchemaXMLEvent.xsd", schemaDesc.getSchemaResource());
+        assertEquals("actual-xsd-text-here", schemaDesc.getSchemaText());
         assertEquals("samples:schemas:simpleSchema", schemaDesc.getRootElementNamespace());
         assertEquals("default-name-space", schemaDesc.getDefaultNamespace());
         assertEquals("/myevent/element2", schemaDesc.getXPathProperties().get("element2").getXpath());

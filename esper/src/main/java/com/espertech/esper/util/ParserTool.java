@@ -153,20 +153,40 @@ public class ParserTool {
         return -1;
     }
 
-    public static List<String> readFile(String file)
+    private static void readFile(BufferedReader reader, List<String> list) throws IOException
     {
-        BufferedReader reader = null;
+        String text;
+        // repeat until all lines is read
+        while ((text = reader.readLine()) != null)
+        {
+            list.add(text);
+        }
+    }
+
+    public static List<String> readFile(InputStream is)
+    {
+        InputStreamReader isr = new InputStreamReader(is);
+        try {
+            return readFile(isr);
+        }
+        finally {
+            try {
+                isr.close();
+            }
+            catch (IOException e) {
+                // fine
+            }
+        }
+    }
+
+    public static List<String> readFile(Reader reader)
+    {
         List<String> list = new ArrayList<String>();
+        BufferedReader bufferedReader = null;
         try
         {
-            reader = new BufferedReader(new FileReader(file));
-            String text = null;
-
-            // repeat until all lines is read
-            while ((text = reader.readLine()) != null)
-            {
-                list.add(text);
-            }
+            bufferedReader = new BufferedReader(reader);
+            readFile(bufferedReader, list);
         }
         catch (FileNotFoundException e)
         {
@@ -180,9 +200,9 @@ public class ParserTool {
         {
             try
             {
-                if (reader != null)
+                if (bufferedReader != null)
                 {
-                    reader.close();
+                    bufferedReader.close();
                 }
             }
             catch (IOException e)
@@ -191,6 +211,29 @@ public class ParserTool {
         }
 
         return list;
+    }
+
+    public static List<String> readFile(String file)
+    {
+        FileReader fileReader = null;
+        try {
+            fileReader = new FileReader(file);
+            return readFile(fileReader);
+        }
+        catch (FileNotFoundException e)
+        {
+            throw new RuntimeException("File not found: " + e.getMessage(), e);
+        }
+        finally {
+            if (fileReader != null) {
+                try {
+                    fileReader.close();
+                }
+                catch (IOException e) {
+                    // fine
+                }
+            }
+        }
     }
 
     public static String linesToText(List<String> lines) {

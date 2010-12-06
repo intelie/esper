@@ -207,11 +207,11 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         SchemaModel schemaModel = null;
 
-        if (xmlDOMEventTypeDesc.getSchemaResource() != null)
+        if ((xmlDOMEventTypeDesc.getSchemaResource() != null) || (xmlDOMEventTypeDesc.getSchemaText() != null))
         {
             try
             {
-                schemaModel = XSDSchemaMapper.loadAndMap(xmlDOMEventTypeDesc.getSchemaResource(), 2);
+                schemaModel = XSDSchemaMapper.loadAndMap(xmlDOMEventTypeDesc.getSchemaResource(), xmlDOMEventTypeDesc.getSchemaText(), 2);
             }
             catch (Exception ex)
             {

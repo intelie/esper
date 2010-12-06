@@ -5,6 +5,7 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.util.ParserTool;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathConstants;
+import java.io.InputStream;
 
 public class TestSchemaXMLEvent extends TestCase
 {
@@ -27,8 +29,10 @@ public class TestSchemaXMLEvent extends TestCase
         Configuration config = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
         eventTypeMeta.setRootElementName("order");
-        String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_WITH_RESTRICTION_URI).toString();
-        eventTypeMeta.setSchemaResource(schemaUri);
+        InputStream schemaStream = TestSchemaXMLEvent.class.getClassLoader().getResourceAsStream(CLASSLOADER_SCHEMA_WITH_RESTRICTION_URI);
+        assertNotNull(schemaStream);
+        String schemaText = ParserTool.linesToText(ParserTool.readFile(schemaStream));
+        eventTypeMeta.setSchemaText(schemaText);
         config.addEventType("OrderEvent", eventTypeMeta);
 
         epService = EPServiceProviderManager.getProvider("TestSchemaXML", config);
@@ -45,6 +49,7 @@ public class TestSchemaXMLEvent extends TestCase
             "<order_amount>202.1</order_amount>" +
             "</order>");
         EventBean event = updateListener.getLastNewData()[0];
+        assertEquals(Double.class, event.get("order_amount").getClass());
         assertEquals(202.1d, event.get("order_amount"));
         updateListener.reset();
     }

@@ -58,7 +58,7 @@ public class TestNamedWindowUpdate extends TestCase
         String stmtTextInsertOne = "insert into MyWindow select * from SupportBean";
         epService.getEPAdministrator().createEPL(stmtTextInsertOne);
 
-        String stmtTextUpdate = "on SupportBean_A update MyWindow set intPrimitive=intPrimitive*100 where string=id";
+        String stmtTextUpdate = "on SupportBean_A update MyWindow mw set mw.intPrimitive=intPrimitive*100 where string=id";
         epService.getEPAdministrator().createEPL(stmtTextUpdate);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 2));

@@ -19,7 +19,7 @@ public class TestXSDSchemaMapper extends TestCase
         URL url = ResourceLoader.resolveClassPathOrURLResource("schema", "regression/simpleSchema.xsd");
         String schemaUri = url.toURI().toString();
 
-        SchemaModel model = XSDSchemaMapper.loadAndMap(schemaUri, 2);
+        SchemaModel model = XSDSchemaMapper.loadAndMap(schemaUri, null, 2);
         assertEquals(1, model.getComponents().size());
 
         SchemaElementComplex component = model.getComponents().get(0);

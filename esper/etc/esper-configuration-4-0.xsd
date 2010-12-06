@@ -61,6 +61,7 @@
 			<xs:attribute name="root-element-namespace" type="xs:string" use="optional"/>
 			<xs:attribute name="default-namespace" type="xs:string" use="optional"/>
 			<xs:attribute name="schema-resource" type="xs:string" use="optional"/>
+			<xs:attribute name="schema-text" type="xs:string" use="optional"/>
 			<xs:attribute name="event-sender-validates-root" type="xs:boolean" use="optional"/>
 			<xs:attribute name="auto-fragment" type="xs:boolean" use="optional"/>
 			<xs:attribute name="xpath-resolve-properties-absolute" type="xs:boolean" use="optional"/>

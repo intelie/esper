@@ -255,6 +255,7 @@ class ConfigurationParser {
         String rootElementName = getRequiredAttribute(xmldomElement, "root-element-name");
         String rootElementNamespace = getOptionalAttribute(xmldomElement, "root-element-namespace");
         String schemaResource = getOptionalAttribute(xmldomElement, "schema-resource");
+        String schemaText = getOptionalAttribute(xmldomElement, "schema-text");
         String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
         String resolvePropertiesAbsoluteStr = getOptionalAttribute(xmldomElement, "xpath-resolve-properties-absolute");
         String propertyExprXPathStr = getOptionalAttribute(xmldomElement, "xpath-property-expr");
@@ -266,6 +267,7 @@ class ConfigurationParser {
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName(rootElementName);
         xmlDOMEventTypeDesc.setSchemaResource(schemaResource);
+        xmlDOMEventTypeDesc.setSchemaText(schemaText);
         xmlDOMEventTypeDesc.setRootElementNamespace(rootElementNamespace);
         xmlDOMEventTypeDesc.setDefaultNamespace(defaultNamespace);
         xmlDOMEventTypeDesc.setXPathFunctionResolver(xpathFunctionResolverClass);

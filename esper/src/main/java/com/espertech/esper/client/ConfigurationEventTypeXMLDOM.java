@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;
 
@@ -53,6 +52,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     private String defaultNamespace;
     
     private String schemaResource;
+    private String schemaText;
     private Map<String, XPathPropertyDesc> xPathProperties;
     private Map<String, String> namespacePrefixes;
 
@@ -148,6 +148,26 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     public void setSchemaResource(String schemaResource)
     {
         this.schemaResource = schemaResource;
+    }
+
+    /**
+     * Returns the schema text, if provided instead of a schema resource, this call returns the actual text of the schema document.
+     * <p>
+     * Set a schema text first. This call will not resolve the schema resource to a text.
+     * @return schema text, if provided, or null value
+     */
+    public String getSchemaText() {
+        return schemaText;
+    }
+
+    /**
+     * Sets the schema text, for use when the schema resource is impractical and when providing the actual text
+     * of the schema instead.
+     * @param schemaText schema text is the actual content of an XSD schema file as a string,
+     * provide instead of a schema resource name
+     */
+    public void setSchemaText(String schemaText) {
+        this.schemaText = schemaText;
     }
 
     /**

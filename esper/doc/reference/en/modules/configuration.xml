@@ -486,7 +486,8 @@ configuration.addEventType("MyXMLNodeEvent", desc);]]></programlisting>
 			<para>
 				 This example configures an event property named <literal>countTags</literal> whose value is computed by an XPath expression. The namespace prefixes
 				 and default namespace are for use with XPath expressions and must also be made known to the engine in order for the engine to compile XPath expressions. 
-				 Via the <literal>schema-resource</literal> attribute we instruct the engine to load a schema file.
+				 Via the <literal>schema-resource</literal> attribute we instruct the engine to load a schema file. You may also use <literal>schema-text</literal> instead to 
+				 provide the actual text of the schema.
 			</para>
 			
 			<para>
@@ -499,7 +500,7 @@ configuration.addEventType("MyXMLNodeEvent", desc);]]></programlisting>
 				<title>Schema Resource</title>
 				<para>
 					 The <literal>schema-resource</literal> attribute takes a schema resource URL or classpath-relative filename. 
-					 The engine attempts to resolve the schema resource as an URL. If the schema resource name is not a valid URL, the engine attempts to resolve the resource from classpath via the <literal>ClassLoader.getResource</literal> method using the thread context class loader. If the name could not be resolved, the engine uses the Configuration class classloader.
+					 The engine attempts to resolve the schema resource as an URL. If the schema resource name is not a valid URL, the engine attempts to resolve the resource from classpath via the <literal>ClassLoader.getResource</literal> method using the thread context class loader. If the name could not be resolved, the engine uses the Configuration class classloader. Use the <literal>schema-text</literal> attribute instead when it is more practical to provide the actual text of the schema. 
 				</para>
 
 				<para>
