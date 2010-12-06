@@ -11,6 +11,8 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.util.SimpleNumberCoercer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a filter parameter containing a reference to another event's property
@@ -18,11 +20,14 @@ import com.espertech.esper.util.SimpleNumberCoercer;
  */
 public final class FilterSpecParamEventProp extends FilterSpecParam
 {
+    private static final Log log = LogFactory.getLog(FilterSpecParamEventProp.class);
+
     private final String resultEventAsName;
     private final String resultEventProperty;
     private final boolean isMustCoerce;
     private final SimpleNumberCoercer numberCoercer;
     private final Class coercionType;
+    private final String statementName;
     private static final long serialVersionUID = 7839598101507253516L;
 
     /**
@@ -38,7 +43,8 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
      */
     public FilterSpecParamEventProp(String propertyName, FilterOperator filterOperator, String resultEventAsName,
                                     String resultEventProperty, boolean isMustCoerce,
-                                    SimpleNumberCoercer numberCoercer, Class coercionType)
+                                    SimpleNumberCoercer numberCoercer, Class coercionType,
+                                    String statementName)
         throws IllegalArgumentException
     {
         super(propertyName, filterOperator);
@@ -47,6 +53,7 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
         this.isMustCoerce = isMustCoerce;
         this.numberCoercer = numberCoercer;
         this.coercionType = coercionType;
+        this.statementName = statementName;
 
         if (filterOperator.isRangeOperator())
         {
@@ -94,13 +101,14 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
     public Object getFilterValue(MatchedEventMap matchedEvents)
     {
         EventBean event = matchedEvents.getMatchingEvent(resultEventAsName);
+        Object value = null;
         if (event == null)
         {
-            throw new IllegalStateException("Event named '" +
-                    '\'' + resultEventAsName + "' not found in event pattern result set");
+            log.warn("Matching events for tag '" + resultEventAsName + "' returned a null result, using null value in filter criteria, for statement '" + statementName + "'");
         }
-
-        Object value = event.get(resultEventProperty);
+        else {
+            value = event.get(resultEventProperty);
+        }
 
         // Coerce if necessary
         if (isMustCoerce)

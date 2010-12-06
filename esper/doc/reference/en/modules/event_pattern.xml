@@ -236,6 +236,16 @@ else {
 			</para>
 			<programlisting><![CDATA[select * from pattern [every (A or B).win:length(10)]]></programlisting>
 		</sect2>
+
+        <sect2 id="pattern-errorreporting" >
+           <title>Pattern Error Reporting</title>
+           
+			<para>
+			  While the pattern compiler analyzes your pattern and verifies its integrity, it may not detect certain pattern errors that may occur at runtime. Sections of this pattern documentation
+			  point out common cases where the pattern engine will log a runtime error. We recommend turning on the log warning level at project development time to inspect and report on warnings logged.
+			  If a statement name is assigned to a statement then the statement name is logged as well.
+			</para>
+		</sect2>
     </sect1>
 
     <sect1 id="pattern-op-precedence">
@@ -1300,6 +1310,17 @@ a=A -> (B(id = a.id) and C(id = a.id))]]></programlisting>
             <para>
 				In the pattern above, when an A event arrives then the engine starts the subexpression <literal>B or not C</literal>. As soon as the subexpression starts, the <literal>not</literal> operator turns to true. The <literal>or</literal> expression turns true and thus your listener receives an invocation providing the A event in the property 'a'. The subexpression does not end and continues listening for B and C events. Upon arrival of a B event your listener receives a second invocation. If instead a C event arrives, the <literal>not</literal> turns permanently false however that does not affect the <literal>or</literal> operator (but would end an <literal>and</literal> operator).
             </para>
+            
+            <para>
+				To test for absence of an event, use <literal>timer:interval</literal> together with <literal>and not</literal> operators. The sample statement reports each 10-second interval during which no A event occurred:
+            </para>
+			<programlisting><![CDATA[every (timer:interval(10 sec) and not A)]]></programlisting>
+			
+			<para>
+				In many cases the <literal>not</literal> operator, when used alone, does not make sense. The following example is invalid and will log a warning when the engine is started:
+			</para>
+			<programlisting><![CDATA[// not a sensible pattern
+(not a=A) -> B(id=a.id)]]></programlisting>
         </sect2>
 
         <sect2 id="pattern-temporal-followed-by" >

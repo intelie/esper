@@ -31,11 +31,14 @@ public class TestInvalidPattern extends TestCase
     {
         String exceptionText = getSyntaxExceptionPattern(EVENT_NUM + "(doublePrimitive='ss'");
         assertEquals("Incorrect syntax near ''ss'' expecting a closing parenthesis ')' but found end of input at line 1 column 63, please check the filter specification within the pattern expression [com.espertech.esper.support.bean.SupportBean_N(doublePrimitive='ss']", exceptionText);
+
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("select * from pattern[(not a=SupportBean) -> SupportBean(string=a.string)]");
     }
 
     public void testStatementException() throws Exception
     {
-        String exceptionText = null;
+        String exceptionText;
 
         exceptionText = getStatementExceptionPattern("timer:at(2,3,4,4,4)");
         assertEquals("Invalid parameter for pattern observer: Error computing crontab schedule specification: Invalid combination between days of week and days of month fields for timer:at [timer:at(2,3,4,4,4)]", exceptionText);

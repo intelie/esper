@@ -28,6 +28,12 @@ final class EvalEveryStateSpawnEvaluator implements Evaluator
 {
     private boolean isEvaluatedTrue;
 
+    private final String statementName;
+
+    EvalEveryStateSpawnEvaluator(String statementName) {
+        this.statementName = statementName;
+    }
+
     public final boolean isEvaluatedTrue()
     {
         return isEvaluatedTrue;
@@ -35,13 +41,13 @@ final class EvalEveryStateSpawnEvaluator implements Evaluator
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
-        log.warn("Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator");
+        log.warn("Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator, for statement '" + statementName + "'");
         isEvaluatedTrue = true;
     }
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        log.warn("Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator");
+        log.warn("Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator, for statement '" + statementName + "'");
         isEvaluatedTrue = true;
     }
 
@@ -100,7 +106,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         // During the start of the child we need to use the temporary evaluator to catch any event created during a start.
         // Events created during the start would likely come from the "not" operator.
         // Quit the new child again if
-        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
         EvalStateNode child = spawnedNodes.get(0);
         child.setParentEvaluator(spawnEvaluator);
         child.start();
@@ -130,7 +136,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         // During the start of a child we need to use the temporary evaluator to catch any event created during a start
         // Such events can be raised when the "not" operator is used.
         EvalNode child = getFactoryNode().getChildNodes().get(0);
-        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
         EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
         spawned.start();
 
@@ -169,7 +175,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
             // During the start of a child we need to use the temporary evaluator to catch any event created during a start
             // Such events can be raised when the "not" operator is used.
             EvalNode child = getFactoryNode().getChildNodes().get(0);
-            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
             EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
             spawned.start();
 

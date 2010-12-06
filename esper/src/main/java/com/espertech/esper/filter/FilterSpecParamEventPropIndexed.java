@@ -1,8 +1,8 @@
 package com.espertech.esper.filter;
 
-import com.espertech.esper.util.SimpleNumberCoercer;
-import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.util.SimpleNumberCoercer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,6 +19,7 @@ public final class FilterSpecParamEventPropIndexed extends FilterSpecParam
     private final boolean isMustCoerce;
     private final SimpleNumberCoercer numberCoercer;
     private final Class coercionType;
+    private final String statementName;
     private static final long serialVersionUID = -1781904301744323795L;
 
     /**
@@ -35,7 +36,7 @@ public final class FilterSpecParamEventPropIndexed extends FilterSpecParam
      */
     public FilterSpecParamEventPropIndexed(String propertyName, FilterOperator filterOperator, String resultEventAsName,
                                     int resultEventIndex, String resultEventProperty, boolean isMustCoerce,
-                                    SimpleNumberCoercer numberCoercer, Class coercionType)
+                                    SimpleNumberCoercer numberCoercer, Class coercionType, String statementName)
         throws IllegalArgumentException
     {
         super(propertyName, filterOperator);
@@ -45,6 +46,7 @@ public final class FilterSpecParamEventPropIndexed extends FilterSpecParam
         this.isMustCoerce = isMustCoerce;
         this.numberCoercer = numberCoercer;
         this.coercionType = coercionType;
+        this.statementName = statementName;
 
         if (filterOperator.isRangeOperator())
         {
@@ -96,11 +98,11 @@ public final class FilterSpecParamEventPropIndexed extends FilterSpecParam
         Object value = null;
         if (events == null)
         {
-            log.warn("Matching events for tag '" + resultEventAsName + "' returned a null result, using null value in filter criteria");
+            log.warn("Matching events for tag '" + resultEventAsName + "' returned a null result, using null value in filter criteria, for statement '" + statementName + "'");
         }
         else if (resultEventIndex > (events.length - 1))
         {
-            log.warn("Matching events for tag '" + resultEventAsName + "' returned no result for index " + resultEventIndex + " at array length " + events.length + ", using null value in filter criteria");
+            log.warn("Matching events for tag '" + resultEventAsName + "' returned no result for index " + resultEventIndex + " at array length " + events.length + ", using null value in filter criteria, for statement '" + statementName + "'");
         }
         else
         {

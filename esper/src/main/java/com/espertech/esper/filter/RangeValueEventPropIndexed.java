@@ -14,6 +14,7 @@ public class RangeValueEventPropIndexed implements FilterSpecParamRangeValue
     private final String resultEventAsName;
     private final int resultEventIndex;
     private final String resultEventProperty;
+    private final String statementName;
     private static final long serialVersionUID = -2443484252813342579L;
 
     /**
@@ -22,11 +23,12 @@ public class RangeValueEventPropIndexed implements FilterSpecParamRangeValue
      * @param resultEventProperty is the event property name
      * @param resultEventIndex index for event
      */
-    public RangeValueEventPropIndexed(String resultEventAsName, int resultEventIndex, String resultEventProperty)
+    public RangeValueEventPropIndexed(String resultEventAsName, int resultEventIndex, String resultEventProperty, String statementName)
     {
         this.resultEventAsName = resultEventAsName;
         this.resultEventIndex = resultEventIndex;
         this.resultEventProperty = resultEventProperty;
+        this.statementName = statementName;
     }
 
     public int getFilterHash()
@@ -50,12 +52,12 @@ public class RangeValueEventPropIndexed implements FilterSpecParamRangeValue
         Number value;
         if (events == null)
         {
-            log.warn("Matching events for tag '" + resultEventAsName + "' returned a null result, using null value in filter criteria");
+            log.warn("Matching events for tag '" + resultEventAsName + "' returned a null result, using null value in filter criteria, for statement '" + statementName + "'");
             return null;
         }
         else if (resultEventIndex > (events.length - 1))
         {
-            log.warn("Matching events for tag '" + resultEventAsName + "' returned no result for index " + resultEventIndex + " at array length " + events.length + ", using null value in filter criteria");
+            log.warn("Matching events for tag '" + resultEventAsName + "' returned no result for index " + resultEventIndex + " at array length " + events.length + ", using null value in filter criteria, for statement '" + statementName + "'");
             return null;
         }
         else

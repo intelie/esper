@@ -106,7 +106,7 @@ public final class FilterSpecCompiler
 
         // Consolidate entries as possible, i.e. (a != 5 and a != 6) is (a not in (5,6))
         // Removes duplicates for same property and same filter operator for filter service index optimizations
-        consolidate(filterParamExprMap);
+        consolidate(filterParamExprMap, statementContext.getStatementName());
 
         // Use all filter parameter and unassigned expressions
         List<FilterSpecParam> filterParams = new ArrayList<FilterSpecParam>();
@@ -157,12 +157,12 @@ public final class FilterSpecCompiler
     }
 
     // remove duplicate propertyName + filterOperator items making a judgement to optimize or simply remove the optimized form
-    private static void consolidate(List<FilterSpecParam> items, FilterParamExprMap filterParamExprMap)
+    private static void consolidate(List<FilterSpecParam> items, FilterParamExprMap filterParamExprMap, String statementName)
     {
         FilterOperator op = items.get(0).getFilterOperator();
         if (op == FilterOperator.NOT_EQUAL)
         {
-            handleConsolidateNotEqual(items, filterParamExprMap);
+            handleConsolidateNotEqual(items, filterParamExprMap, statementName);
         }
         else
         {
@@ -377,7 +377,7 @@ public final class FilterSpecCompiler
         return constituents;
     }
 
-    private static void consolidate(FilterParamExprMap filterParamExprMap)
+    private static void consolidate(FilterParamExprMap filterParamExprMap, String statementName)
     {
         // consolidate or place in a boolean expression (by removing filter spec param from the map)
         // any filter parameter that feature the same property name and filter operator,
@@ -414,7 +414,7 @@ public final class FilterSpecCompiler
                 if (entry.size() > 1)
                 {
                     haveConsolidated = true;
-                    consolidate(entry, filterParamExprMap);
+                    consolidate(entry, filterParamExprMap, statementName);
                 }
             }
         }
@@ -423,7 +423,7 @@ public final class FilterSpecCompiler
 
     // consolidate "val != 3 and val != 4 and val != 5"
     // to "val not in (3, 4, 5)"
-    private static void handleConsolidateNotEqual(List<FilterSpecParam> params, FilterParamExprMap filterParamExprMap)
+    private static void handleConsolidateNotEqual(List<FilterSpecParam> params, FilterParamExprMap filterParamExprMap, String statementName)
     {
         List<FilterSpecParamInValue> values = new ArrayList<FilterSpecParamInValue>();
 
@@ -446,7 +446,7 @@ public final class FilterSpecCompiler
             {
                 FilterSpecParamEventPropIndexed eventProp = (FilterSpecParamEventPropIndexed) param;
                 values.add(new InSetOfValuesEventPropIndexed(eventProp.getResultEventAsName(), eventProp.getResultEventIndex(), eventProp.getResultEventProperty(),
-                        eventProp.isMustCoerce(), JavaClassHelper.getBoxedType(eventProp.getCoercionType())));
+                        eventProp.isMustCoerce(), JavaClassHelper.getBoxedType(eventProp.getCoercionType()), statementName));
             }
             else
             {
@@ -467,18 +467,18 @@ public final class FilterSpecCompiler
      * @param constituent is the expression to look at
      * @param taggedEventTypes event types and their tags
      * @param arrayEventTypes @return filter parameter representing the expression, or null
-     * @param exprEvaluatorContext context for expression evalauation
+     * @param statementContext context for expression evalauation
      * @throws ExprValidationException if the expression is invalid
      * @return FilterSpecParam filter param
      */
-    protected static FilterSpecParam makeFilterParam(ExprNode constituent, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext)
+    protected static FilterSpecParam makeFilterParam(ExprNode constituent, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, StatementContext statementContext)
             throws ExprValidationException
     {
         // Is this expresson node a simple compare, i.e. a=5 or b<4; these can be indexed
         if ((constituent instanceof ExprEqualsNode) ||
             (constituent instanceof ExprRelationalOpNode))
         {
-            FilterSpecParam param = handleEqualsAndRelOp(constituent, arrayEventTypes, exprEvaluatorContext);
+            FilterSpecParam param = handleEqualsAndRelOp(constituent, arrayEventTypes, statementContext, statementContext.getStatementName());
             if (param != null)
             {
                 return param;
@@ -488,7 +488,7 @@ public final class FilterSpecCompiler
         // Is this expresson node a simple compare, i.e. a=5 or b<4; these can be indexed
         if (constituent instanceof ExprInNode)
         {
-            FilterSpecParam param = handleInSetNode((ExprInNode)constituent, arrayEventTypes, exprEvaluatorContext);
+            FilterSpecParam param = handleInSetNode((ExprInNode)constituent, arrayEventTypes, statementContext, statementContext.getStatementName());
             if (param != null)
             {
                 return param;
@@ -497,7 +497,7 @@ public final class FilterSpecCompiler
 
         if (constituent instanceof ExprBetweenNode)
         {
-            FilterSpecParam param = handleRangeNode((ExprBetweenNode)constituent, arrayEventTypes, exprEvaluatorContext);
+            FilterSpecParam param = handleRangeNode((ExprBetweenNode)constituent, arrayEventTypes, statementContext, statementContext.getStatementName());
             if (param != null)
             {
                 return param;
@@ -507,7 +507,7 @@ public final class FilterSpecCompiler
         return null;
     }
 
-    private static FilterSpecParam handleRangeNode(ExprBetweenNode betweenNode, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext)
+    private static FilterSpecParam handleRangeNode(ExprBetweenNode betweenNode, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, String statementName)
     {
         ExprNode left = betweenNode.getChildNodes().get(0);
         if (left instanceof ExprIdentNode)
@@ -517,8 +517,8 @@ public final class FilterSpecCompiler
             FilterOperator op = FilterOperator.parseRangeOperator(betweenNode.isLowEndpointIncluded(), betweenNode.isHighEndpointIncluded(),
                     betweenNode.isNotBetween());
 
-            FilterSpecParamRangeValue low = handleRangeNodeEndpoint(betweenNode.getChildNodes().get(1), arrayEventTypes, exprEvaluatorContext);
-            FilterSpecParamRangeValue high = handleRangeNodeEndpoint(betweenNode.getChildNodes().get(2), arrayEventTypes, exprEvaluatorContext);
+            FilterSpecParamRangeValue low = handleRangeNodeEndpoint(betweenNode.getChildNodes().get(1), arrayEventTypes, exprEvaluatorContext, statementName);
+            FilterSpecParamRangeValue high = handleRangeNodeEndpoint(betweenNode.getChildNodes().get(2), arrayEventTypes, exprEvaluatorContext, statementName);
 
             if ((low != null) && (high != null))
             {
@@ -528,7 +528,7 @@ public final class FilterSpecCompiler
         return null;
     }
 
-    private static FilterSpecParamRangeValue handleRangeNodeEndpoint(ExprNode endpoint, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext)
+    private static FilterSpecParamRangeValue handleRangeNodeEndpoint(ExprNode endpoint, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, String statementName)
     {
         // constant
         if (endpoint instanceof ExprConstantNode)
@@ -550,7 +550,7 @@ public final class FilterSpecCompiler
             if (!arrayEventTypes.isEmpty() && arrayEventTypes.containsKey(identNodeInner.getResolvedStreamName()))
             {
                 Pair<Integer, String> indexAndProp = getStreamIndex(identNodeInner.getResolvedPropertyName());
-                return new RangeValueEventPropIndexed(identNodeInner.getResolvedStreamName(), indexAndProp.getFirst(), indexAndProp.getSecond());
+                return new RangeValueEventPropIndexed(identNodeInner.getResolvedStreamName(), indexAndProp.getFirst(), indexAndProp.getSecond(), statementName);
             }
             else
             {
@@ -562,7 +562,7 @@ public final class FilterSpecCompiler
         return null;
     }
 
-    private static FilterSpecParam handleInSetNode(ExprInNode constituent, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext)
+    private static FilterSpecParam handleInSetNode(ExprInNode constituent, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, String statementName)
             throws ExprValidationException
     {
         ExprNode left = constituent.getChildNodes().get(0);
@@ -629,7 +629,7 @@ public final class FilterSpecCompiler
                     {
                         Pair<Integer, String> indexAndProp = getStreamIndex(identNodeInner.getResolvedPropertyName());
                         inValue = new InSetOfValuesEventPropIndexed(identNodeInner.getResolvedStreamName(), indexAndProp.getFirst(),
-                                indexAndProp.getSecond(), isMustCoerce, numericCoercionType);
+                                indexAndProp.getSecond(), isMustCoerce, numericCoercionType, statementName);
                     }
                     else
                     {
@@ -649,7 +649,7 @@ public final class FilterSpecCompiler
         return null;
     }
 
-    private static FilterSpecParam handleEqualsAndRelOp(ExprNode constituent, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext)
+    private static FilterSpecParam handleEqualsAndRelOp(ExprNode constituent, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, String statementName)
             throws ExprValidationException
     {
         FilterOperator op;
@@ -717,7 +717,7 @@ public final class FilterSpecCompiler
 
             if ((identNodeLeft.getStreamId() == 0) && (identNodeRight.getStreamId() != 0))
             {
-                return handleProperty(op, identNodeLeft, identNodeRight, arrayEventTypes);
+                return handleProperty(op, identNodeLeft, identNodeRight, arrayEventTypes, statementName);
             }
             if ((identNodeRight.getStreamId() == 0) && (identNodeLeft.getStreamId() != 0))
             {
@@ -741,13 +741,13 @@ public final class FilterSpecCompiler
                         op = FilterOperator.LESS_OR_EQUAL;
                     }
                 }
-                return handleProperty(op, identNodeRight, identNodeLeft, arrayEventTypes);
+                return handleProperty(op, identNodeRight, identNodeLeft, arrayEventTypes, statementName);
             }
         }
         return null;
     }
 
-    private static FilterSpecParam handleProperty(FilterOperator op, ExprIdentNode identNodeLeft, ExprIdentNode identNodeRight, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+    private static FilterSpecParam handleProperty(FilterOperator op, ExprIdentNode identNodeLeft, ExprIdentNode identNodeRight, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, String statementName)
             throws ExprValidationException
     {
         String propertyName = identNodeLeft.getResolvedPropertyName();
@@ -773,10 +773,10 @@ public final class FilterSpecCompiler
         {
             Pair<Integer, String> indexAndProp = getStreamIndex(identNodeRight.getResolvedPropertyName());
             return new FilterSpecParamEventPropIndexed(propertyName, op, identNodeRight.getResolvedStreamName(), indexAndProp.getFirst(),
-                    indexAndProp.getSecond(), isMustCoerce, numberCoercer, numericCoercionType);
+                    indexAndProp.getSecond(), isMustCoerce, numberCoercer, numericCoercionType, statementName);
         }
         return new FilterSpecParamEventProp(propertyName, op, identNodeRight.getResolvedStreamName(), identNodeRight.getResolvedPropertyName(),
-                isMustCoerce, numberCoercer, numericCoercionType);
+                isMustCoerce, numberCoercer, numericCoercionType, statementName);
     }
 
     private static Pair<Integer, String> getStreamIndex(String resolvedPropertyName)

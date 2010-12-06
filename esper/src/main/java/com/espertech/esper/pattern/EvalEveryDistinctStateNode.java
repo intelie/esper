@@ -81,7 +81,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         // During the start of the child we need to use the temporary evaluator to catch any event created during a start.
         // Events created during the start would likely come from the "not" operator.
         // Quit the new child again if
-        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
         EvalStateNode child = spawnedNodes.keySet().iterator().next();
         child.setParentEvaluator(spawnEvaluator);
         child.start();
@@ -111,7 +111,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         // During the start of a child we need to use the temporary evaluator to catch any event created during a start
         // Such events can be raised when the "not" operator is used.
         EvalNode child = getFactoryNode().getChildNodes().get(0);
-        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
         EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
         spawned.start();
 
@@ -166,7 +166,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
             // During the start of a child we need to use the temporary evaluator to catch any event created during a start
             // Such events can be raised when the "not" operator is used.
             EvalNode child = getFactoryNode().getChildNodes().get(0);
-            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator();
+            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
             EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
             spawned.start();
 

@@ -76,7 +76,7 @@ public class TestFilterSpecCompiled extends TestCase
         List<FilterSpecParam> params = SupportFilterSpecBuilder.buildList(new Object[]
                                     { "intPrimitive", FilterOperator.EQUAL, 2 });
         SimpleNumberCoercer numberCoercer = SimpleNumberCoercerFactory.getCoercer(int.class, Double.class);
-        params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive", false, numberCoercer, Double.class));
+        params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive", false, numberCoercer, Double.class, "Test"));
         FilterSpecCompiled filterSpec = new FilterSpecCompiled(eventType, "SupportBean", params, null);
 
         SupportBean eventBean = new SupportBean();
