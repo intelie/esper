@@ -3,12 +3,14 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.client.time.CurrentTimeSpanEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.DualWorkQueue;
 import com.espertech.esper.collection.ThreadWorkQueue;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.schedule.ScheduleHandle;
@@ -278,25 +280,84 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
             log.debug(".processTimeEvent Setting time and evaluating schedules");
         }
 
-        CurrentTimeEvent current = (CurrentTimeEvent) event;
-        long currentTime = current.getTimeInMillis();
+        if (event instanceof CurrentTimeEvent) {
+            CurrentTimeEvent current = (CurrentTimeEvent) event;
+            long currentTime = current.getTimeInMillis();
 
-        if (currentTime == services.getSchedulingService().getTime())
+            if (currentTime == services.getSchedulingService().getTime())
+            {
+                if (log.isWarnEnabled())
+                {
+                    log.warn("Duplicate time event received for currentTime " + currentTime);
+                }
+            }
+            services.getSchedulingService().setTime(currentTime);
+
+            processSchedule();
+
+            // Let listeners know of results
+            dispatch();
+
+            // Work off the event queue if any events accumulated in there via a route()
+            processThreadWorkQueue();
+
+            return;
+        }
+
+        // handle time span
+        CurrentTimeSpanEvent span = (CurrentTimeSpanEvent) event;
+        long targetTime = span.getTargetTimeInMillis();
+        long currentTime = services.getSchedulingService().getTime();
+        Long optionalResolution = span.getOptionalResolution();
+
+        if (targetTime < currentTime)
         {
             if (log.isWarnEnabled())
             {
-                log.warn("Duplicate time event received for currentTime " + currentTime);
+                log.warn("Past or current time event received for currentTime " + targetTime);
             }
         }
-        services.getSchedulingService().setTime(currentTime);
 
-        processSchedule();
+        // Evaluation of all time events is protected from statement management
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
+        {
+            log.debug(".processTimeEvent Setting time span and evaluating schedules for time " + targetTime + " optional resolution " + span.getOptionalResolution());
+        }
 
-        // Let listeners know of results
-        dispatch();
+        while(currentTime < targetTime) {
 
-        // Work off the event queue if any events accumulated in there via a route()
-        processThreadWorkQueue();
+            if ((optionalResolution != null) && (optionalResolution > 0)) {
+                currentTime += optionalResolution;
+            }
+            else {
+                Long nearest = services.getSchedulingService().getNearestTimeHandle();
+                if (nearest == null) {
+                    currentTime = targetTime;
+                }
+                else {
+                    currentTime = nearest;
+                }
+            }
+            if (currentTime > targetTime) {
+                currentTime = targetTime;
+            }
+
+            // Evaluation of all time events is protected from statement management
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
+            {
+                log.debug(".processTimeEvent Setting time and evaluating schedules for time " + currentTime);
+            }
+
+            services.getSchedulingService().setTime(currentTime);
+
+            processSchedule();
+
+            // Let listeners know of results
+            dispatch();
+
+            // Work off the event queue if any events accumulated in there via a route()
+            processThreadWorkQueue();
+        }
     }
 
     private void processSchedule()

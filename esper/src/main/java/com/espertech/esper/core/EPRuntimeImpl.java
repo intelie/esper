@@ -10,6 +10,7 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.client.time.CurrentTimeSpanEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.client.util.EventRenderer;
@@ -452,36 +453,100 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             return;
         }
 
-        // Evaluation of all time events is protected from statement management
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
-        {
-            log.debug(".processTimeEvent Setting time and evaluating schedules");
+        if (event instanceof CurrentTimeEvent) {
+            CurrentTimeEvent current = (CurrentTimeEvent) event;
+            long currentTime = current.getTimeInMillis();
+
+            // Evaluation of all time events is protected from statement management
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
+            {
+                log.debug(".processTimeEvent Setting time and evaluating schedules for time " + currentTime);
+            }
+
+            if (isUsingExternalClocking && (currentTime == services.getSchedulingService().getTime()))
+            {
+                if (log.isWarnEnabled())
+                {
+                    log.warn("Duplicate time event received for currentTime " + currentTime);
+                }
+            }
+            services.getSchedulingService().setTime(currentTime);
+
+            if (MetricReportingPath.isMetricsEnabled)
+            {
+                services.getMetricsReportingService().processTimeEvent(currentTime);
+            }
+
+            processSchedule();
+
+            // Let listeners know of results
+            dispatch();
+
+            // Work off the event queue if any events accumulated in there via a route()
+            processThreadWorkQueue();
+
+            return;
         }
 
-        CurrentTimeEvent current = (CurrentTimeEvent) event;
-        long currentTime = current.getTimeInMillis();
+        // handle time span
+        CurrentTimeSpanEvent span = (CurrentTimeSpanEvent) event;
+        long targetTime = span.getTargetTimeInMillis();
+        long currentTime = services.getSchedulingService().getTime();
+        Long optionalResolution = span.getOptionalResolution();
 
-        if (isUsingExternalClocking && (currentTime == services.getSchedulingService().getTime()))
+        if (isUsingExternalClocking && (targetTime < currentTime))
         {
             if (log.isWarnEnabled())
             {
-                log.warn("Duplicate time event received for currentTime " + currentTime);
+                log.warn("Past or current time event received for currentTime " + targetTime);
             }
         }
-        services.getSchedulingService().setTime(currentTime);
 
-        if (MetricReportingPath.isMetricsEnabled)
+        // Evaluation of all time events is protected from statement management
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
         {
-            services.getMetricsReportingService().processTimeEvent(currentTime);
+            log.debug(".processTimeEvent Setting time span and evaluating schedules for time " + targetTime + " optional resolution " + span.getOptionalResolution());
         }
 
-        processSchedule();
+        while(currentTime < targetTime) {
 
-        // Let listeners know of results
-        dispatch();
+            if ((optionalResolution != null) && (optionalResolution > 0)) {
+                currentTime += optionalResolution;
+            }
+            else {
+                Long nearest = services.getSchedulingService().getNearestTimeHandle();
+                if (nearest == null) {
+                    currentTime = targetTime;
+                }
+                else {
+                    currentTime = nearest;
+                }
+            }
+            if (currentTime > targetTime) {
+                currentTime = targetTime;
+            }
 
-        // Work off the event queue if any events accumulated in there via a route()
-        processThreadWorkQueue();
+            // Evaluation of all time events is protected from statement management
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
+            {
+                log.debug(".processTimeEvent Setting time and evaluating schedules for time " + currentTime);
+            }
+
+            services.getSchedulingService().setTime(currentTime);
+
+            if (MetricReportingPath.isMetricsEnabled)
+            {
+                services.getMetricsReportingService().processTimeEvent(currentTime);
+            }
+
+            processSchedule();
+
+            // Let listeners know of results
+            dispatch();
+
+            // Work off the event queue if any events accumulated in there via a route()
+            processThreadWorkQueue();
+        }
     }
 
     private void processSchedule()

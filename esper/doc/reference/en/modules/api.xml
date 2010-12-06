@@ -1537,13 +1537,60 @@ epService.getEPAdministrator().createEPL("select * from pattern[timer:interval(1
 // Print next schedule time
 System.out.println("Next schedule at " + new Date(runtime.getNextScheduledTime());]]></programlisting>
 
+		<sect2 id="api-controlling-time-span">
+			<title>Controlling Time Using Time Span Events</title>
+			<para>
+				With <literal>CurrentTimeEvent</literal>, as described above, your application can advance engine time to a given point in time. In addition, the <literal>getNextScheduledTime</literal> method in <literal>EPRuntime</literal> returns the next scheduled time according to started statements.
+				You would typically use <literal>CurrentTimeEvent</literal> to advance time at a relatively high resolution.
+			</para>
+			
+			<para>
+				To advance time for a span of time without sending individual <literal>CurrentTimeEvent</literal> events to the engine, the API provides the class <literal>CurrentTimeSpanEvent</literal>.  You may use <literal>CurrentTimeSpanEvent</literal> with or without a resolution.
+			</para>
+			
+			<para>
+				If your application only provides the target end time of time span to <literal>CurrentTimeSpanEvent</literal> and no resolution, the engine advances time up to the target time by stepping through all relevant times according to started statements.
+			</para>
+				
+			<para>
+				If your application provides the target end time of time span and in addition a <literal>long</literal>-typed resolution, the engine advances time up to the target time by incrementing time according to the resolution (regardless of next scheduled time according to started statements).
+			</para>
+				
+			<para>
+				Consider the following example:
+			</para>
+			
+			<programlisting><![CDATA[// Set start time to Jan.1, 2010, 00:00 am for this example
+SimpleDateFormat format = new SimpleDateFormat("yyyy MM dd HH:mm:ss SSS");
+Date startTime = format.parse("2010 01 01 00:00:00 000");
+runtime.sendEvent(new CurrentTimeEvent(startTime.getTime()));
 
-		<sect4 id="api-controlling-time-spi">
+// Create a statement.
+EPStatement stmt = epService.getEPAdministrator().createEPL("select current_timestamp() as ct " +
+  "from pattern[every timer:interval(1 minute)]");
+stmt.addListener(...);	// add a listener
+
+// Advance time to 10 minutes after start time
+runtime.sendEvent(new CurrentTimeSpanEvent(startTime.getTime() + 10*60*1000));]]></programlisting>
+
+			<para>
+				The above example advances time to 10 minutes after the time set using <literal>CurrentTimeSpanEvent</literal>. As the example does not pass a resolution, the engine advances time according to statement schedules.
+				Upon sending the <literal>CurrentTimeSpanEvent</literal> the listener sees 10 invocations for minute 1 to minute 10.
+			</para>
+			
+			<para>
+				To advance time according to a given resolution, you may provide the resolution as shown below:
+			</para>		
+			<programlisting><![CDATA[// Advance time to 10 minutes after start time at 100 msec resolution
+runtime.sendEvent(new CurrentTimeSpanEvent(startTime.getTime() + 10*60*1000, 100));]]></programlisting>
+		</sect2>
+
+		<sect2 id="api-controlling-time-spi">
 			<title>Additional Time-Related APIs</title>
 			<para>
 				Consider using the service-provider interface <literal>EPRuntimeSPI</literal> <literal>EPRuntimeIsolatedSPI</literal>. The two interfaces are service-provider interfaces that expose additional function to manage statement schedules. However the SPI interfaces should be considered an extension API and are subject to change between release versions.
 			</para>
-		</sect4>
+		</sect2>
     </sect1>
 
     <sect1 id="api-time-resolution">
