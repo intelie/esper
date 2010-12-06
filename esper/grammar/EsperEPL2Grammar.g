@@ -796,8 +796,8 @@ createColumnList
 	;
 	
 createColumnListElement
-	:   	name=IDENT (classIdentifier (b=LBRACK RBRACK)?)
-		-> ^(CREATE_COL_TYPE $name classIdentifier $b?)
+	:   	classIdentifierNonGreedy (classIdentifier (b=LBRACK RBRACK)?)
+		-> ^(CREATE_COL_TYPE classIdentifierNonGreedy classIdentifier $b?)
 	;
 
 createSelectionList 	

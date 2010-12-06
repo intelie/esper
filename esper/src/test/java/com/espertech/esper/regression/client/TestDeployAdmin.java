@@ -193,7 +193,7 @@ public class TestDeployAdmin extends TestCase
 
         String moduleText = "module regression.test.two;" +
                 "uses regression.test;" +
-                "create schema MyTypeTwo(col1 integer);" +
+                "create schema MyTypeTwo(col1 integer, col2.col3 string);" +
                 "select * from MyTypeTwo;";
         DeploymentResult resultTwo = deploymentAdmin.parseDeploy(moduleText, "uri2", "archive2", "obj2");
         DeploymentInformation[] infos = deploymentAdmin.getDeploymentInformation();

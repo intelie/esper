@@ -170,7 +170,7 @@ createColTypeList
 	;
 
 createColTypeListElement
-	:	^(CREATE_COL_TYPE IDENT CLASS_IDENT LBRACK?)
+	:	^(CREATE_COL_TYPE CLASS_IDENT CLASS_IDENT LBRACK?)
 	;
 
 createSelectionListElement

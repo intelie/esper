@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2010-12-05 08:28:45
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2010-12-06 16:52:52
 
   package com.espertech.esper.epl.generated;
   import java.util.Stack;
@@ -2657,18 +2657,18 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "createColTypeListElement"
-    // EsperEPL2Ast.g:172:1: createColTypeListElement : ^( CREATE_COL_TYPE IDENT CLASS_IDENT ( LBRACK )? ) ;
+    // EsperEPL2Ast.g:172:1: createColTypeListElement : ^( CREATE_COL_TYPE CLASS_IDENT CLASS_IDENT ( LBRACK )? ) ;
     public final void createColTypeListElement() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:173:2: ( ^( CREATE_COL_TYPE IDENT CLASS_IDENT ( LBRACK )? ) )
-            // EsperEPL2Ast.g:173:4: ^( CREATE_COL_TYPE IDENT CLASS_IDENT ( LBRACK )? )
+            // EsperEPL2Ast.g:173:2: ( ^( CREATE_COL_TYPE CLASS_IDENT CLASS_IDENT ( LBRACK )? ) )
+            // EsperEPL2Ast.g:173:4: ^( CREATE_COL_TYPE CLASS_IDENT CLASS_IDENT ( LBRACK )? )
             {
             match(input,CREATE_COL_TYPE,FOLLOW_CREATE_COL_TYPE_in_createColTypeListElement855); 
 
             match(input, Token.DOWN, null); 
-            match(input,IDENT,FOLLOW_IDENT_in_createColTypeListElement857); 
+            match(input,CLASS_IDENT,FOLLOW_CLASS_IDENT_in_createColTypeListElement857); 
             match(input,CLASS_IDENT,FOLLOW_CLASS_IDENT_in_createColTypeListElement859); 
-            // EsperEPL2Ast.g:173:40: ( LBRACK )?
+            // EsperEPL2Ast.g:173:46: ( LBRACK )?
             int alt51=2;
             int LA51_0 = input.LA(1);
 
@@ -2677,7 +2677,7 @@ public class EsperEPL2Ast extends TreeParser {
             }
             switch (alt51) {
                 case 1 :
-                    // EsperEPL2Ast.g:173:40: LBRACK
+                    // EsperEPL2Ast.g:173:46: LBRACK
                     {
                     match(input,LBRACK,FOLLOW_LBRACK_in_createColTypeListElement861); 
 
@@ -14955,7 +14955,7 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_createColTypeListElement_in_createColTypeList837 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
     public static final BitSet FOLLOW_createColTypeListElement_in_createColTypeList840 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0040000000000000L});
     public static final BitSet FOLLOW_CREATE_COL_TYPE_in_createColTypeListElement855 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_IDENT_in_createColTypeListElement857 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_createColTypeListElement857 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000040000L});
     public static final BitSet FOLLOW_CLASS_IDENT_in_createColTypeListElement859 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
     public static final BitSet FOLLOW_LBRACK_in_createColTypeListElement861 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_WILDCARD_SELECT_in_createSelectionListElement876 = new BitSet(new long[]{0x0000000000000002L});

@@ -98,7 +98,7 @@ public class TestSchema extends TestCase
 
     public void testColDefPlain() throws Exception
     {
-        EPStatement stmtCreate = epService.getEPAdministrator().createEPL("create schema MyEventType as (col1 string, col2 int, sbean " + SupportBean.class.getName() + ")");
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL("create schema MyEventType as (col1 string, col2 int, sbean " + SupportBean.class.getName() + ", col3.col4 int)");
         assertTypeColDef(stmtCreate.getEventType());
         EPStatement stmtSelect = epService.getEPAdministrator().createEPL("select * from MyEventType");
         assertTypeColDef(stmtSelect.getEventType());
@@ -280,6 +280,7 @@ public class TestSchema extends TestCase
         assertEquals(String.class, eventType.getPropertyType("col1"));
         assertEquals(Integer.class, eventType.getPropertyType("col2"));
         assertEquals(SupportBean.class, eventType.getPropertyType("sbean"));
-        assertEquals(3, eventType.getPropertyDescriptors().length);
+        assertEquals(Integer.class, eventType.getPropertyType("col3.col4"));
+        assertEquals(4, eventType.getPropertyDescriptors().length);
     }
 }
