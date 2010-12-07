@@ -62,7 +62,7 @@ public class PatternEveryDistinctExpr extends PatternExprBase
         for (Expression expr : expressions) {
             writer.write(delimiter);
             expr.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            delimiter = ",";
+            delimiter = ", ";
         }
         writer.write(") ");
 
