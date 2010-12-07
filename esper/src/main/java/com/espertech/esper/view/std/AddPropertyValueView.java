@@ -8,26 +8,21 @@
  **************************************************************************************/
 package com.espertech.esper.view.std;
 
+import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.view.CloneableView;
-import com.espertech.esper.view.View;
-import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.Viewable;
+import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This view simply adds a property to the events posted to it. This is useful for the group-merge views.
  */
-public final class AddPropertyValueView extends ViewSupport implements CloneableView
+public final class AddPropertyValueView extends ViewSupport implements CloneableView, StoppableView
 {
     private final StatementContext statementContext;
     private final String[] propertyNames;
@@ -179,6 +174,18 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
                 throw new UnsupportedOperationException();
             }
         };
+    }
+
+    @Override
+    public void stop() {
+        OneEventCollection oldEvents = new OneEventCollection();
+        for (Map.Entry<EventBean, EventBean> oldEvent : newToOldEventMap.entrySet()) {
+            oldEvents.add(oldEvent.getValue());
+        }
+        if (!oldEvents.isEmpty()) {
+            updateChildren(null, oldEvents.toArray());
+        }
+        newToOldEventMap.clear();
     }
 
     /**

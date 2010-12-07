@@ -41,6 +41,34 @@ public class TestViewGroupBy extends TestCase
         epService.initialize();
     }
 
+    public void testSelfJoin() {
+        // ESPER-528
+        epService.getEPAdministrator().createEPL("create schema Product (product string, productsize int)");
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        String query =
+                " @Hint('reclaim_group_aged=1,reclaim_group_freq=1') select Product.product as product, Product.productsize as productsize from Product unidirectional" +
+                " left outer join Product.win:time(3 seconds).std:groupwin(product,productsize).std:size() PrevProduct on Product.product=PrevProduct.product and Product.productsize=PrevProduct.productsize" +
+                " having PrevProduct.size<2";
+        epService.getEPAdministrator().createEPL(query);
+
+        // Set to larger number of executions and monitor memory
+        for (int i = 0; ; i++) {
+            sendProductNew("The id of this product is deliberately very very long so that we can use up more memory per instance of this event sent into Esper " + i, i);
+            epService.getEPRuntime().sendEvent(new CurrentTimeEvent(i * 100));
+            //if (i % 2000 == 0) {
+            //    System.out.println("i=" + i + "; Allocated: " + Runtime.getRuntime().totalMemory() / 1024 / 1024 + "; Free: " + Runtime.getRuntime().freeMemory() / 1024 / 1024);
+            //}
+        }
+    }
+
+    private void sendProductNew(String product, int size) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("product", product);
+        event.put("productsize", size);
+        epService.getEPRuntime().sendEvent(event, "Product");
+    }
+
     public void testReclaimTimeWindow()
     {
         sendTimer(0);
