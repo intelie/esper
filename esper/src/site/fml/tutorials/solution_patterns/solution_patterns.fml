@@ -863,7 +863,33 @@ from pattern[every myevent=TrackingEvent where timer:within(10 min)]
     </faq>    
 
     <faq id="remove_duplicates">
-      <question>How can I remove duplicates? What if I want to form pairs of events where each pair is a unique combination of the latest event of two streams?</question>
+      <question>How can I remove duplicates?</question>
+      <answer>
+		<p>
+			One construct EPL exposes to remove duplicates in a stream of events is the pattern "every-distinct". 
+		</p>
+		<p>
+			Other related constructs are the "prior" and "prev" functions, the "unique" data windows, the group-by and output-rate-limiting clauses
+			as well as the "distinct" keyword within the select clause. We only discuss the pattern "every-distinct" here,
+			please see the documentation for additional examples.			
+		</p>
+		<p>
+			The next example statement reports only the first sensor event per device and suppresses subsequent sensor events from the same device:
+		</p>		
+<div class="source"><pre>select * from pattern[every-distinct(s.device) s=Sensor]</pre></div>
+		<p>
+			When your distinct-value key is a timestamp or other ever-increasing or non-unique value, 
+			you should specify a time period indicating how long the key is valid and after which a duplicate can be reported again.
+		</p>
+		<p>
+			The next example statement reports only the first sensor event per device and for 10 seconds suppresses subsequent sensor events from the same device:
+		</p>		
+<div class="source"><pre>select * from pattern[every-distinct(s.device, 10 sec) s=Sensor]</pre></div>    
+      </answer>
+    </faq>    
+
+    <faq id="form_pairs">
+      <question>What if I want to form pairs of events where each pair is a unique combination of the latest event of two streams?</question>
       <answer>
 		<p>
 			I'm trying to detect pairs of events correlated by a "type" value and a unique "device" value.  
@@ -922,8 +948,8 @@ where a.type = b.type
 		<p>
 			From the resulting stream we remove those pairs in which either event was seen before, leaving unique pairs:
 		</p>
-<div class="source"><pre>// Fast way of declaring the stream type, could also be done via config API or XML
-insert into PairDuplicatesRemoved select * from Pair(1=2)</pre></div>
+<div class="source"><pre>// Declaring stream type
+create schema PairDuplicatesRemoved(a Sensor, b Sensor)</pre></div>
 
 <div class="source"><pre>// Remove duplicate pairs where either sensor event is from the prior pair
 insert into PairDuplicatesRemoved

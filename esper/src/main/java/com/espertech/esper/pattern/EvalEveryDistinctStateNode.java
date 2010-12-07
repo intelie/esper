@@ -25,7 +25,7 @@ import java.util.Set;
  * Contains the state collected by an "every" operator. The state includes handles to any sub-listeners
  * started by the operator.
  */
-public final class EvalEveryDistinctStateNode extends EvalStateNode implements Evaluator
+public final class EvalEveryDistinctStateNode extends EvalStateNode implements Evaluator, EvalStateNodeNonQuitting
 {
     private final Map<EvalStateNode, Set<MultiKeyUntyped>> spawnedNodes;
     private final MatchedEventMap beginState;

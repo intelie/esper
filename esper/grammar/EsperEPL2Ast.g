@@ -615,7 +615,7 @@ exprChoice
 	
 	
 distinctExpressions
-	:	^( PATTERN_EVERY_DISTINCT_EXPR valueExpr+ )
+	:	^( PATTERN_EVERY_DISTINCT_EXPR valueExprWithTime+ )
 	;
 	
 patternOp

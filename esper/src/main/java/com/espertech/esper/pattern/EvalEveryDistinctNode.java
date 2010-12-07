@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -23,6 +23,7 @@ public final class EvalEveryDistinctNode extends EvalNode
 {
     private List<ExprNode> expressions;
     private transient MatchedEventConvertor convertor;
+    private Long msecToExpire;
     private static final long serialVersionUID = 7455570958072753956L;
 
     /**
@@ -52,7 +53,7 @@ public final class EvalEveryDistinctNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return context.getPatternStateFactory().makeEveryDistinctStateNode(parentNode, this, beginState, context, stateNodeId, ExprNodeUtility.getEvaluators(expressions), convertor);
+        return context.getPatternStateFactory().makeEveryDistinctStateNode(parentNode, this, beginState, context, stateNodeId, ExprNodeUtility.getEvaluators(expressions), convertor, msecToExpire);
     }
 
     public final String toString()
@@ -82,9 +83,10 @@ public final class EvalEveryDistinctNode extends EvalNode
      * Sets expressions for distinct-value.
      * @param expressions to set
      */
-    public void setExpressions(List<ExprNode> expressions)
+    public void setExpressions(List<ExprNode> expressions, Long msecToExpire)
     {
         this.expressions = expressions;
+        this.msecToExpire = msecToExpire;
     }
 
     private static final Log log = LogFactory.getLog(EvalEveryNode.class);

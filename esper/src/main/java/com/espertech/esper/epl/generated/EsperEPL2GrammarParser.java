@@ -18951,15 +18951,15 @@ public class EsperEPL2GrammarParser extends Parser {
         EsperEPL2GrammarParser.distinctExpressionAtom_return retval = new EsperEPL2GrammarParser.distinctExpressionAtom_return();
         retval.start = input.LT(1);
         CommonTree root_0 = null;
-        EsperEPL2GrammarParser.expression_return expression646 = null;
+        EsperEPL2GrammarParser.expressionWithTime_return expressionWithTime646 = null;
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            pushFollow(FOLLOW_expression_in_distinctExpressionAtom9293);
-            expression646=expression();
+            pushFollow(FOLLOW_expressionWithTime_in_distinctExpressionAtom9293);
+            expressionWithTime646=expressionWithTime();
             state._fsp--;
             if (state.failed) return retval;
-            if ( state.backtracking==0 ) adaptor.addChild(root_0, expression646.getTree());
+            if ( state.backtracking==0 ) adaptor.addChild(root_0, expressionWithTime646.getTree());
             }
             retval.stop = input.LT(-1);
             if ( state.backtracking==0 ) {
@@ -36183,12 +36183,12 @@ public class EsperEPL2GrammarParser extends Parser {
     public static final BitSet FOLLOW_distinctExpressionList_in_qualifyExpression9129 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000230000000L});
     public static final BitSet FOLLOW_matchUntilRange_in_qualifyExpression9135 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000230000000L});
     public static final BitSet FOLLOW_guardPostFix_in_qualifyExpression9144 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_distinctExpressionList9259 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0x3948036830002000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_LPAREN_in_distinctExpressionList9259 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0x3948036A30002000L,0x0000000000080000L});
     public static final BitSet FOLLOW_distinctExpressionAtom_in_distinctExpressionList9261 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000048000000L});
-    public static final BitSet FOLLOW_COMMA_in_distinctExpressionList9264 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0x3948036830002000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_COMMA_in_distinctExpressionList9264 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0x3948036A30002000L,0x0000000000080000L});
     public static final BitSet FOLLOW_distinctExpressionAtom_in_distinctExpressionList9266 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000048000000L});
     public static final BitSet FOLLOW_RPAREN_in_distinctExpressionList9270 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expression_in_distinctExpressionAtom9293 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionWithTime_in_distinctExpressionAtom9293 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_atomicExpression_in_guardPostFix9308 = new BitSet(new long[]{0x0000000000010002L,0x0080000000000000L});
     public static final BitSet FOLLOW_LPAREN_in_guardPostFix9314 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0800000230000000L});
     public static final BitSet FOLLOW_patternExpression_in_guardPostFix9316 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});

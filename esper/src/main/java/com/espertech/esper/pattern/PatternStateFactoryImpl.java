@@ -40,9 +40,14 @@ public class PatternStateFactoryImpl implements PatternStateFactory
         return new EvalEveryStateNode(parentNode, evalEveryNode, beginState, context);
     }
 
-    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, ExprEvaluator[] expressions, MatchedEventConvertor matchedEventConvertor)
+    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, ExprEvaluator[] expressions, MatchedEventConvertor matchedEventConvertor, Long msecToExpiry)
     {
-        return new EvalEveryDistinctStateNode(parentNode, evalEveryNode, beginState, context, expressions, matchedEventConvertor);
+        if (msecToExpiry == null) {
+            return new EvalEveryDistinctStateNode(parentNode, evalEveryNode, beginState, context, expressions, matchedEventConvertor);
+        }
+        else {
+            return new EvalEveryDistinctStateExpireKeyNode(parentNode, evalEveryNode, beginState, context, expressions, matchedEventConvertor, msecToExpiry);
+        }
     }
 
     public EvalStateNode makeNotNode(Evaluator parentNode, EvalNotNode evalNotNode, MatchedEventMap beginState, Object stateNodeId)

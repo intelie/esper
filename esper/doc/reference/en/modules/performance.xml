@@ -552,6 +552,10 @@ select a.symbol, avgA, avgB from StreamAvgA.std:lastevent() a, StreamAvgB.std:la
 			</para>
 			
 			<para>
+			  When using the <literal>every-distinct</literal> pattern construct parameterized by distinct value expressions that generate an unlimited number of distinct values, consider specifying a time period as part of the parameters to indicate to the pattern engine how long a distinct value should be considered.
+			</para>
+			
+			<para>
 			  In a match-recognize pattern consider limiting the number of optional events if optional events are part of the data reported in the <literal>measures</literal> clause. Also when using the partition clause, if your partitioning criteria include a field which is never unique the memory use of the match-recognize pattern engine can grow.
 			</para>
 			

@@ -1446,7 +1446,7 @@ distinctExpressionList
 	;
 
 distinctExpressionAtom
-	:	expression
+	:	expressionWithTime
    	;
 
 guardPostFix

@@ -15,10 +15,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprValidationPropertyException;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.property.PropertyEvaluator;
 import com.espertech.esper.epl.property.PropertyEvaluatorFactory;
 import com.espertech.esper.epl.variable.VariableService;
@@ -34,6 +31,8 @@ import com.espertech.esper.pattern.observer.ObserverParameterException;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.UuidGenerator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -43,6 +42,7 @@ import java.util.*;
 public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 {
     private final EvalNode evalNode;
+    private static final Log log = LogFactory.getLog(PatternStreamSpecRaw.class);
     private static final long serialVersionUID = 6393401926404401433L;
 
     /**
@@ -259,7 +259,29 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             MatchedEventConvertor convertor = new MatchedEventConvertorImpl(matchEventFromChildNodes.getTaggedEventTypes(), matchEventFromChildNodes.getArrayEventTypes(), context.getEventAdapterService());
 
             distinctNode.setConvertor(convertor);
-            distinctNode.setExpressions(validated);
+
+            // Determine whether some expressions are constants or time period
+            List<ExprNode> distinctExpressions = new ArrayList<ExprNode>();
+            Long msecToExpire = null;
+            for (ExprNode expr : validated) {
+                if (expr instanceof ExprTimePeriod) {
+                    Double secondsExpire = (Double) ((ExprTimePeriod) expr).evaluate(null, true, context);
+                    if ((secondsExpire != null) && (secondsExpire > 0)) {
+                        msecToExpire = Math.round(1000d * secondsExpire);
+                    }
+                    log.debug("Setting every-distinct msec-to-expire to " + msecToExpire);
+                }
+                else if (expr.isConstantResult()) {
+                    log.warn("Every-distinct node utilizes an expression returning a constant value, please check expression '" + expr.toExpressionString() + "', not adding expression to distinct-value expression list");
+                }
+                else {
+                    distinctExpressions.add(expr);
+                }
+            }
+            if (distinctExpressions.isEmpty()) {
+                throw new ExprValidationException("Every-distinct node requires one or more distinct-value expressions that each return non-constant result values");
+            }
+            distinctNode.setExpressions(distinctExpressions, msecToExpire);
         }
         else if (evalNode instanceof EvalMatchUntilNode)
         {

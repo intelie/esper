@@ -133,7 +133,7 @@ public interface PatternStateFactory
      * @param expressions distinct-value expressions 
      * @return state node
      */
-    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, ExprEvaluator[] expressions, MatchedEventConvertor convertor);
+    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, ExprEvaluator[] expressions, MatchedEventConvertor convertor, Long msecToExpiry);
 
     /**
      * Makes an or-state node.

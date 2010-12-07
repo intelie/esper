@@ -891,10 +891,15 @@ every timer:interval(1 sec) -> (b=B where timer:within(1 sec))]]></programlistin
             <para>
 				The synopsis for the <literal>every-distinct</literal> pattern operator is:
             </para>
-		   <synopsis>every-distinct(<emphasis>distinct_value_expr </emphasis>[, <emphasis>distinct_value_exp</emphasis>[...]])</synopsis>
+		   <synopsis>every-distinct(<emphasis>distinct_value_expr </emphasis>[, <emphasis>distinct_value_exp</emphasis>[...][, <emphasis>expiry_time_period</emphasis>])</synopsis>
 
             <para>
 				Within parenthesis are one or more <emphasis>distinct_value_expr</emphasis> expressions that return the values by which to remove duplicates.
+            </para>
+
+            <para>
+				You may optionally specify an <emphasis>expiry_time_period</emphasis> time period. If present, the pattern engine expires and removes distinct key values that are older then the time period, removing their associated memory and allowing such distinct values to match again.
+				When your distinct value expressions return an unlimited number of values, for example when your distinct value is a timestamp or auto-increment column, you should always specify an expiry time period.
             </para>
 
             <para>
@@ -940,17 +945,30 @@ every-distinct(aprop) A
 a=A -> every-distinct(a.aprop) b=B]]></programlisting>
 
             <para>
-				When an active subexpression to <literal>every-distinct</literal> becomes permanently false, the distinct-values seen from the active subexpression are removed.
+				When an active subexpression to <literal>every-distinct</literal> becomes permanently false, the distinct-values seen from the active subexpression are removed and the sub-expression within is restarted.
             </para>
 
             <para>
 				For example, the below pattern detects each A event distinct by the value of <literal>aprop</literal>.
             </para>
-			<programlisting><![CDATA[every-distinct(a.aprop) (a=A  and not B)]]></programlisting>
+			<programlisting><![CDATA[every-distinct(a.aprop) (a=A and not B)]]></programlisting>
 
             <para>
 				In the pattern above, when a B event arrives, the subexpression becomes permanently false and is restarted anew, detecting each A event distinct by the value of <literal>aprop</literal> without considering prior values.
             </para>
+            
+            <para>
+              When your distinct key is a timestamp or other non-unique property, specify an expiry time period.
+            </para>
+
+            <para>
+              The following example returns every distinct A event according to the timestamp property on the A event, retaining each timestamp value for 10 seconds:
+            </para>
+			<programlisting><![CDATA[every-distinct(a.timestamp, 10 seconds) a=A]]></programlisting>
+			
+			<para>
+				In the example above, if for a given A event and its timestamp value the same timestamp value occurs again for another A event before 10 seconds passed, the A event is not a match. If 10 seconds passed the pattern indicates a second match.
+			</para>
         </sect2>
 
         <sect2 id="pattern-repeat" >

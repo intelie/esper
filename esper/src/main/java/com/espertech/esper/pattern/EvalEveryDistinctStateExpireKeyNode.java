@@ -8,23 +8,30 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.List;
-import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import com.espertech.esper.util.ExecutionPathDebugLog;
 
 /**
  * Contains the state collected by an "every" operator. The state includes handles to any sub-listeners
  * started by the operator.
  */
-public final class EvalEveryStateNode extends EvalStateNode implements Evaluator, EvalStateNodeNonQuitting
+public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode implements Evaluator, EvalStateNodeNonQuitting
 {
-    private final List<EvalStateNode> spawnedNodes;
+    private final Map<EvalStateNode, LinkedHashMap<MultiKeyUntyped, Long>> spawnedNodes;
     private final MatchedEventMap beginState;
     private final PatternContext context;
+    private final ExprEvaluator[] expressions;
+    private final MatchedEventConvertor matchedEventConvertor;
+    private final long secondsToExpiry;
 
     /**
      * Constructor.
@@ -32,11 +39,16 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
      * @param beginState contains the events that make up prior matches
      * @param context contains handles to services required
      * @param everyNode is the factory node associated to the state
+     * @param expressions distinct-value expressions
+     * @param matchedEventConvertor converts match-event map to events-per-stream
      */
-    public EvalEveryStateNode(Evaluator parentNode,
-                                 EvalEveryNode everyNode,
+    public EvalEveryDistinctStateExpireKeyNode(Evaluator parentNode,
+                                  EvalEveryDistinctNode everyNode,
                                   MatchedEventMap beginState,
-                                  PatternContext context)
+                                  PatternContext context,
+                                  ExprEvaluator[] expressions,
+                                  MatchedEventConvertor matchedEventConvertor,
+                                  long secondsToExpiry)
     {
         super(everyNode, parentNode, null);
 
@@ -45,12 +57,15 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
             log.debug(".constructor");
         }
 
-        this.spawnedNodes = new LinkedList<EvalStateNode>();
+        this.spawnedNodes = new LinkedHashMap<EvalStateNode, LinkedHashMap<MultiKeyUntyped, Long>>();
         this.beginState = beginState.shallowCopy();
         this.context = context;
+        this.expressions = expressions;
+        this.matchedEventConvertor = matchedEventConvertor;
+        this.secondsToExpiry = secondsToExpiry;
 
         EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, context, null);
-        spawnedNodes.add(child);
+        spawnedNodes.put(child, new LinkedHashMap<MultiKeyUntyped, Long>());
     }
 
     public final void start()
@@ -69,7 +84,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         // Events created during the start would likely come from the "not" operator.
         // Quit the new child again if
         EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
-        EvalStateNode child = spawnedNodes.get(0);
+        EvalStateNode child = spawnedNodes.keySet().iterator().next();
         child.setParentEvaluator(spawnEvaluator);
         child.start();
 
@@ -109,7 +124,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         }
         else
         {
-            spawnedNodes.add(spawned);
+            spawnedNodes.put(spawned, new LinkedHashMap<MultiKeyUntyped, Long>());
             spawned.setParentEvaluator(this);
         }
     }
@@ -120,6 +135,35 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         {
             log.debug(".evaluateTrue fromNode=" + fromNode  + "  isQuitted=" + isQuitted);
         }
+
+        // determine if this evaluation has been seen before from the same node
+        MultiKeyUntyped matchEventKey = getKeys(matchEvent);
+        boolean haveSeenThis = false;
+        LinkedHashMap<MultiKeyUntyped, Long> keysFromNode = spawnedNodes.get(fromNode);
+        if (keysFromNode != null)
+        {
+            // Clean out old keys
+            Iterator<Map.Entry<MultiKeyUntyped, Long>> it = keysFromNode.entrySet().iterator();
+            long currentTime = context.getTimeProvider().getTime();
+            for (;it.hasNext();) {
+                Map.Entry<MultiKeyUntyped, Long> entry = it.next();
+                if (currentTime - entry.getValue() >= secondsToExpiry) {
+                    it.remove();
+                }
+                else {
+                    break;
+                }
+            }
+
+            if (keysFromNode.containsKey(matchEventKey))
+            {
+                haveSeenThis = true;
+            }
+            else
+            {
+                keysFromNode.put(matchEventKey, context.getTimeProvider().getTime());
+            }
+        }        
 
         if (isQuitted)
         {
@@ -148,13 +192,20 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
             }
             else
             {
-                spawnedNodes.add(spawned);
+                LinkedHashMap<MultiKeyUntyped, Long> keyset = new LinkedHashMap<MultiKeyUntyped, Long>();
+                if (keysFromNode != null)
+                {
+                    keyset.putAll(keysFromNode);
+                }
+                spawnedNodes.put(spawned, keyset);
                 spawned.setParentEvaluator(this);
             }
         }
 
-        // All nodes indicate to their parents that their child node did not quit, therefore a false for isQuitted
-        this.getParentEvaluator().evaluateTrue(matchEvent, this, false);
+        if (!haveSeenThis)
+        {
+            this.getParentEvaluator().evaluateTrue(matchEvent, this, false);
+        }
     }
 
     public final void quit()
@@ -165,7 +216,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         }
 
         // Stop all child nodes
-        for (EvalStateNode child : spawnedNodes)
+        for (EvalStateNode child : spawnedNodes.keySet())
         {
             child.quit();
         }
@@ -178,7 +229,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
 
     public final Object childrenAccept(EvalStateNodeVisitor visitor, Object data)
     {
-        for (EvalStateNode spawnedNode : spawnedNodes)
+        for (EvalStateNode spawnedNode : spawnedNodes.keySet())
         {
             spawnedNode.accept(visitor, data);
         }
@@ -189,6 +240,17 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
     public final String toString()
     {
         return "EvalEveryStateNode spawnedChildren=" + spawnedNodes.size();
+    }
+
+    private MultiKeyUntyped getKeys(MatchedEventMap currentState)
+    {
+        EventBean[] eventsPerStream = matchedEventConvertor.convert(currentState);
+        Object[] keys = new Object[expressions.length];
+        for (int i = 0; i < keys.length; i++)
+        {
+            keys[i] = expressions[i].evaluate(eventsPerStream, true, context);
+        }
+        return new MultiKeyUntyped(keys);
     }
 
     private static final Log log = LogFactory.getLog(EvalEveryStateNode.class);

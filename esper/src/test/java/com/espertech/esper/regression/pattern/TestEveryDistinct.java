@@ -14,6 +14,48 @@ import junit.framework.TestCase;
 
 public class TestEveryDistinct extends TestCase implements SupportBeanConstants
 {
+    public void testExpireSeenBeforeKey() {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventType("SupportBean", SupportBean.class);
+        EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
+        engine.initialize();
+
+        engine.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        String expression = "select * from pattern [every-distinct(a.intPrimitive, 1 sec) a=SupportBean(string like 'A%')]";
+        EPStatement statement = engine.getEPAdministrator().createEPL(expression);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        engine.getEPRuntime().sendEvent(new SupportBean("A1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a.string".split(","), new Object[] {"A1"});
+
+        engine.getEPRuntime().sendEvent(new SupportBean("A2", 1));
+        assertFalse(listener.isInvoked());
+
+        engine.getEPRuntime().sendEvent(new SupportBean("A3", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a.string".split(","), new Object[] {"A3"});
+
+        engine.getEPRuntime().sendEvent(new SupportBean("A4", 1));
+        engine.getEPRuntime().sendEvent(new SupportBean("A5", 2));
+        assertFalse(listener.isInvoked());
+
+        engine.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
+
+        engine.getEPRuntime().sendEvent(new SupportBean("A4", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a.string".split(","), new Object[] {"A4"});
+        engine.getEPRuntime().sendEvent(new SupportBean("A5", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a.string".split(","), new Object[] {"A5"});
+
+        engine.getEPRuntime().sendEvent(new SupportBean("A6", 1));
+        engine.getEPRuntime().sendEvent(new CurrentTimeEvent(1999));
+        engine.getEPRuntime().sendEvent(new SupportBean("A7", 2));
+        assertFalse(listener.isInvoked());
+        
+        engine.getEPRuntime().sendEvent(new CurrentTimeEvent(2000));
+        engine.getEPRuntime().sendEvent(new SupportBean("A7", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a.string".split(","), new Object[] {"A7"});
+    }
+
     public void testEveryDistinctOverFilter() throws Exception
     {
         Configuration config = SupportConfigFactory.getConfiguration();
@@ -433,6 +475,9 @@ public class TestEveryDistinct extends TestCase implements SupportBeanConstants
 
         tryInvalid(engine, "every-distinct(dummy) A",
                 "Property named 'dummy' is not valid in any stream, every-distinct requires that all properties resolve from sub-expressions to the every-distinct [every-distinct(dummy) A]");
+
+        tryInvalid(engine, "every-distinct(2 sec) A",
+                "Every-distinct node requires one or more distinct-value expressions that each return non-constant result values [every-distinct(2 sec) A]");
     }
 
     public void tryInvalid(EPServiceProvider engine, String statement, String message) throws Exception

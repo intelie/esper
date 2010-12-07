@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2010-12-06 16:52:52
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2010-12-07 10:36:01
 
   package com.espertech.esper.epl.generated;
   import java.util.Stack;
@@ -11831,33 +11831,33 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "distinctExpressions"
-    // EsperEPL2Ast.g:617:1: distinctExpressions : ^( PATTERN_EVERY_DISTINCT_EXPR ( valueExpr )+ ) ;
+    // EsperEPL2Ast.g:617:1: distinctExpressions : ^( PATTERN_EVERY_DISTINCT_EXPR ( valueExprWithTime )+ ) ;
     public final void distinctExpressions() throws RecognitionException {
         try {
-            // EsperEPL2Ast.g:618:2: ( ^( PATTERN_EVERY_DISTINCT_EXPR ( valueExpr )+ ) )
-            // EsperEPL2Ast.g:618:4: ^( PATTERN_EVERY_DISTINCT_EXPR ( valueExpr )+ )
+            // EsperEPL2Ast.g:618:2: ( ^( PATTERN_EVERY_DISTINCT_EXPR ( valueExprWithTime )+ ) )
+            // EsperEPL2Ast.g:618:4: ^( PATTERN_EVERY_DISTINCT_EXPR ( valueExprWithTime )+ )
             {
             match(input,PATTERN_EVERY_DISTINCT_EXPR,FOLLOW_PATTERN_EVERY_DISTINCT_EXPR_in_distinctExpressions4469); 
 
             match(input, Token.DOWN, null); 
-            // EsperEPL2Ast.g:618:35: ( valueExpr )+
+            // EsperEPL2Ast.g:618:35: ( valueExprWithTime )+
             int cnt215=0;
             loop215:
             do {
                 int alt215=2;
                 int LA215_0 = input.LA(1);
 
-                if ( ((LA215_0>=IN_SET && LA215_0<=REGEXP)||LA215_0==NOT_EXPR||(LA215_0>=SUM && LA215_0<=AVG)||(LA215_0>=COALESCE && LA215_0<=COUNT)||(LA215_0>=CASE && LA215_0<=CASE2)||(LA215_0>=PREVIOUS && LA215_0<=EXISTS)||(LA215_0>=INSTANCEOF && LA215_0<=CURRENT_TIMESTAMP)||(LA215_0>=EVAL_AND_EXPR && LA215_0<=EVAL_NOTEQUALS_GROUP_EXPR)||LA215_0==EVENT_PROP_EXPR||LA215_0==CONCAT||(LA215_0>=LIB_FUNC_CHAIN && LA215_0<=DOT_EXPR)||LA215_0==ARRAY_EXPR||(LA215_0>=NOT_IN_SET && LA215_0<=NOT_REGEXP)||(LA215_0>=IN_RANGE && LA215_0<=SUBSELECT_EXPR)||(LA215_0>=EXISTS_SUBSELECT_EXPR && LA215_0<=NOT_IN_SUBSELECT_EXPR)||LA215_0==SUBSTITUTION||(LA215_0>=FIRST_AGGREG && LA215_0<=WINDOW_AGGREG)||(LA215_0>=INT_TYPE && LA215_0<=NULL_TYPE)||(LA215_0>=STAR && LA215_0<=PLUS)||(LA215_0>=BAND && LA215_0<=BXOR)||(LA215_0>=LT && LA215_0<=GE)||(LA215_0>=MINUS && LA215_0<=MOD)) ) {
+                if ( ((LA215_0>=IN_SET && LA215_0<=REGEXP)||LA215_0==NOT_EXPR||(LA215_0>=SUM && LA215_0<=AVG)||(LA215_0>=COALESCE && LA215_0<=COUNT)||(LA215_0>=CASE && LA215_0<=CASE2)||LA215_0==LAST||(LA215_0>=PREVIOUS && LA215_0<=EXISTS)||(LA215_0>=LW && LA215_0<=CURRENT_TIMESTAMP)||(LA215_0>=NUMERIC_PARAM_RANGE && LA215_0<=OBJECT_PARAM_ORDERED_EXPR)||(LA215_0>=EVAL_AND_EXPR && LA215_0<=EVAL_NOTEQUALS_GROUP_EXPR)||LA215_0==EVENT_PROP_EXPR||LA215_0==CONCAT||(LA215_0>=LIB_FUNC_CHAIN && LA215_0<=DOT_EXPR)||(LA215_0>=TIME_PERIOD && LA215_0<=ARRAY_EXPR)||(LA215_0>=NOT_IN_SET && LA215_0<=NOT_REGEXP)||(LA215_0>=IN_RANGE && LA215_0<=SUBSELECT_EXPR)||(LA215_0>=EXISTS_SUBSELECT_EXPR && LA215_0<=NOT_IN_SUBSELECT_EXPR)||(LA215_0>=LAST_OPERATOR && LA215_0<=SUBSTITUTION)||LA215_0==NUMBERSETSTAR||(LA215_0>=FIRST_AGGREG && LA215_0<=WINDOW_AGGREG)||(LA215_0>=INT_TYPE && LA215_0<=NULL_TYPE)||(LA215_0>=STAR && LA215_0<=PLUS)||(LA215_0>=BAND && LA215_0<=BXOR)||(LA215_0>=LT && LA215_0<=GE)||(LA215_0>=MINUS && LA215_0<=MOD)) ) {
                     alt215=1;
                 }
 
 
                 switch (alt215) {
             	case 1 :
-            	    // EsperEPL2Ast.g:618:35: valueExpr
+            	    // EsperEPL2Ast.g:618:35: valueExprWithTime
             	    {
-            	    pushFollow(FOLLOW_valueExpr_in_distinctExpressions4471);
-            	    valueExpr();
+            	    pushFollow(FOLLOW_valueExprWithTime_in_distinctExpressions4471);
+            	    valueExprWithTime();
 
             	    state._fsp--;
 
@@ -15472,7 +15472,7 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_exprChoice_in_exprChoice4446 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
     public static final BitSet FOLLOW_exprChoice_in_exprChoice4448 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_PATTERN_EVERY_DISTINCT_EXPR_in_distinctExpressions4469 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_valueExpr_in_distinctExpressions4471 = new BitSet(new long[]{0x0000000037CC23C8L,0x000000000001E7E0L,0xA0004001F8000000L,0x380000008EE0F009L,0x003BCC3800001FC0L});
+    public static final BitSet FOLLOW_valueExprWithTime_in_distinctExpressions4471 = new BitSet(new long[]{0x0020000037CC23C8L,0x780000000001F7E0L,0xA0004001F8000000L,0x38800000EEE0F00DL,0x003BCC3800001FC0L});
     public static final BitSet FOLLOW_FOLLOWED_BY_EXPR_in_patternOp4490 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_exprChoice_in_patternOp4492 = new BitSet(new long[]{0x000000000000D800L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
     public static final BitSet FOLLOW_exprChoice_in_patternOp4494 = new BitSet(new long[]{0x000000000000D808L,0x8000000000000000L,0x0000000000180006L,0x0001000000000000L});
