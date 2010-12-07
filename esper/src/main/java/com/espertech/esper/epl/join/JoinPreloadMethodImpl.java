@@ -61,4 +61,9 @@ public class JoinPreloadMethodImpl implements JoinPreloadMethod
         Set<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
         resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
     }
+
+    @Override
+    public boolean isPreloading() {
+        return true;
+    }
 }

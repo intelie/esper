@@ -8,6 +8,9 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TestNamedWindowJoin extends TestCase
 {
     private EPServiceProvider epService;
@@ -23,6 +26,50 @@ public class TestNamedWindowJoin extends TestCase
         listenerWindow = new SupportUpdateListener();
         listenerWindowTwo = new SupportUpdateListener();
         listenerStmtOne = new SupportUpdateListener();
+    }
+
+    public void testInnerJoinLateStart() {
+
+        // ESPER-526
+        epService.getEPAdministrator().createEPL("create schema Product (product string, size int)");
+        epService.getEPAdministrator().createEPL("create schema Portfolio (portfolio string, product string)");
+        epService.getEPAdministrator().createEPL("create window ProductWin.win:keepall() as Product");
+        epService.getEPAdministrator().createEPL("insert into ProductWin select * from Product");
+        epService.getEPAdministrator().createEPL("create window PortfolioWin.win:keepall() as Portfolio");
+        epService.getEPAdministrator().createEPL("insert into PortfolioWin select * from Portfolio");
+
+        sendProduct("productA", 1);
+        sendProduct("productB", 2);
+        sendPortfolio("Portfolio", "productA");
+
+        String stmtText = "@Name(\"Query2\") select portfolio, ProductWin.product, size " +
+                "from PortfolioWin unidirectional inner join ProductWin on PortfolioWin.product=ProductWin.product";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listenerStmtOne);
+
+        sendPortfolio("Portfolio", "productB");
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), new String[] {"portfolio", "ProductWin.product", "size"}, new Object[] {"Portfolio", "productB", 2});
+
+        sendPortfolio("Portfolio", "productC");
+        listenerStmtOne.reset();
+
+        sendProduct("productC", 3);
+        sendPortfolio("Portfolio", "productC");
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), new String[] {"portfolio", "ProductWin.product", "size"}, new Object[] {"Portfolio", "productC", 3});
+    }
+
+    private void sendProduct(String product, int size) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("product", product);
+        event.put("size", size);
+        epService.getEPRuntime().sendEvent(event, "Product");
+    }
+
+    private void sendPortfolio(String portfolio, String product) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        event.put("portfolio", portfolio);
+        event.put("product", product);
+        epService.getEPRuntime().sendEvent(event, "Portfolio");
     }
 
     public void testRightOuterJoinLateStart()

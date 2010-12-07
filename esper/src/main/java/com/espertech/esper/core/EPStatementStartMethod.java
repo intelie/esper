@@ -1027,6 +1027,9 @@ public class EPStatementStartMethod
                 {
                     EventBean[] newEvents = eventsInWindow.toArray(new EventBean[eventsInWindow.size()]);
                     view.update(newEvents, null);
+                    if (!joinPreloadMethod.isPreloading() && statementContext.getEpStatementHandle().getOptionalDispatchable() != null) {
+                        statementContext.getEpStatementHandle().getOptionalDispatchable().execute(statementContext);
+                    }
                 }
 
                 // in a join, preload indexes, if any

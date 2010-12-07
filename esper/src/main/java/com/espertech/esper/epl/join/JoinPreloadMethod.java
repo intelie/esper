@@ -34,5 +34,7 @@ public interface JoinPreloadMethod
      * @param buffer buffer to use
      * @param i stream
      */
-    void setBuffer(BufferView buffer, int i);
+    public void setBuffer(BufferView buffer, int i);
+
+    public boolean isPreloading();
 }

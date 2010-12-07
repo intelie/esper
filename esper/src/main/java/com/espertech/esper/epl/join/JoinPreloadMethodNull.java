@@ -39,4 +39,9 @@ public class JoinPreloadMethodNull implements JoinPreloadMethod
     public void setBuffer(BufferView buffer, int i)
     {        
     }
+
+    @Override
+    public boolean isPreloading() {
+        return false;
+    }
 }

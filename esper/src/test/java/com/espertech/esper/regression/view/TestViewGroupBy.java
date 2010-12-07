@@ -53,7 +53,7 @@ public class TestViewGroupBy extends TestCase
         epService.getEPAdministrator().createEPL(query);
 
         // Set to larger number of executions and monitor memory
-        for (int i = 0; ; i++) {
+        for (int i = 0; i < 10; i++) {
             sendProductNew("The id of this product is deliberately very very long so that we can use up more memory per instance of this event sent into Esper " + i, i);
             epService.getEPRuntime().sendEvent(new CurrentTimeEvent(i * 100));
             //if (i % 2000 == 0) {
