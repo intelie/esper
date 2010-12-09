@@ -35,6 +35,31 @@ public class TestOutputLimitEventPerGroup extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testLastNoDataWindow() {
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        String epl = "select string, intPrimitive as intp from SupportBean group by string output last every 1 seconds order by string asc";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 31));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 20));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 22));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 21));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
+
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), new String[] {"string","intp"}, new Object[][] {{"E1", 3}, {"E2", 21}, {"E3", 31}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 31));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 33));
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(2000));
+
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), new String[] {"string","intp"}, new Object[][] {{"E1", 5}, {"E3", 33}});
+}
+
     public void testOutputFirstHavingJoinNoJoin() {
 
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
