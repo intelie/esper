@@ -86,6 +86,10 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
             activeChildNodes.remove(fromNode);
         }
 
+        if (eventsPerChild == null) {
+            return;
+        }
+
         // Add the event received to the list of events per child
         List<MatchedEventMap> eventList = eventsPerChild.get(fromNode);
         if (eventList == null)
