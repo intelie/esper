@@ -28,7 +28,7 @@ public class TestRowPatternRecognitionPrev extends TestCase {
                 "  measures A.string as a_string, B.string as b_string" +
                 "  all matches pattern (A B) " +
                 "  define " +
-                "    A as PREV(A.string, 3) = 'P3' and PREV(A.string, 2) = 'P2' and PREV(A.string, 4) = 'P4'," +
+                "    A as PREV(A.string, 3) = 'P3' and PREV(A.string, 2) = 'P2' and PREV(A.string, 4) = 'P4' and Math.abs(prev(A.value, 0)) >= 0," +
                 "    B as B.value in (PREV(B.value, 4), PREV(B.value, 2))" +
                 ")";
 

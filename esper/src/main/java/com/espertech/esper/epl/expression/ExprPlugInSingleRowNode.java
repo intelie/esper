@@ -148,16 +148,27 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
         evaluator = new ExprStaticMethodEvalInvoke(clazz.getName(), staticMethod, childEvals, isConstantParameters, eval);
 	}
 
-    public void accept(ExprNodeVisitor visitor)
-    {
+    @Override
+    public void accept(ExprNodeVisitor visitor) {
         super.accept(visitor);
+        ExprNode.acceptChain(visitor, chainSpec);
+    }
 
-        // visit all parameters
-        for (ExprChainedSpec chain : this.chainSpec) {
-            for (ExprNode param : chain.getParameters()) {
-                param.accept(visitor);
-            }
-        }
+    @Override
+    public void accept(ExprNodeVisitorWithParent visitor) {
+        super.accept(visitor);
+        ExprNode.acceptChain(visitor, chainSpec);
+    }
+
+    @Override
+    protected void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
+        super.acceptChildnodes(visitor, parent);
+        ExprNode.acceptChain(visitor, chainSpec, this);
+    }
+
+    @Override
+    protected void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
+        ExprNode.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
     }
 
     public List<ExprNode> getAdditionalNodes() {

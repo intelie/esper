@@ -70,16 +70,27 @@ public class ExprDotNode extends ExprNode implements ExprEvaluator, ExprNodeInne
         childEvaluator = this.getChildNodes().get(0).getExprEvaluator();
     }
 
-    public void accept(ExprNodeVisitor visitor)
-    {
+    @Override
+    public void accept(ExprNodeVisitor visitor) {
         super.accept(visitor);
+        ExprNode.acceptChain(visitor, chainSpec);
+    }
 
-        // visit all parameters
-        for (ExprChainedSpec chain : this.chainSpec) {
-            for (ExprNode param : chain.getParameters()) {
-                param.accept(visitor);
-            }
-        }
+    @Override
+    public void accept(ExprNodeVisitorWithParent visitor) {
+        super.accept(visitor);
+        ExprNode.acceptChain(visitor, chainSpec);
+    }
+
+    @Override
+    protected void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
+        super.acceptChildnodes(visitor, parent);
+        ExprNode.acceptChain(visitor, chainSpec, this);
+    }
+
+    @Override
+    protected void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
+        ExprNode.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
     }
 
     public List<ExprChainedSpec> getChainSpec()

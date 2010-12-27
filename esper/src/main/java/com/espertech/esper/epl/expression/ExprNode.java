@@ -78,7 +78,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
      * @return the root node of the validated subtree, possibly
      *         different than the root node of the unvalidated subtree
      */
-    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService,
+    public final ExprNode getValidatedSubtree(StreamTypeService streamTypeService,
                                         MethodResolutionService methodResolutionService,
                                         ViewResourceDelegate viewResourceDelegate,
                                         TimeProvider timeProvider,
@@ -499,6 +499,29 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
         return new MappedPropertyParseResult(clazz.toString(), method, argument);
     }
 
+    public final void replaceChildNode(ExprNode nodeToReplace, ExprNode newNode) {
+        int index = getChildNodes().indexOf(nodeToReplace);
+        if (index == -1) {
+            replaceUnlistedChildNode(nodeToReplace, newNode);
+        }
+        else {
+            getChildNodes().set(index, newNode);
+        }
+    }
+
+    protected void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
+        // Override to replace child expression nodes that are chained or otherwise not listed as child nodes
+    }
+
+    public static void replaceChainChildNode(ExprNode nodeToReplace, ExprNode newNode, List<ExprChainedSpec> chainSpec) {
+        for (ExprChainedSpec chained : chainSpec) {
+            int index = chained.getParameters().indexOf(nodeToReplace);
+            if (index != -1) {
+                chained.getParameters().set(index, newNode);
+            }
+        }
+    }
+
     /**
      * Encapsulates the parse result parsing a mapped property as a class and method name with args.
      */
@@ -548,6 +571,30 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             this.argString = argString;
         }
     }
+
+    public static void acceptChain(ExprNodeVisitor visitor, List<ExprChainedSpec> chainSpec) {
+        for (ExprChainedSpec chain : chainSpec) {
+            for (ExprNode param : chain.getParameters()) {
+                param.accept(visitor);
+            }
+        }
+    }
+
+    public static void acceptChain(ExprNodeVisitorWithParent visitor, List<ExprChainedSpec> chainSpec) {
+        for (ExprChainedSpec chain : chainSpec) {
+            for (ExprNode param : chain.getParameters()) {
+                param.accept(visitor);
+            }
+        }
+    }
+
+    public static void acceptChain(ExprNodeVisitorWithParent visitor, List<ExprChainedSpec> chainSpec, ExprNode parent) {
+        for (ExprChainedSpec chain : chainSpec) {
+            for (ExprNode param : chain.getParameters()) {
+                param.acceptChildnodes(visitor, parent);
+            }
+        }
+    }    
 
     private static final Log log = LogFactory.getLog(ExprNode.class);
 }

@@ -304,17 +304,17 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             return defineItemExpression;
         }
 
-        for (Pair<ExprNode, ExprPreviousNode> pairs : previousVisitor.getPrevious())
+        for (Pair<ExprNode, ExprPreviousNode> previousNodePair : previousVisitor.getPrevious())
         {
-            ExprPreviousNode previousNode = pairs.getSecond();
+            ExprPreviousNode previousNode = previousNodePair.getSecond();
             ExprPreviousMatchRecognizeNode matchRecogPrevNode = new ExprPreviousMatchRecognizeNode();
 
-            if (pairs.getSecond().getChildNodes().size() == 1)
+            if (previousNodePair.getSecond().getChildNodes().size() == 1)
             {
                 matchRecogPrevNode.addChildNode(previousNode.getChildNodes().get(0));
                 matchRecogPrevNode.addChildNode(new ExprConstantNode(1));
             }
-            else if (pairs.getSecond().getChildNodes().size() == 2)
+            else if (previousNodePair.getSecond().getChildNodes().size() == 2)
             {
                 ExprNode first = previousNode.getChildNodes().get(0);
                 ExprNode second = previousNode.getChildNodes().get(1);
@@ -334,14 +334,13 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
                 }
             }
 
-            if (pairs.getFirst() == null)
+            if (previousNodePair.getFirst() == null)
             {
                 defineItemExpression = matchRecogPrevNode;
             }
             else
             {
-                int index = pairs.getFirst().getChildNodes().indexOf(pairs.getSecond());
-                pairs.getFirst().getChildNodes().set(index, matchRecogPrevNode);
+                previousNodePair.getFirst().replaceChildNode(previousNodePair.getSecond(), matchRecogPrevNode);
             }
 
             // store in a list per index such that we can consolidate this into a single buffer
