@@ -36,10 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -56,6 +53,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     private Set<EPServiceStateListener> serviceListeners;
     private Set<EPStatementStateListener> statementListeners;
     private StatementEventDispatcherUnthreaded stmtEventDispatcher;
+    private Map<String, EPServiceProviderImpl> runtimes;
 
     /**
      * Constructor - initializes services.
@@ -63,7 +61,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
      * @param engineURI is the engine URI or "default" (or null which it assumes as "default") if this is the default provider
      * @throws ConfigurationException is thrown to indicate a configuraton error
      */
-    public EPServiceProviderImpl(Configuration configuration, String engineURI) throws ConfigurationException
+    public EPServiceProviderImpl(Configuration configuration, String engineURI, Map<String, EPServiceProviderImpl> runtimes) throws ConfigurationException
     {
         if (configuration == null)
         {
@@ -73,6 +71,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         {
         	throw new NullPointerException("Engine URI should not be null at this stage");
         }
+        this.runtimes = runtimes;
         this.engineURI = engineURI;
         verifyConfiguration(configuration);
         configSnapshot = takeSnapshot(configuration);
@@ -283,6 +282,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             engineToDestroy.getRuntime().destroy();
             engineToDestroy.getAdmin().destroy();
             engineToDestroy.getServices().destroy();
+            runtimes.remove(engineURI);
 
             engineToDestroy.getServices().initialize();
         }

@@ -1,5 +1,6 @@
 package com.espertech.esper.regression.client;
 
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -45,6 +46,23 @@ public class TestEPServiceProvider extends TestCase
 
         String[] uris = EPServiceProviderManager.getProviderURIs();
         assertTrue(Arrays.asList(uris).contains("default"));
+        
+        epService.destroy();
+        assertEquals(0, EPServiceProviderManager.getProviderURIs().length);
+
+        // test destroy
+        Configuration config = SupportConfigFactory.getConfiguration();
+        String uriOne = this.getClass().getName() + "_1";
+        EPServiceProvider engineOne = EPServiceProviderManager.getProvider(uriOne, config);
+        String uriTwo = this.getClass().getName() + "_2";
+        EPServiceProvider engineTwo = EPServiceProviderManager.getProvider(uriTwo, config);
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {uriOne, uriTwo}, EPServiceProviderManager.getProviderURIs());
+
+        engineOne.destroy();
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {uriTwo}, EPServiceProviderManager.getProviderURIs());
+
+        engineTwo.destroy();
+        ArrayAssertionUtil.assertEqualsAnyOrder(null, EPServiceProviderManager.getProviderURIs());
     }
 
     public void testListenerStateChange()

@@ -71,7 +71,7 @@ public final class EPServiceProviderManager
             EPServiceProviderImpl provider = runtimes.get(providerURINonNull);
             if (provider.isDestroyed())
             {
-                provider = new EPServiceProviderImpl(configuration, providerURINonNull);
+                provider = new EPServiceProviderImpl(configuration, providerURINonNull, runtimes);
                 runtimes.put(providerURINonNull, provider);
             }
             else
@@ -82,7 +82,7 @@ public final class EPServiceProviderManager
         }
 
         // New runtime
-        EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, providerURINonNull);
+        EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, providerURINonNull, runtimes);
         runtimes.put(providerURINonNull, runtime);
         runtime.postInitialize();
 
