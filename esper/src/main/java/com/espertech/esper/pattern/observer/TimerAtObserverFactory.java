@@ -95,7 +95,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem, Ser
         {
             throw new EPException("Error computing crontab schedule specification: " + e.getMessage(), e);
         }
-        return new TimerAtObserver(spec, context, beginState, observerEventEvaluator);
+        return new TimerAtObserver(spec, beginState, observerEventEvaluator);
     }
 
     private static final Log log = LogFactory.getLog(TimerAtObserverFactory.class);

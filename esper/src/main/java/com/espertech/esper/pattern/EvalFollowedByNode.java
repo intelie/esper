@@ -19,6 +19,8 @@ public final class EvalFollowedByNode extends EvalNode
 {
     private static final long serialVersionUID = -3535280879288655577L;
 
+    private transient PatternContext context;
+
     public final EvalStateNode newState(Evaluator parentNode,
                                                  MatchedEventMap beginState,
                                                  PatternContext context,
@@ -35,7 +37,12 @@ public final class EvalFollowedByNode extends EvalNode
                     + getChildNodes().size());
         }
 
+        this.context = context;
         return context.getPatternStateFactory().makeFollowedByState(parentNode, this, beginState, stateNodeId);
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     public final String toString()

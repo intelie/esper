@@ -21,6 +21,7 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
  */
 public final class EvalNotStateNode extends EvalStateNode implements Evaluator
 {
+    private final EvalNotNode evalNotNode;
     private final MatchedEventMap beginState;
     private EvalStateNode childNode;
 
@@ -28,23 +29,22 @@ public final class EvalNotStateNode extends EvalStateNode implements Evaluator
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
      * @param beginState contains the events that make up prior matches
-     * @param context contains handles to services required
      * @param evalNotNode is the factory node associated to the state
      */
     public EvalNotStateNode(Evaluator parentNode,
                                   EvalNotNode evalNotNode,
-                                  MatchedEventMap beginState,
-                                  PatternContext context)
+                                  MatchedEventMap beginState)
     {
-        super(evalNotNode, parentNode, null);
+        super(parentNode, null);
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor");
-        }
-
+        this.evalNotNode = evalNotNode;
         this.beginState = beginState.shallowCopy();
-        this.childNode = evalNotNode.getChildNodes().get(0).newState(this, beginState, context, null);
+        this.childNode = evalNotNode.getChildNodes().get(0).newState(this, beginState, evalNotNode.getContext(), null);
+    }
+
+    @Override
+    public EvalNode getFactoryNode() {
+        return evalNotNode;
     }
 
     public final void start()

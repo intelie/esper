@@ -23,6 +23,7 @@ public final class EvalFilterNode extends EvalNode
     private final FilterSpecRaw rawFilterSpec;
     private final String eventAsName;
     private transient FilterSpecCompiled filterSpec;
+    private transient PatternContext context;
 
     /**
      * Constructor.
@@ -52,7 +53,12 @@ public final class EvalFilterNode extends EvalNode
                     + getChildNodes().size());
         }
 
+        this.context = context;
         return context.getPatternStateFactory().makeFilterStateNode(parentNode, this, beginState, stateNodeId);
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     /**

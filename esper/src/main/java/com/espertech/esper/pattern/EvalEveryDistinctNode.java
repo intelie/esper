@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -22,7 +23,9 @@ import java.util.List;
 public final class EvalEveryDistinctNode extends EvalNode
 {
     private List<ExprNode> expressions;
+    private ExprEvaluator[] expressionsArray;
     private transient MatchedEventConvertor convertor;
+    private transient PatternContext context;
     private Long msecToExpire;
     private static final long serialVersionUID = 7455570958072753956L;
 
@@ -53,7 +56,28 @@ public final class EvalEveryDistinctNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return context.getPatternStateFactory().makeEveryDistinctStateNode(parentNode, this, beginState, context, stateNodeId, ExprNodeUtility.getEvaluators(expressions), convertor, msecToExpire);
+        if (expressionsArray == null) {
+            expressionsArray = ExprNodeUtility.getEvaluators(expressions);
+            this.context = context;
+        }
+
+        return context.getPatternStateFactory().makeEveryDistinctStateNode(parentNode, this, beginState, stateNodeId);
+    }
+
+    public ExprEvaluator[] getExpressionsArray() {
+        return expressionsArray;
+    }
+
+    public MatchedEventConvertor getConvertor() {
+        return convertor;
+    }
+
+    public Long getMsecToExpire() {
+        return msecToExpire;
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     public final String toString()

@@ -1,16 +1,15 @@
 package com.espertech.esper.pattern.observer;
 
-import junit.framework.TestCase;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.MatchedEventMapImpl;
+import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
 import com.espertech.esper.support.guard.SupportObserverEvaluator;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
-import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.timer.TimeSourceServiceImpl;
+import junit.framework.TestCase;
 
 public class TestTimerIntervalObserver extends TestCase
 {
@@ -29,9 +28,9 @@ public class TestTimerIntervalObserver extends TestCase
         StatementContext stmtContext = SupportStatementContextFactory.makeContext(scheduleService);
         context = new PatternContext(stmtContext, 1, null);
 
-        evaluator = new SupportObserverEvaluator();
+        evaluator = new SupportObserverEvaluator(context);
 
-        observer =  new TimerIntervalObserver(1000, context, beginState, evaluator);
+        observer =  new TimerIntervalObserver(1000, beginState, evaluator);
     }
 
     public void testStartAndObserve()
@@ -80,7 +79,7 @@ public class TestTimerIntervalObserver extends TestCase
     public void testImmediateTrigger()
     {
         // Should fireStatementStopped right away, wait time set to zero
-        observer =  new TimerIntervalObserver(0, context, beginState, evaluator);
+        observer =  new TimerIntervalObserver(0, beginState, evaluator);
 
         scheduleService.setTime(0);
         observer.startObserve();

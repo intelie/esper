@@ -48,7 +48,7 @@ public class TestEPServiceProvider extends TestCase
         assertTrue(Arrays.asList(uris).contains("default"));
         
         epService.destroy();
-        assertEquals(0, EPServiceProviderManager.getProviderURIs().length);
+        ArrayAssertionUtil.assertNotContains(EPServiceProviderManager.getProviderURIs(), "default");
 
         // test destroy
         Configuration config = SupportConfigFactory.getConfiguration();
@@ -56,13 +56,14 @@ public class TestEPServiceProvider extends TestCase
         EPServiceProvider engineOne = EPServiceProviderManager.getProvider(uriOne, config);
         String uriTwo = this.getClass().getName() + "_2";
         EPServiceProvider engineTwo = EPServiceProviderManager.getProvider(uriTwo, config);
-        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {uriOne, uriTwo}, EPServiceProviderManager.getProviderURIs());
+        ArrayAssertionUtil.assertContains(EPServiceProviderManager.getProviderURIs(), uriOne, uriTwo);
 
         engineOne.destroy();
-        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {uriTwo}, EPServiceProviderManager.getProviderURIs());
+        ArrayAssertionUtil.assertNotContains(EPServiceProviderManager.getProviderURIs(), uriOne);
+        ArrayAssertionUtil.assertContains(EPServiceProviderManager.getProviderURIs(), uriTwo);
 
         engineTwo.destroy();
-        ArrayAssertionUtil.assertEqualsAnyOrder(null, EPServiceProviderManager.getProviderURIs());
+        ArrayAssertionUtil.assertNotContains(EPServiceProviderManager.getProviderURIs(), uriOne, uriTwo);
     }
 
     public void testListenerStateChange()

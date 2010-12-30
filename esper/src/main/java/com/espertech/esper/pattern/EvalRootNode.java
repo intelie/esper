@@ -20,6 +20,8 @@ public final class EvalRootNode extends EvalNode implements PatternStarter
 {
     private static final long serialVersionUID = 6894059650449481615L;
 
+    private transient PatternContext context;
+
     public final PatternStopCallback start(PatternMatchCallback callback,
                                            PatternContext context)
     {
@@ -46,7 +48,12 @@ public final class EvalRootNode extends EvalNode implements PatternStarter
                     + getChildNodes().size());
         }
 
-        return context.getPatternStateFactory().makeRootNode(this.getChildNodes().get(0), beginState);
+        this.context = context;
+        return context.getPatternStateFactory().makeRootNode(this.getChildNodes().get(0), beginState, context);
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     public final String toString()

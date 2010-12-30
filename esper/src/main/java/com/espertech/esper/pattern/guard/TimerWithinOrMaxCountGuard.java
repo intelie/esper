@@ -24,7 +24,6 @@ public class TimerWithinOrMaxCountGuard implements Guard, ScheduleHandleCallback
 {
     private final long msec;
     private final int numCountTo;
-    private final PatternContext context;
     private final Quitable quitable;
     private final ScheduleSlot scheduleSlot;
 
@@ -36,15 +35,13 @@ public class TimerWithinOrMaxCountGuard implements Guard, ScheduleHandleCallback
      * Ctor.
      * @param msec - number of millisecond to guard expiration
      * @param numCountTo - max number of counts
-     * @param context - contains timer service
      * @param quitable - to use to indicate that the gaurd quitted
      */
-    public TimerWithinOrMaxCountGuard(long msec, int numCountTo, PatternContext context, Quitable quitable) {
+    public TimerWithinOrMaxCountGuard(long msec, int numCountTo, Quitable quitable) {
         this.msec = msec;
         this.numCountTo = numCountTo;
-        this.context = context;
         this.quitable = quitable;
-        this.scheduleSlot = context.getScheduleBucket().allocateSlot();
+        this.scheduleSlot = quitable.getContext().getScheduleBucket().allocateSlot();
     }
 
     public void startGuard() {
@@ -52,8 +49,8 @@ public class TimerWithinOrMaxCountGuard implements Guard, ScheduleHandleCallback
             throw new IllegalStateException("Timer already active");
         }
 
-        scheduleHandle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
-        context.getSchedulingService().add(msec, scheduleHandle, scheduleSlot);
+        scheduleHandle = new EPStatementHandleCallback(quitable.getContext().getEpStatementHandle(), this);
+        quitable.getContext().getSchedulingService().add(msec, scheduleHandle, scheduleSlot);
         isTimerActive = true;
         counter = 0;
     }
@@ -82,7 +79,7 @@ public class TimerWithinOrMaxCountGuard implements Guard, ScheduleHandleCallback
 
     private void deactivateTimer() {
         if (scheduleHandle != null) {
-            context.getSchedulingService().remove(scheduleHandle, scheduleSlot);
+            quitable.getContext().getSchedulingService().remove(scheduleHandle, scheduleSlot);
         }
         scheduleHandle = null;
         isTimerActive = false;

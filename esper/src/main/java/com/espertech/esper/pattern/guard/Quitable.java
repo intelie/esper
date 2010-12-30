@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.guard;
 
+import com.espertech.esper.pattern.PatternContext;
+
 /**
  * Receiver for quit events for use by guards.
  */
@@ -17,4 +19,6 @@ public interface Quitable
      * Indicate guard quitted.
      */
     public void guardQuit();
+
+    public PatternContext getContext();
 }

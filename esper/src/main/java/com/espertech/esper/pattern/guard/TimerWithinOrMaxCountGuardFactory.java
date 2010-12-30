@@ -67,6 +67,6 @@ public class TimerWithinOrMaxCountGuardFactory implements GuardFactory, MetaDefI
             throw new EPException("Timer-within-or-max second parameter evaluated to a null-value");
         }
         Integer numCountTo = (Integer) numCountToVal;
-        return new TimerWithinOrMaxCountGuard(milliseconds, numCountTo, context, quitable);
+        return new TimerWithinOrMaxCountGuard(milliseconds, numCountTo, quitable);
     }
 }

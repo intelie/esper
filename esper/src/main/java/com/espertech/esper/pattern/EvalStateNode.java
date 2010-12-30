@@ -15,7 +15,6 @@ package com.espertech.esper.pattern;
  */
 public abstract class EvalStateNode
 {
-    private final EvalNode factoryNode;
     private Evaluator parentEvaluator;
     private final Object stateObjectId;
 
@@ -50,14 +49,18 @@ public abstract class EvalStateNode
     public abstract Object childrenAccept(EvalStateNodeVisitor visitor, Object data);
 
     /**
+     * Returns the factory node for the state node.
+     * @return factory node
+     */
+    public abstract EvalNode getFactoryNode();
+
+    /**
      * Constructor.
      * @param parentNode is the evaluator for this node on which to indicate a change in truth value
-     * @param factoryNode is the factory node creating the state instance
      * @param stateObjectId is the state object id assigned to state node
      */
-    public EvalStateNode(EvalNode factoryNode, Evaluator parentNode, Object stateObjectId)
+    public EvalStateNode(Evaluator parentNode, Object stateObjectId)
     {
-        this.factoryNode = factoryNode;
         this.parentEvaluator = parentNode;
         this.stateObjectId = stateObjectId;
     }
@@ -78,15 +81,6 @@ public abstract class EvalStateNode
     public Object getStateObjectId()
     {
         return stateObjectId;
-    }
-
-    /**
-     * Returns the factory node for the state node.
-     * @return factory node
-     */
-    public EvalNode getFactoryNode()
-    {
-        return factoryNode;
     }
 
     /**

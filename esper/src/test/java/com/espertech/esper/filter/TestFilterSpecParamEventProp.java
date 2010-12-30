@@ -39,26 +39,6 @@ public class TestFilterSpecParamEventProp extends TestCase
         matchedEvents.add("asName", event);
 
         assertEquals(1000, params.getFilterValue(matchedEvents));
-
-        try
-        {
-            params.getFilterValue(new MatchedEventMapImpl());
-            fail();
-        }
-        catch (IllegalStateException ex)
-        {
-            // expected
-        }
-
-        try
-        {
-            params.getFilterValue(null);
-            fail();
-        }
-        catch (NullPointerException ex)
-        {
-            // Expected
-        }
     }
 
     private FilterSpecParamEventProp makeParam(String eventAsName, String property)

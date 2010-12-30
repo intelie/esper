@@ -23,7 +23,6 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 {
     private final EvalFilterNode evalFilterNode;
     private final MatchedEventMap beginState;
-    private final PatternContext context;
 
     private boolean isStarted;
     private EPStatementHandleCallback handle;
@@ -32,15 +31,13 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
      * @param beginState contains the events that make up prior matches
-     * @param context contains handles to services required
      * @param evalFilterNode is the factory node associated to the state
      */
     public EvalFilterStateNode(Evaluator parentNode,
                                      EvalFilterNode evalFilterNode,
-                                     MatchedEventMap beginState,
-                                     PatternContext context)
+                                     MatchedEventMap beginState)
     {
-        super(evalFilterNode, parentNode, null);
+        super(parentNode, null);
 
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
@@ -49,12 +46,16 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
         this.evalFilterNode = evalFilterNode;
         this.beginState = beginState;
-        this.context = context;
+    }
+
+    @Override
+    public EvalNode getFactoryNode() {
+        return evalFilterNode;
     }
 
     public String getStatementId()
     {
-        return context.getStatementId();
+        return evalFilterNode.getContext().getStatementId();
     }
 
     public final void start()
@@ -110,7 +111,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
         if (evalFilterNode.getFilterSpec().getOptionalPropertyEvaluator() != null)
         {
-            EventBean[] propertyEvents = evalFilterNode.getFilterSpec().getOptionalPropertyEvaluator().getProperty(event, context);
+            EventBean[] propertyEvents = evalFilterNode.getFilterSpec().getOptionalPropertyEvaluator().getProperty(event, evalFilterNode.getContext());
             if (propertyEvents == null)
             {
                 return; // no results, ignore match
@@ -173,6 +174,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     private void startFiltering()
     {
+        PatternContext context = evalFilterNode.getContext();
         handle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
         FilterValueSet filterValues = evalFilterNode.getFilterSpec().getValueSet(beginState);
         context.getFilterService().add(filterValues, handle);
@@ -182,6 +184,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     private void stopFiltering()
     {
+        PatternContext context = evalFilterNode.getContext();
         if (handle != null) {
             context.getFilterService().remove(handle);
         }

@@ -76,6 +76,6 @@ public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefIte
         {
             milliseconds = 1000 * param.longValue();
         }
-        return new TimerIntervalObserver(milliseconds, context, beginState, observerEventEvaluator);
+        return new TimerIntervalObserver(milliseconds, beginState, observerEventEvaluator);
     }
 }

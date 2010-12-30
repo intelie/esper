@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class EvalGuardStateNode extends EvalStateNode implements Evaluator, Quitable
 {
+    private EvalGuardNode evalGuardNode;
     private EvalStateNode activeChildNode;
     private final Guard guard;
 
@@ -28,26 +29,35 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
      * @param beginState contains the events that make up prior matches
-     * @param context contains handles to services required
      * @param evalGuardNode is the factory node associated to the state
      * @param stateObjectId is the state object's id value
      */
     public EvalGuardStateNode(Evaluator parentNode,
                                EvalGuardNode evalGuardNode,
                                  MatchedEventMap beginState,
-                                 PatternContext context,
                                  Object stateObjectId)
     {
-        super(evalGuardNode, parentNode, null);
+        super(parentNode, null);
+        this.evalGuardNode = evalGuardNode;
 
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }
 
-        guard = evalGuardNode.getGuardFactory().makeGuard(context, beginState, this, stateObjectId, null);
+        guard = evalGuardNode.getGuardFactory().makeGuard(evalGuardNode.getContext(), beginState, this, stateObjectId, null);
 
-        this.activeChildNode = evalGuardNode.getChildNodes().get(0).newState(this, beginState, context, null);
+        this.activeChildNode = evalGuardNode.getChildNodes().get(0).newState(this, beginState, evalGuardNode.getContext(), null);
+    }
+
+    @Override
+    public EvalNode getFactoryNode() {
+        return evalGuardNode;
+    }
+
+    @Override
+    public PatternContext getContext() {
+        return evalGuardNode.getContext();
     }
 
     public final void start()

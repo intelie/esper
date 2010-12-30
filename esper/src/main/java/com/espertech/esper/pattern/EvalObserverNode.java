@@ -22,6 +22,7 @@ public final class EvalObserverNode extends EvalNode
 {
     private final PatternObserverSpec patternObserverSpec;
     private transient ObserverFactory observerFactory;
+    private transient PatternContext context;    
     private static final long serialVersionUID = 9045310817018028026L;
 
     /**
@@ -76,7 +77,12 @@ public final class EvalObserverNode extends EvalNode
                     + getChildNodes().size());
         }
 
+        this.context = context;
         return context.getPatternStateFactory().makeObserverNode(parentNode, this, beginState, stateNodeId);
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     public final String toString()

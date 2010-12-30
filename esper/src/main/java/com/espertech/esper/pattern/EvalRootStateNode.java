@@ -18,6 +18,7 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
  */
 public final class EvalRootStateNode extends EvalStateNode implements Evaluator, PatternStopCallback, EvalRootState
 {
+    private EvalNode rootSingleChildNode;
     private EvalStateNode topStateNode;
     private PatternMatchCallback callback;
 
@@ -31,7 +32,8 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
                                    MatchedEventMap beginState,
                                    PatternContext context)
     {
-        super(rootSingleChildNode, null, null);
+        super(null, null);
+        this.rootSingleChildNode = rootSingleChildNode;
 
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
@@ -46,6 +48,11 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
             EvalStateNodePrinterVisitor visitor = new EvalStateNodePrinterVisitor();
             this.accept(visitor, null);
         }
+    }
+
+    @Override
+    public EvalNode getFactoryNode() {
+        return rootSingleChildNode;
     }
 
     /**

@@ -19,6 +19,8 @@ public final class EvalEveryNode extends EvalNode
 {
     private static final long serialVersionUID = 3672732014060588205L;
 
+    private transient PatternContext context;
+
     /**
      * Ctor.
      */
@@ -41,7 +43,13 @@ public final class EvalEveryNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return context.getPatternStateFactory().makeEveryStateNode(parentNode, this, beginState, context, stateNodeId);
+        this.context = context;
+
+        return context.getPatternStateFactory().makeEveryStateNode(parentNode, this, beginState, stateNodeId);
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     public final String toString()

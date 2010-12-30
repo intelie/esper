@@ -20,6 +20,7 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
  */
 public final class EvalAndStateNode extends EvalStateNode implements Evaluator
 {
+    private final EvalAndNode evalAndNode;
     private final List<EvalStateNode> activeChildNodes;
     private Map<EvalStateNode, List<MatchedEventMap>> eventsPerChild;
 
@@ -27,30 +28,29 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
      * @param beginState contains the events that make up prior matches
-     * @param context contains handles to services required
      * @param evalAndNode is the factory node associated to the state
      */
     public EvalAndStateNode(Evaluator parentNode,
                                   EvalAndNode evalAndNode,
-                                  MatchedEventMap beginState,
-                                  PatternContext context)
+                                  MatchedEventMap beginState)
     {
-        super(evalAndNode, parentNode, null);
+        super(parentNode, null);
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor");
-        }
-
+        this.evalAndNode = evalAndNode;
         this.activeChildNodes = new LinkedList<EvalStateNode>();
         this.eventsPerChild = new HashMap<EvalStateNode, List<MatchedEventMap>>();
 
         // In an "and" expression we need to create a state for all child listeners
         for (EvalNode node : evalAndNode.getChildNodes())
         {
-            EvalStateNode childState = node.newState(this, beginState, context, null);
+            EvalStateNode childState = node.newState(this, beginState, evalAndNode.getContext(), null);
             activeChildNodes.add(childState);
         }
+    }
+
+    @Override
+    public EvalNode getFactoryNode() {
+        return evalAndNode;
     }
 
     public final void start()

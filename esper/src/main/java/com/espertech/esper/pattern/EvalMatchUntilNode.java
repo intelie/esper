@@ -20,11 +20,13 @@ import java.util.Set;
  */
 public final class EvalMatchUntilNode extends EvalNode
 {
+    private static final long serialVersionUID = -959026931248456356L;
+
     private ExprNode lowerBounds;
     private ExprNode upperBounds;
     private transient MatchedEventConvertor convertor;
+    private transient PatternContext context;
     private String[] tagsArrayed;
-    private static final long serialVersionUID = -959026931248456356L;
 
     /**
      * Ctor.
@@ -100,7 +102,16 @@ public final class EvalMatchUntilNode extends EvalNode
             throw new IllegalStateException("No match-event expression conversion provided");
         }
 
-        return context.getPatternStateFactory().makeMatchUntilState(parentNode, this, beginState, stateNodeId, convertor);
+        this.context = context;
+        return context.getPatternStateFactory().makeMatchUntilState(parentNode, this, beginState, stateNodeId);
+    }
+
+    public PatternContext getContext() {
+        return context;
+    }
+
+    public MatchedEventConvertor getConvertor() {
+        return convertor;
     }
 
     public final String toString()

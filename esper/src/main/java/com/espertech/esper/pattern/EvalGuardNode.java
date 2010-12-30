@@ -21,6 +21,7 @@ public final class EvalGuardNode extends EvalNode
 {
     private PatternGuardSpec patternGuardSpec;
     private transient GuardFactory guardFactory;
+    private transient PatternContext context;
     private static final long serialVersionUID = -1300326291593373936L;
 
     /**
@@ -65,7 +66,12 @@ public final class EvalGuardNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return context.getPatternStateFactory().makeGuardState(parentNode, this, beginState, context, stateNodeId);
+        this.context = context;
+        return context.getPatternStateFactory().makeGuardState(parentNode, this, beginState, stateNodeId);
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     /**

@@ -22,9 +22,9 @@ public class TestTimerWithinOrMaxCountGuard extends TestCase {
         PatternContext context = new PatternContext(stmtContext, 1, null);
         scheduleService = stmtContext.getSchedulingService();
 
-        quitable = new SupportQuitable();
+        quitable = new SupportQuitable(context);
 
-        guard =  new TimerWithinOrMaxCountGuard(1000, 2, context, quitable);
+        guard =  new TimerWithinOrMaxCountGuard(1000, 2, quitable);
     }
 
     public void testInspect() {

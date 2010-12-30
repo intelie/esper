@@ -27,43 +27,38 @@ import java.util.Set;
  */
 public final class EvalEveryDistinctStateNode extends EvalStateNode implements Evaluator, EvalStateNodeNonQuitting
 {
+    private final EvalEveryDistinctNode everyDistinctNode;
     private final Map<EvalStateNode, Set<MultiKeyUntyped>> spawnedNodes;
     private final MatchedEventMap beginState;
-    private final PatternContext context;
-    private final ExprEvaluator[] expressions;
-    private final MatchedEventConvertor matchedEventConvertor;
 
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
      * @param beginState contains the events that make up prior matches
-     * @param context contains handles to services required
-     * @param everyNode is the factory node associated to the state
-     * @param expressions distinct-value expressions
-     * @param matchedEventConvertor converts match-event map to events-per-stream
+     * @param everyDistinctNode is the factory node associated to the state
      */
     public EvalEveryDistinctStateNode(Evaluator parentNode,
-                                  EvalEveryDistinctNode everyNode,
-                                  MatchedEventMap beginState,
-                                  PatternContext context,
-                                  ExprEvaluator[] expressions,
-                                  MatchedEventConvertor matchedEventConvertor)
+                                  EvalEveryDistinctNode everyDistinctNode,
+                                  MatchedEventMap beginState)
     {
-        super(everyNode, parentNode, null);
+        super(parentNode, null);
 
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }
 
+        this.everyDistinctNode = everyDistinctNode;
         this.spawnedNodes = new LinkedHashMap<EvalStateNode, Set<MultiKeyUntyped>>();
         this.beginState = beginState.shallowCopy();
-        this.context = context;
-        this.expressions = expressions;
-        this.matchedEventConvertor = matchedEventConvertor;
 
-        EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, context, null);
+        EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, everyDistinctNode.getContext(), null);
         spawnedNodes.put(child, new HashSet<MultiKeyUntyped>());
+    }
+
+    @Override
+    public EvalNode getFactoryNode() {
+        return everyDistinctNode;
     }
 
     public final void start()
@@ -81,7 +76,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         // During the start of the child we need to use the temporary evaluator to catch any event created during a start.
         // Events created during the start would likely come from the "not" operator.
         // Quit the new child again if
-        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
+        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(everyDistinctNode.getContext().getStatementName());
         EvalStateNode child = spawnedNodes.keySet().iterator().next();
         child.setParentEvaluator(spawnEvaluator);
         child.start();
@@ -111,8 +106,8 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         // During the start of a child we need to use the temporary evaluator to catch any event created during a start
         // Such events can be raised when the "not" operator is used.
         EvalNode child = getFactoryNode().getChildNodes().get(0);
-        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
-        EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
+        EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(everyDistinctNode.getContext().getStatementName());
+        EvalStateNode spawned = child.newState(spawnEvaluator, beginState, everyDistinctNode.getContext(), null);
         spawned.start();
 
         // If the whole spawned expression already turned true, quit it again
@@ -135,7 +130,7 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         }
 
         // determine if this evaluation has been seen before from the same node
-        MultiKeyUntyped matchEventKey = getKeys(matchEvent);
+        MultiKeyUntyped matchEventKey = PatternExpressionUtil.getKeys(matchEvent, everyDistinctNode);
         boolean haveSeenThis = false;
         Set<MultiKeyUntyped> keysFromNode = spawnedNodes.get(fromNode);
         if (keysFromNode != null)
@@ -166,8 +161,8 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
             // During the start of a child we need to use the temporary evaluator to catch any event created during a start
             // Such events can be raised when the "not" operator is used.
             EvalNode child = getFactoryNode().getChildNodes().get(0);
-            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(context.getStatementName());
-            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, context, null);
+            EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(everyDistinctNode.getContext().getStatementName());
+            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, everyDistinctNode.getContext(), null);
             spawned.start();
 
             // If the whole spawned expression already turned true, quit it again
@@ -225,17 +220,6 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
     public final String toString()
     {
         return "EvalEveryStateNode spawnedChildren=" + spawnedNodes.size();
-    }
-
-    private MultiKeyUntyped getKeys(MatchedEventMap currentState)
-    {
-        EventBean[] eventsPerStream = matchedEventConvertor.convert(currentState);
-        Object[] keys = new Object[expressions.length];
-        for (int i = 0; i < keys.length; i++)
-        {
-            keys[i] = expressions[i].evaluate(eventsPerStream, true, context);
-        }
-        return new MultiKeyUntyped(keys);
     }
 
     private static final Log log = LogFactory.getLog(EvalEveryStateNode.class);

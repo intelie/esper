@@ -25,4 +25,6 @@ public interface ObserverEventEvaluator
      * Indicate that the observer turned permanently false.
      */
     public void observerEvaluateFalse();
+
+    public PatternContext getContext();
 }

@@ -1080,4 +1080,17 @@ public class ArrayAssertionUtil
             }
         }
     }
+
+    public static void assertNotContains(String[] strings, String ... values) {
+        Set<String> set = new HashSet<String>(Arrays.asList(strings));
+        for (String value : values) {
+            Assert.assertFalse(set.contains(value));
+        }
+    }
+    public static void assertContains(String[] strings, String ... values) {
+        Set<String> set = new HashSet<String>(Arrays.asList(strings));
+        for (String value : values) {
+            Assert.assertTrue(set.contains(value));
+        }
+    }
 }

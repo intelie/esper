@@ -9,48 +9,48 @@
 package com.espertech.esper.pattern;
 
 
-import java.util.List;
-import java.util.LinkedList;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class represents the state of a "or" operator in the evaluation state tree.
  */
 public final class EvalOrStateNode extends EvalStateNode implements Evaluator
 {
+    private final EvalOrNode evalOrNode;
     private final List<EvalStateNode> childNodes;
 
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
      * @param beginState contains the events that make up prior matches
-     * @param context contains handles to services required
      * @param evalOrNode is the factory node associated to the state
      */
     public EvalOrStateNode(Evaluator parentNode,
                                  EvalOrNode evalOrNode,
-                                 MatchedEventMap beginState,
-                                 PatternContext context)
+                                 MatchedEventMap beginState)
     {
-        super(evalOrNode, parentNode, null);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor");
-        }
+        super(parentNode, null);
 
         this.childNodes = new LinkedList<EvalStateNode>();
+        this.evalOrNode = evalOrNode;
 
         // In an "or" expression we need to create states for all child expressions/listeners,
         // since all are going to be started
         for (EvalNode node : getFactoryNode().getChildNodes())
         {
-            EvalStateNode childState = node.newState(this, beginState, context, null);
+            EvalStateNode childState = node.newState(this, beginState, evalOrNode.getContext(), null);
             childNodes.add(childState);
         }
+    }
+
+    @Override
+    public EvalNode getFactoryNode() {
+        return evalOrNode;
     }
 
     public final void start()

@@ -23,9 +23,9 @@ public class TestTimerWithinGuard extends TestCase
         PatternContext context = new PatternContext(stmtContext, 1, null);
         scheduleService = stmtContext.getSchedulingService();
 
-        quitable = new SupportQuitable();
+        quitable = new SupportQuitable(context);
 
-        guard =  new TimerWithinGuard(1000, context, quitable);
+        guard =  new TimerWithinGuard(1000, quitable);
     }
 
     public void testInspect()

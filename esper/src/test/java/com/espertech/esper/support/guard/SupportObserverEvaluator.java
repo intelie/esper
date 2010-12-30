@@ -4,13 +4,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.observer.ObserverEventEvaluator;
 
 public class SupportObserverEvaluator implements ObserverEventEvaluator
 {
     private List<MatchedEventMap> matchEvents = new LinkedList<MatchedEventMap>();
     private int evaluateFalseCounter;
+    private PatternContext context;
 
+    public SupportObserverEvaluator(PatternContext context) {
+        this.context = context;
+    }
 
     public void observerEvaluateTrue(MatchedEventMap matchEvent)
     {
@@ -39,5 +44,10 @@ public class SupportObserverEvaluator implements ObserverEventEvaluator
         int value = evaluateFalseCounter;
         evaluateFalseCounter = 0;
         return value;
+    }
+
+    @Override
+    public PatternContext getContext() {
+        return context;
     }
 }

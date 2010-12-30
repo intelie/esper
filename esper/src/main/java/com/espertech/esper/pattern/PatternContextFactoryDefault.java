@@ -21,11 +21,6 @@ public class PatternContextFactoryDefault implements PatternContextFactory
                                         boolean hasArrayProperties)
     {
         PatternStateFactory patternStateFactory = new PatternStateFactoryImpl();
-
-        PatternContext patternContext = new PatternContext(statementContext, streamId, patternStateFactory);
-
-        patternStateFactory.setContext(patternContext);
-
-        return patternContext;
+        return new PatternContext(statementContext, streamId, patternStateFactory);
     }
 }

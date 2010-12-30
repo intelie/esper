@@ -8,22 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprNode;
-
-import java.util.List;
-
 /**
  * Factory for pattern state object implementations.
  */
 public interface PatternStateFactory
 {
-    /**
-     * Sets the services for pattern state objects.
-     * @param patternContext is a pattern-level services
-     */
-    public void setContext(PatternContext patternContext);
-
     /**
      * Makes a parent state node for the child state node.
      * @param evalNode is the factory for the parent node
@@ -39,7 +28,7 @@ public interface PatternStateFactory
      * @param beginState is the state node's begin state
      * @return root state node
      */
-    public EvalStateNode makeRootNode(EvalNode evalChildNode, MatchedEventMap beginState);
+    public EvalStateNode makeRootNode(EvalNode evalChildNode, MatchedEventMap beginState, PatternContext context);
 
     /**
      * Makes a followed-by state node.
@@ -57,10 +46,9 @@ public interface PatternStateFactory
      * @param evalMatchUntilNode is the factory node
      * @param beginState is the begin state
      * @param stateObjectId is the state node's object id
-     * @param convertor converts between match-event map and events-per-stream
      * @return state node
      */
-    public EvalStateNode makeMatchUntilState(Evaluator parentNode, EvalMatchUntilNode evalMatchUntilNode, MatchedEventMap beginState, Object stateObjectId, MatchedEventConvertor convertor);
+    public EvalStateNode makeMatchUntilState(Evaluator parentNode, EvalMatchUntilNode evalMatchUntilNode, MatchedEventMap beginState, Object stateObjectId);
 
     /**
      * Makes a followed-by state node.
@@ -117,10 +105,9 @@ public interface PatternStateFactory
      * @param evalEveryNode is the factory node
      * @param beginState is the begin state
      * @param stateNodeId is the state node's object id
-     * @param context is the pattern context
      * @return state node
      */
-    public EvalStateNode makeEveryStateNode(Evaluator parentNode, EvalEveryNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId);
+    public EvalStateNode makeEveryStateNode(Evaluator parentNode, EvalEveryNode evalEveryNode, MatchedEventMap beginState, Object stateNodeId);
 
     /**
      * Makes a every-distinct state node.
@@ -128,12 +115,9 @@ public interface PatternStateFactory
      * @param evalEveryNode is the factory node
      * @param beginState is the begin state
      * @param stateNodeId is the state node's object id
-     * @param context is the pattern context
-     * @param convertor converts between match-event map and events-per-stream
-     * @param expressions distinct-value expressions 
      * @return state node
      */
-    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, ExprEvaluator[] expressions, MatchedEventConvertor convertor, Long msecToExpiry);
+    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, Object stateNodeId);
 
     /**
      * Makes an or-state node.
@@ -141,10 +125,9 @@ public interface PatternStateFactory
      * @param evalOrNode is the factory node
      * @param beginState is the begin state
      * @param stateNodeId is the state node's object id
-     * @param context is the pattern context
      * @return state node
      */
-    public EvalStateNode makeOrState(Evaluator parentNode, EvalOrNode evalOrNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId);
+    public EvalStateNode makeOrState(Evaluator parentNode, EvalOrNode evalOrNode, MatchedEventMap beginState, Object stateNodeId);
 
     /**
      * Makes a guard state node.
@@ -152,8 +135,7 @@ public interface PatternStateFactory
      * @param evalGuardNode is the factory node
      * @param beginState is the begin state
      * @param stateNodeId is the state node's object id
-     * @param context is the pattern context
      * @return state node
      */
-    public EvalStateNode makeGuardState(Evaluator parentNode, EvalGuardNode evalGuardNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId);
+    public EvalStateNode makeGuardState(Evaluator parentNode, EvalGuardNode evalGuardNode, MatchedEventMap beginState, Object stateNodeId);
 }

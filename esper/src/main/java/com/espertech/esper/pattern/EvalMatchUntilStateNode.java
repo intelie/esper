@@ -22,12 +22,10 @@ import java.util.HashMap;
  */
 public final class EvalMatchUntilStateNode extends EvalStateNode implements Evaluator, EvalStateNodeNonQuitting
 {
-    private final PatternContext context;
     private final HashMap<EvalStateNode, Integer> nodes;
     private final EvalMatchUntilNode evalMatchUntilNode;
     private final MatchedEventMap beginState;
     private final ArrayList<EventBean>[] matchedEventArrays;
-    private final MatchedEventConvertor matchedEventConvertor;
 
     private EvalStateNode stateMatcher;
     private EvalStateNode stateUntil;
@@ -39,37 +37,37 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
      * @param beginState contains the events that make up prior matches
-     * @param context contains handles to services required
      * @param evalMatchUntilNode is the factory node associated to the state
      */
     public EvalMatchUntilStateNode(Evaluator parentNode,
                                          EvalMatchUntilNode evalMatchUntilNode,
-                                         MatchedEventMap beginState,
-                                         PatternContext context,
-                                         MatchedEventConvertor matchedEventConvertor)
+                                         MatchedEventMap beginState)
     {
-        super(evalMatchUntilNode, parentNode, null);
+        super(parentNode, null);
 
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }
 
-        this.context = context;
         this.nodes = new HashMap<EvalStateNode, Integer>();
         this.beginState = beginState;
         this.matchedEventArrays = (ArrayList<EventBean>[]) new ArrayList[evalMatchUntilNode.getTagsArrayed().length];
         this.evalMatchUntilNode = evalMatchUntilNode;
-        this.matchedEventConvertor = matchedEventConvertor;
 
         EvalNode childMatcher = evalMatchUntilNode.getChildNodes().get(0);
-        stateMatcher = childMatcher.newState(this, beginState, context, null);
+        stateMatcher = childMatcher.newState(this, beginState, evalMatchUntilNode.getContext(), null);
 
         if (evalMatchUntilNode.getChildNodes().size() > 1)
         {
             EvalNode childUntil = evalMatchUntilNode.getChildNodes().get(1);
-            stateUntil = childUntil.newState(this, beginState, context, null);
+            stateUntil = childUntil.newState(this, beginState, evalMatchUntilNode.getContext(), null);
         }
+    }
+
+    @Override
+    public EvalNode getFactoryNode() {
+        return evalMatchUntilNode;
     }
 
     public final void start()
@@ -90,12 +88,12 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
             stateUntil.start();
         }
 
-        EventBean[] eventsPerStream = matchedEventConvertor.convert(beginState);
+        EventBean[] eventsPerStream = evalMatchUntilNode.getConvertor().convert(beginState);
         if (evalMatchUntilNode.getLowerBounds() != null) {
-            lowerbounds = (Integer) evalMatchUntilNode.getLowerBounds().getExprEvaluator().evaluate(eventsPerStream, true, context);
+            lowerbounds = (Integer) evalMatchUntilNode.getLowerBounds().getExprEvaluator().evaluate(eventsPerStream, true, evalMatchUntilNode.getContext());
         }
         if (evalMatchUntilNode.getUpperBounds() != null) {
-            upperbounds = (Integer) evalMatchUntilNode.getUpperBounds().getExprEvaluator().evaluate(eventsPerStream, true, context);
+            upperbounds = (Integer) evalMatchUntilNode.getUpperBounds().getExprEvaluator().evaluate(eventsPerStream, true, evalMatchUntilNode.getContext());
         }
         if (upperbounds != null && lowerbounds != null) {
             if (upperbounds < lowerbounds) {
@@ -177,7 +175,7 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
                     if (restart)
                     {
                         EvalNode childMatcher = evalMatchUntilNode.getChildNodes().get(0);
-                        stateMatcher = childMatcher.newState(this, beginState, context, null);
+                        stateMatcher = childMatcher.newState(this, beginState, evalMatchUntilNode.getContext(), null);
                         stateMatcher.start();
                     }
                 }

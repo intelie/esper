@@ -8,12 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.observer;
 
-import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.core.EPStatementHandleCallback;
+import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.core.EPStatementHandleCallback;
-import com.espertech.esper.core.ExtensionServicesContext;
 
 /**
  * Observer that will wait a certain interval before indicating true (raising an event).
@@ -21,7 +20,6 @@ import com.espertech.esper.core.ExtensionServicesContext;
 public class TimerIntervalObserver implements EventObserver, ScheduleHandleCallback
 {
     private final long msec;
-    private final PatternContext context;
     private final MatchedEventMap beginState;
     private final ObserverEventEvaluator observerEventEvaluator;
     private final ScheduleSlot scheduleSlot;
@@ -32,17 +30,15 @@ public class TimerIntervalObserver implements EventObserver, ScheduleHandleCallb
     /**
      * Ctor.
      * @param msec - number of milliseconds
-     * @param context - timer service
      * @param beginState - start state
      * @param observerEventEvaluator - receiver for events
      */
-    public TimerIntervalObserver(long msec, PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
+    public TimerIntervalObserver(long msec, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
     {
         this.msec = msec;
-        this.context = context;
         this.beginState = beginState;
         this.observerEventEvaluator = observerEventEvaluator;
-        this.scheduleSlot = context.getScheduleBucket().allocateSlot();
+        this.scheduleSlot = observerEventEvaluator.getContext().getScheduleBucket().allocateSlot();
     }
 
     public final void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
@@ -64,8 +60,8 @@ public class TimerIntervalObserver implements EventObserver, ScheduleHandleCallb
         }
         else
         {
-            scheduleHandle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
-            context.getSchedulingService().add(msec, scheduleHandle, scheduleSlot);
+            scheduleHandle = new EPStatementHandleCallback(observerEventEvaluator.getContext().getEpStatementHandle(), this);
+            observerEventEvaluator.getContext().getSchedulingService().add(msec, scheduleHandle, scheduleSlot);
             isTimerActive = true;
         }
     }
@@ -74,7 +70,7 @@ public class TimerIntervalObserver implements EventObserver, ScheduleHandleCallb
     {
         if (isTimerActive)
         {
-            context.getSchedulingService().remove(scheduleHandle, scheduleSlot);
+            observerEventEvaluator.getContext().getSchedulingService().remove(scheduleHandle, scheduleSlot);
             isTimerActive = false;
             scheduleHandle = null;
         }

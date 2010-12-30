@@ -8,13 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.observer;
 
-import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.schedule.ScheduleHandleCallback;
-import com.espertech.esper.schedule.ScheduleSpec;
-import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
+import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.schedule.ScheduleHandleCallback;
+import com.espertech.esper.schedule.ScheduleSlot;
+import com.espertech.esper.schedule.ScheduleSpec;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
 {
     private final ScheduleSpec scheduleSpec;
-    private final PatternContext context;
     private final ScheduleSlot scheduleSlot;
     private final MatchedEventMap beginState;
     private final ObserverEventEvaluator observerEventEvaluator;
@@ -36,17 +34,15 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
     /**
      * Ctor.
      * @param scheduleSpec - specification containing the crontab schedule
-     * @param context - timer serive to use
      * @param beginState - start state
      * @param observerEventEvaluator - receiver for events
      */
-    public TimerAtObserver(ScheduleSpec scheduleSpec, PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
+    public TimerAtObserver(ScheduleSpec scheduleSpec, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
     {
         this.scheduleSpec = scheduleSpec;
-        this.context = context;
         this.beginState = beginState;
         this.observerEventEvaluator = observerEventEvaluator;
-        this.scheduleSlot = context.getScheduleBucket().allocateSlot();
+        this.scheduleSlot = observerEventEvaluator.getContext().getScheduleBucket().allocateSlot();
     }
 
     public final void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
@@ -72,8 +68,8 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
             throw new IllegalStateException("Timer already active");
         }
 
-        scheduleHandle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
-        context.getSchedulingService().add(scheduleSpec, scheduleHandle, scheduleSlot);
+        scheduleHandle = new EPStatementHandleCallback(observerEventEvaluator.getContext().getEpStatementHandle(), this);
+        observerEventEvaluator.getContext().getSchedulingService().add(scheduleSpec, scheduleHandle, scheduleSlot);
         isTimerActive = true;
     }
 
@@ -86,7 +82,7 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
 
         if (isTimerActive)
         {
-            context.getSchedulingService().remove(scheduleHandle, scheduleSlot);
+            observerEventEvaluator.getContext().getSchedulingService().remove(scheduleHandle, scheduleSlot);
             isTimerActive = false;
             scheduleHandle = null;
         }

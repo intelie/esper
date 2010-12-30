@@ -10,7 +10,6 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.pattern.observer.EventObserver;
 import com.espertech.esper.pattern.observer.ObserverEventEvaluator;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,28 +19,33 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class EvalObserverStateNode extends EvalStateNode implements ObserverEventEvaluator
 {
+    private final EvalObserverNode evalObserverNode;
     private EventObserver eventObserver;
 
     /**
      * Constructor.
      * @param parentNode is the parent evaluator to call to indicate truth value
      * @param beginState contains the events that make up prior matches
-     * @param context contains handles to services required
      * @param evalObserverNode is the factory node associated to the state
      */
     public EvalObserverStateNode(Evaluator parentNode,
                              EvalObserverNode evalObserverNode,
-                                   MatchedEventMap beginState,
-                                   PatternContext context)
+                                   MatchedEventMap beginState)
     {
-        super(evalObserverNode, parentNode, null);
+        super(parentNode, null);
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor");
-        }
+        this.evalObserverNode = evalObserverNode;
+        eventObserver = evalObserverNode.getObserverFactory().makeObserver(evalObserverNode.getContext(), beginState, this, null, null);
+    }
 
-        eventObserver = evalObserverNode.getObserverFactory().makeObserver(context, beginState, this, null, null);
+    @Override
+    public EvalNode getFactoryNode() {
+        return evalObserverNode;
+    }
+
+    @Override
+    public PatternContext getContext() {
+        return evalObserverNode.getContext();
     }
 
     public void observerEvaluateTrue(MatchedEventMap matchEvent)

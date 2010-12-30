@@ -13,7 +13,6 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.pattern.PatternContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,18 +25,15 @@ public class ExpressionGuard implements Guard
 {
     private static Log log = LogFactory.getLog(ExpressionGuard.class);
 
-    private final PatternContext context;
     private final Quitable quitable;
     private final MatchedEventConvertor convertor;
     private final ExprEvaluator expression;
 
     /**
      * Ctor.
-     * @param context - contains timer service
      * @param quitable - to use to indicate that the gaurd quitted
      */
-    public ExpressionGuard(MatchedEventConvertor convertor, ExprEvaluator expression, PatternContext context, Quitable quitable) {
-        this.context = context;
+    public ExpressionGuard(MatchedEventConvertor convertor, ExprEvaluator expression, Quitable quitable) {
         this.quitable = quitable;
         this.convertor = convertor;
         this.expression = expression;
@@ -51,7 +47,7 @@ public class ExpressionGuard implements Guard
 
         try
         {
-            Object result = expression.evaluate(eventsPerStream, true, context);
+            Object result = expression.evaluate(eventsPerStream, true, quitable.getContext());
             if (result == null) {
                 return false;
             }
@@ -65,7 +61,7 @@ public class ExpressionGuard implements Guard
         }
         catch (RuntimeException ex)
         {
-            String message = "Failed to evaluate expression for pattern-guard for statement '" + context.getStatementName() + "'";
+            String message = "Failed to evaluate expression for pattern-guard for statement '" + quitable.getContext().getStatementName() + "'";
             if (ex.getMessage() != null)
             {
                 message += ": " + ex.getMessage();

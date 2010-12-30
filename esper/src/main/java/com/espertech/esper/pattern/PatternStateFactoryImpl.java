@@ -8,81 +8,69 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprNode;
-
-import java.util.List;
-
 /**
  * Default pattern state factory.
  */
 public class PatternStateFactoryImpl implements PatternStateFactory
 {
-    private PatternContext context;
-
-    public void setContext(PatternContext context)
+    public EvalStateNode makeGuardState(Evaluator parentNode, EvalGuardNode evalGuardNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        this.context = context;
+        return new EvalGuardStateNode(parentNode, evalGuardNode, beginState, stateNodeId);
     }
 
-    public EvalStateNode makeGuardState(Evaluator parentNode, EvalGuardNode evalGuardNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId)
+    public EvalStateNode makeOrState(Evaluator parentNode, EvalOrNode evalOrNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        return new EvalGuardStateNode(parentNode, evalGuardNode, beginState, context, stateNodeId);
+        return new EvalOrStateNode(parentNode, evalOrNode, beginState);
     }
 
-    public EvalStateNode makeOrState(Evaluator parentNode, EvalOrNode evalOrNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId)
+    public EvalStateNode makeEveryStateNode(Evaluator parentNode, EvalEveryNode evalEveryNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        return new EvalOrStateNode(parentNode, evalOrNode, beginState, context);
+        return new EvalEveryStateNode(parentNode, evalEveryNode, beginState);
     }
 
-    public EvalStateNode makeEveryStateNode(Evaluator parentNode, EvalEveryNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId)
+    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        return new EvalEveryStateNode(parentNode, evalEveryNode, beginState, context);
-    }
-
-    public EvalStateNode makeEveryDistinctStateNode(Evaluator parentNode, EvalEveryDistinctNode evalEveryNode, MatchedEventMap beginState, PatternContext context, Object stateNodeId, ExprEvaluator[] expressions, MatchedEventConvertor matchedEventConvertor, Long msecToExpiry)
-    {
-        if (msecToExpiry == null) {
-            return new EvalEveryDistinctStateNode(parentNode, evalEveryNode, beginState, context, expressions, matchedEventConvertor);
+        if (evalEveryNode.getMsecToExpire() == null) {
+            return new EvalEveryDistinctStateNode(parentNode, evalEveryNode, beginState);
         }
         else {
-            return new EvalEveryDistinctStateExpireKeyNode(parentNode, evalEveryNode, beginState, context, expressions, matchedEventConvertor, msecToExpiry);
+            return new EvalEveryDistinctStateExpireKeyNode(parentNode, evalEveryNode, beginState);
         }
     }
 
     public EvalStateNode makeNotNode(Evaluator parentNode, EvalNotNode evalNotNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        return new EvalNotStateNode(parentNode, evalNotNode, beginState, context);
+        return new EvalNotStateNode(parentNode, evalNotNode, beginState);
     }
 
     public EvalStateNode makeAndStateNode(Evaluator parentNode, EvalAndNode evalAndNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        return new EvalAndStateNode(parentNode, evalAndNode, beginState, context);
+        return new EvalAndStateNode(parentNode, evalAndNode, beginState);
     }
 
-    public EvalStateNode makeRootNode(EvalNode evalChildNode, MatchedEventMap beginState)
+    public EvalStateNode makeRootNode(EvalNode evalChildNode, MatchedEventMap beginState, PatternContext context)
     {
         return new EvalRootStateNode(evalChildNode, beginState, context);
     }
 
     public EvalStateNode makeObserverNode(Evaluator parentNode, EvalObserverNode evalObserverNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        return new EvalObserverStateNode(parentNode, evalObserverNode, beginState, context);
+        return new EvalObserverStateNode(parentNode, evalObserverNode, beginState);
     }
 
     public EvalStateNode makeFollowedByState(Evaluator parentNode, EvalFollowedByNode evalFollowedByNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        return new EvalFollowedByStateNode(parentNode, evalFollowedByNode, beginState, context);
+        return new EvalFollowedByStateNode(parentNode, evalFollowedByNode, beginState);
     }
 
-    public EvalStateNode makeMatchUntilState(Evaluator parentNode, EvalMatchUntilNode evalMatchUntilNode, MatchedEventMap beginState, Object stateObjectId, MatchedEventConvertor convertor)       
+    public EvalStateNode makeMatchUntilState(Evaluator parentNode, EvalMatchUntilNode evalMatchUntilNode, MatchedEventMap beginState, Object stateObjectId)       
     {
-        return new EvalMatchUntilStateNode(parentNode, evalMatchUntilNode, beginState, context, convertor);
+        return new EvalMatchUntilStateNode(parentNode, evalMatchUntilNode, beginState);
     }
 
     public EvalStateNode makeFilterStateNode(Evaluator parentNode, EvalFilterNode evalFilterNode, MatchedEventMap beginState, Object stateNodeId)
     {
-        return new EvalFilterStateNode(parentNode, evalFilterNode, beginState, context);
+        return new EvalFilterStateNode(parentNode, evalFilterNode, beginState);
     }
 
     public EvalStateNode makeStateNode(EvalNodeNumber evalNodeNumber, MatchedEventMap matchEvents, Object stateObjectId)

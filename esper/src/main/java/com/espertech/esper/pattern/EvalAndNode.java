@@ -19,6 +19,7 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
 public final class EvalAndNode extends EvalNode
 {
     private static final long serialVersionUID = 6830000101092907359L;
+    private transient PatternContext context;
 
     public final EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
@@ -36,6 +37,7 @@ public final class EvalAndNode extends EvalNode
                     + getChildNodes().size());
         }
 
+        this.context = context;
         return context.getPatternStateFactory().makeAndStateNode(parentNode, this, beginState, stateNodeId);
     }
 
@@ -45,4 +47,8 @@ public final class EvalAndNode extends EvalNode
     }
 
     private static final Log log = LogFactory.getLog(EvalAndNode.class);
+
+    public PatternContext getContext() {
+        return context;
+    }
 }

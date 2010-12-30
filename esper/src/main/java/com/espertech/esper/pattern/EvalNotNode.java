@@ -19,6 +19,8 @@ public final class EvalNotNode extends EvalNode
 {
     private static final long serialVersionUID = -8072564032270892802L;
 
+    private transient PatternContext context;
+
     public final EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
                                         PatternContext context, Object stateNodeId)
@@ -34,7 +36,12 @@ public final class EvalNotNode extends EvalNode
                     + getChildNodes().size());
         }
 
+        this.context = context;
         return context.getPatternStateFactory().makeNotNode(parentNode, this, beginState, stateNodeId);
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     public final String toString()

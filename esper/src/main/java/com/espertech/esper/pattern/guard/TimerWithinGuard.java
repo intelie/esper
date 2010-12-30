@@ -22,7 +22,6 @@ import com.espertech.esper.core.ExtensionServicesContext;
 public class TimerWithinGuard implements Guard, ScheduleHandleCallback
 {
     private final long msec;
-    private final PatternContext context;
     private final Quitable quitable;
     private final ScheduleSlot scheduleSlot;
 
@@ -32,15 +31,13 @@ public class TimerWithinGuard implements Guard, ScheduleHandleCallback
     /**
      * Ctor.
      * @param msec - number of millisecond to guard expiration
-     * @param context - contains timer service
      * @param quitable - to use to indicate that the gaurd quitted
      */
-    public TimerWithinGuard(long msec, PatternContext context, Quitable quitable)
+    public TimerWithinGuard(long msec, Quitable quitable)
     {
         this.msec = msec;
-        this.context = context;
         this.quitable = quitable;
-        this.scheduleSlot = context.getScheduleBucket().allocateSlot();
+        this.scheduleSlot = quitable.getContext().getScheduleBucket().allocateSlot();
     }
 
     public void startGuard()
@@ -51,8 +48,8 @@ public class TimerWithinGuard implements Guard, ScheduleHandleCallback
         }
 
         // Start the stopwatch timer
-        scheduleHandle = new EPStatementHandleCallback(context.getEpStatementHandle(), this);
-        context.getSchedulingService().add(msec, scheduleHandle, scheduleSlot);
+        scheduleHandle = new EPStatementHandleCallback(quitable.getContext().getEpStatementHandle(), this);
+        quitable.getContext().getSchedulingService().add(msec, scheduleHandle, scheduleSlot);
         isTimerActive = true;
     }
 
@@ -60,7 +57,7 @@ public class TimerWithinGuard implements Guard, ScheduleHandleCallback
     {
         if (isTimerActive)
         {
-            context.getSchedulingService().remove(scheduleHandle, scheduleSlot);
+            quitable.getContext().getSchedulingService().remove(scheduleHandle, scheduleSlot);
             scheduleHandle = null;
             isTimerActive = false;
         }

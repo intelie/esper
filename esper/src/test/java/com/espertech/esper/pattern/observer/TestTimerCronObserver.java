@@ -32,9 +32,9 @@ public class TestTimerCronObserver extends TestCase
         ScheduleSpec scheduleSpec = new ScheduleSpec();
         scheduleSpec.addValue(ScheduleUnit.SECONDS, 1);
 
-        evaluator = new SupportObserverEvaluator();
+        evaluator = new SupportObserverEvaluator(context);
 
-        observer =  new TimerAtObserver(scheduleSpec, context, beginState, evaluator);
+        observer =  new TimerAtObserver(scheduleSpec, beginState, evaluator);
     }
 
     public void testStartAndObserve()

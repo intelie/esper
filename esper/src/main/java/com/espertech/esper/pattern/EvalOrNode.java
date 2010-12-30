@@ -19,6 +19,8 @@ public final class EvalOrNode extends EvalNode
 {
     private static final long serialVersionUID = -7512529701280258859L;
 
+    private transient PatternContext context;
+
     public final EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
                                         PatternContext context, Object stateNodeId)
@@ -34,7 +36,12 @@ public final class EvalOrNode extends EvalNode
                     + getChildNodes().size());
         }
 
-        return context.getPatternStateFactory().makeOrState(parentNode, this, beginState, context, stateNodeId);
+        this.context = context;
+        return context.getPatternStateFactory().makeOrState(parentNode, this, beginState, stateNodeId);
+    }
+
+    public PatternContext getContext() {
+        return context;
     }
 
     public final String toString()

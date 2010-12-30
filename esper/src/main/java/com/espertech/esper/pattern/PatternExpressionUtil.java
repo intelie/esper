@@ -10,6 +10,8 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.Log;
@@ -24,6 +26,18 @@ import java.util.List;
 public class PatternExpressionUtil
 {
     private static Log log = LogFactory.getLog(PatternExpressionUtil.class);
+
+    public static MultiKeyUntyped getKeys(MatchedEventMap currentState, EvalEveryDistinctNode everyDistinctNode)
+    {
+        EventBean[] eventsPerStream = everyDistinctNode.getConvertor().convert(currentState);
+        ExprEvaluator[] expressions = everyDistinctNode.getExpressionsArray();
+        Object[] keys = new Object[expressions.length];
+        for (int i = 0; i < keys.length; i++)
+        {
+            keys[i] = expressions[i].evaluate(eventsPerStream, true, everyDistinctNode.getContext());
+        }
+        return new MultiKeyUntyped(keys);
+    }
 
     /**
      * Ctor.
