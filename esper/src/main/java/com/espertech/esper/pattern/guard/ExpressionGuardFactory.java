@@ -51,6 +51,6 @@ public class ExpressionGuardFactory implements GuardFactory, MetaDefItem, Serial
 
     public Guard makeGuard(PatternContext context, MatchedEventMap matchedEventMap, Quitable quitable, Object stateNodeId, Object guardState)
     {
-        return new ExpressionGuard(convertor, expression.getExprEvaluator(), context, quitable);
+        return new ExpressionGuard(convertor, expression.getExprEvaluator(), quitable);
     }
 }

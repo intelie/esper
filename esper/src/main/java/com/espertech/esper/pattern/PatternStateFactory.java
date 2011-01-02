@@ -14,15 +14,6 @@ package com.espertech.esper.pattern;
 public interface PatternStateFactory
 {
     /**
-     * Makes a parent state node for the child state node.
-     * @param evalNode is the factory for the parent node
-     * @param matchEvents is the current match state
-     * @param stateObjectId is the parent state object id
-     * @return parent state object
-     */
-    public EvalStateNode makeParentStateNode(EvalNode evalNode, MatchedEventMap matchEvents, Object stateObjectId);
-
-    /**
      * Makes a root state node.
      * @param evalChildNode is the first child node of the root node
      * @param beginState is the state node's begin state
@@ -59,15 +50,6 @@ public interface PatternStateFactory
      * @return state node
      */
     public EvalStateNode makeFilterStateNode(Evaluator parentNode, EvalFilterNode evalFilterNode, MatchedEventMap beginState, Object stateNodeId);
-
-    /**
-     * Makes any new state node.
-     * @param evalNodeNumber is the factory node number
-     * @param beginState is the begin state
-     * @param stateObjectId is the state node's object id
-     * @return state node
-     */
-    public EvalStateNode makeStateNode(EvalNodeNumber evalNodeNumber, MatchedEventMap beginState, Object stateObjectId);
 
     /**
      * Makes a followed-by state node.

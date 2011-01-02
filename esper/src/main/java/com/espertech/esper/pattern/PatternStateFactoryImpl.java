@@ -72,14 +72,4 @@ public class PatternStateFactoryImpl implements PatternStateFactory
     {
         return new EvalFilterStateNode(parentNode, evalFilterNode, beginState);
     }
-
-    public EvalStateNode makeStateNode(EvalNodeNumber evalNodeNumber, MatchedEventMap matchEvents, Object stateObjectId)
-    {
-        throw new UnsupportedOperationException("State node factory not supported");
-    }
-
-    public EvalStateNode makeParentStateNode(EvalNode evalNode, MatchedEventMap matchEvents, Object stateObjectId)
-    {
-        throw new UnsupportedOperationException("State node factory not supported");
-    }
 }
