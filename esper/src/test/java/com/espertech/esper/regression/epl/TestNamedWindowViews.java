@@ -1716,7 +1716,7 @@ public class TestNamedWindowViews extends TestCase
         stmtDelete.destroy();
     }
 
-    public void testInvalidNoDataWindow()
+    public void testInvalid()
     {
         assertEquals("Error starting statement: Named windows require one or more child views that are data window views [create window MyWindow.std:groupwin(value).stat:uni(value) as MyMap]",
                      tryInvalid("create window MyWindow.std:groupwin(value).stat:uni(value) as MyMap"));
@@ -1724,6 +1724,21 @@ public class TestNamedWindowViews extends TestCase
                      tryInvalid("create window MyWindow as MyMap"));
         assertEquals("Named window 'dummy' has not been declared [on MyMap delete from dummy]",
                      tryInvalid("on MyMap delete from dummy"));
+
+        // test model-after with no field
+        Map<String, Object> innerType = new HashMap<String, Object>();
+        innerType.put("key", String.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("InnerMap", innerType);
+        Map<String, Object> outerType = new HashMap<String, Object>();
+        outerType.put("innermap", "InnerMap");
+        epService.getEPAdministrator().getConfiguration().addEventType("OuterMap", outerType);
+        try {
+            epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as select innermap.abc from OuterMap");
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals("Failed to resolve property 'innermap.abc' to a stream or nested property in a stream [create window MyWindow.win:keepall() as select innermap.abc from OuterMap]", ex.getMessage());
+        }
     }
 
     public void testAlreadyExists()
