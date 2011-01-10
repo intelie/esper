@@ -23,25 +23,21 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 /**
  * Contains handles to implementations of services needed by evaluation nodes.
  */
-public final class PatternContext implements ExprEvaluatorContext
+public class PatternContext implements ExprEvaluatorContext
 {
     private final int streamNumber;
     private final StatementContext statementContext;
-    private final PatternStateFactory patternStateFactory;
 
     /**
      * Constructor.
-     * @param patternStateFactory is the state node factory for the pattern
      * @param statementContext is the statement context
      * @param streamNumber is the stream number
      */
     public PatternContext(StatementContext statementContext,
-                          int streamNumber,
-                          PatternStateFactory patternStateFactory)
+                          int streamNumber)
     {
         this.streamNumber = streamNumber;
         this.statementContext = statementContext;
-        this.patternStateFactory = patternStateFactory;
     }
 
     /**
@@ -87,15 +83,6 @@ public final class PatternContext implements ExprEvaluatorContext
     public EPStatementHandle getEpStatementHandle()
     {
         return statementContext.getEpStatementHandle();
-    }
-
-    /**
-     * Returns the pattern state node factory to use.
-     * @return factory for pattern state
-     */
-    public PatternStateFactory getPatternStateFactory()
-    {
-        return patternStateFactory;
     }
 
     /**

@@ -83,7 +83,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem, Ser
     }
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator,
-                                      Object stateNodeId, Object observerState)
+                                      EvalStateNodeNumber stateNodeId, Object observerState)
     {
         List<Object> observerParameters = PatternExpressionUtil.evaluate("Timer-at observer", beginState, params, convertor, context);
 

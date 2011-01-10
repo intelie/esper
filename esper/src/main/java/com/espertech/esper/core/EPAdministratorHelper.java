@@ -20,6 +20,7 @@ import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.pattern.PatternNodeFactory;
 import com.espertech.esper.schedule.SchedulingService;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
@@ -71,7 +72,7 @@ public class EPAdministratorHelper
 
     public static StatementSpecRaw compileEPL(String eplStatement, String eplStatementForErrorMsg, boolean addPleaseCheck, String statementName, EPServicesContext services, SelectClauseStreamSelectorEnum defaultStreamSelector) {
         return compileEPL(eplStatement, eplStatementForErrorMsg, addPleaseCheck, statementName, defaultStreamSelector,
-                services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), services.getEngineURI(), services.getConfigSnapshot());
+                services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), services.getEngineURI(), services.getConfigSnapshot(), services.getPatternNodeFactory());
     }
 
     /**
@@ -88,7 +89,8 @@ public class EPAdministratorHelper
                                               VariableService variableService,
                                               SchedulingService schedulingService,
                                               String engineURI,
-                                              ConfigurationInformation configSnapshot)
+                                              ConfigurationInformation configSnapshot,
+                                              PatternNodeFactory patternNodeFactory)
     {
         if (log.isDebugEnabled())
         {
@@ -99,7 +101,7 @@ public class EPAdministratorHelper
         Tree ast = parseResult.getTree();
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
 
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, engineImportService, variableService, schedulingService, defaultStreamSelector, engineURI, configSnapshot);
+        EPLTreeWalker walker = new EPLTreeWalker(nodes, engineImportService, variableService, schedulingService, defaultStreamSelector, engineURI, configSnapshot, patternNodeFactory);
 
         try
         {
@@ -137,7 +139,7 @@ public class EPAdministratorHelper
         ParseResult parseResult = ParseHelper.parse(expression, expressionForErrorMessage, addPleaseCheck, patternParseRule);
         Tree ast = parseResult.getTree();
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI(), services.getConfigSnapshot());
+        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI(), services.getConfigSnapshot(), services.getPatternNodeFactory());
 
         try
         {

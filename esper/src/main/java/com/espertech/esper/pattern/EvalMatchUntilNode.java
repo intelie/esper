@@ -9,7 +9,6 @@
 package com.espertech.esper.pattern;
 
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,7 +17,7 @@ import java.util.Set;
 /**
  * This class represents a match-until observer in the evaluation tree representing any event expressions.
  */
-public final class EvalMatchUntilNode extends EvalNode
+public class EvalMatchUntilNode extends EvalNode
 {
     private static final long serialVersionUID = -959026931248456356L;
 
@@ -31,12 +30,11 @@ public final class EvalMatchUntilNode extends EvalNode
     /**
      * Ctor.
      */
-    public EvalMatchUntilNode(ExprNode lowerBounds, ExprNode upperBounds, MatchedEventConvertor convertor)
+    protected EvalMatchUntilNode(ExprNode lowerBounds, ExprNode upperBounds)
             throws IllegalArgumentException
     {
         this.lowerBounds = lowerBounds;
         this.upperBounds = upperBounds;
-        this.convertor = convertor;
     }
 
     /**
@@ -88,22 +86,15 @@ public final class EvalMatchUntilNode extends EvalNode
         }
     }
 
-    public final EvalStateNode newState(Evaluator parentNode,
+    public EvalStateNode newState(Evaluator parentNode,
                                                  MatchedEventMap beginState,
                                                  PatternContext context,
-                                                 Object stateNodeId)
+                                                 EvalStateNodeNumber stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".newState");
+        if (this.context == null) {
+            this.context = context;
         }
-        
-        if (convertor == null) {
-            throw new IllegalStateException("No match-event expression conversion provided");
-        }
-
-        this.context = context;
-        return context.getPatternStateFactory().makeMatchUntilState(parentNode, this, beginState, stateNodeId);
+        return new EvalMatchUntilStateNode(parentNode, this, beginState);
     }
 
     public PatternContext getContext() {

@@ -9,15 +9,14 @@
 package com.espertech.esper.pattern;
 
 import com.espertech.esper.util.MetaDefItem;
-import com.espertech.esper.epl.expression.ExprNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
-import java.io.Serializable;
 
 /**
  * Superclass of all nodes in an evaluation tree representing an event pattern expression.
@@ -44,7 +43,7 @@ public abstract class EvalNode implements MetaDefItem, Serializable
     public abstract EvalStateNode newState(Evaluator parentNode,
                                            MatchedEventMap beginState,
                                            PatternContext context,
-                                           Object stateNodeId);
+                                           EvalStateNodeNumber stateNodeId);
 
     /**
      * Constructor creates a list of child nodes.

@@ -2,10 +2,7 @@ package com.espertech.esper.regression.client;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.pattern.MatchedEventConvertor;
-import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.pattern.PatternExpressionUtil;
+import com.espertech.esper.pattern.*;
 import com.espertech.esper.pattern.guard.Guard;
 import com.espertech.esper.pattern.guard.GuardFactorySupport;
 import com.espertech.esper.pattern.guard.GuardParameterException;
@@ -39,7 +36,7 @@ public class MyCountToPatternGuardFactory extends GuardFactorySupport
         this.convertor = convertor;
     }
 
-    public Guard makeGuard(PatternContext context, MatchedEventMap beginState, Quitable quitable, Object stateNodeId, Object guardState)
+    public Guard makeGuard(PatternContext context, MatchedEventMap beginState, Quitable quitable, EvalStateNodeNumber stateNodeId, Object guardState)
     {
         Object parameter = PatternExpressionUtil.evaluate("Count-to guard", beginState, numCountToExpr, convertor, null);
         if (parameter == null)

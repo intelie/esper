@@ -16,7 +16,7 @@ package com.espertech.esper.pattern;
 public abstract class EvalStateNode
 {
     private Evaluator parentEvaluator;
-    private final Object stateObjectId;
+    private final EvalStateNodeNumber stateObjectId;
 
     /**
      * Starts the event expression or an instance of it.
@@ -59,7 +59,7 @@ public abstract class EvalStateNode
      * @param parentNode is the evaluator for this node on which to indicate a change in truth value
      * @param stateObjectId is the state object id assigned to state node
      */
-    public EvalStateNode(Evaluator parentNode, Object stateObjectId)
+    public EvalStateNode(Evaluator parentNode, EvalStateNodeNumber stateObjectId)
     {
         this.parentEvaluator = parentNode;
         this.stateObjectId = stateObjectId;

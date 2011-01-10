@@ -121,7 +121,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     public EPStatement create(EPStatementObjectModel sodaStatement, String statementName, Object userObject) throws EPException
     {
         // Specifies the statement
-        StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI());
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory());
         String eplStatement = sodaStatement.toEPL();
 
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
@@ -133,7 +133,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException
     {
         // Specifies the statement
-        StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI());
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory());
         String eplStatement = sodaStatement.toEPL();
 
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null, null);
@@ -171,7 +171,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     {
         EPPreparedStatementImpl impl = (EPPreparedStatementImpl) prepared;
 
-        StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI());
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory());
         String eplStatement = impl.getModel().toEPL();
 
         return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
@@ -181,7 +181,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     {
         EPPreparedStatementImpl impl = (EPPreparedStatementImpl) prepared;
 
-        StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI());
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory());
         String eplStatement = impl.getModel().toEPL();
 
         return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null, null);

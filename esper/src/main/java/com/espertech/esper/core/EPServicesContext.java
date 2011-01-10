@@ -24,6 +24,7 @@ import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterServiceSPI;
+import com.espertech.esper.pattern.PatternNodeFactory;
 import com.espertech.esper.schedule.SchedulingMgmtService;
 import com.espertech.esper.schedule.SchedulingServiceSPI;
 import com.espertech.esper.timer.TimeSourceService;
@@ -72,6 +73,7 @@ public final class EPServicesContext
     private SchedulingMgmtService schedulingMgmtService;
     private DeploymentStateService deploymentStateService;
     private ExceptionHandlingService exceptionHandlingService;
+    private PatternNodeFactory patternNodeFactory;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -141,7 +143,8 @@ public final class EPServicesContext
                              StatementIsolationService statementIsolationService,
                              SchedulingMgmtService schedulingMgmtService,
                              DeploymentStateService deploymentStateService,
-                             ExceptionHandlingService exceptionHandlingService)
+                             ExceptionHandlingService exceptionHandlingService,
+                             PatternNodeFactory patternNodeFactory)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -177,6 +180,11 @@ public final class EPServicesContext
         this.statementVariableRef = statementVariableRef;
         this.deploymentStateService = deploymentStateService;
         this.exceptionHandlingService = exceptionHandlingService;
+        this.patternNodeFactory = patternNodeFactory;
+    }
+
+    public PatternNodeFactory getPatternNodeFactory() {
+        return patternNodeFactory;
     }
 
     /**

@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.guard;
 
+import com.espertech.esper.pattern.EvalStateNodeNumber;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.pattern.MatchedEventMap;
@@ -40,6 +41,6 @@ public interface GuardFactory
     public Guard makeGuard(PatternContext context,
                            MatchedEventMap beginState,
                            Quitable quitable,
-                           Object stateNodeId,
+                           EvalStateNodeNumber stateNodeId,
                            Object guardState);
 }

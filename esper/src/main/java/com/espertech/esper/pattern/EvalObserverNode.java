@@ -10,7 +10,6 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.pattern.observer.ObserverFactory;
 import com.espertech.esper.epl.spec.PatternObserverSpec;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class represents an observer expression in the evaluation tree representing an pattern expression.
  */
-public final class EvalObserverNode extends EvalNode
+public class EvalObserverNode extends EvalNode
 {
     private final PatternObserverSpec patternObserverSpec;
     private transient ObserverFactory observerFactory;
@@ -29,7 +28,7 @@ public final class EvalObserverNode extends EvalNode
      * Constructor.
      * @param patternObserverSpec is the factory to use to get an observer instance
      */
-    public EvalObserverNode(PatternObserverSpec patternObserverSpec)
+    protected EvalObserverNode(PatternObserverSpec patternObserverSpec)
     {
         this.patternObserverSpec = patternObserverSpec;
     }
@@ -61,24 +60,15 @@ public final class EvalObserverNode extends EvalNode
         return observerFactory;
     }
 
-    public final EvalStateNode newState(Evaluator parentNode,
+    public EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
                                         PatternContext context,
-                                        Object stateNodeId)
+                                        EvalStateNodeNumber stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".newState");
+        if (this.context == null) {
+            this.context = context;
         }
-
-        if (!getChildNodes().isEmpty())
-        {
-            throw new IllegalStateException("Expected number of child nodes incorrect, expected no child nodes, found "
-                    + getChildNodes().size());
-        }
-
-        this.context = context;
-        return context.getPatternStateFactory().makeObserverNode(parentNode, this, beginState, stateNodeId);
+        return new EvalObserverStateNode(parentNode, this, beginState);
     }
 
     public PatternContext getContext() {

@@ -1,5 +1,6 @@
 package com.espertech.esper.support.pattern;
 
+import com.espertech.esper.pattern.EvalStateNodeNumber;
 import com.espertech.esper.pattern.observer.ObserverFactory;
 import com.espertech.esper.pattern.observer.EventObserver;
 import com.espertech.esper.pattern.observer.ObserverEventEvaluator;
@@ -17,10 +18,9 @@ public class SupportObserverFactory implements ObserverFactory
 {
     public void setObserverParameters(List<ExprNode> observerParameters, MatchedEventConvertor convertor) throws ObserverParameterException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
+    public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, EvalStateNodeNumber stateNodeId, Object observerState)
     {
         return null;
     }

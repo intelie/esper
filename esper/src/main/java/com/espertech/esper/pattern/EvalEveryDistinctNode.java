@@ -11,7 +11,6 @@ package com.espertech.esper.pattern;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,10 +19,10 @@ import java.util.List;
 /**
  * This class represents an 'every-distinct' operator in the evaluation tree representing an event expression.
  */
-public final class EvalEveryDistinctNode extends EvalNode
+public class EvalEveryDistinctNode extends EvalNode
 {
     private List<ExprNode> expressions;
-    private ExprEvaluator[] expressionsArray;
+    protected ExprEvaluator[] expressionsArray;
     private transient MatchedEventConvertor convertor;
     private transient PatternContext context;
     private Long msecToExpire;
@@ -32,36 +31,27 @@ public final class EvalEveryDistinctNode extends EvalNode
     /**
      * Ctor.
      * @param expressions distinct-value expressions
-     * @param convertor converts matching events to an event-per-stream for evaluation
      */
-    public EvalEveryDistinctNode(List<ExprNode> expressions, MatchedEventConvertor convertor)
+    protected EvalEveryDistinctNode(List<ExprNode> expressions)
     {
         this.expressions = expressions;
-        this.convertor = convertor;
     }
 
-    public final EvalStateNode newState(Evaluator parentNode,
+    public EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
                                         PatternContext context,
-                                        Object stateNodeId)
+                                        EvalStateNodeNumber stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".newState");
-        }
-
-        if (getChildNodes().size() != 1)
-        {
-            throw new IllegalStateException("Expected number of child nodes incorrect, expected 1 node, found "
-                    + getChildNodes().size());
-        }
-
         if (expressionsArray == null) {
             expressionsArray = ExprNodeUtility.getEvaluators(expressions);
             this.context = context;
         }
-
-        return context.getPatternStateFactory().makeEveryDistinctStateNode(parentNode, this, beginState, stateNodeId);
+        if (msecToExpire == null) {
+            return new EvalEveryDistinctStateNode(parentNode, this, beginState);
+        }
+        else {
+            return new EvalEveryDistinctStateExpireKeyNode(parentNode, this, beginState);
+        }
     }
 
     public ExprEvaluator[] getExpressionsArray() {

@@ -10,14 +10,13 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.epl.spec.FilterSpecRaw;
 import com.espertech.esper.filter.FilterSpecCompiled;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a filter of events in the evaluation tree representing any event expressions.
  */
-public final class EvalFilterNode extends EvalNode
+public class EvalFilterNode extends EvalNode
 {
     private static final long serialVersionUID = 0L;
     private final FilterSpecRaw rawFilterSpec;
@@ -31,30 +30,21 @@ public final class EvalFilterNode extends EvalNode
      * @param eventAsName is the name to use for adding matching events to the MatchedEventMap
      * table used when indicating truth value of true.
      */
-    public EvalFilterNode(FilterSpecRaw filterSpecification,
+    protected EvalFilterNode(FilterSpecRaw filterSpecification,
                                 String eventAsName)
     {
         this.rawFilterSpec = filterSpecification;
         this.eventAsName = eventAsName;
     }
 
-    public final EvalStateNode newState(Evaluator parentNode,
+    public EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
-                                        PatternContext context, Object stateNodeId)
+                                        PatternContext context, EvalStateNodeNumber stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".newState");
+        if (this.context == null) {
+            this.context = context;
         }
-
-        if (!getChildNodes().isEmpty())
-        {
-            throw new IllegalStateException("Expected number of child nodes incorrect, expected no child nodes, found "
-                    + getChildNodes().size());
-        }
-
-        this.context = context;
-        return context.getPatternStateFactory().makeFilterStateNode(parentNode, this, beginState, stateNodeId);
+        return new EvalFilterStateNode(parentNode, this, beginState);
     }
 
     public PatternContext getContext() {

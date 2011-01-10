@@ -10,14 +10,13 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.pattern.guard.GuardFactory;
 import com.espertech.esper.epl.spec.PatternGuardSpec;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a guard in the evaluation tree representing an event expressions.
  */
-public final class EvalGuardNode extends EvalNode
+public class EvalGuardNode extends EvalNode
 {
     private PatternGuardSpec patternGuardSpec;
     private transient GuardFactory guardFactory;
@@ -28,7 +27,7 @@ public final class EvalGuardNode extends EvalNode
      * Constructor.
      * @param patternGuardSpec - factory for guard construction
      */
-    public EvalGuardNode(PatternGuardSpec patternGuardSpec)
+    protected EvalGuardNode(PatternGuardSpec patternGuardSpec)
     {
         this.patternGuardSpec = patternGuardSpec;
     }
@@ -51,23 +50,14 @@ public final class EvalGuardNode extends EvalNode
         this.guardFactory = guardFactory;
     }
 
-    public final EvalStateNode newState(Evaluator parentNode,
+    public EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
-                                        PatternContext context, Object stateNodeId)
+                                        PatternContext context, EvalStateNodeNumber stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".newState");
+        if (this.context == null) {
+            this.context = context;
         }
-
-        if (getChildNodes().size() != 1)
-        {
-            throw new IllegalStateException("Expected number of child nodes incorrect, expected 1 child node, found "
-                    + getChildNodes().size());
-        }
-
-        this.context = context;
-        return context.getPatternStateFactory().makeGuardState(parentNode, this, beginState, stateNodeId);
+        return new EvalGuardStateNode(parentNode, this, beginState, stateNodeId);
     }
 
     public PatternContext getContext() {

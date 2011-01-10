@@ -11,6 +11,6 @@ public class SupportPatternContextFactory
     public static PatternContext makeContext()
     {
         StatementContext stmtContext = SupportStatementContextFactory.makeContext();
-        return new PatternContext(stmtContext, 1, null);
+        return new PatternContext(stmtContext, 1);
     }
 }

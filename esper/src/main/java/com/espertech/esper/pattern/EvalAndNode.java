@@ -10,35 +10,28 @@ package com.espertech.esper.pattern;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 
 
 /**
  * This class represents an 'and' operator in the evaluation tree representing an event expressions.
  */
-public final class EvalAndNode extends EvalNode
+public class EvalAndNode extends EvalNode
 {
     private static final long serialVersionUID = 6830000101092907359L;
     private transient PatternContext context;
 
-    public final EvalStateNode newState(Evaluator parentNode,
+    protected EvalAndNode() {
+    }
+
+    public EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
                                         PatternContext context,
-                                        Object stateNodeId)
+                                        EvalStateNodeNumber stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".newState");
+        if (this.context == null) {
+            this.context = context;
         }
-
-        if (getChildNodes().size() <= 1)
-        {
-            throw new IllegalStateException("Expected number of child nodes incorrect, expected >=2 nodes, found "
-                    + getChildNodes().size());
-        }
-
-        this.context = context;
-        return context.getPatternStateFactory().makeAndStateNode(parentNode, this, beginState, stateNodeId);
+        return new EvalAndStateNode(parentNode, this, beginState);        
     }
 
     public final String toString()

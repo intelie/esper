@@ -9,6 +9,7 @@
 package com.espertech.esper.pattern.observer;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.pattern.EvalStateNodeNumber;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.MatchedEventConvertor;
@@ -40,6 +41,6 @@ public interface ObserverFactory
     public EventObserver makeObserver(PatternContext context,
                                       MatchedEventMap beginState,
                                       ObserverEventEvaluator observerEventEvaluator,
-                                      Object stateNodeId,
+                                      EvalStateNodeNumber stateNodeId,
                                       Object observerState);
 }

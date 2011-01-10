@@ -35,7 +35,7 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
     public EvalGuardStateNode(Evaluator parentNode,
                                EvalGuardNode evalGuardNode,
                                  MatchedEventMap beginState,
-                                 Object stateObjectId)
+                                 EvalStateNodeNumber stateObjectId)
     {
         super(parentNode, null);
         this.evalGuardNode = evalGuardNode;

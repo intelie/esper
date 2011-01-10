@@ -83,9 +83,9 @@ public class StatementSpecMapper
      * @param configuration supplies config values
      * @return statement specification, and internal representation of a statement
      */
-    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, String engineURI)
+    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, String engineURI, PatternNodeFactory patternNodeFactory)
     {
-        StatementSpecMapContext mapContext = new StatementSpecMapContext(engineImportService, variableService, configuration, schedulingService, engineURI);
+        StatementSpecMapContext mapContext = new StatementSpecMapContext(engineImportService, variableService, configuration, schedulingService, engineURI, patternNodeFactory);
 
         StatementSpecRaw raw = map(sodaStatement, mapContext);
         if (mapContext.isHasVariables())
@@ -2130,54 +2130,54 @@ public class StatementSpecMapper
         }
         if (eval instanceof PatternAndExpr)
         {
-            return new EvalAndNode();
+            return mapContext.getPatternNodeFactory().makeAndNode();
         }
         else if (eval instanceof PatternOrExpr)
         {
-            return new EvalOrNode();
+            return mapContext.getPatternNodeFactory().makeOrNode();
         }
         else if (eval instanceof PatternFollowedByExpr)
         {
-            return new EvalFollowedByNode();
+            return mapContext.getPatternNodeFactory().makeFollowedByNode();
         }
         else if (eval instanceof PatternEveryExpr)
         {
-            return new EvalEveryNode();
+            return mapContext.getPatternNodeFactory().makeEveryNode();
         }
         else if (eval instanceof PatternFilterExpr)
         {
             PatternFilterExpr filterExpr = (PatternFilterExpr) eval;
             FilterSpecRaw filterSpec = mapFilter(filterExpr.getFilter(), mapContext);
-            return new EvalFilterNode(filterSpec, filterExpr.getTagName());
+            return mapContext.getPatternNodeFactory().makeFilterNode(filterSpec, filterExpr.getTagName());
         }
         else if (eval instanceof PatternObserverExpr)
         {
             PatternObserverExpr observer = (PatternObserverExpr) eval;
             List<ExprNode> expressions = mapExpressionDeep(observer.getParameters(), mapContext);
-            return new EvalObserverNode(new PatternObserverSpec(observer.getNamespace(), observer.getName(), expressions));
+            return mapContext.getPatternNodeFactory().makeObserverNode(new PatternObserverSpec(observer.getNamespace(), observer.getName(), expressions));
         }
         else if (eval instanceof PatternGuardExpr)
         {
             PatternGuardExpr guard = (PatternGuardExpr) eval;
             List<ExprNode> expressions = mapExpressionDeep(guard.getParameters(), mapContext);
-            return new EvalGuardNode(new PatternGuardSpec(guard.getNamespace(), guard.getName(), expressions));
+            return mapContext.getPatternNodeFactory().makeGuardNode(new PatternGuardSpec(guard.getNamespace(), guard.getName(), expressions));
         }
         else if (eval instanceof PatternNotExpr)
         {
-            return new EvalNotNode();
+            return mapContext.getPatternNodeFactory().makeNotNode();
         }
         else if (eval instanceof PatternMatchUntilExpr)
         {
             PatternMatchUntilExpr until = (PatternMatchUntilExpr) eval;
             ExprNode low = until.getLow() != null ? mapExpressionDeep(until.getLow(), mapContext) : null;
             ExprNode high = until.getHigh() != null ? mapExpressionDeep(until.getHigh(), mapContext) : null;
-            return new EvalMatchUntilNode(low, high, null);
+            return mapContext.getPatternNodeFactory().makeMatchUntilNode(low, high);
         }
         else if (eval instanceof PatternEveryDistinctExpr)
         {
             PatternEveryDistinctExpr everyDist = (PatternEveryDistinctExpr) eval;
             List<ExprNode> expressions = mapExpressionDeep(everyDist.getExpressions(), mapContext);
-            return new EvalEveryDistinctNode(expressions, null);
+            return mapContext.getPatternNodeFactory().makeEveryDistinctNode(expressions);
         }
         throw new IllegalArgumentException("Could not map pattern expression node of type " + eval.getClass().getSimpleName());
     }
@@ -2450,7 +2450,7 @@ public class StatementSpecMapper
                 }
                 String toCompile = "select * from java.lang.Object where " + expression;
                 StatementSpecRaw rawSqlExpr = EPAdministratorHelper.compileEPL(toCompile, expression, false, null, SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
-                        mapContext.getEngineImportService(), mapContext.getVariableService(), mapContext.getSchedulingService(), mapContext.getEngineURI(), mapContext.getConfiguration());
+                        mapContext.getEngineImportService(), mapContext.getVariableService(), mapContext.getSchedulingService(), mapContext.getEngineURI(), mapContext.getConfiguration(), mapContext.getPatternNodeFactory());
 
                 if ((rawSqlExpr.getSubstitutionParameters() != null) && (rawSqlExpr.getSubstitutionParameters().size() > 0)) {
                     throw new ASTWalkException("EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead");

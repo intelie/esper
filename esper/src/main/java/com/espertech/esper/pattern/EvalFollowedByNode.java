@@ -10,35 +10,28 @@ package com.espertech.esper.pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 
 /**
  * This class represents a followed-by operator in the evaluation tree representing any event expressions.
  */
-public final class EvalFollowedByNode extends EvalNode
+public class EvalFollowedByNode extends EvalNode
 {
     private static final long serialVersionUID = -3535280879288655577L;
 
     private transient PatternContext context;
 
-    public final EvalStateNode newState(Evaluator parentNode,
+    protected EvalFollowedByNode() {        
+    }
+
+    public EvalStateNode newState(Evaluator parentNode,
                                                  MatchedEventMap beginState,
                                                  PatternContext context,
-                                                 Object stateNodeId)
+                                                 EvalStateNodeNumber stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".newState");
+        if (this.context == null) {
+            this.context = context;
         }
-
-        if (getChildNodes().size() <= 1)
-        {
-            throw new IllegalStateException("Expected number of child nodes incorrect, expected >=2 child nodes, found "
-                    + getChildNodes().size());
-        }
-
-        this.context = context;
-        return context.getPatternStateFactory().makeFollowedByState(parentNode, this, beginState, stateNodeId);
+        return new EvalFollowedByStateNode(parentNode, this, beginState);
     }
 
     public PatternContext getContext() {

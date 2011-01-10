@@ -2,10 +2,7 @@ package com.espertech.esper.pattern.guard;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.pattern.MatchedEventConvertor;
-import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.pattern.PatternExpressionUtil;
+import com.espertech.esper.pattern.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;
 
@@ -53,7 +50,7 @@ public class TimerWithinOrMaxCountGuardFactory implements GuardFactory, MetaDefI
         this.convertor = convertor;
     }
 
-    public Guard makeGuard(PatternContext context, MatchedEventMap matchedEventMap, Quitable quitable, Object stateNodeId, Object guardState)
+    public Guard makeGuard(PatternContext context, MatchedEventMap matchedEventMap, Quitable quitable, EvalStateNodeNumber stateNodeId, Object guardState)
     {
         Object millisecondVal = PatternExpressionUtil.evaluate("Timer-Within-Or-Max-Count guard", matchedEventMap, millisecondsExpr, convertor, context);
         if (null == millisecondVal) {

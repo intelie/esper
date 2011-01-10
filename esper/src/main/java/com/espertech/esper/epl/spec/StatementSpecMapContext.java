@@ -11,6 +11,7 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.pattern.PatternNodeFactory;
 import com.espertech.esper.schedule.SchedulingService;
 
 import java.util.Set;
@@ -27,6 +28,7 @@ public class StatementSpecMapContext
     private final ConfigurationInformation configuration;
     private final SchedulingService schedulingService;
     private final String engineURI;
+    private final PatternNodeFactory patternNodeFactory;
 
     private boolean hasVariables;
     private Set<String> variableNames;
@@ -37,7 +39,7 @@ public class StatementSpecMapContext
      * @param variableService variable names
      * @param configuration the configuration
      */
-    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, String engineURI)
+    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, String engineURI, PatternNodeFactory patternNodeFactory)
     {
         this.engineImportService = engineImportService;
         this.variableService = variableService;
@@ -45,6 +47,7 @@ public class StatementSpecMapContext
         this.variableNames = new HashSet<String>();
         this.schedulingService = schedulingService;
         this.engineURI = engineURI;
+        this.patternNodeFactory = patternNodeFactory;
     }
 
     /**
@@ -108,5 +111,9 @@ public class StatementSpecMapContext
     public String getEngineURI()
     {
         return engineURI;
+    }
+
+    public PatternNodeFactory getPatternNodeFactory() {
+        return patternNodeFactory;
     }
 }

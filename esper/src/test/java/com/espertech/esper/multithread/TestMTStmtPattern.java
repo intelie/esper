@@ -49,19 +49,17 @@ public class TestMTStmtPattern extends TestCase
             future[i] = threadPool.submit(callables[i]);
         }
 
+        SupportMTUpdateListener listener[] = new SupportMTUpdateListener[numEvents];
         for (int i = 0; i < numEvents; i++)
         {
             EPStatement stmt = engine.getEPAdministrator().createPattern(pattern);
-            SupportMTUpdateListener listener = new SupportMTUpdateListener();
-            stmt.addListener(listener);
+            listener[i] = new SupportMTUpdateListener();
+            stmt.addListener(listener[i]);
 
             synchronized(sendLock)
             {
                 sendLock.notifyAll();
             }
-            Thread.sleep(100);
-            // Should be received exactly one
-            assertTrue(listener.assertOneGetNewAndReset().get("a") instanceof SupportBean);
         }
 
         for (SendEventWaitCallable callable : callables)
@@ -75,5 +73,10 @@ public class TestMTStmtPattern extends TestCase
 
         threadPool.shutdown();
         threadPool.awaitTermination(10, TimeUnit.SECONDS);
+
+        for (int i = 0; i < numEvents; i++)
+        {
+            assertTrue(listener[i].assertOneGetNewAndReset().get("a") instanceof SupportBean);
+        }
     }
 }

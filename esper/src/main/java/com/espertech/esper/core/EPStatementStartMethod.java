@@ -266,7 +266,7 @@ public class EPStatementStartMethod
             final EventStream sourceEventStream = new ZeroDepthStream(eventType);
             eventStreamParentViewable = sourceEventStream;
 
-            EvalRootNode rootNode = new EvalRootNode();
+            EvalRootNode rootNode = services.getPatternNodeFactory().makeRootNode();
             rootNode.addChildNode(patternStreamSpec.getEvalNode());
 
             PatternMatchCallback callback = new PatternMatchCallback() {
@@ -902,7 +902,7 @@ public class EPStatementStartMethod
                 eventStreamParentViewable[i] = sourceEventStream;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), streamSpec.getOptions(), statementContext);
 
-                EvalRootNode rootNode = new EvalRootNode();
+                EvalRootNode rootNode = services.getPatternNodeFactory().makeRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
 
                 PatternMatchCallback callback = new PatternMatchCallback() {

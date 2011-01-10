@@ -41,6 +41,7 @@ import com.espertech.esper.event.xml.SchemaModel;
 import com.espertech.esper.event.xml.XSDSchemaMapper;
 import com.espertech.esper.filter.FilterServiceProvider;
 import com.espertech.esper.filter.FilterServiceSPI;
+import com.espertech.esper.pattern.PatternNodeFactoryImpl;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.plugin.PlugInEventRepresentationContext;
 import com.espertech.esper.schedule.*;
@@ -137,7 +138,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
                 namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
                 statementVariableRef, configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService,
-                deploymentStateService, exceptionHandlingService);
+                deploymentStateService, exceptionHandlingService, new PatternNodeFactoryImpl());
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
