@@ -34,6 +34,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
     private boolean isPrioritized;
     private boolean isLatchStatementInsertStream;
     private ExprEvaluatorContext isolatedTimeEvalContext;
+    private ThreadWorkQueue threadWorkQueue;
 
     private ThreadLocal<Map<EPStatementHandle, ArrayDeque<FilterHandleCallback>>> matchesPerStmtThreadLocal;
     private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
@@ -47,6 +48,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
     {
         this.services = svc;
         this.unisolatedServices = unisolatedSvc;
+        this.threadWorkQueue = new ThreadWorkQueue();
         isSubselectPreeval = unisolatedSvc.getEngineSettingsService().getEngineSettings().getExpression().isSelfSubselectPreeval();
         isPrioritized = unisolatedSvc.getEngineSettingsService().getEngineSettings().getExecution().isPrioritized();
         isLatchStatementInsertStream = unisolatedSvc.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
@@ -189,7 +191,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
 
         // Get it wrapped up, process event
         EventBean eventBean = unisolatedServices.getEventAdapterService().adapterForDOM(document);
-        ThreadWorkQueue.addBack(eventBean);
+        threadWorkQueue.addBack(eventBean);
     }
 
     public void sendEvent(Map map, String eventTypeName) throws EPException
@@ -477,7 +479,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
      */
     public void processThreadWorkQueue()
     {
-        DualWorkQueue queues = ThreadWorkQueue.getThreadQueue();
+        DualWorkQueue queues = threadWorkQueue.getThreadQueue();
 
         if (queues.getFrontQueue().isEmpty()) {
             boolean haveDispatched = unisolatedServices.getNamedWindowService().dispatch(isolatedTimeEvalContext);
@@ -814,20 +816,20 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
         {
             if (addToFront) {
                 Object latch = epStatementHandle.getInsertIntoFrontLatchFactory().newLatch(event);
-                ThreadWorkQueue.addFront(latch);
+                threadWorkQueue.addFront(latch);
             }
             else {
                 Object latch = epStatementHandle.getInsertIntoBackLatchFactory().newLatch(event);
-                ThreadWorkQueue.addBack(latch);
+                threadWorkQueue.addBack(latch);
             }
         }
         else
         {
             if (addToFront) {
-                  ThreadWorkQueue.addFront(event);
+                  threadWorkQueue.addFront(event);
             }
             else {
-                ThreadWorkQueue.addBack(event);
+                threadWorkQueue.addBack(event);
             }
         }
     }

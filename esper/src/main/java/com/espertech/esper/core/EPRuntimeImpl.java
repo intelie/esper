@@ -64,6 +64,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     private ThreadLocal<Map<EPStatementHandle, Object>> schedulePerStmtThreadLocal;
     private InternalEventRouter internalEventRouter;
     private ExprEvaluatorContext engineFilterAndDispatchTimeContext;
+    private ThreadWorkQueue threadWorkQueue;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
     {
@@ -88,6 +89,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     public EPRuntimeImpl(final EPServicesContext services)
     {
         this.services = services;
+        this.threadWorkQueue = new ThreadWorkQueue();
         isLatchStatementInsertStream = this.services.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
         isUsingExternalClocking = !this.services.getEngineSettingsService().getEngineSettings().getThreading().isInternalTimerEnabled();
         isSubselectPreeval = services.getEngineSettingsService().getEngineSettings().getExpression().isSelfSubselectPreeval();
@@ -259,7 +261,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
         // Get it wrapped up, process event
         EventBean eventBean = services.getEventAdapterService().adapterForDOM(document);
-        ThreadWorkQueue.addBack(eventBean);
+        threadWorkQueue.addBack(eventBean);
     }
 
     public void sendEvent(Map map, String eventTypeName) throws EPException
@@ -308,7 +310,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 return;
             }
         }
-        ThreadWorkQueue.addBack(event);
+        threadWorkQueue.addBack(event);
     }
 
     public long getNumEventsEvaluated()
@@ -324,7 +326,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
     public void routeEventBean(EventBean event)
     {
-        ThreadWorkQueue.addBack(event);
+        threadWorkQueue.addBack(event);
     }
 
     public void route(Object event)
@@ -341,7 +343,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             }
         }
                 
-        ThreadWorkQueue.addBack(event);
+        threadWorkQueue.addBack(event);
     }
 
     // Internal route of events via insert-into, holds a statement lock
@@ -353,20 +355,20 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             if (addToFront) {
                 Object latch = epStatementHandle.getInsertIntoFrontLatchFactory().newLatch(event);
-                ThreadWorkQueue.addFront(latch);
+                threadWorkQueue.addFront(latch);
             }
             else {
                 Object latch = epStatementHandle.getInsertIntoBackLatchFactory().newLatch(event);
-                ThreadWorkQueue.addBack(latch);
+                threadWorkQueue.addBack(latch);
             }
         }
         else
         {
             if (addToFront) {
-                ThreadWorkQueue.addFront(event);
+                threadWorkQueue.addFront(event);
             }
             else {
-                ThreadWorkQueue.addBack(event);
+                threadWorkQueue.addBack(event);
             }
         }
     }
@@ -704,7 +706,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
      */
     public void processThreadWorkQueue()
     {
-        DualWorkQueue queues = ThreadWorkQueue.getThreadQueue();
+        DualWorkQueue queues = threadWorkQueue.getThreadQueue();
 
         if (queues.getFrontQueue().isEmpty()) {
             boolean haveDispatched = services.getNamedWindowService().dispatch(engineFilterAndDispatchTimeContext);

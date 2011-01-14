@@ -19,7 +19,7 @@ import java.util.ArrayDeque;
  */
 public class DispatchServiceImpl implements DispatchService
 {
-    private static final ThreadLocal<ArrayDeque<Dispatchable>> threadDispatchQueue = new ThreadLocal<ArrayDeque<Dispatchable>>()
+    private final ThreadLocal<ArrayDeque<Dispatchable>> threadDispatchQueue = new ThreadLocal<ArrayDeque<Dispatchable>>()
     {
         protected synchronized ArrayDeque<Dispatchable> initialValue()
         {

@@ -14,7 +14,7 @@ package com.espertech.esper.collection;
  */
 public class ThreadWorkQueue
 {
-    private static final ThreadLocal<DualWorkQueue> threadQueue = new ThreadLocal<DualWorkQueue>()
+    private final ThreadLocal<DualWorkQueue> threadQueue = new ThreadLocal<DualWorkQueue>()
     {
         protected synchronized DualWorkQueue initialValue()
         {
@@ -26,7 +26,7 @@ public class ThreadWorkQueue
      * Adds event to the back queue.
      * @param event to add
      */
-    public static void addBack(Object event)
+    public void addBack(Object event)
     {
         DualWorkQueue queue = threadQueue.get();
         queue.getBackQueue().addLast(event);
@@ -36,13 +36,13 @@ public class ThreadWorkQueue
      * Adds event to the front queue.
      * @param event to add
      */
-    public static void addFront(Object event)
+    public void addFront(Object event)
     {
         DualWorkQueue queue = threadQueue.get();
         queue.getFrontQueue().addLast(event);
     }
 
-    public static DualWorkQueue getThreadQueue() {
+    public DualWorkQueue getThreadQueue() {
         return threadQueue.get();
     }
 }
