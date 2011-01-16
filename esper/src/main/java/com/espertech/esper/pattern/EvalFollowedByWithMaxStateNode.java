@@ -23,7 +23,7 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
 {
     private final EvalFollowedByNode evalFollowedByNode;
     private final HashMap<EvalStateNode, Integer> nodes;
-    private int[] countActivePerChild;
+    private final int[] countActivePerChild;
 
     /**
      * Constructor.
@@ -39,7 +39,7 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
 
         this.evalFollowedByNode = evalFollowedByNode;
         this.nodes = new HashMap<EvalStateNode, Integer>();
-        countActivePerChild = new int[evalFollowedByNode.getChildNodes().size() - 1];
+        this.countActivePerChild = new int[evalFollowedByNode.getChildNodes().size() - 1];
 
         EvalNode child = evalFollowedByNode.getChildNodes().get(0);
         EvalStateNode childState = child.newState(this, beginState, evalFollowedByNode.getContext(), null);

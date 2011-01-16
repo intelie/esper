@@ -21,7 +21,7 @@ public class ExceptionHandlingService {
     }
 
     public void handleCondition(BaseCondition condition, EPStatementHandle handle) {
-        if (exceptionHandlers.isEmpty()) {
+        if (conditionHandlers.isEmpty()) {
             log.info("Condition encountered processing statement '" + handle.getStatementName() + "' statement text '" + handle.getEPL() + "' : " + condition.toString());
             return;
         }

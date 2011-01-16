@@ -24,7 +24,7 @@ public class EvalFollowedByNode extends EvalNode
 
     private transient PatternContext context;
     private List<ExprNode> optionalMaxExpressions;
-    private boolean hasMax;
+    protected boolean hasMax;
     private Integer[] cachedMaxPerChild;
     private ExprEvaluator[] cachedMaxEvaluatorPerChild;
 

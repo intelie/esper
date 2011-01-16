@@ -52,6 +52,32 @@ public class TestFollowedByMaxOperator extends TestCase implements SupportBeanCo
         }
     }
 
+    public void testMultiple() {
+        SupportConditionHandlerFactory.SupportConditionHandler handler = SupportConditionHandlerFactory.getLastHandler();
+
+        String expression = "select a.id as a, b.id as b, c.id as c from pattern [" +
+                "every a=SupportBean_A -[2]> b=SupportBean_B -[3]> c=SupportBean_C]";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
+
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        String fields[] = new String[] {"a", "b", "c"};
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A3"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A4"));
+        assertTrue(handler.getContexts().isEmpty());
+        
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B2"));
+        assertContext(epService, stmt, handler.getContexts(), 3);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_C("C1"));
+        assertTrue(handler.getContexts().isEmpty());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"A1","B1","C1"}, {"A2","B1","C1"}, {"A3","B2","C1"}});
+    }
+
     public void testMixed() {
         SupportConditionHandlerFactory.SupportConditionHandler handler = SupportConditionHandlerFactory.getLastHandler();
 
