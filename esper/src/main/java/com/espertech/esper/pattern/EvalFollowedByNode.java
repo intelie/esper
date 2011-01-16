@@ -41,7 +41,12 @@ public class EvalFollowedByNode extends EvalNode
             initOptionalMaxCache();
             this.context = context;
         }
-        return new EvalFollowedByStateNode(parentNode, this, beginState);
+        if (!hasMax) {
+            return new EvalFollowedByStateNode(parentNode, this, beginState);
+        }
+        else {
+            return new EvalFollowedByWithMaxStateNode(parentNode, this, beginState);
+        }
     }
 
     protected void initOptionalMaxCache() {
@@ -79,10 +84,6 @@ public class EvalFollowedByNode extends EvalNode
                 cachedMaxEvaluatorPerChild[i] = optionalMaxExpressions.get(i).getExprEvaluator();
             }
         }
-    }
-
-    public boolean hasMax() {
-        return hasMax;
     }
 
     public int getMax(int position) {

@@ -18491,7 +18491,10 @@ public class EsperEPL2GrammarParser extends Parser {
                 {
                 CommonTree root_1 = (CommonTree)adaptor.nil();
                 root_1 = (CommonTree)adaptor.becomeRoot((CommonTree)adaptor.create(FOLLOWED_BY_ITEM, "FOLLOWED_BY_ITEM"), root_1);
-                adaptor.addChild(root_1, stream_expression.nextTree());
+                if ( stream_expression.hasNext() ) {
+                    adaptor.addChild(root_1, stream_expression.nextTree());
+                }
+                stream_expression.reset();
                 adaptor.addChild(root_1, stream_orExpression.nextTree());
                 adaptor.addChild(root_0, root_1);
                 }
@@ -18527,7 +18530,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_andExpression=new RewriteRuleSubtreeStream(adaptor,"rule andExpression");
         try {
             {
-            pushFollow(FOLLOW_andExpression_in_orExpression9025);
+            pushFollow(FOLLOW_andExpression_in_orExpression9026);
             andExpression636=andExpression();
             state._fsp--;
             if (state.failed) return retval;
@@ -18542,9 +18545,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt222) {
             	case 1 :
             	    {
-            	    o=(Token)match(input,OR_EXPR,FOLLOW_OR_EXPR_in_orExpression9030); if (state.failed) return retval; 
+            	    o=(Token)match(input,OR_EXPR,FOLLOW_OR_EXPR_in_orExpression9031); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_OR_EXPR.add(o);
-            	    pushFollow(FOLLOW_andExpression_in_orExpression9032);
+            	    pushFollow(FOLLOW_andExpression_in_orExpression9033);
             	    andExpression637=andExpression();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -18608,7 +18611,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_matchUntilExpression=new RewriteRuleSubtreeStream(adaptor,"rule matchUntilExpression");
         try {
             {
-            pushFollow(FOLLOW_matchUntilExpression_in_andExpression9064);
+            pushFollow(FOLLOW_matchUntilExpression_in_andExpression9065);
             matchUntilExpression638=matchUntilExpression();
             state._fsp--;
             if (state.failed) return retval;
@@ -18623,9 +18626,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt223) {
             	case 1 :
             	    {
-            	    a=(Token)match(input,AND_EXPR,FOLLOW_AND_EXPR_in_andExpression9069); if (state.failed) return retval; 
+            	    a=(Token)match(input,AND_EXPR,FOLLOW_AND_EXPR_in_andExpression9070); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_AND_EXPR.add(a);
-            	    pushFollow(FOLLOW_matchUntilExpression_in_andExpression9071);
+            	    pushFollow(FOLLOW_matchUntilExpression_in_andExpression9072);
             	    matchUntilExpression639=matchUntilExpression();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -18699,7 +18702,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt224) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_matchUntilRange_in_matchUntilExpression9106);
+                    pushFollow(FOLLOW_matchUntilRange_in_matchUntilExpression9107);
                     r=matchUntilRange();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -18707,7 +18710,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            pushFollow(FOLLOW_qualifyExpression_in_matchUntilExpression9110);
+            pushFollow(FOLLOW_qualifyExpression_in_matchUntilExpression9111);
             qualifyExpression640=qualifyExpression();
             state._fsp--;
             if (state.failed) return retval;
@@ -18720,9 +18723,9 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt225) {
                 case 1 :
                     {
-                    a=(Token)match(input,UNTIL,FOLLOW_UNTIL_in_matchUntilExpression9115); if (state.failed) return retval; 
+                    a=(Token)match(input,UNTIL,FOLLOW_UNTIL_in_matchUntilExpression9116); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_UNTIL.add(a);
-                    pushFollow(FOLLOW_qualifyExpression_in_matchUntilExpression9117);
+                    pushFollow(FOLLOW_qualifyExpression_in_matchUntilExpression9118);
                     qualifyExpression641=qualifyExpression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -18852,21 +18855,21 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt226) {
                         case 1 :
                             {
-                            e=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_qualifyExpression9182); if (state.failed) return retval; 
+                            e=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_qualifyExpression9183); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_EVERY_EXPR.add(e);
                             }
                             break;
                         case 2 :
                             {
-                            n=(Token)match(input,NOT_EXPR,FOLLOW_NOT_EXPR_in_qualifyExpression9188); if (state.failed) return retval; 
+                            n=(Token)match(input,NOT_EXPR,FOLLOW_NOT_EXPR_in_qualifyExpression9189); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_NOT_EXPR.add(n);
                             }
                             break;
                         case 3 :
                             {
-                            d=(Token)match(input,EVERY_DISTINCT_EXPR,FOLLOW_EVERY_DISTINCT_EXPR_in_qualifyExpression9194); if (state.failed) return retval; 
+                            d=(Token)match(input,EVERY_DISTINCT_EXPR,FOLLOW_EVERY_DISTINCT_EXPR_in_qualifyExpression9195); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_EVERY_DISTINCT_EXPR.add(d);
-                            pushFollow(FOLLOW_distinctExpressionList_in_qualifyExpression9196);
+                            pushFollow(FOLLOW_distinctExpressionList_in_qualifyExpression9197);
                             distinctExpressionList642=distinctExpressionList();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -18882,7 +18885,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt227) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_matchUntilRange_in_qualifyExpression9202);
+                            pushFollow(FOLLOW_matchUntilRange_in_qualifyExpression9203);
                             r=matchUntilRange();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -18893,7 +18896,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            pushFollow(FOLLOW_guardPostFix_in_qualifyExpression9211);
+            pushFollow(FOLLOW_guardPostFix_in_qualifyExpression9212);
             guardPostFix643=guardPostFix();
             state._fsp--;
             if (state.failed) return retval;
@@ -19016,9 +19019,9 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_distinctExpressionAtom=new RewriteRuleSubtreeStream(adaptor,"rule distinctExpressionAtom");
         try {
             {
-            LPAREN644=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_distinctExpressionList9326); if (state.failed) return retval; 
+            LPAREN644=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_distinctExpressionList9327); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LPAREN.add(LPAREN644);
-            pushFollow(FOLLOW_distinctExpressionAtom_in_distinctExpressionList9328);
+            pushFollow(FOLLOW_distinctExpressionAtom_in_distinctExpressionList9329);
             distinctExpressionAtom645=distinctExpressionAtom();
             state._fsp--;
             if (state.failed) return retval;
@@ -19033,9 +19036,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt229) {
             	case 1 :
             	    {
-            	    COMMA646=(Token)match(input,COMMA,FOLLOW_COMMA_in_distinctExpressionList9331); if (state.failed) return retval; 
+            	    COMMA646=(Token)match(input,COMMA,FOLLOW_COMMA_in_distinctExpressionList9332); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_COMMA.add(COMMA646);
-            	    pushFollow(FOLLOW_distinctExpressionAtom_in_distinctExpressionList9333);
+            	    pushFollow(FOLLOW_distinctExpressionAtom_in_distinctExpressionList9334);
             	    distinctExpressionAtom647=distinctExpressionAtom();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -19046,7 +19049,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break loop229;
                 }
             } while (true);
-            RPAREN648=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_distinctExpressionList9337); if (state.failed) return retval; 
+            RPAREN648=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_distinctExpressionList9338); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN648);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -19093,7 +19096,7 @@ public class EsperEPL2GrammarParser extends Parser {
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            pushFollow(FOLLOW_expressionWithTime_in_distinctExpressionAtom9360);
+            pushFollow(FOLLOW_expressionWithTime_in_distinctExpressionAtom9361);
             expressionWithTime649=expressionWithTime();
             state._fsp--;
             if (state.failed) return retval;
@@ -19159,7 +19162,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt230) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_atomicExpression_in_guardPostFix9375);
+                    pushFollow(FOLLOW_atomicExpression_in_guardPostFix9376);
                     atomicExpression650=atomicExpression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19168,14 +19171,14 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    l=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardPostFix9381); if (state.failed) return retval; 
+                    l=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardPostFix9382); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(l);
-                    pushFollow(FOLLOW_patternExpression_in_guardPostFix9383);
+                    pushFollow(FOLLOW_patternExpression_in_guardPostFix9384);
                     patternExpression651=patternExpression();
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_patternExpression.add(patternExpression651.getTree());
-                    RPAREN652=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardPostFix9385); if (state.failed) return retval; 
+                    RPAREN652=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardPostFix9386); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN652);
                     }
                     break;
@@ -19192,9 +19195,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     {
-                    wh=(Token)match(input,WHERE,FOLLOW_WHERE_in_guardPostFix9392); if (state.failed) return retval; 
+                    wh=(Token)match(input,WHERE,FOLLOW_WHERE_in_guardPostFix9393); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_WHERE.add(wh);
-                    pushFollow(FOLLOW_guardWhereExpression_in_guardPostFix9394);
+                    pushFollow(FOLLOW_guardWhereExpression_in_guardPostFix9395);
                     guardWhereExpression653=guardWhereExpression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19205,9 +19208,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     {
-                    wi=(Token)match(input,WHILE,FOLLOW_WHILE_in_guardPostFix9402); if (state.failed) return retval; 
+                    wi=(Token)match(input,WHILE,FOLLOW_WHILE_in_guardPostFix9403); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_WHILE.add(wi);
-                    pushFollow(FOLLOW_guardWhileExpression_in_guardPostFix9404);
+                    pushFollow(FOLLOW_guardWhileExpression_in_guardPostFix9405);
                     guardWhileExpression654=guardWhileExpression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19320,7 +19323,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_observerExpression_in_atomicExpression9466);
+                    pushFollow(FOLLOW_observerExpression_in_atomicExpression9467);
                     observerExpression655=observerExpression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19330,7 +19333,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_patternFilterExpression_in_atomicExpression9470);
+                    pushFollow(FOLLOW_patternFilterExpression_in_atomicExpression9471);
                     patternFilterExpression656=patternFilterExpression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19380,9 +19383,9 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_expressionWithTimeList=new RewriteRuleSubtreeStream(adaptor,"rule expressionWithTimeList");
         try {
             {
-            ns=(Token)match(input,IDENT,FOLLOW_IDENT_in_observerExpression9485); if (state.failed) return retval; 
+            ns=(Token)match(input,IDENT,FOLLOW_IDENT_in_observerExpression9486); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_IDENT.add(ns);
-            COLON657=(Token)match(input,COLON,FOLLOW_COLON_in_observerExpression9487); if (state.failed) return retval; 
+            COLON657=(Token)match(input,COLON,FOLLOW_COLON_in_observerExpression9488); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_COLON.add(COLON657);
             int alt233=2;
             int LA233_0 = input.LA(1);
@@ -19401,18 +19404,18 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt233) {
                 case 1 :
                     {
-                    nm=(Token)match(input,IDENT,FOLLOW_IDENT_in_observerExpression9492); if (state.failed) return retval; 
+                    nm=(Token)match(input,IDENT,FOLLOW_IDENT_in_observerExpression9493); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(nm);
                     }
                     break;
                 case 2 :
                     {
-                    a=(Token)match(input,AT,FOLLOW_AT_in_observerExpression9498); if (state.failed) return retval; 
+                    a=(Token)match(input,AT,FOLLOW_AT_in_observerExpression9499); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_AT.add(a);
                     }
                     break;
             }
-            LPAREN658=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_observerExpression9501); if (state.failed) return retval; 
+            LPAREN658=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_observerExpression9502); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LPAREN.add(LPAREN658);
             int alt234=2;
             int LA234_0 = input.LA(1);
@@ -19422,7 +19425,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt234) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_expressionWithTimeList_in_observerExpression9503);
+                    pushFollow(FOLLOW_expressionWithTimeList_in_observerExpression9504);
                     expressionWithTimeList659=expressionWithTimeList();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19430,7 +19433,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            RPAREN660=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_observerExpression9506); if (state.failed) return retval; 
+            RPAREN660=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_observerExpression9507); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN660);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -19506,18 +19509,18 @@ public class EsperEPL2GrammarParser extends Parser {
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            IDENT661=(Token)match(input,IDENT,FOLLOW_IDENT_in_guardWhereExpression9555); if (state.failed) return retval;
+            IDENT661=(Token)match(input,IDENT,FOLLOW_IDENT_in_guardWhereExpression9556); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             IDENT661_tree = (CommonTree)adaptor.create(IDENT661);
             adaptor.addChild(root_0, IDENT661_tree);
             }
-            COLON662=(Token)match(input,COLON,FOLLOW_COLON_in_guardWhereExpression9557); if (state.failed) return retval;
-            IDENT663=(Token)match(input,IDENT,FOLLOW_IDENT_in_guardWhereExpression9560); if (state.failed) return retval;
+            COLON662=(Token)match(input,COLON,FOLLOW_COLON_in_guardWhereExpression9558); if (state.failed) return retval;
+            IDENT663=(Token)match(input,IDENT,FOLLOW_IDENT_in_guardWhereExpression9561); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             IDENT663_tree = (CommonTree)adaptor.create(IDENT663);
             adaptor.addChild(root_0, IDENT663_tree);
             }
-            LPAREN664=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardWhereExpression9562); if (state.failed) return retval;
+            LPAREN664=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardWhereExpression9563); if (state.failed) return retval;
             int alt235=2;
             int LA235_0 = input.LA(1);
             if ( (LA235_0==WINDOW||LA235_0==ESCAPE||(LA235_0>=NOT_EXPR && LA235_0<=EVERY_EXPR)||(LA235_0>=SUM && LA235_0<=COUNT)||LA235_0==CASE||LA235_0==OUTER||(LA235_0>=JOIN && LA235_0<=FULL)||(LA235_0>=EVENTS && LA235_0<=LAST)||(LA235_0>=UNIDIRECTIONAL && LA235_0<=CURRENT_TIMESTAMP)||LA235_0==SNAPSHOT||(LA235_0>=VARIABLE && LA235_0<=INDEX)||(LA235_0>=BOOLEAN_TRUE && LA235_0<=VALUE_NULL)||(LA235_0>=DEFINE && LA235_0<=MATCHES)||LA235_0==WHILE||(LA235_0>=MERGE && LA235_0<=MATCHED)||LA235_0==NUM_DOUBLE||(LA235_0>=IDENT && LA235_0<=LPAREN)||LA235_0==LBRACK||LA235_0==STAR||(LA235_0>=PLUS && LA235_0<=QUESTION)||(LA235_0>=STRING_LITERAL && LA235_0<=QUOTED_STRING_LITERAL)||LA235_0==MINUS||LA235_0==LCURLY||LA235_0==NUM_INT||(LA235_0>=TICKED_STRING_LITERAL && LA235_0<=NUM_FLOAT)) ) {
@@ -19526,7 +19529,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt235) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_expressionWithTimeList_in_guardWhereExpression9566);
+                    pushFollow(FOLLOW_expressionWithTimeList_in_guardWhereExpression9567);
                     expressionWithTimeList665=expressionWithTimeList();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19534,7 +19537,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            RPAREN666=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardWhereExpression9570); if (state.failed) return retval;
+            RPAREN666=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardWhereExpression9571); if (state.failed) return retval;
             }
             retval.stop = input.LT(-1);
             if ( state.backtracking==0 ) {
@@ -19565,13 +19568,13 @@ public class EsperEPL2GrammarParser extends Parser {
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            LPAREN667=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardWhileExpression9583); if (state.failed) return retval;
-            pushFollow(FOLLOW_expression_in_guardWhileExpression9586);
+            LPAREN667=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_guardWhileExpression9584); if (state.failed) return retval;
+            pushFollow(FOLLOW_expression_in_guardWhileExpression9587);
             expression668=expression();
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, expression668.getTree());
-            RPAREN669=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardWhileExpression9588); if (state.failed) return retval;
+            RPAREN669=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_guardWhileExpression9589); if (state.failed) return retval;
             }
             retval.stop = input.LT(-1);
             if ( state.backtracking==0 ) {
@@ -19612,7 +19615,7 @@ public class EsperEPL2GrammarParser extends Parser {
          Boolean isopen = true; 
         try {
             {
-            LBRACK670=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_matchUntilRange9609); if (state.failed) return retval; 
+            LBRACK670=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_matchUntilRange9610); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LBRACK.add(LBRACK670);
             int alt238=2;
             int LA238_0 = input.LA(1);
@@ -19631,7 +19634,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt238) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_expression_in_matchUntilRange9616);
+                    pushFollow(FOLLOW_expression_in_matchUntilRange9617);
                     expression671=expression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19644,7 +19647,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt237) {
                         case 1 :
                             {
-                            c1=(Token)match(input,COLON,FOLLOW_COLON_in_matchUntilRange9621); if (state.failed) return retval; 
+                            c1=(Token)match(input,COLON,FOLLOW_COLON_in_matchUntilRange9622); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_COLON.add(c1);
                             int alt236=2;
                             int LA236_0 = input.LA(1);
@@ -19654,7 +19657,7 @@ public class EsperEPL2GrammarParser extends Parser {
                             switch (alt236) {
                                 case 1 :
                                     {
-                                    pushFollow(FOLLOW_expression_in_matchUntilRange9624);
+                                    pushFollow(FOLLOW_expression_in_matchUntilRange9625);
                                     expression672=expression();
                                     state._fsp--;
                                     if (state.failed) return retval;
@@ -19672,9 +19675,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    c2=(Token)match(input,COLON,FOLLOW_COLON_in_matchUntilRange9644); if (state.failed) return retval; 
+                    c2=(Token)match(input,COLON,FOLLOW_COLON_in_matchUntilRange9645); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_COLON.add(c2);
-                    pushFollow(FOLLOW_expression_in_matchUntilRange9646);
+                    pushFollow(FOLLOW_expression_in_matchUntilRange9647);
                     expression673=expression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19682,7 +19685,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            RBRACK674=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_matchUntilRange9657); if (state.failed) return retval; 
+            RBRACK674=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_matchUntilRange9658); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK674);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -19779,14 +19782,14 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt239) {
                 case 1 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_eventFilterExpression9744); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_eventFilterExpression9745); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    EQUALS675=(Token)match(input,EQUALS,FOLLOW_EQUALS_in_eventFilterExpression9746); if (state.failed) return retval; 
+                    EQUALS675=(Token)match(input,EQUALS,FOLLOW_EQUALS_in_eventFilterExpression9747); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_EQUALS.add(EQUALS675);
                     }
                     break;
             }
-            pushFollow(FOLLOW_classIdentifier_in_eventFilterExpression9755);
+            pushFollow(FOLLOW_classIdentifier_in_eventFilterExpression9756);
             classIdentifier676=classIdentifier();
             state._fsp--;
             if (state.failed) return retval;
@@ -19799,7 +19802,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt241) {
                 case 1 :
                     {
-                    LPAREN677=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventFilterExpression9766); if (state.failed) return retval; 
+                    LPAREN677=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventFilterExpression9767); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(LPAREN677);
                     int alt240=2;
                     int LA240_0 = input.LA(1);
@@ -19809,7 +19812,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt240) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_expressionList_in_eventFilterExpression9768);
+                            pushFollow(FOLLOW_expressionList_in_eventFilterExpression9769);
                             expressionList678=expressionList();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -19817,7 +19820,7 @@ public class EsperEPL2GrammarParser extends Parser {
                             }
                             break;
                     }
-                    RPAREN679=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventFilterExpression9771); if (state.failed) return retval; 
+                    RPAREN679=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventFilterExpression9772); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN679);
                     }
                     break;
@@ -19830,7 +19833,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt242) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_propertyExpression_in_eventFilterExpression9783);
+                    pushFollow(FOLLOW_propertyExpression_in_eventFilterExpression9784);
                     propertyExpression680=propertyExpression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -19894,7 +19897,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_propertyExpressionAtomic=new RewriteRuleSubtreeStream(adaptor,"rule propertyExpressionAtomic");
         try {
             {
-            pushFollow(FOLLOW_propertyExpressionAtomic_in_propertyExpression9828);
+            pushFollow(FOLLOW_propertyExpressionAtomic_in_propertyExpression9829);
             propertyExpressionAtomic681=propertyExpressionAtomic();
             state._fsp--;
             if (state.failed) return retval;
@@ -19909,7 +19912,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt243) {
             	case 1 :
             	    {
-            	    pushFollow(FOLLOW_propertyExpressionAtomic_in_propertyExpression9831);
+            	    pushFollow(FOLLOW_propertyExpressionAtomic_in_propertyExpression9832);
             	    propertyExpressionAtomic682=propertyExpressionAtomic();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -19990,7 +19993,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_eventProperty=new RewriteRuleSubtreeStream(adaptor,"rule eventProperty");
         try {
             {
-            LBRACK683=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_propertyExpressionAtomic9861); if (state.failed) return retval; 
+            LBRACK683=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_propertyExpressionAtomic9862); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LBRACK.add(LBRACK683);
             int alt244=2;
             int LA244_0 = input.LA(1);
@@ -20000,19 +20003,19 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt244) {
                 case 1 :
                     {
-                    SELECT684=(Token)match(input,SELECT,FOLLOW_SELECT_in_propertyExpressionAtomic9864); if (state.failed) return retval; 
+                    SELECT684=(Token)match(input,SELECT,FOLLOW_SELECT_in_propertyExpressionAtomic9865); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_SELECT.add(SELECT684);
-                    pushFollow(FOLLOW_propertySelectionList_in_propertyExpressionAtomic9866);
+                    pushFollow(FOLLOW_propertySelectionList_in_propertyExpressionAtomic9867);
                     propertySelectionList685=propertySelectionList();
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_propertySelectionList.add(propertySelectionList685.getTree());
-                    FROM686=(Token)match(input,FROM,FOLLOW_FROM_in_propertyExpressionAtomic9868); if (state.failed) return retval; 
+                    FROM686=(Token)match(input,FROM,FOLLOW_FROM_in_propertyExpressionAtomic9869); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_FROM.add(FROM686);
                     }
                     break;
             }
-            pushFollow(FOLLOW_eventProperty_in_propertyExpressionAtomic9872);
+            pushFollow(FOLLOW_eventProperty_in_propertyExpressionAtomic9873);
             eventProperty687=eventProperty();
             state._fsp--;
             if (state.failed) return retval;
@@ -20025,9 +20028,9 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt245) {
                 case 1 :
                     {
-                    AS688=(Token)match(input,AS,FOLLOW_AS_in_propertyExpressionAtomic9875); if (state.failed) return retval; 
+                    AS688=(Token)match(input,AS,FOLLOW_AS_in_propertyExpressionAtomic9876); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_AS.add(AS688);
-                    IDENT689=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyExpressionAtomic9877); if (state.failed) return retval; 
+                    IDENT689=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyExpressionAtomic9878); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(IDENT689);
                     }
                     break;
@@ -20040,9 +20043,9 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt246) {
                 case 1 :
                     {
-                    WHERE690=(Token)match(input,WHERE,FOLLOW_WHERE_in_propertyExpressionAtomic9882); if (state.failed) return retval; 
+                    WHERE690=(Token)match(input,WHERE,FOLLOW_WHERE_in_propertyExpressionAtomic9883); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_WHERE.add(WHERE690);
-                    pushFollow(FOLLOW_expression_in_propertyExpressionAtomic9884);
+                    pushFollow(FOLLOW_expression_in_propertyExpressionAtomic9885);
                     expression691=expression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -20050,7 +20053,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            RBRACK692=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_propertyExpressionAtomic9888); if (state.failed) return retval; 
+            RBRACK692=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_propertyExpressionAtomic9889); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK692);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -20111,7 +20114,7 @@ public class EsperEPL2GrammarParser extends Parser {
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            pushFollow(FOLLOW_propertySelectionListElement_in_propertySelectionList9938);
+            pushFollow(FOLLOW_propertySelectionListElement_in_propertySelectionList9939);
             propertySelectionListElement693=propertySelectionListElement();
             state._fsp--;
             if (state.failed) return retval;
@@ -20126,8 +20129,8 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt247) {
             	case 1 :
             	    {
-            	    COMMA694=(Token)match(input,COMMA,FOLLOW_COMMA_in_propertySelectionList9941); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_propertySelectionListElement_in_propertySelectionList9944);
+            	    COMMA694=(Token)match(input,COMMA,FOLLOW_COMMA_in_propertySelectionList9942); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_propertySelectionListElement_in_propertySelectionList9945);
             	    propertySelectionListElement695=propertySelectionListElement();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -20288,7 +20291,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt249) {
                 case 1 :
                     {
-                    s=(Token)match(input,STAR,FOLLOW_STAR_in_propertySelectionListElement9970); if (state.failed) return retval; 
+                    s=(Token)match(input,STAR,FOLLOW_STAR_in_propertySelectionListElement9971); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_STAR.add(s);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -20303,7 +20306,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_propertyStreamSelector_in_propertySelectionListElement9986);
+                    pushFollow(FOLLOW_propertyStreamSelector_in_propertySelectionListElement9987);
                     propertyStreamSelector696=propertyStreamSelector();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -20312,7 +20315,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_expression_in_propertySelectionListElement9991);
+                    pushFollow(FOLLOW_expression_in_propertySelectionListElement9992);
                     expression697=expression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -20325,9 +20328,9 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt248) {
                         case 1 :
                             {
-                            AS698=(Token)match(input,AS,FOLLOW_AS_in_propertySelectionListElement9994); if (state.failed) return retval; 
+                            AS698=(Token)match(input,AS,FOLLOW_AS_in_propertySelectionListElement9995); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_AS.add(AS698);
-                            pushFollow(FOLLOW_keywordAllowedIdent_in_propertySelectionListElement9998);
+                            pushFollow(FOLLOW_keywordAllowedIdent_in_propertySelectionListElement9999);
                             i=keywordAllowedIdent();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -20401,11 +20404,11 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_DOT=new RewriteRuleTokenStream(adaptor,"token DOT");
         try {
             {
-            s=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyStreamSelector10042); if (state.failed) return retval; 
+            s=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyStreamSelector10043); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_IDENT.add(s);
-            DOT699=(Token)match(input,DOT,FOLLOW_DOT_in_propertyStreamSelector10044); if (state.failed) return retval; 
+            DOT699=(Token)match(input,DOT,FOLLOW_DOT_in_propertyStreamSelector10045); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_DOT.add(DOT699);
-            STAR700=(Token)match(input,STAR,FOLLOW_STAR_in_propertyStreamSelector10046); if (state.failed) return retval; 
+            STAR700=(Token)match(input,STAR,FOLLOW_STAR_in_propertyStreamSelector10047); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_STAR.add(STAR700);
             int alt250=2;
             int LA250_0 = input.LA(1);
@@ -20415,9 +20418,9 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt250) {
                 case 1 :
                     {
-                    AS701=(Token)match(input,AS,FOLLOW_AS_in_propertyStreamSelector10049); if (state.failed) return retval; 
+                    AS701=(Token)match(input,AS,FOLLOW_AS_in_propertyStreamSelector10050); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_AS.add(AS701);
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyStreamSelector10053); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_propertyStreamSelector10054); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
@@ -20495,14 +20498,14 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt251) {
                 case 1 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_patternFilterExpression10100); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_patternFilterExpression10101); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
-                    EQUALS702=(Token)match(input,EQUALS,FOLLOW_EQUALS_in_patternFilterExpression10102); if (state.failed) return retval; 
+                    EQUALS702=(Token)match(input,EQUALS,FOLLOW_EQUALS_in_patternFilterExpression10103); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_EQUALS.add(EQUALS702);
                     }
                     break;
             }
-            pushFollow(FOLLOW_classIdentifier_in_patternFilterExpression10111);
+            pushFollow(FOLLOW_classIdentifier_in_patternFilterExpression10112);
             classIdentifier703=classIdentifier();
             state._fsp--;
             if (state.failed) return retval;
@@ -20515,7 +20518,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt253) {
                 case 1 :
                     {
-                    LPAREN704=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_patternFilterExpression10122); if (state.failed) return retval; 
+                    LPAREN704=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_patternFilterExpression10123); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(LPAREN704);
                     int alt252=2;
                     int LA252_0 = input.LA(1);
@@ -20525,7 +20528,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt252) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_expressionList_in_patternFilterExpression10124);
+                            pushFollow(FOLLOW_expressionList_in_patternFilterExpression10125);
                             expressionList705=expressionList();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -20533,7 +20536,7 @@ public class EsperEPL2GrammarParser extends Parser {
                             }
                             break;
                     }
-                    RPAREN706=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_patternFilterExpression10127); if (state.failed) return retval; 
+                    RPAREN706=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_patternFilterExpression10128); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN706);
                     }
                     break;
@@ -20546,7 +20549,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt254) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_propertyExpression_in_patternFilterExpression10139);
+                    pushFollow(FOLLOW_propertyExpression_in_patternFilterExpression10140);
                     propertyExpression707=propertyExpression();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -20614,7 +20617,7 @@ public class EsperEPL2GrammarParser extends Parser {
          String identifier = ""; 
         try {
             {
-            pushFollow(FOLLOW_escapableStr_in_classIdentifier10194);
+            pushFollow(FOLLOW_escapableStr_in_classIdentifier10195);
             i1=escapableStr();
             state._fsp--;
             if (state.failed) return retval;
@@ -20641,9 +20644,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt255) {
             	case 1 :
             	    {
-            	    DOT708=(Token)match(input,DOT,FOLLOW_DOT_in_classIdentifier10213); if (state.failed) return retval; 
+            	    DOT708=(Token)match(input,DOT,FOLLOW_DOT_in_classIdentifier10214); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_DOT.add(DOT708);
-            	    pushFollow(FOLLOW_escapableStr_in_classIdentifier10217);
+            	    pushFollow(FOLLOW_escapableStr_in_classIdentifier10218);
             	    i2=escapableStr();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -20700,7 +20703,7 @@ public class EsperEPL2GrammarParser extends Parser {
          String identifier = ""; 
         try {
             {
-            pushFollow(FOLLOW_escapableStr_in_classIdentifierNonGreedy10262);
+            pushFollow(FOLLOW_escapableStr_in_classIdentifierNonGreedy10263);
             i1=escapableStr();
             state._fsp--;
             if (state.failed) return retval;
@@ -20750,9 +20753,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt256) {
             	case 1 :
             	    {
-            	    DOT709=(Token)match(input,DOT,FOLLOW_DOT_in_classIdentifierNonGreedy10297); if (state.failed) return retval; 
+            	    DOT709=(Token)match(input,DOT,FOLLOW_DOT_in_classIdentifierNonGreedy10298); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_DOT.add(DOT709);
-            	    pushFollow(FOLLOW_escapableStr_in_classIdentifierNonGreedy10301);
+            	    pushFollow(FOLLOW_escapableStr_in_classIdentifierNonGreedy10302);
             	    i2=escapableStr();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -20807,7 +20810,7 @@ public class EsperEPL2GrammarParser extends Parser {
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            pushFollow(FOLLOW_expression_in_expressionList10343);
+            pushFollow(FOLLOW_expression_in_expressionList10344);
             expression710=expression();
             state._fsp--;
             if (state.failed) return retval;
@@ -20822,8 +20825,8 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt257) {
             	case 1 :
             	    {
-            	    COMMA711=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionList10346); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_expression_in_expressionList10349);
+            	    COMMA711=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionList10347); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_expression_in_expressionList10350);
             	    expression712=expression();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -20863,7 +20866,7 @@ public class EsperEPL2GrammarParser extends Parser {
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList10377);
+            pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList10378);
             expressionWithTime713=expressionWithTime();
             state._fsp--;
             if (state.failed) return retval;
@@ -20878,8 +20881,8 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt258) {
             	case 1 :
             	    {
-            	    COMMA714=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionWithTimeList10380); if (state.failed) return retval;
-            	    pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList10383);
+            	    COMMA714=(Token)match(input,COMMA,FOLLOW_COMMA_in_expressionWithTimeList10381); if (state.failed) return retval;
+            	    pushFollow(FOLLOW_expressionWithTime_in_expressionWithTimeList10384);
             	    expressionWithTime715=expressionWithTime();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -22345,7 +22348,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_lastOperand_in_expressionWithTime10409);
+                    pushFollow(FOLLOW_lastOperand_in_expressionWithTime10410);
                     lastOperand716=lastOperand();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22355,7 +22358,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_lastWeekdayOperand_in_expressionWithTime10420);
+                    pushFollow(FOLLOW_lastWeekdayOperand_in_expressionWithTime10421);
                     lastWeekdayOperand717=lastWeekdayOperand();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22365,7 +22368,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 3 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_timePeriod_in_expressionWithTime10431);
+                    pushFollow(FOLLOW_timePeriod_in_expressionWithTime10432);
                     timePeriod718=timePeriod();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22375,7 +22378,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 4 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_expressionQualifyable_in_expressionWithTime10442);
+                    pushFollow(FOLLOW_expressionQualifyable_in_expressionWithTime10443);
                     expressionQualifyable719=expressionQualifyable();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22385,7 +22388,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 5 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_rangeOperand_in_expressionWithTime10453);
+                    pushFollow(FOLLOW_rangeOperand_in_expressionWithTime10454);
                     rangeOperand720=rangeOperand();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22395,7 +22398,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 6 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_frequencyOperand_in_expressionWithTime10465);
+                    pushFollow(FOLLOW_frequencyOperand_in_expressionWithTime10466);
                     frequencyOperand721=frequencyOperand();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22405,7 +22408,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 7 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_lastOperator_in_expressionWithTime10476);
+                    pushFollow(FOLLOW_lastOperator_in_expressionWithTime10477);
                     lastOperator722=lastOperator();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22415,7 +22418,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 8 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_weekDayOperator_in_expressionWithTime10488);
+                    pushFollow(FOLLOW_weekDayOperator_in_expressionWithTime10489);
                     weekDayOperator723=weekDayOperator();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22425,7 +22428,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 9 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_numericParameterList_in_expressionWithTime10500);
+                    pushFollow(FOLLOW_numericParameterList_in_expressionWithTime10501);
                     numericParameterList724=numericParameterList();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22435,7 +22438,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 10 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_numberSetStar_in_expressionWithTime10505);
+                    pushFollow(FOLLOW_numberSetStar_in_expressionWithTime10506);
                     numberSetStar725=numberSetStar();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22479,7 +22482,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
         try {
             {
-            pushFollow(FOLLOW_expression_in_expressionQualifyable10516);
+            pushFollow(FOLLOW_expression_in_expressionQualifyable10517);
             expression726=expression();
             state._fsp--;
             if (state.failed) return retval;
@@ -22515,31 +22518,31 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt260) {
                 case 1 :
                     {
-                    a=(Token)match(input,ASC,FOLLOW_ASC_in_expressionQualifyable10521); if (state.failed) return retval; 
+                    a=(Token)match(input,ASC,FOLLOW_ASC_in_expressionQualifyable10522); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_ASC.add(a);
                     }
                     break;
                 case 2 :
                     {
-                    d=(Token)match(input,DESC,FOLLOW_DESC_in_expressionQualifyable10525); if (state.failed) return retval; 
+                    d=(Token)match(input,DESC,FOLLOW_DESC_in_expressionQualifyable10526); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DESC.add(d);
                     }
                     break;
                 case 3 :
                     {
-                    s=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable10529); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable10530); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECONDS.add(s);
                     }
                     break;
                 case 4 :
                     {
-                    s=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable10533); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable10534); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECOND.add(s);
                     }
                     break;
                 case 5 :
                     {
-                    s=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable10537); if (state.failed) return retval; 
+                    s=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable10538); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SEC.add(s);
                     }
                     break;
@@ -22612,7 +22615,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_STAR=new RewriteRuleTokenStream(adaptor,"token STAR");
         try {
             {
-            STAR727=(Token)match(input,STAR,FOLLOW_STAR_in_numberSetStar10594); if (state.failed) return retval; 
+            STAR727=(Token)match(input,STAR,FOLLOW_STAR_in_numberSetStar10595); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_STAR.add(STAR727);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -22653,7 +22656,7 @@ public class EsperEPL2GrammarParser extends Parser {
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            LW728=(Token)match(input,LW,FOLLOW_LW_in_lastWeekdayOperand10614); if (state.failed) return retval;
+            LW728=(Token)match(input,LW,FOLLOW_LW_in_lastWeekdayOperand10615); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             LW728_tree = (CommonTree)adaptor.create(LW728);
             root_0 = (CommonTree)adaptor.becomeRoot(LW728_tree, root_0);
@@ -22685,7 +22688,7 @@ public class EsperEPL2GrammarParser extends Parser {
         try {
             {
             root_0 = (CommonTree)adaptor.nil();
-            LAST729=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperand10627); if (state.failed) return retval;
+            LAST729=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperand10628); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             LAST729_tree = (CommonTree)adaptor.create(LAST729);
             root_0 = (CommonTree)adaptor.becomeRoot(LAST729_tree, root_0);
@@ -22727,9 +22730,9 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_substitution=new RewriteRuleSubtreeStream(adaptor,"rule substitution");
         try {
             {
-            STAR730=(Token)match(input,STAR,FOLLOW_STAR_in_frequencyOperand10639); if (state.failed) return retval; 
+            STAR730=(Token)match(input,STAR,FOLLOW_STAR_in_frequencyOperand10640); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_STAR.add(STAR730);
-            DIV731=(Token)match(input,DIV,FOLLOW_DIV_in_frequencyOperand10641); if (state.failed) return retval; 
+            DIV731=(Token)match(input,DIV,FOLLOW_DIV_in_frequencyOperand10642); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_DIV.add(DIV731);
             int alt261=3;
             switch ( input.LA(1) ) {
@@ -22760,7 +22763,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt261) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_frequencyOperand10644);
+                    pushFollow(FOLLOW_number_in_frequencyOperand10645);
                     number732=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22769,13 +22772,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_frequencyOperand10648); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_frequencyOperand10649); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_frequencyOperand10650);
+                    pushFollow(FOLLOW_substitution_in_frequencyOperand10651);
                     substitution733=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22890,7 +22893,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt262) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_rangeOperand10699);
+                    pushFollow(FOLLOW_number_in_rangeOperand10700);
                     number734=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22899,13 +22902,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand10703); if (state.failed) return retval; 
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand10704); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i1);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_rangeOperand10705);
+                    pushFollow(FOLLOW_substitution_in_rangeOperand10706);
                     substitution735=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22913,7 +22916,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            COLON736=(Token)match(input,COLON,FOLLOW_COLON_in_rangeOperand10708); if (state.failed) return retval; 
+            COLON736=(Token)match(input,COLON,FOLLOW_COLON_in_rangeOperand10709); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_COLON.add(COLON736);
             int alt263=3;
             switch ( input.LA(1) ) {
@@ -22944,7 +22947,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt263) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_rangeOperand10711);
+                    pushFollow(FOLLOW_number_in_rangeOperand10712);
                     number737=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -22953,13 +22956,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i2=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand10715); if (state.failed) return retval; 
+                    i2=(Token)match(input,IDENT,FOLLOW_IDENT_in_rangeOperand10716); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i2);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_rangeOperand10717);
+                    pushFollow(FOLLOW_substitution_in_rangeOperand10718);
                     substitution738=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -23136,7 +23139,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt264) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_lastOperator10831);
+                    pushFollow(FOLLOW_number_in_lastOperator10832);
                     number739=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -23145,13 +23148,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_lastOperator10835); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_lastOperator10836); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_lastOperator10837);
+                    pushFollow(FOLLOW_substitution_in_lastOperator10838);
                     substitution740=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -23159,7 +23162,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            LAST741=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperator10840); if (state.failed) return retval; 
+            LAST741=(Token)match(input,LAST,FOLLOW_LAST_in_lastOperator10841); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LAST.add(LAST741);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -23264,7 +23267,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt265) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_weekDayOperator10888);
+                    pushFollow(FOLLOW_number_in_weekDayOperator10889);
                     number742=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -23273,13 +23276,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekDayOperator10892); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekDayOperator10893); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_weekDayOperator10894);
+                    pushFollow(FOLLOW_substitution_in_weekDayOperator10895);
                     substitution743=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -23287,7 +23290,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     }
                     break;
             }
-            WEEKDAY744=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_weekDayOperator10897); if (state.failed) return retval; 
+            WEEKDAY744=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_weekDayOperator10898); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_WEEKDAY.add(WEEKDAY744);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -23365,9 +23368,9 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_numericListParameter=new RewriteRuleSubtreeStream(adaptor,"rule numericListParameter");
         try {
             {
-            LBRACK745=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_numericParameterList10944); if (state.failed) return retval; 
+            LBRACK745=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_numericParameterList10945); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LBRACK.add(LBRACK745);
-            pushFollow(FOLLOW_numericListParameter_in_numericParameterList10946);
+            pushFollow(FOLLOW_numericListParameter_in_numericParameterList10947);
             numericListParameter746=numericListParameter();
             state._fsp--;
             if (state.failed) return retval;
@@ -23382,9 +23385,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt266) {
             	case 1 :
             	    {
-            	    COMMA747=(Token)match(input,COMMA,FOLLOW_COMMA_in_numericParameterList10949); if (state.failed) return retval; 
+            	    COMMA747=(Token)match(input,COMMA,FOLLOW_COMMA_in_numericParameterList10950); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_COMMA.add(COMMA747);
-            	    pushFollow(FOLLOW_numericListParameter_in_numericParameterList10951);
+            	    pushFollow(FOLLOW_numericListParameter_in_numericParameterList10952);
             	    numericListParameter748=numericListParameter();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -23395,7 +23398,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    break loop266;
                 }
             } while (true);
-            RBRACK749=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_numericParameterList10955); if (state.failed) return retval; 
+            RBRACK749=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_numericParameterList10956); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK749);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -23539,7 +23542,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_rangeOperand_in_numericListParameter10977);
+                    pushFollow(FOLLOW_rangeOperand_in_numericListParameter10978);
                     rangeOperand750=rangeOperand();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -23549,7 +23552,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_frequencyOperand_in_numericListParameter10983);
+                    pushFollow(FOLLOW_frequencyOperand_in_numericListParameter10984);
                     frequencyOperand751=frequencyOperand();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -23559,7 +23562,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 3 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_numberconstant_in_numericListParameter10988);
+                    pushFollow(FOLLOW_numberconstant_in_numericListParameter10989);
                     numberconstant752=numberconstant();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -23596,7 +23599,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_eventPropertyAtomic=new RewriteRuleSubtreeStream(adaptor,"rule eventPropertyAtomic");
         try {
             {
-            pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty11004);
+            pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty11005);
             eventPropertyAtomic753=eventPropertyAtomic();
             state._fsp--;
             if (state.failed) return retval;
@@ -23611,9 +23614,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt268) {
             	case 1 :
             	    {
-            	    DOT754=(Token)match(input,DOT,FOLLOW_DOT_in_eventProperty11007); if (state.failed) return retval; 
+            	    DOT754=(Token)match(input,DOT,FOLLOW_DOT_in_eventProperty11008); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_DOT.add(DOT754);
-            	    pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty11009);
+            	    pushFollow(FOLLOW_eventPropertyAtomic_in_eventProperty11010);
             	    eventPropertyAtomic755=eventPropertyAtomic();
             	    state._fsp--;
             	    if (state.failed) return retval;
@@ -23693,7 +23696,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleSubtreeStream stream_eventPropertyIdent=new RewriteRuleSubtreeStream(adaptor,"rule eventPropertyIdent");
         try {
             {
-            pushFollow(FOLLOW_eventPropertyIdent_in_eventPropertyAtomic11035);
+            pushFollow(FOLLOW_eventPropertyIdent_in_eventPropertyAtomic11036);
             eventPropertyIdent756=eventPropertyIdent();
             state._fsp--;
             if (state.failed) return retval;
@@ -23719,11 +23722,11 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt272) {
                 case 1 :
                     {
-                    lb=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_eventPropertyAtomic11044); if (state.failed) return retval; 
+                    lb=(Token)match(input,LBRACK,FOLLOW_LBRACK_in_eventPropertyAtomic11045); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LBRACK.add(lb);
-                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_eventPropertyAtomic11048); if (state.failed) return retval; 
+                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_eventPropertyAtomic11049); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_INT.add(ni);
-                    RBRACK757=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_eventPropertyAtomic11050); if (state.failed) return retval; 
+                    RBRACK757=(Token)match(input,RBRACK,FOLLOW_RBRACK_in_eventPropertyAtomic11051); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RBRACK.add(RBRACK757);
                     int alt269=2;
                     int LA269_0 = input.LA(1);
@@ -23733,7 +23736,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt269) {
                         case 1 :
                             {
-                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic11055); if (state.failed) return retval; 
+                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic11056); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUESTION.add(q);
                             }
                             break;
@@ -23742,7 +23745,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    lp=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventPropertyAtomic11069); if (state.failed) return retval; 
+                    lp=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_eventPropertyAtomic11070); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(lp);
                     int alt270=2;
                     int LA270_0 = input.LA(1);
@@ -23761,18 +23764,18 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt270) {
                         case 1 :
                             {
-                            s=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_eventPropertyAtomic11074); if (state.failed) return retval; 
+                            s=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_eventPropertyAtomic11075); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_STRING_LITERAL.add(s);
                             }
                             break;
                         case 2 :
                             {
-                            s=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic11080); if (state.failed) return retval; 
+                            s=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic11081); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUOTED_STRING_LITERAL.add(s);
                             }
                             break;
                     }
-                    RPAREN758=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventPropertyAtomic11083); if (state.failed) return retval; 
+                    RPAREN758=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_eventPropertyAtomic11084); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(RPAREN758);
                     int alt271=2;
                     int LA271_0 = input.LA(1);
@@ -23782,7 +23785,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt271) {
                         case 1 :
                             {
-                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic11088); if (state.failed) return retval; 
+                            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic11089); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_QUESTION.add(q);
                             }
                             break;
@@ -23791,7 +23794,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 3 :
                     {
-                    q1=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic11102); if (state.failed) return retval; 
+                    q1=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_eventPropertyAtomic11103); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_QUESTION.add(q1);
                     }
                     break;
@@ -23894,7 +23897,7 @@ public class EsperEPL2GrammarParser extends Parser {
          String identifier = ""; 
         try {
             {
-            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent11225);
+            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent11226);
             ipi=keywordAllowedIdent();
             state._fsp--;
             if (state.failed) return retval;
@@ -23912,9 +23915,9 @@ public class EsperEPL2GrammarParser extends Parser {
                 switch (alt274) {
             	case 1 :
             	    {
-            	    ESCAPECHAR759=(Token)match(input,ESCAPECHAR,FOLLOW_ESCAPECHAR_in_eventPropertyIdent11237); if (state.failed) return retval; 
+            	    ESCAPECHAR759=(Token)match(input,ESCAPECHAR,FOLLOW_ESCAPECHAR_in_eventPropertyIdent11238); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_ESCAPECHAR.add(ESCAPECHAR759);
-            	    DOT760=(Token)match(input,DOT,FOLLOW_DOT_in_eventPropertyIdent11239); if (state.failed) return retval; 
+            	    DOT760=(Token)match(input,DOT,FOLLOW_DOT_in_eventPropertyIdent11240); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_DOT.add(DOT760);
             	    int alt273=2;
             	    switch ( input.LA(1) ) {
@@ -24027,7 +24030,7 @@ public class EsperEPL2GrammarParser extends Parser {
             	    switch (alt273) {
             	        case 1 :
             	            {
-            	            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent11243);
+            	            pushFollow(FOLLOW_keywordAllowedIdent_in_eventPropertyIdent11244);
             	            ipi2=keywordAllowedIdent();
             	            state._fsp--;
             	            if (state.failed) return retval;
@@ -24421,7 +24424,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_keywordAllowedIdent11282); if (state.failed) return retval;
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_keywordAllowedIdent11283); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i1_tree = (CommonTree)adaptor.create(i1);
                     adaptor.addChild(root_0, i1_tree);
@@ -24434,7 +24437,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent11291); if (state.failed) return retval;
+                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent11292); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i2_tree = (CommonTree)adaptor.create(i2);
                     adaptor.addChild(root_0, i2_tree);
@@ -24447,7 +24450,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 3 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    AT761=(Token)match(input,AT,FOLLOW_AT_in_keywordAllowedIdent11298); if (state.failed) return retval;
+                    AT761=(Token)match(input,AT,FOLLOW_AT_in_keywordAllowedIdent11299); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     AT761_tree = (CommonTree)adaptor.create(AT761);
                     adaptor.addChild(root_0, AT761_tree);
@@ -24460,7 +24463,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 4 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    COUNT762=(Token)match(input,COUNT,FOLLOW_COUNT_in_keywordAllowedIdent11305); if (state.failed) return retval;
+                    COUNT762=(Token)match(input,COUNT,FOLLOW_COUNT_in_keywordAllowedIdent11306); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     COUNT762_tree = (CommonTree)adaptor.create(COUNT762);
                     adaptor.addChild(root_0, COUNT762_tree);
@@ -24473,7 +24476,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 5 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    ESCAPE763=(Token)match(input,ESCAPE,FOLLOW_ESCAPE_in_keywordAllowedIdent11312); if (state.failed) return retval;
+                    ESCAPE763=(Token)match(input,ESCAPE,FOLLOW_ESCAPE_in_keywordAllowedIdent11313); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     ESCAPE763_tree = (CommonTree)adaptor.create(ESCAPE763);
                     adaptor.addChild(root_0, ESCAPE763_tree);
@@ -24486,7 +24489,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 6 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    EVERY_EXPR764=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_keywordAllowedIdent11323); if (state.failed) return retval;
+                    EVERY_EXPR764=(Token)match(input,EVERY_EXPR,FOLLOW_EVERY_EXPR_in_keywordAllowedIdent11324); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     EVERY_EXPR764_tree = (CommonTree)adaptor.create(EVERY_EXPR764);
                     adaptor.addChild(root_0, EVERY_EXPR764_tree);
@@ -24499,7 +24502,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 7 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    SUM765=(Token)match(input,SUM,FOLLOW_SUM_in_keywordAllowedIdent11330); if (state.failed) return retval;
+                    SUM765=(Token)match(input,SUM,FOLLOW_SUM_in_keywordAllowedIdent11331); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     SUM765_tree = (CommonTree)adaptor.create(SUM765);
                     adaptor.addChild(root_0, SUM765_tree);
@@ -24512,7 +24515,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 8 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    AVG766=(Token)match(input,AVG,FOLLOW_AVG_in_keywordAllowedIdent11337); if (state.failed) return retval;
+                    AVG766=(Token)match(input,AVG,FOLLOW_AVG_in_keywordAllowedIdent11338); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     AVG766_tree = (CommonTree)adaptor.create(AVG766);
                     adaptor.addChild(root_0, AVG766_tree);
@@ -24525,7 +24528,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 9 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MAX767=(Token)match(input,MAX,FOLLOW_MAX_in_keywordAllowedIdent11344); if (state.failed) return retval;
+                    MAX767=(Token)match(input,MAX,FOLLOW_MAX_in_keywordAllowedIdent11345); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MAX767_tree = (CommonTree)adaptor.create(MAX767);
                     adaptor.addChild(root_0, MAX767_tree);
@@ -24538,7 +24541,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 10 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MIN768=(Token)match(input,MIN,FOLLOW_MIN_in_keywordAllowedIdent11351); if (state.failed) return retval;
+                    MIN768=(Token)match(input,MIN,FOLLOW_MIN_in_keywordAllowedIdent11352); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MIN768_tree = (CommonTree)adaptor.create(MIN768);
                     adaptor.addChild(root_0, MIN768_tree);
@@ -24551,7 +24554,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 11 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    COALESCE769=(Token)match(input,COALESCE,FOLLOW_COALESCE_in_keywordAllowedIdent11358); if (state.failed) return retval;
+                    COALESCE769=(Token)match(input,COALESCE,FOLLOW_COALESCE_in_keywordAllowedIdent11359); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     COALESCE769_tree = (CommonTree)adaptor.create(COALESCE769);
                     adaptor.addChild(root_0, COALESCE769_tree);
@@ -24564,7 +24567,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 12 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MEDIAN770=(Token)match(input,MEDIAN,FOLLOW_MEDIAN_in_keywordAllowedIdent11365); if (state.failed) return retval;
+                    MEDIAN770=(Token)match(input,MEDIAN,FOLLOW_MEDIAN_in_keywordAllowedIdent11366); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MEDIAN770_tree = (CommonTree)adaptor.create(MEDIAN770);
                     adaptor.addChild(root_0, MEDIAN770_tree);
@@ -24577,7 +24580,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 13 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    STDDEV771=(Token)match(input,STDDEV,FOLLOW_STDDEV_in_keywordAllowedIdent11372); if (state.failed) return retval;
+                    STDDEV771=(Token)match(input,STDDEV,FOLLOW_STDDEV_in_keywordAllowedIdent11373); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     STDDEV771_tree = (CommonTree)adaptor.create(STDDEV771);
                     adaptor.addChild(root_0, STDDEV771_tree);
@@ -24590,7 +24593,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 14 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    AVEDEV772=(Token)match(input,AVEDEV,FOLLOW_AVEDEV_in_keywordAllowedIdent11379); if (state.failed) return retval;
+                    AVEDEV772=(Token)match(input,AVEDEV,FOLLOW_AVEDEV_in_keywordAllowedIdent11380); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     AVEDEV772_tree = (CommonTree)adaptor.create(AVEDEV772);
                     adaptor.addChild(root_0, AVEDEV772_tree);
@@ -24603,7 +24606,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 15 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    EVENTS773=(Token)match(input,EVENTS,FOLLOW_EVENTS_in_keywordAllowedIdent11386); if (state.failed) return retval;
+                    EVENTS773=(Token)match(input,EVENTS,FOLLOW_EVENTS_in_keywordAllowedIdent11387); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     EVENTS773_tree = (CommonTree)adaptor.create(EVENTS773);
                     adaptor.addChild(root_0, EVENTS773_tree);
@@ -24616,7 +24619,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 16 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    FIRST774=(Token)match(input,FIRST,FOLLOW_FIRST_in_keywordAllowedIdent11393); if (state.failed) return retval;
+                    FIRST774=(Token)match(input,FIRST,FOLLOW_FIRST_in_keywordAllowedIdent11394); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     FIRST774_tree = (CommonTree)adaptor.create(FIRST774);
                     adaptor.addChild(root_0, FIRST774_tree);
@@ -24629,7 +24632,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 17 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    LAST775=(Token)match(input,LAST,FOLLOW_LAST_in_keywordAllowedIdent11400); if (state.failed) return retval;
+                    LAST775=(Token)match(input,LAST,FOLLOW_LAST_in_keywordAllowedIdent11401); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     LAST775_tree = (CommonTree)adaptor.create(LAST775);
                     adaptor.addChild(root_0, LAST775_tree);
@@ -24642,7 +24645,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 18 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    WHILE776=(Token)match(input,WHILE,FOLLOW_WHILE_in_keywordAllowedIdent11407); if (state.failed) return retval;
+                    WHILE776=(Token)match(input,WHILE,FOLLOW_WHILE_in_keywordAllowedIdent11408); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     WHILE776_tree = (CommonTree)adaptor.create(WHILE776);
                     adaptor.addChild(root_0, WHILE776_tree);
@@ -24655,7 +24658,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 19 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MERGE777=(Token)match(input,MERGE,FOLLOW_MERGE_in_keywordAllowedIdent11414); if (state.failed) return retval;
+                    MERGE777=(Token)match(input,MERGE,FOLLOW_MERGE_in_keywordAllowedIdent11415); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MERGE777_tree = (CommonTree)adaptor.create(MERGE777);
                     adaptor.addChild(root_0, MERGE777_tree);
@@ -24668,7 +24671,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 20 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MATCHED778=(Token)match(input,MATCHED,FOLLOW_MATCHED_in_keywordAllowedIdent11421); if (state.failed) return retval;
+                    MATCHED778=(Token)match(input,MATCHED,FOLLOW_MATCHED_in_keywordAllowedIdent11422); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MATCHED778_tree = (CommonTree)adaptor.create(MATCHED778);
                     adaptor.addChild(root_0, MATCHED778_tree);
@@ -24681,7 +24684,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 21 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    UNIDIRECTIONAL779=(Token)match(input,UNIDIRECTIONAL,FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent11428); if (state.failed) return retval;
+                    UNIDIRECTIONAL779=(Token)match(input,UNIDIRECTIONAL,FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent11429); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     UNIDIRECTIONAL779_tree = (CommonTree)adaptor.create(UNIDIRECTIONAL779);
                     adaptor.addChild(root_0, UNIDIRECTIONAL779_tree);
@@ -24694,7 +24697,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 22 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    RETAINUNION780=(Token)match(input,RETAINUNION,FOLLOW_RETAINUNION_in_keywordAllowedIdent11435); if (state.failed) return retval;
+                    RETAINUNION780=(Token)match(input,RETAINUNION,FOLLOW_RETAINUNION_in_keywordAllowedIdent11436); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     RETAINUNION780_tree = (CommonTree)adaptor.create(RETAINUNION780);
                     adaptor.addChild(root_0, RETAINUNION780_tree);
@@ -24707,7 +24710,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 23 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    RETAININTERSECTION781=(Token)match(input,RETAININTERSECTION,FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent11442); if (state.failed) return retval;
+                    RETAININTERSECTION781=(Token)match(input,RETAININTERSECTION,FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent11443); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     RETAININTERSECTION781_tree = (CommonTree)adaptor.create(RETAININTERSECTION781);
                     adaptor.addChild(root_0, RETAININTERSECTION781_tree);
@@ -24720,7 +24723,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 24 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    UNTIL782=(Token)match(input,UNTIL,FOLLOW_UNTIL_in_keywordAllowedIdent11449); if (state.failed) return retval;
+                    UNTIL782=(Token)match(input,UNTIL,FOLLOW_UNTIL_in_keywordAllowedIdent11450); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     UNTIL782_tree = (CommonTree)adaptor.create(UNTIL782);
                     adaptor.addChild(root_0, UNTIL782_tree);
@@ -24733,7 +24736,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 25 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PATTERN783=(Token)match(input,PATTERN,FOLLOW_PATTERN_in_keywordAllowedIdent11456); if (state.failed) return retval;
+                    PATTERN783=(Token)match(input,PATTERN,FOLLOW_PATTERN_in_keywordAllowedIdent11457); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PATTERN783_tree = (CommonTree)adaptor.create(PATTERN783);
                     adaptor.addChild(root_0, PATTERN783_tree);
@@ -24746,7 +24749,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 26 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    SQL784=(Token)match(input,SQL,FOLLOW_SQL_in_keywordAllowedIdent11463); if (state.failed) return retval;
+                    SQL784=(Token)match(input,SQL,FOLLOW_SQL_in_keywordAllowedIdent11464); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     SQL784_tree = (CommonTree)adaptor.create(SQL784);
                     adaptor.addChild(root_0, SQL784_tree);
@@ -24759,7 +24762,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 27 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    METADATASQL785=(Token)match(input,METADATASQL,FOLLOW_METADATASQL_in_keywordAllowedIdent11470); if (state.failed) return retval;
+                    METADATASQL785=(Token)match(input,METADATASQL,FOLLOW_METADATASQL_in_keywordAllowedIdent11471); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     METADATASQL785_tree = (CommonTree)adaptor.create(METADATASQL785);
                     adaptor.addChild(root_0, METADATASQL785_tree);
@@ -24772,7 +24775,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 28 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PREVIOUS786=(Token)match(input,PREVIOUS,FOLLOW_PREVIOUS_in_keywordAllowedIdent11477); if (state.failed) return retval;
+                    PREVIOUS786=(Token)match(input,PREVIOUS,FOLLOW_PREVIOUS_in_keywordAllowedIdent11478); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PREVIOUS786_tree = (CommonTree)adaptor.create(PREVIOUS786);
                     adaptor.addChild(root_0, PREVIOUS786_tree);
@@ -24785,7 +24788,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 29 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PREVIOUSTAIL787=(Token)match(input,PREVIOUSTAIL,FOLLOW_PREVIOUSTAIL_in_keywordAllowedIdent11484); if (state.failed) return retval;
+                    PREVIOUSTAIL787=(Token)match(input,PREVIOUSTAIL,FOLLOW_PREVIOUSTAIL_in_keywordAllowedIdent11485); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PREVIOUSTAIL787_tree = (CommonTree)adaptor.create(PREVIOUSTAIL787);
                     adaptor.addChild(root_0, PREVIOUSTAIL787_tree);
@@ -24798,7 +24801,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 30 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PRIOR788=(Token)match(input,PRIOR,FOLLOW_PRIOR_in_keywordAllowedIdent11491); if (state.failed) return retval;
+                    PRIOR788=(Token)match(input,PRIOR,FOLLOW_PRIOR_in_keywordAllowedIdent11492); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PRIOR788_tree = (CommonTree)adaptor.create(PRIOR788);
                     adaptor.addChild(root_0, PRIOR788_tree);
@@ -24811,7 +24814,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 31 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    WEEKDAY789=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_keywordAllowedIdent11498); if (state.failed) return retval;
+                    WEEKDAY789=(Token)match(input,WEEKDAY,FOLLOW_WEEKDAY_in_keywordAllowedIdent11499); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     WEEKDAY789_tree = (CommonTree)adaptor.create(WEEKDAY789);
                     adaptor.addChild(root_0, WEEKDAY789_tree);
@@ -24824,7 +24827,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 32 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    LW790=(Token)match(input,LW,FOLLOW_LW_in_keywordAllowedIdent11505); if (state.failed) return retval;
+                    LW790=(Token)match(input,LW,FOLLOW_LW_in_keywordAllowedIdent11506); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     LW790_tree = (CommonTree)adaptor.create(LW790);
                     adaptor.addChild(root_0, LW790_tree);
@@ -24837,7 +24840,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 33 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    INSTANCEOF791=(Token)match(input,INSTANCEOF,FOLLOW_INSTANCEOF_in_keywordAllowedIdent11512); if (state.failed) return retval;
+                    INSTANCEOF791=(Token)match(input,INSTANCEOF,FOLLOW_INSTANCEOF_in_keywordAllowedIdent11513); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     INSTANCEOF791_tree = (CommonTree)adaptor.create(INSTANCEOF791);
                     adaptor.addChild(root_0, INSTANCEOF791_tree);
@@ -24850,7 +24853,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 34 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    TYPEOF792=(Token)match(input,TYPEOF,FOLLOW_TYPEOF_in_keywordAllowedIdent11519); if (state.failed) return retval;
+                    TYPEOF792=(Token)match(input,TYPEOF,FOLLOW_TYPEOF_in_keywordAllowedIdent11520); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     TYPEOF792_tree = (CommonTree)adaptor.create(TYPEOF792);
                     adaptor.addChild(root_0, TYPEOF792_tree);
@@ -24863,7 +24866,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 35 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    CAST793=(Token)match(input,CAST,FOLLOW_CAST_in_keywordAllowedIdent11526); if (state.failed) return retval;
+                    CAST793=(Token)match(input,CAST,FOLLOW_CAST_in_keywordAllowedIdent11527); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     CAST793_tree = (CommonTree)adaptor.create(CAST793);
                     adaptor.addChild(root_0, CAST793_tree);
@@ -24876,7 +24879,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 36 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    SNAPSHOT794=(Token)match(input,SNAPSHOT,FOLLOW_SNAPSHOT_in_keywordAllowedIdent11533); if (state.failed) return retval;
+                    SNAPSHOT794=(Token)match(input,SNAPSHOT,FOLLOW_SNAPSHOT_in_keywordAllowedIdent11534); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     SNAPSHOT794_tree = (CommonTree)adaptor.create(SNAPSHOT794);
                     adaptor.addChild(root_0, SNAPSHOT794_tree);
@@ -24889,7 +24892,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 37 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    VARIABLE795=(Token)match(input,VARIABLE,FOLLOW_VARIABLE_in_keywordAllowedIdent11540); if (state.failed) return retval;
+                    VARIABLE795=(Token)match(input,VARIABLE,FOLLOW_VARIABLE_in_keywordAllowedIdent11541); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     VARIABLE795_tree = (CommonTree)adaptor.create(VARIABLE795);
                     adaptor.addChild(root_0, VARIABLE795_tree);
@@ -24902,7 +24905,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 38 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    INDEX796=(Token)match(input,INDEX,FOLLOW_INDEX_in_keywordAllowedIdent11549); if (state.failed) return retval;
+                    INDEX796=(Token)match(input,INDEX,FOLLOW_INDEX_in_keywordAllowedIdent11550); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     INDEX796_tree = (CommonTree)adaptor.create(INDEX796);
                     adaptor.addChild(root_0, INDEX796_tree);
@@ -24915,7 +24918,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 39 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    WINDOW797=(Token)match(input,WINDOW,FOLLOW_WINDOW_in_keywordAllowedIdent11558); if (state.failed) return retval;
+                    WINDOW797=(Token)match(input,WINDOW,FOLLOW_WINDOW_in_keywordAllowedIdent11559); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     WINDOW797_tree = (CommonTree)adaptor.create(WINDOW797);
                     adaptor.addChild(root_0, WINDOW797_tree);
@@ -24928,7 +24931,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 40 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    LEFT798=(Token)match(input,LEFT,FOLLOW_LEFT_in_keywordAllowedIdent11565); if (state.failed) return retval;
+                    LEFT798=(Token)match(input,LEFT,FOLLOW_LEFT_in_keywordAllowedIdent11566); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     LEFT798_tree = (CommonTree)adaptor.create(LEFT798);
                     adaptor.addChild(root_0, LEFT798_tree);
@@ -24941,7 +24944,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 41 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    RIGHT799=(Token)match(input,RIGHT,FOLLOW_RIGHT_in_keywordAllowedIdent11572); if (state.failed) return retval;
+                    RIGHT799=(Token)match(input,RIGHT,FOLLOW_RIGHT_in_keywordAllowedIdent11573); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     RIGHT799_tree = (CommonTree)adaptor.create(RIGHT799);
                     adaptor.addChild(root_0, RIGHT799_tree);
@@ -24954,7 +24957,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 42 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    OUTER800=(Token)match(input,OUTER,FOLLOW_OUTER_in_keywordAllowedIdent11579); if (state.failed) return retval;
+                    OUTER800=(Token)match(input,OUTER,FOLLOW_OUTER_in_keywordAllowedIdent11580); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     OUTER800_tree = (CommonTree)adaptor.create(OUTER800);
                     adaptor.addChild(root_0, OUTER800_tree);
@@ -24967,7 +24970,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 43 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    FULL801=(Token)match(input,FULL,FOLLOW_FULL_in_keywordAllowedIdent11586); if (state.failed) return retval;
+                    FULL801=(Token)match(input,FULL,FOLLOW_FULL_in_keywordAllowedIdent11587); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     FULL801_tree = (CommonTree)adaptor.create(FULL801);
                     adaptor.addChild(root_0, FULL801_tree);
@@ -24980,7 +24983,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 44 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    JOIN802=(Token)match(input,JOIN,FOLLOW_JOIN_in_keywordAllowedIdent11593); if (state.failed) return retval;
+                    JOIN802=(Token)match(input,JOIN,FOLLOW_JOIN_in_keywordAllowedIdent11594); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     JOIN802_tree = (CommonTree)adaptor.create(JOIN802);
                     adaptor.addChild(root_0, JOIN802_tree);
@@ -24993,7 +24996,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 45 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    DEFINE803=(Token)match(input,DEFINE,FOLLOW_DEFINE_in_keywordAllowedIdent11600); if (state.failed) return retval;
+                    DEFINE803=(Token)match(input,DEFINE,FOLLOW_DEFINE_in_keywordAllowedIdent11601); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     DEFINE803_tree = (CommonTree)adaptor.create(DEFINE803);
                     adaptor.addChild(root_0, DEFINE803_tree);
@@ -25006,7 +25009,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 46 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    PARTITION804=(Token)match(input,PARTITION,FOLLOW_PARTITION_in_keywordAllowedIdent11607); if (state.failed) return retval;
+                    PARTITION804=(Token)match(input,PARTITION,FOLLOW_PARTITION_in_keywordAllowedIdent11608); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     PARTITION804_tree = (CommonTree)adaptor.create(PARTITION804);
                     adaptor.addChild(root_0, PARTITION804_tree);
@@ -25019,7 +25022,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 47 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    MATCHES805=(Token)match(input,MATCHES,FOLLOW_MATCHES_in_keywordAllowedIdent11614); if (state.failed) return retval;
+                    MATCHES805=(Token)match(input,MATCHES,FOLLOW_MATCHES_in_keywordAllowedIdent11615); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     MATCHES805_tree = (CommonTree)adaptor.create(MATCHES805);
                     adaptor.addChild(root_0, MATCHES805_tree);
@@ -25075,7 +25078,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableStr11635); if (state.failed) return retval;
+                    i1=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableStr11636); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i1_tree = (CommonTree)adaptor.create(i1);
                     adaptor.addChild(root_0, i1_tree);
@@ -25088,7 +25091,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableStr11644); if (state.failed) return retval;
+                    i2=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableStr11645); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     i2_tree = (CommonTree)adaptor.create(i2);
                     adaptor.addChild(root_0, i2_tree);
@@ -25144,7 +25147,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    IDENT806=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableIdent11658); if (state.failed) return retval;
+                    IDENT806=(Token)match(input,IDENT,FOLLOW_IDENT_in_escapableIdent11659); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     IDENT806_tree = (CommonTree)adaptor.create(IDENT806);
                     adaptor.addChild(root_0, IDENT806_tree);
@@ -25153,7 +25156,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    t=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent11666); if (state.failed) return retval; 
+                    t=(Token)match(input,TICKED_STRING_LITERAL,FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent11667); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TICKED_STRING_LITERAL.add(t);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -25616,7 +25619,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt306) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_yearPart_in_timePeriod11691);
+                    pushFollow(FOLLOW_yearPart_in_timePeriod11692);
                     yearPart807=yearPart();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -25675,7 +25678,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt278) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_monthPart_in_timePeriod11693);
+                            pushFollow(FOLLOW_monthPart_in_timePeriod11694);
                             monthPart808=monthPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -25737,7 +25740,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt279) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_weekPart_in_timePeriod11696);
+                            pushFollow(FOLLOW_weekPart_in_timePeriod11697);
                             weekPart809=weekPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -25799,7 +25802,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt280) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_dayPart_in_timePeriod11699);
+                            pushFollow(FOLLOW_dayPart_in_timePeriod11700);
                             dayPart810=dayPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -25861,7 +25864,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt281) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod11702);
+                            pushFollow(FOLLOW_hourPart_in_timePeriod11703);
                             hourPart811=hourPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -25923,7 +25926,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt282) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod11705);
+                            pushFollow(FOLLOW_minutePart_in_timePeriod11706);
                             minutePart812=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -25985,7 +25988,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt283) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod11708);
+                            pushFollow(FOLLOW_secondPart_in_timePeriod11709);
                             secondPart813=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26001,7 +26004,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt284) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11711);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11712);
                             millisecondPart814=millisecondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26013,7 +26016,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    pushFollow(FOLLOW_monthPart_in_timePeriod11717);
+                    pushFollow(FOLLOW_monthPart_in_timePeriod11718);
                     monthPart815=monthPart();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -26072,7 +26075,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt285) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_weekPart_in_timePeriod11719);
+                            pushFollow(FOLLOW_weekPart_in_timePeriod11720);
                             weekPart816=weekPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26134,7 +26137,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt286) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_dayPart_in_timePeriod11722);
+                            pushFollow(FOLLOW_dayPart_in_timePeriod11723);
                             dayPart817=dayPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26196,7 +26199,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt287) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod11725);
+                            pushFollow(FOLLOW_hourPart_in_timePeriod11726);
                             hourPart818=hourPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26258,7 +26261,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt288) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod11728);
+                            pushFollow(FOLLOW_minutePart_in_timePeriod11729);
                             minutePart819=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26320,7 +26323,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt289) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod11731);
+                            pushFollow(FOLLOW_secondPart_in_timePeriod11732);
                             secondPart820=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26336,7 +26339,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt290) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11734);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11735);
                             millisecondPart821=millisecondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26348,7 +26351,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_weekPart_in_timePeriod11740);
+                    pushFollow(FOLLOW_weekPart_in_timePeriod11741);
                     weekPart822=weekPart();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -26407,7 +26410,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt291) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_dayPart_in_timePeriod11742);
+                            pushFollow(FOLLOW_dayPart_in_timePeriod11743);
                             dayPart823=dayPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26469,7 +26472,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt292) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod11745);
+                            pushFollow(FOLLOW_hourPart_in_timePeriod11746);
                             hourPart824=hourPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26531,7 +26534,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt293) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod11748);
+                            pushFollow(FOLLOW_minutePart_in_timePeriod11749);
                             minutePart825=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26593,7 +26596,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt294) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod11751);
+                            pushFollow(FOLLOW_secondPart_in_timePeriod11752);
                             secondPart826=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26609,7 +26612,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt295) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11754);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11755);
                             millisecondPart827=millisecondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26621,7 +26624,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 4 :
                     {
-                    pushFollow(FOLLOW_dayPart_in_timePeriod11760);
+                    pushFollow(FOLLOW_dayPart_in_timePeriod11761);
                     dayPart828=dayPart();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -26680,7 +26683,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt296) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_hourPart_in_timePeriod11762);
+                            pushFollow(FOLLOW_hourPart_in_timePeriod11763);
                             hourPart829=hourPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26742,7 +26745,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt297) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod11765);
+                            pushFollow(FOLLOW_minutePart_in_timePeriod11766);
                             minutePart830=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26804,7 +26807,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt298) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod11768);
+                            pushFollow(FOLLOW_secondPart_in_timePeriod11769);
                             secondPart831=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26820,7 +26823,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt299) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11771);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11772);
                             millisecondPart832=millisecondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26832,7 +26835,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 5 :
                     {
-                    pushFollow(FOLLOW_hourPart_in_timePeriod11777);
+                    pushFollow(FOLLOW_hourPart_in_timePeriod11778);
                     hourPart833=hourPart();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -26891,7 +26894,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt300) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_minutePart_in_timePeriod11779);
+                            pushFollow(FOLLOW_minutePart_in_timePeriod11780);
                             minutePart834=minutePart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26953,7 +26956,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt301) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod11782);
+                            pushFollow(FOLLOW_secondPart_in_timePeriod11783);
                             secondPart835=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26969,7 +26972,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt302) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11785);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11786);
                             millisecondPart836=millisecondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -26981,7 +26984,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 6 :
                     {
-                    pushFollow(FOLLOW_minutePart_in_timePeriod11791);
+                    pushFollow(FOLLOW_minutePart_in_timePeriod11792);
                     minutePart837=minutePart();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27040,7 +27043,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt303) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_secondPart_in_timePeriod11793);
+                            pushFollow(FOLLOW_secondPart_in_timePeriod11794);
                             secondPart838=secondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -27056,7 +27059,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt304) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11796);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11797);
                             millisecondPart839=millisecondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -27068,7 +27071,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 7 :
                     {
-                    pushFollow(FOLLOW_secondPart_in_timePeriod11802);
+                    pushFollow(FOLLOW_secondPart_in_timePeriod11803);
                     secondPart840=secondPart();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27081,7 +27084,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     switch (alt305) {
                         case 1 :
                             {
-                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11804);
+                            pushFollow(FOLLOW_millisecondPart_in_timePeriod11805);
                             millisecondPart841=millisecondPart();
                             state._fsp--;
                             if (state.failed) return retval;
@@ -27093,7 +27096,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 8 :
                     {
-                    pushFollow(FOLLOW_millisecondPart_in_timePeriod11810);
+                    pushFollow(FOLLOW_millisecondPart_in_timePeriod11811);
                     millisecondPart842=millisecondPart();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27211,7 +27214,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt307) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_yearPart11857);
+                    pushFollow(FOLLOW_number_in_yearPart11858);
                     number843=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27220,13 +27223,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_yearPart11861); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_yearPart11862); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_yearPart11863);
+                    pushFollow(FOLLOW_substitution_in_yearPart11864);
                     substitution844=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27251,13 +27254,13 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt308) {
                 case 1 :
                     {
-                    TIMEPERIOD_YEARS845=(Token)match(input,TIMEPERIOD_YEARS,FOLLOW_TIMEPERIOD_YEARS_in_yearPart11867); if (state.failed) return retval; 
+                    TIMEPERIOD_YEARS845=(Token)match(input,TIMEPERIOD_YEARS,FOLLOW_TIMEPERIOD_YEARS_in_yearPart11868); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_YEARS.add(TIMEPERIOD_YEARS845);
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_YEAR846=(Token)match(input,TIMEPERIOD_YEAR,FOLLOW_TIMEPERIOD_YEAR_in_yearPart11871); if (state.failed) return retval; 
+                    TIMEPERIOD_YEAR846=(Token)match(input,TIMEPERIOD_YEAR,FOLLOW_TIMEPERIOD_YEAR_in_yearPart11872); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_YEAR.add(TIMEPERIOD_YEAR846);
                     }
                     break;
@@ -27368,7 +27371,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt309) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_monthPart11919);
+                    pushFollow(FOLLOW_number_in_monthPart11920);
                     number847=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27377,13 +27380,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_monthPart11923); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_monthPart11924); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_monthPart11925);
+                    pushFollow(FOLLOW_substitution_in_monthPart11926);
                     substitution848=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27408,13 +27411,13 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt310) {
                 case 1 :
                     {
-                    TIMEPERIOD_MONTHS849=(Token)match(input,TIMEPERIOD_MONTHS,FOLLOW_TIMEPERIOD_MONTHS_in_monthPart11929); if (state.failed) return retval; 
+                    TIMEPERIOD_MONTHS849=(Token)match(input,TIMEPERIOD_MONTHS,FOLLOW_TIMEPERIOD_MONTHS_in_monthPart11930); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MONTHS.add(TIMEPERIOD_MONTHS849);
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_MONTH850=(Token)match(input,TIMEPERIOD_MONTH,FOLLOW_TIMEPERIOD_MONTH_in_monthPart11933); if (state.failed) return retval; 
+                    TIMEPERIOD_MONTH850=(Token)match(input,TIMEPERIOD_MONTH,FOLLOW_TIMEPERIOD_MONTH_in_monthPart11934); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MONTH.add(TIMEPERIOD_MONTH850);
                     }
                     break;
@@ -27525,7 +27528,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt311) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_weekPart11981);
+                    pushFollow(FOLLOW_number_in_weekPart11982);
                     number851=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27534,13 +27537,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekPart11985); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_weekPart11986); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_weekPart11987);
+                    pushFollow(FOLLOW_substitution_in_weekPart11988);
                     substitution852=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27565,13 +27568,13 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt312) {
                 case 1 :
                     {
-                    TIMEPERIOD_WEEKS853=(Token)match(input,TIMEPERIOD_WEEKS,FOLLOW_TIMEPERIOD_WEEKS_in_weekPart11991); if (state.failed) return retval; 
+                    TIMEPERIOD_WEEKS853=(Token)match(input,TIMEPERIOD_WEEKS,FOLLOW_TIMEPERIOD_WEEKS_in_weekPart11992); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_WEEKS.add(TIMEPERIOD_WEEKS853);
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_WEEK854=(Token)match(input,TIMEPERIOD_WEEK,FOLLOW_TIMEPERIOD_WEEK_in_weekPart11995); if (state.failed) return retval; 
+                    TIMEPERIOD_WEEK854=(Token)match(input,TIMEPERIOD_WEEK,FOLLOW_TIMEPERIOD_WEEK_in_weekPart11996); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_WEEK.add(TIMEPERIOD_WEEK854);
                     }
                     break;
@@ -27682,7 +27685,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt313) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_dayPart12043);
+                    pushFollow(FOLLOW_number_in_dayPart12044);
                     number855=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27691,13 +27694,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_dayPart12047); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_dayPart12048); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_dayPart12049);
+                    pushFollow(FOLLOW_substitution_in_dayPart12050);
                     substitution856=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27722,13 +27725,13 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt314) {
                 case 1 :
                     {
-                    TIMEPERIOD_DAYS857=(Token)match(input,TIMEPERIOD_DAYS,FOLLOW_TIMEPERIOD_DAYS_in_dayPart12053); if (state.failed) return retval; 
+                    TIMEPERIOD_DAYS857=(Token)match(input,TIMEPERIOD_DAYS,FOLLOW_TIMEPERIOD_DAYS_in_dayPart12054); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_DAYS.add(TIMEPERIOD_DAYS857);
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_DAY858=(Token)match(input,TIMEPERIOD_DAY,FOLLOW_TIMEPERIOD_DAY_in_dayPart12057); if (state.failed) return retval; 
+                    TIMEPERIOD_DAY858=(Token)match(input,TIMEPERIOD_DAY,FOLLOW_TIMEPERIOD_DAY_in_dayPart12058); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_DAY.add(TIMEPERIOD_DAY858);
                     }
                     break;
@@ -27839,7 +27842,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt315) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_hourPart12106);
+                    pushFollow(FOLLOW_number_in_hourPart12107);
                     number859=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27848,13 +27851,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_hourPart12110); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_hourPart12111); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_hourPart12112);
+                    pushFollow(FOLLOW_substitution_in_hourPart12113);
                     substitution860=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -27879,13 +27882,13 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt316) {
                 case 1 :
                     {
-                    TIMEPERIOD_HOURS861=(Token)match(input,TIMEPERIOD_HOURS,FOLLOW_TIMEPERIOD_HOURS_in_hourPart12116); if (state.failed) return retval; 
+                    TIMEPERIOD_HOURS861=(Token)match(input,TIMEPERIOD_HOURS,FOLLOW_TIMEPERIOD_HOURS_in_hourPart12117); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_HOURS.add(TIMEPERIOD_HOURS861);
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_HOUR862=(Token)match(input,TIMEPERIOD_HOUR,FOLLOW_TIMEPERIOD_HOUR_in_hourPart12120); if (state.failed) return retval; 
+                    TIMEPERIOD_HOUR862=(Token)match(input,TIMEPERIOD_HOUR,FOLLOW_TIMEPERIOD_HOUR_in_hourPart12121); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_HOUR.add(TIMEPERIOD_HOUR862);
                     }
                     break;
@@ -27999,7 +28002,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt317) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_minutePart12169);
+                    pushFollow(FOLLOW_number_in_minutePart12170);
                     number863=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -28008,13 +28011,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_minutePart12173); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_minutePart12174); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_minutePart12175);
+                    pushFollow(FOLLOW_substitution_in_minutePart12176);
                     substitution864=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -28048,19 +28051,19 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt318) {
                 case 1 :
                     {
-                    TIMEPERIOD_MINUTES865=(Token)match(input,TIMEPERIOD_MINUTES,FOLLOW_TIMEPERIOD_MINUTES_in_minutePart12179); if (state.failed) return retval; 
+                    TIMEPERIOD_MINUTES865=(Token)match(input,TIMEPERIOD_MINUTES,FOLLOW_TIMEPERIOD_MINUTES_in_minutePart12180); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MINUTES.add(TIMEPERIOD_MINUTES865);
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_MINUTE866=(Token)match(input,TIMEPERIOD_MINUTE,FOLLOW_TIMEPERIOD_MINUTE_in_minutePart12183); if (state.failed) return retval; 
+                    TIMEPERIOD_MINUTE866=(Token)match(input,TIMEPERIOD_MINUTE,FOLLOW_TIMEPERIOD_MINUTE_in_minutePart12184); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MINUTE.add(TIMEPERIOD_MINUTE866);
                     }
                     break;
                 case 3 :
                     {
-                    MIN867=(Token)match(input,MIN,FOLLOW_MIN_in_minutePart12187); if (state.failed) return retval; 
+                    MIN867=(Token)match(input,MIN,FOLLOW_MIN_in_minutePart12188); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_MIN.add(MIN867);
                     }
                     break;
@@ -28174,7 +28177,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt319) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_secondPart12237);
+                    pushFollow(FOLLOW_number_in_secondPart12238);
                     number868=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -28183,13 +28186,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_secondPart12241); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_secondPart12242); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_secondPart12243);
+                    pushFollow(FOLLOW_substitution_in_secondPart12244);
                     substitution869=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -28223,19 +28226,19 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt320) {
                 case 1 :
                     {
-                    TIMEPERIOD_SECONDS870=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_secondPart12247); if (state.failed) return retval; 
+                    TIMEPERIOD_SECONDS870=(Token)match(input,TIMEPERIOD_SECONDS,FOLLOW_TIMEPERIOD_SECONDS_in_secondPart12248); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECONDS.add(TIMEPERIOD_SECONDS870);
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_SECOND871=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_secondPart12251); if (state.failed) return retval; 
+                    TIMEPERIOD_SECOND871=(Token)match(input,TIMEPERIOD_SECOND,FOLLOW_TIMEPERIOD_SECOND_in_secondPart12252); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SECOND.add(TIMEPERIOD_SECOND871);
                     }
                     break;
                 case 3 :
                     {
-                    TIMEPERIOD_SEC872=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_secondPart12255); if (state.failed) return retval; 
+                    TIMEPERIOD_SEC872=(Token)match(input,TIMEPERIOD_SEC,FOLLOW_TIMEPERIOD_SEC_in_secondPart12256); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_SEC.add(TIMEPERIOD_SEC872);
                     }
                     break;
@@ -28349,7 +28352,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt321) {
                 case 1 :
                     {
-                    pushFollow(FOLLOW_number_in_millisecondPart12305);
+                    pushFollow(FOLLOW_number_in_millisecondPart12306);
                     number873=number();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -28358,13 +28361,13 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_millisecondPart12309); if (state.failed) return retval; 
+                    i=(Token)match(input,IDENT,FOLLOW_IDENT_in_millisecondPart12310); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_IDENT.add(i);
                     }
                     break;
                 case 3 :
                     {
-                    pushFollow(FOLLOW_substitution_in_millisecondPart12311);
+                    pushFollow(FOLLOW_substitution_in_millisecondPart12312);
                     substitution874=substitution();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -28398,19 +28401,19 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt322) {
                 case 1 :
                     {
-                    TIMEPERIOD_MILLISECONDS875=(Token)match(input,TIMEPERIOD_MILLISECONDS,FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart12315); if (state.failed) return retval; 
+                    TIMEPERIOD_MILLISECONDS875=(Token)match(input,TIMEPERIOD_MILLISECONDS,FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart12316); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISECONDS.add(TIMEPERIOD_MILLISECONDS875);
                     }
                     break;
                 case 2 :
                     {
-                    TIMEPERIOD_MILLISECOND876=(Token)match(input,TIMEPERIOD_MILLISECOND,FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart12319); if (state.failed) return retval; 
+                    TIMEPERIOD_MILLISECOND876=(Token)match(input,TIMEPERIOD_MILLISECOND,FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart12320); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISECOND.add(TIMEPERIOD_MILLISECOND876);
                     }
                     break;
                 case 3 :
                     {
-                    TIMEPERIOD_MILLISEC877=(Token)match(input,TIMEPERIOD_MILLISEC,FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart12323); if (state.failed) return retval; 
+                    TIMEPERIOD_MILLISEC877=(Token)match(input,TIMEPERIOD_MILLISEC,FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart12324); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_TIMEPERIOD_MILLISEC.add(TIMEPERIOD_MILLISEC877);
                     }
                     break;
@@ -28521,7 +28524,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt323) {
                 case 1 :
                     {
-                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_number12378); if (state.failed) return retval; 
+                    ni=(Token)match(input,NUM_INT,FOLLOW_NUM_INT_in_number12379); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_INT.add(ni);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28535,7 +28538,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    nl=(Token)match(input,NUM_LONG,FOLLOW_NUM_LONG_in_number12395); if (state.failed) return retval; 
+                    nl=(Token)match(input,NUM_LONG,FOLLOW_NUM_LONG_in_number12396); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_LONG.add(nl);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28549,7 +28552,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 3 :
                     {
-                    nf=(Token)match(input,NUM_FLOAT,FOLLOW_NUM_FLOAT_in_number12412); if (state.failed) return retval; 
+                    nf=(Token)match(input,NUM_FLOAT,FOLLOW_NUM_FLOAT_in_number12413); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_FLOAT.add(nf);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28563,7 +28566,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 4 :
                     {
-                    nd=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_number12429); if (state.failed) return retval; 
+                    nd=(Token)match(input,NUM_DOUBLE,FOLLOW_NUM_DOUBLE_in_number12430); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NUM_DOUBLE.add(nd);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28602,7 +28605,7 @@ public class EsperEPL2GrammarParser extends Parser {
         RewriteRuleTokenStream stream_QUESTION=new RewriteRuleTokenStream(adaptor,"token QUESTION");
         try {
             {
-            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_substitution12450); if (state.failed) return retval; 
+            q=(Token)match(input,QUESTION,FOLLOW_QUESTION_in_substitution12451); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_QUESTION.add(q);
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
@@ -28689,7 +28692,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 1 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_numberconstant_in_constant12469);
+                    pushFollow(FOLLOW_numberconstant_in_constant12470);
                     numberconstant878=numberconstant();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -28699,7 +28702,7 @@ public class EsperEPL2GrammarParser extends Parser {
                 case 2 :
                     {
                     root_0 = (CommonTree)adaptor.nil();
-                    pushFollow(FOLLOW_stringconstant_in_constant12476);
+                    pushFollow(FOLLOW_stringconstant_in_constant12477);
                     stringconstant879=stringconstant();
                     state._fsp--;
                     if (state.failed) return retval;
@@ -28708,7 +28711,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 3 :
                     {
-                    t=(Token)match(input,BOOLEAN_TRUE,FOLLOW_BOOLEAN_TRUE_in_constant12489); if (state.failed) return retval; 
+                    t=(Token)match(input,BOOLEAN_TRUE,FOLLOW_BOOLEAN_TRUE_in_constant12490); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_BOOLEAN_TRUE.add(t);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28726,7 +28729,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 4 :
                     {
-                    f=(Token)match(input,BOOLEAN_FALSE,FOLLOW_BOOLEAN_FALSE_in_constant12509); if (state.failed) return retval; 
+                    f=(Token)match(input,BOOLEAN_FALSE,FOLLOW_BOOLEAN_FALSE_in_constant12510); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_BOOLEAN_FALSE.add(f);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28744,7 +28747,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 5 :
                     {
-                    nu=(Token)match(input,VALUE_NULL,FOLLOW_VALUE_NULL_in_constant12529); if (state.failed) return retval; 
+                    nu=(Token)match(input,VALUE_NULL,FOLLOW_VALUE_NULL_in_constant12530); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_VALUE_NULL.add(nu);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28803,18 +28806,18 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt325) {
                 case 1 :
                     {
-                    m=(Token)match(input,MINUS,FOLLOW_MINUS_in_numberconstant12551); if (state.failed) return retval; 
+                    m=(Token)match(input,MINUS,FOLLOW_MINUS_in_numberconstant12552); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_MINUS.add(m);
                     }
                     break;
                 case 2 :
                     {
-                    p=(Token)match(input,PLUS,FOLLOW_PLUS_in_numberconstant12557); if (state.failed) return retval; 
+                    p=(Token)match(input,PLUS,FOLLOW_PLUS_in_numberconstant12558); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_PLUS.add(p);
                     }
                     break;
             }
-            pushFollow(FOLLOW_number_in_numberconstant12561);
+            pushFollow(FOLLOW_number_in_numberconstant12562);
             number880=number();
             state._fsp--;
             if (state.failed) return retval;
@@ -28877,7 +28880,7 @@ public class EsperEPL2GrammarParser extends Parser {
             switch (alt326) {
                 case 1 :
                     {
-                    sl=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_stringconstant12590); if (state.failed) return retval; 
+                    sl=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_stringconstant12591); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_STRING_LITERAL.add(sl);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28895,7 +28898,7 @@ public class EsperEPL2GrammarParser extends Parser {
                     break;
                 case 2 :
                     {
-                    qsl=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant12606); if (state.failed) return retval; 
+                    qsl=(Token)match(input,QUOTED_STRING_LITERAL,FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant12607); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_QUOTED_STRING_LITERAL.add(qsl);
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
@@ -28967,7 +28970,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred6_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_propertyStreamSelector_in_synpred6_EsperEPL2Grammar9981);
+        pushFollow(FOLLOW_propertyStreamSelector_in_synpred6_EsperEPL2Grammar9982);
         propertyStreamSelector();
         state._fsp--;
         if (state.failed) return ;
@@ -28975,7 +28978,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred7_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_lastOperand_in_synpred7_EsperEPL2Grammar10404);
+        pushFollow(FOLLOW_lastOperand_in_synpred7_EsperEPL2Grammar10405);
         lastOperand();
         state._fsp--;
         if (state.failed) return ;
@@ -28983,7 +28986,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred8_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_lastWeekdayOperand_in_synpred8_EsperEPL2Grammar10415);
+        pushFollow(FOLLOW_lastWeekdayOperand_in_synpred8_EsperEPL2Grammar10416);
         lastWeekdayOperand();
         state._fsp--;
         if (state.failed) return ;
@@ -28991,7 +28994,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred9_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_timePeriod_in_synpred9_EsperEPL2Grammar10426);
+        pushFollow(FOLLOW_timePeriod_in_synpred9_EsperEPL2Grammar10427);
         timePeriod();
         state._fsp--;
         if (state.failed) return ;
@@ -28999,7 +29002,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred10_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_expressionQualifyable_in_synpred10_EsperEPL2Grammar10437);
+        pushFollow(FOLLOW_expressionQualifyable_in_synpred10_EsperEPL2Grammar10438);
         expressionQualifyable();
         state._fsp--;
         if (state.failed) return ;
@@ -29007,7 +29010,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred11_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_rangeOperand_in_synpred11_EsperEPL2Grammar10448);
+        pushFollow(FOLLOW_rangeOperand_in_synpred11_EsperEPL2Grammar10449);
         rangeOperand();
         state._fsp--;
         if (state.failed) return ;
@@ -29015,7 +29018,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred12_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_frequencyOperand_in_synpred12_EsperEPL2Grammar10460);
+        pushFollow(FOLLOW_frequencyOperand_in_synpred12_EsperEPL2Grammar10461);
         frequencyOperand();
         state._fsp--;
         if (state.failed) return ;
@@ -29023,7 +29026,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred13_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_lastOperator_in_synpred13_EsperEPL2Grammar10471);
+        pushFollow(FOLLOW_lastOperator_in_synpred13_EsperEPL2Grammar10472);
         lastOperator();
         state._fsp--;
         if (state.failed) return ;
@@ -29031,7 +29034,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred14_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_weekDayOperator_in_synpred14_EsperEPL2Grammar10482);
+        pushFollow(FOLLOW_weekDayOperator_in_synpred14_EsperEPL2Grammar10483);
         weekDayOperator();
         state._fsp--;
         if (state.failed) return ;
@@ -29039,7 +29042,7 @@ public class EsperEPL2GrammarParser extends Parser {
     }
     public final void synpred15_EsperEPL2Grammar_fragment() throws RecognitionException {   
         {
-        pushFollow(FOLLOW_numericParameterList_in_synpred15_EsperEPL2Grammar10495);
+        pushFollow(FOLLOW_numericParameterList_in_synpred15_EsperEPL2Grammar10496);
         numericParameterList();
         state._fsp--;
         if (state.failed) return ;
@@ -36326,335 +36329,335 @@ public class EsperEPL2GrammarParser extends Parser {
     public static final BitSet FOLLOW_expression_in_followedByRepeat8991 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x1000000000000000L});
     public static final BitSet FOLLOW_FOLLOWMAX_END_in_followedByRepeat8993 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
     public static final BitSet FOLLOW_orExpression_in_followedByRepeat8997 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_andExpression_in_orExpression9025 = new BitSet(new long[]{0x0000000000000802L});
-    public static final BitSet FOLLOW_OR_EXPR_in_orExpression9030 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_andExpression_in_orExpression9032 = new BitSet(new long[]{0x0000000000000802L});
-    public static final BitSet FOLLOW_matchUntilExpression_in_andExpression9064 = new BitSet(new long[]{0x0000000000001002L});
-    public static final BitSet FOLLOW_AND_EXPR_in_andExpression9069 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_matchUntilExpression_in_andExpression9071 = new BitSet(new long[]{0x0000000000001002L});
-    public static final BitSet FOLLOW_matchUntilRange_in_matchUntilExpression9106 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_qualifyExpression_in_matchUntilExpression9110 = new BitSet(new long[]{0x0000000000000002L,0x0000000000200000L});
-    public static final BitSet FOLLOW_UNTIL_in_matchUntilExpression9115 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_qualifyExpression_in_matchUntilExpression9117 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EVERY_EXPR_in_qualifyExpression9182 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_NOT_EXPR_in_qualifyExpression9188 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_EVERY_DISTINCT_EXPR_in_qualifyExpression9194 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_distinctExpressionList_in_qualifyExpression9196 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_matchUntilRange_in_qualifyExpression9202 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_guardPostFix_in_qualifyExpression9211 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_distinctExpressionList9326 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D460004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_distinctExpressionAtom_in_distinctExpressionList9328 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000090000000L});
-    public static final BitSet FOLLOW_COMMA_in_distinctExpressionList9331 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D460004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_distinctExpressionAtom_in_distinctExpressionList9333 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000090000000L});
-    public static final BitSet FOLLOW_RPAREN_in_distinctExpressionList9337 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expressionWithTime_in_distinctExpressionAtom9360 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_atomicExpression_in_guardPostFix9375 = new BitSet(new long[]{0x0000000000010002L,0x0080000000000000L});
-    public static final BitSet FOLLOW_LPAREN_in_guardPostFix9381 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
-    public static final BitSet FOLLOW_patternExpression_in_guardPostFix9383 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_RPAREN_in_guardPostFix9385 = new BitSet(new long[]{0x0000000000010002L,0x0080000000000000L});
-    public static final BitSet FOLLOW_WHERE_in_guardPostFix9392 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
-    public static final BitSet FOLLOW_guardWhereExpression_in_guardPostFix9394 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHILE_in_guardPostFix9402 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_guardWhileExpression_in_guardPostFix9404 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_observerExpression_in_atomicExpression9466 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_patternFilterExpression_in_atomicExpression9470 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_observerExpression9485 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_COLON_in_observerExpression9487 = new BitSet(new long[]{0x0000000000000000L,0x0000000000400000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
-    public static final BitSet FOLLOW_IDENT_in_observerExpression9492 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_AT_in_observerExpression9498 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_LPAREN_in_observerExpression9501 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D4E0004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expressionWithTimeList_in_observerExpression9503 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_RPAREN_in_observerExpression9506 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_guardWhereExpression9555 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_COLON_in_guardWhereExpression9557 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
-    public static final BitSet FOLLOW_IDENT_in_guardWhereExpression9560 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
-    public static final BitSet FOLLOW_LPAREN_in_guardWhereExpression9562 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D4E0004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expressionWithTimeList_in_guardWhereExpression9566 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_RPAREN_in_guardWhereExpression9570 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_guardWhileExpression9583 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expression_in_guardWhileExpression9586 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_RPAREN_in_guardWhileExpression9588 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACK_in_matchUntilRange9609 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29007D060004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expression_in_matchUntilRange9616 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010800000000L});
-    public static final BitSet FOLLOW_COLON_in_matchUntilRange9621 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D860004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expression_in_matchUntilRange9624 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_COLON_in_matchUntilRange9644 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expression_in_matchUntilRange9646 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_RBRACK_in_matchUntilRange9657 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_eventFilterExpression9744 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_EQUALS_in_eventFilterExpression9746 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
-    public static final BitSet FOLLOW_classIdentifier_in_eventFilterExpression9755 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
-    public static final BitSet FOLLOW_LPAREN_in_eventFilterExpression9766 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D0E0004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expressionList_in_eventFilterExpression9768 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_RPAREN_in_eventFilterExpression9771 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
-    public static final BitSet FOLLOW_propertyExpression_in_eventFilterExpression9783 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_propertyExpressionAtomic_in_propertyExpression9828 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
-    public static final BitSet FOLLOW_propertyExpressionAtomic_in_propertyExpression9831 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
-    public static final BitSet FOLLOW_LBRACK_in_propertyExpressionAtomic9861 = new BitSet(new long[]{0x803801E80FFC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
-    public static final BitSet FOLLOW_SELECT_in_propertyExpressionAtomic9864 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_propertySelectionList_in_propertyExpressionAtomic9866 = new BitSet(new long[]{0x0000000400000000L});
-    public static final BitSet FOLLOW_FROM_in_propertyExpressionAtomic9868 = new BitSet(new long[]{0x803801E807FC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
-    public static final BitSet FOLLOW_eventProperty_in_propertyExpressionAtomic9872 = new BitSet(new long[]{0x0000000000030000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_AS_in_propertyExpressionAtomic9875 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
-    public static final BitSet FOLLOW_IDENT_in_propertyExpressionAtomic9877 = new BitSet(new long[]{0x0000000000010000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_WHERE_in_propertyExpressionAtomic9882 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expression_in_propertyExpressionAtomic9884 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_RBRACK_in_propertyExpressionAtomic9888 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_propertySelectionListElement_in_propertySelectionList9938 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_COMMA_in_propertySelectionList9941 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_propertySelectionListElement_in_propertySelectionList9944 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_STAR_in_propertySelectionListElement9970 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_propertyStreamSelector_in_propertySelectionListElement9986 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expression_in_propertySelectionListElement9991 = new BitSet(new long[]{0x0000000000020002L});
-    public static final BitSet FOLLOW_AS_in_propertySelectionListElement9994 = new BitSet(new long[]{0x803801E807FC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
-    public static final BitSet FOLLOW_keywordAllowedIdent_in_propertySelectionListElement9998 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_propertyStreamSelector10042 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_DOT_in_propertyStreamSelector10044 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_STAR_in_propertyStreamSelector10046 = new BitSet(new long[]{0x0000000000020002L});
-    public static final BitSet FOLLOW_AS_in_propertyStreamSelector10049 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
-    public static final BitSet FOLLOW_IDENT_in_propertyStreamSelector10053 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_patternFilterExpression10100 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
-    public static final BitSet FOLLOW_EQUALS_in_patternFilterExpression10102 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
-    public static final BitSet FOLLOW_classIdentifier_in_patternFilterExpression10111 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
-    public static final BitSet FOLLOW_LPAREN_in_patternFilterExpression10122 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D0E0004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expressionList_in_patternFilterExpression10124 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_RPAREN_in_patternFilterExpression10127 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
-    public static final BitSet FOLLOW_propertyExpression_in_patternFilterExpression10139 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_escapableStr_in_classIdentifier10194 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_DOT_in_classIdentifier10213 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
-    public static final BitSet FOLLOW_escapableStr_in_classIdentifier10217 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_escapableStr_in_classIdentifierNonGreedy10262 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_DOT_in_classIdentifierNonGreedy10297 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
-    public static final BitSet FOLLOW_escapableStr_in_classIdentifierNonGreedy10301 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_expression_in_expressionList10343 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_COMMA_in_expressionList10346 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expression_in_expressionList10349 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList10377 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_COMMA_in_expressionWithTimeList10380 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D460004000L,0x0000000000400001L});
-    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList10383 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
-    public static final BitSet FOLLOW_lastOperand_in_expressionWithTime10409 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastWeekdayOperand_in_expressionWithTime10420 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timePeriod_in_expressionWithTime10431 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expressionQualifyable_in_expressionWithTime10442 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_expressionWithTime10453 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_expressionWithTime10465 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperator_in_expressionWithTime10476 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_weekDayOperator_in_expressionWithTime10488 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numericParameterList_in_expressionWithTime10500 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberSetStar_in_expressionWithTime10505 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expression_in_expressionQualifyable10516 = new BitSet(new long[]{0x0600000000000002L,0x0000007000000000L});
-    public static final BitSet FOLLOW_ASC_in_expressionQualifyable10521 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DESC_in_expressionQualifyable10525 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable10529 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable10533 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable10537 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STAR_in_numberSetStar10594 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LW_in_lastWeekdayOperand10614 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LAST_in_lastOperand10627 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STAR_in_frequencyOperand10639 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0020000000000000L});
-    public static final BitSet FOLLOW_DIV_in_frequencyOperand10641 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_number_in_frequencyOperand10644 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_frequencyOperand10648 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_substitution_in_frequencyOperand10650 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_rangeOperand10699 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_IDENT_in_rangeOperand10703 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_substitution_in_rangeOperand10705 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
-    public static final BitSet FOLLOW_COLON_in_rangeOperand10708 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_number_in_rangeOperand10711 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_rangeOperand10715 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_substitution_in_rangeOperand10717 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_lastOperator10831 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_lastOperator10835 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_substitution_in_lastOperator10837 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_LAST_in_lastOperator10840 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_weekDayOperator10888 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
-    public static final BitSet FOLLOW_IDENT_in_weekDayOperator10892 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
-    public static final BitSet FOLLOW_substitution_in_weekDayOperator10894 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
-    public static final BitSet FOLLOW_WEEKDAY_in_weekDayOperator10897 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACK_in_numericParameterList10944 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000D020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList10946 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000810000000L});
-    public static final BitSet FOLLOW_COMMA_in_numericParameterList10949 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000D020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList10951 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000810000000L});
-    public static final BitSet FOLLOW_RBRACK_in_numericParameterList10955 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_numericListParameter10977 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_numericListParameter10983 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberconstant_in_numericListParameter10988 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty11004 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_DOT_in_eventProperty11007 = new BitSet(new long[]{0x803801E807FC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
-    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty11009 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_eventPropertyIdent_in_eventPropertyAtomic11035 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000008440000000L});
-    public static final BitSet FOLLOW_LBRACK_in_eventPropertyAtomic11044 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0200000000000000L});
-    public static final BitSet FOLLOW_NUM_INT_in_eventPropertyAtomic11048 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
-    public static final BitSet FOLLOW_RBRACK_in_eventPropertyAtomic11050 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic11055 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_eventPropertyAtomic11069 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000060000000000L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_eventPropertyAtomic11074 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic11080 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
-    public static final BitSet FOLLOW_RPAREN_in_eventPropertyAtomic11083 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000008000000000L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic11088 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic11102 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent11225 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x2000000000000000L});
-    public static final BitSet FOLLOW_ESCAPECHAR_in_eventPropertyIdent11237 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
-    public static final BitSet FOLLOW_DOT_in_eventPropertyIdent11239 = new BitSet(new long[]{0x803801E807FC4422L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x6000000020000000L});
-    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent11243 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x2000000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_keywordAllowedIdent11282 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent11291 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AT_in_keywordAllowedIdent11298 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COUNT_in_keywordAllowedIdent11305 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ESCAPE_in_keywordAllowedIdent11312 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EVERY_EXPR_in_keywordAllowedIdent11323 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SUM_in_keywordAllowedIdent11330 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AVG_in_keywordAllowedIdent11337 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MAX_in_keywordAllowedIdent11344 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MIN_in_keywordAllowedIdent11351 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COALESCE_in_keywordAllowedIdent11358 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MEDIAN_in_keywordAllowedIdent11365 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STDDEV_in_keywordAllowedIdent11372 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_AVEDEV_in_keywordAllowedIdent11379 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EVENTS_in_keywordAllowedIdent11386 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FIRST_in_keywordAllowedIdent11393 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LAST_in_keywordAllowedIdent11400 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHILE_in_keywordAllowedIdent11407 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MERGE_in_keywordAllowedIdent11414 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MATCHED_in_keywordAllowedIdent11421 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent11428 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RETAINUNION_in_keywordAllowedIdent11435 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent11442 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UNTIL_in_keywordAllowedIdent11449 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PATTERN_in_keywordAllowedIdent11456 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SQL_in_keywordAllowedIdent11463 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_METADATASQL_in_keywordAllowedIdent11470 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PREVIOUS_in_keywordAllowedIdent11477 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PREVIOUSTAIL_in_keywordAllowedIdent11484 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PRIOR_in_keywordAllowedIdent11491 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WEEKDAY_in_keywordAllowedIdent11498 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LW_in_keywordAllowedIdent11505 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INSTANCEOF_in_keywordAllowedIdent11512 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TYPEOF_in_keywordAllowedIdent11519 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CAST_in_keywordAllowedIdent11526 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SNAPSHOT_in_keywordAllowedIdent11533 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VARIABLE_in_keywordAllowedIdent11540 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INDEX_in_keywordAllowedIdent11549 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WINDOW_in_keywordAllowedIdent11558 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_in_keywordAllowedIdent11565 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RIGHT_in_keywordAllowedIdent11572 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OUTER_in_keywordAllowedIdent11579 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FULL_in_keywordAllowedIdent11586 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_JOIN_in_keywordAllowedIdent11593 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DEFINE_in_keywordAllowedIdent11600 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PARTITION_in_keywordAllowedIdent11607 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MATCHES_in_keywordAllowedIdent11614 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_escapableStr11635 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableStr11644 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_escapableIdent11658 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent11666 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_yearPart_in_timePeriod11691 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_monthPart_in_timePeriod11693 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_weekPart_in_timePeriod11696 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod11699 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod11702 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod11705 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod11708 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11711 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_monthPart_in_timePeriod11717 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_weekPart_in_timePeriod11719 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod11722 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod11725 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod11728 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod11731 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11734 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_weekPart_in_timePeriod11740 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod11742 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod11745 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod11748 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod11751 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11754 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_dayPart_in_timePeriod11760 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod11762 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod11765 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod11768 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11771 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_hourPart_in_timePeriod11777 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod11779 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod11782 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11785 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_minutePart_in_timePeriod11791 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod11793 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11796 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_secondPart_in_timePeriod11802 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11804 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11810 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_yearPart11857 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
-    public static final BitSet FOLLOW_IDENT_in_yearPart11861 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
-    public static final BitSet FOLLOW_substitution_in_yearPart11863 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_YEARS_in_yearPart11867 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_YEAR_in_yearPart11871 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_monthPart11919 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
-    public static final BitSet FOLLOW_IDENT_in_monthPart11923 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
-    public static final BitSet FOLLOW_substitution_in_monthPart11925 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MONTHS_in_monthPart11929 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MONTH_in_monthPart11933 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_weekPart11981 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
-    public static final BitSet FOLLOW_IDENT_in_weekPart11985 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
-    public static final BitSet FOLLOW_substitution_in_weekPart11987 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_WEEKS_in_weekPart11991 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_WEEK_in_weekPart11995 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_dayPart12043 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
-    public static final BitSet FOLLOW_IDENT_in_dayPart12047 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
-    public static final BitSet FOLLOW_substitution_in_dayPart12049 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_DAYS_in_dayPart12053 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_DAY_in_dayPart12057 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_hourPart12106 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
-    public static final BitSet FOLLOW_IDENT_in_hourPart12110 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
-    public static final BitSet FOLLOW_substitution_in_hourPart12112 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_HOURS_in_hourPart12116 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_HOUR_in_hourPart12120 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_minutePart12169 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
-    public static final BitSet FOLLOW_IDENT_in_minutePart12173 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
-    public static final BitSet FOLLOW_substitution_in_minutePart12175 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MINUTES_in_minutePart12179 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MINUTE_in_minutePart12183 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MIN_in_minutePart12187 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_secondPart12237 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
-    public static final BitSet FOLLOW_IDENT_in_secondPart12241 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
-    public static final BitSet FOLLOW_substitution_in_secondPart12243 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_secondPart12247 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_secondPart12251 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_secondPart12255 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_number_in_millisecondPart12305 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
-    public static final BitSet FOLLOW_IDENT_in_millisecondPart12309 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
-    public static final BitSet FOLLOW_substitution_in_millisecondPart12311 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart12315 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart12319 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart12323 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_INT_in_number12378 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_LONG_in_number12395 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_FLOAT_in_number12412 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUM_DOUBLE_in_number12429 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUESTION_in_substitution12450 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numberconstant_in_constant12469 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_stringconstant_in_constant12476 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOLEAN_TRUE_in_constant12489 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOLEAN_FALSE_in_constant12509 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VALUE_NULL_in_constant12529 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINUS_in_numberconstant12551 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8210004000004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_PLUS_in_numberconstant12557 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8210004000004000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_number_in_numberconstant12561 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_stringconstant12590 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant12606 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_andExpression_in_orExpression9026 = new BitSet(new long[]{0x0000000000000802L});
+    public static final BitSet FOLLOW_OR_EXPR_in_orExpression9031 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_andExpression_in_orExpression9033 = new BitSet(new long[]{0x0000000000000802L});
+    public static final BitSet FOLLOW_matchUntilExpression_in_andExpression9065 = new BitSet(new long[]{0x0000000000001002L});
+    public static final BitSet FOLLOW_AND_EXPR_in_andExpression9070 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_matchUntilExpression_in_andExpression9072 = new BitSet(new long[]{0x0000000000001002L});
+    public static final BitSet FOLLOW_matchUntilRange_in_matchUntilExpression9107 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_qualifyExpression_in_matchUntilExpression9111 = new BitSet(new long[]{0x0000000000000002L,0x0000000000200000L});
+    public static final BitSet FOLLOW_UNTIL_in_matchUntilExpression9116 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_qualifyExpression_in_matchUntilExpression9118 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EVERY_EXPR_in_qualifyExpression9183 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_NOT_EXPR_in_qualifyExpression9189 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_EVERY_DISTINCT_EXPR_in_qualifyExpression9195 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_distinctExpressionList_in_qualifyExpression9197 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_matchUntilRange_in_qualifyExpression9203 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_guardPostFix_in_qualifyExpression9212 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LPAREN_in_distinctExpressionList9327 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D460004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_distinctExpressionAtom_in_distinctExpressionList9329 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000090000000L});
+    public static final BitSet FOLLOW_COMMA_in_distinctExpressionList9332 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D460004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_distinctExpressionAtom_in_distinctExpressionList9334 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000090000000L});
+    public static final BitSet FOLLOW_RPAREN_in_distinctExpressionList9338 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionWithTime_in_distinctExpressionAtom9361 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_atomicExpression_in_guardPostFix9376 = new BitSet(new long[]{0x0000000000010002L,0x0080000000000000L});
+    public static final BitSet FOLLOW_LPAREN_in_guardPostFix9382 = new BitSet(new long[]{0x000000000000E000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000460000000L});
+    public static final BitSet FOLLOW_patternExpression_in_guardPostFix9384 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_RPAREN_in_guardPostFix9386 = new BitSet(new long[]{0x0000000000010002L,0x0080000000000000L});
+    public static final BitSet FOLLOW_WHERE_in_guardPostFix9393 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
+    public static final BitSet FOLLOW_guardWhereExpression_in_guardPostFix9395 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WHILE_in_guardPostFix9403 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_guardWhileExpression_in_guardPostFix9405 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_observerExpression_in_atomicExpression9467 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_patternFilterExpression_in_atomicExpression9471 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_observerExpression9486 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_COLON_in_observerExpression9488 = new BitSet(new long[]{0x0000000000000000L,0x0000000000400000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
+    public static final BitSet FOLLOW_IDENT_in_observerExpression9493 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_AT_in_observerExpression9499 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_LPAREN_in_observerExpression9502 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D4E0004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expressionWithTimeList_in_observerExpression9504 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_RPAREN_in_observerExpression9507 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_guardWhereExpression9556 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_COLON_in_guardWhereExpression9558 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
+    public static final BitSet FOLLOW_IDENT_in_guardWhereExpression9561 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000040000000L});
+    public static final BitSet FOLLOW_LPAREN_in_guardWhereExpression9563 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D4E0004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expressionWithTimeList_in_guardWhereExpression9567 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_RPAREN_in_guardWhereExpression9571 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LPAREN_in_guardWhileExpression9584 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expression_in_guardWhileExpression9587 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_RPAREN_in_guardWhileExpression9589 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACK_in_matchUntilRange9610 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29007D060004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expression_in_matchUntilRange9617 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010800000000L});
+    public static final BitSet FOLLOW_COLON_in_matchUntilRange9622 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D860004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expression_in_matchUntilRange9625 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_COLON_in_matchUntilRange9645 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expression_in_matchUntilRange9647 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_RBRACK_in_matchUntilRange9658 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_eventFilterExpression9745 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_EQUALS_in_eventFilterExpression9747 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
+    public static final BitSet FOLLOW_classIdentifier_in_eventFilterExpression9756 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
+    public static final BitSet FOLLOW_LPAREN_in_eventFilterExpression9767 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D0E0004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expressionList_in_eventFilterExpression9769 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_RPAREN_in_eventFilterExpression9772 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
+    public static final BitSet FOLLOW_propertyExpression_in_eventFilterExpression9784 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_propertyExpressionAtomic_in_propertyExpression9829 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
+    public static final BitSet FOLLOW_propertyExpressionAtomic_in_propertyExpression9832 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
+    public static final BitSet FOLLOW_LBRACK_in_propertyExpressionAtomic9862 = new BitSet(new long[]{0x803801E80FFC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
+    public static final BitSet FOLLOW_SELECT_in_propertyExpressionAtomic9865 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_propertySelectionList_in_propertyExpressionAtomic9867 = new BitSet(new long[]{0x0000000400000000L});
+    public static final BitSet FOLLOW_FROM_in_propertyExpressionAtomic9869 = new BitSet(new long[]{0x803801E807FC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
+    public static final BitSet FOLLOW_eventProperty_in_propertyExpressionAtomic9873 = new BitSet(new long[]{0x0000000000030000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_AS_in_propertyExpressionAtomic9876 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
+    public static final BitSet FOLLOW_IDENT_in_propertyExpressionAtomic9878 = new BitSet(new long[]{0x0000000000010000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_WHERE_in_propertyExpressionAtomic9883 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expression_in_propertyExpressionAtomic9885 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_RBRACK_in_propertyExpressionAtomic9889 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_propertySelectionListElement_in_propertySelectionList9939 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_COMMA_in_propertySelectionList9942 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_propertySelectionListElement_in_propertySelectionList9945 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_STAR_in_propertySelectionListElement9971 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_propertyStreamSelector_in_propertySelectionListElement9987 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expression_in_propertySelectionListElement9992 = new BitSet(new long[]{0x0000000000020002L});
+    public static final BitSet FOLLOW_AS_in_propertySelectionListElement9995 = new BitSet(new long[]{0x803801E807FC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
+    public static final BitSet FOLLOW_keywordAllowedIdent_in_propertySelectionListElement9999 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_propertyStreamSelector10043 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_DOT_in_propertyStreamSelector10045 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000001000000000L});
+    public static final BitSet FOLLOW_STAR_in_propertyStreamSelector10047 = new BitSet(new long[]{0x0000000000020002L});
+    public static final BitSet FOLLOW_AS_in_propertyStreamSelector10050 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
+    public static final BitSet FOLLOW_IDENT_in_propertyStreamSelector10054 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_patternFilterExpression10101 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000100000000L});
+    public static final BitSet FOLLOW_EQUALS_in_patternFilterExpression10103 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
+    public static final BitSet FOLLOW_classIdentifier_in_patternFilterExpression10112 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000440000000L});
+    public static final BitSet FOLLOW_LPAREN_in_patternFilterExpression10123 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D0E0004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expressionList_in_patternFilterExpression10125 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_RPAREN_in_patternFilterExpression10128 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000400000000L});
+    public static final BitSet FOLLOW_propertyExpression_in_patternFilterExpression10140 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_escapableStr_in_classIdentifier10195 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_DOT_in_classIdentifier10214 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
+    public static final BitSet FOLLOW_escapableStr_in_classIdentifier10218 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_escapableStr_in_classIdentifierNonGreedy10263 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_DOT_in_classIdentifierNonGreedy10298 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
+    public static final BitSet FOLLOW_escapableStr_in_classIdentifierNonGreedy10302 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_expression_in_expressionList10344 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_COMMA_in_expressionList10347 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D060004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expression_in_expressionList10350 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList10378 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_COMMA_in_expressionWithTimeList10381 = new BitSet(new long[]{0xB87843E81FFC6430L,0x069C9C0000F5FFFFL,0x0000000000000000L,0x0000000000000000L,0xC29006D460004000L,0x0000000000400001L});
+    public static final BitSet FOLLOW_expressionWithTime_in_expressionWithTimeList10384 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000010000000L});
+    public static final BitSet FOLLOW_lastOperand_in_expressionWithTime10410 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastWeekdayOperand_in_expressionWithTime10421 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timePeriod_in_expressionWithTime10432 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionQualifyable_in_expressionWithTime10443 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_expressionWithTime10454 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_expressionWithTime10466 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperator_in_expressionWithTime10477 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekDayOperator_in_expressionWithTime10489 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numericParameterList_in_expressionWithTime10501 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberSetStar_in_expressionWithTime10506 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expression_in_expressionQualifyable10517 = new BitSet(new long[]{0x0600000000000002L,0x0000007000000000L});
+    public static final BitSet FOLLOW_ASC_in_expressionQualifyable10522 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DESC_in_expressionQualifyable10526 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_expressionQualifyable10530 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_expressionQualifyable10534 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_expressionQualifyable10538 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STAR_in_numberSetStar10595 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LW_in_lastWeekdayOperand10615 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LAST_in_lastOperand10628 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STAR_in_frequencyOperand10640 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0020000000000000L});
+    public static final BitSet FOLLOW_DIV_in_frequencyOperand10642 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_number_in_frequencyOperand10645 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_frequencyOperand10649 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_substitution_in_frequencyOperand10651 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_rangeOperand10700 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_IDENT_in_rangeOperand10704 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_substitution_in_rangeOperand10706 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000010000000000L});
+    public static final BitSet FOLLOW_COLON_in_rangeOperand10709 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_number_in_rangeOperand10712 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_rangeOperand10716 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_substitution_in_rangeOperand10718 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_lastOperator10832 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_lastOperator10836 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_substitution_in_lastOperator10838 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_LAST_in_lastOperator10841 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_weekDayOperator10889 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_IDENT_in_weekDayOperator10893 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_substitution_in_weekDayOperator10895 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000800L});
+    public static final BitSet FOLLOW_WEEKDAY_in_weekDayOperator10898 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACK_in_numericParameterList10945 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000D020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList10947 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000810000000L});
+    public static final BitSet FOLLOW_COMMA_in_numericParameterList10950 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000D020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_numericListParameter_in_numericParameterList10952 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000810000000L});
+    public static final BitSet FOLLOW_RBRACK_in_numericParameterList10956 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_numericListParameter10978 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_numericListParameter10984 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberconstant_in_numericListParameter10989 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty11005 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_DOT_in_eventProperty11008 = new BitSet(new long[]{0x803801E807FC4420L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x4000000020000000L});
+    public static final BitSet FOLLOW_eventPropertyAtomic_in_eventProperty11010 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_eventPropertyIdent_in_eventPropertyAtomic11036 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000008440000000L});
+    public static final BitSet FOLLOW_LBRACK_in_eventPropertyAtomic11045 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0200000000000000L});
+    public static final BitSet FOLLOW_NUM_INT_in_eventPropertyAtomic11049 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000800000000L});
+    public static final BitSet FOLLOW_RBRACK_in_eventPropertyAtomic11051 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000008000000000L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic11056 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LPAREN_in_eventPropertyAtomic11070 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000060000000000L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_eventPropertyAtomic11075 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_eventPropertyAtomic11081 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000080000000L});
+    public static final BitSet FOLLOW_RPAREN_in_eventPropertyAtomic11084 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000008000000000L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic11089 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUESTION_in_eventPropertyAtomic11103 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent11226 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x2000000000000000L});
+    public static final BitSet FOLLOW_ESCAPECHAR_in_eventPropertyIdent11238 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000200000000L});
+    public static final BitSet FOLLOW_DOT_in_eventPropertyIdent11240 = new BitSet(new long[]{0x803801E807FC4422L,0x069C000000F4FA7FL,0x0000000000000000L,0x0000000000000000L,0x6000000020000000L});
+    public static final BitSet FOLLOW_keywordAllowedIdent_in_eventPropertyIdent11244 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x2000000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_keywordAllowedIdent11283 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_keywordAllowedIdent11292 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AT_in_keywordAllowedIdent11299 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COUNT_in_keywordAllowedIdent11306 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ESCAPE_in_keywordAllowedIdent11313 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EVERY_EXPR_in_keywordAllowedIdent11324 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SUM_in_keywordAllowedIdent11331 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AVG_in_keywordAllowedIdent11338 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MAX_in_keywordAllowedIdent11345 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MIN_in_keywordAllowedIdent11352 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COALESCE_in_keywordAllowedIdent11359 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MEDIAN_in_keywordAllowedIdent11366 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STDDEV_in_keywordAllowedIdent11373 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_AVEDEV_in_keywordAllowedIdent11380 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EVENTS_in_keywordAllowedIdent11387 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FIRST_in_keywordAllowedIdent11394 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LAST_in_keywordAllowedIdent11401 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WHILE_in_keywordAllowedIdent11408 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MERGE_in_keywordAllowedIdent11415 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MATCHED_in_keywordAllowedIdent11422 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UNIDIRECTIONAL_in_keywordAllowedIdent11429 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RETAINUNION_in_keywordAllowedIdent11436 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RETAININTERSECTION_in_keywordAllowedIdent11443 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_UNTIL_in_keywordAllowedIdent11450 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PATTERN_in_keywordAllowedIdent11457 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SQL_in_keywordAllowedIdent11464 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_METADATASQL_in_keywordAllowedIdent11471 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PREVIOUS_in_keywordAllowedIdent11478 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PREVIOUSTAIL_in_keywordAllowedIdent11485 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PRIOR_in_keywordAllowedIdent11492 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WEEKDAY_in_keywordAllowedIdent11499 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LW_in_keywordAllowedIdent11506 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INSTANCEOF_in_keywordAllowedIdent11513 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TYPEOF_in_keywordAllowedIdent11520 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CAST_in_keywordAllowedIdent11527 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SNAPSHOT_in_keywordAllowedIdent11534 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VARIABLE_in_keywordAllowedIdent11541 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INDEX_in_keywordAllowedIdent11550 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WINDOW_in_keywordAllowedIdent11559 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_in_keywordAllowedIdent11566 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RIGHT_in_keywordAllowedIdent11573 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OUTER_in_keywordAllowedIdent11580 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FULL_in_keywordAllowedIdent11587 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_JOIN_in_keywordAllowedIdent11594 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DEFINE_in_keywordAllowedIdent11601 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PARTITION_in_keywordAllowedIdent11608 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MATCHES_in_keywordAllowedIdent11615 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_escapableStr11636 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableStr11645 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_escapableIdent11659 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TICKED_STRING_LITERAL_in_escapableIdent11667 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_yearPart_in_timePeriod11692 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_monthPart_in_timePeriod11694 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriod11697 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod11700 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod11703 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod11706 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod11709 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11712 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_monthPart_in_timePeriod11718 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriod11720 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod11723 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod11726 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod11729 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod11732 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11735 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekPart_in_timePeriod11741 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod11743 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod11746 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod11749 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod11752 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11755 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_dayPart_in_timePeriod11761 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod11763 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod11766 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod11769 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11772 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_hourPart_in_timePeriod11778 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod11780 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod11783 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11786 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_minutePart_in_timePeriod11792 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod11794 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11797 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_secondPart_in_timePeriod11803 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x821000C020004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11805 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_millisecondPart_in_timePeriod11811 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_yearPart11858 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
+    public static final BitSet FOLLOW_IDENT_in_yearPart11862 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
+    public static final BitSet FOLLOW_substitution_in_yearPart11864 = new BitSet(new long[]{0x0000000000000000L,0x0000000003000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_YEARS_in_yearPart11868 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_YEAR_in_yearPart11872 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_monthPart11920 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
+    public static final BitSet FOLLOW_IDENT_in_monthPart11924 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
+    public static final BitSet FOLLOW_substitution_in_monthPart11926 = new BitSet(new long[]{0x0000000000000000L,0x000000000C000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MONTHS_in_monthPart11930 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MONTH_in_monthPart11934 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_weekPart11982 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
+    public static final BitSet FOLLOW_IDENT_in_weekPart11986 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
+    public static final BitSet FOLLOW_substitution_in_weekPart11988 = new BitSet(new long[]{0x0000000000000000L,0x0000000030000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_WEEKS_in_weekPart11992 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_WEEK_in_weekPart11996 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_dayPart12044 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
+    public static final BitSet FOLLOW_IDENT_in_dayPart12048 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
+    public static final BitSet FOLLOW_substitution_in_dayPart12050 = new BitSet(new long[]{0x0000000000000000L,0x00000000C0000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_DAYS_in_dayPart12054 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_DAY_in_dayPart12058 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_hourPart12107 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
+    public static final BitSet FOLLOW_IDENT_in_hourPart12111 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
+    public static final BitSet FOLLOW_substitution_in_hourPart12113 = new BitSet(new long[]{0x0000000000000000L,0x0000000300000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_HOURS_in_hourPart12117 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_HOUR_in_hourPart12121 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_minutePart12170 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
+    public static final BitSet FOLLOW_IDENT_in_minutePart12174 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
+    public static final BitSet FOLLOW_substitution_in_minutePart12176 = new BitSet(new long[]{0x0000000000200000L,0x0000000C00000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MINUTES_in_minutePart12180 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MINUTE_in_minutePart12184 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MIN_in_minutePart12188 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_secondPart12238 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
+    public static final BitSet FOLLOW_IDENT_in_secondPart12242 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
+    public static final BitSet FOLLOW_substitution_in_secondPart12244 = new BitSet(new long[]{0x0000000000000000L,0x0000007000000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECONDS_in_secondPart12248 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SECOND_in_secondPart12252 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_SEC_in_secondPart12256 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_number_in_millisecondPart12306 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
+    public static final BitSet FOLLOW_IDENT_in_millisecondPart12310 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
+    public static final BitSet FOLLOW_substitution_in_millisecondPart12312 = new BitSet(new long[]{0x0000000000000000L,0x0000038000000000L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECONDS_in_millisecondPart12316 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISECOND_in_millisecondPart12320 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TIMEPERIOD_MILLISEC_in_millisecondPart12324 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_INT_in_number12379 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_LONG_in_number12396 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_FLOAT_in_number12413 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NUM_DOUBLE_in_number12430 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUESTION_in_substitution12451 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numberconstant_in_constant12470 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_stringconstant_in_constant12477 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOLEAN_TRUE_in_constant12490 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOLEAN_FALSE_in_constant12510 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VALUE_NULL_in_constant12530 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINUS_in_numberconstant12552 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8210004000004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_PLUS_in_numberconstant12558 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x8210004000004000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_number_in_numberconstant12562 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_stringconstant12591 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUOTED_STRING_LITERAL_in_stringconstant12607 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_streamSelector_in_synpred1_EsperEPL2Grammar4502 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_timePeriod_in_synpred2_EsperEPL2Grammar5902 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_builtinFunc_in_synpred3_EsperEPL2Grammar7766 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_propertyStreamSelector_in_synpred4_EsperEPL2Grammar8604 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_eventProperty_in_synpred5_EsperEPL2Grammar8672 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_propertyStreamSelector_in_synpred6_EsperEPL2Grammar9981 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperand_in_synpred7_EsperEPL2Grammar10404 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastWeekdayOperand_in_synpred8_EsperEPL2Grammar10415 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_timePeriod_in_synpred9_EsperEPL2Grammar10426 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expressionQualifyable_in_synpred10_EsperEPL2Grammar10437 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_rangeOperand_in_synpred11_EsperEPL2Grammar10448 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_frequencyOperand_in_synpred12_EsperEPL2Grammar10460 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lastOperator_in_synpred13_EsperEPL2Grammar10471 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_weekDayOperator_in_synpred14_EsperEPL2Grammar10482 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numericParameterList_in_synpred15_EsperEPL2Grammar10495 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_propertyStreamSelector_in_synpred6_EsperEPL2Grammar9982 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperand_in_synpred7_EsperEPL2Grammar10405 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastWeekdayOperand_in_synpred8_EsperEPL2Grammar10416 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_timePeriod_in_synpred9_EsperEPL2Grammar10427 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expressionQualifyable_in_synpred10_EsperEPL2Grammar10438 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rangeOperand_in_synpred11_EsperEPL2Grammar10449 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_frequencyOperand_in_synpred12_EsperEPL2Grammar10461 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lastOperator_in_synpred13_EsperEPL2Grammar10472 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_weekDayOperator_in_synpred14_EsperEPL2Grammar10483 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numericParameterList_in_synpred15_EsperEPL2Grammar10496 = new BitSet(new long[]{0x0000000000000002L});
 }

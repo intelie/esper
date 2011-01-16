@@ -2004,6 +2004,37 @@ config.getEngineDefaults().getExceptionHandling().addClass(MyCEPEngineExceptionH
 	
 		</sect2>
 
+		<sect2 id="config-engine-conditionhandling" revision="1">
+			<title>Engine Settings related to Condition Handling</title>
+			
+			<para>
+				Use the settings as described here to register a condition handler factory class that provides a condition handler. The engine invokes condition handlers in the order they are listed to indicate conditions, which is the term used for notification when certain predefined limits are reached, as further described in <xref linkend="api-condition"/>.
+			</para>
+
+			<para>
+				Please provide the full-qualified class name of each class that implements the <literal>com.espertech.esper.client.hook.ConditionHandlerFactory</literal> interface in the engine defaults configuration as below.
+			</para>
+	
+			<para>
+				 The XML configuration is as follows:
+			</para>
+
+			<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <conditionHandling>
+      <handlerFactory class="my.company.cep.MyCEPEngineConditionHandlerFactory"/>
+    </conditionHandling>
+  </defaults>
+</engine-settings>]]></programlisting>
+		
+			<para>
+			 The API calls to register a condition handler factory are as follows:
+			</para>
+			<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getConditionHandling().addClass(MyCEPEngineConditionHandlerFactory.class);]]></programlisting>
+	
+		</sect2>
+
 		<sect2 id="config-revisionevent" revision="1">
 			<title>Revision Event Type</title>
 			

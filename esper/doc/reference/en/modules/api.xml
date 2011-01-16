@@ -1884,6 +1884,30 @@ isolatedService.getEPRuntime().send(historyEvent);
         </para>
     </sect1>
 
+    <sect1 id="api-condition">
+        <title>Condition Handling</title>
+        
+        <para>
+			You may register one or more condition handlers for the engine to invoke in the case it encounters certain conditions, as outlined below, when executing a statement. By default and without condition handlers the engine logs the condition at informational level and continues processing. The configuration is described in <xref linkend="config-engine-conditionhandling"/>.
+        </para>
+        
+        <para>
+			If your application registers condition handlers as part of engine configuration, the engine invokes the condition handlers in the order they are registered passing relevant condition information such as EPL statement name, expression and the condition information itself.
+        </para>
+        
+        <para>
+			Currently the only condition indicated by this facility is raised by the pattern followed-by operator when used with the limit expression and when the limit is reached, see <xref linkend="pattern-temporal-followed-by-max"/>.
+        </para>
+
+        <para>
+			A condition handler may not itself throw a runtime exception or return any value.
+        </para>
+
+        <para>
+			As the configuration section describes, your application registers one or more classes that implement the <literal>ConditionHandlerFactory</literal> interface in the engine configuration. Upon engine initialization the engine obtains a factory instance from the class name that then provides the condition handler instance. The condition handler class must implement the <literal>ConditionHandler</literal> interface.
+        </para>
+    </sect1>
+
     <sect1 id="api-soda">
         <title>Statement Object Model</title>
         

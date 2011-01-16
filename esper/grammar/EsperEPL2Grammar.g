@@ -1412,7 +1412,7 @@ followedByExpression
 	
 followedByRepeat
 	:   (f=FOLLOWED_BY | (g=FOLLOWMAX_BEGIN expression FOLLOWMAX_END)) orExpression
-    		-> ^(FOLLOWED_BY_ITEM expression orExpression)
+    		-> ^(FOLLOWED_BY_ITEM expression? orExpression)
 	;
 	
 orExpression

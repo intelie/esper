@@ -31,6 +31,7 @@ import com.espertech.esper.pattern.observer.ObserverParameterException;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.UuidGenerator;
+import com.espertech.esper.view.ViewParameterException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -344,7 +345,6 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         {
             EvalFollowedByNode followedByNode = (EvalFollowedByNode) evalNode;
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(context.getEngineURI(), false);
-            String message = "Followed-by maximum-subexpr value expressions must return a numeric value";
 
             if (followedByNode.getOptionalMaxExpressions() != null) {
                 List<ExprNode> validated = new ArrayList<ExprNode>();
@@ -353,9 +353,19 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                         validated.add(null);
                     }
                     else {
+                        ExprNodeSummaryVisitor visitor = new ExprNodeSummaryVisitor();
+                        maxExpr.accept(visitor);
+                        if (!visitor.isPlain())
+                        {
+                            String errorMessage = "Invalid maximum expression in followed-by, " + visitor.getMessage() + " are not allowed within the expression";
+                            log.error(errorMessage);
+                            throw new ExprValidationException(errorMessage);
+                        }
+
                         ExprNode validatedExpr = maxExpr.getValidatedSubtree(streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
                         validated.add(validatedExpr);
                         if ((validatedExpr.getExprEvaluator().getType() == null) || (!JavaClassHelper.isNumeric(validatedExpr.getExprEvaluator().getType()))) {
+                            String message = "Invalid maximum expression in followed-by, the expression must return an integer value";
                             throw new ExprValidationException(message);
                         }
                     }

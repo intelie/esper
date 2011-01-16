@@ -30,6 +30,11 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCaseList.addTest(testCase);
 
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -[1000]> (d=" + EVENT_D_CLASS + " or not d=" + EVENT_D_CLASS + ")");
+        testCase.add("B1", "b", events.getEvent("B1"), "d", null);
+        testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
+        testCaseList.addTest(testCase);
+
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -> every d=" + EVENT_D_CLASS);
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("D2", "b", events.getEvent("B1"), "d", events.getEvent("D2"));
@@ -44,6 +49,10 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
         testCase.add("B1", "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
 
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -[1000]> not d=" + EVENT_D_CLASS);
+        testCase.add("B1", "b", events.getEvent("B1"));
+        testCaseList.addTest(testCase);
+
         testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " -> every d=" + EVENT_D_CLASS);
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("D1", "b", events.getEvent("B2"), "d", events.getEvent("D1"));
@@ -55,6 +64,12 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " -> d=" + EVENT_D_CLASS);
+        testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
+        testCase.add("D1", "b", events.getEvent("B2"), "d", events.getEvent("D1"));
+        testCase.add("D3", "b", events.getEvent("B3"), "d", events.getEvent("D3"));
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " -[10]> d=" + EVENT_D_CLASS);
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("D1", "b", events.getEvent("B2"), "d", events.getEvent("D1"));
         testCase.add("D3", "b", events.getEvent("B3"), "d", events.getEvent("D3"));
@@ -76,6 +91,10 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("every (a_1=" + EVENT_A_CLASS + "() -> b=" + EVENT_B_CLASS + "() -> a_2=" + EVENT_A_CLASS + "())");
+        testCase.add("A2", "a_1", events.getEvent("A1"), "b", events.getEvent("B1"), "a_2", events.getEvent("A2"));
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("every (a_1=" + EVENT_A_CLASS + "() -[10]> b=" + EVENT_B_CLASS + "() -[10]> a_2=" + EVENT_A_CLASS + "())");
         testCase.add("A2", "a_1", events.getEvent("A1"), "b", events.getEvent("B1"), "a_2", events.getEvent("A2"));
         testCaseList.addTest(testCase);
 
