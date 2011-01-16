@@ -2586,7 +2586,28 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveFollowedBy(Tree node)
     {
         log.debug(".leaveFollowedBy");
-        EvalFollowedByNode fbNode = patternNodeFactory.makeFollowedByNode();
+        ExprNode[] maxExpressions = new ExprNode[node.getChildCount() - 1];
+        List<EvalNode> childNodes = new ArrayList<EvalNode>();
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Tree child = node.getChild(i);
+            if (child.getType() != FOLLOWED_BY_ITEM) {
+                throw new ASTWalkException("Unexpected child node for followed-by item");
+            }
+            if (i == 0) {
+                childNodes.add(astPatternNodeMap.remove(child.getChild(0)));    // first pattern sub-expression cannot have max
+            }
+            else {
+                int current = 0;
+                if (child.getChildCount() == 2) {
+                    maxExpressions[i - 1] = astExprNodeMap.remove(child.getChild(current));
+                    current++;
+                }
+                childNodes.add(astPatternNodeMap.remove(child.getChild(current)));
+            }
+        }
+        List<ExprNode> expressions = Arrays.asList(maxExpressions); // can contain null elements as max/no-max can be mixed
+        EvalFollowedByNode fbNode = patternNodeFactory.makeFollowedByNode(expressions);
+        fbNode.getChildNodes().addAll(childNodes);
         astPatternNodeMap.put(node, fbNode);
     }
 

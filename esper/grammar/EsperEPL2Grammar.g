@@ -136,6 +136,7 @@ tokens
    	NUMERIC_PARAM_FREQUENCY;   	
    	OBJECT_PARAM_ORDERED_EXPR;
    	FOLLOWED_BY_EXPR;
+   	FOLLOWED_BY_ITEM;
    	ARRAY_PARAM_LIST;
    	PATTERN_FILTER_EXPR;
    	PATTERN_NOT_EXPR;
@@ -1401,11 +1402,17 @@ patternExpression
 @after { paraphrases.pop(); }
 	: followedByExpression
 	;
-	
+
 followedByExpression
-	: orExpression (f=FOLLOWED_BY orExpression)*
-	    -> {$f != null}? ^(FOLLOWED_BY_EXPR orExpression+)
+  @init { boolean fb = false; } 
+	: orExpression (followedByRepeat { fb = true; } )*
+	    -> {fb == true}? ^(FOLLOWED_BY_EXPR ^(FOLLOWED_BY_ITEM orExpression) followedByRepeat+)
 	    -> orExpression
+	;
+	
+followedByRepeat
+	:   (f=FOLLOWED_BY | (g=FOLLOWMAX_BEGIN expression FOLLOWMAX_END)) orExpression
+    		-> ^(FOLLOWED_BY_ITEM expression orExpression)
 	;
 	
 orExpression
@@ -1829,6 +1836,8 @@ stringconstant
 //----------------------------------------------------------------------------
 
 // Operators
+FOLLOWMAX_BEGIN : '-[';
+FOLLOWMAX_END   : ']>';
 FOLLOWED_BY 	: '->';
 EQUALS 		: '=';
 SQL_NE 		: '<>';

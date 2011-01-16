@@ -25,8 +25,8 @@ public class PatternNodeFactoryImpl implements PatternNodeFactory {
         return new EvalFilterNode(filterSpecification, eventAsName);
     }
 
-    public EvalFollowedByNode makeFollowedByNode() {
-        return new EvalFollowedByNode();
+    public EvalFollowedByNode makeFollowedByNode(List<ExprNode> maxExpressions) {
+        return new EvalFollowedByNode(maxExpressions);
     }
 
     public EvalGuardNode makeGuardNode(PatternGuardSpec patternGuardSpec) {

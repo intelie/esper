@@ -234,6 +234,9 @@ public class TestNamedWindowTypes extends TestCase
 
     public void testCreateTableArray()
     {
+        epService.getEPAdministrator().createEPL("create schema SecurityData (name String, roles String[])");
+        epService.getEPAdministrator().createEPL("create window SecurityEvent.win:time(30 sec) (ipAddress string, userId String, secData SecurityData, historySecData SecurityData[])");
+
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() (myvalue string[])";
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);

@@ -920,7 +920,11 @@ class ConfigurationParser {
             }
             if (subElement.getNodeName().equals("exceptionHandling"))
             {
-                handleExceptionHandling(configuration, subElement);
+                configuration.getEngineDefaults().getExceptionHandling().addClasses(getHandlerFactories(subElement));
+            }
+            if (subElement.getNodeName().equals("conditionHandling"))
+            {
+                configuration.getEngineDefaults().getConditionHandling().addClasses(getHandlerFactories(subElement));
             }
         }
     }
@@ -1292,8 +1296,9 @@ class ConfigurationParser {
         }
     }
 
-    private static void handleExceptionHandling(Configuration configuration, Element parentElement)
+    private static List<String> getHandlerFactories(Element parentElement)
     {
+        List<String> list = new ArrayList<String>();
         DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (nodeIterator.hasNext())
         {
@@ -1301,9 +1306,10 @@ class ConfigurationParser {
             if (subElement.getNodeName().equals("handlerFactory"))
             {
                 String text = getRequiredAttribute(subElement, "class");
-                configuration.getEngineDefaults().getExceptionHandling().addClass(text);
+                list.add(text);
             }
         }
+        return list;
     }
 
     private static void handleMetricsReportingPatterns(ConfigurationMetricsReporting.StmtGroupMetrics groupDef, Element parentElement)

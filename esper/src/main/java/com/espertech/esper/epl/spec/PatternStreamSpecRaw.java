@@ -340,6 +340,29 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             }
             matchUntilNode.setTagsArrayedSet(arrayTags);
         }
+        else if (evalNode instanceof EvalFollowedByNode)
+        {
+            EvalFollowedByNode followedByNode = (EvalFollowedByNode) evalNode;
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(context.getEngineURI(), false);
+            String message = "Followed-by maximum-subexpr value expressions must return a numeric value";
+
+            if (followedByNode.getOptionalMaxExpressions() != null) {
+                List<ExprNode> validated = new ArrayList<ExprNode>();
+                for (ExprNode maxExpr : followedByNode.getOptionalMaxExpressions()) {
+                    if (maxExpr == null) {
+                        validated.add(null);
+                    }
+                    else {
+                        ExprNode validatedExpr = maxExpr.getValidatedSubtree(streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
+                        validated.add(validatedExpr);
+                        if ((validatedExpr.getExprEvaluator().getType() == null) || (!JavaClassHelper.isNumeric(validatedExpr.getExprEvaluator().getType()))) {
+                            throw new ExprValidationException(message);
+                        }
+                    }
+                }
+                followedByNode.setOptionalMaxExpressions(validated);
+            }
+        }
 
         if (newTaggedEventTypes != null)
         {
@@ -371,7 +394,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return validated;
     }
 
-    private static StreamTypeService getStreamTypeService(String engineURI, EventAdapterService eventAdapterService, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+    private static StreamTypeService getStreamTypeService(String engineURI, EventAdapterService eventAdapterService, Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes)
     {
         LinkedHashMap<String, Pair<EventType, String>> filterTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         filterTypes.putAll(taggedEventTypes);

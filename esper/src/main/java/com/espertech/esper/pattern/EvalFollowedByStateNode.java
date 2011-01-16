@@ -9,6 +9,7 @@
 package com.espertech.esper.pattern;
 
 
+import com.espertech.esper.client.hook.ConditionPatternSubexpressionMax;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,6 +24,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
 {
     private final EvalFollowedByNode evalFollowedByNode;
     private final HashMap<EvalStateNode, Integer> nodes;
+    private int[] countActivePerChild;
 
     /**
      * Constructor.
@@ -38,6 +40,9 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
 
         this.evalFollowedByNode = evalFollowedByNode;
         this.nodes = new HashMap<EvalStateNode, Integer>();
+        if (evalFollowedByNode.hasMax()) {
+            countActivePerChild = new int[evalFollowedByNode.getChildNodes().size() - 1];
+        }
 
         EvalNode child = evalFollowedByNode.getChildNodes().get(0);
         EvalStateNode childState = child.newState(this, beginState, evalFollowedByNode.getContext(), null);
@@ -79,6 +84,9 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
         if (isQuitted)
         {
             nodes.remove(fromNode);
+            if (evalFollowedByNode.hasMax()) {
+                countActivePerChild[index - 1]--;
+            }
         }
 
         // the node may already have quit as a result of an outer state quitting this state,
@@ -100,9 +108,20 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
 
             this.getParentEvaluator().evaluateTrue(matchEvent, this, isFollowedByQuitted);
         }
-        // Else start a new listener for the next-in-line filter
+        // Else start a new sub-expression for the next-in-line filter
         else
         {
+            if (evalFollowedByNode.hasMax()) {
+                int max = evalFollowedByNode.getMax(index);
+                if ((max != -1) && (max >=0)) {
+                    if (countActivePerChild[index] >= max) {
+                        evalFollowedByNode.getContext().getExceptionHandlingService().handleCondition(new ConditionPatternSubexpressionMax(max), evalFollowedByNode.getContext().getEpStatementHandle());
+                        return;
+                    }
+                }
+                countActivePerChild[index]++;
+            }
+
             EvalNode child = getFactoryNode().getChildNodes().get(index + 1);
             EvalStateNode childState = child.newState(this, matchEvent, evalFollowedByNode.getContext(), null);
             nodes.put(childState, index + 1);
@@ -118,7 +137,10 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
         }
 
         fromNode.quit();
-        nodes.remove(fromNode);
+        Integer index = nodes.remove(fromNode);
+        if (index != null && evalFollowedByNode.hasMax()) {
+            countActivePerChild[index - 1]--;
+        }
         
         if (nodes.isEmpty())
         {

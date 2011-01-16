@@ -69,6 +69,7 @@ public final class StatementContext implements ExprEvaluatorContext
     private final ViewService viewService;
     private final StatementFilterVersion statementFilterVersion;
     private final Annotation[] annotations;
+    private final ExceptionHandlingService exceptionHandlingService;
 
     /**
      * Constructor.
@@ -129,7 +130,8 @@ public final class StatementContext implements ExprEvaluatorContext
                               MetricReportingServiceSPI metricReportingService,
                               ViewService viewService,
                               StatementFilterVersion statementFilterVersion,
-                              Annotation[] annotations)
+                              Annotation[] annotations,
+                              ExceptionHandlingService exceptionHandlingService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -162,6 +164,7 @@ public final class StatementContext implements ExprEvaluatorContext
         this.viewService = viewService;
         this.statementFilterVersion = statementFilterVersion;
         this.annotations = annotations;
+        this.exceptionHandlingService = exceptionHandlingService;
     }
 
     /**
@@ -474,6 +477,10 @@ public final class StatementContext implements ExprEvaluatorContext
      */
     public StatementFilterVersion getStatementFilterVersion() {
         return statementFilterVersion;
+    }
+
+    public ExceptionHandlingService getExceptionHandlingService() {
+        return exceptionHandlingService;
     }
 
     public Annotation[] getAnnotations()

@@ -619,9 +619,13 @@ distinctExpressions
 	;
 	
 patternOp
-	:	^( f=FOLLOWED_BY_EXPR exprChoice exprChoice (exprChoice)* { leaveNode($f); } )
+	:	^( f=FOLLOWED_BY_EXPR followedByItem followedByItem (followedByItem)* { leaveNode($f); } )
 	| 	^( o=OR_EXPR exprChoice exprChoice (exprChoice)* { leaveNode($o); } )
 	| 	^( a=AND_EXPR exprChoice exprChoice (exprChoice)* { leaveNode($a); } )	
+	;
+	
+followedByItem
+	:	^( FOLLOWED_BY_ITEM valueExpr? exprChoice)	
 	;
 	
 atomicExpr

@@ -81,6 +81,7 @@ public class TestConfigurationParser extends TestCase
         assertTrue(config.getEngineDefaults().getExpression().isExtendedAggregation());
         assertFalse(config.getEngineDefaults().getExpression().isDuckTyping());
         assertNull(config.getEngineDefaults().getExceptionHandling().getHandlerFactories());
+        assertNull(config.getEngineDefaults().getConditionHandling().getHandlerFactories());
 
         ConfigurationEventTypeXMLDOM domType = new ConfigurationEventTypeXMLDOM();
         assertFalse(domType.isXPathPropertyExpr());
@@ -361,6 +362,9 @@ public class TestConfigurationParser extends TestCase
         assertEquals(2, config.getEngineDefaults().getExceptionHandling().getHandlerFactories().size());
         assertEquals("my.company.cep.LoggingExceptionHandlerFactory", config.getEngineDefaults().getExceptionHandling().getHandlerFactories().get(0));
         assertEquals("my.company.cep.AlertExceptionHandlerFactory", config.getEngineDefaults().getExceptionHandling().getHandlerFactories().get(1));
+        assertEquals(2, config.getEngineDefaults().getConditionHandling().getHandlerFactories().size());
+        assertEquals("my.company.cep.LoggingConditionHandlerFactory", config.getEngineDefaults().getConditionHandling().getHandlerFactories().get(0));
+        assertEquals("my.company.cep.AlertConditionHandlerFactory", config.getEngineDefaults().getConditionHandling().getHandlerFactories().get(1));
 
         // variables
         assertEquals(2, config.getVariables().size());

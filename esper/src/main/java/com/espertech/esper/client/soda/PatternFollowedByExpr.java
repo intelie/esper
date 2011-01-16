@@ -9,6 +9,7 @@
 package com.espertech.esper.client.soda;
 
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * Followed-by for use in pattern expressions. 
@@ -17,11 +18,17 @@ public class PatternFollowedByExpr extends PatternExprBase
 {
     private static final long serialVersionUID = 1480442602208180240L;
 
+    private List<Expression> optionalMaxPerSubexpression;
+
     /**
      * Ctor - for use to create a pattern expression tree, without pattern child expression.
      */
     public PatternFollowedByExpr()
     {
+    }
+
+    public PatternFollowedByExpr(List<Expression> optionalMaxPerSubexpression) {
+        this.optionalMaxPerSubexpression = optionalMaxPerSubexpression;
     }
 
     /**
@@ -55,14 +62,33 @@ public class PatternFollowedByExpr extends PatternExprBase
         return PatternExprPrecedenceEnum.FOLLOWED_BY;
     }
 
+    public List<Expression> getOptionalMaxPerSubexpression() {
+        return optionalMaxPerSubexpression;
+    }
+
+    public void setOptionalMaxPerSubexpression(List<Expression> optionalMaxPerSubexpression) {
+        this.optionalMaxPerSubexpression = optionalMaxPerSubexpression;
+    }
+
     public void toPrecedenceFreeEPL(StringWriter writer)
     {
         String delimiter = "";
+        int childNum = 0;
         for (PatternExpr child : this.getChildren())
         {
             writer.write(delimiter);
             child.toEPL(writer, getPrecedence());
+
             delimiter = " -> ";
+            if (optionalMaxPerSubexpression != null && optionalMaxPerSubexpression.size() > childNum) {
+                Expression maxExpr = optionalMaxPerSubexpression.get(childNum);
+                if (maxExpr != null) {
+                    StringWriter inner = new StringWriter();
+                    maxExpr.toEPL(inner, ExpressionPrecedenceEnum.MINIMUM);
+                    delimiter = " -[" + inner.toString() + "]> ";
+                }
+            }
+            childNum++;
         }
     }
 }

@@ -1147,8 +1147,15 @@ public class StatementSpecMapper
     private static List<ExprNode> mapExpressionDeep(List<Expression> expressions, StatementSpecMapContext mapContext)
     {
         List<ExprNode> result = new ArrayList<ExprNode>();
+        if (expressions == null) {
+            return result;
+        }
         for (Expression expr : expressions)
         {
+            if (expr == null) {
+                result.add(null);
+                continue;
+            }
             result.add(mapExpressionDeep(expr, mapContext));
         }
         return result;
@@ -1567,8 +1574,15 @@ public class StatementSpecMapper
     private static List<Expression> unmapExpressionDeep(List<ExprNode> expressions, StatementSpecUnMapContext unmapContext)
     {
         List<Expression> result = new ArrayList<Expression>();
+        if (expressions == null) {
+            return result;
+        }
         for (ExprNode expr : expressions)
         {
+            if (expr == null) {
+                result.add(null);
+                continue;
+            }
             result.add(unmapExpressionDeep(expr, unmapContext));
         }
         return result;
@@ -2138,7 +2152,9 @@ public class StatementSpecMapper
         }
         else if (eval instanceof PatternFollowedByExpr)
         {
-            return mapContext.getPatternNodeFactory().makeFollowedByNode();
+            PatternFollowedByExpr fb = (PatternFollowedByExpr) eval;
+            List<ExprNode> maxExpr = mapExpressionDeep(fb.getOptionalMaxPerSubexpression(), mapContext);
+            return mapContext.getPatternNodeFactory().makeFollowedByNode(maxExpr);
         }
         else if (eval instanceof PatternEveryExpr)
         {
@@ -2194,7 +2210,9 @@ public class StatementSpecMapper
         }
         else if (eval instanceof EvalFollowedByNode)
         {
-            return new PatternFollowedByExpr();
+            EvalFollowedByNode fb = (EvalFollowedByNode) eval;
+            List<Expression> expressions = unmapExpressionDeep(fb.getOptionalMaxExpressions(), unmapContext);
+            return new PatternFollowedByExpr(expressions);
         }
         else if (eval instanceof EvalEveryNode)
         {

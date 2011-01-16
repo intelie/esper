@@ -371,6 +371,7 @@
 					<xs:element ref="esper:expression" minOccurs="0"/>
 					<xs:element ref="esper:execution" minOccurs="0"/>
 					<xs:element ref="esper:exceptionHandling" minOccurs="0"/>
+					<xs:element ref="esper:conditionHandling" minOccurs="0"/>
 				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
@@ -704,6 +705,13 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="exceptionHandling">
+		<xs:complexType>
+				<xs:sequence>
+					<xs:element ref="esper:handlerFactory" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="conditionHandling">
 		<xs:complexType>
 				<xs:sequence>
 					<xs:element ref="esper:handlerFactory" minOccurs="0" maxOccurs="unbounded"/>

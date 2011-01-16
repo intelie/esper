@@ -30,6 +30,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private Expression expression;
     private Execution execution;
     private ExceptionHandling exceptionHandling;
+    private ConditionHandling conditionHandling;
     private ConfigurationMetricsReporting metricsReporting;
     private AlternativeContext alternativeContext;
     private static final long serialVersionUID = -528835191586154300L;
@@ -51,6 +52,7 @@ public class ConfigurationEngineDefaults implements Serializable
         expression = new Expression();
         execution = new Execution();
         exceptionHandling = new ExceptionHandling();
+        conditionHandling = new ConditionHandling();
         alternativeContext = new AlternativeContext();
     }
 
@@ -186,6 +188,14 @@ public class ConfigurationEngineDefaults implements Serializable
      */
     public void setExceptionHandling(ExceptionHandling exceptionHandling) {
         this.exceptionHandling = exceptionHandling;
+    }
+
+    public ConditionHandling getConditionHandling() {
+        return conditionHandling;
+    }
+
+    public void setConditionHandling(ConditionHandling conditionHandling) {
+        this.conditionHandling = conditionHandling;
     }
 
     /**
@@ -1334,6 +1344,13 @@ public class ConfigurationEngineDefaults implements Serializable
             handlerFactories.add(exceptionHandlerFactoryClassName);
         }
 
+        public void addClasses(List<String> classNames) {
+            if (handlerFactories == null) {
+                handlerFactories = new ArrayList<String>();
+            }
+            handlerFactories.addAll(classNames);
+        }
+
         /**
          * Add an exception handler factory class.
          * <p>
@@ -1344,6 +1361,57 @@ public class ConfigurationEngineDefaults implements Serializable
          */
         public void addClass(Class exceptionHandlerFactoryClass) {
             addClass(exceptionHandlerFactoryClass.getName());
+        }
+    }
+
+    /**
+     * Configuration object for defining condition handling behavior.
+     */
+    public static class ConditionHandling implements Serializable {
+        private static final long serialVersionUID = -708367341332718634L;
+        private List<String> handlerFactories;
+
+        /**
+         * Returns the list of condition handler factory class names,
+         * see {@link com.espertech.esper.client.hook.ConditionHandlerFactory}
+         * @return list of fully-qualified class names
+         */
+        public List<String> getHandlerFactories() {
+            return handlerFactories;
+        }
+
+        /**
+         * Add an condition handler factory class name.
+         * <p>
+         * Provide a fully-qualified class name of the implementation
+         * of the {@link com.espertech.esper.client.hook.ConditionHandlerFactory}
+         * interface.
+         * @param className class name of condition handler factory
+         */
+        public void addClass(String className) {
+            if (handlerFactories == null) {
+                handlerFactories = new ArrayList<String>();
+            }
+            handlerFactories.add(className);
+        }
+
+        public void addClasses(List<String> classNames) {
+            if (handlerFactories == null) {
+                handlerFactories = new ArrayList<String>();
+            }
+            handlerFactories.addAll(classNames);
+        }
+
+        /**
+         * Add an condition handler factory class.
+         * <p>
+         * The class provided should implement the
+         * {@link com.espertech.esper.client.hook.ConditionHandlerFactory}
+         * interface.
+         * @param clazz class of implementation
+         */
+        public void addClass(Class clazz) {
+            addClass(clazz.getName());
         }
     }
 }

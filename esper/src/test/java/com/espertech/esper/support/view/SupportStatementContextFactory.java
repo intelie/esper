@@ -1,5 +1,6 @@
 package com.espertech.esper.support.view;
 
+import com.espertech.esper.client.hook.ConditionHandler;
 import com.espertech.esper.client.hook.ExceptionHandler;
 import com.espertech.esper.core.ExceptionHandlingService;
 import com.espertech.esper.core.StatementContext;
@@ -64,7 +65,7 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 new OutputConditionFactoryDefault(),
-                new NamedWindowServiceImpl(null, variableService, false, new ManagedReadWriteLock("dummyeplock", true), new ExceptionHandlingService("engURI", Collections.<ExceptionHandler>emptyList()), false),
+                new NamedWindowServiceImpl(null, variableService, false, new ManagedReadWriteLock("dummyeplock", true), new ExceptionHandlingService("engURI", Collections.<ExceptionHandler>emptyList(), Collections.<ConditionHandler>emptyList()), false),
                 null,
                 new StatementResultServiceImpl(null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading())), // statement result svc
                 null, // resolution URIs
@@ -74,6 +75,7 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 new StatementFilterVersion(),
+                null,
                 null);
     }
 }

@@ -9,9 +9,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.hook.ExceptionHandler;
-import com.espertech.esper.client.hook.ExceptionHandlerFactoryContext;
-import com.espertech.esper.client.hook.ExceptionHandlerFactory;
+import com.espertech.esper.client.hook.*;
 import com.espertech.esper.core.deploy.DeploymentStateService;
 import com.espertech.esper.core.deploy.DeploymentStateServiceImpl;
 import com.espertech.esper.core.thread.ThreadingService;
@@ -94,7 +92,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         EngineEnvContext jndiContext = new EngineEnvContext();
 
         // exception handling
-        ExceptionHandlingService exceptionHandlingService = initExceptionHandling(epServiceProvider.getURI(), configSnapshot.getEngineDefaults().getExceptionHandling());
+        ExceptionHandlingService exceptionHandlingService = initExceptionHandling(epServiceProvider.getURI(), configSnapshot.getEngineDefaults().getExceptionHandling(), configSnapshot.getEngineDefaults().getConditionHandling());
 
         // Statement context factory
         StatementContextFactory statementContextFactory = new StatementContextFactoryDefault(plugInViews, plugInPatternObj);
@@ -153,15 +151,16 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         return services;
     }
 
-    protected static ExceptionHandlingService initExceptionHandling(String engineURI, ConfigurationEngineDefaults.ExceptionHandling exceptionHandling)
+    protected static ExceptionHandlingService initExceptionHandling(String engineURI, ConfigurationEngineDefaults.ExceptionHandling exceptionHandling,
+                                                                    ConfigurationEngineDefaults.ConditionHandling conditionHandling)
         throws ConfigurationException
     {
-        List<ExceptionHandler> result;
+        List<ExceptionHandler> exceptionHandlers;
         if (exceptionHandling.getHandlerFactories() == null || exceptionHandling.getHandlerFactories().isEmpty()) {
-            result = Collections.emptyList();
+            exceptionHandlers = Collections.emptyList();
         }
         else {
-            result = new ArrayList<ExceptionHandler>();
+            exceptionHandlers = new ArrayList<ExceptionHandler>();
             ExceptionHandlerFactoryContext context = new ExceptionHandlerFactoryContext(engineURI);
             for (String className : exceptionHandling.getHandlerFactories()) {
                 try {
@@ -171,14 +170,37 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                         log.warn("Exception handler factory '" + className + "' returned a null handler, skipping factory");
                         continue;
                     }
-                    result.add(handler);
+                    exceptionHandlers.add(handler);
                 }
                 catch (RuntimeException ex) {
                     throw new ConfigurationException("Exception initializing exception handler from exception handler factory '" + className + "': " + ex.getMessage(), ex);
                 }
             }
         }
-        return new ExceptionHandlingService(engineURI, result);
+
+        List<ConditionHandler> conditionHandlers;
+        if (conditionHandling.getHandlerFactories() == null || conditionHandling.getHandlerFactories().isEmpty()) {
+            conditionHandlers = Collections.emptyList();
+        }
+        else {
+            conditionHandlers = new ArrayList<ConditionHandler>();
+            ConditionHandlerFactoryContext context = new ConditionHandlerFactoryContext(engineURI);
+            for (String className : conditionHandling.getHandlerFactories()) {
+                try {
+                    ConditionHandlerFactory factory = (ConditionHandlerFactory) JavaClassHelper.instantiate(ConditionHandlerFactory.class, className);
+                    ConditionHandler handler = factory.getHandler(context);
+                    if (handler == null) {
+                        log.warn("Condition handler factory '" + className + "' returned a null handler, skipping factory");
+                        continue;
+                    }
+                    conditionHandlers.add(handler);
+                }
+                catch (RuntimeException ex) {
+                    throw new ConfigurationException("Exception initializing exception handler from exception handler factory '" + className + "': " + ex.getMessage(), ex);
+                }
+            }
+        }
+        return new ExceptionHandlingService(engineURI, exceptionHandlers, conditionHandlers);
     }
 
     /**
