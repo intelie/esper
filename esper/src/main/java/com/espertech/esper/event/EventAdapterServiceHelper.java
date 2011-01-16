@@ -40,18 +40,18 @@ public class EventAdapterServiceHelper
         {
             return null;
         }
-        EventTypeSPI typeSPI = (EventTypeSPI) eventType;
-        if (!typeSPI.getMetadata().isApplicationConfigured())
-        {
-            return null;
-        }
         if (eventType instanceof BeanEventType)
         {
             BeanEventType beanEventType = (BeanEventType) eventType;
             FastClass fastClass = beanEventType.getFastClass();
             return PropertyHelper.getWritableProperties(fastClass.getJavaClass());
         }
-        else if (eventType instanceof MapEventType)
+        EventTypeSPI typeSPI = (EventTypeSPI) eventType;
+        if (!typeSPI.getMetadata().isApplicationConfigured())
+        {
+            return null;
+        }
+        if (eventType instanceof MapEventType)
         {
             Map<String, Object> mapdef = ((MapEventType) eventType).getTypes();
             Set<WriteablePropertyDescriptor> writables = new HashSet<WriteablePropertyDescriptor>();
@@ -125,17 +125,17 @@ public class EventAdapterServiceHelper
         {
             return null;
         }
-        EventTypeSPI typeSPI = (EventTypeSPI) eventType;
-        if (!typeSPI.getMetadata().isApplicationConfigured())
-        {
-            return null;
-        }
         if (eventType instanceof BeanEventType)
         {
             BeanEventType beanEventType = (BeanEventType) eventType;
             return new EventBeanManufacturerBean(beanEventType, eventAdapterService, properties, methodResolutionService);
         }
-        else if (eventType instanceof MapEventType)
+        EventTypeSPI typeSPI = (EventTypeSPI) eventType;
+        if (!typeSPI.getMetadata().isApplicationConfigured())
+        {
+            return null;
+        }
+        if (eventType instanceof MapEventType)
         {
             MapEventType mapEventType = (MapEventType) eventType;
             return new EventBeanManufacturerMap(mapEventType, eventAdapterService, properties);

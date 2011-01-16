@@ -26,6 +26,7 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         ConfigurationEventTypeLegacy legacy = new ConfigurationEventTypeLegacy();
         legacy.setFactoryMethod("getInstance");
         configuration.addEventType("SupportBeanString", SupportBeanString.class.getName(), legacy);
+        configuration.addImport(TestInsertIntoPopulateUnderlying.class.getPackage().getName() + ".*");
 
         legacy = new ConfigurationEventTypeLegacy();
         legacy.setFactoryMethod(SupportSensorEventFactory.class.getName() + ".getInstance");
@@ -94,6 +95,27 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         event = (SupportBeanObject) listener.assertOneGetNewAndReset().getUnderlying();
         assertSame(n1, event.getOne());
         assertSame(s01, event.getTwo());
+        stmtOne.destroy();
+
+        // test fully-qualified class name as target
+        stmtTextOne = "insert into " + SupportBeanObject.class.getName() + " select one, two from SupportBean_N.std:lastevent() as one, SupportBean_S0.std:lastevent() as two";
+        stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(n1);
+        epService.getEPRuntime().sendEvent(s01);
+        event = (SupportBeanObject) listener.assertOneGetNewAndReset().getUnderlying();
+        assertSame(n1, event.getOne());
+        assertSame(s01, event.getTwo());
+
+        // test local class and auto-import
+        stmtOne.destroy();
+        stmtTextOne = "insert into " + this.getClass().getName() + "$MyLocalTarget select 1 as value from SupportBean_N";
+        stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);
+        stmtOne.addListener(listener);
+        epService.getEPRuntime().sendEvent(n1);
+        MyLocalTarget eventLocal = (MyLocalTarget) listener.assertOneGetNewAndReset().getUnderlying();
+        assertEquals(1, eventLocal.getValue());
     }
 
     public void testInvalid()
@@ -577,6 +599,18 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
 
         public void setEndEvent(SupportBean[] endEvent) {
             this.endEvent = endEvent;
+        }
+    }
+
+    public static class MyLocalTarget {
+        public int value;
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
         }
     }
 }

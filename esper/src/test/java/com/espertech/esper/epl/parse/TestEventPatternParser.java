@@ -399,10 +399,10 @@ public class TestEventPatternParser extends TestCase
 
         // 2 Children: filter a  and  or-subexpression with the rest
         assertTrue(ast.getChildCount() == 2);
-        assertTrue(ast.getChild(0).getType() == EsperEPL2GrammarParser.PATTERN_FILTER_EXPR);
+        assertEquals(EsperEPL2GrammarParser.PATTERN_FILTER_EXPR, ast.getChild(0).getChild(0).getType());
 
         // Assert on or-subexpression
-        Tree orExpr = ast.getChild(1);
+        Tree orExpr = ast.getChild(1).getChild(0);
         assertTrue(orExpr.getType() == EsperEPL2GrammarParser.OR_EXPR);
         assertTrue(orExpr.getChildCount() == 2);
         assertTrue(orExpr.getChild(0).getType() == EsperEPL2GrammarParser.PATTERN_NOT_EXPR);

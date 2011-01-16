@@ -627,6 +627,21 @@ public class SelectExprProcessorHelper
                 else
                 {
                     EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
+
+                    if (existingType == null) {
+                        // The type may however be an auto-import or fully-qualified class name
+                        Class clazz = null;
+                        try {
+                            clazz = this.methodResolutionService.resolveClass(insertIntoDesc.getEventTypeName());
+                        }
+                        catch (EngineImportException e) {
+                            log.debug("Target stream name '" + insertIntoDesc.getEventTypeName() + "' is not resolved as a class name");
+                        }
+                        if (clazz != null) {
+                            existingType = eventAdapterService.addBeanType(clazz.getName(), clazz, false, false, false);
+                        }
+                    }
+
                     SelectExprInsertEventBean selectExprInsertEventBean = null;
                     if (existingType != null)
                     {

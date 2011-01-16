@@ -209,7 +209,7 @@ selectExpr
 	;
 	
 insertIntoExpr
-	:	^(i=INSERTINTO_EXPR (ISTREAM | RSTREAM)? IDENT (exprCol)? { leaveNode($i); } )
+	:	^(i=INSERTINTO_EXPR (ISTREAM | RSTREAM)? CLASS_IDENT (exprCol)? { leaveNode($i); } )
 	;
 	
 exprCol

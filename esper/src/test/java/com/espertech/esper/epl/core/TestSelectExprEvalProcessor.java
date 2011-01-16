@@ -30,14 +30,15 @@ public class TestSelectExprEvalProcessor extends TestCase
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
         SupportValueAddEventService vaeService = new SupportValueAddEventService();
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
+        MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(new EngineImportServiceImpl(true), null, true);
 
-        methodOne = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null, null);
+        methodOne = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null);
 
         InsertIntoDesc insertIntoDesc = new InsertIntoDesc(true, "Hello");
         insertIntoDesc.add("a");
         insertIntoDesc.add("b");
 
-        methodTwo = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, null, null);
+        methodTwo = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null);
     }
 
     public void testGetResultEventType() throws Exception

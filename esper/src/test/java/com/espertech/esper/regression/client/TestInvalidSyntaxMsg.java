@@ -53,7 +53,7 @@ public class TestInvalidSyntaxMsg extends TestCase
                    "Incorrect syntax near 'google' expecting 'from' but found an identifier at line 1 column 9 [select * google]");
 
         tryCompile("insert into into",
-                   "Incorrect syntax near 'into' (a reserved keyword) expecting an identifier but found 'into' at line 1 column 12, please check the insert-into clause [insert into into]");
+                   "Incorrect syntax near 'into' (a reserved keyword) at line 1 column 12, please check the insert-into clause [insert into into]");
 
         tryCompile("select prior(A, x) from A",
                    "Incorrect syntax near 'A' at line 1 column 13, please check the select clause [select prior(A, x) from A]");

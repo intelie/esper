@@ -841,8 +841,8 @@ variantListElement
 insertIntoExpr
 @init  { paraphrases.push("insert-into clause"); }
 @after { paraphrases.pop(); }
-	:	(s=ISTREAM | s=RSTREAM)? INTO i=IDENT (LPAREN columnList RPAREN)?
-		-> ^(INSERTINTO_EXPR $s? $i columnList?)
+	:	(s=ISTREAM | s=RSTREAM)? INTO classIdentifier (LPAREN columnList RPAREN)?
+		-> ^(INSERTINTO_EXPR $s? classIdentifier columnList?)
 	;
 		
 columnList

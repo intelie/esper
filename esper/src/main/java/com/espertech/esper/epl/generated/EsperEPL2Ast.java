@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2011-01-16 08:45:10
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 EsperEPL2Ast.g 2011-01-16 16:39:21
 
   package com.espertech.esper.epl.generated;
   import java.util.Stack;
@@ -3306,13 +3306,13 @@ public class EsperEPL2Ast extends TreeParser {
 
 
     // $ANTLR start "insertIntoExpr"
-    // EsperEPL2Ast.g:211:1: insertIntoExpr : ^(i= INSERTINTO_EXPR ( ISTREAM | RSTREAM )? IDENT ( exprCol )? ) ;
+    // EsperEPL2Ast.g:211:1: insertIntoExpr : ^(i= INSERTINTO_EXPR ( ISTREAM | RSTREAM )? CLASS_IDENT ( exprCol )? ) ;
     public final void insertIntoExpr() throws RecognitionException {
         CommonTree i=null;
 
         try {
-            // EsperEPL2Ast.g:212:2: ( ^(i= INSERTINTO_EXPR ( ISTREAM | RSTREAM )? IDENT ( exprCol )? ) )
-            // EsperEPL2Ast.g:212:4: ^(i= INSERTINTO_EXPR ( ISTREAM | RSTREAM )? IDENT ( exprCol )? )
+            // EsperEPL2Ast.g:212:2: ( ^(i= INSERTINTO_EXPR ( ISTREAM | RSTREAM )? CLASS_IDENT ( exprCol )? ) )
+            // EsperEPL2Ast.g:212:4: ^(i= INSERTINTO_EXPR ( ISTREAM | RSTREAM )? CLASS_IDENT ( exprCol )? )
             {
             i=(CommonTree)match(input,INSERTINTO_EXPR,FOLLOW_INSERTINTO_EXPR_in_insertIntoExpr1150); 
 
@@ -3343,8 +3343,8 @@ public class EsperEPL2Ast extends TreeParser {
 
             }
 
-            match(input,IDENT,FOLLOW_IDENT_in_insertIntoExpr1161); 
-            // EsperEPL2Ast.g:212:51: ( exprCol )?
+            match(input,CLASS_IDENT,FOLLOW_CLASS_IDENT_in_insertIntoExpr1161); 
+            // EsperEPL2Ast.g:212:57: ( exprCol )?
             int alt70=2;
             int LA70_0 = input.LA(1);
 
@@ -3353,7 +3353,7 @@ public class EsperEPL2Ast extends TreeParser {
             }
             switch (alt70) {
                 case 1 :
-                    // EsperEPL2Ast.g:212:52: exprCol
+                    // EsperEPL2Ast.g:212:58: exprCol
                     {
                     pushFollow(FOLLOW_exprCol_in_insertIntoExpr1164);
                     exprCol();
@@ -15047,8 +15047,8 @@ public class EsperEPL2Ast extends TreeParser {
     public static final BitSet FOLLOW_orderByClause_in_selectExpr1126 = new BitSet(new long[]{0x0000000000000002L,0x0000200000000000L});
     public static final BitSet FOLLOW_rowLimitClause_in_selectExpr1133 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_INSERTINTO_EXPR_in_insertIntoExpr1150 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_set_in_insertIntoExpr1152 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
-    public static final BitSet FOLLOW_IDENT_in_insertIntoExpr1161 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x2000000000000000L});
+    public static final BitSet FOLLOW_set_in_insertIntoExpr1152 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_CLASS_IDENT_in_insertIntoExpr1161 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x2000000000000000L});
     public static final BitSet FOLLOW_exprCol_in_insertIntoExpr1164 = new BitSet(new long[]{0x0000000000000008L});
     public static final BitSet FOLLOW_EXPRCOL_in_exprCol1183 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_IDENT_in_exprCol1185 = new BitSet(new long[]{0x0000000000000008L,0x0000000000000000L,0x0000000000000000L,0x0000000000000000L,0x0000000020000000L});
