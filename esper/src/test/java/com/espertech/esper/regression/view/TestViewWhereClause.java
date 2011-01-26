@@ -1,14 +1,15 @@
 package com.espertech.esper.regression.view;
 
+import com.espertech.esper.client.*;
 import junit.framework.TestCase;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.client.SupportConfigFactory;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TestViewWhereClause extends TestCase
 {
@@ -40,6 +41,32 @@ public class TestViewWhereClause extends TestCase
 
         sendMarketDataEvent("CSCO");
         assertTrue(listener.getAndClearIsInvoked());
+        
+        // invalid return type for filter during compilation time
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        try {
+            epService.getEPAdministrator().createEPL("Select string From SupportBean.win:time(30 seconds) where intPrimitive group by string");
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals("Error validating expression: The where-clause filter expression must return a boolean value [Select string From SupportBean.win:time(30 seconds) where intPrimitive group by string]", ex.getMessage());
+        }
+
+        // invalid return type for filter at runtime
+        Map<String, Object> dict = new HashMap<String, Object>();
+        dict.put("criteria", Boolean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MapEvent", dict);
+        EPStatement stmt = epService.getEPAdministrator().createEPL("Select * From MapEvent.win:time(30 seconds) where criteria");
+
+        try {
+            epService.getEPRuntime().sendEvent(Collections.singletonMap("criteria", 15), "MapEvent");
+            fail(); // ensure exception handler rethrows
+        }
+        catch (EPException ex) {
+            // fine
+        }
+        stmt.destroy();
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
     }
 
     public void testWhereNumericType()

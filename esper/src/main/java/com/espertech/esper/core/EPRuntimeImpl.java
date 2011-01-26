@@ -418,6 +418,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
         catch (RuntimeException ex)
         {
+            matchesArrayThreadLocal.get().clear();
             throw new EPException(ex);
         }
         finally
@@ -572,6 +573,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         try
         {
             processScheduleHandles(handles);
+        }
+        catch (RuntimeException ex)
+        {
+            handles.clear();
+            throw ex;
         }
         finally
         {
@@ -773,6 +779,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             processMatches(eventBean);
         }
+        catch (RuntimeException ex)
+        {
+            matchesArrayThreadLocal.get().clear();
+            throw ex;
+        }
         finally
         {
             insertIntoLatch.done();
@@ -791,6 +802,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         try
         {
             processMatches(eventBean);
+        }
+        catch (RuntimeException ex)
+        {
+            matchesArrayThreadLocal.get().clear();
+            throw ex;
         }
         finally
         {
@@ -817,6 +833,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         try
         {
             processMatches(eventBean);
+        }
+        catch (RuntimeException ex)
+        {
+            matchesArrayThreadLocal.get().clear();
+            throw ex;
         }
         finally
         {
