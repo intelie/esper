@@ -1,0 +1,76 @@
+package com.espertech.esper.epl.expression;
+
+import com.espertech.esper.support.epl.SupportExprNodeUtil;
+import junit.framework.TestCase;
+import com.espertech.esper.support.epl.SupportExprNode;
+import com.espertech.esper.type.MathArithTypeEnum;
+
+public class TestExprConcatNode extends TestCase
+{
+    private ExprConcatNode concatNode;
+
+    public void setUp()
+    {
+        concatNode = new ExprConcatNode();
+    }
+
+    public void testGetType() throws Exception
+    {
+        assertEquals(String.class, concatNode.getType());
+    }
+
+    public void testToExpressionString() throws Exception
+    {
+        concatNode = new ExprConcatNode();
+        concatNode.addChildNode(new SupportExprNode("a"));
+        concatNode.addChildNode(new SupportExprNode("b"));
+        assertEquals("(\"a\"||\"b\")", concatNode.toExpressionString());
+        concatNode.addChildNode(new SupportExprNode("c"));
+        assertEquals("(\"a\"||\"b\"||\"c\")", concatNode.toExpressionString());
+    }
+
+    public void testValidate()
+    {
+        // Must have 2 or more String subnodes
+        try
+        {
+            concatNode.validate(null, null, null, null, null, null);
+            fail();
+        }
+        catch (ExprValidationException ex)
+        {
+            // Expected
+        }
+
+        // Must have only string-type subnodes
+        concatNode.addChildNode(new SupportExprNode(String.class));
+        concatNode.addChildNode(new SupportExprNode(Integer.class));
+        try
+        {
+            concatNode.validate(null, null, null, null, null, null);
+            fail();
+        }
+        catch (ExprValidationException ex)
+        {
+            // Expected
+        }
+    }
+
+    public void testEvaluate() throws Exception
+    {
+        concatNode.addChildNode(new SupportExprNode("x"));
+        concatNode.addChildNode(new SupportExprNode("y"));
+        SupportExprNodeUtil.validate(concatNode);
+        assertEquals("xy", concatNode.evaluate(null, false, null));
+
+        concatNode.addChildNode(new SupportExprNode("z"));
+        SupportExprNodeUtil.validate(concatNode);
+        assertEquals("xyz", concatNode.evaluate(null, false, null));
+    }
+
+    public void testEqualsNode() throws Exception
+    {
+        assertTrue(concatNode.equalsNode(concatNode));
+        assertFalse(concatNode.equalsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false)));
+    }
+}
