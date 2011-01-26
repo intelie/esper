@@ -132,7 +132,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
         boolean streamFound = false;
         for (String name : streamTypeService.getStreamNames())
         {
-            if (name.equals(streamName))
+            if (name != null && name.equals(streamName))
             {
                 streamFound = true;
             }

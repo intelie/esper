@@ -126,6 +126,7 @@ public class TestStaticFunctions extends TestCase
 	{
 		Configuration configuration = SupportConfigFactory.getConfiguration();
 		configuration.addImport("mull");
+        configuration.addEventType("SupportBean", SupportBean.class);
 		epService = EPServiceProviderManager.getProvider("1", configuration);
 
 		statementText = "select Integer.toBinaryString(7) " + stream;
@@ -139,11 +140,25 @@ public class TestStaticFunctions extends TestCase
 			// expected
 		}
 
+        try {
+            String query = "select * from SupportBean(Math.abs(-1) = 1) ";
+            epService.getEPAdministrator().createEPL(query);
+        }
+        catch (EPStatementException ex) {
+            assertEquals("Could not load class by name 'Math', please check imports [select * from SupportBean(Math.abs(-1) = 1) ]", ex.getMessage());
+        }
+
 		configuration.addImport("java.lang.*");
 		epService = EPServiceProviderManager.getProvider("2", configuration);
 
 		Object[] result = createStatementAndGetProperty(true, "Integer.toBinaryString(7)");
 		assertEquals(Integer.toBinaryString(7), result[0]);
+        
+        String query = "select * from SupportBean(Math.abs(-1) = 1) ";
+        epService.getEPAdministrator().createEPL(query);
+
+        EPServiceProviderManager.getProvider("1").destroy();
+        EPServiceProviderManager.getProvider("2").destroy();
 	}
 
     public void testRuntimeAutoImports()
