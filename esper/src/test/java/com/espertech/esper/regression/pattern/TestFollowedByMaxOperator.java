@@ -6,10 +6,7 @@ import com.espertech.esper.client.hook.ConditionHandlerFactoryContext;
 import com.espertech.esper.client.hook.ConditionPatternSubexpressionMax;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.support.bean.SupportBeanConstants;
-import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportBean_B;
-import com.espertech.esper.support.bean.SupportBean_C;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConditionHandlerFactory;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -26,6 +23,7 @@ public class TestFollowedByMaxOperator extends TestCase implements SupportBeanCo
 
     public void setUp() {
         Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventType("SupportBean", SupportBean.class);
         config.addEventType("SupportBean_A", SupportBean_A.class);
         config.addEventType("SupportBean_B", SupportBean_B.class);
         config.addEventType("SupportBean_C", SupportBean_C.class);
@@ -119,11 +117,11 @@ public class TestFollowedByMaxOperator extends TestCase implements SupportBeanCo
         ConditionHandlerFactoryContext context = SupportConditionHandlerFactory.getFactoryContexts().get(0);
         assertEquals(epService.getURI(), context.getEngineURI());
         SupportConditionHandlerFactory.SupportConditionHandler handler = SupportConditionHandlerFactory.getLastHandler();
+        SupportUpdateListener listener = new SupportUpdateListener();
 
         // not-operator
         String expression = "select a.id as a, b.id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B and not SupportBean_C)]";
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
-        SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
         String fields[] = new String[] {"a", "b"};
 
@@ -163,6 +161,27 @@ public class TestFollowedByMaxOperator extends TestCase implements SupportBeanCo
         epService.getEPRuntime().sendEvent(new SupportBean_A("A6"));
         epService.getEPRuntime().sendEvent(new SupportBean_A("A7"));
         assertContext(epService, stmtTwo, handler.getContexts(), 2);
+
+        // every-operator
+        stmtTwo.destroy();
+        String expressionThree = "select a.id as a, b.id as b from pattern [every a=SupportBean_A -[2]> (every b=SupportBean_B(id=a.id) and not SupportBean_C(id=a.id))]";
+        EPStatement stmtThree = epService.getEPAdministrator().createEPL(expressionThree);
+        stmtThree.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("2"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_B("1"));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"1","1"}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_B("2"));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"2","2"}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_C("1"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("3"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("3"));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"3","3"}});
     }
 
     public void testSingleMaxSimple()
