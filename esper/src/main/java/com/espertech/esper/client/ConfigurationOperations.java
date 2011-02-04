@@ -410,4 +410,25 @@ public interface ConfigurationOperations
      * @throws ConfigurationException thrown when the type information change failed
      */
     public void replaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config) throws ConfigurationException;
+
+    /**
+     * Returns the event type for a given event type name. Returns null if a type by that name does not exist.
+     * <p>
+     * This operation is not available for static configuration and is only available for runtime use.
+     * @param eventTypeName to return event type for
+     * @return event type or null if a type by that name does not exists
+     */
+    public EventType getEventType(String eventTypeName);
+
+    /**
+     * Returns an array of event types tracked or available within the engine in any order. Included are all application-configured or EPL-created schema types
+     * as well as dynamically-allocated stream's event types or types otherwise known to the engine as a dependeny type or supertype to another type.
+     * <p>
+     * Event types that are associated to statement output may not necessarily be returned as such types,
+     * depending on the statement, are considered anonymous.
+     * <p>
+     * This operation is not available for static configuration and is only available for runtime use.
+     * @return event type array
+     */
+    public EventType[] getEventTypes();
 }

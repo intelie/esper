@@ -678,7 +678,7 @@ finally {
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						Add new event types for all event representations, check if an event type exists, update an existing Map event type or remove an event type.
+						Add new event types for all event representations, check if an event type exists, update an existing event type, remove an event type, query a list of types and obtain a type by name.
 					</para>
 				</listitem>
 				<listitem>

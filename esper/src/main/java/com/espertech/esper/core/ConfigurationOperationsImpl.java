@@ -19,6 +19,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableTypeException;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.VariantEventType;
@@ -487,5 +489,13 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
             return Collections.emptySet();
         }
         return Collections.unmodifiableSet(statements);
+    }
+
+    public EventType getEventType(String eventTypeName) {
+        return eventAdapterService.getExistsTypeByName(eventTypeName);
+    }
+
+    public EventType[] getEventTypes() {
+        return eventAdapterService.getAllTypes();
     }
 }

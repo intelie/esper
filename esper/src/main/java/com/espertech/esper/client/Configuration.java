@@ -664,6 +664,14 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         throw new UnsupportedOperationException("Statement metric reporting can only be enabled or disabled at runtime");
     }
 
+    public EventType getEventType(String eventTypeName) {
+        throw new UnsupportedOperationException("Obtaining an event type by name is only available at runtime");
+    }
+
+    public EventType[] getEventTypes() {
+        throw new UnsupportedOperationException("Obtaining event types is only available at runtime");
+    }
+
     public void setMetricsReportingEnabled()
     {
         this.getEngineDefaults().getMetricsReporting().setEnableMetricsReporting(true);

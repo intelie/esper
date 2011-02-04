@@ -71,6 +71,9 @@ public class TestMapEvent extends TestCase
         ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
         EPStatement stmt = epService.getEPAdministrator().createEPL("select myInt from myMapEvent", "stmtOne");
         ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeNameUsedBy("myMapEvent").toArray());
+        
+        assertEquals(1, epService.getEPAdministrator().getConfiguration().getEventTypes().length);
+        assertEquals("myMapEvent", epService.getEPAdministrator().getConfiguration().getEventType("myMapEvent").getName());
 
         try {
             configOps.removeEventType("myMapEvent", false);
@@ -86,6 +89,8 @@ public class TestMapEvent extends TestCase
         assertTrue(configOps.removeEventType("myMapEvent", false));
         assertFalse(configOps.removeEventType("myMapEvent", false));    // try double-remove
         assertFalse(configOps.isEventTypeExists("myMapEvent"));
+        assertEquals(0, epService.getEPAdministrator().getConfiguration().getEventTypes().length);
+        assertEquals(null, epService.getEPAdministrator().getConfiguration().getEventType("myMapEvent"));
         try {
             epService.getEPAdministrator().createEPL("select myInt from myMapEvent");
             fail();
@@ -100,6 +105,8 @@ public class TestMapEvent extends TestCase
         configOps.addEventType("myMapEvent", properties);
         assertTrue(configOps.isEventTypeExists("myMapEvent"));
         assertTrue(configOps.getEventTypeNameUsedBy("myMapEvent").isEmpty());
+        assertEquals(1, epService.getEPAdministrator().getConfiguration().getEventTypes().length);
+        assertEquals("myMapEvent", epService.getEPAdministrator().getConfiguration().getEventType("myMapEvent").getName());
 
         // compile
         epService.getEPAdministrator().createEPL("select p01 from myMapEvent", "stmtTwo");
