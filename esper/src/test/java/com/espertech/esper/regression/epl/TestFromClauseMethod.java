@@ -25,6 +25,26 @@ public class TestFromClauseMethod extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void test2StreamMaxAggregation() {
+        String className = SupportStaticMethodLib.class.getName();
+        String stmtText;
+
+        // ESPER 556
+        stmtText = "select max(col1) as maxcol1 from SupportBean.std:unique(string), method:" + className + ".fetchResult100() ";
+
+        String[] fields = "maxcol1".split(",");
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), fields, new Object[][] {{9}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), fields, new Object[][] {{9}});
+
+        stmt.destroy();
+    }
+
     public void test2JoinHistoricalSubordinateOuterMultiField()
     {
         String className = SupportStaticMethodLib.class.getName();

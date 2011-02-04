@@ -115,14 +115,19 @@ public class ExprNodeUtility
             hasDataWindows = false;
         }
         else if (!isAllIRStream) {
-            hasDataWindows = false;
-            // get all aggregated properties to determine if any is from a windowed stream
-            ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
-            child.accept(visitor);
-            for (ExprIdentNode node : visitor.getExprProperties()) {
-                if (!isIStreamOnly[node.getStreamId()]) {
-                    hasDataWindows = true;
-                    break;
+            if (streamTypeService.getEventTypes().length > 1) {
+                // In a join we assume that a data window is present or implicit via unidirectional
+            }
+            else {
+                hasDataWindows = false;
+                // get all aggregated properties to determine if any is from a windowed stream
+                ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+                child.accept(visitor);
+                for (ExprIdentNode node : visitor.getExprProperties()) {
+                    if (!isIStreamOnly[node.getStreamId()]) {
+                        hasDataWindows = true;
+                        break;
+                    }
                 }
             }
         }
