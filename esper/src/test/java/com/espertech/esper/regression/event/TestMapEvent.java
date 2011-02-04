@@ -1,14 +1,13 @@
 package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.core.EPServiceProviderSPI;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -281,16 +280,6 @@ public class TestMapEvent extends TestCase
         {
             // expected
         }
-    }
-
-    private Map<String, Object> makeMap(Object[][] entries)
-    {
-        Map result = new HashMap<String, Object>();
-        for (int i = 0; i < entries.length; i++)
-        {
-            result.put(entries[i][0], entries[i][1]);
-        }
-        return result;
     }
 
     private static Log log = LogFactory.getLog(TestMapEvent.class);
