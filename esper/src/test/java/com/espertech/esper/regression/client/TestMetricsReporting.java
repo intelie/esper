@@ -8,12 +8,14 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.ArrayHandlingUtil;
 import com.espertech.esper.support.util.SupportSubscriber;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class TestMetricsReporting extends TestCase
 {
@@ -52,12 +54,54 @@ public class TestMetricsReporting extends TestCase
         }
     }
 
-    public void testEngineMetrics()
-    {
-        epService = EPServiceProviderManager.getProvider("MyURI", getConfig(10000, -1));
+    public void testNamedWindowAndViewShare() throws Exception {
+        epService = EPServiceProviderManager.getDefaultProvider(getConfig(-1, 1000, false));
         epService.initialize();
 
-        String[] engineFields = "engineURI,timestamp,inputCount,scheduleDepth".split(",");
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        epService.getEPAdministrator().createEPL("@Name('0') create schema StatementMetric as " + StatementMetric.class.getName());
+        epService.getEPAdministrator().createEPL("@Name('A') create window MyWindow.std:lastevent() as select * from SupportBean");
+        epService.getEPAdministrator().createEPL("@Name('B1') insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("@Name('B2') insert into MyWindow select * from SupportBean");
+        epService.getEPAdministrator().createEPL("@Name('C') select sum(intPrimitive) from MyWindow");
+        epService.getEPAdministrator().createEPL("@Name('D') select sum(w1.intPrimitive) from MyWindow w1, MyWindow w2");
+
+        String appModuleTwo = "@Name('W') create window SupportBeanWindow.win:keepall() as SupportBean;" +
+                "" +
+                "@Name('M') on SupportBean oe\n" +
+                "  merge SupportBeanWindow pw\n" +
+                "  where pw.string = oe.string\n" +
+                "  when not matched \n" +
+                "    then insert select *\n" +
+                "  when matched and oe.intPrimitive=1\n" +
+                "    then delete\n" +
+                "  when matched\n" +
+                "    then update set pw.intPrimitive = oe.intPrimitive";
+        epService.getEPAdministrator().getDeploymentAdmin().parseDeploy(appModuleTwo, null, null, null);
+        
+        EPStatement stmt = epService.getEPAdministrator().createEPL("@Name('X') select * from StatementMetric");
+        stmt.addListener(listener);
+        String fields[] = "statementName,numInput".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
+        EventBean[] received = ArrayHandlingUtil.reorder("statementName", listener.getNewDataListFlattened());
+        ArrayAssertionUtil.assertPropsPerRow(received, fields, new Object[][] {{"A", 2L}, {"B1", 1L}, {"B2", 1L}, {"C", 2L}, {"D", 2L}, {"M", 1L}, {"W", 1L}});
+
+        /* Comment-in for printout.
+        for (int i = 0; i < received.length; i++) {
+            EventBean event = received[i];
+            System.out.println(event.get("statementName") + " " + event.get("wallTime") + " " + event.get("numInput"));
+        }
+        */
+    }
+
+    public void testEngineMetrics()
+    {
+        epService = EPServiceProviderManager.getProvider("MyURI", getConfig(10000, -1, true));
+        epService.initialize();
+
+        String[] engineFields = "engineURI,timestamp,inputCount,inputCountDelta,scheduleDepth".split(",");
         sendTimer(1000);
 
         String text = "select * from " + EngineMetric.class.getName();
@@ -73,7 +117,7 @@ public class TestMetricsReporting extends TestCase
 
         sendTimer(11000);
         EventBean event = listener.assertOneGetNewAndReset();
-        ArrayAssertionUtil.assertProps(event, engineFields, new Object[] {"MyURI", 11000L, 1L, 1L});
+        ArrayAssertionUtil.assertProps(event, engineFields, new Object[] {"MyURI", 11000L, 1L, 1L, 1L});
 
         epService.getEPRuntime().sendEvent(new SupportBean());
         epService.getEPRuntime().sendEvent(new SupportBean());
@@ -81,12 +125,12 @@ public class TestMetricsReporting extends TestCase
         sendTimer(20000);
         sendTimer(21000);
         event = listener.assertOneGetNewAndReset();
-        ArrayAssertionUtil.assertProps(event, engineFields, new Object[] {"MyURI", 21000L, 4L, 0L});
+        ArrayAssertionUtil.assertProps(event, engineFields, new Object[] {"MyURI", 21000L, 4L, 3L, 0L});
     }
 
     public void testStatementGroups()
     {
-        Configuration config = getConfig(-1, 7000);
+        Configuration config = getConfig(-1, 7000, true);
 
         ConfigurationMetricsReporting.StmtGroupMetrics groupOne = new ConfigurationMetricsReporting.StmtGroupMetrics();
         groupOne.setInterval(8000);
@@ -114,7 +158,7 @@ public class TestMetricsReporting extends TestCase
         epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive = 1).win:keepall()", "GroupOne");
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive = 2).win:keepall()", "GroupTwo");
         stmt.setSubscriber(new SupportSubscriber());
-        epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive = 3).win:keepall()", "Default");
+        epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive = 3).win:keepall()", "Default");   // no listener
 
         stmt = epService.getEPAdministrator().createEPL("select * from " + StatementMetric.class.getName(), "StmtMetrics");
         stmt.addListener(listener);
@@ -124,8 +168,8 @@ public class TestMetricsReporting extends TestCase
         assertFalse(listener.isInvoked());
 
         sendTimer(8000);
-        String[] fields = "statementName,numOutputIStream".split(",");
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"GroupOne", 0L});
+        String[] fields = "statementName,numOutputIStream,numInput".split(",");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"GroupOne", 0L, 0L});
 
         sendTimer(12000);
         sendTimer(14000);
@@ -133,7 +177,7 @@ public class TestMetricsReporting extends TestCase
         assertFalse(listener.isInvoked());
 
         sendTimer(16000);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"GroupOne", 0L});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"GroupOne", 0L, 0L});
 
         // should report as groupTwo
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 2));
@@ -141,7 +185,7 @@ public class TestMetricsReporting extends TestCase
         assertFalse(listener.isInvoked());
 
         sendTimer(18000);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"GroupTwo", 1L});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"GroupTwo", 1L, 1L});
 
         // should report as groupTwo
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
@@ -149,7 +193,7 @@ public class TestMetricsReporting extends TestCase
         assertFalse(listener.isInvoked());
 
         sendTimer(21000);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"Default", 0L});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"Default", 0L, 1L});
 
         // turn off group 1
         epService.getEPAdministrator().getConfiguration().setMetricsReportingInterval("GroupOneStatements", -1);
@@ -159,12 +203,12 @@ public class TestMetricsReporting extends TestCase
         // turn on group 1
         epService.getEPAdministrator().getConfiguration().setMetricsReportingInterval("GroupOneStatements", 1000);
         sendTimer(25000);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"GroupOne", 0L});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"GroupOne", 0L, 0L});
     }
 
     public void testStatementMetrics()
     {
-        Configuration config = getConfig(-1, -1);
+        Configuration config = getConfig(-1, -1, true);
 
         // report on all statements every 10 seconds
         ConfigurationMetricsReporting.StmtGroupMetrics configOne = new ConfigurationMetricsReporting.StmtGroupMetrics();
@@ -228,7 +272,7 @@ public class TestMetricsReporting extends TestCase
     public void testEnabledDisableRuntime()
     {
         EPStatement[] statements = new EPStatement[5];
-        Configuration config = getConfig(10000, 10000);
+        Configuration config = getConfig(10000, 10000, true);
         epService = EPServiceProviderManager.getProvider("MyURI", config);
         epService.initialize();
 
@@ -274,7 +318,7 @@ public class TestMetricsReporting extends TestCase
     {
         String[] fields = new String[] {"statementName"};
         EPStatement[] statements = new EPStatement[5];
-        Configuration config = getConfig(-1, 10000);
+        Configuration config = getConfig(-1, 10000, true);
 
         ConfigurationMetricsReporting.StmtGroupMetrics configOne = new ConfigurationMetricsReporting.StmtGroupMetrics();
         configOne.setInterval(-1);
@@ -374,7 +418,7 @@ public class TestMetricsReporting extends TestCase
      */
     public void testManual()
     {
-        Configuration config = getConfig(1000, 1000);
+        Configuration config = getConfig(1000, 1000, true);
         config.getEngineDefaults().getMetricsReporting().setThreading(true);
 
         /*
@@ -400,9 +444,10 @@ public class TestMetricsReporting extends TestCase
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(currentTime));
     }
 
-    private Configuration getConfig(long engineMetricInterval, long stmtMetricInterval)
+    private Configuration getConfig(long engineMetricInterval, long stmtMetricInterval, boolean shareViews)
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getViewResources().setShareViews(shareViews);
         configuration.getEngineDefaults().getMetricsReporting().setEnableMetricsReporting(true);
         configuration.getEngineDefaults().getMetricsReporting().setThreading(false);
         configuration.getEngineDefaults().getMetricsReporting().setEngineInterval(engineMetricInterval);

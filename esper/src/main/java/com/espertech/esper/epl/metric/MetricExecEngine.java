@@ -19,6 +19,7 @@ public class MetricExecEngine implements MetricExec
     private final String engineURI;
     private final MetricScheduleService metricScheduleService;
     private final long interval;
+    private EngineMetric lastMetric;
 
     /**
      * Ctor.
@@ -39,7 +40,9 @@ public class MetricExecEngine implements MetricExec
     {
         long inputCount = context.getServices().getFilterService().getNumEventsEvaluated();
         long schedDepth = context.getServices().getSchedulingService().getScheduleHandleCount();
-        EngineMetric metric = new EngineMetric(engineURI, metricScheduleService.getCurrentTime(), inputCount, schedDepth);
+        long deltaInputCount = lastMetric == null ? inputCount : inputCount - lastMetric.getInputCount();
+        EngineMetric metric = new EngineMetric(engineURI, metricScheduleService.getCurrentTime(), inputCount, deltaInputCount, schedDepth);
+        lastMetric = metric;
         metricEventRouter.route(metric);
         metricScheduleService.add(interval, this);        
     }

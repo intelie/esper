@@ -608,7 +608,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
                 long deltaCPU = cpuTimeAfter - cpuTimeBefore;
                 long deltaWall = wallTimeAfter - wallTimeBefore;
-                services.getMetricsReportingService().accountTime(handle.getEpStatementHandle().getMetricsHandle(), deltaCPU, deltaWall);
+                services.getMetricsReportingService().accountTime(handle.getEpStatementHandle().getMetricsHandle(), deltaCPU, deltaWall, 1);
             }
             else
             {
@@ -680,7 +680,8 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
                 long deltaCPU = cpuTimeAfter - cpuTimeBefore;
                 long deltaWall = wallTimeAfter - wallTimeBefore;
-                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall);
+                int numInput = (callbackObject instanceof Collection) ? ((Collection) callbackObject).size() : 1;
+                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall, numInput);
             }
             else
             {
@@ -880,7 +881,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
                 long deltaCPU = cpuTimeAfter - cpuTimeBefore;
                 long deltaWall = wallTimeAfter - wallTimeBefore;
-                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall);
+                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall, 1);
             }
             else
             {
@@ -916,7 +917,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
                 long deltaCPU = cpuTimeAfter - cpuTimeBefore;
                 long deltaWall = wallTimeAfter - wallTimeBefore;
-                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall);
+                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall, callbackList.size());
             }
             else
             {

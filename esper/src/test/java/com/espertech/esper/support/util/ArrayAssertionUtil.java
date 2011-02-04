@@ -589,7 +589,7 @@ public class ArrayAssertionUtil
             assertEqualsExactOrder(eventPropArray, valueArray);
             return;
         }
-        Assert.assertEquals("Error asserting property named '" + name + "'",expected,received);
+        Assert.assertEquals(message,expected,received);
     }
 
     private static Object[] toObjectArray(Object array)

@@ -40,7 +40,7 @@ public interface MetricReportingService
      * @param deltaCPU cpu time nsec
      * @param deltaWall wall time nsec
      */
-    public void accountTime(StatementMetricHandle metricsHandle, long deltaCPU, long deltaWall);
+    public void accountTime(StatementMetricHandle metricsHandle, long deltaCPU, long deltaWall, int numInput);
 
     /**
      * Account for statement output row counting.

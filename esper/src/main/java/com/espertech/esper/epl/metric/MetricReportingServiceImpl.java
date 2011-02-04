@@ -179,9 +179,9 @@ public class MetricReportingServiceImpl implements MetricReportingServiceSPI, Me
         executionContext.getRuntime().sendEvent(metricEvent);
     }
 
-    public void accountTime(StatementMetricHandle metricsHandle, long deltaCPU, long deltaWall)
+    public void accountTime(StatementMetricHandle metricsHandle, long deltaCPU, long deltaWall, int numInputEvents)
     {
-        stmtMetricRepository.accountTimes(metricsHandle, deltaCPU, deltaWall);
+        stmtMetricRepository.accountTimes(metricsHandle, deltaCPU, deltaWall, numInputEvents);
     }
 
     public void accountOutput(StatementMetricHandle handle, int numIStream, int numRStream)

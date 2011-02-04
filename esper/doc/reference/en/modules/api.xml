@@ -2393,6 +2393,10 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 							<entry>Cumulative number of input events since engine initialization time. Input events are defined as events send in via application threads as well as <literal>insert into</literal> events.</entry>
 						</row>
 						<row>
+							<entry>inputCountDelta</entry>
+							<entry>Number of input events since last reporting period.</entry>
+						</row>
+						<row>
 							<entry>scheduleDepth</entry>
 							<entry>Number of outstanding schedules.</entry>
 						</row>
@@ -2439,6 +2443,10 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 						<row>
 							<entry>wallTime</entry>
 							<entry>Statement processing wall time in nanoseconds (based on <literal>System.nanoTime</literal>).</entry>
+						</row>
+						<row>
+							<entry>numInput</entry>
+							<entry>Number of input events to the statement.</entry>
 						</row>
 						<row>
 							<entry>numOutputIStream</entry>

@@ -12,11 +12,14 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.OneEventCollection;
+import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.metric.MetricReportingPath;
+import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.view.StatementStopService;
@@ -39,6 +42,8 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
     private final EventTypeSPI eventTypeSPI;
     private List<NamedWindowOnMergeAction> updateDeleteActions;
     private List<NamedWindowOnMergeAction> insertActions;
+    private EPStatementHandle createWindowStatementHandle;
+    private MetricReportingService metricReportingService;
 
     /**
      * Ctor.
@@ -56,11 +61,15 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
                                  StatementResultService statementResultService,
                                  StatementContext statementContext,
                                  OnTriggerMergeDesc onTriggerDesc,
-                                 EventType triggeringEventType)
+                                 EventType triggeringEventType,
+                                 EPStatementHandle createWindowStatementHandle,
+                                 MetricReportingService metricReportingService)
             throws ExprValidationException
     {
         super(statementStopService, lookupStrategy, removeStreamView, statementContext);
         this.statementResultService = statementResultService;
+        this.createWindowStatementHandle = createWindowStatementHandle;
+        this.metricReportingService = metricReportingService;
         eventTypeSPI = (EventTypeSPI) removeStreamView.getEventType();
 
         setup(onTriggerDesc, triggeringEventType, statementContext);
@@ -106,6 +115,11 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
 
         if (!newData.isEmpty() || (oldData != null && !oldData.isEmpty()))
         {
+            if ((MetricReportingPath.isMetricsEnabled) && (createWindowStatementHandle.getMetricsHandle().isEnabled()) && !newData.isEmpty())
+            {
+                metricReportingService.accountTime(createWindowStatementHandle.getMetricsHandle(), 0, 0, newData.toArray().length);
+            }
+
             // Events to delete are indicated via old data
             this.rootView.update(newData.isEmpty() ? null : newData.toArray(), (oldData == null || oldData.isEmpty()) ? null : oldData.toArray());
 

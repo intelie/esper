@@ -19,6 +19,7 @@ public class StatementMetric extends MetricEvent
     private String statementName;
     private AtomicLong cpuTime;
     private AtomicLong wallTime;
+    private AtomicLong numInput;
     private AtomicLong numOutputRStream;
     private AtomicLong numOutputIStream;
 
@@ -35,6 +36,7 @@ public class StatementMetric extends MetricEvent
         this.wallTime = new AtomicLong();
         this.numOutputIStream = new AtomicLong();
         this.numOutputRStream = new AtomicLong();
+        this.numInput = new AtomicLong();
     }
 
     /**
@@ -134,5 +136,18 @@ public class StatementMetric extends MetricEvent
     public void addNumOutputRStream(int numRStream)
     {
         numOutputRStream.addAndGet(numRStream);
+    }
+
+    public long getNumInput() {
+        return numInput.get();
+    }
+
+    /**
+     * Adds number of input events.
+     * @param numInputAdd to add
+     */
+    public void addNumInput(long numInputAdd)
+    {
+        numInput.addAndGet(numInputAdd);
     }
 }

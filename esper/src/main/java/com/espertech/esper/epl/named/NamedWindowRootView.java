@@ -20,6 +20,7 @@ import com.espertech.esper.epl.join.plan.QueryGraph;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.epl.lookup.*;
+import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.spec.OnTriggerDesc;
 import com.espertech.esper.epl.spec.OnTriggerMergeDesc;
 import com.espertech.esper.epl.spec.OnTriggerType;
@@ -61,12 +62,14 @@ public class NamedWindowRootView extends ViewSupport
     private final boolean queryPlanLogging;
     private boolean isChildBatching;
     private StatementLock statementResourceLock;
+    private MetricReportingService metricReportingService;
+    private EPStatementHandle createWindowStatementHandle;
 
     /**
      * Ctor.
      * @param revisionProcessor handle update events if supplied, or null if not handling revisions
      */
-    public NamedWindowRootView(ValueAddEventProcessor revisionProcessor, StatementLock statementResourceLock, boolean queryPlanLogging)
+    public NamedWindowRootView(ValueAddEventProcessor revisionProcessor, StatementLock statementResourceLock, boolean queryPlanLogging, EPStatementHandle createWindowStatementHandle, MetricReportingService metricReportingService)
     {
         this.indexRepository = new NamedWindowIndexRepository();
         this.tablePerMultiLookup = new HashMap<LookupStrategy, PropertyIndexedEventTable>();
@@ -75,6 +78,8 @@ public class NamedWindowRootView extends ViewSupport
         this.revisionProcessor = revisionProcessor;
         this.statementResourceLock = statementResourceLock;
         this.queryPlanLogging = queryPlanLogging;
+        this.metricReportingService = metricReportingService;
+        this.createWindowStatementHandle = createWindowStatementHandle;
     }
 
     /**
@@ -224,7 +229,7 @@ public class NamedWindowRootView extends ViewSupport
         else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_MERGE)
         {
             OnTriggerMergeDesc desc = (OnTriggerMergeDesc) onTriggerDesc;
-            return new NamedWindowOnMergeView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc, filterEventType);
+            return new NamedWindowOnMergeView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc, filterEventType, createWindowStatementHandle, metricReportingService);
         }
         else
         {

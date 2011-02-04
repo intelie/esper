@@ -116,7 +116,7 @@ public class StatementMetricRepository
      * @param cpu time
      * @param wall time
      */
-    public void accountTimes(StatementMetricHandle handle, long cpu, long wall)
+    public void accountTimes(StatementMetricHandle handle, long cpu, long wall, int numInput)
     {
         StatementMetricArray array = groupMetrics[handle.getGroupNum()];
         array.getRwLock().acquireReadLock();
@@ -125,6 +125,7 @@ public class StatementMetricRepository
             StatementMetric metric = array.getAddMetric(handle.getIndex());
             metric.addCPUTime(cpu);
             metric.addWallTime(wall);
+            metric.addNumInput(numInput);
         }
         finally
         {
