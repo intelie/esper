@@ -81,6 +81,12 @@ public class ExceptionConvertor
             }
             t = parser.getTokenStream().get(parser.getTokenStream().size() - 1);
         }
+
+        Token tEnd = null;
+        if (parser.getTokenStream().size() > 0) {
+            tEnd = parser.getTokenStream().get(parser.getTokenStream().size() - 1);
+        }
+
         String positionInfo = getPositionInfo(t);
         String token = "'" + t.getText() + "'";
 
@@ -119,6 +125,9 @@ public class ExceptionConvertor
                      (keywords.contains("'" + tBefore.getText().toLowerCase() + "'")))
             {
                 token += " ('" + tBefore.getText() + "' is a reserved keyword)";
+            }
+            else if (tEnd != null && keywords.contains("'" + tEnd.getText().toLowerCase() + "'")) {
+                token += " ('" + tEnd.getText() + "' is a reserved keyword)";
             }
         }
 
