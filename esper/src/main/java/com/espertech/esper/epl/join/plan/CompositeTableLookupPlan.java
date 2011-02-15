@@ -24,7 +24,7 @@ import java.util.Map;
 public class CompositeTableLookupPlan extends TableLookupPlan
 {
     private final String[] directKeys;
-    private final List<RangeKeyDesc> rangeKeyPairs;
+    private final List<QueryGraphValueRange> rangeKeyPairs;
 
     /**
      * Ctor.
@@ -32,7 +32,7 @@ public class CompositeTableLookupPlan extends TableLookupPlan
      * @param indexedStream - stream to index table lookup
      * @param indexNum - index number for the table containing the full unindexed contents
      */
-    public CompositeTableLookupPlan(int lookupStream, int indexedStream, String indexNum, String[] directKeys, List<RangeKeyDesc> rangeKeyPairs)
+    public CompositeTableLookupPlan(int lookupStream, int indexedStream, String indexNum, String[] directKeys, List<QueryGraphValueRange> rangeKeyPairs)
     {
         super(lookupStream, indexedStream, indexNum);
         this.directKeys = directKeys;

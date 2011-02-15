@@ -20,7 +20,7 @@ import java.util.Collection;
 /**
  * Index lookup strategy for subqueries.
  */
-public class SortedTableLookupStrategy implements TableLookupStrategy
+public class SubqSortedTableLookupStrategy implements SubqTableLookupStrategy
 {
     private final SubqueryRangeKeyDesc rangeKey;
 
@@ -36,7 +36,7 @@ public class SortedTableLookupStrategy implements TableLookupStrategy
      * @param eventTypes is the event types per stream
      * @param index is the table carrying the data to lookup into
      */
-    public SortedTableLookupStrategy(EventType[] eventTypes, SubqueryRangeKeyDesc rangeKey, PropertySortedEventTable index)
+    public SubqSortedTableLookupStrategy(EventType[] eventTypes, SubqueryRangeKeyDesc rangeKey, PropertySortedEventTable index)
     {
         this.rangeKey = rangeKey;
         this.index = index;

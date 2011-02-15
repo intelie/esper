@@ -16,7 +16,7 @@ import com.espertech.esper.util.JavaClassHelper;
 /**
  * Index lookup strategy that coerces the key values before performing a lookup.
  */
-public class IndexedTableLookupStrategyCoercing extends IndexedTableLookupStrategy
+public class SubqIndexedTableLookupStrategyCoercing extends SubqIndexedTableLookupStrategy
 {
     private Class[] coercionTypes;
 
@@ -28,7 +28,7 @@ public class IndexedTableLookupStrategyCoercing extends IndexedTableLookupStrate
      * @param index is the table to look into
      * @param coercionTypes is the types to coerce to before lookup
      */
-    public IndexedTableLookupStrategyCoercing(EventType[] eventTypes, int[] streamNumbers, String[] properties, PropertyIndexedEventTable index, Class[] coercionTypes)
+    public SubqIndexedTableLookupStrategyCoercing(EventType[] eventTypes, int[] streamNumbers, String[] properties, PropertyIndexedEventTable index, Class[] coercionTypes)
     {
         super(eventTypes, streamNumbers, properties, index);
         this.coercionTypes = coercionTypes;

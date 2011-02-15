@@ -1,15 +1,15 @@
 package com.espertech.esper.epl.join.table;
 
-import com.espertech.esper.epl.join.plan.RangeKeyDesc;
+import com.espertech.esper.epl.join.plan.QueryGraphValueRange;
 
 public class SubqueryRangeKeyDesc {
     private int keyStreamNum;
     private int startStreamNum;
     private int endStreamNum;
-    private RangeKeyDesc rangeKey;
+    private QueryGraphValueRange rangeInfo;
 
-    public static SubqueryRangeKeyDesc createZeroStreamNum(RangeKeyDesc rangeKeyPair) {
-        if (rangeKeyPair.getOp().isRange()) {
+    public static SubqueryRangeKeyDesc createZeroStreamNum(QueryGraphValueRange rangeKeyPair) {
+        if (rangeKeyPair.getType().isRange()) {
             return new SubqueryRangeKeyDesc(0, 0, rangeKeyPair);
         }
         else {
@@ -17,21 +17,21 @@ public class SubqueryRangeKeyDesc {
         }
     }
 
-    public SubqueryRangeKeyDesc(int keyStreamNum, RangeKeyDesc rangeKey) {
-        if (rangeKey.getOp().isRange()) {
+    public SubqueryRangeKeyDesc(int keyStreamNum, QueryGraphValueRange rangeInfo) {
+        if (rangeInfo.getType().isRange()) {
             throw new IllegalArgumentException("Ctor not applicable to ranges");
         }
         this.keyStreamNum = keyStreamNum;
-        this.rangeKey = rangeKey;
+        this.rangeInfo = rangeInfo;
     }
 
-    public SubqueryRangeKeyDesc(int startStreamNum, int endStreamNum, RangeKeyDesc rangeKey) {
-        if (!rangeKey.getOp().isRange()) {
+    public SubqueryRangeKeyDesc(int startStreamNum, int endStreamNum, QueryGraphValueRange rangeInfo) {
+        if (!rangeInfo.getType().isRange()) {
             throw new IllegalArgumentException("Ctor only applicable to ranges");
         }
         this.startStreamNum = startStreamNum;
         this.endStreamNum = endStreamNum;
-        this.rangeKey = rangeKey;
+        this.rangeInfo = rangeInfo;
     }
 
     public int getKeyStreamNum() {
@@ -46,8 +46,8 @@ public class SubqueryRangeKeyDesc {
         return endStreamNum;
     }
 
-    public RangeKeyDesc getRangeKey() {
-        return rangeKey;
+    public QueryGraphValueRange getRangeInfo() {
+        return rangeInfo;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class SubqueryRangeKeyDesc {
                 "keyStreamNum=" + keyStreamNum +
                 ", startStreamNum=" + startStreamNum +
                 ", endStreamNum=" + endStreamNum +
-                ", rangeKey=" + rangeKey +
+                ", rangeKey=" + rangeInfo +
                 '}';
     }
 }

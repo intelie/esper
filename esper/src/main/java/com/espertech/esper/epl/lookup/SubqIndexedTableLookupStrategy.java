@@ -19,7 +19,7 @@ import java.util.Collection;
 /**
  * Index lookup strategy for subqueries.
  */
-public class IndexedTableLookupStrategy implements TableLookupStrategy
+public class SubqIndexedTableLookupStrategy implements SubqTableLookupStrategy
 {
     private final String[] properties;
 
@@ -45,7 +45,7 @@ public class IndexedTableLookupStrategy implements TableLookupStrategy
      * @param properties is the key properties
      * @param index is the table carrying the data to lookup into
      */
-    public IndexedTableLookupStrategy(EventType[] eventTypes, int[] streamNumbers, String[] properties, PropertyIndexedEventTable index)
+    public SubqIndexedTableLookupStrategy(EventType[] eventTypes, int[] streamNumbers, String[] properties, PropertyIndexedEventTable index)
     {
         this.streamNumbers = streamNumbers;
         this.properties = properties;

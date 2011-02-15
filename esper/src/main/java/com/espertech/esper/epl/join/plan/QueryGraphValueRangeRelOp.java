@@ -21,8 +21,4 @@ public class QueryGraphValueRangeRelOp extends QueryGraphValueRange {
     public boolean isBetweenPart() {
         return isBetweenPart;
     }
-
-    public RangeKeyDesc getRangeKey() {
-        return new RangeKeyDesc(getType(), propertyKey);
-    }
 }

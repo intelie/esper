@@ -11,13 +11,15 @@ package com.espertech.esper.epl.join.exec;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.join.plan.RangeKeyDesc;
-import com.espertech.esper.epl.join.rep.Cursor;
-import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
 import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
 import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
+import com.espertech.esper.epl.join.plan.QueryGraphValueRange;
+import com.espertech.esper.epl.join.rep.Cursor;
+import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Lookup on an nested map structure that represents an index for use with at least one range and possibly multiple ranges
@@ -30,14 +32,14 @@ public class CompositeTableLookupStrategy implements JoinExecTableLookupStrategy
     private final EventType eventType;
     private final PropertyCompositeEventTable index;
     private final InnerIndexQuery chain;
-    private final List<RangeKeyDesc> rangeKeyPairs;
+    private final List<QueryGraphValueRange> rangeKeyPairs;
 
     /**
      * Ctor.
      * @param eventType - event type to expect for lookup
      * @param index - index to look up in
      */
-    public CompositeTableLookupStrategy(EventType eventType, String[] optionalKeyProps, List<RangeKeyDesc> rangeKeyPairs, PropertyCompositeEventTable index)
+    public CompositeTableLookupStrategy(EventType eventType, String[] optionalKeyProps, List<QueryGraphValueRange> rangeKeyPairs, PropertyCompositeEventTable index)
     {
         this.eventType = eventType;
         this.index = index;

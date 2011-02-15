@@ -13,7 +13,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.exec.sorted.SortedAccessStrategy;
 import com.espertech.esper.epl.join.exec.sorted.SortedAccessStrategyFactory;
-import com.espertech.esper.epl.join.plan.RangeKeyDesc;
+import com.espertech.esper.epl.join.plan.QueryGraphValueRange;
 import com.espertech.esper.epl.join.rep.Cursor;
 import com.espertech.esper.epl.join.table.PropertySortedEventTable;
 
@@ -27,7 +27,7 @@ import java.util.Set;
 public class SortedTableLookupStrategy implements JoinExecTableLookupStrategy
 {
     private final EventType eventType;
-    private final RangeKeyDesc rangeKeyPair;
+    private final QueryGraphValueRange rangeKeyPair;
     private final PropertySortedEventTable index;
     private final SortedAccessStrategy strategy;
 
@@ -36,7 +36,7 @@ public class SortedTableLookupStrategy implements JoinExecTableLookupStrategy
      * @param eventType - event type to expect for lookup
      * @param index - index to look up in
      */
-    public SortedTableLookupStrategy(EventType eventType, RangeKeyDesc rangeKeyPair, PropertySortedEventTable index)
+    public SortedTableLookupStrategy(EventType eventType, QueryGraphValueRange rangeKeyPair, PropertySortedEventTable index)
     {
         this.eventType = eventType;
         this.rangeKeyPair = rangeKeyPair;

@@ -11,7 +11,7 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.lookup.TableLookupStrategy;
+import com.espertech.esper.epl.lookup.SubqTableLookupStrategy;
 import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import org.apache.commons.logging.Log;
@@ -49,7 +49,7 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
     private transient StreamTypeService filterSubqueryStreamTypes;
     private StatementSpecRaw statementSpecRaw;
     private transient StatementSpecCompiled statementSpecCompiled;
-    private transient TableLookupStrategy strategy;
+    private transient SubqTableLookupStrategy strategy;
     private transient SubselectAggregationPreprocessor subselectAggregationPreprocessor;
 
     private static Set<EventBean> singleNullRowEventSet = new HashSet<EventBean>();
@@ -176,7 +176,7 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
      * Sets the strategy for boiling down the table of lookup events into a subset against which to run the filter.
      * @param strategy is the looking strategy (full table scan or indexed)
      */
-    public void setStrategy(TableLookupStrategy strategy)
+    public void setStrategy(SubqTableLookupStrategy strategy)
     {
         this.strategy = strategy;
     }

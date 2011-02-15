@@ -17,7 +17,10 @@ import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.SortedSet;
 
 /**
  *
@@ -278,7 +281,7 @@ public class NStreamQueryPlanBuilder
         // sorted index lookup
         if ((indexedStreamIndexProps == null || indexedStreamIndexProps.length == 0) && (rangeStreamIndexProps != null && rangeStreamIndexProps.length == 1)) {
             QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream, false);
-            RangeKeyDesc range = value.getRangeEntries().get(0).getRangeKey();
+            QueryGraphValueRange range = value.getRangeEntries().get(0);
             return new SortedTableLookupPlan(currentLookupStream, indexedStream, indexNum, range);
         }
         // composite range and index lookup
@@ -286,11 +289,7 @@ public class NStreamQueryPlanBuilder
         {
             String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
             QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream, false);
-            List<RangeKeyDesc> rangeKeys = new ArrayList<RangeKeyDesc>();
-            for (QueryGraphValueRange entry : value.getRangeEntries()) {
-                rangeKeys.add(entry.getRangeKey());
-            }
-            return new CompositeTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields, rangeKeys);
+            return new CompositeTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields, value.getRangeEntries());
         }
     }
 

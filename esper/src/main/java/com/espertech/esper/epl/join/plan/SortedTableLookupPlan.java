@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class SortedTableLookupPlan extends TableLookupPlan
 {
-    private RangeKeyDesc rangeKeyPair;
+    private QueryGraphValueRange rangeKeyPair;
 
     /**
      * Ctor.
@@ -29,7 +29,7 @@ public class SortedTableLookupPlan extends TableLookupPlan
      * @param indexedStream - stream to index table lookup
      * @param indexNum - index number for the table containing the full unindexed contents
      */
-    public SortedTableLookupPlan(int lookupStream, int indexedStream, String indexNum, RangeKeyDesc rangeKeyPair)
+    public SortedTableLookupPlan(int lookupStream, int indexedStream, String indexNum, QueryGraphValueRange rangeKeyPair)
     {
         super(lookupStream, indexedStream, indexNum);
         this.rangeKeyPair = rangeKeyPair;

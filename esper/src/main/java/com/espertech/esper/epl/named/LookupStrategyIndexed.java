@@ -11,7 +11,7 @@ package com.espertech.esper.epl.named;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.lookup.TableLookupStrategy;
+import com.espertech.esper.epl.lookup.SubqTableLookupStrategy;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,14 +25,14 @@ public class LookupStrategyIndexed implements LookupStrategy
 {
     private final ExprEvaluator joinExpr;
     private final EventBean[] eventsPerStream;
-    private final TableLookupStrategy tableLookupStrategy;
+    private final SubqTableLookupStrategy tableLookupStrategy;
 
     /**
      * Ctor.
      * @param joinExpr the validated where clause of the on-delete
      * @param tableLookupStrategy the strategy for looking up in an index the matching events using correlation
      */
-    public LookupStrategyIndexed(ExprEvaluator joinExpr, TableLookupStrategy tableLookupStrategy)
+    public LookupStrategyIndexed(ExprEvaluator joinExpr, SubqTableLookupStrategy tableLookupStrategy)
     {
         this.joinExpr = joinExpr;
         this.eventsPerStream = new EventBean[2];

@@ -11,19 +11,18 @@ package com.espertech.esper.epl.lookup;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.core.StatementLock;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Index lookup strategy for subqueries.
  */
-public class FullTableScanLookupStrategyLocking implements TableLookupStrategy
+public class SubqIndexedTableLookupStrategyLocking implements SubqTableLookupStrategy
 {
-    private final Iterable<EventBean> contents;
+    private final SubqTableLookupStrategy inner;
     private final StatementLock statementLock;
 
-    public FullTableScanLookupStrategyLocking(Iterable<EventBean> contents, StatementLock statementLock) {
-        this.contents = contents;
+    public SubqIndexedTableLookupStrategyLocking(SubqTableLookupStrategy inner, StatementLock statementLock) {
+        this.inner = inner;
         this.statementLock = statementLock;
     }
 
@@ -31,11 +30,13 @@ public class FullTableScanLookupStrategyLocking implements TableLookupStrategy
     public Collection<EventBean> lookup(EventBean[] events) {
         statementLock.acquireReadLock();
         try {
-            ArrayDeque<EventBean> result = new ArrayDeque<EventBean>();
-            for (EventBean eventBean : contents) {
-                result.add(eventBean);
+            Collection<EventBean> result = inner.lookup(events);
+            if (result != null) {
+                return new ArrayDeque<EventBean>(result);
             }
-            return result;
+            else {
+                return Collections.emptyList();
+            }
         }
         finally {
             statementLock.releaseReadLock();

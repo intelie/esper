@@ -8,8 +8,6 @@ public abstract class QueryGraphValueRange {
     private final QueryGraphRangeEnum type;
     private final String propertyValue;
 
-    public abstract RangeKeyDesc getRangeKey();
-
     protected QueryGraphValueRange(QueryGraphRangeEnum type, String propertyValue) {
         this.type = type;
         this.propertyValue = propertyValue;
@@ -31,20 +29,5 @@ public abstract class QueryGraphValueRange {
             count++;
         }
         return props;
-    }
-
-    public static List<RangeKeyDesc> getPropertyNamesRangeKey(List<QueryGraphValueRange> ranges) {
-        List<RangeKeyDesc> result = new ArrayList<RangeKeyDesc>();
-        for (QueryGraphValueRange item : ranges) {
-            if (item.getType().isRange()) {
-                QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) item;
-                result.add(new RangeKeyDesc(item.getType(), in.getPropertyStart(), in.getPropertyEnd(), in.isAllowRangeReversal()));
-            }
-            else {
-                QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) item;
-                result.add(new RangeKeyDesc(item.getType(), relOp.getPropertyKey()));
-            }
-        }
-        return result;
     }
 }

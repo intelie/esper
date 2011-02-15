@@ -50,7 +50,7 @@ public class PropertyCompositeEventTable implements EventTable
         this.optKeyCoercedTypes = optKeyCoercedTypes;
         this.optRangeCoercedTypes = optRangeCoercedTypes;
 
-        if (optionalKeyedProps != null) {
+        if (optionalKeyedProps != null && optionalKeyedProps.length > 0) {
             index = new HashMap<Object, Object>();
         }
         else {
@@ -59,7 +59,7 @@ public class PropertyCompositeEventTable implements EventTable
 
         // construct chain
         List<InnerIndexEnterRemove> enterRemoves = new ArrayList<InnerIndexEnterRemove>();
-        if (optionalKeyedProps != null) {
+        if (optionalKeyedProps != null && optionalKeyedProps.length > 0) {
             enterRemoves.add(new InnerIndexEnterRemoveKeyed(eventType, optionalKeyedProps, optKeyCoercedTypes));
         }
         int count = 0;

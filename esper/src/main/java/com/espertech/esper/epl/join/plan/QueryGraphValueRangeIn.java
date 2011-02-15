@@ -27,8 +27,4 @@ public class QueryGraphValueRangeIn extends QueryGraphValueRange {
     public String getPropertyEnd() {
         return propertyEnd;
     }
-
-    public RangeKeyDesc getRangeKey() {
-        return new RangeKeyDesc(getType(), propertyStart, propertyEnd, allowRangeReversal);
-    }
 }

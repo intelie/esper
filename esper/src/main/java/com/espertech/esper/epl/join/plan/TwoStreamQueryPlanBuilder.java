@@ -69,21 +69,21 @@ public class TwoStreamQueryPlanBuilder
             else {
                 // stream zero-to-one
                 if (keyProps.length == 0 && valueZeroOne.getRangeEntries().size() == 1) {
-                    List<RangeKeyDesc> zeroRangeKeyPairs = QueryGraphValueRange.getPropertyNamesRangeKey(valueZeroOne.getRangeEntries());
+                    List<QueryGraphValueRange> zeroRangeKeyPairs = valueZeroOne.getRangeEntries();
                     lookupPlans[0] = new SortedTableLookupPlan(0, 1, indexOneName, zeroRangeKeyPairs.get(0));
                 }
                 else {
-                    List<RangeKeyDesc> zeroRangeKeyPairs = QueryGraphValueRange.getPropertyNamesRangeKey(valueZeroOne.getRangeEntries());
+                    List<QueryGraphValueRange> zeroRangeKeyPairs = valueZeroOne.getRangeEntries();
                     lookupPlans[0] = new CompositeTableLookupPlan(0, 1, indexOneName, queryGraph.getKeyProperties(0, 1), zeroRangeKeyPairs);
                 }
 
                 // stream one-to-zero
                 if (keyProps.length == 0 && valueOneZero.getRangeEntries().size() == 1) {
-                    List<RangeKeyDesc> oneRangeKeyPairs = QueryGraphValueRange.getPropertyNamesRangeKey(valueOneZero.getRangeEntries());
+                    List<QueryGraphValueRange> oneRangeKeyPairs = valueOneZero.getRangeEntries();
                     lookupPlans[1] = new SortedTableLookupPlan(1, 0, indexZeroName, oneRangeKeyPairs.get(0));
                 }
                 else {
-                    List<RangeKeyDesc> oneRangeKeyPairs = QueryGraphValueRange.getPropertyNamesRangeKey(valueOneZero.getRangeEntries());
+                    List<QueryGraphValueRange> oneRangeKeyPairs = valueOneZero.getRangeEntries();
                     lookupPlans[1] = new CompositeTableLookupPlan(1, 0, indexZeroName, queryGraph.getKeyProperties(1, 0), oneRangeKeyPairs);
                 }
             }                

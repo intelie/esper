@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Lookup on an unindexed table returning the full table as matching events.
  */
-public class FullTableScanLookupStrategy implements TableLookupStrategy
+public class SubqFullTableScanLookupStrategy implements SubqTableLookupStrategy
 {
     private UnindexedEventTable eventIndex;
 
@@ -24,7 +24,7 @@ public class FullTableScanLookupStrategy implements TableLookupStrategy
      * Ctor.
      * @param eventIndex - table to use
      */
-    public FullTableScanLookupStrategy(UnindexedEventTable eventIndex)
+    public SubqFullTableScanLookupStrategy(UnindexedEventTable eventIndex)
     {
         this.eventIndex = eventIndex;
     }

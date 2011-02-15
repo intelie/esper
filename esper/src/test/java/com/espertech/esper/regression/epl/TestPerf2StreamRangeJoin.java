@@ -31,7 +31,6 @@ public class TestPerf2StreamRangeJoin extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
     }
 
-    // TODO subquery
     // TODO fill index for named window
     // TODO named window on-select, on-delete, on-update, on-merge
     // TODO fire-and-forget queries

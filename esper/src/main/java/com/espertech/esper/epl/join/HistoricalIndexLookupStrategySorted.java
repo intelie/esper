@@ -9,15 +9,12 @@
 package com.espertech.esper.epl.join;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.join.exec.sorted.SortedAccessStrategy;
 import com.espertech.esper.epl.join.exec.sorted.SortedAccessStrategyFactory;
-import com.espertech.esper.epl.join.plan.RangeKeyDesc;
+import com.espertech.esper.epl.join.plan.QueryGraphValueRange;
 import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.epl.join.table.PropertySortedEventTable;
-import com.espertech.esper.event.EventBeanUtility;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -33,7 +30,7 @@ public class HistoricalIndexLookupStrategySorted implements HistoricalIndexLooku
      * Ctor.
      * @param eventType - event type to expect for lookup
      */
-    public HistoricalIndexLookupStrategySorted(EventType eventType, RangeKeyDesc property)
+    public HistoricalIndexLookupStrategySorted(EventType eventType, QueryGraphValueRange property)
     {
         strategy = SortedAccessStrategyFactory.make(eventType, property);
     }

@@ -27,8 +27,6 @@ import java.util.*;
  */
 public class EventBeanUtility
 {
-    private static final EventBean[] nullArray = new EventBean[0];
-
     public static EventPropertyGetter getSafePropertyGetter(EventType type, String propertyName) {
         EventPropertyGetter getter = type.getGetter(propertyName);
         if (getter == null) {
@@ -301,6 +299,16 @@ public class EventBeanUtility
         return keyValues;
     }
 
+    public static Object[] getPropertyArray(EventBean[] eventsPerStream, EventPropertyGetter[] propertyGetters, int[] streamNums)
+    {
+        Object[] keyValues = new Object[propertyGetters.length];
+        for (int i = 0; i < propertyGetters.length; i++)
+        {
+            keyValues[i] = propertyGetters[i].get(eventsPerStream[streamNums[i]]);
+        }
+        return keyValues;
+    }
+
     /**
      * Returns Multikey instance for given event and getters.
      * @param event - event to get property values from
@@ -312,7 +320,6 @@ public class EventBeanUtility
         Object[] keyValues = getPropertyArray(event, propertyGetters);
         return new MultiKeyUntyped(keyValues);
     }
-
 
     public static MultiKeyUntyped getMultiKey(EventBean event, EventPropertyGetter[] propertyGetters, Class[] coercionTypes) {
         Object[] keyValues = getPropertyArray(event, propertyGetters);
@@ -332,6 +339,30 @@ public class EventBeanUtility
             }
         }
         return new MultiKeyUntyped(keyValues);
+    }
+
+    public static MultiKeyUntyped getMultiKey(EventBean[] eventPerStream, EventPropertyGetter[] propertyGetters, int[] keyStreamNums, Class[] coercionTypes) {
+        Object[] keyValues = getPropertyArray(eventPerStream, propertyGetters, keyStreamNums);
+        if (coercionTypes == null) {
+            return new MultiKeyUntyped(keyValues);
+        }
+        coerce(keyValues, coercionTypes);
+        return new MultiKeyUntyped(keyValues);
+    }
+
+    private static void coerce(Object[] keyValues, Class[] coercionTypes) {
+        for (int i = 0; i < coercionTypes.length; i++)
+        {
+            Object key = keyValues[i];
+            if ((key != null) && (!key.getClass().equals(coercionTypes[i])))
+            {
+                if (key instanceof Number)
+                {
+                    key = JavaClassHelper.coerceBoxed((Number) key, coercionTypes[i]);
+                    keyValues[i] = key;
+                }
+            }
+        }
     }
 
     public static Object coerce(Object target, Class coercionType) {

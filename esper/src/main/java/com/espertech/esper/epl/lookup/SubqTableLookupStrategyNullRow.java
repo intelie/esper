@@ -17,7 +17,7 @@ import java.util.HashSet;
  * Implementation for a table lookup strategy that returns exactly one row
  * but leaves that row as an undefined value.
  */
-public class TableLookupStrategyNullRow implements TableLookupStrategy
+public class SubqTableLookupStrategyNullRow implements SubqTableLookupStrategy
 {
     private static Set<EventBean> singleNullRowEventSet = new HashSet<EventBean>();
 

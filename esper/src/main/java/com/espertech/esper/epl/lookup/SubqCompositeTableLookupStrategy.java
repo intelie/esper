@@ -12,40 +12,35 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
 import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
-import com.espertech.esper.epl.join.plan.RangeKeyDesc;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
+import com.espertech.esper.epl.join.table.SubqueryRangeKeyDesc;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Index lookup strategy for subqueries.
  */
-public class CompositeTableLookupStrategy implements TableLookupStrategy
+public class SubqCompositeTableLookupStrategy implements SubqTableLookupStrategy
 {
     private final PropertyCompositeEventTable index;
     private final InnerIndexQuery innerIndexQuery;
-    private final List<RangeKeyDesc> rangeDescs;
+    private final Collection<SubqueryRangeKeyDesc> rangeDescs;
 
-    public CompositeTableLookupStrategy(EventType[] eventTypes, int[] keyStreamNums, String[] keyProps, Class[] coercionTypes, int[] rangeStreamNums, List<RangeKeyDesc> rangeDescs, Class[] rangeCoercionTypes, PropertyCompositeEventTable index) {
+    public SubqCompositeTableLookupStrategy(EventType[] typesPerStream, int[] keyStreamNums, String[] keyProps, Class[] coercionKeyTypes, Collection<SubqueryRangeKeyDesc> rangeProps, Class[] coercionRangeTypes, PropertyCompositeEventTable index) {
         this.index = index;
-        this.rangeDescs = rangeDescs;
-
-        // TODO - not right yet
-        innerIndexQuery = InnerIndexQueryFactory.make(eventTypes[0], keyProps, coercionTypes, rangeDescs, rangeCoercionTypes);
+        this.rangeDescs = rangeProps;
+        this.innerIndexQuery = InnerIndexQueryFactory.make(typesPerStream, keyStreamNums, keyProps, coercionKeyTypes, rangeProps, coercionRangeTypes);
     }
 
     public Collection<EventBean> lookup(EventBean[] eventsPerStream)
     {
-        // TODO - plain wrong
-        return innerIndexQuery.get(eventsPerStream[0], index.getIndex());
+        return innerIndexQuery.get(eventsPerStream, index.getIndex());
     }
 
     public String toString()
     {
-        // TODO - improve
-        return "SortedTableLookupStrategy ranges=" + Arrays.toString(rangeDescs.toArray()) +
+        return "SubqCompositeTableLookupStrategy ranges=" + Arrays.toString(rangeDescs.toArray()) +
                 " index=(" + index + ')';
     }
 }

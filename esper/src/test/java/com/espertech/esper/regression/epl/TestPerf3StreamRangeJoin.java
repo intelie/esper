@@ -33,14 +33,6 @@ public class TestPerf3StreamRangeJoin extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
     }
 
-    // TODO - Query could still be faster
-    // Reason: NestedIteration is the only plan available for this 3-way join.
-    // NestedIteration made sense when only "=" was indexed on as equivalency-finder can attach a stream easily.
-    // NestedIteration can indeed improve performance when it uses the composite keys but it may not by much.
-
-    // Research: Outer join query plan builder may handle CardinalJoin case already?
-    // If yes, inner-join is a specialized case of outer join, one could rewrite
-
     public void testPerf3StreamKeyAndRange() {
         epService.getEPAdministrator().createEPL("create window ST0.win:keepall() as SupportBean_ST0");
         epService.getEPAdministrator().createEPL("@Name('I1') insert into ST0 select * from SupportBean_ST0");

@@ -1,14 +1,14 @@
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.epl.lookup.TableLookupStrategy;
+import com.espertech.esper.epl.lookup.SubqTableLookupStrategy;
 import com.espertech.esper.util.StopCallback;
 
 public class NamedWindowSubqueryStopCallback implements StopCallback {
 
     private final NamedWindowProcessor processor;
-    private final TableLookupStrategy namedWindowSubqueryLookup;
+    private final SubqTableLookupStrategy namedWindowSubqueryLookup;
 
-    public NamedWindowSubqueryStopCallback(NamedWindowProcessor processor, TableLookupStrategy namedWindowSubqueryLookup) {
+    public NamedWindowSubqueryStopCallback(NamedWindowProcessor processor, SubqTableLookupStrategy namedWindowSubqueryLookup) {
         this.processor = processor;
         this.namedWindowSubqueryLookup = namedWindowSubqueryLookup;
     }

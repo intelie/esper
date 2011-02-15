@@ -428,12 +428,12 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             if (rangeEntries.size() == 1 && (keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0)) {
                 Class rangeCoercionType = rangeCoercionTypes == null ? null : rangeCoercionTypes[0];
                 PollResultIndexingStrategySorted indexing = new PollResultIndexingStrategySorted(polledViewStreamNum, polledViewType, QueryGraphValueRange.getPropertyNamesValues(rangeEntries)[0], rangeCoercionType);
-                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategySorted(streamViewType, QueryGraphValueRange.getPropertyNamesRangeKey(rangeEntries).get(0));
+                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategySorted(streamViewType, rangeEntries.get(0));
                 return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
             }
             else {
                 PollResultIndexingStrategyComposite indexing = new PollResultIndexingStrategyComposite(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes, QueryGraphValueRange.getPropertyNamesValues(rangeEntries), rangeCoercionTypes);
-                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyComposite(streamViewType, keyPropertiesJoin, keyCoercionTypes, QueryGraphValueRange.getPropertyNamesRangeKey(rangeEntries), rangeCoercionTypes);
+                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyComposite(streamViewType, keyPropertiesJoin, keyCoercionTypes, rangeEntries, rangeCoercionTypes);
                 return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
             }
         }

@@ -14,6 +14,7 @@ import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Build query index plans.
@@ -109,10 +110,13 @@ public class QueryPlanIndexBuilder
                                     relOp.getPropertyKey(), typesPerStream[lookupStream]);
             }
 
-            if (coercionType != valuePropType) {
-                mustCoerce = true;
+            if (coercionType == null) {
+                coercionTypes[i] = valuePropType;
             }
-            coercionTypes[i] = coercionType;
+            else {
+                mustCoerce = true;
+                coercionTypes[i] = coercionType;
+            }
         }
         if (!mustCoerce)
         {
@@ -196,15 +200,60 @@ public class QueryPlanIndexBuilder
     }
 
     public static Class getCoercionType(EventType indexedType, String indexedProp, SubqueryRangeKeyDesc rangeKey, EventType[] keyTypes) {
-        RangeKeyDesc desc = rangeKey.getRangeKey();
-        if (desc.getOp().isRange()) {
+        QueryGraphValueRange desc = rangeKey.getRangeInfo();
+        if (desc.getType().isRange()) {
+            QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) desc;
             return getCoercionTypeRangeIn(indexedType.getPropertyType(indexedProp),
-                                    desc.getStart(), keyTypes[rangeKey.getStartStreamNum()],
-                                    desc.getEnd(), keyTypes[rangeKey.getEndStreamNum()]);
+                                    in.getPropertyStart(), keyTypes[rangeKey.getStartStreamNum()],
+                                    in.getPropertyEnd(), keyTypes[rangeKey.getEndStreamNum()]);
         }
         else {
+            QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) desc;
             return getCoercionTypeRangeRelOp(indexedType.getPropertyType(indexedProp),
-                                    desc.getKey(), keyTypes[rangeKey.getKeyStreamNum()]);
+                                    relOp.getPropertyKey(), keyTypes[rangeKey.getKeyStreamNum()]);
         }
+    }
+
+    public static Class[] getCoercionTypes(EventType viewableEventType, Map<String, SubqueryRangeKeyDesc> rangeProps, EventType[] typesPerStream) {
+        if (rangeProps.isEmpty()) {
+            return null;
+        }
+
+        Class[] coercionTypes = new Class[rangeProps.size()];
+        boolean mustCoerce = false;
+        int count = 0;
+        for (Map.Entry<String, SubqueryRangeKeyDesc> entry : rangeProps.entrySet())
+        {
+            SubqueryRangeKeyDesc subQRange = entry.getValue();
+            QueryGraphValueRange rangeDesc = entry.getValue().getRangeInfo();
+
+            Class valuePropType = JavaClassHelper.getBoxedType(viewableEventType.getPropertyType(entry.getKey()));
+            Class coercionType;
+
+            if (rangeDesc.getType().isRange()) {
+                QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) rangeDesc;
+                coercionType = getCoercionTypeRangeIn(valuePropType,
+                                        in.getPropertyStart(), typesPerStream[subQRange.getStartStreamNum()],
+                                        in.getPropertyEnd(), typesPerStream[subQRange.getEndStreamNum()]);
+            }
+            else {
+                QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) rangeDesc;
+                coercionType = getCoercionTypeRangeRelOp(valuePropType,
+                                    relOp.getPropertyKey(), typesPerStream[subQRange.getKeyStreamNum()]);
+            }
+
+            if (coercionType == null) {
+                coercionTypes[count++] = valuePropType;
+            }
+            else {
+                mustCoerce = true;
+                coercionTypes[count++] = coercionType;
+            }
+        }
+        if (!mustCoerce)
+        {
+            return null;
+        }
+        return coercionTypes;
     }
 }

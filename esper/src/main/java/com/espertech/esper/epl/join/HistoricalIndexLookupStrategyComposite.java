@@ -11,7 +11,7 @@ package com.espertech.esper.epl.join;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
-import com.espertech.esper.epl.join.plan.RangeKeyDesc;
+import com.espertech.esper.epl.join.plan.QueryGraphValueRange;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
 import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
@@ -28,7 +28,7 @@ public class HistoricalIndexLookupStrategyComposite implements HistoricalIndexLo
 {
     private final InnerIndexQuery chain;
 
-    public HistoricalIndexLookupStrategyComposite(EventType eventType, String[] keyPropertiesJoin, Class[] keyCoercionTypes, List<RangeKeyDesc> rangeKeyPairs, Class[] rangeCoercionTypes) {
+    public HistoricalIndexLookupStrategyComposite(EventType eventType, String[] keyPropertiesJoin, Class[] keyCoercionTypes, List<QueryGraphValueRange> rangeKeyPairs, Class[] rangeCoercionTypes) {
         chain = InnerIndexQueryFactory.make(eventType, keyPropertiesJoin, keyCoercionTypes, rangeKeyPairs, rangeCoercionTypes);
     }
 
