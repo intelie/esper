@@ -10,14 +10,11 @@ package com.espertech.esper.epl.join;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.exec.sorted.SortedAccessStrategy;
-import com.espertech.esper.epl.join.exec.sorted.SortedAccessStrategyFactory;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
 import com.espertech.esper.epl.join.plan.RangeKeyDesc;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
-import com.espertech.esper.epl.join.table.PropertySortedEventTable;
-import com.espertech.esper.epl.join.table.comp.InnerIndexQuery;
-import com.espertech.esper.epl.join.table.comp.InnerIndexQueryFactory;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
 
 import java.util.Iterator;
 import java.util.List;

@@ -10,10 +10,10 @@ package com.espertech.esper.epl.lookup;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
 import com.espertech.esper.epl.join.plan.RangeKeyDesc;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
-import com.espertech.esper.epl.join.table.comp.InnerIndexQuery;
-import com.espertech.esper.epl.join.table.comp.InnerIndexQueryFactory;
 
 import java.util.Arrays;
 import java.util.Collection;

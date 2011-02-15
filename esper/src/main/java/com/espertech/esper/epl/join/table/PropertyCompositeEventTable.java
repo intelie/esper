@@ -10,9 +10,9 @@ package com.espertech.esper.epl.join.table;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.table.comp.InnerIndexEnterRemove;
-import com.espertech.esper.epl.join.table.comp.InnerIndexEnterRemoveKeyed;
-import com.espertech.esper.epl.join.table.comp.InnerIndexEnterRemoveRange;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexEnterRemove;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexEnterRemoveKeyed;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexEnterRemoveRange;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

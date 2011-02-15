@@ -2,7 +2,7 @@ package com.espertech.esper.epl.join.plan;
 
 import junit.framework.TestCase;
 import com.espertech.esper.epl.join.exec.FullTableScanLookupStrategy;
-import com.espertech.esper.epl.join.exec.TableLookupStrategy;
+import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
 
@@ -27,7 +27,7 @@ public class TestFullTableScanLookupPlan extends TestCase
         indexes[1] = new HashMap<String,EventTable>();
         indexes[1].put("idx2", unindexedEventIndex);
 
-        TableLookupStrategy lookupStrategy = spec.makeStrategy(indexes, null);
+        JoinExecTableLookupStrategy lookupStrategy = spec.makeStrategy(indexes, null);
 
         FullTableScanLookupStrategy strategy = (FullTableScanLookupStrategy) lookupStrategy;
         assertEquals(unindexedEventIndex, strategy.getEventIndex());

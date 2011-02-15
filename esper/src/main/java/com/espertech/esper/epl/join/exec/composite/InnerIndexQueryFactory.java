@@ -1,4 +1,4 @@
-package com.espertech.esper.epl.join.table.comp;
+package com.espertech.esper.epl.join.exec.composite;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.join.plan.RangeKeyDesc;

@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.epl.join.exec.FullTableScanLookupStrategy;
-import com.espertech.esper.epl.join.exec.TableLookupStrategy;
+import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
 import com.espertech.esper.client.EventType;
@@ -32,7 +32,7 @@ public class FullTableScanLookupPlan extends TableLookupPlan
         super(lookupStream, indexedStream, indexNum);
     }
 
-    public TableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
+    public JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
     {
         UnindexedEventTable index = (UnindexedEventTable) indexesPerStream[this.getIndexedStream()].get(this.getIndexNum());
         return new FullTableScanLookupStrategy(index);

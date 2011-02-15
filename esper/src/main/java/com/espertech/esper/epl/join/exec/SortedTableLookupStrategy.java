@@ -9,16 +9,13 @@
 package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.exec.sorted.SortedAccessStrategy;
 import com.espertech.esper.epl.join.exec.sorted.SortedAccessStrategyFactory;
-import com.espertech.esper.epl.join.plan.QueryGraphRangeEnum;
 import com.espertech.esper.epl.join.plan.RangeKeyDesc;
 import com.espertech.esper.epl.join.rep.Cursor;
 import com.espertech.esper.epl.join.table.PropertySortedEventTable;
-import com.espertech.esper.event.EventBeanUtility;
 
 import java.util.Set;
 
@@ -27,7 +24,7 @@ import java.util.Set;
  * <p>
  * Use the composite strategy if supporting multiple ranges or if range is in combination with unique key.
  */
-public class SortedTableLookupStrategy implements TableLookupStrategy
+public class SortedTableLookupStrategy implements JoinExecTableLookupStrategy
 {
     private final EventType eventType;
     private final RangeKeyDesc rangeKeyPair;

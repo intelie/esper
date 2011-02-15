@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * A lookup strategy for use in outer joins onto historical streams.
  */
-public class HistoricalTableLookupStrategy implements TableLookupStrategy
+public class HistoricalTableLookupStrategy implements JoinExecTableLookupStrategy
 {
     private final HistoricalEventViewable viewable;
     private final PollResultIndexingStrategy indexingStrategy;

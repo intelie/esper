@@ -14,10 +14,8 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.plan.RangeKeyDesc;
 import com.espertech.esper.epl.join.rep.Cursor;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
-import com.espertech.esper.epl.join.table.comp.InnerIndexQuery;
-import com.espertech.esper.epl.join.table.comp.InnerIndexQueryFactory;
-import com.espertech.esper.epl.join.table.comp.InnerIndexQueryKeyed;
-import com.espertech.esper.epl.join.table.comp.InnerIndexQueryRange;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
+import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
 
 import java.util.*;
 
@@ -27,7 +25,7 @@ import java.util.*;
  * <p>
  * Use the sorted strategy instead if supporting a single range only and no other unique keys are part of the index.
  */
-public class CompositeTableLookupStrategy implements TableLookupStrategy
+public class CompositeTableLookupStrategy implements JoinExecTableLookupStrategy
 {
     private final EventType eventType;
     private final PropertyCompositeEventTable index;

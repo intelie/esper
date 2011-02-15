@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
-import com.espertech.esper.epl.join.exec.TableLookupStrategy;
+import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.client.EventType;
 
@@ -29,7 +29,7 @@ public abstract class TableLookupPlan
      * @param eventTypes - types of events in stream
      * @return lookup strategy instance
      */
-    public abstract TableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes);
+    public abstract JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes);
 
     /**
      * Ctor.

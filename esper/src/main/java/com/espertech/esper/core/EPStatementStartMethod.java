@@ -2057,7 +2057,6 @@ public class EPStatementStartMethod
                             end = relOp.getPropertyKey();
                             streamNumEnd = stream;
                         }
-                        boolean isBetween =
                         RangeKeyDesc rangeKeyDesc = new RangeKeyDesc(opsDesc.getType(), start, end, false);
                         rangeKey = new SubqueryRangeKeyDesc(streamNumStart, streamNumEnd, rangeKeyDesc);
                         rangeProps.put(rangeDesc.getPropertyValue(), rangeKey);

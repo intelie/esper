@@ -1,4 +1,4 @@
-package com.espertech.esper.epl.join.table.comp;
+package com.espertech.esper.epl.join.exec.composite;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;

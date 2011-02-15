@@ -11,7 +11,7 @@ package com.espertech.esper.epl.join.plan;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.exec.TableLookupExecNode;
-import com.espertech.esper.epl.join.exec.TableLookupStrategy;
+import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.util.IndentWriter;
@@ -53,7 +53,7 @@ public class TableLookupNode extends QueryPlanNode
 
     public ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
-        TableLookupStrategy lookupStrategy = tableLookupPlan.makeStrategy(indexesPerStream, streamTypes);
+        JoinExecTableLookupStrategy lookupStrategy = tableLookupPlan.makeStrategy(indexesPerStream, streamTypes);
 
         return new TableLookupExecNode(tableLookupPlan.getIndexedStream(), lookupStrategy);
     }

@@ -9,8 +9,8 @@
 package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.exec.LookupInstructionExec;
-import com.espertech.esper.epl.join.exec.TableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.util.IndentWriter;
@@ -75,7 +75,7 @@ public class LookupInstructionPlan
      */
     public LookupInstructionExec makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
-        TableLookupStrategy strategies[] = new TableLookupStrategy[lookupPlans.length];
+        JoinExecTableLookupStrategy strategies[] = new JoinExecTableLookupStrategy[lookupPlans.length];
         for (int i = 0; i < lookupPlans.length; i++)
         {
             if (lookupPlans[i] != null)

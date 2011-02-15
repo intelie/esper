@@ -23,14 +23,14 @@ import java.util.List;
 public class TableOuterLookupExecNode extends ExecNode
 {
     private int indexedStream;
-    private TableLookupStrategy lookupStrategy;
+    private JoinExecTableLookupStrategy lookupStrategy;
 
     /**
      * Ctor.
      * @param indexedStream - stream indexed for lookup
      * @param lookupStrategy - strategy to use for lookup (full table/indexed)
      */
-    public TableOuterLookupExecNode(int indexedStream, TableLookupStrategy lookupStrategy)
+    public TableOuterLookupExecNode(int indexedStream, JoinExecTableLookupStrategy lookupStrategy)
     {
         this.indexedStream = indexedStream;
         this.lookupStrategy = lookupStrategy;
@@ -40,7 +40,7 @@ public class TableOuterLookupExecNode extends ExecNode
      * Returns strategy for lookup.
      * @return lookup strategy
      */
-    public TableLookupStrategy getLookupStrategy()
+    public JoinExecTableLookupStrategy getLookupStrategy()
     {
         return lookupStrategy;
     }

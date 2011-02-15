@@ -18,7 +18,7 @@ import java.util.Set;
  * Strategy for looking up, in some sort of table or index, an event, potentially based on the
  * events properties, and returning a set of matched events.
  */
-public interface TableLookupStrategy
+public interface JoinExecTableLookupStrategy
 {
     /**
      * Returns matched events for a event to look up for. Never returns an empty result set,

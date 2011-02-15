@@ -25,7 +25,7 @@ public class LookupInstructionExec
 {
     private final int fromStream;
     private final String fromStreamName;
-    private final TableLookupStrategy[] lookupStrategies;
+    private final JoinExecTableLookupStrategy[] lookupStrategies;
 
     private final int numSubStreams;
     private final Set<EventBean>[] resultPerStream;
@@ -41,7 +41,7 @@ public class LookupInstructionExec
      * @param lookupStrategies - the strategy to use for each stream to look up in
      * @param requiredPerStream - indicates which of the lookup streams are required to build a result and which are not
      */
-    public LookupInstructionExec(int fromStream, String fromStreamName, int[] toStreams, TableLookupStrategy[] lookupStrategies, boolean[] requiredPerStream)
+    public LookupInstructionExec(int fromStream, String fromStreamName, int[] toStreams, JoinExecTableLookupStrategy[] lookupStrategies, boolean[] requiredPerStream)
     {
         if (toStreams.length != lookupStrategies.length)
         {

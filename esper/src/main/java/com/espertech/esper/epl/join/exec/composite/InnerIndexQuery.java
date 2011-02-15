@@ -1,8 +1,7 @@
-package com.espertech.esper.epl.join.table.comp;
+package com.espertech.esper.epl.join.exec.composite;
 
 import com.espertech.esper.client.EventBean;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 

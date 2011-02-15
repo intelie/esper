@@ -9,11 +9,11 @@ public class TestLookupInstructionExec extends TestCase
 {
     private LookupInstructionExec exec;
     private SupportRepositoryImpl rep;
-    private TableLookupStrategy[] lookupStrategies;
+    private JoinExecTableLookupStrategy[] lookupStrategies;
 
     public void setUp()
     {
-        lookupStrategies = new TableLookupStrategy[4];
+        lookupStrategies = new JoinExecTableLookupStrategy[4];
         for (int i = 0; i < lookupStrategies.length; i++)
         {
             lookupStrategies[i] = new SupportTableLookupStrategy(1);

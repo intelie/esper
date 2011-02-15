@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * Lookup on an unindexed table returning the full table as matching events.
  */
-public class FullTableScanLookupStrategy implements TableLookupStrategy
+public class FullTableScanLookupStrategy implements JoinExecTableLookupStrategy
 {
     private UnindexedEventTable eventIndex;
 

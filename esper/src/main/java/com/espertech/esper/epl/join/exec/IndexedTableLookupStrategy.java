@@ -22,7 +22,7 @@ import java.util.Arrays;
 /**
  * Lookup on an index using a set of properties as key values.
  */
-public class IndexedTableLookupStrategy implements TableLookupStrategy
+public class IndexedTableLookupStrategy implements JoinExecTableLookupStrategy
 {
     private final EventType eventType;
     private final String[] properties;

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import com.espertech.esper.epl.join.exec.IndexedTableLookupStrategy;
-import com.espertech.esper.epl.join.exec.TableLookupStrategy;
+import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.client.EventType;
@@ -34,7 +34,7 @@ public class TestIndexedTableLookupPlan extends TestCase
         indexes[1] = new HashMap<String,EventTable>();
         indexes[1].put("idx1", propertyMapEventIndex);
 
-        TableLookupStrategy lookupStrategy = spec.makeStrategy(indexes, types);
+        JoinExecTableLookupStrategy lookupStrategy = spec.makeStrategy(indexes, types);
 
         IndexedTableLookupStrategy strategy = (IndexedTableLookupStrategy) lookupStrategy;
         assertEquals(types[0], strategy.getEventType());
