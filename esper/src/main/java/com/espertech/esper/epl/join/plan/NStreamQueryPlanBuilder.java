@@ -12,15 +12,12 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.NumberSetPermutationEnumeration;
 import com.espertech.esper.collection.NumberSetShiftGroupEnumeration;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.DependencyGraph;
+import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  *
@@ -113,7 +110,8 @@ public class NStreamQueryPlanBuilder
      * @param historicalStreamIndexLists - index management, populated for the query plan
      * @return query plan
      */
-    protected static QueryPlan build(QueryGraph queryGraph, EventType[] typesPerStream,
+    protected static QueryPlan build(QueryGraph queryGraph,
+                                     EventType[] typesPerStream,
                                      boolean hasHistorical,
                                      boolean[] isHistorical,
                                      DependencyGraph dependencyGraph,
@@ -125,7 +123,7 @@ public class NStreamQueryPlanBuilder
         }
 
         int numStreams = queryGraph.getNumStreams();
-        QueryPlanIndex[] indexSpecs = QueryPlanIndexBuilder.buildIndexSpec(queryGraph);
+        QueryPlanIndex[] indexSpecs = QueryPlanIndexBuilder.buildIndexSpec(queryGraph, typesPerStream);
         if (log.isDebugEnabled())
         {
             log.debug(".build Index build completed, indexes=" + QueryPlanIndex.print(indexSpecs));
@@ -231,27 +229,35 @@ public class NStreamQueryPlanBuilder
                                                QueryPlanIndex indexSpecs, EventType[] typesPerStream)
     {
         String[] indexedStreamIndexProps = queryGraph.getIndexProperties(currentLookupStream, indexedStream);
-        int indexNum;
+        String[] rangeStreamIndexProps = queryGraph.getRangeProperties(currentLookupStream, indexedStream);
+        String indexNum = indexSpecs.getIndexNum(indexedStreamIndexProps, rangeStreamIndexProps);
 
-        // We use an index if there are index properties for the 2 streams
-        TableLookupPlan tableLookupPlan;
+        // full table scan - no lookups
+        if ((indexedStreamIndexProps == null || indexedStreamIndexProps.length == 0) && (rangeStreamIndexProps == null || rangeStreamIndexProps.length == 0)) {
+            // We don't use a keyed index but use the full stream set as the stream does not have any indexes
 
-        if (indexedStreamIndexProps != null)
-        {
-            // Determine the index number assigned by looking at the index specifications
-            indexNum = indexSpecs.getIndexNum(indexedStreamIndexProps);
-
-            if (indexNum == -1)
+            // If no such full set index exists yet, add to specs
+            if (indexNum == null)
             {
-                throw new IllegalStateException("Failed to query plan as index for " + Arrays.toString(indexedStreamIndexProps) + " could looked up in the index specification");
+                indexNum = indexSpecs.addIndex(null, null);
             }
+            return new FullTableScanLookupPlan(currentLookupStream, indexedStream, indexNum);
+        }
 
+        if (indexNum == null)
+        {
+            throw new IllegalStateException("Failed to query plan as index for " + Arrays.toString(indexedStreamIndexProps) + " and " + Arrays.toString(rangeStreamIndexProps) + " in the index specification");
+        }
+
+        // straight keyed-index lookup
+        if (indexedStreamIndexProps != null && indexedStreamIndexProps.length > 0 && (rangeStreamIndexProps == null || rangeStreamIndexProps.length == 0))
+        {
             // Constructed keyed lookup strategy
             String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
-            tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
+            IndexedTableLookupPlan tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
 
             // Determine coercion required
-            Class[] coercionTypes = TwoStreamQueryPlanBuilder.getCoercionTypes(typesPerStream, currentLookupStream, indexedStream, keyGenFields, indexedStreamIndexProps);
+            Class[] coercionTypes = QueryPlanIndexBuilder.getCoercionTypes(typesPerStream, currentLookupStream, indexedStream, keyGenFields, indexedStreamIndexProps);
             if (coercionTypes != null)
             {
                 // check if there already are coercion types for this index
@@ -265,22 +271,27 @@ public class NStreamQueryPlanBuilder
                 }
                 indexSpecs.setCoercionTypes(indexedStreamIndexProps, coercionTypes);
             }
+
+            return tableLookupPlan;
         }
+
+        // sorted index lookup
+        if ((indexedStreamIndexProps == null || indexedStreamIndexProps.length == 0) && (rangeStreamIndexProps != null && rangeStreamIndexProps.length == 1)) {
+            QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream, false);
+            RangeKeyDesc range = value.getRangeEntries().get(0).getRangeKey();
+            return new SortedTableLookupPlan(currentLookupStream, indexedStream, indexNum, range);
+        }
+        // composite range and index lookup
         else
         {
-            // We don't use a keyed index but use the full stream set as the stream does not have any indexes
-            indexNum = indexSpecs.getIndexNum(new String[0]);
-
-            // If no such full set index exists yet, add to specs
-            if (indexNum == -1)
-            {
-                indexNum = indexSpecs.addIndex(new String[0], null);
+            String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
+            QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream, false);
+            List<RangeKeyDesc> rangeKeys = new ArrayList<RangeKeyDesc>();
+            for (QueryGraphValueRange entry : value.getRangeEntries()) {
+                rangeKeys.add(entry.getRangeKey());
             }
-
-            tableLookupPlan = new FullTableScanLookupPlan(currentLookupStream, indexedStream, indexNum);
+            return new CompositeTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields, rangeKeys);
         }
-
-        return tableLookupPlan;
     }
 
 
@@ -411,7 +422,7 @@ public class NStreamQueryPlanBuilder
         for (int i = 0; i < nextStreams.length; i++)
         {
             int nextStream = nextStreams[i];
-            if (!queryGraph.isNavigable(currentStream, nextStream))
+            if (!queryGraph.isNavigablePropertyEquals(currentStream, nextStream))
             {
                 break;
             }
@@ -420,43 +431,6 @@ public class NStreamQueryPlanBuilder
         }
 
         return currentDepth;
-    }
-
-    /**
-     * Returns query plan based on all unindexed full table lookups and lookups based
-     * on a simple nesting order.
-     * @param eventTypes - stream event types
-     * @return query plan
-     */
-    protected static QueryPlan buildNStreamDefaultQuerySpec(EventType[] eventTypes)
-    {
-        QueryPlanIndex[] indexSpecs = new QueryPlanIndex[eventTypes.length];
-        QueryPlanNode[] execNodeSpecs = new QueryPlanNode[eventTypes.length];
-
-        // Build indexes without key properties
-        for (int i = 0; i < indexSpecs.length; i++)
-        {
-            indexSpecs[i] = new QueryPlanIndex(null, null);
-        }
-
-        // Handle N-stream queries
-        for (int streamNo = 0; streamNo < eventTypes.length; streamNo++)
-        {
-            int[] nestingOrder = buildDefaultNestingOrder(eventTypes.length, streamNo);
-            NestedIterationNode nestedNode = new NestedIterationNode(nestingOrder);
-            execNodeSpecs[streamNo] = nestedNode;
-            int lookupStream = streamNo;
-
-            for (int j = 0; j < nestingOrder.length; j++)
-            {
-                int indexedStream = nestingOrder[j];
-                FullTableScanLookupPlan scanLookupStrategy = new FullTableScanLookupPlan(lookupStream, indexedStream, 0);
-                nestedNode.addChildNode(new TableLookupNode(scanLookupStrategy));
-                lookupStream = indexedStream;
-            }
-        }
-
-        return new QueryPlan(indexSpecs, execNodeSpecs);
     }
 
     /**
@@ -483,39 +457,6 @@ public class NStreamQueryPlanBuilder
         }
 
         return nestingOrder;
-    }
-
-    private static Class[] getCoercionTypes(EventType[] typesPerStream,
-                                         int lookupStream,
-                                         int indexedStream,
-                                         String[] keyProps,
-                                         String[] indexProps)
-    {
-        // Determine if any coercion is required
-        if (indexProps.length != keyProps.length)
-        {
-            throw new IllegalStateException("Mismatch in the number of key and index properties");
-        }
-
-        Class[] coercionTypes = new Class[indexProps.length];
-        boolean mustCoerce = false;
-        for (int i = 0; i < keyProps.length; i++)
-        {
-            Class keyPropType = JavaClassHelper.getBoxedType(typesPerStream[lookupStream].getPropertyType(keyProps[i]));
-            Class indexedPropType = JavaClassHelper.getBoxedType(typesPerStream[indexedStream].getPropertyType(indexProps[i]));
-            Class coercionType = indexedPropType;
-            if (keyPropType != indexedPropType)
-            {
-                coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, keyPropType);
-                mustCoerce = true;
-            }
-            coercionTypes[i] = coercionType;
-        }
-        if (!mustCoerce)
-        {
-            return null;
-        }
-        return coercionTypes;
     }
 
     /**

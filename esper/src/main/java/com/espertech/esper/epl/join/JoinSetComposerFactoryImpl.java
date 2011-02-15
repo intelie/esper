@@ -8,25 +8,25 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.core.StreamJoinAnalysisResult;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.plan.*;
 import com.espertech.esper.epl.join.table.*;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.util.AuditPath;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.DependencyGraph;
+import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.Viewable;
-import com.espertech.esper.core.StreamJoinAnalysisResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Factory for building a {@link JoinSetComposer} from analyzing filter nodes, for
@@ -70,11 +70,15 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 HistoricalEventViewable historicalViewable = (HistoricalEventViewable) streamViews[i];
                 isHistorical[i] = true;
                 hasHistorical = true;
-                historicalDependencyGraph.addDependency(i, historicalViewable.getRequiredStreams());
+                SortedSet<Integer> streamsThisStreamDependsOn = historicalViewable.getRequiredStreams();
+                historicalDependencyGraph.addDependency(i, streamsThisStreamDependsOn);
             }
         }
 
-        EventTable[][] indexes;
+        if (log.isDebugEnabled()) {
+            log.debug("Dependency graph: " + historicalDependencyGraph);
+        }
+
         QueryStrategy[] queryStrategies;
 
         // Handle a join with a database or other historical data source for 2 streams
@@ -94,25 +98,23 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 log.debug(".makeComposer After outer join queryGraph=\n" + queryGraph);
             }
         }
-        else
-        {
-            // Let the query graph reflect the where-clause
-            if (optionalFilterNode != null)
-            {
-                // Analyze relationships between streams using the optional filter expression.
-                // Relationships are properties in AND and EQUALS nodes of joins.
-                FilterExprAnalyzer.analyze(optionalFilterNode, queryGraph);
-                if (log.isDebugEnabled())
-                {
-                    log.debug(".makeComposer After filter expression queryGraph=\n" + queryGraph);
-                }
 
-                // Add navigation entries based on key and index property equivalency (a=b, b=c follows a=c)
-                QueryGraph.fillEquivalentNav(queryGraph);
-                if (log.isDebugEnabled())
-                {
-                    log.debug(".makeComposer After fill equiv. nav. queryGraph=\n" + queryGraph);
-                }
+        // Let the query graph reflect the where-clause
+        if (optionalFilterNode != null)
+        {
+            // Analyze relationships between streams using the optional filter expression.
+            // Relationships are properties in AND and EQUALS nodes of joins.
+            FilterExprAnalyzer.analyze(optionalFilterNode, queryGraph);
+            if (log.isDebugEnabled())
+            {
+                log.debug(".makeComposer After filter expression queryGraph=\n" + queryGraph);
+            }
+
+            // Add navigation entries based on key and index property equivalency (a=b, b=c follows a=c)
+            QueryGraph.fillEquivalentNav(queryGraph);
+            if (log.isDebugEnabled())
+            {
+                log.debug(".makeComposer After fill equiv. nav. queryGraph=\n" + queryGraph);
             }
         }
 
@@ -120,27 +122,50 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         HistoricalStreamIndexList[] historicalStreamIndexLists = new HistoricalStreamIndexList[streamTypes.length];
 
         QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, queryGraph, streamNames,
-                hasHistorical, isHistorical, historicalDependencyGraph, historicalStreamIndexLists, exprEvaluatorContext);
+                hasHistorical, isHistorical, historicalDependencyGraph, historicalStreamIndexLists, exprEvaluatorContext,
+                streamJoinAnalysisResult);
+
+        // remove unused indexes - consider all streams or all unidirectional
+        HashSet<String> usedIndexes = new HashSet<String>();
+        QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
+        for (int streamNum = 0; streamNum < queryPlan.getExecNodeSpecs().length; streamNum++) {
+            QueryPlanNode planNode = queryPlan.getExecNodeSpecs()[streamNum];
+            if (planNode != null) {
+                planNode.addIndexes(usedIndexes);
+            }
+        }
+        for (QueryPlanIndex indexSpec : indexSpecs) {
+            if (indexSpec == null) {
+                continue;
+            }
+            Map<String, QueryPlanIndexItem> items = indexSpec.getItems();
+            String[] indexNames = items.keySet().toArray(new String[items.size()]);
+            for (String indexName : indexNames) {
+                if (!usedIndexes.contains(indexName)) {
+                    items.remove(indexName);
+                }
+            }
+        }
+
         if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
             queryPlanLog.info("Query plan: " + queryPlan);
         }
 
         // Build indexes
-        QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
-        indexes = new EventTable[indexSpecs.length][];
+        Map<String, EventTable>[] indexesPerStream = new HashMap[indexSpecs.length];
         for (int streamNo = 0; streamNo < indexSpecs.length; streamNo++)
         {
             if (indexSpecs[streamNo] == null)
             {
                 continue;
             }
-            
-            String[][] indexProps = indexSpecs[streamNo].getIndexProps();
-            Class[][] coercionTypes = indexSpecs[streamNo].getCoercionTypesPerIndex();
-            indexes[streamNo] = new EventTable[indexProps.length];
-            for (int indexNo = 0; indexNo < indexProps.length; indexNo++)
-            {
-                indexes[streamNo][indexNo] = buildIndex(streamNo, indexProps[indexNo], coercionTypes[indexNo], streamTypes[streamNo]);
+
+            Map<String, QueryPlanIndexItem> items = indexSpecs[streamNo].getItems();
+            indexesPerStream[streamNo] = new LinkedHashMap<String, EventTable>();
+
+            for (Map.Entry<String, QueryPlanIndexItem> entry : items.entrySet()) {
+                EventTable index = buildIndex(streamNo, items.get(entry.getKey()), streamTypes[streamNo]);
+                indexesPerStream[streamNo].put(entry.getKey(), index);
             }
         }
 
@@ -156,7 +181,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 continue;
             }
 
-            ExecNode executionNode = planNode.makeExec(indexes, streamTypes, streamViews, historicalStreamIndexLists);
+            ExecNode executionNode = planNode.makeExec(indexesPerStream, streamTypes, streamViews, historicalStreamIndexLists);
 
             if (log.isDebugEnabled())
             {
@@ -173,11 +198,11 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         {
             if (hasHistorical)
             {
-                return new JoinSetComposerHistoricalImpl(indexes, queryStrategies, streamViews, exprEvaluatorContext);
+                return new JoinSetComposerHistoricalImpl(indexesPerStream, queryStrategies, streamViews, exprEvaluatorContext);
             }
             else
             {
-                return new JoinSetComposerImpl(indexes, queryStrategies, streamJoinAnalysisResult.isPureSelfJoin(), exprEvaluatorContext);
+                return new JoinSetComposerImpl(indexesPerStream, queryStrategies, streamJoinAnalysisResult.isPureSelfJoin(), exprEvaluatorContext);
             }
         }
         else
@@ -194,7 +219,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 unidirectionalStream = 0;
                 driver = queryStrategies[0];
             }
-            return new JoinSetComposerStreamToWinImpl(indexes, streamJoinAnalysisResult.isPureSelfJoin(),
+            return new JoinSetComposerStreamToWinImpl(indexesPerStream, streamJoinAnalysisResult.isPureSelfJoin(),
                     unidirectionalStream, driver, streamJoinAnalysisResult.getUnidirectionalNonDriving());
         }
     }
@@ -369,75 +394,94 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                                                                   EventType streamViewType,
                                                                                                   int polledViewStreamNum,
                                                                                                   int streamViewStreamNum)
-        {
+    {
         // index and key property names
         String[] keyPropertiesJoin = queryGraph.getKeyProperties(streamViewStreamNum, polledViewStreamNum);
         String[] indexPropertiesJoin = queryGraph.getIndexProperties(streamViewStreamNum, polledViewStreamNum);
+        List<QueryGraphValueRange> rangeEntries = queryGraph.getGraphValue(streamViewStreamNum, polledViewStreamNum, false).getRangeEntries();
 
         // If the analysis revealed no join columns, must use the brute-force full table scan
-        if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
+        if (((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0)) && rangeEntries.isEmpty())
         {
             return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(
                             new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
         }
 
-        // Build a set of index descriptors with property name and coercion type
-        boolean mustCoerce = false;
-        Class[] coercionTypes = new Class[indexPropertiesJoin.length];
-        for (int i = 0; i < keyPropertiesJoin.length; i++)
-        {
-            Class keyPropType = JavaClassHelper.getBoxedType(streamViewType.getPropertyType(keyPropertiesJoin[i]));
-            Class indexedPropType = JavaClassHelper.getBoxedType(polledViewType.getPropertyType(indexPropertiesJoin[i]));
-            Class coercionType = indexedPropType;
-            if (keyPropType != indexedPropType)
+        Class[] keyCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(new EventType[] {streamViewType, polledViewType}, 0, 1, keyPropertiesJoin, indexPropertiesJoin);
+
+        if (rangeEntries.isEmpty()) {
+            // No coercion
+            if (keyCoercionTypes == null)
             {
-                coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, keyPropType);
-                mustCoerce = true;
+                PollResultIndexingStrategyIndex indexing = new PollResultIndexingStrategyIndex(polledViewStreamNum, polledViewType, indexPropertiesJoin);
+                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
+                return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
             }
 
-            coercionTypes[i] = coercionType;
-        }
-
-        // No coercion
-        if (!mustCoerce)
-        {
-            PollResultIndexingStrategyIndex indexing = new PollResultIndexingStrategyIndex(polledViewStreamNum, polledViewType, indexPropertiesJoin);
+            // With coercion, same lookup strategy as the index coerces
+            PollResultIndexingStrategy indexing = new PollResultIndexingStrategyIndexCoerce(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes);
             HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
             return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
         }
-
-        // With coercion, same lookup strategy as the index coerces
-        PollResultIndexingStrategy indexing = new PollResultIndexingStrategyIndexCoerce(polledViewStreamNum, polledViewType, indexPropertiesJoin, coercionTypes);
-        HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
-        return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+        else {
+            Class[] rangeCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(new EventType[] {streamViewType, polledViewType}, 0, 1, rangeEntries);
+            if (rangeEntries.size() == 1 && (keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0)) {
+                Class rangeCoercionType = rangeCoercionTypes == null ? null : rangeCoercionTypes[0];
+                PollResultIndexingStrategySorted indexing = new PollResultIndexingStrategySorted(polledViewStreamNum, polledViewType, QueryGraphValueRange.getPropertyNamesValues(rangeEntries)[0], rangeCoercionType);
+                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategySorted(streamViewType, QueryGraphValueRange.getPropertyNamesRangeKey(rangeEntries).get(0));
+                return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+            }
+            else {
+                PollResultIndexingStrategyComposite indexing = new PollResultIndexingStrategyComposite(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes, QueryGraphValueRange.getPropertyNamesValues(rangeEntries), rangeCoercionTypes);
+                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyComposite(streamViewType, keyPropertiesJoin, keyCoercionTypes, QueryGraphValueRange.getPropertyNamesRangeKey(rangeEntries), rangeCoercionTypes);
+                return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+            }
+        }
     }
 
     /**
      * Build an index/table instance using the event properties for the event type.
      * @param indexedStreamNum - number of stream indexed
-     * @param indexProps - properties to index
-     * @param optCoercionTypes - optional array of coercion types, or null if no coercion is required
      * @param eventType - type of event to expect
      * @return table build
      */
-    protected static EventTable buildIndex(int indexedStreamNum, String[] indexProps, Class[] optCoercionTypes, EventType eventType)
+    protected static EventTable buildIndex(int indexedStreamNum, QueryPlanIndexItem item, EventType eventType)
     {
+        String[] indexProps = item.getIndexProps();
+        Class[] indexCoercionTypes = item.getOptIndexCoercionTypes();
+        String[] rangeProps = item.getRangeProps();
+        Class[] rangeCoercionTypes = item.getOptRangeCoercionTypes();
+
         EventTable table;
-        if (indexProps.length == 0)
-        {
-            table = new UnindexedEventTable(indexedStreamNum);
-        }
-        else
-        {
-            if (optCoercionTypes == null)
+        if (rangeProps == null || rangeProps.length == 0) {
+            if (indexProps == null || indexProps.length == 0)
             {
-                table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps, null);
+                table = new UnindexedEventTable(indexedStreamNum);
             }
             else
             {
-                table = new PropertyIndTableCoerceAll(indexedStreamNum, eventType, indexProps, optCoercionTypes);
+                if (indexCoercionTypes == null || indexCoercionTypes.length == 0)
+                {
+                    table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps, null);
+                }
+                else
+                {
+                    table = new PropertyIndTableCoerceAll(indexedStreamNum, eventType, indexProps, indexCoercionTypes);
+                }
             }
-
+        }
+        else {
+            if ((rangeProps.length == 1) && (indexProps == null || indexProps.length == 0)) {
+                if (rangeCoercionTypes == null) {
+                    return new PropertySortedEventTable(indexedStreamNum, eventType, rangeProps[0]);
+                }
+                else {
+                    return new PropertySortedEventTableCoerced(indexedStreamNum, eventType, rangeProps[0], rangeCoercionTypes[0]);
+                }
+            }
+            else {
+                return new PropertyCompositeEventTable(indexedStreamNum, eventType, indexProps, indexCoercionTypes, rangeProps, rangeCoercionTypes);
+            }
         }
         return table;
     }

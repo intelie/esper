@@ -17,6 +17,9 @@ import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.view.Viewable;
 
+import java.util.HashSet;
+import java.util.Map;
+
 /**
  * Specifies exection of a table lookup using the supplied plan for performing the lookup.
  */
@@ -48,10 +51,14 @@ public class TableLookupNode extends QueryPlanNode
                " tableLookupPlan=" + tableLookupPlan);
     }
 
-    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
+    public ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         TableLookupStrategy lookupStrategy = tableLookupPlan.makeStrategy(indexesPerStream, streamTypes);
 
         return new TableLookupExecNode(tableLookupPlan.getIndexedStream(), lookupStrategy);
+    }
+
+    public void addIndexes(HashSet<String> usedIndexes) {
+        usedIndexes.add(tableLookupPlan.getIndexNum());
     }
 }

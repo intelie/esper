@@ -325,6 +325,70 @@
 			<para>
 				Note that if there are no successes and at least one right-hand row yields null for the operator's result, the result of the any construct will be null, not false. This is in accordance with SQL's normal rules for Boolean combinations of null values.
 			</para>
+
+			<sect2 id="epl-operator-ref-keyword-in-range">
+				<title>'<literal>in</literal>' for Range Selection</title>
+				
+				<para>
+					The <literal>in</literal> keyword can be used to specify ranges, including open, half-closed, half-open and inverted ranges.
+				</para>
+
+				<para>
+					Ranges come in the following 4 varieties. The round <literal>()</literal> or square <literal>[]</literal> bracket indicate whether an endpoint is included or excluded. The low point and the high-point of the range are separated by the colon <literal>:</literal> character.
+				 </para>
+	
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							Open ranges that contain neither endpoint <literal>(low:high)</literal>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Closed ranges that contain both endpoints <literal>[low:high]</literal>. The equivalent 'between' keyword also defines a closed range.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Half-open ranges that contain the low endpoint but not the high endpoint <literal>[low:high)</literal>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Half-closed ranges that contain the high endpoint but not the low endpoint <literal>(low:high]</literal>
+						</para>
+					</listitem>
+				</itemizedlist>
+				
+				<para>
+					The following statement two statements are equivalent: Both statements select orders where the price is in the range of zero and 10000 (endpoints inclusive):
+				</para>
+				<programlisting><![CDATA[select * from OrderEvent where price in [0:10000]]]></programlisting>
+				<programlisting><![CDATA[select * from OrderEvent where price between 0 and 10000]]></programlisting>
+
+				<para>
+					The next statement selects order events where the price is greater then 100 and less-or-equal to 2000:
+				</para>
+				<programlisting><![CDATA[select * from OrderEvent where price in (100:2000]]]></programlisting>
+
+				<para>
+					Use the <literal>not in</literal> keywords to specify an inverted range.
+				</para>
+				
+				<para>
+					The following statement selects an inverted range by selecting all order events where the price is less then zero or the price is greater or equal to 10000:
+				</para>
+				<programlisting><![CDATA[select * from OrderEvent where price not in (0:10000]]]></programlisting>
+				
+				<para>
+					In case the value of low endpoint is less then the value of high endpoint the <literal>in</literal> operator reverses the range.
+				</para>
+				<para>
+					The following two statements are also equivalent:
+				</para>
+				<programlisting><![CDATA[select * from OrderEvent where price in [10000:0]]]></programlisting>
+				<programlisting><![CDATA[select * from OrderEvent where price >= 0 and price <= 1000]]></programlisting>
+			</sect2>
 		</sect1>		
 
 		<sect1 id="epl-operator-ref-keyword-between">
@@ -347,7 +411,7 @@
 			</para>
 
 			<para>
-				The next example shows how the <literal>between</literal> keyword can be used to select events with a price between 55 and 60 (inclusive).
+				The next example shows how the <literal>between</literal> keyword can be used to select events with a price between 55 and 60 (endpoints inclusive).
 			</para>
 			<programlisting><![CDATA[select * from StockTickEvent where price between 55 and 60]]></programlisting>
 			<para>
@@ -358,6 +422,19 @@
 				And also equivalent to:
 			</para>
 			<programlisting><![CDATA[]]>select * from StockTickEvent where price between 60 and 55</programlisting>
+			
+			<para>
+				While the <literal>between</literal> keyword always includes the endpoints of the range, the <literal>in</literal> operator allows finer control of endpoint inclusion.
+			</para>
+
+			<para>
+				In case the value of <emphasis>begin_expression</emphasis> is less then the value of <emphasis>end_expression</emphasis> the <literal>between</literal> operator reverses the range.
+			</para>
+			<para>
+				The following two statements are also equivalent:
+			</para>
+			<programlisting><![CDATA[select * from StockTickEvent where price between 60 and 55]]></programlisting>
+			<programlisting><![CDATA[select * from StockTickEvent where price >= 55 and price <= 60]]></programlisting>
 		</sect1>		
 
 		<sect1 id="epl-operator-ref-keyword-like">

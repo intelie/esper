@@ -6,6 +6,9 @@ import com.espertech.esper.epl.join.exec.TableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TestFullTableScanLookupPlan extends TestCase
 {
     private UnindexedEventTable unindexedEventIndex;
@@ -17,10 +20,12 @@ public class TestFullTableScanLookupPlan extends TestCase
 
     public void testLookup()
     {
-        FullTableScanLookupPlan spec = new FullTableScanLookupPlan(0, 1, 2);
+        FullTableScanLookupPlan spec = new FullTableScanLookupPlan(0, 1, "idx2");
 
-        EventTable[][] indexes = new EventTable[2][];
-        indexes[1] = new EventTable[] {null, null, unindexedEventIndex};
+        Map<String,EventTable>[] indexes = new Map[2];
+        indexes[0] = new HashMap<String,EventTable>();
+        indexes[1] = new HashMap<String,EventTable>();
+        indexes[1].put("idx2", unindexedEventIndex);
 
         TableLookupStrategy lookupStrategy = spec.makeStrategy(indexes, null);
 

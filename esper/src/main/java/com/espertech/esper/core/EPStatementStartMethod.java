@@ -21,12 +21,8 @@ import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.join.*;
-import com.espertech.esper.epl.join.plan.FilterExprAnalyzer;
-import com.espertech.esper.epl.join.plan.QueryGraph;
-import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.table.PropertyIndTableCoerceAdd;
-import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
-import com.espertech.esper.epl.join.table.UnindexedEventTable;
+import com.espertech.esper.epl.join.plan.*;
+import com.espertech.esper.epl.join.table.*;
 import com.espertech.esper.epl.lookup.*;
 import com.espertech.esper.epl.named.*;
 import com.espertech.esper.epl.spec.*;
@@ -1143,7 +1139,7 @@ public class EPStatementStartMethod
             }
         }
         // last, for aggregation we need to send the current join results to the result set processor
-        if ((hasNamedWindow) && (joinPreloadMethod != null) && (!isRecoveringResilient))
+        if ((hasNamedWindow) && (joinPreloadMethod != null) && (!isRecoveringResilient) && resultSetProcessor.hasAggregation())
         {
             joinPreloadMethod.preloadAggregation(resultSetProcessor);
         }
@@ -1982,7 +1978,7 @@ public class EPStatementStartMethod
         // No filter expression means full table scan
         if (filterExpr == null)
         {
-            return new JoinedPropPlan(Collections.<String, JoinedPropDesc>emptyMap(), false);
+            return new JoinedPropPlan();
         }
 
         // analyze query graph
@@ -1991,38 +1987,96 @@ public class EPStatementStartMethod
 
         // Build a list of streams and indexes
         Map<String, JoinedPropDesc> joinProps = new LinkedHashMap<String, JoinedPropDesc>();
+        Map<String, SubqueryRangeKeyDesc> rangeProps = new LinkedHashMap<String, SubqueryRangeKeyDesc>();
         boolean mustCoerce = false;
         for (int stream = 0; stream <  outerEventTypes.length; stream++)
         {
             int lookupStream = stream + 1;
+
+            // handle key-lookups
             String[] keyPropertiesJoin = queryGraph.getKeyProperties(lookupStream, 0);
             String[] indexPropertiesJoin = queryGraph.getIndexProperties(lookupStream, 0);
-            if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
+            if ((keyPropertiesJoin != null) && (keyPropertiesJoin.length != 0))
             {
-                continue;
-            }
-            if (keyPropertiesJoin.length != indexPropertiesJoin.length)
-            {
-                throw new IllegalStateException("Invalid query key and index property collection for stream " + stream);
-            }
-
-            for (int i = 0; i < keyPropertiesJoin.length; i++)
-            {
-                Class keyPropType = JavaClassHelper.getBoxedType(subselectTypeService.getEventTypes()[lookupStream].getPropertyType(keyPropertiesJoin[i]));
-                Class indexedPropType = JavaClassHelper.getBoxedType(subselectTypeService.getEventTypes()[0].getPropertyType(indexPropertiesJoin[i]));
-                Class coercionType = indexedPropType;
-                if (keyPropType != indexedPropType)
+                if (keyPropertiesJoin.length != indexPropertiesJoin.length)
                 {
-                    coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, indexedPropType);
-                    mustCoerce = true;
+                    throw new IllegalStateException("Invalid query key and index property collection for stream " + stream);
                 }
 
-                JoinedPropDesc desc = new JoinedPropDesc(indexPropertiesJoin[i],
-                        coercionType, keyPropertiesJoin[i], stream);
-                joinProps.put(indexPropertiesJoin[i], desc);
+                for (int i = 0; i < keyPropertiesJoin.length; i++)
+                {
+                    Class keyPropType = JavaClassHelper.getBoxedType(subselectTypeService.getEventTypes()[lookupStream].getPropertyType(keyPropertiesJoin[i]));
+                    Class indexedPropType = JavaClassHelper.getBoxedType(subselectTypeService.getEventTypes()[0].getPropertyType(indexPropertiesJoin[i]));
+                    Class coercionType = indexedPropType;
+                    if (keyPropType != indexedPropType)
+                    {
+                        coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, indexedPropType);
+                        mustCoerce = true;
+                    }
+
+                    JoinedPropDesc desc = new JoinedPropDesc(indexPropertiesJoin[i],
+                            coercionType, keyPropertiesJoin[i], stream);
+                    joinProps.put(indexPropertiesJoin[i], desc);
+                }
             }
+
+            // handle range lookups
+            List<QueryGraphValueRange> rangeDescs = queryGraph.getGraphValue(lookupStream, 0, false).getRangeEntries();
+            if (rangeDescs.isEmpty()) {
+                continue;
+            }
+
+            // get all ranges lookups
+            for (QueryGraphValueRange rangeDesc : rangeDescs) {
+
+                SubqueryRangeKeyDesc rangeKey = rangeProps.get(rangeDesc.getPropertyValue());
+
+                // other streams may specify the start or end endpoint of a range, therefore this operation can be additive
+                if (rangeKey != null) {
+                    if (rangeKey.getRangeKey().getOp().isRange()) {
+                        continue;
+                    }
+
+                    // see if we can make this additive by using a range
+                    QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) rangeDesc;
+                    QueryGraphRangeConsolidateDesc opsDesc = QueryGraphRangeUtil.getCanConsolidate(rangeKey.getRangeKey().getOp(), rangeDesc.getType());
+                    if (opsDesc != null) {
+                        String start;
+                        String end;
+                        int streamNumStart;
+                        int streamNumEnd;
+                        if (!opsDesc.isReverse()) {
+                            start = relOp.getPropertyKey();
+                            streamNumStart = stream;
+                            end = rangeKey.getRangeKey().getKey();
+                            streamNumEnd = rangeKey.getEndStreamNum();
+                        }
+                        else {
+                            start = rangeKey.getRangeKey().getKey();
+                            streamNumStart = rangeKey.getStartStreamNum();
+                            end = relOp.getPropertyKey();
+                            streamNumEnd = stream;
+                        }
+                        boolean isBetween =
+                        RangeKeyDesc rangeKeyDesc = new RangeKeyDesc(opsDesc.getType(), start, end, false);
+                        rangeKey = new SubqueryRangeKeyDesc(streamNumStart, streamNumEnd, rangeKeyDesc);
+                        rangeProps.put(rangeDesc.getPropertyValue(), rangeKey);
+                    }
+                    // ignore
+                }
+                else {
+                    if (rangeDesc.getType().isRange()) {
+                        rangeKey = new SubqueryRangeKeyDesc(stream, stream, rangeDesc.getRangeKey());
+                    }
+                    else {
+                        rangeKey = new SubqueryRangeKeyDesc(stream, rangeDesc.getRangeKey());
+                    }
+                    rangeProps.put(rangeDesc.getPropertyValue(), rangeKey);
+                }
+            }
+
         }
-        return new JoinedPropPlan(joinProps, mustCoerce);
+        return new JoinedPropPlan(joinProps, rangeProps, mustCoerce);
     }
 
     private Pair<EventTable, TableLookupStrategy> determineSubqueryIndex(ExprNode filterExpr,
@@ -2046,13 +2100,14 @@ public class EPStatementStartMethod
         // Build a list of streams and indexes
         JoinedPropPlan joinPropDesc = getJoinProps(filterExpr, outerEventTypes, subselectTypeService);
         Map<String, JoinedPropDesc> joinProps = joinPropDesc.getJoinProps();
+        Map<String, SubqueryRangeKeyDesc> rangeProps = joinPropDesc.getRangeProps();
 
-        if (joinProps.size() != 0)
+        if (joinProps.size() != 0 && rangeProps.isEmpty())
         {
             String indexedProps[] = joinProps.keySet().toArray(new String[joinProps.keySet().size()]);
-            int[] keyStreamNums = JoinedPropDesc.getKeyStreamNums(joinProps.values());
-            String[] keyProps = JoinedPropDesc.getKeyProperties(joinProps.values());
-            Class coercionTypes[] = JoinedPropDesc.getCoercionTypes(joinProps.values());
+            int[] keyStreamNums = JoinedPropUtil.getKeyStreamNums(joinProps.values());
+            String[] keyProps = JoinedPropUtil.getKeyProperties(joinProps.values());
+            Class coercionTypes[] = JoinedPropUtil.getCoercionTypes(joinProps.values());
 
             if (!joinPropDesc.isMustCoerce())
             {
@@ -2074,7 +2129,7 @@ public class EPStatementStartMethod
                 return new Pair<EventTable, TableLookupStrategy>(table, strategy);
             }
         }
-        else
+        else if (joinProps.isEmpty() && rangeProps.isEmpty())
         {
             UnindexedEventTable table = new UnindexedEventTable(0);
             if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
@@ -2082,6 +2137,46 @@ public class EPStatementStartMethod
             }
             return new Pair<EventTable, TableLookupStrategy>(table, new FullTableScanLookupStrategy(table));
         }
+        else if (joinProps.isEmpty() && rangeProps.size() == 1) 
+        {
+            String indexedProp = rangeProps.keySet().iterator().next();
+            SubqueryRangeKeyDesc rangeKey = rangeProps.values().iterator().next();
+            Class coercionType = QueryPlanIndexBuilder.getCoercionType(viewableEventType, indexedProp, rangeKey, outerEventTypes);
+            PropertySortedEventTable table;
+            if (coercionType == null) {
+                table = new PropertySortedEventTable(0, viewableEventType, indexedProp);
+            }
+            else {
+                table = new PropertySortedEventTableCoerced(0, viewableEventType, indexedProp, coercionType);
+            }
+            TableLookupStrategy strategy = new SortedTableLookupStrategy(outerEventTypes, rangeKey, table);
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("local buf, range property scan");
+            }
+            return new Pair<EventTable, TableLookupStrategy>(table, strategy);
+        }
+
+        /*
+        TODO
+        String indexedProps[] = joinProps.keySet().toArray(new String[joinProps.keySet().size()]);
+        String rangedProps[] = rangeProps.keySet().toArray(new String[rangeProps.keySet().size()]);
+        PropertyCompositeEventTable table = new PropertyCompositeEventTable(0, viewableEventType, indexedProps, null, rangedProps, null);
+
+        int[] keyStreamNums = JoinedPropUtil.getKeyStreamNums(joinProps.values());
+        String[] keyProps = JoinedPropUtil.getKeyProperties(joinProps.values());
+        Class coercionTypes[] = JoinedPropUtil.getCoercionTypes(joinProps.values());
+
+        int[] rangeStreamNums = JoinedPropUtil.getKeyStreamNumsRange(rangeProps.values());
+        List<RangeKeyDesc> rangeDescs = JoinedPropUtil.getRanges(rangeProps.values());
+        // TODO Class[] coercionTypes = JoinedPropDesc.getCoercionTypes(joinProps.values());
+
+        TableLookupStrategy strategy = new CompositeTableLookupStrategy(outerEventTypes, keyStreamNums, keyProps, coercionTypes, rangeStreamNums, rangeDescs, null, table);
+        if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+            queryPlanLog.info("local buf, key and range composite scan");
+        }
+        return new Pair<EventTable, TableLookupStrategy>(table, strategy);
+        */
+        return null;
     }
 
     // For delete actions from named windows

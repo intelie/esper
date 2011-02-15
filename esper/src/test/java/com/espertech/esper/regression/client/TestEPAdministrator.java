@@ -298,7 +298,7 @@ public class TestEPAdministrator extends TestCase
             assertEquals(expected, ex.getMessage());
         }
 
-        expected = "Incorrect syntax near 'goofy' near reserved keyword 'in' [goofy in in]"; 
+        expected = "Incorrect syntax near 'goofy' ('in' is a reserved keyword) near reserved keyword 'in' [goofy in in]";
         try {
             spi.compilePatternToNode(compiled);
             fail();

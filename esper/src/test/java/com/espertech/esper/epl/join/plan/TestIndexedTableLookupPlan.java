@@ -1,6 +1,8 @@
 package com.espertech.esper.epl.join.plan;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import com.espertech.esper.epl.join.exec.IndexedTableLookupStrategy;
@@ -25,10 +27,12 @@ public class TestIndexedTableLookupPlan extends TestCase
 
     public void testLookup()
     {
-        IndexedTableLookupPlan spec = new IndexedTableLookupPlan(0, 1, 0, new String[] {"intBoxed"});
+        IndexedTableLookupPlan spec = new IndexedTableLookupPlan(0, 1, "idx1", new String[] {"intBoxed"});
 
-        EventTable[][] indexes = new EventTable[2][];
-        indexes[1] = new EventTable[] {propertyMapEventIndex};
+        Map<String,EventTable>[] indexes = new Map[2];
+        indexes[0] = new HashMap<String,EventTable>();
+        indexes[1] = new HashMap<String,EventTable>();
+        indexes[1].put("idx1", propertyMapEventIndex);
 
         TableLookupStrategy lookupStrategy = spec.makeStrategy(indexes, types);
 

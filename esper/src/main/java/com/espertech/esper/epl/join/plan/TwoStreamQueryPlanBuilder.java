@@ -10,7 +10,8 @@ package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.type.OuterJoinType;
-import com.espertech.esper.util.JavaClassHelper;
+
+import java.util.List;
 
 /**
  * Builds a query plan for the simple 2-stream scenario.
@@ -31,28 +32,63 @@ public class TwoStreamQueryPlanBuilder
 
         TableLookupPlan lookupPlans[] = new TableLookupPlan[2];
 
-        // Without navigability, use full set indexes and lookup without key use
-        if (!queryGraph.isNavigable(0, 1))
-        {
-            String[][] unkeyedIndexProps = new String[][] {new String[0]};
+        // not navigable, full table scan
+        if (!queryGraph.isNavigableAtAll(0, 1)) {
 
-            indexSpecs[0] = new QueryPlanIndex(unkeyedIndexProps, new Class[][] {null});
-            indexSpecs[1] = new QueryPlanIndex(unkeyedIndexProps, new Class[][] {null});
-            lookupPlans[0] = new FullTableScanLookupPlan(0, 1, 0);
-            lookupPlans[1] = new FullTableScanLookupPlan(1, 0, 0);
+            indexSpecs[0] = QueryPlanIndex.makeIndex(new QueryPlanIndexItem(null, null, null, null));
+            indexSpecs[1] = QueryPlanIndex.makeIndex(new QueryPlanIndexItem(null, null, null, null));
+            lookupPlans[0] = new FullTableScanLookupPlan(0, 1, indexSpecs[1].getFirstIndexNum());
+            lookupPlans[1] = new FullTableScanLookupPlan(1, 0, indexSpecs[0].getFirstIndexNum());
         }
-        else
-        {
+        else {
             String[] keyProps = queryGraph.getKeyProperties(0, 1);
             String[] indexProps = queryGraph.getIndexProperties(0, 1);
-            Class[] coercionTypes = getCoercionTypes(typesPerStream, 0, 1, keyProps, indexProps);
+            Class[] keyCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(typesPerStream, 0, 1, keyProps, indexProps);
 
-            indexSpecs[0] = new QueryPlanIndex(new String[][] {queryGraph.getIndexProperties(1, 0)}, new Class[][] {coercionTypes});
-            indexSpecs[1] = new QueryPlanIndex(new String[][] {queryGraph.getIndexProperties(0, 1)}, new Class[][] {coercionTypes});
-            lookupPlans[0] = new IndexedTableLookupPlan(0, 1, 0, queryGraph.getKeyProperties(0, 1));
-            lookupPlans[1] = new IndexedTableLookupPlan(1, 0, 0, queryGraph.getKeyProperties(1, 0));
+            QueryGraphValue valueZeroOne = queryGraph.getGraphValue(0, 1, false);
+            QueryGraphValue valueOneZero = queryGraph.getGraphValue(1, 0, false);
+            String[] oneRangeIndexedProps = QueryGraphValueRange.getPropertyNamesValues(valueZeroOne.getRangeEntries());
+            String[] zeroRangeIndexedProps = QueryGraphValueRange.getPropertyNamesValues(valueOneZero.getRangeEntries());
+            Class[] oneRangeCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(typesPerStream, 0, 1, valueZeroOne.getRangeEntries());
+            Class[] zeroRangeCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(typesPerStream, 1, 0, valueOneZero.getRangeEntries());
+
+            QueryPlanIndexItem itemZero = new QueryPlanIndexItem(queryGraph.getIndexProperties(1, 0), keyCoercionTypes, zeroRangeIndexedProps, zeroRangeCoercionTypes);
+            indexSpecs[0] = QueryPlanIndex.makeIndex(itemZero);
+            QueryPlanIndexItem itemOne = new QueryPlanIndexItem(queryGraph.getIndexProperties(0, 1), keyCoercionTypes, oneRangeIndexedProps, oneRangeCoercionTypes);
+            indexSpecs[1] = QueryPlanIndex.makeIndex(itemOne);
+
+            String indexOneName = indexSpecs[1].getFirstIndexNum();
+            String indexZeroName = indexSpecs[0].getFirstIndexNum();
+
+            // straight no-range case means direct index lookup
+            if (valueZeroOne.getRangeEntries().isEmpty()) {
+                lookupPlans[0] = new IndexedTableLookupPlan(0, 1, indexOneName, queryGraph.getKeyProperties(0, 1));
+                lookupPlans[1] = new IndexedTableLookupPlan(1, 0, indexZeroName, queryGraph.getKeyProperties(1, 0));
+            }
+            // we have ranges
+            else {
+                // stream zero-to-one
+                if (keyProps.length == 0 && valueZeroOne.getRangeEntries().size() == 1) {
+                    List<RangeKeyDesc> zeroRangeKeyPairs = QueryGraphValueRange.getPropertyNamesRangeKey(valueZeroOne.getRangeEntries());
+                    lookupPlans[0] = new SortedTableLookupPlan(0, 1, indexOneName, zeroRangeKeyPairs.get(0));
+                }
+                else {
+                    List<RangeKeyDesc> zeroRangeKeyPairs = QueryGraphValueRange.getPropertyNamesRangeKey(valueZeroOne.getRangeEntries());
+                    lookupPlans[0] = new CompositeTableLookupPlan(0, 1, indexOneName, queryGraph.getKeyProperties(0, 1), zeroRangeKeyPairs);
+                }
+
+                // stream one-to-zero
+                if (keyProps.length == 0 && valueOneZero.getRangeEntries().size() == 1) {
+                    List<RangeKeyDesc> oneRangeKeyPairs = QueryGraphValueRange.getPropertyNamesRangeKey(valueOneZero.getRangeEntries());
+                    lookupPlans[1] = new SortedTableLookupPlan(1, 0, indexZeroName, oneRangeKeyPairs.get(0));
+                }
+                else {
+                    List<RangeKeyDesc> oneRangeKeyPairs = QueryGraphValueRange.getPropertyNamesRangeKey(valueOneZero.getRangeEntries());
+                    lookupPlans[1] = new CompositeTableLookupPlan(1, 0, indexZeroName, queryGraph.getKeyProperties(1, 0), oneRangeKeyPairs);
+                }
+            }                
         }
-
+        
         execNodeSpecs[0] = new TableLookupNode(lookupPlans[0]);
         execNodeSpecs[1] = new TableLookupNode(lookupPlans[1]);
 
@@ -71,48 +107,5 @@ public class TwoStreamQueryPlanBuilder
         }
 
         return new QueryPlan(indexSpecs, execNodeSpecs);
-    }
-
-    /**
-     * Returns null if no coercion is required, or an array of classes for use in coercing the
-     * lookup keys and index keys into a common type.
-     * @param typesPerStream is the event types for each stream
-     * @param lookupStream is the stream looked up from
-     * @param indexedStream is the indexed stream
-     * @param keyProps is the properties to use to look up
-     * @param indexProps is the properties to index on
-     * @return coercion types, or null if none required
-     */
-    protected static Class[] getCoercionTypes(EventType[] typesPerStream,
-                                            int lookupStream,
-                                            int indexedStream,
-                                            String[] keyProps,
-                                            String[] indexProps)
-    {
-        // Determine if any coercion is required
-        if (indexProps.length != keyProps.length)
-        {
-            throw new IllegalStateException("Mismatch in the number of key and index properties");
-        }
-
-        Class[] coercionTypes = new Class[indexProps.length];
-        boolean mustCoerce = false;
-        for (int i = 0; i < keyProps.length; i++)
-        {
-            Class keyPropType = JavaClassHelper.getBoxedType(typesPerStream[lookupStream].getPropertyType(keyProps[i]));
-            Class indexedPropType = JavaClassHelper.getBoxedType(typesPerStream[indexedStream].getPropertyType(indexProps[i]));
-            Class coercionType = indexedPropType;
-            if (keyPropType != indexedPropType)
-            {
-                coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, indexedPropType);
-                mustCoerce = true;
-            }
-            coercionTypes[i] = coercionType;
-        }
-        if (!mustCoerce)
-        {
-            return null;
-        }
-        return coercionTypes;
     }
 }

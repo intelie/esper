@@ -18,8 +18,10 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.view.Viewable;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Query plan for executing a set of lookup instructions and assembling an end result via
@@ -58,7 +60,7 @@ public class LookupInstructionQueryPlanNode extends QueryPlanNode
         this.assemblyInstructions = assemblyInstructions;
     }
 
-    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
+    public ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         LookupInstructionExec execs[] = new LookupInstructionExec[lookupInstructions.size()];
 
@@ -72,6 +74,13 @@ public class LookupInstructionQueryPlanNode extends QueryPlanNode
 
         return new LookupInstructionExecNode(rootStream, rootStreamName,
                 numStreams, execs, requiredPerStream, assemblyInstructions.toArray(new BaseAssemblyNode[assemblyInstructions.size()]));
+    }
+
+    @Override
+    public void addIndexes(HashSet<String> usedIndexes) {
+        for (LookupInstructionPlan plan : lookupInstructions) {
+            plan.addIndexes(usedIndexes);
+        }
     }
 
     protected void print(IndentWriter writer)

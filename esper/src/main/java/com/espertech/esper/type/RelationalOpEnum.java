@@ -52,6 +52,19 @@ public enum RelationalOpEnum
         this.expressionText = expressionText;
     }
 
+    public RelationalOpEnum reversed() {
+        if (GT == this) {
+            return LT;
+        }
+        else if (GE == this) {
+            return LE;
+        }
+        else if (LE == this) {
+            return GE;
+        }
+        return GT;
+    }
+
     /**
      * Parses the operator and returns an enum for the operator.
      * @param op to parse

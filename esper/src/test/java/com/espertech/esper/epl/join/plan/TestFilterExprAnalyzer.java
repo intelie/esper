@@ -16,7 +16,7 @@ public class TestFilterExprAnalyzer extends TestCase
         QueryGraph graph = new QueryGraph(2);
         FilterExprAnalyzer.analyzeEqualsNode(equalsNode, graph);
 
-        assertTrue(graph.isNavigable(0, 1));
+        assertTrue(graph.isNavigablePropertyEquals(0, 1));
         ArrayAssertionUtil.assertEqualsExactOrder(graph.getKeyProperties(0, 1), new String[] {"intPrimitive"});
         ArrayAssertionUtil.assertEqualsExactOrder(graph.getIndexProperties(1, 0), new String[] {"intPrimitive"});
         ArrayAssertionUtil.assertEqualsExactOrder(graph.getKeyProperties(1, 0), new String[] {"intBoxed"});
@@ -31,7 +31,7 @@ public class TestFilterExprAnalyzer extends TestCase
         QueryGraph graph = new QueryGraph(2);
         FilterExprAnalyzer.analyzeAndNode(andNode, graph);
 
-        assertTrue(graph.isNavigable(0, 1));
+        assertTrue(graph.isNavigablePropertyEquals(0, 1));
         ArrayAssertionUtil.assertEqualsExactOrder(graph.getKeyProperties(0, 1), new String[] {"intPrimitive","string"});
         ArrayAssertionUtil.assertEqualsExactOrder(graph.getIndexProperties(1, 0), new String[] {"intPrimitive","string"});
         ArrayAssertionUtil.assertEqualsExactOrder(graph.getKeyProperties(1, 0), new String[] {"intBoxed","string"});

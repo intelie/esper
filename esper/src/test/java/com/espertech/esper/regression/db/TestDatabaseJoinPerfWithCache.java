@@ -1,5 +1,6 @@
 package com.espertech.esper.regression.db;
 
+import com.espertech.esper.support.bean.SupportBeanRange;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean;
@@ -33,6 +34,70 @@ public class TestDatabaseJoinPerfWithCache extends TestCase
 
         epServiceRetained = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epServiceRetained.initialize();
+    }
+
+    public void testRangeIndex() {
+        epServiceRetained.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
+
+        String stmtText = "select * from SupportBeanRange sbr, "+
+                " sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 between rangeStart and rangeEnd";
+
+        EPStatement statement = epServiceRetained.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            epServiceRetained.getEPRuntime().sendEvent(new SupportBeanRange("R", 10, 12));
+            assertEquals(3,listener.getAndResetLastNewData().length);
+        }
+        long endTime = System.currentTimeMillis();
+        long delta = endTime - startTime;
+        log.info("delta=" + delta);
+        assertTrue("Delta=" + delta, delta < 500);
+
+        // test coercion
+        statement.destroy();
+        stmtText = "select * from SupportBeanRange sbr, "+
+                " sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 between rangeStartLong and rangeEndLong";
+
+        statement = epServiceRetained.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+        epServiceRetained.getEPRuntime().sendEvent(SupportBeanRange.makeLong("R", "K", 10L, 12L));
+        assertEquals(3,listener.getAndResetLastNewData().length);
+    }
+
+    public void testKeyAndRangeIndex() {
+        epServiceRetained.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
+
+        String stmtText = "select * from SupportBeanRange sbr, "+
+                " sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol1 = key and mycol3 between rangeStart and rangeEnd";
+
+        EPStatement statement = epServiceRetained.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            epServiceRetained.getEPRuntime().sendEvent(new SupportBeanRange("R", "11", 10, 12));
+            assertEquals(1,listener.getAndResetLastNewData().length);
+        }
+        long endTime = System.currentTimeMillis();
+        long delta = endTime - startTime;
+        log.info("delta=" + delta);
+        assertTrue("Delta=" + delta, delta < 500);
+
+        // test coercion
+        statement.destroy();
+        stmtText = "select * from SupportBeanRange sbr, "+
+                " sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol1 = key and mycol3 between rangeStartLong and rangeEndLong";
+
+        statement = epServiceRetained.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+        epServiceRetained.getEPRuntime().sendEvent(SupportBeanRange.makeLong("R", "11", 10L, 12L));
+        assertEquals(1,listener.getAndResetLastNewData().length);
     }
 
     /**

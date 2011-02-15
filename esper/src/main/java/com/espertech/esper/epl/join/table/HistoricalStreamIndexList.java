@@ -141,13 +141,18 @@ public class HistoricalStreamIndexList
 
         // determine which index number the polling stream must use
         int indexUsed = 0;
+        boolean found = false;
         for (List<Integer> desc : indexesUsedByStreams.values())
         {
             if (desc.contains(streamViewStreamNum))
             {
+                found = true;
                 break;
             }
             indexUsed++;
+        }
+        if (!found) {
+            throw new IllegalStateException("Index not found for use by stream " + streamViewStreamNum);
         }
 
         // Use one of the indexes built by the master index and a lookup strategy

@@ -16,6 +16,7 @@ import com.espertech.esper.epl.join.table.EventTable;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,9 +43,9 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
      * @param queryStrategy is the lookup query strategy for the stream
      * @param selfJoinRepositoryResets indicators for any stream's table that reset after strategy executon
      */
-    public JoinSetComposerStreamToWinImpl(EventTable[][] repositories, boolean isPureSelfJoin, int streamNumber, QueryStrategy queryStrategy, boolean[] selfJoinRepositoryResets)
+    public JoinSetComposerStreamToWinImpl(Map<String, EventTable>[] repositories, boolean isPureSelfJoin, int streamNumber, QueryStrategy queryStrategy, boolean[] selfJoinRepositoryResets)
     {
-        this.repositories = repositories;
+        this.repositories = JoinSetComposerUtil.toArray(repositories);
         this.streamNumber = streamNumber;
         this.queryStrategy = queryStrategy;
 

@@ -16,6 +16,7 @@ import com.espertech.esper.client.EventBean;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,10 +41,10 @@ public class JoinSetComposerImpl implements JoinSetComposer
      * @param isPureSelfJoin - for self-join only
      * @param exprEvaluatorContext expression evaluation context
      */
-    public JoinSetComposerImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, boolean isPureSelfJoin,
+    public JoinSetComposerImpl(Map<String, EventTable>[] repositories, QueryStrategy[] queryStrategies, boolean isPureSelfJoin,
                                ExprEvaluatorContext exprEvaluatorContext)
     {
-        this.repositories = repositories;
+        this.repositories = JoinSetComposerUtil.toArray(repositories);
         this.queryStrategies = queryStrategies;
         this.isPureSelfJoin = isPureSelfJoin;
         this.exprEvaluatorContext = exprEvaluatorContext;

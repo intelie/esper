@@ -29,6 +29,14 @@ public class EventBeanUtility
 {
     private static final EventBean[] nullArray = new EventBean[0];
 
+    public static EventPropertyGetter getSafePropertyGetter(EventType type, String propertyName) {
+        EventPropertyGetter getter = type.getGetter(propertyName);
+        if (getter == null) {
+            throw new IllegalStateException("Property " + propertyName + " not found by table");
+        }
+        return getter;
+    }
+
     /**
      * Resizes an array of events to a new size.
      * <p>
@@ -303,6 +311,41 @@ public class EventBeanUtility
     {
         Object[] keyValues = getPropertyArray(event, propertyGetters);
         return new MultiKeyUntyped(keyValues);
+    }
+
+
+    public static MultiKeyUntyped getMultiKey(EventBean event, EventPropertyGetter[] propertyGetters, Class[] coercionTypes) {
+        Object[] keyValues = getPropertyArray(event, propertyGetters);
+        if (coercionTypes == null) {
+            return new MultiKeyUntyped(keyValues);
+        }
+        for (int i = 0; i < coercionTypes.length; i++)
+        {
+            Object key = keyValues[i];
+            if ((key != null) && (!key.getClass().equals(coercionTypes[i])))
+            {
+                if (key instanceof Number)
+                {
+                    key = JavaClassHelper.coerceBoxed((Number) key, coercionTypes[i]);
+                    keyValues[i] = key;
+                }
+            }
+        }
+        return new MultiKeyUntyped(keyValues);
+    }
+
+    public static Object coerce(Object target, Class coercionType) {
+        if (coercionType == null) {
+            return target;
+        }
+        if (target != null && !target.getClass().equals(coercionType))
+        {
+            if (target instanceof Number)
+            {
+                return JavaClassHelper.coerceBoxed((Number) target, coercionType);
+            }
+        }
+        return target;
     }
 
     /**

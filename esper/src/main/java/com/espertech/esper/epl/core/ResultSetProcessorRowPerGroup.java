@@ -1608,4 +1608,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
         return keys;
     }
+
+    public boolean hasAggregation() {
+        return true;
+    }
 }

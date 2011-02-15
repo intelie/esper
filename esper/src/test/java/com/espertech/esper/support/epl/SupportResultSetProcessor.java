@@ -55,4 +55,9 @@ public class SupportResultSetProcessor implements ResultSetProcessor
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public boolean hasAggregation() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

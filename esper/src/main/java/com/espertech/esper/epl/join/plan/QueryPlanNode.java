@@ -10,6 +10,9 @@ package com.espertech.esper.epl.join.plan;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Map;
+
 import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
@@ -30,7 +33,9 @@ public abstract class QueryPlanNode
      * @param historicalStreamIndexLists index management for historical streams
      * @return execution node matching spec
      */
-    public abstract ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists);
+    public abstract ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists);
+
+    public abstract void addIndexes(HashSet<String> usedIndexes);
 
     /**
      * Print a long readable format of the query node to the supplied PrintWriter.

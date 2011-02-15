@@ -300,7 +300,7 @@ public class NamedWindowRootView extends ViewSupport
         }
         Arrays.sort(joinedPropDesc);
         Arrays.sort(indexedPropDesc);
-        keyPropertiesJoin = JoinedPropDesc.getKeyProperties(joinedPropDesc);
+        keyPropertiesJoin = JoinedPropUtil.getKeyProperties(joinedPropDesc);
 
         // Get the table for this index
         PropertyIndexedEventTable table = indexRepository.addTable(indexedPropDesc, dataWindowContents, namedWindowEventType, mustCoerce);
@@ -568,10 +568,10 @@ public class NamedWindowRootView extends ViewSupport
         JoinedPropDesc[] propsJoinedArr = propsJoined.toArray(new JoinedPropDesc[propsJoined.size()]);
         Arrays.sort(propsJoinedArr);
 
-        String[] indexPropertiesJoin = JoinedPropDesc.getIndexProperties(propsJoinedArr);
-        String[] keyPropertiesJoin = JoinedPropDesc.getKeyProperties(propsJoinedArr);
-        Class[] coercionTypes = JoinedPropDesc.getCoercionTypes(propsJoinedArr);
-        int[] streamNumbersPerProperty = JoinedPropDesc.getKeyStreamNums(propsJoinedArr);
+        String[] indexPropertiesJoin = JoinedPropUtil.getIndexProperties(propsJoinedArr);
+        String[] keyPropertiesJoin = JoinedPropUtil.getKeyProperties(propsJoinedArr);
+        Class[] coercionTypes = JoinedPropUtil.getCoercionTypes(propsJoinedArr);
+        int[] streamNumbersPerProperty = JoinedPropUtil.getKeyStreamNums(propsJoinedArr);
 
         // Add all joined fields to an array for sorting
         IndexedPropDesc[] indexedPropDesc = new IndexedPropDesc[keyPropertiesJoin.length];

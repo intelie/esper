@@ -1,13 +1,10 @@
 package com.espertech.esper.regression.epl;
 
+import com.espertech.esper.support.bean.*;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.support.bean.SupportBean_S0;
-import com.espertech.esper.support.bean.SupportBean_S1;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -17,7 +14,7 @@ import com.espertech.esper.util.SerializableObjectCopier;
 public class Test2StreamOuterJoin extends TestCase
 {
     private EPServiceProvider epService;
-    private SupportUpdateListener updateListener;
+    private SupportUpdateListener listener;
     private EPStatement outerJoinView;
     private String[] fields = new String[] {"s0.id", "s0.p00", "s1.id", "s1.p10"};
 
@@ -30,7 +27,7 @@ public class Test2StreamOuterJoin extends TestCase
         config.getEngineDefaults().getLogging().setEnableQueryPlan(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        updateListener = new SupportUpdateListener();
+        listener = new SupportUpdateListener();
 
         int count = 100;
         for (int i = 0; i < eventsS0.length; i++)
@@ -44,6 +41,80 @@ public class Test2StreamOuterJoin extends TestCase
         }
     }
 
+    public void testRangeOuterJoin() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
+
+        String stmtOne = "select sb.string as sbstr, sb.intPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+                      "from SupportBean.win:keepall() sb " +
+                      "full outer join " +
+                      "SupportBeanRange.win:keepall() sbr " +
+                      "on string = key " +
+                      "where intPrimitive between rangeStart and rangeEnd " +
+                      "order by rangeStart asc, intPrimitive asc";
+        runAssertion(stmtOne);
+
+        String stmtTwo = "select sb.string as sbstr, sb.intPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+                      "from SupportBeanRange.win:keepall() sbr " +
+                      "full outer join " +
+                      "SupportBean.win:keepall() sb " +
+                      "on string = key " +
+                      "where intPrimitive between rangeStart and rangeEnd " +
+                      "order by rangeStart asc, intPrimitive asc";
+        runAssertion(stmtTwo);
+
+        String stmtThree = "select sb.string as sbstr, sb.intPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+                      "from SupportBeanRange.win:keepall() sbr " +
+                      "full outer join " +
+                      "SupportBean.win:keepall() sb " +
+                      "on string = key " +
+                      "where intPrimitive >= rangeStart and intPrimitive <= rangeEnd " +
+                      "order by rangeStart asc, intPrimitive asc";
+        runAssertion(stmtThree);
+    }
+
+    private void runAssertion(String epl) {
+
+        String fields[] = "sbstr,sbint,sbrk,sbrs,sbre".split(",");
+        outerJoinView = epService.getEPAdministrator().createEPL(epl);
+        outerJoinView.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("K1", 10));
+        epService.getEPRuntime().sendEvent(new SupportBeanRange("R1", "K1", 20, 30));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("K1", 30));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"K1", 30, "K1", 20, 30}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("K1", 40));
+        epService.getEPRuntime().sendEvent(new SupportBean("K1", 31));
+        epService.getEPRuntime().sendEvent(new SupportBean("K1", 19));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBeanRange("R2", "K1", 39, 41));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"K1", 40, "K1", 39, 41}});
+
+        epService.getEPRuntime().sendEvent(new SupportBeanRange("R2", "K1", 38, 40));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"K1", 40, "K1", 38, 40}});
+
+        epService.getEPRuntime().sendEvent(new SupportBeanRange("R2", "K1", 40, 42));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {{"K1", 40, "K1", 40, 42}});
+
+        epService.getEPRuntime().sendEvent(new SupportBeanRange("R2", "K1", 41, 42));
+        epService.getEPRuntime().sendEvent(new SupportBeanRange("R2", "K1", 38, 39));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("K1", 41));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][] {
+                {"K1", 41, "K1", 39, 41}, {"K1", 41, "K1", 40, 42}, {"K1", 41, "K1", 41, 42}});
+
+        epService.getEPRuntime().sendEvent(new SupportBeanRange("R2", "K1", 35, 42));
+        ArrayAssertionUtil.assertPropsPerRow(listener.getAndResetLastNewData(), fields, new Object[][]
+                {{"K1", 40, "K1", 35, 42}, {"K1", 41, "K1", 35, 42}});
+
+        outerJoinView.destroy();
+    }
+
     public void testFullOuterIteratorGroupBy()
     {
         String stmt = "select string, intPrimitive, symbol, volume " +
@@ -54,7 +125,7 @@ public class Test2StreamOuterJoin extends TestCase
                       "order by string, intPrimitive, symbol, volume";
 
         outerJoinView = epService.getEPAdministrator().createEPL(stmt);
-        outerJoinView.addListener(updateListener);
+        outerJoinView.addListener(listener);
 
         sendEventMD("c0", 200L);
         sendEventMD("c3", 400L);
@@ -106,27 +177,27 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Send S0[0]
         sendEvent(eventsS0[0]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), 100, "0", null, null);
+        compareEvent(listener.assertOneGetNewAndReset(), 100, "0", null, null);
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{100, "0", null, null}});
 
         // Send S1[1]
         sendEvent(eventsS1[1]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), null, null, 201, "1");
+        compareEvent(listener.assertOneGetNewAndReset(), null, null, 201, "1");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{100, "0", null, null},
                                 {null, null, 201, "1"}});
 
         // Send S1[2] and S0[2]
         sendEvent(eventsS1[2]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), null, null, 202, "2");
+        compareEvent(listener.assertOneGetNewAndReset(), null, null, 202, "2");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{100, "0", null, null},
                                 {null, null, 201, "1"},
                                 {null, null, 202, "2"} });
 
         sendEvent(eventsS0[2]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), 102, "2", 202, "2");
+        compareEvent(listener.assertOneGetNewAndReset(), 102, "2", 202, "2");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{100, "0", null, null},
                                 {null, null, 201, "1"},
@@ -134,14 +205,14 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Send S0[3] and S1[3]
         sendEvent(eventsS0[3]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), 103, "3", null, null);
+        compareEvent(listener.assertOneGetNewAndReset(), 103, "3", null, null);
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{100, "0", null, null},
                                 {null, null, 201, "1"},
                                 {102, "2", 202, "2"},
                                 {103, "3", null, null}});
         sendEvent(eventsS1[3]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), 103, "3", 203, "3");
+        compareEvent(listener.assertOneGetNewAndReset(), 103, "3", 203, "3");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{100, "0", null, null},
                                 {null, null, 201, "1"},
@@ -150,11 +221,11 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Send S0[4], pushes S0[0] out of window
         sendEvent(eventsS0[4]);
-        EventBean oldEvent = updateListener.getLastOldData()[0];
-        EventBean newEvent = updateListener.getLastNewData()[0];
+        EventBean oldEvent = listener.getLastOldData()[0];
+        EventBean newEvent = listener.getLastNewData()[0];
         compareEvent(oldEvent, 100, "0", null, null);
         compareEvent(newEvent, 104, "4", null, null);
-        updateListener.reset();
+        listener.reset();
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{null, null, 201, "1"},
                                 {102, "2", 202, "2"},
@@ -163,7 +234,7 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Send S1[4]
         sendEvent(eventsS1[4]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), 104, "4", 204, "4");
+        compareEvent(listener.assertOneGetNewAndReset(), 104, "4", 204, "4");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{null, null, 201, "1"},
                                 {102, "2", 202, "2"},
@@ -172,7 +243,7 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Send S1[5]
         sendEvent(eventsS1[5]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), null, null, 205, "5");
+        compareEvent(listener.assertOneGetNewAndReset(), null, null, 205, "5");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{null, null, 201, "1"},
                                 {102, "2", 202, "2"},
@@ -182,8 +253,8 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Send S1[6], pushes S1[1] out of window
         sendEvent(eventsS1[5]);
-        oldEvent = updateListener.getLastOldData()[0];
-        newEvent = updateListener.getLastNewData()[0];
+        oldEvent = listener.getLastOldData()[0];
+        newEvent = listener.getLastNewData()[0];
         compareEvent(oldEvent, null, null, 201, "1");
         compareEvent(newEvent, null, null, 205, "5");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
@@ -208,7 +279,7 @@ public class Test2StreamOuterJoin extends TestCase
         String stmtText = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from com.espertech.esper.support.bean.SupportBean_S0.win:keepall() as s0 left outer join com.espertech.esper.support.bean.SupportBean_S1.win:keepall() as s1 on s0.p00 = s1.p10 and s1.p11 = s0.p01";
         assertEquals(stmtText, model.toEPL());
         outerJoinView = epService.getEPAdministrator().create(model);
-        outerJoinView.addListener(updateListener);
+        outerJoinView.addListener(listener);
 
         assertMultiColumnLeft();
 
@@ -225,7 +296,7 @@ public class Test2StreamOuterJoin extends TestCase
             " on s0.p00 = s1.p10 and s0.p01 = s1.p11";
 
         outerJoinView = epService.getEPAdministrator().createEPL(joinStatement);
-        outerJoinView.addListener(updateListener);
+        outerJoinView.addListener(listener);
 
         assertMultiColumnLeft();
     }
@@ -234,16 +305,16 @@ public class Test2StreamOuterJoin extends TestCase
     {
         String fields[] = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11".split(",");
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "A_1", "B_1"));
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", null, null, null});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", null, null, null});
 
         epService.getEPRuntime().sendEvent(new SupportBean_S1(2, "A_1", "B_1"));
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", 2, "A_1", "B_1"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", 2, "A_1", "B_1"});
 
         epService.getEPRuntime().sendEvent(new SupportBean_S1(3, "A_2", "B_1"));
-        assertFalse(updateListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportBean_S1(4, "A_1", "B_2"));
-        assertFalse(updateListener.isInvoked());
+        assertFalse(listener.isInvoked());
     }
 
     public void testMultiColumnRight()
@@ -256,19 +327,19 @@ public class Test2StreamOuterJoin extends TestCase
             " on s0.p00 = s1.p10 and s1.p11 = s0.p01";
 
         outerJoinView = epService.getEPAdministrator().createEPL(joinStatement);
-        outerJoinView.addListener(updateListener);
+        outerJoinView.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "A_1", "B_1"));
-        assertFalse(updateListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportBean_S1(2, "A_1", "B_1"));
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", 2, "A_1", "B_1"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", 2, "A_1", "B_1"});
 
         epService.getEPRuntime().sendEvent(new SupportBean_S1(3, "A_2", "B_1"));
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 3, "A_2", "B_1"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 3, "A_2", "B_1"});
 
         epService.getEPRuntime().sendEvent(new SupportBean_S1(4, "A_1", "B_2"));
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 4, "A_1", "B_2"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 4, "A_1", "B_2"});
     }
 
     public void testMultiColumnRightCoercion()
@@ -281,28 +352,28 @@ public class Test2StreamOuterJoin extends TestCase
             " on s0.intPrimitive = s1.doublePrimitive and s1.intPrimitive = s0.doublePrimitive";
 
         outerJoinView = epService.getEPAdministrator().createEPL(joinStatement);
-        outerJoinView.addListener(updateListener);
+        outerJoinView.addListener(listener);
 
         sendEvent("S1_1", 10, 20d);
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, "S1_1"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, "S1_1"});
 
         sendEvent("S0_2", 11, 22d);
-        assertFalse(updateListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         sendEvent("S0_3", 11, 21d);
-        assertFalse(updateListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         sendEvent("S0_4", 12, 21d);
-        assertFalse(updateListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         sendEvent("S1_2", 11, 22d);
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, "S1_2"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, "S1_2"});
 
         sendEvent("S1_3", 22, 11d);
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"S0_2", "S1_3"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"S0_2", "S1_3"});
 
         sendEvent("S0_5", 22, 11d);
-        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"S0_5", "S1_2"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"S0_5", "S1_2"});
     }
 
     public void testRightOuterJoin()
@@ -312,26 +383,26 @@ public class Test2StreamOuterJoin extends TestCase
         // Send S0 events, no events expected
         sendEvent(eventsS0[0]);
         sendEvent(eventsS0[1]);
-        assertFalse(updateListener.isInvoked());
+        assertFalse(listener.isInvoked());
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields, null);
 
         // Send S1[2]
         sendEvent(eventsS1[2]);
-        EventBean event = updateListener.assertOneGetNewAndReset();
+        EventBean event = listener.assertOneGetNewAndReset();
         compareEvent(event, null, null, 202, "2");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{null, null, 202, "2"}});
 
         // Send S0[2] events, joined event expected
         sendEvent(eventsS0[2]);
-        event = updateListener.assertOneGetNewAndReset();
+        event = listener.assertOneGetNewAndReset();
         compareEvent(event, 102, "2", 202, "2");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", 202, "2"}});
 
         // Send S1[3]
         sendEvent(eventsS1[3]);
-        event = updateListener.assertOneGetNewAndReset();
+        event = listener.assertOneGetNewAndReset();
         compareEvent(event, null, null, 203, "3");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", 202, "2"},
@@ -339,7 +410,7 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Send some more S0 events
         sendEvent(eventsS0[3]);
-        event = updateListener.assertOneGetNewAndReset();
+        event = listener.assertOneGetNewAndReset();
         compareEvent(event, 103, "3", 203, "3");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", 202, "2"},
@@ -347,14 +418,14 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Send some more S0 events
         sendEvent(eventsS0[4]);
-        assertFalse(updateListener.isInvoked());
+        assertFalse(listener.isInvoked());
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", 202, "2"},
                                 {103, "3", 203, "3"}});
 
         // Push S0[2] out of the window
         sendEvent(eventsS0[5]);
-        event = updateListener.assertOneGetOldAndReset();
+        event = listener.assertOneGetOldAndReset();
         compareEvent(event, 102, "2", 202, "2");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{null, null, 202, "2"},
@@ -362,11 +433,11 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Some more S1 events
         sendEvent(eventsS1[6]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), null, null, 206, "6");
+        compareEvent(listener.assertOneGetNewAndReset(), null, null, 206, "6");
         sendEvent(eventsS1[7]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), null, null, 207, "7");
+        compareEvent(listener.assertOneGetNewAndReset(), null, null, 207, "7");
         sendEvent(eventsS1[8]);
-        compareEvent(updateListener.assertOneGetNewAndReset(), null, null, 208, "8");
+        compareEvent(listener.assertOneGetNewAndReset(), null, null, 208, "8");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{null, null, 202, "2"},
                                 {103, "3", 203, "3"},
@@ -376,8 +447,8 @@ public class Test2StreamOuterJoin extends TestCase
 
         // Push S1[2] out of the window
         sendEvent(eventsS1[9]);
-        EventBean oldEvent = updateListener.getLastOldData()[0];
-        EventBean newEvent = updateListener.getLastNewData()[0];
+        EventBean oldEvent = listener.getLastOldData()[0];
+        EventBean newEvent = listener.getLastNewData()[0];
         compareEvent(oldEvent, null, null, 202, "2");
         compareEvent(newEvent, null, null, 209, "9");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
@@ -396,19 +467,19 @@ public class Test2StreamOuterJoin extends TestCase
         sendEvent(eventsS1[0]);
         sendEvent(eventsS1[1]);
         sendEvent(eventsS1[3]);
-        assertNull(updateListener.getLastNewData());    // No events expected
+        assertNull(listener.getLastNewData());    // No events expected
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields, null);
 
         // Send S0 event, expect event back from outer join
         sendEvent(eventsS0[2]);
-        EventBean event = updateListener.assertOneGetNewAndReset();
+        EventBean event = listener.assertOneGetNewAndReset();
         compareEvent(event, 102, "2", null, null);
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", null, null}});
 
         // Send S1 event matching S0, expect event back
         sendEvent(eventsS1[2]);
-        event = updateListener.assertOneGetNewAndReset();
+        event = listener.assertOneGetNewAndReset();
         compareEvent(event, 102, "2", 202, "2");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", 202, "2"}});
@@ -417,13 +488,13 @@ public class Test2StreamOuterJoin extends TestCase
         sendEvent(eventsS1[4]);
         sendEvent(eventsS1[5]);
         sendEvent(eventsS1[6]);
-        assertNull(updateListener.getLastNewData());    // No events expected
+        assertNull(listener.getLastNewData());    // No events expected
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", 202, "2"}});
 
         // Send event, expect a join result
         sendEvent(eventsS0[5]);
-        event = updateListener.assertOneGetNewAndReset();
+        event = listener.assertOneGetNewAndReset();
         compareEvent(event, 105, "5", 205, "5");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", 202, "2"},
@@ -432,7 +503,7 @@ public class Test2StreamOuterJoin extends TestCase
         // Let S1[2] go out of the window (lenght 5), expected old join event
         sendEvent(eventsS1[7]);
         sendEvent(eventsS1[8]);
-        event = updateListener.assertOneGetOldAndReset();
+        event = listener.assertOneGetOldAndReset();
         compareEvent(event, 102, "2", 202, "2");
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", null, null},
@@ -440,7 +511,7 @@ public class Test2StreamOuterJoin extends TestCase
 
         // S0[9] should generate an outer join event
         sendEvent(eventsS0[9]);
-        event = updateListener.assertOneGetNewAndReset();
+        event = listener.assertOneGetNewAndReset();
         compareEvent(event, 109, "9", null, null);
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
                 new Object[][] {{102, "2", null, null},
@@ -449,8 +520,8 @@ public class Test2StreamOuterJoin extends TestCase
 
         // S0[2] Should leave the window (length 3), should get OLD and NEW event
         sendEvent(eventsS0[10]);
-        EventBean oldEvent = updateListener.getLastOldData()[0];
-        EventBean newEvent = updateListener.getLastNewData()[0];
+        EventBean oldEvent = listener.getLastOldData()[0];
+        EventBean newEvent = listener.getLastNewData()[0];
         compareEvent(oldEvent, 102, "2", null, null);     // S1[2] has left the window already
         compareEvent(newEvent, 110, "10", null, null);
         ArrayAssertionUtil.assertEqualsAnyOrder(outerJoinView.iterator(), fields,
@@ -510,7 +581,7 @@ public class Test2StreamOuterJoin extends TestCase
             " on s0.p00 = s1.p10";
 
         outerJoinView = epService.getEPAdministrator().createEPL(joinStatement);
-        outerJoinView.addListener(updateListener);
+        outerJoinView.addListener(listener);
 
         return outerJoinView;
     }

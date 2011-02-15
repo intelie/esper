@@ -17,7 +17,9 @@ import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.view.Viewable;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Plan to perform a nested iteration over child nodes.
@@ -60,7 +62,7 @@ public class NestedIterationNode extends QueryPlanNode
         return childNodes;
     }
 
-    public ExecNode makeExec(EventTable[][] indexPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexList)
+    public ExecNode makeExec(Map<String, EventTable>[] indexPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexList)
     {
         if (childNodes.isEmpty())
         {
@@ -74,6 +76,13 @@ public class NestedIterationNode extends QueryPlanNode
             execNode.addChildNode(childExec);
         }
         return execNode;
+    }
+
+    public void addIndexes(HashSet<String> usedIndexes) {
+        for (QueryPlanNode child : childNodes)
+        {
+            child.addIndexes(usedIndexes);
+        }
     }
 
     public void print(IndentWriter indentWriter)

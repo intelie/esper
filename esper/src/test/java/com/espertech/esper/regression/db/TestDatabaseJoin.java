@@ -81,6 +81,36 @@ public class TestDatabaseJoin extends TestCase
         stmt.destroy();
     }
 
+    public void test2HistoricalStarInner()
+    {
+        String[] fields = "a,b,c,d".split(",");
+        String stmtText = "select string as a, intPrimitive as b, s1.myvarchar as c, s2.myvarchar as d from " +
+                SupportBean.class.getName() + ".win:keepall() as s0 " +
+                " inner join " +
+                " sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} <> mytesttable.mybigint'] as s1 " +
+                " on s1.myvarchar=s0.string " +
+                " inner join " +
+                " sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} <> mytesttable.myint'] as s2 " +
+                " on s2.myvarchar=s0.string ";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, null);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 10));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("B", 3));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"B", 3, "B", "B"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("D", 4));
+        assertFalse(listener.isInvoked());
+
+        stmt.destroy();
+    }
+
     public void testVariables()
     {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);

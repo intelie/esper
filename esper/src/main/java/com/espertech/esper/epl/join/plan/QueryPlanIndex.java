@@ -8,84 +8,66 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
+import com.espertech.esper.util.UuidGenerator;
+
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Specifies an index to build as part of an overall query plan.
  */
 public class QueryPlanIndex
 {
-    private String[][] indexProps;
-    private Class[][] optCoercionTypes;
+    private Map<String, QueryPlanIndexItem> items;
 
-    /**
-     * Ctor.
-     * @param indexProps - array of property names with the first dimension suplying the number of
-     * distinct indexes. The second dimension can be empty and indicates a full table scan.
-     * @param optCoercionTypes - array of coercion types for each index, or null entry for no coercion required
-     */
-    public QueryPlanIndex(String[][] indexProps, Class[][] optCoercionTypes)
-    {
-        if ((indexProps == null) || (indexProps.length == 0) || (optCoercionTypes == null))
-        {
-            throw new IllegalArgumentException("Null or empty index properites or coercion types-per-index parameter is supplied, expecting at least one entry");
+    public QueryPlanIndex(Map<String, QueryPlanIndexItem> items) {
+        if (items == null) {
+            throw new IllegalArgumentException("Null value not allowed for items");
         }
-        this.indexProps = indexProps;
-        this.optCoercionTypes = optCoercionTypes;
+        this.items = items;
     }
 
-    /**
-     * Returns property names of all indexes.
-     * @return property names array
-     */
-    public String[][] getIndexProps()
-    {
-        return indexProps;
+    public Map<String, QueryPlanIndexItem> getItems() {
+        return items;
     }
 
-    /**
-     * Returns property names of all indexes.
-     * @return property names array
-     */
-    public Class[][] getCoercionTypesPerIndex()
-    {
-        return optCoercionTypes;
+    public static QueryPlanIndex makeIndex(QueryPlanIndexItem ... items) {
+        Map<String, QueryPlanIndexItem> result = new LinkedHashMap<String, QueryPlanIndexItem>();
+        for (QueryPlanIndexItem item : items) {
+            result.put(UuidGenerator.generate(), item);            
+        }
+        return new QueryPlanIndex(result);
+    }
+
+    public static QueryPlanIndex makeIndex(List<QueryPlanIndexItem> indexesSet) {
+        Map<String, QueryPlanIndexItem> items = new LinkedHashMap<String, QueryPlanIndexItem>();
+        for (QueryPlanIndexItem item : indexesSet) {
+            items.put(UuidGenerator.generate(), item);
+        }
+        return new QueryPlanIndex(items);
     }
 
     /**
      * Find a matching index for the property names supplied.
-     * @param indexFields - property names to search for
+     * @param indexProps - property names to search for
      * @return -1 if not found, or offset within indexes if found
      */
-    protected int getIndexNum(String[] indexFields)
+    protected String getIndexNum(String[] indexProps, String[] rangeProps)
     {
-        // Shallow compare, considers unsorted column names
-        for (int i = 0; i < indexProps.length; i++)
-        {
-            if (Arrays.equals(indexFields, indexProps[i]))
-            {
-                return i;
+        QueryPlanIndexItem proposed = new QueryPlanIndexItem(indexProps, null, rangeProps, null);
+        for (Map.Entry<String, QueryPlanIndexItem> entry : items.entrySet()) {
+            if (entry.getValue().equalsCompareSortedProps(proposed)) {
+                return entry.getKey();
             }
         }
 
-        // Deep compare, consider sorted column names
-        String[] copyIndexFields = new String[indexFields.length];
-        System.arraycopy(indexFields, 0, copyIndexFields, 0, indexFields.length);
-        Arrays.sort(copyIndexFields);
+        return null;
+    }
 
-        for (int i = 0; i < indexProps.length; i++)
-        {
-            String[] copyIndexProps = new String[indexProps[i].length];
-            System.arraycopy(indexProps[i], 0, copyIndexProps, 0, copyIndexProps.length);
-            Arrays.sort(copyIndexProps);
-            
-            if (Arrays.equals(copyIndexFields, copyIndexProps))
-            {
-                return i;
-            }
-        }
-
-        return -1;
+    protected String getFirstIndexNum() {
+        return items.keySet().iterator().next();
     }
 
     /**
@@ -94,21 +76,28 @@ public class QueryPlanIndex
      * @param coercionTypes - list of coercion types if required, or null if no coercion required
      * @return number indicating position of index that was added
      */
-    public int addIndex(String[] indexProperties, Class[] coercionTypes)
+    public String addIndex(String[] indexProperties, Class[] coercionTypes)
     {
-        int numElements = indexProps.length;
-        String[][] newProps = new String[numElements + 1][];
-        System.arraycopy(indexProps, 0, newProps, 0, numElements);
-        newProps[numElements] = indexProperties;
-        indexProps = newProps;
-
-        Class[][] newCoercionTypes = new Class[numElements + 1][];
-        System.arraycopy(optCoercionTypes, 0, newCoercionTypes, 0, numElements);
-        newCoercionTypes[numElements] = coercionTypes;
-        optCoercionTypes = newCoercionTypes;
-
-        return numElements;
+        String uuid = UuidGenerator.generate();
+        items.put(uuid, new QueryPlanIndexItem(indexProperties, coercionTypes, null, null));
+        return uuid;
     }
+
+    /**
+     * For testing - Returns property names of all indexes.
+     * @return property names array
+     */
+    public String[][] getIndexProps()
+    {
+        String[][] arr = new String[items.size()][];
+        int count = 0;
+        for (Map.Entry<String, QueryPlanIndexItem> entry : items.entrySet()) {
+            arr[count] = entry.getValue().getIndexProps();
+            count++;
+        }
+        return arr;
+    }
+
 
     /**
      * Returns a list of coercion types for a given index.
@@ -117,11 +106,11 @@ public class QueryPlanIndex
      */
     public Class[] getCoercionTypes(String[] indexProperties)
     {
-        for (int i = 0; i < indexProps.length; i++)
+        for (Map.Entry<String, QueryPlanIndexItem> entry : items.entrySet())
         {
-            if (Arrays.deepEquals(indexProps[i], indexProperties))
+            if (Arrays.deepEquals(entry.getValue().getIndexProps(), indexProperties))
             {
-                return this.optCoercionTypes[i];
+                return entry.getValue().getOptIndexCoercionTypes();
             }
         }
         throw new IllegalArgumentException("Index properties not found");
@@ -135,11 +124,11 @@ public class QueryPlanIndex
     public void setCoercionTypes(String[] indexProperties, Class[] coercionTypes)
     {
         boolean found = false;
-        for (int i = 0; i < indexProps.length; i++)
+        for (Map.Entry<String, QueryPlanIndexItem> entry : items.entrySet())
         {
-            if (Arrays.deepEquals(indexProps[i], indexProperties))
+            if (Arrays.deepEquals(entry.getValue().getIndexProps(), indexProperties))
             {
-                this.optCoercionTypes[i] = coercionTypes;
+                entry.getValue().setOptIndexCoercionTypes(coercionTypes);
                 found = true;
             }
         }
@@ -151,17 +140,17 @@ public class QueryPlanIndex
 
     public String toString()
     {
-        if (indexProps == null)
-        {
-            return "indexProperties=null";
+        if (items.isEmpty()) {
+            return "    (none)";
         }
-
         StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < indexProps.length; i++)
+        String delimiter = "";
+        for (Map.Entry<String, QueryPlanIndexItem> entry : items.entrySet())
         {
-            buf.append("indexProperties(").append(i).append(")=").append(Arrays.toString(indexProps[i])).append(' ');
+            buf.append(delimiter);
+            buf.append("    item " + entry.getKey() + " : " + entry.getValue());
+            delimiter = "\n";
         }
-
         return buf.toString();
     }
 
@@ -176,11 +165,14 @@ public class QueryPlanIndex
         StringBuilder buffer = new StringBuilder();
         buffer.append("QueryPlanIndex[]\n");
 
+        String delimiter = "";
         for (int i = 0; i < indexSpecs.length; i++)
         {
-            buffer.append("  index spec " + i + " : " + indexSpecs[i] + '\n');
+            buffer.append(delimiter);
+            buffer.append("  index spec stream " + i + " : \n" + (indexSpecs[i] == null ? "    null" : indexSpecs[i]));
+            delimiter = "\n";
         }
 
-        return buffer.toString();
+        return buffer.toString() + "\n";
     }
 }

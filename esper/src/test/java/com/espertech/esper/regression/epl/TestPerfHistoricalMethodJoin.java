@@ -18,6 +18,7 @@ public class TestPerfHistoricalMethodJoin extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getLogging().setEnableQueryPlan(true);
         config.addEventType(SupportBeanInt.class);
 
         ConfigurationMethodRef configMethod = new ConfigurationMethodRef();

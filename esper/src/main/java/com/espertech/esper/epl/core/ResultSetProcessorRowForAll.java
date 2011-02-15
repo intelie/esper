@@ -540,4 +540,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
         resultEvents.add(event);
     }
+
+    public boolean hasAggregation() {
+        return true;
+    }    
 }

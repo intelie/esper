@@ -7911,8 +7911,8 @@ public class EsperEPL2GrammarParser extends Parser {
             }
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
-            RewriteRuleTokenStream stream_reluctant=new RewriteRuleTokenStream(adaptor,"token reluctant",reluctant);
             RewriteRuleTokenStream stream_s=new RewriteRuleTokenStream(adaptor,"token s",s);
+            RewriteRuleTokenStream stream_reluctant=new RewriteRuleTokenStream(adaptor,"token reluctant",reluctant);
             RewriteRuleTokenStream stream_q=new RewriteRuleTokenStream(adaptor,"token q",q);
             RewriteRuleTokenStream stream_p=new RewriteRuleTokenStream(adaptor,"token p",p);
             RewriteRuleTokenStream stream_i=new RewriteRuleTokenStream(adaptor,"token i",i);

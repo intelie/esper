@@ -1632,4 +1632,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             count++;
         }
     }
+
+    public boolean hasAggregation() {
+        return true;
+    }    
 }

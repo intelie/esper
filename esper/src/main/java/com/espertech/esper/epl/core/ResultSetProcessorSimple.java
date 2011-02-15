@@ -692,4 +692,8 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             }
         }
     }
+
+    public boolean hasAggregation() {
+        return false;
+    }
 }

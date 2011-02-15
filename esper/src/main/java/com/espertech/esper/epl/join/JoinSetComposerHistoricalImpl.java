@@ -19,6 +19,7 @@ import com.espertech.esper.view.HistoricalEventViewable;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -44,10 +45,10 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
      * @param streamViews the viewable representing each stream
      * @param staticEvalExprEvaluatorContext expression evaluation context for static (not runtime) evaluation
      */
-    public JoinSetComposerHistoricalImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, Viewable[] streamViews,
+    public JoinSetComposerHistoricalImpl(Map<String, EventTable>[] repositories, QueryStrategy[] queryStrategies, Viewable[] streamViews,
                                          ExprEvaluatorContext staticEvalExprEvaluatorContext)
     {
-        this.repositories = repositories;
+        this.repositories = JoinSetComposerUtil.toArray(repositories, streamViews.length);
         this.queryStrategies = queryStrategies;
         this.streamViews = streamViews;
         this.staticEvalExprEvaluatorContext = staticEvalExprEvaluatorContext;

@@ -12,9 +12,9 @@ import com.espertech.esper.epl.expression.*;
 
 /**
  * Analyzes a filter expression and builds a query graph model.
- * The 'equals' and 'and' expressions in the filter expression are extracted
+ * The 'equals', 'and' 'between' and relational operators expressions in the filter expression are extracted
  * and placed in the query graph model as navigable relationships (by key and index
- * properties) between streams.
+ * properties as well as ranges) between streams.
  */
 public class FilterExprAnalyzer
 {
@@ -39,6 +39,54 @@ public class FilterExprAnalyzer
             ExprAndNode andNode = (ExprAndNode) topNode;
             analyzeAndNode(andNode, queryGraph);
         }
+        else if (topNode instanceof ExprBetweenNode) {
+            ExprBetweenNode betweenNode = (ExprBetweenNode) topNode;
+            analyzeBetweenNode(betweenNode, queryGraph);            
+        }
+        else if (topNode instanceof ExprRelationalOpNode) {
+            ExprRelationalOpNode relNode = (ExprRelationalOpNode) topNode;
+            analyzeRelationalOpNode(relNode, queryGraph);
+        }
+    }
+
+    private static void analyzeRelationalOpNode(ExprRelationalOpNode relNode, QueryGraph queryGraph) {
+        if ( (!(relNode.getChildNodes().get(0) instanceof ExprIdentNode)) ||
+             (!(relNode.getChildNodes().get(1) instanceof ExprIdentNode)))
+        {
+            return;
+        }
+
+        ExprIdentNode identNodeLeft = (ExprIdentNode) relNode.getChildNodes().get(0);
+        ExprIdentNode identNodeRight = (ExprIdentNode) relNode.getChildNodes().get(1);
+
+        if (identNodeLeft.getStreamId() != identNodeRight.getStreamId())
+        {
+            queryGraph.addRelationalOp(identNodeLeft.getStreamId(), identNodeLeft.getResolvedPropertyName(),
+                    identNodeRight.getStreamId(), identNodeRight.getResolvedPropertyName(), relNode.getRelationalOpEnum());
+        }
+    }
+
+    private static void analyzeBetweenNode(ExprBetweenNode betweenNode, QueryGraph queryGraph) {
+        if ( (!(betweenNode.getChildNodes().get(0) instanceof ExprIdentNode)) ||
+             (!(betweenNode.getChildNodes().get(1) instanceof ExprIdentNode)) ||
+             (!(betweenNode.getChildNodes().get(2) instanceof ExprIdentNode)) )
+        {
+            return;
+        }
+
+        ExprIdentNode identNodeValue = (ExprIdentNode) betweenNode.getChildNodes().get(0);
+        ExprIdentNode identNodeStart = (ExprIdentNode) betweenNode.getChildNodes().get(1);
+        ExprIdentNode identNodeEnd = (ExprIdentNode) betweenNode.getChildNodes().get(2);
+        boolean includeStart = betweenNode.isLowEndpointIncluded();
+        boolean includeEnd = betweenNode.isHighEndpointIncluded();
+        boolean isNot = betweenNode.isNotBetween();
+
+        int keyStreamStart = identNodeStart.getStreamId();
+        int keyStreamEnd = identNodeEnd.getStreamId();
+        int valueStream = identNodeValue.getStreamId();
+        queryGraph.addRange(keyStreamStart, identNodeStart.getResolvedPropertyName(), keyStreamEnd,
+                identNodeEnd.getResolvedPropertyName(), valueStream, identNodeValue.getResolvedPropertyName(),
+                includeStart, includeEnd, isNot);
     }
 
     /**
@@ -73,14 +121,7 @@ public class FilterExprAnalyzer
     {
         for (ExprNode childNode : andNode.getChildNodes())
         {
-            if (childNode instanceof ExprEqualsNode)
-            {
-                ExprEqualsNode equalsNode = (ExprEqualsNode) childNode;
-                if (!equalsNode.isNotEquals())
-                {
-                    analyzeEqualsNode(equalsNode, queryGraph);
-                }
-            }
+            analyze(childNode, queryGraph);
         }
     }
 }

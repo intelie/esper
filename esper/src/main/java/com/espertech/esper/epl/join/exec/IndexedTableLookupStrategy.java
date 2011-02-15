@@ -39,6 +39,9 @@ public class IndexedTableLookupStrategy implements TableLookupStrategy
     {
         this.eventType = eventType;
         this.properties = properties;
+        if (index == null) {
+            throw new IllegalArgumentException("Unexpected null index received");
+        }
         this.index = index;
 
         propertyGetters = new EventPropertyGetter[properties.length];

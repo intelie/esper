@@ -47,7 +47,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
 
     public void testCreateStreamPlan()
     {
-        QueryPlanIndex[] indexes = QueryPlanIndexBuilder.buildIndexSpec(queryGraph);
+        QueryPlanIndex[] indexes = QueryPlanIndexBuilder.buildIndexSpec(queryGraph, typesPerStream);
         for (int i = 0; i < indexes.length; i++)
         {
             log.debug(".testCreateStreamPlan index " + i + " = " + indexes[i]);
@@ -66,13 +66,13 @@ public class TestNStreamQueryPlanBuilder extends TestCase
         assertTrue(Arrays.equals(lookupStrategySpec.getKeyProperties(), new String[] {"p01"} ));
         assertEquals(0, lookupStrategySpec.getLookupStream());
         assertEquals(2, lookupStrategySpec.getIndexedStream());
-        assertEquals(0, lookupStrategySpec.getIndexNum());
+        assertNotNull(lookupStrategySpec.getIndexNum());
 
         // Check lookup strategy for last lookup
         tableLookupSpec = (TableLookupNode) nested.getChildNodes().get(3);
         FullTableScanLookupPlan unkeyedSpecScan = (FullTableScanLookupPlan) tableLookupSpec.getLookupStrategySpec();
         assertEquals(1, unkeyedSpecScan.getIndexedStream());
-        assertEquals(1, unkeyedSpecScan.getIndexNum());
+        assertNotNull(unkeyedSpecScan.getIndexNum());
     }
 
     public void testComputeBestPath()

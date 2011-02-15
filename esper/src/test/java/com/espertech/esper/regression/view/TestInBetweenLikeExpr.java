@@ -375,6 +375,43 @@ public class TestInBetweenLikeExpr extends TestCase
         selectTestCase.stop();
     }
 
+    public void testInRange() {
+
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        String[] fields = "ro,rc,rho,rhc,nro,nrc,nrho,nrhc".split(",");
+        EPStatement stmt = epService.getEPAdministrator().createEPL(
+                "select intPrimitive in (2:4) as ro, intPrimitive in [2:4] as rc, intPrimitive in [2:4) as rho, intPrimitive in (2:4] as rhc, " +
+                "intPrimitive not in (2:4) as nro, intPrimitive not in [2:4] as nrc, intPrimitive not in [2:4) as nrho, intPrimitive not in (2:4] as nrhc " +
+                "from SupportBean.std:lastevent()");
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, false, false, true, true, true, true});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, true, true, false, true, false, false, true});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true, true, true, false, false, false, false});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 4));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, true, false, true, true, false, true, false});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, false, false, true, true, true, true});
+
+        // test range reversed
+        stmt.destroy();
+        stmt = epService.getEPAdministrator().createEPL(
+                "select intPrimitive between 4 and 2 as r1, intPrimitive in [4:2] as r2 from SupportBean.std:lastevent()");
+        stmt.addListener(listener);
+        
+        fields = "r1,r2".split(",");
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true});
+    }
+
     public void testBetweenNumericCoercionDouble()
     {
         String caseExpr = "select intBoxed between floatBoxed and doublePrimitive as result from " + SupportBean.class.getName();

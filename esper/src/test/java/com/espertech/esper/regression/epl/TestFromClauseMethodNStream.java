@@ -37,7 +37,8 @@ public class TestFromClauseMethodNStream extends TestCase
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1 " +
                    "from SupportBeanInt.std:lastevent() as s0, " +
                    "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal('H1', p01) as h1 ";
+                   "method:SupportJoinMethods.fetchVal('H1', p01) as h1 " +
+                   "order by h0.val, h1.val";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
         listener = new SupportUpdateListener();
@@ -119,13 +120,15 @@ public class TestFromClauseMethodNStream extends TestCase
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1 " +
                    "from SupportBeanInt.win:keepall() as s0, " +
                    "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal(h0.val, p01) as h1";
+                   "method:SupportJoinMethods.fetchVal(h0.val, p01) as h1 " +
+                   "order by h0.val, h1.val";
         runAssertionTwo(expression);
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1 from " +
                    "method:SupportJoinMethods.fetchVal(h0.val, p01) as h1, " +
                    "SupportBeanInt.win:keepall() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0 ";
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0 " +
+                   "order by h0.val, h1.val";
         runAssertionTwo(expression);
     }
     
@@ -164,14 +167,16 @@ public class TestFromClauseMethodNStream extends TestCase
                    "from SupportBeanInt.std:lastevent() as s0, " +
                    "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
                    "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
-                   "method:SupportJoinMethods.fetchVal('H2', p02) as h2 ";
+                   "method:SupportJoinMethods.fetchVal('H2', p02) as h2 " +
+                   "order by h0.val, h1.val, h2.val";
         runAssertionThree(expression);
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
                    "method:SupportJoinMethods.fetchVal('H2', p02) as h2, " +
                    "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
                    "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                   "SupportBeanInt.std:lastevent() as s0 ";
+                   "SupportBeanInt.std:lastevent() as s0 " +
+                   "order by h0.val, h1.val, h2.val";
         runAssertionThree(expression);
     }
 
@@ -307,7 +312,7 @@ public class TestFromClauseMethodNStream extends TestCase
                    "SupportBeanInt(id like 'S1%').std:lastevent() as s1, " +
                    "SupportBeanInt(id like 'S2%').std:lastevent() as s2, " +
                    "method:SupportJoinMethods.fetchVal(s1.id||s2.id||'H1', s0.p00) as h0 " +
-                   "order by s0.id";
+                   "order by s0.id, s1.id, s2.id, h0.val";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
         listener = new SupportUpdateListener();

@@ -72,9 +72,10 @@ public class TestNStreamOuterQueryPlanBuilder extends TestCase
         queryGraph.add(1, "", 0, "");
 
         Set<InterchangeablePair<Integer, Integer>> innerJoins = new HashSet<InterchangeablePair<Integer, Integer>>();
+        InnerJoinGraph innerJoinGraph = new InnerJoinGraph(6, innerJoins);
         Stack<Integer> streamStack = new Stack<Integer>();
 
-        NStreamOuterQueryPlanBuilder.recursiveBuild(streamNum, streamStack, queryGraph, outerInnerGraph, innerJoins, completedStreams,
+        NStreamOuterQueryPlanBuilder.recursiveBuild(streamNum, streamStack, queryGraph, outerInnerGraph, innerJoinGraph, completedStreams,
                 substreamsPerStream, requiredPerStream, new DependencyGraph(6));
 
         assertEquals(6, substreamsPerStream.size());

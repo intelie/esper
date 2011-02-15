@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.util;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -17,6 +18,14 @@ import java.util.Set;
  */
 public class CollectionUtil<T>
 {
+    public static int[] addValue(int[] ints, int i) {
+        int[] copy = new int[ints.length + 1];
+        System.arraycopy(ints, 0, copy, 0, ints.length);
+        copy[ints.length] = i;
+        return copy;
+    }
+
+
     /**
      * Returns an array of integer values from the set of integer values
      * @param set to return array for
@@ -34,6 +43,16 @@ public class CollectionUtil<T>
             result[index++] = value;
         }
         return result;
+    }
+
+    public static String[] copySortArray(String[] values) {
+        if (values == null) {
+            return null;
+        }
+        String[] copy = new String[values.length];
+        System.arraycopy(values, 0, copy, 0, values.length);
+        Arrays.sort(copy);
+        return copy;
     }
 
     /**
@@ -65,5 +84,12 @@ public class CollectionUtil<T>
             delimiter = ", ";
         }
         return buf.toString();
+    }
+
+    public static boolean compare(String[] otherIndexProps, String[] thisIndexProps) {
+        if (otherIndexProps != null && thisIndexProps != null) {
+            return Arrays.equals(otherIndexProps, thisIndexProps);
+        }
+        return otherIndexProps == null && thisIndexProps == null;
     }
 }

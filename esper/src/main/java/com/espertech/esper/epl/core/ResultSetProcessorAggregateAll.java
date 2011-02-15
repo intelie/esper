@@ -595,4 +595,8 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
         }
     }
+
+    public boolean hasAggregation() {
+        return true;
+    }
 }

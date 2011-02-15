@@ -1,7 +1,6 @@
 package com.espertech.esper.epl.join.plan;
 
 import junit.framework.TestCase;
-import com.espertech.esper.epl.join.plan.QueryPlanIndex;
 
 public class TestQueryPlanIndex extends TestCase
 {
@@ -9,20 +8,17 @@ public class TestQueryPlanIndex extends TestCase
 
     public void setUp()
     {
-        String[][] indexes = new String[][] {
-            { "p01", "p02"},
-            { "p21" },
-            new String[0],
-        };
-
-        indexSpec = new QueryPlanIndex(indexes, new Class[indexes.length][]);
+        QueryPlanIndexItem itemOne = new QueryPlanIndexItem(new String[] { "p01", "p02"}, null, null, null);
+        QueryPlanIndexItem itemTwo = new QueryPlanIndexItem(new String[] { "p21"}, new Class[0], null, null);
+        QueryPlanIndexItem itemThree = new QueryPlanIndexItem(new String[0], new Class[0], null, null);
+        indexSpec = QueryPlanIndex.makeIndex(itemOne, itemTwo, itemThree);
     }
 
     public void testInvalidUse()
     {
         try
         {
-            new QueryPlanIndex(null, null);
+            new QueryPlanIndex(null);
             fail();
         }
         catch (IllegalArgumentException ex)
@@ -33,17 +29,17 @@ public class TestQueryPlanIndex extends TestCase
 
     public void testGetIndexNum()
     {
-        assertEquals(0, indexSpec.getIndexNum(new String[] { "p01", "p02"}));
-        assertEquals(1, indexSpec.getIndexNum(new String[] {"p21"}));
-        assertEquals(2, indexSpec.getIndexNum(new String[0]));
+        assertNotNull(indexSpec.getIndexNum(new String[] { "p01", "p02"}, null));
+        assertNotNull(indexSpec.getIndexNum(new String[] {"p21"}, null));
+        assertNotNull(indexSpec.getIndexNum(new String[0], null));
 
-        assertEquals(-1, indexSpec.getIndexNum(new String[] { "YY", "XX"}));
+        assertNull(indexSpec.getIndexNum(new String[] { "YY", "XX"}, null));
     }
 
     public void testAddIndex()
     {
-        int indexNum = indexSpec.addIndex(new String[] {"a", "b"}, null);
-        assertEquals(3, indexNum);
-        assertEquals(3, indexSpec.getIndexNum(new String[] { "a", "b"}));
+        String indexNum = indexSpec.addIndex(new String[] {"a", "b"}, null);
+        assertNotNull(indexNum);
+        assertEquals(indexNum, indexSpec.getIndexNum(new String[] { "a", "b"}, null));
     }
 }

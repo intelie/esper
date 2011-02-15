@@ -15,6 +15,7 @@ import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.epl.join.exec.IndexedTableLookupStrategy;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Plan to perform an indexed table lookup.
@@ -30,7 +31,7 @@ public class IndexedTableLookupPlan extends TableLookupPlan
      * @param indexNum - index number for the table containing the full unindexed contents
      * @param keyProperties - properties to use in lookup event to access index
      */
-    public IndexedTableLookupPlan(int lookupStream, int indexedStream, int indexNum, String[] keyProperties)
+    public IndexedTableLookupPlan(int lookupStream, int indexedStream, String indexNum, String[] keyProperties)
     {
         super(lookupStream, indexedStream, indexNum);
         this.keyProperties = keyProperties;
@@ -45,9 +46,9 @@ public class IndexedTableLookupPlan extends TableLookupPlan
         return keyProperties;
     }
 
-    public TableLookupStrategy makeStrategy(EventTable[][] indexesPerStream, EventType[] eventTypes)
+    public TableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
     {
-        PropertyIndexedEventTable index = (PropertyIndexedEventTable) indexesPerStream[this.getIndexedStream()][this.getIndexNum()];
+        PropertyIndexedEventTable index = (PropertyIndexedEventTable) indexesPerStream[this.getIndexedStream()].get(getIndexNum());
         return new IndexedTableLookupStrategy(eventTypes[this.getLookupStream()], keyProperties, index);
     }
 

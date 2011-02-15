@@ -162,4 +162,8 @@ public class ResultSetProcessorHandThrough extends ResultSetProcessorBaseSimple
         UniformPair<EventBean[]> result = processJoinResult(joinSet, emptyRowSet, true);
         return new ArrayEventIterator(result.getFirst());
     }
+
+    public boolean hasAggregation() {
+        return false;
+    }
 }

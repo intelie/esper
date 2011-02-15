@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.join.plan;
 
+import com.espertech.esper.core.StreamJoinAnalysisResult;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBean_S0;
@@ -37,17 +38,17 @@ public class TestQueryPlanBuilder extends TestCase
         descList.add(joinDesc);
 
         QueryGraph queryGraph = new QueryGraph(2);
-        QueryPlan plan = QueryPlanBuilder.getPlan(typesPerStream, new LinkedList<OuterJoinDesc>(), queryGraph, null, false, isHistorical, dependencyGraph, null, null);
+        QueryPlan plan = QueryPlanBuilder.getPlan(typesPerStream, new LinkedList<OuterJoinDesc>(), queryGraph, null, false, isHistorical, dependencyGraph, null, null, new StreamJoinAnalysisResult(2));
         assertPlan(plan);
 
-        plan = QueryPlanBuilder.getPlan(typesPerStream, descList, queryGraph, null, false, isHistorical, dependencyGraph, null, null);
+        plan = QueryPlanBuilder.getPlan(typesPerStream, descList, queryGraph, null, false, isHistorical, dependencyGraph, null, null, new StreamJoinAnalysisResult(2));
         assertPlan(plan);
 
         FilterExprAnalyzer.analyze(SupportExprNodeFactory.makeEqualsNode(), queryGraph);
-        plan = QueryPlanBuilder.getPlan(typesPerStream, descList, queryGraph, null, false, isHistorical, dependencyGraph, null, null);
+        plan = QueryPlanBuilder.getPlan(typesPerStream, descList, queryGraph, null, false, isHistorical, dependencyGraph, null, null, new StreamJoinAnalysisResult(2));
         assertPlan(plan);
 
-        plan = QueryPlanBuilder.getPlan(typesPerStream, new LinkedList<OuterJoinDesc>(), queryGraph, null, false, isHistorical, dependencyGraph, null, null);
+        plan = QueryPlanBuilder.getPlan(typesPerStream, new LinkedList<OuterJoinDesc>(), queryGraph, null, false, isHistorical, dependencyGraph, null, null, new StreamJoinAnalysisResult(2));
         assertPlan(plan);
     }
 

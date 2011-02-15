@@ -1,17 +1,19 @@
 package com.espertech.esper.epl.join;
 
-import java.util.Set;
-
-import junit.framework.TestCase;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.join.exec.FullTableScanLookupStrategy;
 import com.espertech.esper.epl.join.exec.TableLookupExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import junit.framework.TestCase;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class TestJoinSetComposerImpl extends TestCase
 {
@@ -39,10 +41,13 @@ public class TestJoinSetComposerImpl extends TestCase
         queryStrategies[0] = new ExecNodeQueryStrategy(0, 2, lookupLeft);
         queryStrategies[1] = new ExecNodeQueryStrategy(1, 2, lookupRight);
 
-        EventTable[][] indexesPerStream = new EventTable[2][1];
-        indexesPerStream[0][0] = indexLeft;
-        indexesPerStream[1][0] = indexRight;
-        joinSetComposerImpl = new JoinSetComposerImpl(indexesPerStream, queryStrategies, false, null);
+        Map<String,EventTable>[] indexes = new Map[2];
+        indexes[0] = new HashMap<String,EventTable>();
+        indexes[1] = new HashMap<String,EventTable>();
+        indexes[0].put("idxLeft", indexLeft);
+        indexes[1].put("idxLeft", indexRight);
+
+        joinSetComposerImpl = new JoinSetComposerImpl(indexes, queryStrategies, false, null);
     }
 
     public void testJoin()

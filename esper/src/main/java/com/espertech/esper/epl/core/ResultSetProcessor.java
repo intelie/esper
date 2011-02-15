@@ -91,4 +91,6 @@ public interface ResultSetProcessor
      * @return results for dispatch
      */
     public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType);
+
+    public boolean hasAggregation();
 }

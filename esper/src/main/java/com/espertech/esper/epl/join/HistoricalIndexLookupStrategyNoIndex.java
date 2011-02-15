@@ -18,8 +18,10 @@ import java.util.Iterator;
  */
 public class HistoricalIndexLookupStrategyNoIndex implements HistoricalIndexLookupStrategy
 {
-    public Iterator<EventBean> lookup(EventBean lookupEvent, EventTable index)
-    {
+    public HistoricalIndexLookupStrategyNoIndex() {
+    }
+
+    public Iterator<EventBean> lookup(EventBean lookupEvent, EventTable index) {
         return index.iterator();
     }
 }

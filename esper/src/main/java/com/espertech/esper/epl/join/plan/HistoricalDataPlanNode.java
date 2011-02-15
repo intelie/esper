@@ -22,6 +22,9 @@ import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.Viewable;
 
+import java.util.HashSet;
+import java.util.Map;
+
 /**
  * Query plan for performing a historical data lookup.
  * <p>
@@ -52,11 +55,15 @@ public class HistoricalDataPlanNode extends QueryPlanNode
         this.outerJoinExprNode = exprNode;
     }
 
-    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
+    public ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> pair = historicalStreamIndexLists[streamNum].getStrategy(lookupStreamNum);
         HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[streamNum];
         return new HistoricalDataExecNode(viewable, pair.getSecond(), pair.getFirst(), numStreams, streamNum);
+    }
+
+    public void addIndexes(HashSet<String> usedIndexes) {
+        // none to add
     }
 
     /**

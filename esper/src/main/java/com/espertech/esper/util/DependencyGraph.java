@@ -48,8 +48,7 @@ public class DependencyGraph
         for (Map.Entry<Integer, SortedSet<Integer>> entry : dependencies.entrySet())
         {
             count++;
-            writer.println("Entry " + count + ": from=" + entry.getKey());
-            writer.println("  to=" + entry.getValue());
+            writer.println("Entry " + count + ": from=" + entry.getKey() + " to=" + entry.getValue());
         }
 
         return buf.toString();
@@ -138,8 +137,8 @@ public class DependencyGraph
     }
 
     /**
-     * Returns a set of stream numbers that are not a dependency of any stream.
-     * @return set of stream number of streams without dependencies
+     * Returns a set of stream numbers that are the root dependencies, i.e. the dependencies with the deepest graph.
+     * @return set of stream number of streams
      */
     public Set<Integer> getRootNodes()
     {
@@ -240,5 +239,28 @@ public class DependencyGraph
         }
 
         return false;
+    }
+
+    /**
+     * Check if the given stream has any dependencies, direct or indirect, to any of the streams that are not in the ignore list.
+     */
+    public boolean hasUnsatisfiedDependency(int navigableStream, Set<Integer> ignoreList) {
+        Set<Integer> deepDependencies = new HashSet<Integer>();
+        recursivePopulateDependencies(navigableStream, deepDependencies);
+
+        for (int dependency : deepDependencies) {
+            if (!ignoreList.contains(dependency)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void recursivePopulateDependencies(int navigableStream, Set<Integer> deepDependencies) {
+        Set<Integer> dependencies = getDependenciesForStream(navigableStream);
+        deepDependencies.addAll(dependencies);
+        for (int dependency : dependencies) {
+            recursivePopulateDependencies(dependency, deepDependencies);
+        }        
     }
 }

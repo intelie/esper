@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
+import com.espertech.esper.type.RelationalOpEnum;
+
 import java.util.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -85,7 +87,17 @@ public class QueryGraph
      * @param streamTo - to stream number
      * @return true if relationship exists, false if not
      */
-    public boolean isNavigable(int streamFrom, int streamTo)
+    public boolean isNavigablePropertyEquals(int streamFrom, int streamTo)
+    {
+        QueryGraphKey key = new QueryGraphKey(streamFrom, streamTo);
+        QueryGraphValue value = streamJoinMap.get(key);
+        if (value == null) {
+            return false;
+        }
+        return (!value.getPropertiesLeft().isEmpty());
+    }
+
+    public boolean isNavigableAtAll(int streamFrom, int streamTo)
     {
         QueryGraphKey key = new QueryGraphKey(streamFrom, streamTo);
         return streamJoinMap.containsKey(key);
@@ -101,12 +113,21 @@ public class QueryGraph
         Set<Integer> result = new HashSet<Integer>();
         for (int i = 0; i < numStreams; i++)
         {
-            if (isNavigable(streamFrom, i))
+            if (isNavigableAtAll(streamFrom, i))
             {
                 result.add(i);
             }
         }
         return result;
+    }
+
+    public QueryGraphValue getGraphValue(int streamLookup, int streamIndexed, boolean canReorder) {
+        QueryGraphKey key = new QueryGraphKey(streamLookup, streamIndexed, canReorder);
+        QueryGraphValue value = streamJoinMap.get(key);
+        if (value != null) {
+            return value;
+        }
+        return new QueryGraphValue();
     }
 
     /**
@@ -130,6 +151,19 @@ public class QueryGraph
             return value.getPropertiesLeft().toArray(new String[value.getPropertiesLeft().size()]);
         }
         return value.getPropertiesRight().toArray(new String[value.getPropertiesRight().size()]);
+    }
+
+    public String[] getRangeProperties(int streamLookup, int streamIndexed)
+    {
+        QueryGraphKey key = new QueryGraphKey(streamLookup, streamIndexed, false);
+        QueryGraphValue value = streamJoinMap.get(key);
+
+        if (value == null)
+        {
+            return null;
+        }
+
+        return value.getRangeEntriesValueProperties();
     }
 
     /**
@@ -157,7 +191,7 @@ public class QueryGraph
 
     /**
      * Fill in equivalent key properties (navigation entries) on all streams.
-     * For example, if  a=b and b=c  then add a=c. The method adds new equalivalent key properties
+     * For example, if  a=b and b=c  then addRelOpInternal a=c. The method adds new equalivalent key properties
      * until no additional entries to be added are found, ie. several passes can be made.
      * @param queryGraph - navigablity info between streamss
      */
@@ -287,5 +321,61 @@ public class QueryGraph
         }
 
         return buf.toString();
+    }
+
+    public void addRange(int streamNumStart, String propertyStart,
+                         int streamNumEnd, String propertyEnd,
+                         int streamNumValue, String propertyValue,
+                         boolean includeStart, boolean includeEnd, boolean isInverted) {
+
+        // add as a range if the endpoints are from the same stream
+        if (streamNumStart == streamNumEnd && streamNumStart != streamNumValue) {
+            QueryGraphRangeEnum rangeOp = QueryGraphRangeEnum.getRangeOp(includeStart, includeEnd, isInverted);
+            QueryGraphValue valueLeft = getCreateValue(streamNumStart, streamNumValue);
+            valueLeft.addRange(rangeOp, propertyStart, propertyEnd, propertyValue);
+
+            QueryGraphValue valueRight = getCreateValue(streamNumValue, streamNumStart);
+            valueRight.addRelOp(propertyValue, QueryGraphRangeEnum.GREATER_OR_EQUAL, propertyEnd, false);
+            valueRight.addRelOp(propertyValue, QueryGraphRangeEnum.LESS_OR_EQUAL, propertyStart, false);
+        }
+        else {
+            // endpoints from a different stream, add individually
+            if (streamNumValue != streamNumStart) {
+                QueryGraphValue valueStart = getCreateValue(streamNumStart, streamNumValue);
+                valueStart.addRelOp(propertyStart, QueryGraphRangeEnum.GREATER_OR_EQUAL, propertyValue, true); // read propertyValue >= propertyStart
+
+                QueryGraphValue valueStartReversed = getCreateValue(streamNumValue, streamNumStart);
+                valueStartReversed.addRelOp(propertyValue, QueryGraphRangeEnum.LESS_OR_EQUAL, propertyStart, true);  // read propertyStart <= propertyValue
+            }
+
+            if (streamNumValue != streamNumEnd) {
+                QueryGraphValue valueEnd = getCreateValue(streamNumEnd, streamNumValue);
+                valueEnd.addRelOp(propertyEnd, QueryGraphRangeEnum.LESS_OR_EQUAL, propertyValue, true);   // read propertyValue <= propertyEnd
+
+                QueryGraphValue valueEndReversed = getCreateValue(streamNumValue, streamNumEnd);
+                valueEndReversed.addRelOp(propertyValue, QueryGraphRangeEnum.GREATER_OR_EQUAL, propertyEnd, true); // read propertyEnd >= propertyValue
+            }
+        }
+
+    }
+
+    public void addRelationalOp(int streamIdLeft, String propertyLeft, int streamIdRight, String propertyRight, RelationalOpEnum relationalOpEnum) {
+        QueryGraphValue valueLeft = getCreateValue(streamIdLeft, streamIdRight);
+        valueLeft.addRelOp(propertyLeft, QueryGraphRangeEnum.mapFrom(relationalOpEnum.reversed()), propertyRight, false);
+
+        QueryGraphValue valueRight = getCreateValue(streamIdRight, streamIdLeft);
+        valueRight.addRelOp(propertyRight, QueryGraphRangeEnum.mapFrom(relationalOpEnum), propertyLeft, false);
+    }
+
+    private QueryGraphValue getCreateValue(int streamKey, int streamValue) {
+        QueryGraphKey key = new QueryGraphKey(streamKey, streamValue, false);
+        QueryGraphValue value = streamJoinMap.get(key);
+
+        if (value == null)
+        {
+            value = new QueryGraphValue();
+            streamJoinMap.put(key, value);
+        }
+        return value;
     }
 }

@@ -76,15 +76,29 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
 
             if (subsetIter != null)
             {
-                // Add each row to the join result or, for outer joins, run through the outer join filter
-                for (;subsetIter.hasNext();)
-                {
-                    EventBean candidate = subsetIter.next();
-
-                    lookupEventsPerStream[0][streamNum] = candidate;
-                    Boolean pass = (Boolean) outerJoinExprNode.evaluate(lookupEventsPerStream[0], true, exprEvaluatorContext);
-                    if ((pass != null) && (pass))
+                if (outerJoinExprNode != null) {
+                    // Add each row to the join result or, for outer joins, run through the outer join filter
+                    for (;subsetIter.hasNext();)
                     {
+                        EventBean candidate = subsetIter.next();
+
+                        lookupEventsPerStream[0][streamNum] = candidate;
+                        Boolean pass = (Boolean) outerJoinExprNode.evaluate(lookupEventsPerStream[0], true, exprEvaluatorContext);
+                        if ((pass != null) && (pass))
+                        {
+                            if (result == null)
+                            {
+                                result = new HashSet<EventBean>();
+                            }
+                            result.add(candidate);
+                        }
+                    }
+                }
+                else {
+                    // Add each row to the join result or, for outer joins, run through the outer join filter
+                    for (;subsetIter.hasNext();)
+                    {
+                        EventBean candidate = subsetIter.next();
                         if (result == null)
                         {
                             result = new HashSet<EventBean>();
@@ -112,7 +126,7 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
             return;
         }
 
-        lookupEventsPerStream[parent.getStream()] = parent.getParentEvent();
+        lookupEventsPerStream[parent.getStream()] = node.getParentEvent();
         recursiveFill(lookupEventsPerStream, parent);
     }
 }

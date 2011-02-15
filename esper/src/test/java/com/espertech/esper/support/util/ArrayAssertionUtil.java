@@ -1093,4 +1093,12 @@ public class ArrayAssertionUtil
             Assert.assertTrue(set.contains(value));
         }
     }
+
+    public static Object[] getUnderlying(EventBean[] events) {
+        Object[] arr = new Object[events.length];
+        for (int i = 0; i < events.length; i++) {
+            arr[i] = events[i].getUnderlying();
+        }
+        return arr;
+    }
 }
