@@ -26,7 +26,7 @@ public class SubqIndexedTableLookupStrategy implements SubqTableLookupStrategy
     /**
      * Stream numbers to get key values from.
      */
-    protected final int[] streamNumbers;
+    protected final int[] keyStreamNums;
 
     /**
      * Index to look up in.
@@ -41,20 +41,20 @@ public class SubqIndexedTableLookupStrategy implements SubqTableLookupStrategy
     /**
      * Ctor.
      * @param eventTypes is the event types per stream
-     * @param streamNumbers is the stream number per property
+     * @param keyStreamNumbers is the stream number per property
      * @param properties is the key properties
      * @param index is the table carrying the data to lookup into
      */
-    public SubqIndexedTableLookupStrategy(EventType[] eventTypes, int[] streamNumbers, String[] properties, PropertyIndexedEventTable index)
+    public SubqIndexedTableLookupStrategy(EventType[] eventTypes, int[] keyStreamNumbers, String[] properties, PropertyIndexedEventTable index)
     {
-        this.streamNumbers = streamNumbers;
+        this.keyStreamNums = keyStreamNumbers;
         this.properties = properties;
         this.index = index;
 
         propertyGetters = new EventPropertyGetter[properties.length];
-        for (int i = 0; i < streamNumbers.length; i++)
+        for (int i = 0; i < keyStreamNumbers.length; i++)
         {
-            int streamNumber = streamNumbers[i];
+            int streamNumber = keyStreamNumbers[i];
             String property = properties[i];
             EventType eventType = eventTypes[streamNumber];
             propertyGetters[i] = eventType.getGetter(property);
@@ -100,7 +100,7 @@ public class SubqIndexedTableLookupStrategy implements SubqTableLookupStrategy
         Object[] keyValues = new Object[propertyGetters.length];
         for (int i = 0; i < propertyGetters.length; i++)
         {
-            int streamNum = streamNumbers[i];
+            int streamNum = keyStreamNums[i];
             EventBean event = eventsPerStream[streamNum];
             keyValues[i] = propertyGetters[i].get(event);
         }

@@ -10,11 +10,11 @@ package com.espertech.esper.epl.join;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexQuery;
 import com.espertech.esper.epl.join.plan.QueryGraphValueRange;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexQueryFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,10 +26,10 @@ import java.util.Set;
  */
 public class HistoricalIndexLookupStrategyComposite implements HistoricalIndexLookupStrategy
 {
-    private final InnerIndexQuery chain;
+    private final CompositeIndexQuery chain;
 
     public HistoricalIndexLookupStrategyComposite(EventType eventType, String[] keyPropertiesJoin, Class[] keyCoercionTypes, List<QueryGraphValueRange> rangeKeyPairs, Class[] rangeCoercionTypes) {
-        chain = InnerIndexQueryFactory.make(eventType, keyPropertiesJoin, keyCoercionTypes, rangeKeyPairs, rangeCoercionTypes);
+        chain = CompositeIndexQueryFactory.make(eventType, keyPropertiesJoin, keyCoercionTypes, rangeKeyPairs, rangeCoercionTypes);
     }
 
     public Iterator<EventBean> lookup(EventBean lookupEvent, EventTable indexTable)

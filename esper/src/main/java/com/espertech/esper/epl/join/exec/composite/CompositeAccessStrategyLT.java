@@ -14,23 +14,23 @@ public class CompositeAccessStrategyLT extends CompositeAccessStrategyRelOpBase 
         super(key, coercionType, keyStreaNum);
     }
 
-    public Set<EventBean> lookup(EventBean event, Map parent, Set<EventBean> result, InnerIndexQuery next) {
+    public Set<EventBean> lookup(EventBean event, Map parent, Set<EventBean> result, CompositeIndexQuery next) {
         TreeMap index = (TreeMap) parent;
         Object comparable = key.get(event);
         if (comparable == null) {
             return null;
         }
         comparable = EventBeanUtility.coerce(comparable, coercionType);
-        return InnerIndexQueryRange.handle(event, index.headMap(comparable), null, result, next);
+        return CompositeIndexQueryRange.handle(event, index.headMap(comparable), null, result, next);
     }
 
-    public Collection<EventBean> lookup(EventBean[] eventsPerStream, Map parent, Collection<EventBean> result, InnerIndexQuery next) {
+    public Collection<EventBean> lookup(EventBean[] eventsPerStream, Map parent, Collection<EventBean> result, CompositeIndexQuery next) {
         TreeMap index = (TreeMap) parent;
         Object comparable = key.get(eventsPerStream[keyStreamNum]);
         if (comparable == null) {
             return null;
         }
         comparable = EventBeanUtility.coerce(comparable, coercionType);
-        return InnerIndexQueryRange.handle(eventsPerStream, index.headMap(comparable), null, result, next);
+        return CompositeIndexQueryRange.handle(eventsPerStream, index.headMap(comparable), null, result, next);
     }
 }

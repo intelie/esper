@@ -10,14 +10,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class InnerIndexQueryKeyed implements InnerIndexQuery {
+public class CompositeIndexQueryKeyed implements CompositeIndexQuery {
 
     private final EventPropertyGetter[] propertyGetters;
     private final Class[] keyCoercionTypes;
     private final int[] keyStreamNum;
-    private InnerIndexQuery next;
+    private CompositeIndexQuery next;
 
-    public InnerIndexQueryKeyed(EventType[] typePerStream, String[] keysProps, int[] keyStreamNum, Class[] keyCoercionTypes) {
+    public CompositeIndexQueryKeyed(EventType[] typePerStream, String[] keysProps, int[] keyStreamNum, Class[] keyCoercionTypes) {
         this.keyCoercionTypes  = keyCoercionTypes;
         this.keyStreamNum = keyStreamNum;
         propertyGetters = new EventPropertyGetter[keysProps.length];
@@ -28,7 +28,7 @@ public class InnerIndexQueryKeyed implements InnerIndexQuery {
         }
     }
 
-    public void setNext(InnerIndexQuery next) {
+    public void setNext(CompositeIndexQuery next) {
         this.next = next;
     }
 

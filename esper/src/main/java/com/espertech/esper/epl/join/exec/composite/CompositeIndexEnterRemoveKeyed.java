@@ -10,13 +10,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class InnerIndexEnterRemoveKeyed implements InnerIndexEnterRemove {
+public class CompositeIndexEnterRemoveKeyed implements CompositeIndexEnterRemove {
 
     private final EventPropertyGetter[] propertyGetters;
     private final Class[] keyCoercionTypes;
-    private InnerIndexEnterRemove next;
+    private CompositeIndexEnterRemove next;
 
-    public InnerIndexEnterRemoveKeyed(EventType eventType, String[] keysProps, Class[] keyCoercionTypes) {
+    public CompositeIndexEnterRemoveKeyed(EventType eventType, String[] keysProps, Class[] keyCoercionTypes) {
         this.keyCoercionTypes = keyCoercionTypes;
         propertyGetters = new EventPropertyGetter[keysProps.length];
         for (int i = 0; i < keysProps.length; i++)
@@ -25,7 +25,7 @@ public class InnerIndexEnterRemoveKeyed implements InnerIndexEnterRemove {
         }
     }
 
-    public void setNext(InnerIndexEnterRemove next) {
+    public void setNext(CompositeIndexEnterRemove next) {
         this.next = next;
     }
 

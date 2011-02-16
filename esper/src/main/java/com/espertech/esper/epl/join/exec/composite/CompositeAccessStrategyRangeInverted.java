@@ -12,7 +12,7 @@ public class CompositeAccessStrategyRangeInverted extends CompositeAccessStrateg
         super(start, includeStart, startStreamNum, end, includeEnd, endStreamNum, coercionType);
     }
 
-    public Set<EventBean> lookup(EventBean event, Map parent, Set<EventBean> result, InnerIndexQuery next) {
+    public Set<EventBean> lookup(EventBean event, Map parent, Set<EventBean> result, CompositeIndexQuery next) {
         Object comparableStart = start.get(event);
         if (comparableStart == null) {
             return null;
@@ -27,10 +27,10 @@ public class CompositeAccessStrategyRangeInverted extends CompositeAccessStrateg
         TreeMap index = (TreeMap) parent;
         SortedMap<Object,Set<EventBean>> submapOne = index.headMap(comparableStart, !includeStart);
         SortedMap<Object,Set<EventBean>> submapTwo = index.tailMap(comparableEnd, !includeEnd);
-        return InnerIndexQueryRange.handle(event, submapOne, submapTwo, result, next);
+        return CompositeIndexQueryRange.handle(event, submapOne, submapTwo, result, next);
     }
 
-    public Collection<EventBean> lookup(EventBean[] eventPerStream, Map parent, Collection<EventBean> result, InnerIndexQuery next) {
+    public Collection<EventBean> lookup(EventBean[] eventPerStream, Map parent, Collection<EventBean> result, CompositeIndexQuery next) {
         Object comparableStart = start.get(eventPerStream[startStreamNum]);
         if (comparableStart == null) {
             return null;
@@ -45,6 +45,6 @@ public class CompositeAccessStrategyRangeInverted extends CompositeAccessStrateg
         TreeMap index = (TreeMap) parent;
         SortedMap<Object,Set<EventBean>> submapOne = index.headMap(comparableStart, !includeStart);
         SortedMap<Object,Set<EventBean>> submapTwo = index.tailMap(comparableEnd, !includeEnd);
-        return InnerIndexQueryRange.handle(eventPerStream, submapOne, submapTwo, result, next);
+        return CompositeIndexQueryRange.handle(eventPerStream, submapOne, submapTwo, result, next);
     }
 }

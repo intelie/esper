@@ -8,6 +8,7 @@ import com.espertech.esper.epl.join.plan.QueryGraphValueRangeIn;
 import com.espertech.esper.epl.join.plan.QueryGraphValueRangeRelOp;
 import com.espertech.esper.epl.join.table.SubqueryRangeKeyDesc;
 import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.filter.FilterOperator;
 
 public class SortedAccessStrategyFactory {
 

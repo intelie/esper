@@ -321,7 +321,11 @@ public class StatementSpecMapper
         {
             return;
         }
-        model.setCreateIndex(new CreateIndexClause(createIndexDesc.getIndexName(), createIndexDesc.getWindowName(), createIndexDesc.getColumns().toArray(new String[createIndexDesc.getColumns().size()])));
+        List<CreateIndexColumn> cols = new ArrayList<CreateIndexColumn>();
+        for (CreateIndexItem item : createIndexDesc.getColumns()) {
+            cols.add(new CreateIndexColumn(item.getName(), CreateIndexColumnType.valueOf(item.getType().name().toUpperCase())));
+        }
+        model.setCreateIndex(new CreateIndexClause(createIndexDesc.getIndexName(), createIndexDesc.getWindowName(), cols));
     }
 
     private static void unmapCreateVariable(CreateVariableDesc createVariableDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -999,7 +1003,12 @@ public class StatementSpecMapper
             return;
         }
 
-        CreateIndexDesc desc = new CreateIndexDesc(clause.getIndexName(),clause.getWindowName(), clause.getColumns());
+        List<CreateIndexItem> cols = new ArrayList<CreateIndexItem>();
+        for (CreateIndexColumn col : clause.getColumns()) {
+            cols.add(new CreateIndexItem(col.getColumnName(), CreateIndexType.valueOf(col.getType().name().toUpperCase())));
+        }
+
+        CreateIndexDesc desc = new CreateIndexDesc(clause.getIndexName(),clause.getWindowName(), cols);
         raw.setCreateIndexDesc(desc);
     }
 

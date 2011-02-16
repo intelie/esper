@@ -14,7 +14,7 @@ public class SortedAccessStrategyLT extends SortedAccessStrategyRelOpBase implem
     }
 
     public Set<EventBean> lookup(EventBean event, PropertySortedEventTable index) {
-        return index.lookupLessThen(keyGetter.get(event));
+        return index.lookupLess(keyGetter.get(event));
     }
 
     public Collection<EventBean> lookup(EventBean[] eventsPerStream, PropertySortedEventTable index) {

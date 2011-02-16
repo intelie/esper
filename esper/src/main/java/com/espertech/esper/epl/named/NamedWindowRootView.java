@@ -15,21 +15,22 @@ import com.espertech.esper.core.*;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.join.plan.FilterExprAnalyzer;
-import com.espertech.esper.epl.join.plan.QueryGraph;
-import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
+import com.espertech.esper.epl.join.exec.RangeIndexLookupValue;
+import com.espertech.esper.epl.join.exec.RangeIndexLookupValueEquals;
+import com.espertech.esper.epl.join.exec.RangeIndexLookupValueRange;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexLookup;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexLookupFactory;
+import com.espertech.esper.epl.join.plan.*;
+import com.espertech.esper.epl.join.table.*;
 import com.espertech.esper.epl.lookup.*;
 import com.espertech.esper.epl.metric.MetricReportingService;
-import com.espertech.esper.epl.spec.OnTriggerDesc;
-import com.espertech.esper.epl.spec.OnTriggerMergeDesc;
-import com.espertech.esper.epl.spec.OnTriggerType;
-import com.espertech.esper.epl.spec.OnTriggerWindowUpdateDesc;
+import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
+import com.espertech.esper.filter.DoubleRange;
 import com.espertech.esper.filter.FilterOperator;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
-import com.espertech.esper.filter.FilterSpecParamConstant;
+import com.espertech.esper.type.DoubleValue;
 import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
@@ -55,10 +56,10 @@ public class NamedWindowRootView extends ViewSupport
     private EventType namedWindowEventType;
     private final NamedWindowIndexRepository indexRepository;
     private Iterable<EventBean> dataWindowContents;
-    private final Map<LookupStrategy, PropertyIndexedEventTable> tablePerMultiLookup;
-    private final Map<SubqTableLookupStrategy, PropertyIndexedEventTable> tablePerSingleLookup;
+    private final Map<LookupStrategy, EventTable> tablePerMultiLookup;
+    private final Map<SubqTableLookupStrategy, EventTable> tablePerSingleLookup;
     private final ValueAddEventProcessor revisionProcessor;
-    private final ConcurrentHashMap<String, PropertyIndexedEventTable> explicitIndexes;
+    private final ConcurrentHashMap<String, EventTable> explicitIndexes;
     private final boolean queryPlanLogging;
     private boolean isChildBatching;
     private StatementLock statementResourceLock;
@@ -72,9 +73,9 @@ public class NamedWindowRootView extends ViewSupport
     public NamedWindowRootView(ValueAddEventProcessor revisionProcessor, StatementLock statementResourceLock, boolean queryPlanLogging, EPStatementHandle createWindowStatementHandle, MetricReportingService metricReportingService)
     {
         this.indexRepository = new NamedWindowIndexRepository();
-        this.tablePerMultiLookup = new HashMap<LookupStrategy, PropertyIndexedEventTable>();
-        this.tablePerSingleLookup = new HashMap<SubqTableLookupStrategy, PropertyIndexedEventTable>();
-        this.explicitIndexes = new ConcurrentHashMap<String, PropertyIndexedEventTable>();
+        this.tablePerMultiLookup = new HashMap<LookupStrategy, EventTable>();
+        this.tablePerSingleLookup = new HashMap<SubqTableLookupStrategy, EventTable>();
+        this.explicitIndexes = new ConcurrentHashMap<String, EventTable>();
         this.revisionProcessor = revisionProcessor;
         this.statementResourceLock = statementResourceLock;
         this.queryPlanLogging = queryPlanLogging;
@@ -132,27 +133,36 @@ public class NamedWindowRootView extends ViewSupport
      * @param columns properties indexed
      * @throws ExprValidationException if the index fails to be valid
      */
-    public synchronized void addExplicitIndex(String namedWindowName, String indexName, List<String> columns) throws ExprValidationException {
+    public synchronized void addExplicitIndex(String namedWindowName, String indexName, List<CreateIndexItem> columns) throws ExprValidationException {
 
         if (explicitIndexes.containsKey(indexName)) {
             throw new ExprValidationException("Index by name '" + indexName + "' already exists");
         }
 
+        List<IndexedPropDesc> hashProps = new ArrayList<IndexedPropDesc>();
+        List<IndexedPropDesc> btreeProps = new ArrayList<IndexedPropDesc>();
+
         Set<String> indexed = new HashSet<String>();
-        IndexedPropDesc[] desc = new IndexedPropDesc[columns.size()];
-        for (int i = 0; i < columns.size(); i++) {
-            String columnName = columns.get(i);
-            Class type = namedWindowEventType.getPropertyType(columnName);
+        for (CreateIndexItem columnDesc : columns) {
+            String columnName = columnDesc.getName();
+
+            Class type = JavaClassHelper.getBoxedType(namedWindowEventType.getPropertyType(columnName));
             if (type == null) {
-                throw new ExprValidationException("Property named '" + columnName + "' not found on named window '"+ namedWindowName + "'");
+                throw new ExprValidationException("Property named '" + columnName + "' not found on named window '" + namedWindowName + "'");
             }
             if (!indexed.add(columnName)) {
                 throw new ExprValidationException("Property named '" + columnName + "' has been declared more then once");
             }
-            desc[i] = new IndexedPropDesc(columnName, type);
+
+            IndexedPropDesc desc = new IndexedPropDesc(columnName, type);
+            if (columnDesc.getType() == CreateIndexType.HASH) {
+                hashProps.add(desc);
+            } else {
+                btreeProps.add(desc);
+            }
         }
 
-        PropertyIndexedEventTable table = indexRepository.addTable(desc, dataWindowContents, namedWindowEventType, false);
+        EventTable table = indexRepository.addTable(hashProps, btreeProps, dataWindowContents, namedWindowEventType, false);
         explicitIndexes.put(indexName, table);
     }
 
@@ -205,7 +215,7 @@ public class NamedWindowRootView extends ViewSupport
             throws ExprValidationException
     {
         // Determine strategy for deletion and index table to use (if any)
-        Pair<LookupStrategy,PropertyIndexedEventTable> strategy = getStrategyPair(joinExpr, filterEventType);
+        Pair<LookupStrategy,EventTable> strategy = getStrategyPair(joinExpr, filterEventType);
 
         // If a new table is required, add that table to be updated
         if (strategy.getSecond() != null)
@@ -244,19 +254,19 @@ public class NamedWindowRootView extends ViewSupport
      */
     public void removeOnExpr(LookupStrategy strategy)
     {
-        PropertyIndexedEventTable table = tablePerMultiLookup.remove(strategy);
+        EventTable table = tablePerMultiLookup.remove(strategy);
         if (table != null)
         {
             indexRepository.removeTableReference(table);
         }
     }
 
-    private Pair<LookupStrategy,PropertyIndexedEventTable> getStrategyPair(ExprNode joinExpr, EventType filterEventType)
+    private Pair<LookupStrategy,EventTable> getStrategyPair(ExprNode joinExpr, EventType filterEventType)
     {
         // No join expression means delete all
         if (joinExpr == null)
         {
-            return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyAllRows(dataWindowContents), null);
+            return new Pair<LookupStrategy,EventTable>(new LookupStrategyAllRows(dataWindowContents), null);
         }
 
         // analyze query graph; Whereas stream0=named window, stream1=delete-expr filter
@@ -270,7 +280,7 @@ public class NamedWindowRootView extends ViewSupport
         // If the analysis revealed no join columns, must use the brute-force full table scan
         if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
         {
-            return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyTableScan(joinExpr.getExprEvaluator(), dataWindowContents), null);
+            return new Pair<LookupStrategy,EventTable>(new LookupStrategyTableScan(joinExpr.getExprEvaluator(), dataWindowContents), null);
         }
 
         // Build a set of index descriptors with property name and coercion type
@@ -303,7 +313,7 @@ public class NamedWindowRootView extends ViewSupport
         keyPropertiesJoin = JoinedPropUtil.getKeyProperties(joinedPropDesc);
 
         // Get the table for this index
-        PropertyIndexedEventTable table = indexRepository.addTable(indexedPropDesc, dataWindowContents, namedWindowEventType, mustCoerce);
+        EventTable table = indexRepository.addTable(indexedPropDesc, dataWindowContents, namedWindowEventType, mustCoerce);
 
         // assign types and stream numbers
         EventType[] eventTypePerStream = new EventType[] {null, filterEventType};
@@ -317,14 +327,14 @@ public class NamedWindowRootView extends ViewSupport
         SubqTableLookupStrategy lookupStrategy;
         if (!mustCoerce)
         {
-            lookupStrategy = new SubqIndexedTableLookupStrategy(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table);
+            lookupStrategy = new SubqIndexedTableLookupStrategy(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, (PropertyIndexedEventTable) table);
         }
         else
         {
-            lookupStrategy = new SubqIndexedTableLookupStrategyCoercing(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table, coercionTypes);
+            lookupStrategy = new SubqIndexedTableLookupStrategyCoercing(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, (PropertyIndexedEventTable) table, coercionTypes);
         }
 
-        return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyIndexed(joinExpr.getExprEvaluator(), lookupStrategy), table);
+        return new Pair<LookupStrategy,EventTable>(new LookupStrategyIndexed(joinExpr.getExprEvaluator(), lookupStrategy), table);
     }
 
     public void setParent(Viewable parent)
@@ -362,117 +372,146 @@ public class NamedWindowRootView extends ViewSupport
             return null;
         }
 
-        // Widening/Coercion is part of filter spec compile 
-        Map<String, Class> keysAndTypes = new HashMap<String, Class>();
+        // Determine what straight-equals keys and which ranges are available.
+        // Widening/Coercion is part of filter spec compile.
+        Set<String> keysAvailable = new HashSet<String>();
+        Set<String> rangesAvailable = new HashSet<String>();
         for (FilterSpecParam param : filter.getParameters()) {
-            if (!(param instanceof FilterSpecParamConstant)) {
-                continue;
-            }
             if (param.getFilterOperator() == FilterOperator.EQUAL) {
                 Object filterValue = param.getFilterValue(null);
                 if (filterValue == null) {
-                    keysAndTypes.put(param.getPropertyName(), null);
+                    keysAvailable.add(param.getPropertyName());
                 }
                 else {
-                    keysAndTypes.put(param.getPropertyName(), filterValue.getClass());
+                    keysAvailable.add(param.getPropertyName());
                 }
+            }
+            else if (param.getFilterOperator().isRangeOperator() ||
+                     param.getFilterOperator().isInvertedRangeOperator() ||
+                     param.getFilterOperator().isComparisonOperator()) {
+                rangesAvailable.add(param.getPropertyName());
+            }
+            else if (param.getFilterOperator().isRangeOperator()) {
+                rangesAvailable.add(param.getPropertyName());
             }
         }
 
-        PropertyIndexedEventTable tableFound = findTable(keysAndTypes);
-        if (tableFound == null) {
+        // Find an index that matches the needs
+        Pair<IndexMultiKey, EventTable> tablePair = indexRepository.findTable(keysAvailable, rangesAvailable, explicitIndexes);
+        if (tablePair == null) {
             if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
                 queryPlanLog.info("no index found");
             }
             return null;    // indicates table scan
         }
 
-        Object[] keyValues = new Object[tableFound.getPropertyNames().length];
-        for (int keyIndex = 0; keyIndex < tableFound.getPropertyNames().length; keyIndex++) {
+        // Compile key index lookup values
+        String[] keyIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getKeyProps());
+        Object[] keyValues = new Object[keyIndexProps.length];
+        for (int keyIndex = 0; keyIndex < keyIndexProps.length; keyIndex++) {
             for (FilterSpecParam param : filter.getParameters()) {
-                if (param.getPropertyName().equals(tableFound.getPropertyNames()[keyIndex])) {
+                if (param.getPropertyName().equals(keyIndexProps[keyIndex])) {
                     keyValues[keyIndex] = param.getFilterValue(null);
                     break;
                 }
             }
         }
 
-        if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-            queryPlanLog.info("index lookup, using keys " + Arrays.toString(tableFound.getPropertyNames()));
+        // Analyze ranges - these may include key lookup value (EQUALS semantics)
+        String[] rangeIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getRangeProps());
+        RangeIndexLookupValue[] rangeValues;
+        if (rangeIndexProps.length > 0) {
+            rangeValues = compileRangeLookupValues(rangeIndexProps, filter.getParameters());
         }
-        Set<EventBean> result = tableFound.lookup(keyValues);
+        else {
+            rangeValues = new RangeIndexLookupValue[0];
+        }
+
+        IndexMultiKey indexMultiKey = tablePair.getFirst();
+        Set<EventBean> result;
+        if (indexMultiKey.getKeyProps().length > 0 && indexMultiKey.getRangeProps().length == 0) {
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("hash-only index lookup, using keys " + Arrays.toString(keyIndexProps));
+            }
+            PropertyIndexedEventTable table = (PropertyIndexedEventTable) tablePair.getSecond();
+            result = table.lookup(keyValues);
+        }
+        else if (indexMultiKey.getKeyProps().length == 0 && indexMultiKey.getRangeProps().length == 1) {
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("btree-only index lookup, using key " + Arrays.toString(indexMultiKey.getRangeProps()));
+            }
+            PropertySortedEventTable table = (PropertySortedEventTable) tablePair.getSecond();
+            result = table.lookupConstants(rangeValues[0]);
+        }
+        else {
+            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                queryPlanLog.info("hash-btree-combination index lookup, using keys " + Arrays.toString(keyIndexProps) + " and " + Arrays.toString(indexMultiKey.getRangeProps()));
+            }
+            PropertyCompositeEventTable table = (PropertyCompositeEventTable) tablePair.getSecond();
+            Class[] rangeCoercion = table.getOptRangeCoercedTypes();
+            CompositeIndexLookup lookup = CompositeIndexLookupFactory.make(keyValues, rangeValues, rangeCoercion);
+            result = new HashSet<EventBean>();
+            lookup.lookup(table.getIndex(), result);
+        }
         if (result != null) {
             return result;
         }
         return Collections.EMPTY_LIST;
     }
 
-    private PropertyIndexedEventTable findTable(Map<String, Class> keysAndTypes) {
-        if (keysAndTypes.isEmpty()) {
+    private RangeIndexLookupValue[] compileRangeLookupValues(String[] rangeIndexProps, List<FilterSpecParam> parameters) {
+        RangeIndexLookupValue[] result = new RangeIndexLookupValue[rangeIndexProps.length];
+
+        for (int rangeIndex = 0; rangeIndex < rangeIndexProps.length; rangeIndex++) {
+            for (FilterSpecParam param : parameters) {
+                if (!param.getPropertyName().equals(rangeIndexProps[rangeIndex])) {
+                    continue;
+                }
+
+                if (param.getFilterOperator() == FilterOperator.EQUAL) {
+                    result[rangeIndex] = new RangeIndexLookupValueEquals(param.getFilterValue(null));
+                }
+                else if (param.getFilterOperator().isRangeOperator() || param.getFilterOperator().isInvertedRangeOperator()) {
+                    QueryGraphRangeEnum opAdd = QueryGraphRangeEnum.mapFrom(param.getFilterOperator());
+                    result[rangeIndex] = new RangeIndexLookupValueRange(param.getFilterValue(null), opAdd, true);
+                }
+                else if (param.getFilterOperator().isComparisonOperator()) {
+
+                    RangeIndexLookupValue existing = result[rangeIndex];
+                    QueryGraphRangeEnum opAdd = QueryGraphRangeEnum.mapFrom(param.getFilterOperator());
+                    if (existing == null) {
+                        result[rangeIndex] = new RangeIndexLookupValueRange(param.getFilterValue(null), opAdd, true);
+                    }
+                    else {
+                        if (!(existing instanceof RangeIndexLookupValueRange)) {
+                            continue;
+                        }
+                        RangeIndexLookupValueRange existingRange = (RangeIndexLookupValueRange) existing;
+                        QueryGraphRangeEnum opExist = existingRange.getOperator();
+                        QueryGraphRangeConsolidateDesc desc = QueryGraphRangeUtil.getCanConsolidate(opExist, opAdd);
+                        if (desc != null) {
+                            DoubleRange doubleRange = getDoubleRange(desc.isReverse(), existing.getValue(), param.getFilterValue(null));
+                            result[rangeIndex] = new RangeIndexLookupValueRange(doubleRange, desc.getType(), false);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private DoubleRange getDoubleRange(boolean reverse, Object start, Object end) {
+        if (start == null || end == null) {
             return null;
         }
-
-        List<PropertyIndexedEventTable> candidateTables = null;
-        for (PropertyIndexedEventTable table : indexRepository.getTables()) {
-
-            boolean missed = false;
-            for (String indexedProp : table.getPropertyNames()) {
-                if (!keysAndTypes.containsKey(indexedProp)) {
-                    missed = true;
-                    break;
-                }
-            }
-            if (!missed) {
-                if (candidateTables == null) {
-                    candidateTables = new ArrayList<PropertyIndexedEventTable>();
-                    candidateTables.add(table);
-                }
-                else {
-                    candidateTables.add(table);
-                }
-            }
-        }
-
-        if (candidateTables == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("No index found.");
-            }
-            return null;
-        }
-
-        // take the best available table
-        PropertyIndexedEventTable tableFound;
-        if (candidateTables.size() > 1) {
-            Comparator<PropertyIndexedEventTable> comparator = new Comparator<PropertyIndexedEventTable>() {
-                public int compare(PropertyIndexedEventTable o1, PropertyIndexedEventTable o2)
-                {
-                    if (o1.getPropertyNames().length > o2.getPropertyNames().length) {
-                        return -1;  // sort desc by count columns
-                    }
-                    if (o1.getPropertyNames().length == o2.getPropertyNames().length) {
-                        return 0;
-                    }
-                    return 1;
-                }
-            };
-            Collections.sort(candidateTables,comparator);
-            tableFound = candidateTables.get(0);
+        double startDbl = ((Number) start).doubleValue();
+        double endDbl = ((Number) end).doubleValue();
+        if (reverse) {
+            return new DoubleRange(startDbl, endDbl);
         }
         else {
-            tableFound = candidateTables.get(0);
+            return new DoubleRange(endDbl, startDbl);
         }
-
-        if (log.isDebugEnabled()) {
-            String indexName = null;
-            for (Map.Entry<String, PropertyIndexedEventTable> entry : explicitIndexes.entrySet()) {
-                if (entry.getValue() == tableFound) {
-                    indexName = entry.getKey();
-                }
-            }
-            log.debug("Found index " + indexName + " for on-demand query");
-        }
-
-        return tableFound;
     }
 
     /**
@@ -481,7 +520,7 @@ public class NamedWindowRootView extends ViewSupport
      */
     public void removeExplicitIndex(String indexName)
     {
-        PropertyIndexedEventTable table = explicitIndexes.remove(indexName);
+        EventTable table = explicitIndexes.remove(indexName);
         if (table != null) {
             indexRepository.removeTableReference(table);
         }
@@ -504,16 +543,21 @@ public class NamedWindowRootView extends ViewSupport
             return new SubqFullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
         }
 
-        Map<String, Class> indexedCols = new LinkedHashMap<String, Class>();
+        Set<String> indexedCols = new LinkedHashSet<String>();
         for (Map.Entry<String, JoinedPropDesc> entry : joinDesc.getJoinProps().entrySet()) {
-            indexedCols.put(entry.getValue().getIndexPropName(), entry.getValue().getCoercionType());
+            indexedCols.add(entry.getValue().getIndexPropName());
+        }
+
+        Set<String> rangeCols = new LinkedHashSet<String>();
+        for (Map.Entry<String, SubqueryRangeKeyDesc> entry : joinDesc.getRangeProps().entrySet()) {
+            rangeCols.add(entry.getValue().getRangeInfo().getPropertyValue());
         }
 
         // find matching table that could be used
-        PropertyIndexedEventTable table = findTable(indexedCols);
+        Pair<IndexMultiKey, EventTable> tablePair = indexRepository.findTable(indexedCols, rangeCols, explicitIndexes);
 
         // no matching existing table found, add new one
-        if (table == null) {
+        if (tablePair == null) {
             Pair<SubqTableLookupStrategy, String> strategy = addTableGetStrategy(joinDesc, eventTypesPerStream);
             if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
                 queryPlanLog.info("new sharable index, " + strategy.getSecond());
@@ -522,20 +566,17 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         // build strategy based on existing table
-        EventType[] types = new EventType[table.getPropertyNames().length];
-        int[] streamNumbers = new int[table.getPropertyNames().length];
-        String[] keyProps = new String[table.getPropertyNames().length];
-        Class[] coercionTypes = new Class[table.getPropertyNames().length];
-        String[] indexProps = new String[table.getPropertyNames().length];
+        String[] tableIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getKeyProps());
+        int[] streamNumbers = new int[tableIndexProps.length];
+        String[] keyProps = new String[tableIndexProps.length];
+        Class[] coercionTypes = new Class[tableIndexProps.length];
 
-        for (int i = 0; i < table.getPropertyNames().length; i++) {
-            String indexedProp = table.getPropertyNames()[i];
+        for (int i = 0; i < tableIndexProps.length; i++) {
+            String indexedProp = tableIndexProps[i];
 
             for (Map.Entry<String, JoinedPropDesc> entry : joinDesc.getJoinProps().entrySet()) {
                 JoinedPropDesc joinPlan = entry.getValue();
                 if (entry.getValue().getIndexPropName().equals(indexedProp)) {
-                    indexProps[i] = indexedProp;
-                    types[i] = eventTypesPerStream[joinPlan.getKeyStreamId()];
                     streamNumbers[i] = joinPlan.getKeyStreamId();
                     keyProps[i] = joinPlan.getKeyPropName();
                     coercionTypes[i] = joinPlan.getCoercionType();
@@ -544,17 +585,17 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         SubqIndexedTableLookupStrategy strategy;
-        String message = "index lookup on " + Arrays.toString(indexProps) + " based on " + Arrays.toString(keyProps);
+        String message = "index lookup on " + Arrays.toString(tableIndexProps) + " based on " + Arrays.toString(keyProps);
         if (!joinDesc.isMustCoerce()) {
-            strategy = new SubqIndexedTableLookupStrategy(types, streamNumbers, keyProps, table);
+            strategy = new SubqIndexedTableLookupStrategy(eventTypesPerStream, streamNumbers, keyProps, (PropertyIndexedEventTable) tablePair.getSecond());
         }
         else {
-            strategy = new SubqIndexedTableLookupStrategyCoercing(types, streamNumbers, keyProps, table, coercionTypes);
+            strategy = new SubqIndexedTableLookupStrategyCoercing(eventTypesPerStream, streamNumbers, keyProps, (PropertyIndexedEventTable) tablePair.getSecond(), coercionTypes);
             message = "coerced " + message;
         }
         SubqIndexedTableLookupStrategyLocking locking = new SubqIndexedTableLookupStrategyLocking(strategy, statementResourceLock);
-        tablePerSingleLookup.put(locking, table);
-        indexRepository.addTableReference(table);
+        tablePerSingleLookup.put(locking, tablePair.getSecond());
+        indexRepository.addTableReference(tablePair.getSecond());
         
         if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
             queryPlanLog.info("existing index, " + message);
@@ -581,25 +622,25 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         // Get the table for this index
-        PropertyIndexedEventTable table = indexRepository.addTable(indexedPropDesc, dataWindowContents, namedWindowEventType, joinDesc.isMustCoerce());
+        EventTable table = indexRepository.addTable(indexedPropDesc, dataWindowContents, namedWindowEventType, joinDesc.isMustCoerce());
 
         // create the strategy
         SubqTableLookupStrategy lookupStrategy;
         String message = "index lookup on " + Arrays.toString(indexPropertiesJoin) + " based on " + Arrays.toString(keyPropertiesJoin);
         if (!joinDesc.isMustCoerce())
         {
-            lookupStrategy = new SubqIndexedTableLookupStrategy(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table);
+            lookupStrategy = new SubqIndexedTableLookupStrategy(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, (PropertyIndexedEventTable) table);
         }
         else
         {
-            lookupStrategy = new SubqIndexedTableLookupStrategyCoercing(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table, coercionTypes);
+            lookupStrategy = new SubqIndexedTableLookupStrategyCoercing(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, (PropertyIndexedEventTable) table, coercionTypes);
             message = "coerced " + message;
         }
         return new Pair<SubqTableLookupStrategy, String>(lookupStrategy, message);
     }
 
     public void removeSubqueryLookupStrategy(SubqTableLookupStrategy namedWindowSubqueryLookup) {
-        PropertyIndexedEventTable table = tablePerSingleLookup.remove(namedWindowSubqueryLookup);
+        EventTable table = tablePerSingleLookup.remove(namedWindowSubqueryLookup);
         if (table != null) {
             indexRepository.removeTableReference(table);
         }

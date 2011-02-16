@@ -1,32 +1,8 @@
 package com.espertech.esper.epl.lookup;
 
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.join.plan.RangeKeyDesc;
-
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class JoinedPropUtil {
-
-    public static int[] getKeyStreamNumsRange(Collection<Pair<Integer, RangeKeyDesc>> pairs) {
-        int[] streamIds = new int[pairs.size()];
-        int count = 0;
-        for (Pair<Integer, RangeKeyDesc> pair : pairs)
-        {
-            streamIds[count++] = pair.getFirst();
-        }
-        return streamIds;
-    }
-
-    public static List<RangeKeyDesc> getRanges(Collection<Pair<Integer, RangeKeyDesc>> pairs) {
-        List<RangeKeyDesc> ranges = new ArrayList<RangeKeyDesc>();
-        for (Pair<Integer, RangeKeyDesc> pair : pairs)
-        {
-            ranges.add(pair.getSecond());
-        }
-        return ranges;
-    }
 
     /**
      * Returns the key stream numbers.

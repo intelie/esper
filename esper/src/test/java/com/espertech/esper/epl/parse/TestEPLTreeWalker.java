@@ -70,15 +70,17 @@ public class TestEPLTreeWalker extends TestCase
 
     public void testWalkCreateIndex() throws Exception
     {
-        String expression = "create index A_INDEX on B_NAMEDWIN (c, d)";
+        String expression = "create index A_INDEX on B_NAMEDWIN (c, d btree)";
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         CreateIndexDesc createIndex = walker.getStatementSpec().getCreateIndexDesc();
         assertEquals("A_INDEX", createIndex.getIndexName());
         assertEquals("B_NAMEDWIN", createIndex.getWindowName());
         assertEquals(2, createIndex.getColumns().size());
-        assertEquals("c", createIndex.getColumns().get(0));
-        assertEquals("d", createIndex.getColumns().get(1));
+        assertEquals("c", createIndex.getColumns().get(0).getName());
+        assertEquals(CreateIndexType.HASH, createIndex.getColumns().get(0).getType());
+        assertEquals("d", createIndex.getColumns().get(1).getName());
+        assertEquals(CreateIndexType.BTREE, createIndex.getColumns().get(1).getType());
     }
 
     public void testWalkViewExpressions() throws Exception

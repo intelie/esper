@@ -31,7 +31,6 @@ public class PropertyIndexedEventTable implements EventTable
 {
     private final int streamNum;
     private final String[] propertyNames;
-    private final Class[] propertyCoercedTypes;
 
     /**
      * Getters for properties.
@@ -48,13 +47,11 @@ public class PropertyIndexedEventTable implements EventTable
      * @param streamNum - the stream number that is indexed
      * @param eventType - types of events indexed
      * @param propertyNames - property names to use for indexing
-     * @param propertyCoercedTypes - property types
      */
-    public PropertyIndexedEventTable(int streamNum, EventType eventType, String[] propertyNames, Class[] propertyCoercedTypes)
+    public PropertyIndexedEventTable(int streamNum, EventType eventType, String[] propertyNames)
     {
         this.streamNum = streamNum;
         this.propertyNames = propertyNames;
-        this.propertyCoercedTypes = propertyCoercedTypes;
 
         // Init getters
         propertyGetters = new EventPropertyGetter[propertyNames.length];
@@ -194,15 +191,6 @@ public class PropertyIndexedEventTable implements EventTable
      */
     public String[] getPropertyNames() {
         return propertyNames;
-    }
-
-    /**
-     * Returns property types.
-     * @return types
-     */
-    public Class[] getPropertyCoercedTypes()
-    {
-        return propertyCoercedTypes;
     }
 
     public String toString()

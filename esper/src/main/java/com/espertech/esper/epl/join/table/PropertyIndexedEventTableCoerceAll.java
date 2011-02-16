@@ -26,9 +26,9 @@ import java.util.Set;
  * Takes a list of property names as parameter. Doesn't care which event type the events have as long as the properties
  * exist. If the same event is added twice, the class throws an exception on add.
  */
-public class PropertyIndTableCoerceAll extends PropertyIndTableCoerceAdd
+public class PropertyIndexedEventTableCoerceAll extends PropertyIndexedEventTableCoerceAdd
 {
-    private static Log log = LogFactory.getLog(PropertyIndTableCoerceAll.class);
+    private static Log log = LogFactory.getLog(PropertyIndexedEventTableCoerceAll.class);
     private final Class[] coercionTypes;
 
     /**
@@ -38,7 +38,7 @@ public class PropertyIndTableCoerceAll extends PropertyIndTableCoerceAdd
      * @param propertyNames are the property names to get property values
      * @param coercionType are the classes to coerce indexed values to
      */
-    public PropertyIndTableCoerceAll(int streamNum, EventType eventType, String[] propertyNames, Class[] coercionType)
+    public PropertyIndexedEventTableCoerceAll(int streamNum, EventType eventType, String[] propertyNames, Class[] coercionType)
     {
         super(streamNum, eventType, propertyNames, coercionType);
         this.coercionTypes = coercionType;

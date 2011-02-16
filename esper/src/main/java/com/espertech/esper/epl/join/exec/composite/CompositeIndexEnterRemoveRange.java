@@ -7,19 +7,19 @@ import com.espertech.esper.event.EventBeanUtility;
 
 import java.util.*;
 
-public class InnerIndexEnterRemoveRange implements InnerIndexEnterRemove {
+public class CompositeIndexEnterRemoveRange implements CompositeIndexEnterRemove {
 
     private final EventPropertyGetter propertyGetter;
     private final Class coercionType;
     private HashSet<EventBean> nullKeys;
-    private InnerIndexEnterRemove next;
+    private CompositeIndexEnterRemove next;
 
-    public InnerIndexEnterRemoveRange(EventType eventType, String rangeProp, Class coercionType) {
+    public CompositeIndexEnterRemoveRange(EventType eventType, String rangeProp, Class coercionType) {
         this.propertyGetter = EventBeanUtility.getSafePropertyGetter(eventType, rangeProp);
         this.coercionType = coercionType;
     }
 
-    public void setNext(InnerIndexEnterRemove next) {
+    public void setNext(CompositeIndexEnterRemove next) {
         this.next = next;
     }
 

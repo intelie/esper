@@ -22,7 +22,7 @@ public class TestIndexedTableLookupPlan extends TestCase
     {
         types = new EventType[] { SupportEventTypeFactory.createBeanType(SupportBean.class) };
 
-        propertyMapEventIndex = new PropertyIndexedEventTable(1, types[0], new String[] {"intBoxed"}, null);
+        propertyMapEventIndex = new PropertyIndexedEventTable(1, types[0], new String[] {"intBoxed"});
     }
 
     public void testLookup()

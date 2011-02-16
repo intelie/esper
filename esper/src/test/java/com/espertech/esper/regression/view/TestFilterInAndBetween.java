@@ -102,6 +102,7 @@ public class TestFilterInAndBetween extends TestCase
 
     public void testInExpr()
     {
+        tryExpr("(string in ['b':'d'))", "string", new String[] {"a", "b", "c", "d"}, new boolean [] {false, true, true, false});
         tryExpr("(string in ('a', 'b'))", "string", new String[] {"a", "x", "b", "y"}, new boolean [] {true, false, true, false});
         tryExpr("(boolPrimitive in (false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {false, true});
         tryExpr("(boolPrimitive in (false, false, false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {false, true});

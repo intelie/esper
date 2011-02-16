@@ -198,6 +198,7 @@ tokens
 	WHEN_LIMIT_EXPR;
 	INSERTINTO_EXPR;
 	EXPRCOL;
+	INDEXCOL;
 	CONCAT;	
 	LIB_FUNCTION;
 	LIB_FUNC_CHAIN;
@@ -780,9 +781,19 @@ createWindowExprModelAfter
 	;
 		
 createIndexExpr
-	:	CREATE INDEX n=IDENT ON w=IDENT LPAREN columnList RPAREN
-		-> ^(CREATE_INDEX_EXPR $n $w columnList)
+	:	CREATE INDEX n=IDENT ON w=IDENT LPAREN createIndexColumnList RPAREN
+		-> ^(CREATE_INDEX_EXPR $n $w createIndexColumnList)
 	;
+	
+createIndexColumnList
+	: 	createIndexColumn (COMMA createIndexColumn)* 
+		-> ^(INDEXCOL createIndexColumn+)
+	;	
+
+createIndexColumn
+	: 	IDENT IDENT? 
+		-> ^(INDEXCOL IDENT*)
+	;	
 
 createVariableExpr
 	:	CREATE VARIABLE classIdentifier n=IDENT (EQUALS expression)?

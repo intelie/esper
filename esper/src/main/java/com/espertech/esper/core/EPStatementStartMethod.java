@@ -2114,7 +2114,7 @@ public class EPStatementStartMethod
 
             if (!joinPropDesc.isMustCoerce())
             {
-                PropertyIndexedEventTable table = new PropertyIndexedEventTable(0, viewableEventType, indexedProps, coercionTypes);
+                PropertyIndexedEventTable table = new PropertyIndexedEventTable(0, viewableEventType, indexedProps);
                 SubqTableLookupStrategy strategy = new SubqIndexedTableLookupStrategy( outerEventTypes,
                         keyStreamNums, keyProps, table);
                 if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
@@ -2124,7 +2124,7 @@ public class EPStatementStartMethod
             }
             else
             {                
-                PropertyIndTableCoerceAdd table = new PropertyIndTableCoerceAdd(0, viewableEventType, indexedProps, coercionTypes);
+                PropertyIndexedEventTableCoerceAdd table = new PropertyIndexedEventTableCoerceAdd(0, viewableEventType, indexedProps, coercionTypes);
                 SubqTableLookupStrategy strategy = new SubqIndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
                 if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
                     queryPlanLog.info("local index, coerced index lookup on " + Arrays.toString(indexedProps) + " based on " + Arrays.toString(keyProps));

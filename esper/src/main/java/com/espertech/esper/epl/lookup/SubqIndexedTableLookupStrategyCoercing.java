@@ -39,7 +39,7 @@ public class SubqIndexedTableLookupStrategyCoercing extends SubqIndexedTableLook
         Object[] keyValues = new Object[propertyGetters.length];
         for (int i = 0; i < propertyGetters.length; i++)
         {
-            int streamNum = streamNumbers[i];
+            int streamNum = keyStreamNums[i];
             EventBean event = eventsPerStream[streamNum];
             Object value = propertyGetters[i].get(event);
 

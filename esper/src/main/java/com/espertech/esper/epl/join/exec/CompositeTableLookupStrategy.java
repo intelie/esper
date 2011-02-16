@@ -11,8 +11,8 @@ package com.espertech.esper.epl.join.exec;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexQuery;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexQueryFactory;
 import com.espertech.esper.epl.join.plan.QueryGraphValueRange;
 import com.espertech.esper.epl.join.rep.Cursor;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
@@ -31,7 +31,7 @@ public class CompositeTableLookupStrategy implements JoinExecTableLookupStrategy
 {
     private final EventType eventType;
     private final PropertyCompositeEventTable index;
-    private final InnerIndexQuery chain;
+    private final CompositeIndexQuery chain;
     private final List<QueryGraphValueRange> rangeKeyPairs;
 
     /**
@@ -44,7 +44,7 @@ public class CompositeTableLookupStrategy implements JoinExecTableLookupStrategy
         this.eventType = eventType;
         this.index = index;
         this.rangeKeyPairs = rangeKeyPairs;
-        chain = InnerIndexQueryFactory.make(eventType, optionalKeyProps, index.getOptKeyCoercedTypes(), rangeKeyPairs, index.getOptRangeCoercedTypes());
+        chain = CompositeIndexQueryFactory.make(eventType, optionalKeyProps, index.getOptKeyCoercedTypes(), rangeKeyPairs, index.getOptRangeCoercedTypes());
     }
 
     /**

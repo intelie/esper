@@ -5,10 +5,10 @@ import com.espertech.esper.client.EventBean;
 import java.util.HashSet;
 import java.util.Map;
 
-public interface InnerIndexEnterRemove {
+public interface CompositeIndexEnterRemove {
 
     public void enter(EventBean event, Map parent);
-    public void setNext(InnerIndexEnterRemove next);
+    public void setNext(CompositeIndexEnterRemove next);
     public void remove(EventBean event, Map parent);
     public void getAll(HashSet<EventBean> result, Map parent);
 }

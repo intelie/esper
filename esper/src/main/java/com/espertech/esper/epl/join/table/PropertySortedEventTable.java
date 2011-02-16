@@ -11,8 +11,14 @@ package com.espertech.esper.epl.join.table;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.SuperIterator;
+import com.espertech.esper.epl.join.exec.RangeIndexLookupValue;
+import com.espertech.esper.epl.join.exec.RangeIndexLookupValueEquals;
+import com.espertech.esper.epl.join.exec.RangeIndexLookupValueRange;
+import com.espertech.esper.epl.join.plan.QueryGraphRangeEnum;
 import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.filter.DoubleRange;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -176,7 +182,7 @@ public class PropertySortedEventTable implements EventTable
         return normalizeCollection(submapOne, submapTwo);
     }
 
-    public Set<EventBean> lookupLessThen(Object keyStart) {
+    public Set<EventBean> lookupLess(Object keyStart) {
         if (keyStart == null) {
             return Collections.emptySet();
         }
@@ -394,4 +400,60 @@ public class PropertySortedEventTable implements EventTable
 
     private static Log log = LogFactory.getLog(PropertySortedEventTable.class);
 
+    public Set<EventBean> lookupConstants(RangeIndexLookupValue lookupValueBase) {
+
+        if (lookupValueBase instanceof RangeIndexLookupValueEquals) {
+            RangeIndexLookupValueEquals equals = (RangeIndexLookupValueEquals) lookupValueBase;
+            return propertyIndex.get(equals.getValue());    
+        }
+
+        RangeIndexLookupValueRange lookupValue = (RangeIndexLookupValueRange) lookupValueBase;
+        if (lookupValue.getOperator() == QueryGraphRangeEnum.RANGE_CLOSED) {
+            DoubleRange range = (DoubleRange) lookupValue.getValue();
+            return lookupRange(range.getMin(), true, range.getMax(), true, lookupValue.isAllowRangeReverse());
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.RANGE_HALF_OPEN) {
+            DoubleRange range = (DoubleRange) lookupValue.getValue();
+            return lookupRange(range.getMin(), true, range.getMax(), false, lookupValue.isAllowRangeReverse());
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.RANGE_HALF_CLOSED) {
+            DoubleRange range = (DoubleRange) lookupValue.getValue();
+            return lookupRange(range.getMin(), false, range.getMax(), true, lookupValue.isAllowRangeReverse());
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.RANGE_OPEN) {
+            DoubleRange range = (DoubleRange) lookupValue.getValue();
+            return lookupRange(range.getMin(), false, range.getMax(), false, lookupValue.isAllowRangeReverse());
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.NOT_RANGE_CLOSED) {
+            DoubleRange range = (DoubleRange) lookupValue.getValue();
+            return lookupRangeInverted(range.getMin(), true, range.getMax(), true);
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.NOT_RANGE_HALF_OPEN) {
+            DoubleRange range = (DoubleRange) lookupValue.getValue();
+            return lookupRangeInverted(range.getMin(), true, range.getMax(), false);
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.NOT_RANGE_HALF_CLOSED) {
+            DoubleRange range = (DoubleRange) lookupValue.getValue();
+            return lookupRangeInverted(range.getMin(), false, range.getMax(), true);
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.NOT_RANGE_OPEN) {
+            DoubleRange range = (DoubleRange) lookupValue.getValue();
+            return lookupRangeInverted(range.getMin(), false, range.getMax(), false);
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.GREATER) {
+            return lookupGreater(lookupValue.getValue());
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
+            return lookupGreaterEqual(lookupValue.getValue());
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.LESS) {
+            return lookupLess(lookupValue.getValue());
+        }
+        else if (lookupValue.getOperator() == QueryGraphRangeEnum.LESS_OR_EQUAL) {
+            return lookupLessEqual(lookupValue.getValue());
+        }
+        else {
+            throw new IllegalArgumentException("Unrecognized operator '" + lookupValue.getOperator() + "'");
+        }
+    }
 }

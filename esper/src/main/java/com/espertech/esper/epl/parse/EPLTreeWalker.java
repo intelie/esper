@@ -642,13 +642,25 @@ public class EPLTreeWalker extends EsperEPL2Ast
         String windowName = node.getChild(1).getText();
 
         Tree nodeExpr = node.getChild(2);
-        List<String> columns = new ArrayList<String>();
+        List<CreateIndexItem> columns = new ArrayList<CreateIndexItem>();
 
         for (int i = 0; i < nodeExpr.getChildCount(); i++)
         {
-            if (nodeExpr.getChild(i).getType() == IDENT)
+            CreateIndexType type = CreateIndexType.HASH;
+            Tree child = nodeExpr.getChild(i);
+            if (child.getType() == INDEXCOL)
             {
-                columns.add(nodeExpr.getChild(i).getText());
+                String columnName = child.getChild(0).getText();
+                if (child.getChildCount() == 2) {
+                    String typeName = child.getChild(1).getText();
+                    try {
+                        type = CreateIndexType.valueOf(typeName.toUpperCase());
+                    }
+                    catch (RuntimeException ex) {
+                        throw new ASTWalkException("Invalid column index type '" + type + "' encountered, please use any of the following index type names " + Arrays.asList(CreateIndexType.values()));
+                    }
+                }
+                columns.add(new CreateIndexItem(columnName, type));
             }
         }
 

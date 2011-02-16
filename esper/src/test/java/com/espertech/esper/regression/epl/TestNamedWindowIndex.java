@@ -3,6 +3,7 @@ package com.espertech.esper.regression.epl;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBeanRange;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -23,6 +24,69 @@ public class TestNamedWindowIndex extends TestCase
         listener = new SupportUpdateListener();
     }
     
+    public void testMultiRangeAndKey() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
+
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as SupportBeanRange");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBeanRange");
+        epService.getEPAdministrator().createEPL("create index idx1 on MyWindow(key hash, keyLong hash, rangeStartLong btree, rangeEndLong btree)");
+        String fields[] = "id".split(",");
+
+        String query1 = "select * from MyWindow where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 and key='K1' order by id asc";
+        runQueryAssertion(query1, fields, null);
+        
+        epService.getEPRuntime().sendEvent(SupportBeanRange.makeLong("E1", "K1", 1L, 2L, 3L));
+        runQueryAssertion(query1, fields, new Object[][] {{"E1"}});
+
+        epService.getEPRuntime().sendEvent(SupportBeanRange.makeLong("E2", "K1", 1L, 2L, 4L));
+        runQueryAssertion(query1, fields, new Object[][] {{"E1"}, {"E2"}});
+
+        epService.getEPRuntime().sendEvent(SupportBeanRange.makeLong("E3", "K1", 1L, 3L, 3L));
+        runQueryAssertion(query1, fields, new Object[][] {{"E1"}, {"E2"}, {"E3"}});
+
+        String query2 = "select * from MyWindow where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 order by id asc";
+        runQueryAssertion(query2, fields, new Object[][] {{"E1"}, {"E2"}, {"E3"}});
+    }
+
+    private void runQueryAssertion(String epl, String[] fields, Object[][] expected) {
+        EPOnDemandQueryResult result = epService.getEPRuntime().executeQuery(epl);
+        ArrayAssertionUtil.assertPropsPerRow(result.getArray(), fields, expected);
+    }
+
+    public void testHashBTreeWidening() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
+
+        // widen to long
+        String stmtTextCreate = "create window MyWindowOne.win:keepall() as (f1 long, f2 string)";
+        epService.getEPAdministrator().createEPL(stmtTextCreate);
+        epService.getEPAdministrator().createEPL("insert into MyWindowOne(f1, f2) select longPrimitive, string from SupportBean");
+        epService.getEPAdministrator().createEPL("create index MyWindowOneIndex1 on MyWindowOne(f1 btree)");
+        String fields[] = "f1,f2".split(",");
+
+        sendEventLong("E1", 10L);
+        EPOnDemandQueryResult result = epService.getEPRuntime().executeQuery("select * from MyWindowOne where f1>9");
+        ArrayAssertionUtil.assertPropsPerRow(result.getArray(), fields, new Object[][] {{10L, "E1"}});
+
+        // SODA
+        String epl = "create index IX1 on MyWindowOne(f1, f2 btree)";
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
+        assertEquals(model.toEPL(), epl);
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        assertEquals(epl, stmt.getText());
+
+        // coerce to short
+        stmtTextCreate = "create window MyWindowTwo.win:keepall() as (f1 short, f2 string)";
+        epService.getEPAdministrator().createEPL(stmtTextCreate);
+        epService.getEPAdministrator().createEPL("insert into MyWindowTwo(f1, f2) select shortPrimitive, string from SupportBean");
+        epService.getEPAdministrator().createEPL("create index MyWindowTwoIndex1 on MyWindowTwo(f1 btree)");
+
+        sendEventShort("E1", (short) 2);
+
+        result = epService.getEPRuntime().executeQuery("select * from MyWindowTwo where f1>=2");
+        ArrayAssertionUtil.assertPropsPerRow(result.getArray(), fields, new Object[][] {{(short)2, "E1"}});
+    }
+
     public void testWidening()
     {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
@@ -50,65 +114,6 @@ public class TestNamedWindowIndex extends TestCase
 
         result = epService.getEPRuntime().executeQuery("select * from MyWindowTwo where f1=2");
         ArrayAssertionUtil.assertPropsPerRow(result.getArray(), fields, new Object[][] {{(short)2, "E1"}});
-    }
-
-    public void testFAFPerformance()
-    {
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
-
-        // create window one
-        String stmtTextCreateOne = "create window MyWindowOne.win:keepall() as (f1 string, f2 int)";
-        epService.getEPAdministrator().createEPL(stmtTextCreateOne);
-        epService.getEPAdministrator().createEPL("insert into MyWindowOne(f1, f2) select string, intPrimitive from SupportBean");
-        epService.getEPAdministrator().createEPL("create index MyWindowOneIndex on MyWindowOne(f1)");
-
-        // insert X rows
-        int maxRows = 100;   //for performance testing change to int maxRows = 100000;
-        for (int i=0; i < maxRows; i++) {
-            epService.getEPRuntime().sendEvent(new SupportBean("K" + i, i));
-        }
-
-        // fire N queries each returning 1 row
-        long start = System.currentTimeMillis();
-        String queryText = "select * from MyWindowOne where f1='K10'";
-        EPOnDemandPreparedQuery query = epService.getEPRuntime().prepareQuery(queryText);
-        int loops = 10000;  
-
-        for (int i = 0; i < loops; i++) {
-            EPOnDemandQueryResult result = query.execute();
-            assertEquals(1, result.getArray().length);
-            assertEquals("K10", result.getArray()[0].get("f1"));
-        }
-        long end = System.currentTimeMillis();
-        long delta = end - start;
-        assertTrue("delta=" + delta, delta < 200);
-        
-        // test no value returned
-        queryText = "select * from MyWindowOne where f1='KX'";
-        query = epService.getEPRuntime().prepareQuery(queryText);
-        EPOnDemandQueryResult result = query.execute();
-        assertEquals(0, result.getArray().length);
-
-        // test query null
-        queryText = "select * from MyWindowOne where f1=null";
-        query = epService.getEPRuntime().prepareQuery(queryText);
-        result = query.execute();
-        assertEquals(0, result.getArray().length);
-        
-        // insert null and test null
-        epService.getEPRuntime().sendEvent(new SupportBean(null, -2));
-        result = query.execute();
-        assertEquals(1, result.getArray().length);
-        assertEquals(-2, result.getArray()[0].get("f2"));
-
-        // test two values
-        epService.getEPRuntime().sendEvent(new SupportBean(null, -1));
-        query = epService.getEPRuntime().prepareQuery("select * from MyWindowOne where f1=null order by f2 asc");
-        result = query.execute();
-        assertEquals(2, result.getArray().length);
-        assertEquals(-2, result.getArray()[0].get("f2"));
-        assertEquals(-1, result.getArray()[1].get("f2"));
     }
 
     public void testCompositeIndex()

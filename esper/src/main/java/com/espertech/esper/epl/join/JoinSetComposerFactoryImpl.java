@@ -164,7 +164,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             indexesPerStream[streamNo] = new LinkedHashMap<String, EventTable>();
 
             for (Map.Entry<String, QueryPlanIndexItem> entry : items.entrySet()) {
-                EventTable index = buildIndex(streamNo, items.get(entry.getKey()), streamTypes[streamNo]);
+                EventTable index = EventTableFactory.buildIndex(streamNo, items.get(entry.getKey()), streamTypes[streamNo], false);
                 indexesPerStream[streamNo].put(entry.getKey(), index);
             }
         }
@@ -437,53 +437,6 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
             }
         }
-    }
-
-    /**
-     * Build an index/table instance using the event properties for the event type.
-     * @param indexedStreamNum - number of stream indexed
-     * @param eventType - type of event to expect
-     * @return table build
-     */
-    protected static EventTable buildIndex(int indexedStreamNum, QueryPlanIndexItem item, EventType eventType)
-    {
-        String[] indexProps = item.getIndexProps();
-        Class[] indexCoercionTypes = item.getOptIndexCoercionTypes();
-        String[] rangeProps = item.getRangeProps();
-        Class[] rangeCoercionTypes = item.getOptRangeCoercionTypes();
-
-        EventTable table;
-        if (rangeProps == null || rangeProps.length == 0) {
-            if (indexProps == null || indexProps.length == 0)
-            {
-                table = new UnindexedEventTable(indexedStreamNum);
-            }
-            else
-            {
-                if (indexCoercionTypes == null || indexCoercionTypes.length == 0)
-                {
-                    table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps, null);
-                }
-                else
-                {
-                    table = new PropertyIndTableCoerceAll(indexedStreamNum, eventType, indexProps, indexCoercionTypes);
-                }
-            }
-        }
-        else {
-            if ((rangeProps.length == 1) && (indexProps == null || indexProps.length == 0)) {
-                if (rangeCoercionTypes == null) {
-                    return new PropertySortedEventTable(indexedStreamNum, eventType, rangeProps[0]);
-                }
-                else {
-                    return new PropertySortedEventTableCoerced(indexedStreamNum, eventType, rangeProps[0], rangeCoercionTypes[0]);
-                }
-            }
-            else {
-                return new PropertyCompositeEventTable(indexedStreamNum, eventType, indexProps, indexCoercionTypes, rangeProps, rangeCoercionTypes);
-            }
-        }
-        return table;
     }
 
     private static final Log log = LogFactory.getLog(JoinSetComposerFactoryImpl.class);

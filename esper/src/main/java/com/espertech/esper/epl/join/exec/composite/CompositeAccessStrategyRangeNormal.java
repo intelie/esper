@@ -15,7 +15,7 @@ public class CompositeAccessStrategyRangeNormal extends CompositeAccessStrategyR
         this.allowReverseRange = allowReverseRange;
     }
 
-    public Set<EventBean> lookup(EventBean event, Map parent, Set<EventBean> result, InnerIndexQuery next) {
+    public Set<EventBean> lookup(EventBean event, Map parent, Set<EventBean> result, CompositeIndexQuery next) {
         Object comparableStart = start.get(event);
         if (comparableStart == null) {
             return null;
@@ -41,10 +41,10 @@ public class CompositeAccessStrategyRangeNormal extends CompositeAccessStrategyR
             }
         }
 
-        return InnerIndexQueryRange.handle(event, submap, null, result, next);
+        return CompositeIndexQueryRange.handle(event, submap, null, result, next);
     }
 
-    public Collection<EventBean> lookup(EventBean[] eventPerStream, Map parent, Collection<EventBean> result, InnerIndexQuery next) {
+    public Collection<EventBean> lookup(EventBean[] eventPerStream, Map parent, Collection<EventBean> result, CompositeIndexQuery next) {
         Object comparableStart = start.get(eventPerStream[startStreamNum]);
         if (comparableStart == null) {
             return null;
@@ -70,6 +70,6 @@ public class CompositeAccessStrategyRangeNormal extends CompositeAccessStrategyR
             }
         }
 
-        return InnerIndexQueryRange.handle(eventPerStream, submap, null, result, next);
+        return CompositeIndexQueryRange.handle(eventPerStream, submap, null, result, next);
     }
 }

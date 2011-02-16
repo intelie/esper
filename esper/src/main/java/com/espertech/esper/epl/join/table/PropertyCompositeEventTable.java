@@ -10,25 +10,30 @@ package com.espertech.esper.epl.join.table;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexEnterRemove;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexEnterRemoveKeyed;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexEnterRemoveRange;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexEnterRemove;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexEnterRemoveKeyed;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexEnterRemoveRange;
+import com.espertech.esper.filter.FilterOperator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
 /**
- * Index that organizes events by the event property values into a nested tree structure
- * with either {@link com.espertech.esper.collection.MultiKeyUntyped} or Object (sortable) keys that store the property values.
- * <p>
  * For use when the index comprises of either two or more ranges or a unique key in combination with a range.
+ * Organizes into a TreeMap<key, TreeMap<key2, Set<EventBean>>, for short. The top level can also be just Map<MultiKeyUntyped, TreeMap...>.
+ * Expected at least either (A) one key and one range or (B) zero keys and 2 ranges.
+ * <p>
+ * An alternative implementatation could have been based on "TreeMap<ComparableMultiKey, Set<EventBean>>>", however the following implication arrive
+ * - not applicable for range-only lookups (since there the key can be the value itself
+ * - not applicable for multiple nested range as ordering not nested
+ * - each add/remove and lookup would also need to construct a key object.
  */
 public class PropertyCompositeEventTable implements EventTable
 {
     private final int streamNum;
     private final String[] rangeProps;
-    private final InnerIndexEnterRemove chain;
+    private final CompositeIndexEnterRemove chain;
     private final Class[] optKeyCoercedTypes;
     private final Class[] optRangeCoercedTypes;
 
@@ -58,20 +63,20 @@ public class PropertyCompositeEventTable implements EventTable
         }
 
         // construct chain
-        List<InnerIndexEnterRemove> enterRemoves = new ArrayList<InnerIndexEnterRemove>();
+        List<CompositeIndexEnterRemove> enterRemoves = new ArrayList<CompositeIndexEnterRemove>();
         if (optionalKeyedProps != null && optionalKeyedProps.length > 0) {
-            enterRemoves.add(new InnerIndexEnterRemoveKeyed(eventType, optionalKeyedProps, optKeyCoercedTypes));
+            enterRemoves.add(new CompositeIndexEnterRemoveKeyed(eventType, optionalKeyedProps, optKeyCoercedTypes));
         }
         int count = 0;
         for (String rangeProp : rangeProps) {
             Class coercionType = optRangeCoercedTypes == null ? null : optRangeCoercedTypes[count];
-            enterRemoves.add(new InnerIndexEnterRemoveRange(eventType, rangeProp, coercionType));
+            enterRemoves.add(new CompositeIndexEnterRemoveRange(eventType, rangeProp, coercionType));
             count++;
         }
 
         // Hook up as chain for remove
-        InnerIndexEnterRemove last = null;
-        for (InnerIndexEnterRemove action : enterRemoves) {
+        CompositeIndexEnterRemove last = null;
+        for (CompositeIndexEnterRemove action : enterRemoves) {
             if (last != null) {
                 last.setNext(action);
             }
@@ -162,5 +167,4 @@ public class PropertyCompositeEventTable implements EventTable
     }
 
     private static Log log = LogFactory.getLog(PropertyCompositeEventTable.class);
-
 }

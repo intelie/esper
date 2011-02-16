@@ -11,7 +11,6 @@ package com.espertech.esper.client.soda;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,7 +22,7 @@ public class CreateIndexClause implements Serializable
 
     private String indexName;
     private String windowName;
-    private List<String> columns = new ArrayList<String>();
+    private List<CreateIndexColumn> columns = new ArrayList<CreateIndexColumn>();
 
     /**
      * Ctor.
@@ -43,6 +42,12 @@ public class CreateIndexClause implements Serializable
         return new CreateIndexClause(indexName, windowName, properties);
     }
 
+    public CreateIndexClause(String indexName, String windowName, List<CreateIndexColumn> columns) {
+        this.indexName = indexName;
+        this.windowName = windowName;
+        this.columns = columns;
+    }
+
     /**
      * Ctor.
      * @param windowName is the name of the window to create
@@ -53,7 +58,9 @@ public class CreateIndexClause implements Serializable
     {
         this.indexName = indexName;
         this.windowName = windowName;
-        columns.addAll(Arrays.asList(properties));
+        for (String prop : properties) {
+            columns.add(new CreateIndexColumn(prop));
+        }
     }
 
     /**
@@ -68,10 +75,10 @@ public class CreateIndexClause implements Serializable
         writer.write(windowName);
         writer.write('(');
         String delimiter = "";
-        for (String prop : columns)
+        for (CreateIndexColumn prop : columns)
         {
             writer.write(delimiter);
-            writer.write(prop);
+            prop.toEPL(writer);
             delimiter = ", ";
         }
         writer.write(')');
@@ -117,7 +124,7 @@ public class CreateIndexClause implements Serializable
      * Returns columns.
      * @return columns
      */
-    public List<String> getColumns()
+    public List<CreateIndexColumn> getColumns()
     {
         return columns;
     }
@@ -126,7 +133,7 @@ public class CreateIndexClause implements Serializable
      * Sets columns.
      * @param columns to index
      */
-    public void setColumns(List<String> columns)
+    public void setColumns(List<CreateIndexColumn> columns)
     {
         this.columns = columns;
     }

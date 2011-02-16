@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.join;
 
 import com.espertech.esper.epl.join.plan.QueryPlanIndexItem;
+import com.espertech.esper.epl.join.table.EventTableFactory;
 import junit.framework.TestCase;
 
 import com.espertech.esper.client.EventType;
@@ -37,16 +38,16 @@ public class TestJoinSetComposerFactory extends TestCase
     public void testBuildIndex()
     {
         QueryPlanIndexItem item = new QueryPlanIndexItem(new String[] {"intPrimitive", "boolBoxed"}, null, null, null);
-        EventTable table = JoinSetComposerFactoryImpl.buildIndex(0, item, streamTypes[0]);
+        EventTable table = EventTableFactory.buildIndex(0, item, streamTypes[0], false);
         assertTrue(table instanceof PropertyIndexedEventTable);
 
         item = new QueryPlanIndexItem(new String[0], null, null, null);
-        table = JoinSetComposerFactoryImpl.buildIndex(0, item, streamTypes[0]);
+        table = EventTableFactory.buildIndex(0, item, streamTypes[0], false);
         assertTrue(table instanceof UnindexedEventTable);
 
         try
         {
-            JoinSetComposerFactoryImpl.buildIndex(0, null, streamTypes[0]);
+            EventTableFactory.buildIndex(0, null, streamTypes[0], false);
             fail();
         }
         catch (NullPointerException ex)

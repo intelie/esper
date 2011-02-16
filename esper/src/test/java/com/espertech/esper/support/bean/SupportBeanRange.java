@@ -12,8 +12,17 @@ public class SupportBeanRange implements Serializable
     private String rangeEndStr;
     private Long rangeStartLong;
     private Long rangeEndLong;
+    private Long keyLong;
 
     public SupportBeanRange() {
+    }
+
+    public Long getKeyLong() {
+        return keyLong;
+    }
+
+    public void setKeyLong(Long keyLong) {
+        this.keyLong = keyLong;
     }
 
     public static SupportBeanRange makeLong(String id, String key, Long rangeStartLong, Long rangeEndLong) {
@@ -75,5 +84,47 @@ public class SupportBeanRange implements Serializable
 
     public String getRangeEndStr() {
         return rangeEndStr;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setRangeStart(Integer rangeStart) {
+        this.rangeStart = rangeStart;
+    }
+
+    public void setRangeEnd(Integer rangeEnd) {
+        this.rangeEnd = rangeEnd;
+    }
+
+    public void setRangeStartStr(String rangeStartStr) {
+        this.rangeStartStr = rangeStartStr;
+    }
+
+    public void setRangeEndStr(String rangeEndStr) {
+        this.rangeEndStr = rangeEndStr;
+    }
+
+    public void setRangeStartLong(Long rangeStartLong) {
+        this.rangeStartLong = rangeStartLong;
+    }
+
+    public void setRangeEndLong(Long rangeEndLong) {
+        this.rangeEndLong = rangeEndLong;
+    }
+
+    public static SupportBeanRange makeLong(String id, String key, Long keyLong, Long rangeStartLong, Long rangeEndLong) {
+        SupportBeanRange range = new SupportBeanRange();
+        range.setId(id);
+        range.setKey(key);
+        range.setKeyLong(keyLong);
+        range.setRangeStartLong(rangeStartLong);
+        range.setRangeEndLong(rangeEndLong);
+        return range;
     }
 }

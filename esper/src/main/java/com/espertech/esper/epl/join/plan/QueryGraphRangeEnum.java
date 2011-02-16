@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.join.plan;
 
+import com.espertech.esper.filter.FilterOperator;
 import com.espertech.esper.type.RelationalOpEnum;
 
 public enum QueryGraphRangeEnum {
@@ -67,6 +68,48 @@ public enum QueryGraphRangeEnum {
 
     QueryGraphRangeEnum(boolean range) {
         this.range = range;
+    }
+
+    public static QueryGraphRangeEnum mapFrom(FilterOperator op) {
+        if (op == FilterOperator.GREATER) {
+            return GREATER;
+        }
+        else if (op == FilterOperator.GREATER_OR_EQUAL) {
+            return GREATER_OR_EQUAL;
+        }
+        else if (op == FilterOperator.LESS) {
+            return LESS;
+        }
+        else if (op == FilterOperator.LESS_OR_EQUAL) {
+            return LESS_OR_EQUAL;
+        }
+        else if (op == FilterOperator.RANGE_OPEN) {
+            return RANGE_OPEN;
+        }
+        else if (op == FilterOperator.RANGE_HALF_CLOSED) {
+            return RANGE_HALF_CLOSED;
+        }
+        else if (op == FilterOperator.RANGE_HALF_OPEN) {
+            return RANGE_HALF_OPEN;
+        }
+        else if (op == FilterOperator.RANGE_CLOSED) {
+            return RANGE_CLOSED;
+        }
+        else if (op == FilterOperator.NOT_RANGE_OPEN) {
+            return NOT_RANGE_OPEN;
+        }
+        else if (op == FilterOperator.NOT_RANGE_HALF_CLOSED) {
+            return NOT_RANGE_HALF_CLOSED;
+        }
+        else if (op == FilterOperator.NOT_RANGE_HALF_OPEN) {
+            return NOT_RANGE_HALF_OPEN;
+        }
+        else if (op == FilterOperator.NOT_RANGE_CLOSED) {
+            return NOT_RANGE_CLOSED;
+        }
+        else {
+            return null;
+        }
     }
 
     public static QueryGraphRangeEnum mapFrom(RelationalOpEnum relationalOpEnum) {

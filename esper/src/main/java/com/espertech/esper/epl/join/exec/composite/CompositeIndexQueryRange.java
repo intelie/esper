@@ -12,12 +12,12 @@ import com.espertech.esper.event.EventBeanUtility;
 
 import java.util.*;
 
-public class InnerIndexQueryRange implements InnerIndexQuery {
+public class CompositeIndexQueryRange implements CompositeIndexQuery {
 
     private final CompositeAccessStrategy strategy;
-    private InnerIndexQuery next;
+    private CompositeIndexQuery next;
 
-    public InnerIndexQueryRange(EventType[] typePerStream, SubqueryRangeKeyDesc subqRangeKey, Class coercionType) {
+    public CompositeIndexQueryRange(EventType[] typePerStream, SubqueryRangeKeyDesc subqRangeKey, Class coercionType) {
 
         QueryGraphValueRange rangeProp = subqRangeKey.getRangeInfo();
 
@@ -73,7 +73,7 @@ public class InnerIndexQueryRange implements InnerIndexQuery {
         return strategy.lookup(eventsPerStream, parent, null, next);
     }
 
-    protected static Set<EventBean> handle(EventBean event, SortedMap sortedMapOne, SortedMap sortedMapTwo, Set<EventBean> result, InnerIndexQuery next) {
+    protected static Set<EventBean> handle(EventBean event, SortedMap sortedMapOne, SortedMap sortedMapTwo, Set<EventBean> result, CompositeIndexQuery next) {
         if (next == null) {
             if (result == null) {
                 result = new HashSet<EventBean>();
@@ -99,7 +99,7 @@ public class InnerIndexQueryRange implements InnerIndexQuery {
         }
     }
 
-    protected static Collection<EventBean> handle(EventBean[] eventsPerStream, SortedMap sortedMapOne, SortedMap sortedMapTwo, Collection<EventBean> result, InnerIndexQuery next) {
+    protected static Collection<EventBean> handle(EventBean[] eventsPerStream, SortedMap sortedMapOne, SortedMap sortedMapTwo, Collection<EventBean> result, CompositeIndexQuery next) {
         if (next == null) {
             if (result == null) {
                 result = new HashSet<EventBean>();
@@ -139,7 +139,7 @@ public class InnerIndexQueryRange implements InnerIndexQuery {
         }
     }
 
-    public void setNext(InnerIndexQuery next) {
+    public void setNext(CompositeIndexQuery next) {
         this.next = next;
     }
 }

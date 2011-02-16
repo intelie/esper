@@ -154,7 +154,15 @@ createWindowExpr
 	;
 
 createIndexExpr
-	:	^(i=CREATE_INDEX_EXPR IDENT IDENT exprCol { leaveNode($i); })
+	:	^(i=CREATE_INDEX_EXPR IDENT IDENT indexColList { leaveNode($i); })
+	;
+
+indexColList
+	:	^(INDEXCOL indexCol+)
+	;
+	
+indexCol
+	:	^(INDEXCOL IDENT IDENT?)
 	;
 
 createWindowExprInsert

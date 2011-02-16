@@ -10,8 +10,8 @@ package com.espertech.esper.epl.lookup;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexQuery;
-import com.espertech.esper.epl.join.exec.composite.InnerIndexQueryFactory;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexQuery;
+import com.espertech.esper.epl.join.exec.composite.CompositeIndexQueryFactory;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
 import com.espertech.esper.epl.join.table.SubqueryRangeKeyDesc;
 
@@ -24,13 +24,13 @@ import java.util.Collection;
 public class SubqCompositeTableLookupStrategy implements SubqTableLookupStrategy
 {
     private final PropertyCompositeEventTable index;
-    private final InnerIndexQuery innerIndexQuery;
+    private final CompositeIndexQuery innerIndexQuery;
     private final Collection<SubqueryRangeKeyDesc> rangeDescs;
 
     public SubqCompositeTableLookupStrategy(EventType[] typesPerStream, int[] keyStreamNums, String[] keyProps, Class[] coercionKeyTypes, Collection<SubqueryRangeKeyDesc> rangeProps, Class[] coercionRangeTypes, PropertyCompositeEventTable index) {
         this.index = index;
         this.rangeDescs = rangeProps;
-        this.innerIndexQuery = InnerIndexQueryFactory.make(typesPerStream, keyStreamNums, keyProps, coercionKeyTypes, rangeProps, coercionRangeTypes);
+        this.innerIndexQuery = CompositeIndexQueryFactory.make(typesPerStream, keyStreamNums, keyProps, coercionKeyTypes, rangeProps, coercionRangeTypes);
     }
 
     public Collection<EventBean> lookup(EventBean[] eventsPerStream)

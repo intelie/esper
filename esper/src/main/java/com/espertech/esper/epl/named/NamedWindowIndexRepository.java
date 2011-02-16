@@ -10,16 +10,14 @@ package com.espertech.esper.epl.named;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.epl.join.plan.QueryPlanIndexItem;
 import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.table.PropertyIndTableCoerceAdd;
-import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
+import com.espertech.esper.epl.join.table.EventTableFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A repository of index tables for use with a single named window and all it's deleting statements that
@@ -30,53 +28,69 @@ import java.util.Map;
  */
 public class NamedWindowIndexRepository
 {
-    private List<PropertyIndexedEventTable> tables;
-    private Map<MultiKey<IndexedPropDesc>, Pair<PropertyIndexedEventTable, Integer>> tableIndexes;
+    private static final Log log = LogFactory.getLog(NamedWindowIndexRepository.class);
+
+    private List<EventTable> tables;
+    private Map<IndexMultiKey, Pair<EventTable, Integer>> tableIndexesRefCount;
 
     /**
      * Ctor.
      */
     public NamedWindowIndexRepository()
     {
-        tables = new ArrayList<PropertyIndexedEventTable>();
-        tableIndexes = new HashMap<MultiKey<IndexedPropDesc>, Pair<PropertyIndexedEventTable, Integer>>();
+        tables = new ArrayList<EventTable>();
+        tableIndexesRefCount = new HashMap<IndexMultiKey, Pair<EventTable, Integer>>();
+    }
+
+    public EventTable addTable(IndexedPropDesc[] hashProps,
+                               Iterable<EventBean> prefilledEvents,
+                               EventType indexedType,
+                               boolean mustCoerce) {
+        return addTable(Arrays.asList(hashProps), Collections.EMPTY_LIST, prefilledEvents, indexedType, mustCoerce);
     }
 
     /**
      * Create a new index table or use an existing index table, by matching the
      * join descriptor properties to an existing table.
-     * @param indexedPropDescs must be in sorted natural order and define the properties joined
+     * @param hashProps must be in sorted natural order and define the properties joined
+     * @param btreeProps
      * @param prefilledEvents is the events to enter into a new table, if a new table is created
      * @param indexedType is the type of event to hold in the index
      * @param mustCoerce is an indicator whether coercion is required or not.
      * @return new or existing index table
      */
-    public PropertyIndexedEventTable addTable(IndexedPropDesc[] indexedPropDescs,
+    public EventTable addTable(List<IndexedPropDesc> hashProps,
+                               List<IndexedPropDesc> btreeProps,
                                Iterable<EventBean> prefilledEvents,
                                EventType indexedType,
                                boolean mustCoerce)
     {
-        MultiKey<IndexedPropDesc> indexPropKey = new MultiKey<IndexedPropDesc>(indexedPropDescs);
+        if (hashProps.isEmpty() && btreeProps.isEmpty()) {
+            throw new IllegalArgumentException("Invalid zero element list for hash and btree columns");
+        }
+        IndexMultiKey indexPropKey = new IndexMultiKey(hashProps, btreeProps);
 
         // Get an existing table, if any
-        Pair<PropertyIndexedEventTable, Integer> refTablePair = tableIndexes.get(indexPropKey);
+        Pair<EventTable, Integer> refTablePair = tableIndexesRefCount.get(indexPropKey);
         if (refTablePair != null)
         {
             refTablePair.setSecond(refTablePair.getSecond() + 1);
             return refTablePair.getFirst();
         }
 
+        IndexedPropDesc[] indexedPropDescs = hashProps.toArray(new IndexedPropDesc[hashProps.size()]);
         String[] indexProps = IndexedPropDesc.getIndexProperties(indexedPropDescs);
-        Class[] coercionTypes = IndexedPropDesc.getCoercionTypes(indexedPropDescs);
-        PropertyIndexedEventTable table;
-        if (!mustCoerce)
-        {
-            table = new PropertyIndexedEventTable(0, indexedType, indexProps, coercionTypes);
+        Class[] indexCoercionTypes = IndexedPropDesc.getCoercionTypes(indexedPropDescs);
+        if (!mustCoerce) {
+            indexCoercionTypes = null;
         }
-        else
-        {
-            table = new PropertyIndTableCoerceAdd(0, indexedType, indexProps, coercionTypes);
-        }
+
+        IndexedPropDesc[] rangePropDescs = btreeProps.toArray(new IndexedPropDesc[btreeProps.size()]);
+        String[] rangeProps = IndexedPropDesc.getIndexProperties(rangePropDescs);
+        Class[] rangeCoercionTypes = IndexedPropDesc.getCoercionTypes(rangePropDescs);
+
+        QueryPlanIndexItem indexItem = new QueryPlanIndexItem(indexProps, indexCoercionTypes, rangeProps, rangeCoercionTypes);
+        EventTable table = EventTableFactory.buildIndex(0, indexItem, indexedType, true);
 
         // fill table since its new
         EventBean[] events = new EventBean[1];
@@ -90,13 +104,13 @@ public class NamedWindowIndexRepository
         tables.add(table);
 
         // add index, reference counted
-        tableIndexes.put(indexPropKey, new Pair<PropertyIndexedEventTable, Integer>(table, 1));
+        tableIndexesRefCount.put(indexPropKey, new Pair<EventTable, Integer>(table, 1));
 
         return table;
     }
 
     public void addTableReference(EventTable table) {
-        for (Map.Entry<MultiKey<IndexedPropDesc>, Pair<PropertyIndexedEventTable, Integer>> entry : tableIndexes.entrySet())
+        for (Map.Entry<IndexMultiKey, Pair<EventTable, Integer>> entry : tableIndexesRefCount.entrySet())
         {
             if (entry.getValue().getFirst() == table)
             {
@@ -111,9 +125,9 @@ public class NamedWindowIndexRepository
      * If the table is no longer used, discard it and no longer update events into the index.
      * @param table to remove a reference to
      */
-    public void removeTableReference(PropertyIndexedEventTable table)
+    public void removeTableReference(EventTable table)
     {
-        for (Map.Entry<MultiKey<IndexedPropDesc>, Pair<PropertyIndexedEventTable, Integer>> entry : tableIndexes.entrySet())
+        for (Map.Entry<IndexMultiKey, Pair<EventTable, Integer>> entry : tableIndexesRefCount.entrySet())
         {
             if (entry.getValue().getFirst() == table)
             {
@@ -126,7 +140,7 @@ public class NamedWindowIndexRepository
                 }
 
                 tables.remove(table);
-                tableIndexes.remove(entry.getKey());
+                tableIndexesRefCount.remove(entry.getKey());
                 break;
             }
         }
@@ -136,7 +150,7 @@ public class NamedWindowIndexRepository
      * Returns a list of current index tables in the repository.
      * @return index tables
      */
-    public List<PropertyIndexedEventTable> getTables()
+    public List<EventTable> getTables()
     {
         return tables;
     }
@@ -147,6 +161,82 @@ public class NamedWindowIndexRepository
     public void destroy()
     {
         tables.clear();
-        tableIndexes.clear();
+        tableIndexesRefCount.clear();
+    }
+
+    public Pair<IndexMultiKey, EventTable> findTable(Set<String> keyPropertyNames, Set<String> rangePropertyNames, Map<String, EventTable> explicitIndexNames) {
+
+        if (keyPropertyNames.isEmpty() && rangePropertyNames.isEmpty()) {
+            return null;
+        }
+
+        List<IndexMultiKey> candidateTables = null;
+        for (Map.Entry<IndexMultiKey, Pair<EventTable, Integer>> entry : tableIndexesRefCount.entrySet()) {
+
+            boolean missed = false;
+            String[] indexedProps = IndexedPropDesc.getIndexProperties(entry.getKey().getKeyProps());
+            for (String indexedProp : indexedProps) {
+                if (!keyPropertyNames.contains(indexedProp)) {
+                    missed = true;
+                    break;
+                }
+            }
+
+            String[] rangeIndexProps = IndexedPropDesc.getIndexProperties(entry.getKey().getRangeProps());
+            for (String rangeProp : rangeIndexProps) {
+                if (!rangePropertyNames.contains(rangeProp) && !keyPropertyNames.contains(rangeProp)) {
+                    missed = true;
+                    break;
+                }
+            }
+            
+            if (!missed) {
+                if (candidateTables == null) {
+                    candidateTables = new ArrayList<IndexMultiKey>();
+                }
+                candidateTables.add(entry.getKey());
+            }
+        }
+
+        if (candidateTables == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("No index found.");
+            }
+            return null;
+        }
+
+        // take the best available table
+        IndexMultiKey indexMultiKey;
+        if (candidateTables.size() > 1) {
+            Comparator<IndexMultiKey> comparator = new Comparator<IndexMultiKey>() {
+                public int compare(IndexMultiKey o1, IndexMultiKey o2)
+                {
+                    String[] indexedProps1 = IndexedPropDesc.getIndexProperties(o1.getKeyProps());
+                    String[] indexedProps2 = IndexedPropDesc.getIndexProperties(o2.getKeyProps());
+                    if (indexedProps1.length > indexedProps2.length) {
+                        return -1;  // sort desc by count columns
+                    }
+                    if (indexedProps1.length == indexedProps2.length) {
+                        return 0;
+                    }
+                    return 1;
+                }
+            };
+            Collections.sort(candidateTables,comparator);
+        }
+        indexMultiKey = candidateTables.get(0);
+        EventTable tableFound = tableIndexesRefCount.get(indexMultiKey).getFirst();
+
+        if (log.isDebugEnabled()) {
+            String indexName = null;
+            for (Map.Entry<String, EventTable> entry : explicitIndexNames.entrySet()) {
+                if (entry.getValue() == tableFound) {
+                    indexName = entry.getKey();
+                }
+            }
+            log.debug("Found index " + indexName + " for on-demand query");
+        }
+
+        return new Pair<IndexMultiKey, EventTable>(indexMultiKey, tableFound);
     }
 }
