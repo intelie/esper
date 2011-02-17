@@ -8,12 +8,12 @@ public class SubqueryRangeKeyDesc {
     private int endStreamNum;
     private QueryGraphValueRange rangeInfo;
 
-    public static SubqueryRangeKeyDesc createZeroStreamNum(QueryGraphValueRange rangeKeyPair) {
+    public static SubqueryRangeKeyDesc createSingleStreamNum(QueryGraphValueRange rangeKeyPair, int allKeyStreamNum) {
         if (rangeKeyPair.getType().isRange()) {
-            return new SubqueryRangeKeyDesc(0, 0, rangeKeyPair);
+            return new SubqueryRangeKeyDesc(allKeyStreamNum, allKeyStreamNum, rangeKeyPair);
         }
         else {
-            return new SubqueryRangeKeyDesc(0, rangeKeyPair);
+            return new SubqueryRangeKeyDesc(allKeyStreamNum, rangeKeyPair);
         }
     }
 

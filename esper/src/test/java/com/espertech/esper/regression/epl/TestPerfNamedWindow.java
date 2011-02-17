@@ -1,10 +1,9 @@
 package com.espertech.esper.regression.epl;
 
+import com.espertech.esper.client.*;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.support.bean.SupportBeanRange;
 import junit.framework.TestCase;
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -14,18 +13,79 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 
 public class TestPerfNamedWindow extends TestCase
 {
-    private EPServiceProvider epService;
-    private SupportUpdateListener listenerWindow;
+    private EPServiceProviderSPI epService;
+    private SupportUpdateListener listener;
 
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService = (EPServiceProviderSPI) EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        listenerWindow = new SupportUpdateListener();
+        listener = new SupportUpdateListener();
 
         // force GC
         System.gc();
+    }
+
+    public void testOnSelectPerformance()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
+
+        // create window one
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+
+        // insert X rows
+        int maxRows = 10000;   //for performance testing change to int maxRows = 100000;
+        for (int i = 0; i < maxRows; i++) {
+            SupportBean bean = new SupportBean((i < 5000) ? "A" : "B", i);
+            bean.setLongPrimitive(i);
+            bean.setLongBoxed((long) i + 1);
+            epService.getEPRuntime().sendEvent(bean);
+        }
+        epService.getEPRuntime().sendEvent(new SupportBean("B", 100));
+
+        String eplIdx1One = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive = sbr.rangeStart";
+        runOnDemandAssertion(eplIdx1One, new SupportBeanRange("R", 5501, 0), 5501);
+
+        String eplIdx1Two = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive between sbr.rangeStart and sbr.rangeEnd";
+        runOnDemandAssertion(eplIdx1Two, new SupportBeanRange("R", 5501, 5503), 5501+5502+5503);
+
+        String eplIdx1Three = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where string = key and intPrimitive between sbr.rangeStart and sbr.rangeEnd";
+        runOnDemandAssertion(eplIdx1Three, new SupportBeanRange("R", "A", 4998, 5503), 4998+4999);
+
+        String eplIdx1Four = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
+                "where string = key and longPrimitive = rangeStart and intPrimitive between rangeStart and rangeEnd " +
+                "and longBoxed between rangeStart and rangeEnd";
+        runOnDemandAssertion(eplIdx1Four, new SupportBeanRange("R", "A", 4998, 5503), 4998);
+
+        String eplIdx1Five = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
+                "where intPrimitive between rangeStart and rangeEnd " +
+                "and longBoxed between rangeStart and rangeEnd";
+        runOnDemandAssertion(eplIdx1Five, new SupportBeanRange("R", "A", 4998, 5001), 4998 + 4999 + 5000);
+    }
+
+    private void runOnDemandAssertion(String epl, SupportBeanRange event, Integer expected) {
+        assertEquals(0, epService.getNamedWindowService().getNamedWindowIndexes("MyWindow").length);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        assertEquals(1, epService.getNamedWindowService().getNamedWindowIndexes("MyWindow").length);
+
+        long start = System.currentTimeMillis();
+        int loops = 1000;
+
+        for (int i = 0; i < loops; i++) {
+            epService.getEPRuntime().sendEvent(event);
+            assertEquals(expected, listener.assertOneGetNewAndReset().get("sumi"));
+        }
+        long end = System.currentTimeMillis();
+        long delta = end - start;
+        assertTrue("delta=" + delta, delta < 1000);
+
+        stmt.destroy();
+        assertEquals(0, epService.getNamedWindowService().getNamedWindowIndexes("MyWindow").length);
     }
 
     public void testDeletePerformance()
@@ -49,7 +109,7 @@ public class TestPerfNamedWindow extends TestCase
         }
 
         // delete rows
-        stmtCreate.addListener(listenerWindow);
+        stmtCreate.addListener(listener);
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++)
         {
@@ -61,7 +121,7 @@ public class TestPerfNamedWindow extends TestCase
 
         // assert they are deleted
         assertEquals(50000 - 10000, ArrayAssertionUtil.iteratorCount(stmtCreate.iterator()));
-        assertEquals(10000, listenerWindow.getOldDataList().size());
+        assertEquals(10000, listener.getOldDataList().size());
     }
 
     public void testDeletePerformanceCoercion()
@@ -85,7 +145,7 @@ public class TestPerfNamedWindow extends TestCase
         }
 
         // delete rows
-        stmtCreate.addListener(listenerWindow);
+        stmtCreate.addListener(listener);
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++)
         {
@@ -97,7 +157,7 @@ public class TestPerfNamedWindow extends TestCase
 
         // assert they are deleted
         assertEquals(50000 - 10000, ArrayAssertionUtil.iteratorCount(stmtCreate.iterator()));
-        assertEquals(10000, listenerWindow.getOldDataList().size());
+        assertEquals(10000, listener.getOldDataList().size());
     }
 
     public void testDeletePerformanceTwoDeleters()
@@ -125,7 +185,7 @@ public class TestPerfNamedWindow extends TestCase
         }
 
         // delete all rows
-        stmtCreate.addListener(listenerWindow);
+        stmtCreate.addListener(listener);
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++)
         {
@@ -138,7 +198,7 @@ public class TestPerfNamedWindow extends TestCase
 
         // assert they are all deleted
         assertEquals(0, ArrayAssertionUtil.iteratorCount(stmtCreate.iterator()));
-        assertEquals(20000, listenerWindow.getOldDataList().size());
+        assertEquals(20000, listener.getOldDataList().size());
     }
 
     public void testDeletePerformanceIndexReuse()

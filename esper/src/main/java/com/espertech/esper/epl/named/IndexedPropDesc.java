@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
+import java.util.List;
+
 /**
  * Holds property information for joined properties in a lookup.
  */
@@ -53,6 +55,16 @@ public class IndexedPropDesc implements Comparable
     public static String[] getIndexProperties(IndexedPropDesc[] descList)
     {
         String[] result = new String[descList.length];
+        int count = 0;
+        for (IndexedPropDesc desc : descList)
+        {
+            result[count++] = desc.getIndexPropName();
+        }
+        return result;
+    }
+
+    public static String[] getIndexProperties(List<IndexedPropDesc> descList) {
+        String[] result = new String[descList.size()];
         int count = 0;
         for (IndexedPropDesc desc : descList)
         {

@@ -29,7 +29,7 @@ public abstract class NamedWindowOnExprBaseView extends ViewSupport implements S
      * The event type of the events hosted in the named window.
      */
     protected final EventType namedWindowEventType;
-    private final LookupStrategy lookupStrategy;
+    private final NamedWindowLookupStrategy lookupStrategy;
     private final ExprEvaluatorContext exprEvaluatorContext;
 
     /**
@@ -45,7 +45,7 @@ public abstract class NamedWindowOnExprBaseView extends ViewSupport implements S
      * @param exprEvaluatorContext context for expression evalauation
      */
     public NamedWindowOnExprBaseView(StatementStopService statementStopService,
-                                 LookupStrategy lookupStrategy,
+                                 NamedWindowLookupStrategy lookupStrategy,
                                  NamedWindowRootView rootView,
                                  ExprEvaluatorContext exprEvaluatorContext)
     {

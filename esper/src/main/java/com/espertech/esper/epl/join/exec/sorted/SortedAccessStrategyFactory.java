@@ -14,7 +14,7 @@ public class SortedAccessStrategyFactory {
 
     public static SortedAccessStrategy make(EventType eventType, QueryGraphValueRange rangeKeyPair)
     {
-        return make(new EventType[] {eventType}, SubqueryRangeKeyDesc.createZeroStreamNum(rangeKeyPair));
+        return make(new EventType[] {eventType}, SubqueryRangeKeyDesc.createSingleStreamNum(rangeKeyPair, 0));
     }
 
     public static SortedAccessStrategy make(EventType[] eventTypePerStream, SubqueryRangeKeyDesc streamRangeKey) {

@@ -2144,7 +2144,7 @@ public class EPStatementStartMethod
         {
             String indexedProp = rangeProps.keySet().iterator().next();
             SubqueryRangeKeyDesc rangeKey = rangeProps.values().iterator().next();
-            Class coercionType = QueryPlanIndexBuilder.getCoercionType(viewableEventType, indexedProp, rangeKey, outerEventTypes);
+            Class coercionType = CoercionUtil.getCoercionType(viewableEventType, indexedProp, rangeKey, outerEventTypes);
             PropertySortedEventTable table;
             if (coercionType == null) {
                 table = new PropertySortedEventTable(0, viewableEventType, indexedProp);
@@ -2162,12 +2162,12 @@ public class EPStatementStartMethod
         String[] indexedKeyProps = joinProps.keySet().toArray(new String[joinProps.keySet().size()]);
         Class[] coercionKeyTypes = JoinedPropUtil.getCoercionTypes(joinProps.values());
         String[] indexedRangeProps = rangeProps.keySet().toArray(new String[rangeProps.keySet().size()]);
-        Class[] coercionRangeTypes = QueryPlanIndexBuilder.getCoercionTypes(viewableEventType, rangeProps, outerEventTypes);
-        PropertyCompositeEventTable table = new PropertyCompositeEventTable(0, viewableEventType, indexedKeyProps, coercionKeyTypes, indexedRangeProps, coercionRangeTypes);
+        CoercionDesc coercionRangeTypes = CoercionUtil.getCoercionTypes(viewableEventType, rangeProps, outerEventTypes);
+        PropertyCompositeEventTable table = new PropertyCompositeEventTable(0, viewableEventType, indexedKeyProps, coercionKeyTypes, indexedRangeProps, coercionRangeTypes.getCoercionTypes());
 
         int[] keyStreamNums = JoinedPropUtil.getKeyStreamNums(joinProps.values());
         String[] keyProps = JoinedPropUtil.getKeyProperties(joinProps.values());
-        SubqTableLookupStrategy strategy = new SubqCompositeTableLookupStrategy(outerEventTypes, keyStreamNums, keyProps, coercionKeyTypes, rangeProps.values(), coercionRangeTypes, table);
+        SubqTableLookupStrategy strategy = new SubqCompositeTableLookupStrategy(outerEventTypes, keyStreamNums, keyProps, coercionKeyTypes, rangeProps.values(), coercionRangeTypes.getCoercionTypes(), table);
         
         if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
             queryPlanLog.info("local buf, key and range composite scan");

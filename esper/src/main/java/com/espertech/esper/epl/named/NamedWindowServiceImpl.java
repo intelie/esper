@@ -119,6 +119,15 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processor;
     }
 
+    public IndexMultiKey[] getNamedWindowIndexes(String windowName) {
+        NamedWindowProcessor processor = processors.get(windowName);
+        if (processor == null)
+        {
+            return null;
+        }
+        return processor.getIndexDescriptors();
+    }
+
     public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService,
                                              ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized,
                                              ExprEvaluatorContext exprEvaluatorContext, Annotation[] annotations) throws ViewProcessingException

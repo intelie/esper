@@ -55,6 +55,18 @@ public class CollectionUtil<T>
         return copy;
     }
 
+    public static boolean sortCompare(String[] valuesOne, String[] valuesTwo) {
+        if (valuesOne == null) {
+            return valuesTwo == null;
+        }
+        if (valuesTwo == null) {
+            return false;
+        }
+        String[] copyOne = copySortArray(valuesOne);
+        String[] copyTwo = copySortArray(valuesTwo);
+        return Arrays.equals(copyOne, copyTwo);
+    }
+
     /**
      * Returns a list of the elements invoking toString on non-null elements.
      * @param set to render

@@ -126,4 +126,11 @@ public interface NamedWindowService
      * @param observer to remove
      */
     public void removeObserver(NamedWindowLifecycleObserver observer);
+
+    /**
+     * Returns an index descriptor array describing all available indexes for the named window.
+     * @param windowName window name
+     * @return indexes
+     */
+    public IndexMultiKey[] getNamedWindowIndexes(String windowName);
 }

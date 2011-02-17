@@ -45,7 +45,7 @@ public class NamedWindowOnUpdateView extends NamedWindowOnExprBaseView
      * @throws com.espertech.esper.epl.expression.ExprValidationException when expression validation fails
      */
     public NamedWindowOnUpdateView(StatementStopService statementStopService,
-                                 LookupStrategy lookupStrategy,
+                                 NamedWindowLookupStrategy lookupStrategy,
                                  NamedWindowRootView removeStreamView,
                                  StatementResultService statementResultService,
                                  ExprEvaluatorContext exprEvaluatorContext,

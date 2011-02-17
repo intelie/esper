@@ -14,6 +14,7 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.join.plan.QueryPlanIndexItem;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.EventTableFactory;
+import com.espertech.esper.util.CollectionUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -42,13 +43,6 @@ public class NamedWindowIndexRepository
         tableIndexesRefCount = new HashMap<IndexMultiKey, Pair<EventTable, Integer>>();
     }
 
-    public EventTable addTable(IndexedPropDesc[] hashProps,
-                               Iterable<EventBean> prefilledEvents,
-                               EventType indexedType,
-                               boolean mustCoerce) {
-        return addTable(Arrays.asList(hashProps), Collections.EMPTY_LIST, prefilledEvents, indexedType, mustCoerce);
-    }
-
     /**
      * Create a new index table or use an existing index table, by matching the
      * join descriptor properties to an existing table.
@@ -59,7 +53,7 @@ public class NamedWindowIndexRepository
      * @param mustCoerce is an indicator whether coercion is required or not.
      * @return new or existing index table
      */
-    public EventTable addTable(List<IndexedPropDesc> hashProps,
+    public EventTable addTableCreateOrReuse(List<IndexedPropDesc> hashProps,
                                List<IndexedPropDesc> btreeProps,
                                Iterable<EventBean> prefilledEvents,
                                EventType indexedType,
@@ -68,15 +62,17 @@ public class NamedWindowIndexRepository
         if (hashProps.isEmpty() && btreeProps.isEmpty()) {
             throw new IllegalArgumentException("Invalid zero element list for hash and btree columns");
         }
-        IndexMultiKey indexPropKey = new IndexMultiKey(hashProps, btreeProps);
 
         // Get an existing table, if any
-        Pair<EventTable, Integer> refTablePair = tableIndexesRefCount.get(indexPropKey);
+        IndexMultiKey indexPropKeyMatch = findExactMatch(tableIndexesRefCount.keySet(), hashProps, btreeProps);
+        Pair<EventTable, Integer> refTablePair = tableIndexesRefCount.get(indexPropKeyMatch);
         if (refTablePair != null)
         {
             refTablePair.setSecond(refTablePair.getSecond() + 1);
             return refTablePair.getFirst();
         }
+
+        IndexMultiKey indexPropKey = new IndexMultiKey(hashProps, btreeProps);
 
         IndexedPropDesc[] indexedPropDescs = hashProps.toArray(new IndexedPropDesc[hashProps.size()]);
         String[] indexProps = IndexedPropDesc.getIndexProperties(indexedPropDescs);
@@ -107,6 +103,23 @@ public class NamedWindowIndexRepository
         tableIndexesRefCount.put(indexPropKey, new Pair<EventTable, Integer>(table, 1));
 
         return table;
+    }
+
+    private IndexMultiKey findExactMatch(Set<IndexMultiKey> indexMultiKeys, List<IndexedPropDesc> hashProps, List<IndexedPropDesc> btreeProps) {
+        for (IndexMultiKey existing : indexMultiKeys) {
+            if (isExactMatch(existing, hashProps, btreeProps)) {
+                return existing;
+            }
+        }
+        return null;
+    }
+
+    private boolean isExactMatch(IndexMultiKey existing, List<IndexedPropDesc> hashProps, List<IndexedPropDesc> btreeProps) {
+
+        boolean keyPropCompare = CollectionUtil.sortCompare(IndexedPropDesc.getIndexProperties(existing.getKeyProps()),
+                IndexedPropDesc.getIndexProperties(hashProps));
+        return keyPropCompare && CollectionUtil.sortCompare(IndexedPropDesc.getIndexProperties(existing.getRangeProps()),
+                IndexedPropDesc.getIndexProperties(btreeProps));
     }
 
     public void addTableReference(EventTable table) {
@@ -238,5 +251,10 @@ public class NamedWindowIndexRepository
         }
 
         return new Pair<IndexMultiKey, EventTable>(indexMultiKey, tableFound);
+    }
+
+    public IndexMultiKey[] getIndexDescriptors() {
+        Set<IndexMultiKey> keySet = tableIndexesRefCount.keySet();
+        return keySet.toArray(new IndexMultiKey[keySet.size()]);
     }
 }

@@ -14,13 +14,14 @@ import com.espertech.esper.core.StreamJoinAnalysisResult;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.plan.*;
-import com.espertech.esper.epl.join.table.*;
+import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.join.table.EventTableFactory;
+import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.DependencyGraph;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
@@ -407,11 +408,11 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                             new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
         }
 
-        Class[] keyCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(new EventType[] {streamViewType, polledViewType}, 0, 1, keyPropertiesJoin, indexPropertiesJoin);
+        CoercionDesc keyCoercionTypes = CoercionUtil.getCoercionTypes(new EventType[] {streamViewType, polledViewType}, 0, 1, keyPropertiesJoin, indexPropertiesJoin);
 
         if (rangeEntries.isEmpty()) {
             // No coercion
-            if (keyCoercionTypes == null)
+            if (!keyCoercionTypes.isCoerce())
             {
                 PollResultIndexingStrategyIndex indexing = new PollResultIndexingStrategyIndex(polledViewStreamNum, polledViewType, indexPropertiesJoin);
                 HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
@@ -419,21 +420,21 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             }
 
             // With coercion, same lookup strategy as the index coerces
-            PollResultIndexingStrategy indexing = new PollResultIndexingStrategyIndexCoerce(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes);
+            PollResultIndexingStrategy indexing = new PollResultIndexingStrategyIndexCoerce(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes.getCoercionTypes());
             HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
             return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
         }
         else {
-            Class[] rangeCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(new EventType[] {streamViewType, polledViewType}, 0, 1, rangeEntries);
-            if (rangeEntries.size() == 1 && (keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0)) {
-                Class rangeCoercionType = rangeCoercionTypes == null ? null : rangeCoercionTypes[0];
+            CoercionDesc rangeCoercionTypes = CoercionUtil.getCoercionTypes(new EventType[] {streamViewType, polledViewType}, 0, 1, rangeEntries);
+            if (rangeEntries.size() == 1 && (keyPropertiesJoin == null || keyPropertiesJoin.length == 0)) {
+                Class rangeCoercionType = rangeCoercionTypes.isCoerce() ? rangeCoercionTypes.getCoercionTypes()[0] : null;
                 PollResultIndexingStrategySorted indexing = new PollResultIndexingStrategySorted(polledViewStreamNum, polledViewType, QueryGraphValueRange.getPropertyNamesValues(rangeEntries)[0], rangeCoercionType);
                 HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategySorted(streamViewType, rangeEntries.get(0));
                 return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
             }
             else {
-                PollResultIndexingStrategyComposite indexing = new PollResultIndexingStrategyComposite(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes, QueryGraphValueRange.getPropertyNamesValues(rangeEntries), rangeCoercionTypes);
-                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyComposite(streamViewType, keyPropertiesJoin, keyCoercionTypes, rangeEntries, rangeCoercionTypes);
+                PollResultIndexingStrategyComposite indexing = new PollResultIndexingStrategyComposite(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes.getCoercionTypes(), QueryGraphValueRange.getPropertyNamesValues(rangeEntries), rangeCoercionTypes.getCoercionTypes());
+                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyComposite(streamViewType, keyPropertiesJoin, keyCoercionTypes.getCoercionTypes(), rangeEntries, rangeCoercionTypes.getCoercionTypes());
                 return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
             }
         }

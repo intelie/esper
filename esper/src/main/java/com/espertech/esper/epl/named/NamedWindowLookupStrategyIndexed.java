@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * Uses an index to determine event to be deleted or selected from a named window.
  */
-public class LookupStrategyIndexed implements LookupStrategy
+public class NamedWindowLookupStrategyIndexed implements NamedWindowLookupStrategy
 {
     private final ExprEvaluator joinExpr;
     private final EventBean[] eventsPerStream;
@@ -32,7 +32,7 @@ public class LookupStrategyIndexed implements LookupStrategy
      * @param joinExpr the validated where clause of the on-delete
      * @param tableLookupStrategy the strategy for looking up in an index the matching events using correlation
      */
-    public LookupStrategyIndexed(ExprEvaluator joinExpr, SubqTableLookupStrategy tableLookupStrategy)
+    public NamedWindowLookupStrategyIndexed(ExprEvaluator joinExpr, SubqTableLookupStrategy tableLookupStrategy)
     {
         this.joinExpr = joinExpr;
         this.eventsPerStream = new EventBean[2];

@@ -260,8 +260,8 @@ public class NStreamQueryPlanBuilder
             IndexedTableLookupPlan tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
 
             // Determine coercion required
-            Class[] coercionTypes = QueryPlanIndexBuilder.getCoercionTypes(typesPerStream, currentLookupStream, indexedStream, keyGenFields, indexedStreamIndexProps);
-            if (coercionTypes != null)
+            CoercionDesc coercionTypes = CoercionUtil.getCoercionTypes(typesPerStream, currentLookupStream, indexedStream, keyGenFields, indexedStreamIndexProps);
+            if (coercionTypes.isCoerce())
             {
                 // check if there already are coercion types for this index
                 Class[] existCoercionTypes = indexSpecs.getCoercionTypes(indexedStreamIndexProps);
@@ -269,10 +269,10 @@ public class NStreamQueryPlanBuilder
                 {
                     for (int i = 0; i < existCoercionTypes.length; i++)
                     {
-                        coercionTypes[i] = JavaClassHelper.getCompareToCoercionType(existCoercionTypes[i], coercionTypes[i]);
+                        coercionTypes.getCoercionTypes()[i] = JavaClassHelper.getCompareToCoercionType(existCoercionTypes[i], coercionTypes.getCoercionTypes()[i]);
                     }
                 }
-                indexSpecs.setCoercionTypes(indexedStreamIndexProps, coercionTypes);
+                indexSpecs.setCoercionTypes(indexedStreamIndexProps, coercionTypes.getCoercionTypes());
             }
 
             return tableLookupPlan;

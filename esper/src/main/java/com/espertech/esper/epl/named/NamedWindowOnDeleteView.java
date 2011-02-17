@@ -37,7 +37,7 @@ public class NamedWindowOnDeleteView extends NamedWindowOnExprBaseView
      * @param exprEvaluatorContext context for expression evalauation
      */
     public NamedWindowOnDeleteView(StatementStopService statementStopService,
-                                 LookupStrategy lookupStrategy,
+                                 NamedWindowLookupStrategy lookupStrategy,
                                  NamedWindowRootView removeStreamView,
                                  StatementResultService statementResultService,
                                  ExprEvaluatorContext exprEvaluatorContext)

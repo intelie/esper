@@ -43,18 +43,20 @@ public class TwoStreamQueryPlanBuilder
         else {
             String[] keyProps = queryGraph.getKeyProperties(0, 1);
             String[] indexProps = queryGraph.getIndexProperties(0, 1);
-            Class[] keyCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(typesPerStream, 0, 1, keyProps, indexProps);
+            CoercionDesc keyCoercionTypes = CoercionUtil.getCoercionTypes(typesPerStream, 0, 1, keyProps, indexProps);
 
             QueryGraphValue valueZeroOne = queryGraph.getGraphValue(0, 1, false);
             QueryGraphValue valueOneZero = queryGraph.getGraphValue(1, 0, false);
             String[] oneRangeIndexedProps = QueryGraphValueRange.getPropertyNamesValues(valueZeroOne.getRangeEntries());
             String[] zeroRangeIndexedProps = QueryGraphValueRange.getPropertyNamesValues(valueOneZero.getRangeEntries());
-            Class[] oneRangeCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(typesPerStream, 0, 1, valueZeroOne.getRangeEntries());
-            Class[] zeroRangeCoercionTypes = QueryPlanIndexBuilder.getCoercionTypes(typesPerStream, 1, 0, valueOneZero.getRangeEntries());
+            CoercionDesc oneRangeCoercionTypes = CoercionUtil.getCoercionTypes(typesPerStream, 0, 1, valueZeroOne.getRangeEntries());
+            CoercionDesc zeroRangeCoercionTypes = CoercionUtil.getCoercionTypes(typesPerStream, 1, 0, valueOneZero.getRangeEntries());
 
-            QueryPlanIndexItem itemZero = new QueryPlanIndexItem(queryGraph.getIndexProperties(1, 0), keyCoercionTypes, zeroRangeIndexedProps, zeroRangeCoercionTypes);
+            QueryPlanIndexItem itemZero = new QueryPlanIndexItem(queryGraph.getIndexProperties(1, 0), keyCoercionTypes.isCoerce() ? keyCoercionTypes.getCoercionTypes() : null, zeroRangeIndexedProps,
+                    zeroRangeCoercionTypes.isCoerce() ? zeroRangeCoercionTypes.getCoercionTypes() : null);
             indexSpecs[0] = QueryPlanIndex.makeIndex(itemZero);
-            QueryPlanIndexItem itemOne = new QueryPlanIndexItem(queryGraph.getIndexProperties(0, 1), keyCoercionTypes, oneRangeIndexedProps, oneRangeCoercionTypes);
+            QueryPlanIndexItem itemOne = new QueryPlanIndexItem(queryGraph.getIndexProperties(0, 1), keyCoercionTypes.isCoerce() ? keyCoercionTypes.getCoercionTypes() : null, oneRangeIndexedProps, 
+                    oneRangeCoercionTypes.isCoerce() ? oneRangeCoercionTypes.getCoercionTypes() : null);
             indexSpecs[1] = QueryPlanIndex.makeIndex(itemOne);
 
             String indexOneName = indexSpecs[1].getFirstIndexNum();

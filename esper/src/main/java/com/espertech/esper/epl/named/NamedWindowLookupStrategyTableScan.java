@@ -19,7 +19,7 @@ import java.util.Set;
 /**
  * Determine events to be deleted from a named window using the where-clause and full table scan.
  */
-public class LookupStrategyTableScan implements LookupStrategy
+public class NamedWindowLookupStrategyTableScan implements NamedWindowLookupStrategy
 {
     private final ExprEvaluator joinExpr;
     private final EventBean[] eventsPerStream;
@@ -30,7 +30,7 @@ public class LookupStrategyTableScan implements LookupStrategy
      * @param joinExpr is the where clause
      * @param iterable is the named window's data window iterator
      */
-    public LookupStrategyTableScan(ExprEvaluator joinExpr, Iterable<EventBean> iterable)
+    public NamedWindowLookupStrategyTableScan(ExprEvaluator joinExpr, Iterable<EventBean> iterable)
     {
         this.joinExpr = joinExpr;
         this.eventsPerStream = new EventBean[2];

@@ -53,9 +53,15 @@ public class TestPerf3StreamRangeJoin extends TestCase
                 "inner join ST1 st1 on st1.key1 = a.key " +
                 "where " +
                 "st0.p00 between rangeStart and rangeEnd and st1.p10 between rangeStart and rangeEnd";
-//        String epl = "select * from SupportBeanRange.std:lastevent() a, ST0 st0, ST1 st1 " +
-//                "where st0.key0 = a.key and st1.key1 = a.key and " +
-//                "st0.p00 between rangeStart and rangeEnd and st1.p10 between rangeStart and rangeEnd";
+        runAssertion(epl);
+
+        epl = "select * from SupportBeanRange.std:lastevent() a, ST0 st0, ST1 st1 " +
+                "where st0.key0 = a.key and st1.key1 = a.key and " +
+                "st0.p00 between rangeStart and rangeEnd and st1.p10 between rangeStart and rangeEnd";
+        runAssertion(epl);
+    }
+
+    private void runAssertion(String epl) {
         stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
 

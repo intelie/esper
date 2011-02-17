@@ -11,32 +11,18 @@ package com.espertech.esper.epl.named;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 /**
- * Deletes from a named window all events simply using the named window's data window iterator.
+ * A deletion strategy is for use with named window in on-delete statements and encapsulates
+ * the strategy for resolving one or more events arriving in the on-clause of an on-delete statement
+ * to one or more events to be deleted from the named window.
  */
-public class LookupStrategyAllRows implements LookupStrategy
+public interface NamedWindowLookupStrategy
 {
-    private Iterable<EventBean> source;
-
     /**
-     * Ctor.
-     * @param source iterator of the data window under the named window
+     * Determines the events to be deleted from a named window.
+     * @param newData is the correlation events
+     * @return the events to delete from the named window
+     * @param exprEvaluatorContext expression evaluation context
      */
-    public LookupStrategyAllRows(Iterable<EventBean> source)
-    {
-        this.source = source;
-    }
-
-    public EventBean[] lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext)
-    {
-        ArrayList<EventBean> events = new ArrayList<EventBean>();
-        for (Iterator<EventBean> it = source.iterator(); it.hasNext();)
-        {
-            events.add(it.next());
-        }
-        return events.toArray(new EventBean[events.size()]);
-    }
+    public EventBean[] lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext);
 }

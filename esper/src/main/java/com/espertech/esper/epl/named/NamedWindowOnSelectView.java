@@ -62,7 +62,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
      * @param isDistinct is true for distinct output
      */
     public NamedWindowOnSelectView(StatementStopService statementStopService,
-                                   LookupStrategy lookupStrategy,
+                                   NamedWindowLookupStrategy lookupStrategy,
                                    NamedWindowRootView rootView,
                                    InternalEventRouter internalEventRouter,
                                    boolean addToFront,

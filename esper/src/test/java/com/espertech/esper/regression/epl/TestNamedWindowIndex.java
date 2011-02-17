@@ -2,6 +2,8 @@ package com.espertech.esper.regression.epl;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
+import com.espertech.esper.core.EPAdministratorSPI;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanRange;
 import com.espertech.esper.support.bean.SupportBean_A;
@@ -13,13 +15,13 @@ import junit.framework.TestCase;
 
 public class TestNamedWindowIndex extends TestCase
 {
-    private EPServiceProvider epService;
+    private EPServiceProviderSPI epService;
     private SupportUpdateListener listener;
 
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService = (EPServiceProviderSPI) EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
@@ -46,6 +48,8 @@ public class TestNamedWindowIndex extends TestCase
 
         String query2 = "select * from MyWindow where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 order by id asc";
         runQueryAssertion(query2, fields, new Object[][] {{"E1"}, {"E2"}, {"E3"}});
+
+        assertEquals(1, epService.getNamedWindowService().getNamedWindowIndexes("MyWindow").length);
     }
 
     private void runQueryAssertion(String epl, String[] fields, Object[][] expected) {
@@ -245,6 +249,7 @@ public class TestNamedWindowIndex extends TestCase
         ArrayAssertionUtil.assertPropsPerRow(result.getArray(), fields, new Object[][] {{"E1", -2}});
 
         indexTwo.destroy();
+        assertEquals(0, epService.getNamedWindowService().getNamedWindowIndexes("MyWindowOne").length);
     }
 
     public void testOnSelectReUse()
@@ -263,6 +268,7 @@ public class TestNamedWindowIndex extends TestCase
 
         EPStatement stmtOnSelect = epService.getEPAdministrator().createEPL("on SupportBean_S0 s0 select nw.f1 as f1, nw.f2 as f2 from MyWindowOne nw where nw.f2 = s0.id");
         stmtOnSelect.addListener(listener);
+        assertEquals(1, epService.getNamedWindowService().getNamedWindowIndexes("MyWindowOne").length);
 
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
@@ -272,7 +278,22 @@ public class TestNamedWindowIndex extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
 
+        // create second identical statement
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL("on SupportBean_S0 s0 select nw.f1 as f1, nw.f2 as f2 from MyWindowOne nw where nw.f2 = s0.id");
+        assertEquals(1, epService.getNamedWindowService().getNamedWindowIndexes("MyWindowOne").length);
+        
         stmtOnSelect.destroy();
+        assertEquals(1, epService.getNamedWindowService().getNamedWindowIndexes("MyWindowOne").length);
+
+        stmtTwo.destroy();
+        assertEquals(0, epService.getNamedWindowService().getNamedWindowIndexes("MyWindowOne").length);
+
+        // two-key index order test
+        epService.getEPAdministrator().createEPL("create window MyWindowTwo.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("create index idx1 on MyWindowTwo (string, intPrimitive)");
+        epService.getEPAdministrator().createEPL("on SupportBean sb select * from MyWindowTwo w where w.string = sb.string and w.intPrimitive = sb.intPrimitive");
+        epService.getEPAdministrator().createEPL("on SupportBean sb select * from MyWindowTwo w where w.intPrimitive = sb.intPrimitive and w.string = sb.string");
+        assertEquals(1, epService.getNamedWindowService().getNamedWindowIndexes("MyWindowTwo").length);
     }
 
     public void testInvalid() {

@@ -56,7 +56,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
      * @throws ExprValidationException when expression validation fails
      */
     public NamedWindowOnMergeView(StatementStopService statementStopService,
-                                 LookupStrategy lookupStrategy,
+                                 NamedWindowLookupStrategy lookupStrategy,
                                  NamedWindowRootView removeStreamView,
                                  StatementResultService statementResultService,
                                  StatementContext statementContext,

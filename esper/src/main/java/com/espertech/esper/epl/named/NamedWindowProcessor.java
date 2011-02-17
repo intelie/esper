@@ -161,4 +161,8 @@ public class NamedWindowProcessor
     public boolean isEnableSubqueryIndexShare() {
         return isEnableSubqueryIndexShare;
     }
+
+    public IndexMultiKey[] getIndexDescriptors() {
+        return rootView.getIndexes();
+    }
 }
