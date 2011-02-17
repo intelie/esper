@@ -413,7 +413,7 @@ public class TestPerf2StreamRangeJoin extends TestCase
         long endTime = System.currentTimeMillis();
         log.info("delta=" + (endTime - startTime));
         
-        assertTrue((endTime - startTime) < 1000);
+        assertTrue((endTime - startTime) < 1500);
         stmt.destroy();
     }
 

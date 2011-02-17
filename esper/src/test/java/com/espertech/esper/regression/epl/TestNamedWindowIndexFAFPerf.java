@@ -36,27 +36,26 @@ public class TestNamedWindowIndexFAFPerf extends TestCase
 
         // fire single-key queries
         String eplIdx1One = "select intPrimitive as sumi from MyWindow where intPrimitive = 5501";
-        runFAFBTreeAssertion(eplIdx1One, 5501);
+        runFAFAssertion(eplIdx1One, 5501);
 
         String eplIdx1Two = "select sum(intPrimitive) as sumi from MyWindow where intPrimitive > 9997";
-        runFAFBTreeAssertion(eplIdx1Two, 9998 + 9999);
+        runFAFAssertion(eplIdx1Two, 9998 + 9999);
 
         // drop index, create multikey btree
         idx.destroy();
         idx = epService.getEPAdministrator().createEPL("create index idx2 on MyWindow(intPrimitive btree, string btree)");
 
         String eplIdx2One = "select intPrimitive as sumi from MyWindow where intPrimitive = 5501 and string = 'A'";
-        runFAFBTreeAssertion(eplIdx2One, 5501);
+        runFAFAssertion(eplIdx2One, 5501);
 
         String eplIdx2Two = "select sum(intPrimitive) as sumi from MyWindow where intPrimitive in [5000:5004) and string = 'A'";
-        runFAFBTreeAssertion(eplIdx2Two, 5000+5001+5003+5002);
+        runFAFAssertion(eplIdx2Two, 5000+5001+5003+5002);
 
-        // TODO string range?
-        //String eplIdx2Three = "select sum(intPrimitive) as sumi from MyWindow where intPrimitive=5001 and string between 'A' and 'B'";
-        //runFAFBTreeAssertion(eplIdx2Three, 5001);
+        String eplIdx2Three = "select sum(intPrimitive) as sumi from MyWindow where intPrimitive=5001 and string between 'A' and 'B'";
+        runFAFAssertion(eplIdx2Three, 5001);
     }
 
-    private void runFAFBTreeAssertion(String epl, Integer expected) {
+    private void runFAFAssertion(String epl, Integer expected) {
         long start = System.currentTimeMillis();
         int loops = 1000;
 
@@ -84,48 +83,23 @@ public class TestNamedWindowIndexFAFPerf extends TestCase
             epService.getEPRuntime().sendEvent(new SupportBean("A", i));
         }
 
-        // fire N queries
-        long start = System.currentTimeMillis();
-        int loops = 1000;
-
-        EPOnDemandPreparedQuery queryBetween = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive between 200 and 202");
-        EPOnDemandPreparedQuery queryBetweenReversed = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive between 202 and 199");
-        EPOnDemandPreparedQuery queryGELE = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive >= 200 and intPrimitive <= 202");
-        EPOnDemandPreparedQuery queryGELEReversed = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive >= 202 and intPrimitive <= 200");
-        EPOnDemandPreparedQuery queryGT = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive > 9997");
-        EPOnDemandPreparedQuery queryGE = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive >= 9997");
-        EPOnDemandPreparedQuery queryLT = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive < 5");
-        EPOnDemandPreparedQuery queryLE = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive <= 5");
-        EPOnDemandPreparedQuery queryIn = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive in [200:202]");
-        EPOnDemandPreparedQuery queryInHalfOpen = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive in [200:202)");
-        EPOnDemandPreparedQuery queryInHalfClosed = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive in (200:202]");
-        EPOnDemandPreparedQuery queryInOpen = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive in (200:202)");
-        EPOnDemandPreparedQuery queryNotIn = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive not in [3:9997]");
-        EPOnDemandPreparedQuery queryNotInHalfOpen = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive not in [3:9997)");
-        EPOnDemandPreparedQuery queryNotInHalfClosed = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive not in (3:9997]");
-        EPOnDemandPreparedQuery queryNotInOpen = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive not in (3:9997)");
-
-        for (int i = 0; i < loops; i++) {
-            runFAFQuery(queryBetween, 603);
-            runFAFQuery(queryBetweenReversed, 199+200+201+202);
-            runFAFQuery(queryGELE, 603);
-            runFAFQuery(queryGELEReversed, null);
-            runFAFQuery(queryGT, 9998 + 9999);
-            runFAFQuery(queryGE, 9997 + 9998 + 9999);
-            runFAFQuery(queryLT, 4+3+2+1);
-            runFAFQuery(queryLE, 5+4+3+2+1);
-            runFAFQuery(queryIn, 603);
-            runFAFQuery(queryInHalfOpen, 401);
-            runFAFQuery(queryInHalfClosed, 403);
-            runFAFQuery(queryInOpen, 201);
-            runFAFQuery(queryNotIn, 1+2+9998+9999);
-            runFAFQuery(queryNotInHalfOpen, 1+2+9997+9998+9999);
-            runFAFQuery(queryNotInHalfClosed, 1+2+3+9998+9999);
-            runFAFQuery(queryNotInOpen, 1+2+3+9997+9998+9999);
-        }
-        long end = System.currentTimeMillis();
-        long delta = end - start;
-        assertTrue("delta=" + delta, delta < 1000);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive not in [3:9997]", 1+2+9998+9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive not in [3:9997)", 1+2+9997+9998+9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive not in (3:9997]", 1+2+3+9998+9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive not in (3:9997)", 1+2+3+9997+9998+9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'B' and intPrimitive not in (3:9997)", null);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive between 200 and 202", 603);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive between 202 and 199", 199+200+201+202);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive >= 200 and intPrimitive <= 202", 603);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive >= 202 and intPrimitive <= 200", null);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive > 9997", 9998 + 9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive >= 9997", 9997 + 9998 + 9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive < 5", 4+3+2+1);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive <= 5", 5+4+3+2+1);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive in [200:202]", 603);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive in [200:202)", 401);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive in (200:202]", 403);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where string = 'A' and intPrimitive in (200:202)", 201);
 
         // test no value returned
         EPOnDemandPreparedQuery query = epService.getEPRuntime().prepareQuery("select * from MyWindow where string = 'A' and intPrimitive < 0");
@@ -148,48 +122,22 @@ public class TestNamedWindowIndexFAFPerf extends TestCase
             epService.getEPRuntime().sendEvent(new SupportBean("K", i));
         }
 
-        // fire N queries
-        long start = System.currentTimeMillis();
-        int loops = 1000;
-
-        EPOnDemandPreparedQuery queryBetween = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive between 200 and 202");
-        EPOnDemandPreparedQuery queryBetweenReversed = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive between 202 and 199");
-        EPOnDemandPreparedQuery queryGELE = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive >= 200 and intPrimitive <= 202");
-        EPOnDemandPreparedQuery queryGELEReversed = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive >= 202 and intPrimitive <= 200");
-        EPOnDemandPreparedQuery queryGT = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive > 9997");
-        EPOnDemandPreparedQuery queryGE = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive >= 9997");
-        EPOnDemandPreparedQuery queryLT = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive < 5");
-        EPOnDemandPreparedQuery queryLE = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive <= 5");
-        EPOnDemandPreparedQuery queryIn = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive in [200:202]");
-        EPOnDemandPreparedQuery queryInHalfOpen = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive in [200:202)");
-        EPOnDemandPreparedQuery queryInHalfClosed = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive in (200:202]");
-        EPOnDemandPreparedQuery queryInOpen = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive in (200:202)");
-        EPOnDemandPreparedQuery queryNotIn = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive not in [3:9997]");
-        EPOnDemandPreparedQuery queryNotInHalfOpen = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive not in [3:9997)");
-        EPOnDemandPreparedQuery queryNotInHalfClosed = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive not in (3:9997]");
-        EPOnDemandPreparedQuery queryNotInOpen = epService.getEPRuntime().prepareQuery("select sum(intPrimitive) as sumi from MyWindow where intPrimitive not in (3:9997)");
-
-        for (int i = 0; i < loops; i++) {
-            runFAFQuery(queryBetween, 603);
-            runFAFQuery(queryBetweenReversed, 199+200+201+202);
-            runFAFQuery(queryGELE, 603);
-            runFAFQuery(queryGELEReversed, null);
-            runFAFQuery(queryGT, 9998 + 9999);
-            runFAFQuery(queryGE, 9997 + 9998 + 9999);
-            runFAFQuery(queryLT, 4+3+2+1);
-            runFAFQuery(queryLE, 5+4+3+2+1);
-            runFAFQuery(queryIn, 603);
-            runFAFQuery(queryInHalfOpen, 401);
-            runFAFQuery(queryInHalfClosed, 403);
-            runFAFQuery(queryInOpen, 201);
-            runFAFQuery(queryNotIn, 1+2+9998+9999);
-            runFAFQuery(queryNotInHalfOpen, 1+2+9997+9998+9999);
-            runFAFQuery(queryNotInHalfClosed, 1+2+3+9998+9999);
-            runFAFQuery(queryNotInOpen, 1+2+3+9997+9998+9999);
-        }
-        long end = System.currentTimeMillis();
-        long delta = end - start;
-        assertTrue("delta=" + delta, delta < 1000);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive between 200 and 202", 603);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive between 202 and 199", 199+200+201+202);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive >= 200 and intPrimitive <= 202", 603);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive >= 202 and intPrimitive <= 200", null);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive > 9997", 9998 + 9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive >= 9997", 9997 + 9998 + 9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive < 5", 4+3+2+1);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive <= 5", 5+4+3+2+1);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive in [200:202]", 603);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive in [200:202)", 401);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive in (200:202]", 403);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive in (200:202)", 201);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive not in [3:9997]", 1+2+9998+9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive not in [3:9997)", 1+2+9997+9998+9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive not in (3:9997]", 1+2+3+9998+9999);
+        runFAFAssertion("select sum(intPrimitive) as sumi from MyWindow where intPrimitive not in (3:9997)", 1+2+3+9997+9998+9999);
 
         // test no value returned
         EPOnDemandPreparedQuery query = epService.getEPRuntime().prepareQuery("select * from MyWindow where intPrimitive < 0");

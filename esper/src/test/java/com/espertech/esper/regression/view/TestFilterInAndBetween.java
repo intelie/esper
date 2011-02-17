@@ -102,8 +102,14 @@ public class TestFilterInAndBetween extends TestCase
 
     public void testInExpr()
     {
-        tryExpr("(string in ['b':'d'))", "string", new String[] {"a", "b", "c", "d"}, new boolean [] {false, true, true, false});
-        tryExpr("(string in ('a', 'b'))", "string", new String[] {"a", "x", "b", "y"}, new boolean [] {true, false, true, false});
+        tryExpr("(string > 'b')", "string", new String[] {"a", "b", "c", "d"}, new boolean [] {false, false, true, true});
+        tryExpr("(string < 'b')", "string", new String[] {"a", "b", "c", "d"}, new boolean [] {true, false, false, false});
+        tryExpr("(string >= 'b')", "string", new String[] {"a", "b", "c", "d"}, new boolean [] {false, true, true, true});
+        tryExpr("(string <= 'b')", "string", new String[] {"a", "b", "c", "d"}, new boolean [] {true, true, false, false});
+        tryExpr("(string in ['b':'d'])", "string", new String[] {"a", "b", "c", "d", "e"}, new boolean [] {false, true, true, true, false});
+        tryExpr("(string in ('b':'d'])", "string", new String[] {"a", "b", "c", "d", "e"}, new boolean [] {false, false, true, true, false});
+        tryExpr("(string in ['b':'d'))", "string", new String[] {"a", "b", "c", "d", "e"}, new boolean [] {false, true, true, false, false});
+        tryExpr("(string in ('b':'d'))", "string", new String[] {"a", "b", "c", "d", "e"}, new boolean [] {false, false, true, false, false});
         tryExpr("(boolPrimitive in (false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {false, true});
         tryExpr("(boolPrimitive in (false, false, false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {false, true});
         tryExpr("(boolPrimitive in (false, true, false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {true, true});
@@ -122,13 +128,6 @@ public class TestFilterInAndBetween extends TestCase
 
     public void testNotInExpr()
     {
-        tryExpr("(string not in ('a', 'b'))", "string", new String[] {"a", "x", "b", "y"}, new boolean [] {false, true, false, true});
-        tryExpr("(boolPrimitive not in (false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {true, false});
-        tryExpr("(boolPrimitive not in (false, false, false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {true, false});
-        tryExpr("(boolPrimitive not in (false, true, false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {false, false});
-        tryExpr("(intBoxed not in (4, 6, 1))", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, false, true, true, false, true, false});
-        tryExpr("(intBoxed not in (3))", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, true, true, false, true, true, true});
-        tryExpr("(longBoxed not in (3))", "longBoxed", new Object[] {0L, 1L, 2L, 3L, 4L, 5L, 6L}, new boolean [] {true, true, true, false, true, true, true});
         tryExpr("(intBoxed not between 4 and 6)", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, true, true, true, false, false, false});
         tryExpr("(intBoxed not between 2 and 1)", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, false, false, true, true, true, true});
         tryExpr("(intBoxed not between 4 and -1)", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {false, false, false, false, false, true, true});
@@ -136,6 +135,17 @@ public class TestFilterInAndBetween extends TestCase
         tryExpr("(intBoxed not in (2:4])", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, true, true, false, false, true, true});
         tryExpr("(intBoxed not in [2:4))", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, true, false, false, true, true, true});
         tryExpr("(intBoxed not in (2:4))", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, true, true, false, true, true, true});
+        tryExpr("(string not in ['b':'d'])", "string", new String[] {"a", "b", "c", "d", "e"}, new boolean [] {true, false, false, false, true});
+        tryExpr("(string not in ('b':'d'])", "string", new String[] {"a", "b", "c", "d", "e"}, new boolean [] {true, true, false, false, true});
+        tryExpr("(string not in ['b':'d'))", "string", new String[] {"a", "b", "c", "d", "e"}, new boolean [] {true, false, false, true, true});
+        tryExpr("(string not in ('b':'d'))", "string", new String[] {"a", "b", "c", "d", "e"}, new boolean [] {true, true, false, true, true});
+        tryExpr("(string not in ('a', 'b'))", "string", new String[] {"a", "x", "b", "y"}, new boolean [] {false, true, false, true});
+        tryExpr("(boolPrimitive not in (false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {true, false});
+        tryExpr("(boolPrimitive not in (false, false, false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {true, false});
+        tryExpr("(boolPrimitive not in (false, true, false))", "boolPrimitive", new Object[] {true, false}, new boolean [] {false, false});
+        tryExpr("(intBoxed not in (4, 6, 1))", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, false, true, true, false, true, false});
+        tryExpr("(intBoxed not in (3))", "intBoxed", new Object[] {0, 1, 2, 3, 4, 5, 6}, new boolean [] {true, true, true, false, true, true, true});
+        tryExpr("(longBoxed not in (3))", "longBoxed", new Object[] {0L, 1L, 2L, 3L, 4L, 5L, 6L}, new boolean [] {true, true, true, false, true, true, true});
     }
 
     public void testReuse()
@@ -253,7 +263,7 @@ public class TestFilterInAndBetween extends TestCase
         for (int i = 0; i < values.length; i++)
         {
             sendBean(fieldName, values[i]);
-            assertEquals("Listener invocation unexpected for " + fieldName + "=" + values[i], isInvoked[i], testListener.isInvoked());
+            assertEquals("Listener invocation unexpected for " + filterExpr + " field " + fieldName + "=" + values[i], isInvoked[i], testListener.isInvoked());
             testListener.reset();
         }
 

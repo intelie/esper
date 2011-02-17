@@ -410,6 +410,24 @@ public class TestInBetweenLikeExpr extends TestCase
         fields = "r1,r2".split(",");
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true});
+        
+        // test string type
+        stmt.destroy();
+        fields = "ro".split(",");
+        stmt = epService.getEPAdministrator().createEPL("select string in ('a':'d') as ro from SupportBean.std:lastevent()");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("a", 5));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("b", 5));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("c", 5));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("d", 5));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false});
     }
 
     public void testBetweenNumericCoercionDouble()

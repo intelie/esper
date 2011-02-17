@@ -34,7 +34,7 @@ public class SupportFilterSpecBuilder
                 double max = ((Number) objects[index++]).doubleValue();
                 filterParams.add(new FilterSpecParamRange(propertyName, filterOperator,
                         new RangeValueDouble(min),
-                        new RangeValueDouble(max)));
+                        new RangeValueDouble(max), Double.class));
             }
         }
 

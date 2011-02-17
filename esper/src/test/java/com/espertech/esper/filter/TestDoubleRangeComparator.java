@@ -46,7 +46,7 @@ public class TestDoubleRangeComparator extends TestCase
                     " range=" + range +
                     " expected=" + expected);
 
-            //assertEquals(range, expected);
+            assertEquals(range, expected);
             count++;
         }
         assertEquals(count, TEST_SET.length);

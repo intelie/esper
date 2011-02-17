@@ -48,19 +48,37 @@ public class IndexFactory
             (filterOperator == FilterOperator.LESS) ||
             (filterOperator == FilterOperator.LESS_OR_EQUAL))
         {
-            index = new FilterParamIndexCompare(propertyName, filterOperator, eventType);
+            Class type = eventType.getPropertyType(propertyName);
+            if (type != String.class) {
+                index = new FilterParamIndexCompare(propertyName, filterOperator, eventType);
+            }
+            else {
+                index = new FilterParamIndexCompareString(propertyName, filterOperator, eventType);
+            }
             return index;
         }
 
         // Handle all normal and inverted RANGE comparisons
         if (filterOperator.isRangeOperator())
         {
-            index = new FilterParamIndexRange(propertyName, filterOperator, eventType);
+            Class type = eventType.getPropertyType(propertyName);
+            if (type != String.class) {
+                index = new FilterParamIndexRange(propertyName, filterOperator, eventType);
+            }
+            else {
+                index = new FilterParamIndexRangeString(propertyName, filterOperator, eventType);
+            }
             return index;
         }
         if (filterOperator.isInvertedRangeOperator())
         {
-            index = new FilterParamIndexNotRange(propertyName, filterOperator, eventType);
+            Class type = eventType.getPropertyType(propertyName);
+            if (type != String.class) {
+                index = new FilterParamIndexNotRange(propertyName, filterOperator, eventType);
+            }
+            else {
+                index = new FilterParamIndexNotRangeString(propertyName, filterOperator, eventType);
+            }
             return index;
         }
 

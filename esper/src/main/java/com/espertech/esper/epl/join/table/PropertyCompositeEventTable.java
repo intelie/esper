@@ -32,6 +32,7 @@ import java.util.*;
 public class PropertyCompositeEventTable implements EventTable
 {
     private final int streamNum;
+    private final String[] optionalKeyedProps;
     private final String[] rangeProps;
     private final CompositeIndexEnterRemove chain;
     private final Class[] optKeyCoercedTypes;
@@ -52,6 +53,7 @@ public class PropertyCompositeEventTable implements EventTable
     {
         this.streamNum = streamNum;
         this.rangeProps = rangeProps;
+        this.optionalKeyedProps = optionalKeyedProps;
         this.optKeyCoercedTypes = optKeyCoercedTypes;
         this.optRangeCoercedTypes = optRangeCoercedTypes;
 
@@ -161,9 +163,10 @@ public class PropertyCompositeEventTable implements EventTable
 
     public String toString()
     {
-        return "PropertyIndexedEventTable" +
+        return "PropertyCompositeEventTable" +
                 " streamNum=" + streamNum +
-                " propertyNames=" + Arrays.toString(rangeProps);
+                " keys=" + Arrays.toString(optionalKeyedProps) +
+                " ranges=" + Arrays.toString(rangeProps);
     }
 
     private static Log log = LogFactory.getLog(PropertyCompositeEventTable.class);

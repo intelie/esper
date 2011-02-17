@@ -41,7 +41,7 @@ public class EventTableFactory
                 else
                 {
                     if (coerceOnAddOnly) {
-                        table = new PropertyIndexedEventTableCoerceAdd(indexedStreamNum, eventType, indexProps, null);
+                        table = new PropertyIndexedEventTableCoerceAdd(indexedStreamNum, eventType, indexProps, indexCoercionTypes);
                     }
                     else {
                         table = new PropertyIndexedEventTableCoerceAll(indexedStreamNum, eventType, indexProps, indexCoercionTypes);

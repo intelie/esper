@@ -39,6 +39,6 @@ public class TestFilterSpecParamRange extends TestCase
     {
         return new FilterSpecParamRange(propertyName, filterOp,
                 new RangeValueDouble(doubleRange.getMin()),
-                new RangeValueDouble(doubleRange.getMax()));
+                new RangeValueDouble(doubleRange.getMax()), Double.class);
     }
 }

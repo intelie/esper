@@ -1244,7 +1244,7 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 				<itemizedlist spacing="compact">
 					<listitem>
 						<para>
-							Range and comparison operators require the event property to be of a numeric type. 
+							Range and comparison operators require the event property to be of a numeric or string type. 
 						</para>
 					</listitem>
 					<listitem>

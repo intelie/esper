@@ -522,7 +522,7 @@ public final class FilterSpecCompiler
 
             if ((low != null) && (high != null))
             {
-                return new FilterSpecParamRange(propertyName, op, low, high);
+                return new FilterSpecParamRange(propertyName, op, low, high, identNode.getType());
             }
         }
         return null;
@@ -534,8 +534,13 @@ public final class FilterSpecCompiler
         if (endpoint instanceof ExprConstantNode)
         {
             ExprConstantNode node = (ExprConstantNode) endpoint;
-            Number result = (Number) node.evaluate(null, true, exprEvaluatorContext);
-            return new RangeValueDouble(result.doubleValue());
+            Object value = node.evaluate(null, true, exprEvaluatorContext);
+            if (value instanceof String) {
+                return new RangeValueString((String)value);
+            }
+            else {
+                return new RangeValueDouble(((Number)value).doubleValue());
+            }
         }
 
         // or property

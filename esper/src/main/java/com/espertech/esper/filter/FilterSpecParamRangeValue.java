@@ -24,7 +24,7 @@ public interface FilterSpecParamRangeValue extends MetaDefItem, Serializable
      * @param matchedEvents is the prior results
      * @return filter value
      */
-    public Double getFilterValue(MatchedEventMap matchedEvents);
+    public Object getFilterValue(MatchedEventMap matchedEvents);
 
     /**
      * Returns a hash code for use in computing a filter range hash code that matches

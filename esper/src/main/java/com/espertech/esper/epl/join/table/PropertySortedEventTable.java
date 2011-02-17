@@ -19,6 +19,7 @@ import com.espertech.esper.epl.join.exec.RangeIndexLookupValueRange;
 import com.espertech.esper.epl.join.plan.QueryGraphRangeEnum;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.filter.DoubleRange;
+import com.espertech.esper.filter.Range;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -409,36 +410,36 @@ public class PropertySortedEventTable implements EventTable
 
         RangeIndexLookupValueRange lookupValue = (RangeIndexLookupValueRange) lookupValueBase;
         if (lookupValue.getOperator() == QueryGraphRangeEnum.RANGE_CLOSED) {
-            DoubleRange range = (DoubleRange) lookupValue.getValue();
-            return lookupRange(range.getMin(), true, range.getMax(), true, lookupValue.isAllowRangeReverse());
+            Range range = (Range) lookupValue.getValue();
+            return lookupRange(range.getLowEndpoint(), true, range.getHighEndpoint(), true, lookupValue.isAllowRangeReverse());
         }
         else if (lookupValue.getOperator() == QueryGraphRangeEnum.RANGE_HALF_OPEN) {
-            DoubleRange range = (DoubleRange) lookupValue.getValue();
-            return lookupRange(range.getMin(), true, range.getMax(), false, lookupValue.isAllowRangeReverse());
+            Range range = (Range) lookupValue.getValue();
+            return lookupRange(range.getLowEndpoint(), true, range.getHighEndpoint(), false, lookupValue.isAllowRangeReverse());
         }
         else if (lookupValue.getOperator() == QueryGraphRangeEnum.RANGE_HALF_CLOSED) {
-            DoubleRange range = (DoubleRange) lookupValue.getValue();
-            return lookupRange(range.getMin(), false, range.getMax(), true, lookupValue.isAllowRangeReverse());
+            Range range = (Range) lookupValue.getValue();
+            return lookupRange(range.getLowEndpoint(), false, range.getHighEndpoint(), true, lookupValue.isAllowRangeReverse());
         }
         else if (lookupValue.getOperator() == QueryGraphRangeEnum.RANGE_OPEN) {
-            DoubleRange range = (DoubleRange) lookupValue.getValue();
-            return lookupRange(range.getMin(), false, range.getMax(), false, lookupValue.isAllowRangeReverse());
+            Range range = (Range) lookupValue.getValue();
+            return lookupRange(range.getLowEndpoint(), false, range.getHighEndpoint(), false, lookupValue.isAllowRangeReverse());
         }
         else if (lookupValue.getOperator() == QueryGraphRangeEnum.NOT_RANGE_CLOSED) {
-            DoubleRange range = (DoubleRange) lookupValue.getValue();
-            return lookupRangeInverted(range.getMin(), true, range.getMax(), true);
+            Range range = (Range) lookupValue.getValue();
+            return lookupRangeInverted(range.getLowEndpoint(), true, range.getHighEndpoint(), true);
         }
         else if (lookupValue.getOperator() == QueryGraphRangeEnum.NOT_RANGE_HALF_OPEN) {
-            DoubleRange range = (DoubleRange) lookupValue.getValue();
-            return lookupRangeInverted(range.getMin(), true, range.getMax(), false);
+            Range range = (Range) lookupValue.getValue();
+            return lookupRangeInverted(range.getLowEndpoint(), true, range.getHighEndpoint(), false);
         }
         else if (lookupValue.getOperator() == QueryGraphRangeEnum.NOT_RANGE_HALF_CLOSED) {
-            DoubleRange range = (DoubleRange) lookupValue.getValue();
-            return lookupRangeInverted(range.getMin(), false, range.getMax(), true);
+            Range range = (Range) lookupValue.getValue();
+            return lookupRangeInverted(range.getLowEndpoint(), false, range.getHighEndpoint(), true);
         }
         else if (lookupValue.getOperator() == QueryGraphRangeEnum.NOT_RANGE_OPEN) {
-            DoubleRange range = (DoubleRange) lookupValue.getValue();
-            return lookupRangeInverted(range.getMin(), false, range.getMax(), false);
+            Range range = (Range) lookupValue.getValue();
+            return lookupRangeInverted(range.getLowEndpoint(), false, range.getHighEndpoint(), false);
         }
         else if (lookupValue.getOperator() == QueryGraphRangeEnum.GREATER) {
             return lookupGreater(lookupValue.getValue());

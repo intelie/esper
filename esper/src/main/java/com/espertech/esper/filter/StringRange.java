@@ -12,10 +12,10 @@ package com.espertech.esper.filter;
 /**
  * Holds a range of double values with a minimum (start) value and a maximum (end) value.
  */
-public final class DoubleRange implements Range
+public final class StringRange implements Range
 {
-    private Double min;
-    private Double max;
+    private String min;
+    private String max;
     private int hashCode;
 
     /**
@@ -23,14 +23,14 @@ public final class DoubleRange implements Range
      * @param min is the low endpoint
      * @param max is the high endpoint
      */
-    public DoubleRange(Double min, Double max)
+    public StringRange(String min, String max)
     {
         this.min = min;
         this.max = max;
 
         if ((min != null) && (max != null))
         {
-            if (min > max)
+            if (min.compareTo(max) > 0)
             {
                 this.max = min;
                 this.min = max;
@@ -50,12 +50,7 @@ public final class DoubleRange implements Range
         }
     }
 
-    /**
-     * Returns low endpoint.
-     * @return low endpoint
-     */
-    public final Double getMin()
-    {
+    public Object getLowEndpoint() {
         return min;
     }
 
@@ -63,7 +58,12 @@ public final class DoubleRange implements Range
         return max;
     }
 
-    public Object getLowEndpoint() {
+    /**
+     * Returns low endpoint.
+     * @return low endpoint
+     */
+    public final String getMin()
+    {
         return min;
     }
 
@@ -71,34 +71,31 @@ public final class DoubleRange implements Range
      * Returns high endpoint.
      * @return high endpoint
      */
-    public final Double getMax()
+    public final String getMax()
     {
         return max;
     }
 
-    public final boolean equals(Object other)
-    {
-        if (other == this)
-        {
-            return true;
-        }
-        if (!(other instanceof DoubleRange))
-        {
-            return false;
-        }
-        DoubleRange otherRange = (DoubleRange) other;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return ((otherRange.max.doubleValue() == this.max) && (otherRange.min.doubleValue() == this.min));
+        StringRange that = (StringRange) o;
+
+        if (hashCode != that.hashCode) return false;
+        if (max != null ? !max.equals(that.max) : that.max != null) return false;
+        if (min != null ? !min.equals(that.min) : that.min != null) return false;
+
+        return true;
     }
 
-    public final int hashCode()
-    {
+    public int hashCode() {
         return hashCode;
     }
 
     public final String toString()
     {
-        return "DoubleRange" +
+        return "StringRange" +
                " min=" + min +
                " max=" + max;
     }

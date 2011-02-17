@@ -17,6 +17,7 @@ public final class FilterSpecParamRange extends FilterSpecParam
 {
     private final FilterSpecParamRangeValue min;
     private final FilterSpecParamRangeValue max;
+    private final Class type;
     private static final long serialVersionUID = -3381167844631490119L;
 
     /**
@@ -27,12 +28,13 @@ public final class FilterSpecParamRange extends FilterSpecParam
      * @param max is the end point of the range
      * @throws IllegalArgumentException if an operator was supplied that does not take a double range value
      */
-    public FilterSpecParamRange(String propertyName, FilterOperator filterOperator, FilterSpecParamRangeValue min, FilterSpecParamRangeValue max)
+    public FilterSpecParamRange(String propertyName, FilterOperator filterOperator, FilterSpecParamRangeValue min, FilterSpecParamRangeValue max, Class type)
         throws IllegalArgumentException
     {
         super(propertyName, filterOperator);
         this.min = min;
         this.max = max;
+        this.type = type;
 
         if (!(filterOperator.isRangeOperator()) && (!(filterOperator.isInvertedRangeOperator())))
         {
@@ -43,8 +45,11 @@ public final class FilterSpecParamRange extends FilterSpecParam
 
     public final Object getFilterValue(MatchedEventMap matchedEvents)
     {
-        Double begin = min.getFilterValue(matchedEvents);
-        Double end = max.getFilterValue(matchedEvents);
+        if (type == String.class) {
+            return new StringRange((String)min.getFilterValue(matchedEvents), (String) max.getFilterValue(matchedEvents));
+        }
+        Double begin = (Double) min.getFilterValue(matchedEvents);
+        Double end = (Double) max.getFilterValue(matchedEvents);
         return new DoubleRange(begin, end);
     }
 

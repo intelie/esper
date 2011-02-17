@@ -26,11 +26,7 @@ import com.espertech.esper.epl.lookup.*;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
-import com.espertech.esper.filter.DoubleRange;
-import com.espertech.esper.filter.FilterOperator;
-import com.espertech.esper.filter.FilterSpecCompiled;
-import com.espertech.esper.filter.FilterSpecParam;
-import com.espertech.esper.type.DoubleValue;
+import com.espertech.esper.filter.*;
 import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
@@ -377,6 +373,9 @@ public class NamedWindowRootView extends ViewSupport
         Set<String> keysAvailable = new HashSet<String>();
         Set<String> rangesAvailable = new HashSet<String>();
         for (FilterSpecParam param : filter.getParameters()) {
+            if (!(param instanceof FilterSpecParamConstant || param instanceof FilterSpecParamRange)) {
+                continue;
+            }
             if (param.getFilterOperator() == FilterOperator.EQUAL) {
                 Object filterValue = param.getFilterValue(null);
                 if (filterValue == null) {

@@ -105,7 +105,6 @@ public class TestPerf3StreamRangeJoin extends TestCase
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++)
         {
-            System.out.println("Query #" + i);
             epService.getEPRuntime().sendEvent(new SupportBeanRange("R", "R", 100, 101));
             assertEquals(4, listener.getAndResetLastNewData().length);
         }
@@ -141,7 +140,7 @@ public class TestPerf3StreamRangeJoin extends TestCase
         // Repeat
         log.info("Querying");
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 500; i++)
         {
             epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", "G", -1));
             assertEquals(5, listener.getAndResetLastNewData().length);
