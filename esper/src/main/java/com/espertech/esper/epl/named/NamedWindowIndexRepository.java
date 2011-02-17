@@ -14,7 +14,6 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.join.plan.QueryPlanIndexItem;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.EventTableFactory;
-import com.espertech.esper.util.CollectionUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,7 +52,7 @@ public class NamedWindowIndexRepository
      * @param mustCoerce is an indicator whether coercion is required or not.
      * @return new or existing index table
      */
-    public EventTable addTableCreateOrReuse(List<IndexedPropDesc> hashProps,
+    public Pair<IndexMultiKey, EventTable> addTableCreateOrReuse(List<IndexedPropDesc> hashProps,
                                List<IndexedPropDesc> btreeProps,
                                Iterable<EventBean> prefilledEvents,
                                EventType indexedType,
@@ -64,12 +63,12 @@ public class NamedWindowIndexRepository
         }
 
         // Get an existing table, if any
-        IndexMultiKey indexPropKeyMatch = findExactMatch(tableIndexesRefCount.keySet(), hashProps, btreeProps);
-        Pair<EventTable, Integer> refTablePair = tableIndexesRefCount.get(indexPropKeyMatch);
-        if (refTablePair != null)
+        IndexMultiKey indexPropKeyMatch = findExactMatchNameAndType(tableIndexesRefCount.keySet(), hashProps, btreeProps);
+        if (indexPropKeyMatch != null)
         {
+            Pair<EventTable, Integer> refTablePair = tableIndexesRefCount.get(indexPropKeyMatch);
             refTablePair.setSecond(refTablePair.getSecond() + 1);
-            return refTablePair.getFirst();
+            return new Pair<IndexMultiKey, EventTable>(indexPropKeyMatch, refTablePair.getFirst());
         }
 
         IndexMultiKey indexPropKey = new IndexMultiKey(hashProps, btreeProps);
@@ -102,10 +101,10 @@ public class NamedWindowIndexRepository
         // add index, reference counted
         tableIndexesRefCount.put(indexPropKey, new Pair<EventTable, Integer>(table, 1));
 
-        return table;
+        return new Pair<IndexMultiKey, EventTable>(indexPropKey, table);
     }
 
-    private IndexMultiKey findExactMatch(Set<IndexMultiKey> indexMultiKeys, List<IndexedPropDesc> hashProps, List<IndexedPropDesc> btreeProps) {
+    private IndexMultiKey findExactMatchNameAndType(Set<IndexMultiKey> indexMultiKeys, List<IndexedPropDesc> hashProps, List<IndexedPropDesc> btreeProps) {
         for (IndexMultiKey existing : indexMultiKeys) {
             if (isExactMatch(existing, hashProps, btreeProps)) {
                 return existing;
@@ -115,11 +114,8 @@ public class NamedWindowIndexRepository
     }
 
     private boolean isExactMatch(IndexMultiKey existing, List<IndexedPropDesc> hashProps, List<IndexedPropDesc> btreeProps) {
-
-        boolean keyPropCompare = CollectionUtil.sortCompare(IndexedPropDesc.getIndexProperties(existing.getKeyProps()),
-                IndexedPropDesc.getIndexProperties(hashProps));
-        return keyPropCompare && CollectionUtil.sortCompare(IndexedPropDesc.getIndexProperties(existing.getRangeProps()),
-                IndexedPropDesc.getIndexProperties(btreeProps));
+        boolean keyPropCompare = IndexedPropDesc.compare(Arrays.asList(existing.getKeyProps()), hashProps);
+        return keyPropCompare && IndexedPropDesc.compare(Arrays.asList(existing.getRangeProps()), btreeProps);
     }
 
     public void addTableReference(EventTable table) {

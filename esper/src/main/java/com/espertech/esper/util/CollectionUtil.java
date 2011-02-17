@@ -25,6 +25,14 @@ public class CollectionUtil<T>
         return copy;
     }
 
+    public static int findItem(String[] items, String item) {
+        for (int i = 0; i < items.length; i++) {
+            if (items[i].equals(item)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /**
      * Returns an array of integer values from the set of integer values

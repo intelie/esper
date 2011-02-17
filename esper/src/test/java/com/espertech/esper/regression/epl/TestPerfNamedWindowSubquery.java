@@ -35,9 +35,21 @@ public class TestPerfNamedWindowSubquery extends TestCase
     public void testRange() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        
+        //runRangeAssertion(false);
+        runRangeAssertion(true, true);
+    }
 
+    private void runRangeAssertion(boolean indexShare, boolean buildIndex) {
         String createEpl = "create window MyWindow.win:keepall() as select * from SupportBean";
+        if (indexShare) {
+            createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
+        }
         epService.getEPAdministrator().createEPL(createEpl);
+
+        if (buildIndex) {
+            epService.getEPAdministrator().createEPL("create index idx1 on MyWindow(intPrimitive btree)");
+        }
         epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
 
         // preload
@@ -48,7 +60,7 @@ public class TestPerfNamedWindowSubquery extends TestCase
         String[] fields = "cols.mini,cols.maxi".split(",");
         String queryEpl = "select (select min(intPrimitive) as mini, max(intPrimitive) as maxi from MyWindow where intPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
         EPStatement stmt = epService.getEPAdministrator().createEPL(queryEpl);
-        stmt.addListener(listener);        
+        stmt.addListener(listener);
 
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++) {
@@ -58,6 +70,8 @@ public class TestPerfNamedWindowSubquery extends TestCase
         long delta = System.currentTimeMillis() - startTime;
         assertTrue("delta=" + delta, delta < 500);
         log.info("delta=" + delta);
+
+        epService.getEPAdministrator().destroyAllStatements();
     }
 
     public void testKeyedRange() {
