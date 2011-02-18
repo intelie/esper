@@ -36,12 +36,12 @@ public class SortedTableLookupStrategy implements JoinExecTableLookupStrategy
      * @param eventType - event type to expect for lookup
      * @param index - index to look up in
      */
-    public SortedTableLookupStrategy(EventType eventType, QueryGraphValueRange rangeKeyPair, PropertySortedEventTable index)
+    public SortedTableLookupStrategy(EventType eventType, QueryGraphValueRange rangeKeyPair, Class coercionType, PropertySortedEventTable index)
     {
         this.eventType = eventType;
         this.rangeKeyPair = rangeKeyPair;
         this.index = index;
-        this.strategy = SortedAccessStrategyFactory.make(eventType, rangeKeyPair);
+        this.strategy = SortedAccessStrategyFactory.make(eventType, rangeKeyPair, coercionType);
     }
 
     /**

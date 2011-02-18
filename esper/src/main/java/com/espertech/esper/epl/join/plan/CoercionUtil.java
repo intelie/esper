@@ -33,7 +33,7 @@ public class CoercionUtil {
             }
             else {
                 QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) entry;
-                coercionType = getCoercionTypeRangeRelOp(valuePropType,
+                coercionType = getCoercionType(valuePropType,
                                     relOp.getPropertyKey(), typesPerStream[lookupStream]);
             }
 
@@ -90,6 +90,10 @@ public class CoercionUtil {
         return new CoercionDesc(mustCoerce, coercionTypes);
     }
 
+    public static Class getCoercionType(EventType indexedType, String indexedProp, EventType keyType, String key) {
+        return getCoercionType(indexedType.getPropertyType(indexedProp), key, keyType);
+    }
+
     public static Class getCoercionType(EventType indexedType, String indexedProp, SubqueryRangeKeyDesc rangeKey, EventType[] keyTypes) {
         QueryGraphValueRange desc = rangeKey.getRangeInfo();
         if (desc.getType().isRange()) {
@@ -100,7 +104,7 @@ public class CoercionUtil {
         }
         else {
             QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) desc;
-            return getCoercionTypeRangeRelOp(indexedType.getPropertyType(indexedProp),
+            return getCoercionType(indexedType.getPropertyType(indexedProp),
                                     relOp.getPropertyKey(), keyTypes[rangeKey.getKeyStreamNum()]);
         }
     }
@@ -129,7 +133,7 @@ public class CoercionUtil {
             }
             else {
                 QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) rangeDesc;
-                coercionType = getCoercionTypeRangeRelOp(valuePropType,
+                coercionType = getCoercionType(valuePropType,
                                     relOp.getPropertyKey(), typesPerStream[subQRange.getKeyStreamNum()]);
             }
 
@@ -144,8 +148,7 @@ public class CoercionUtil {
         return new CoercionDesc(mustCoerce, coercionTypes);
     }
 
-    private static Class getCoercionTypeRangeRelOp(Class valuePropType,
-                                              String propertyKey, EventType eventTypeKey) {
+    private static Class getCoercionType(Class valuePropType, String propertyKey, EventType eventTypeKey) {
         Class coercionType = null;
         Class keyPropType = JavaClassHelper.getBoxedType(eventTypeKey.getPropertyType(propertyKey));
         if (valuePropType != keyPropType)
@@ -155,7 +158,7 @@ public class CoercionUtil {
         return coercionType;
     }
 
-    private static Class getCoercionTypeRangeIn(Class valuePropType,
+    public static Class getCoercionTypeRangeIn(Class valuePropType,
                                               String propertyStart, EventType eventTypeStart,
                                               String propertyEnd, EventType eventTypeEnd) {
         Class coercionType = null;

@@ -29,7 +29,6 @@ public class TestSubselectFiltered extends TestCase
         epService.initialize();
         listener = new SupportUpdateListener();
     }
-
     
     public void test3StreamKeyRangeCoercion() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);

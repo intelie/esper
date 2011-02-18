@@ -8,8 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.epl.lookup;
 
-import java.util.Collection;
-
 /**
  * Holds property information for joined properties in a lookup.
  */

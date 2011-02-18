@@ -13,7 +13,7 @@ public class CompositeIndexQueryFactory {
     public static CompositeIndexQuery make(EventType eventType, String[] optionalKeyProps, Class[] keyCoercionTypes, List<QueryGraphValueRange> rangeKeyPairs, Class[] rangeCoercionTypes) {
         List<SubqueryRangeKeyDesc> ranges = new ArrayList<SubqueryRangeKeyDesc>();
         for (QueryGraphValueRange range : rangeKeyPairs) {
-            ranges.add(SubqueryRangeKeyDesc.createSingleStreamNum(range, 0));
+            ranges.add(SubqueryRangeKeyDesc.createSingleStreamNum(range, 0, rangeCoercionTypes == null ? null : rangeCoercionTypes[0]));
         }
         return make(new EventType[] {eventType}, new int[optionalKeyProps.length], optionalKeyProps, keyCoercionTypes, ranges, rangeCoercionTypes);
     }

@@ -38,7 +38,7 @@ public class SortedTableLookupPlan extends TableLookupPlan
     public JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
     {
         PropertySortedEventTable index = (PropertySortedEventTable) indexesPerStream[this.getIndexedStream()].get(this.getIndexNum());
-        return new SortedTableLookupStrategy(eventTypes[this.getLookupStream()], rangeKeyPair, index);
+        return new SortedTableLookupStrategy(eventTypes[this.getLookupStream()], rangeKeyPair, null, index);
     }
 
     public String toString()

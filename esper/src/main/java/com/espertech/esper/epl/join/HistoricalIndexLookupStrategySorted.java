@@ -32,7 +32,7 @@ public class HistoricalIndexLookupStrategySorted implements HistoricalIndexLooku
      */
     public HistoricalIndexLookupStrategySorted(EventType eventType, QueryGraphValueRange property)
     {
-        strategy = SortedAccessStrategyFactory.make(eventType, property);
+        strategy = SortedAccessStrategyFactory.make(eventType, property, null);
     }
 
     public Iterator<EventBean> lookup(EventBean lookupEvent, EventTable indexTable)

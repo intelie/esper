@@ -8,13 +8,12 @@ import com.espertech.esper.epl.join.plan.QueryGraphValueRangeIn;
 import com.espertech.esper.epl.join.plan.QueryGraphValueRangeRelOp;
 import com.espertech.esper.epl.join.table.SubqueryRangeKeyDesc;
 import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.filter.FilterOperator;
 
 public class SortedAccessStrategyFactory {
 
-    public static SortedAccessStrategy make(EventType eventType, QueryGraphValueRange rangeKeyPair)
+    public static SortedAccessStrategy make(EventType eventType, QueryGraphValueRange rangeKeyPair, Class coercionType)
     {
-        return make(new EventType[] {eventType}, SubqueryRangeKeyDesc.createSingleStreamNum(rangeKeyPair, 0));
+        return make(new EventType[] {eventType}, SubqueryRangeKeyDesc.createSingleStreamNum(rangeKeyPair, 0, coercionType));
     }
 
     public static SortedAccessStrategy make(EventType[] eventTypePerStream, SubqueryRangeKeyDesc streamRangeKey) {
