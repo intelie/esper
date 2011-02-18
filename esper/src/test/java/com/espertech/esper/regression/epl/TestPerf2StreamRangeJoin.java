@@ -34,7 +34,7 @@ public class TestPerf2StreamRangeJoin extends TestCase
     // TODO PropertIndex without Multikey requirement
     // TODO test duplicate specification
     // TODO test remove stream
-    // TODO support for @Hint to disable optimizations
+    // TODO support for @Hint to disable optimizations, inner-join nested execution
     // TODO 3 stream inner, outer (full, left, right)
     // TODO 2 stream outer (full, left, right)
 

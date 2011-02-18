@@ -97,6 +97,10 @@ public class CompositeIndexEnterRemoveRange implements CompositeIndexEnterRemove
         if (next == null) {
             Map<Object, Set<EventBean>> eventMap = (Map<Object, Set<EventBean>>) parent;
 
+            if (eventMap == null) {
+                return;
+            }
+            
             Set<EventBean> events = eventMap.get(sortable);
             if (events == null)
             {

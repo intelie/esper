@@ -32,11 +32,56 @@ public class TestPerfNamedWindowSubquery extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testKeyAndRange() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        
+        runKeyAndRangeAssertion(false, false);
+        runKeyAndRangeAssertion(true, false);
+        runKeyAndRangeAssertion(true, true);
+    }
+
+    private void runKeyAndRangeAssertion(boolean indexShare, boolean buildIndex) {
+        String createEpl = "create window MyWindow.win:keepall() as select * from SupportBean";
+        if (indexShare) {
+            createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
+        }
+        epService.getEPAdministrator().createEPL(createEpl);
+
+        if (buildIndex) {
+            epService.getEPAdministrator().createEPL("create index idx1 on MyWindow(string hash, intPrimitive btree)");
+        }
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+
+        // preload
+        for (int i = 0; i < 10000; i++) {
+            String string = i < 5000 ? "A" : "B";
+            epService.getEPRuntime().sendEvent(new SupportBean(string, i));
+        }
+
+        String[] fields = "cols.mini,cols.maxi".split(",");
+        String queryEpl = "select (select min(intPrimitive) as mini, max(intPrimitive) as maxi from MyWindow where string = sbr.key and intPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(queryEpl);
+        stmt.addListener(listener);
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            epService.getEPRuntime().sendEvent(new SupportBeanRange("R1", "A", 300, 312));
+            ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {300, 312});
+        }
+        long delta = System.currentTimeMillis() - startTime;
+        assertTrue("delta=" + delta, delta < 500);
+        log.info("delta=" + delta);
+
+        epService.getEPAdministrator().destroyAllStatements();
+    }
+
     public void testRange() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         
-        //runRangeAssertion(false);
+        runRangeAssertion(false, false);
+        runRangeAssertion(true, false);
         runRangeAssertion(true, true);
     }
 

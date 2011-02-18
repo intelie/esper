@@ -42,6 +42,9 @@ public class CompositeIndexEnterRemoveKeyed implements CompositeIndexEnterRemove
     public void remove(EventBean event, Map parent) {
         MultiKeyUntyped mk = EventBeanUtility.getMultiKey(event, propertyGetters, keyCoercionTypes);
         Map innerIndex = (Map) parent.get(mk);
+        if (innerIndex == null) {
+            return;
+        }
         next.remove(event, innerIndex);
         if (innerIndex.isEmpty()) {
             parent.remove(mk);
