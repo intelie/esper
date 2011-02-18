@@ -24,7 +24,7 @@ public class CompositeIndexQueryKeyed implements CompositeIndexQuery {
         for (int i = 0; i < keysProps.length; i++)
         {
             int keyStream = keyStreamNum[i];
-            propertyGetters[i] = EventBeanUtility.getSafePropertyGetter(typePerStream[keyStream], keysProps[i]);
+            propertyGetters[i] = EventBeanUtility.getAssertPropertyGetter(typePerStream[keyStream], keysProps[i]);
         }
     }
 

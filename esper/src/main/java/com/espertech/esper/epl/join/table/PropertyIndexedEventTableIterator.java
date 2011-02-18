@@ -11,29 +11,31 @@ package com.espertech.esper.epl.join.table;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKeyUntyped;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
- * Iterator for use by {@link PropertyIndexedEventTable}.
+ * Iterator for use by {@link com.espertech.esper.epl.join.table.PropertyIndexedEventTable}.
  */
-public final class PropertyIndexedEventTableIterator implements Iterator<EventBean>
+public final class PropertyIndexedEventTableIterator<T> implements Iterator<EventBean>
 {
-    private final Map<MultiKeyUntyped, Set<EventBean>> window;
-
-    private final Iterator<MultiKeyUntyped> keyIterator;
+    private final Map<T, Set<EventBean>> window;
+    private final Iterator<T> keyIterator;
     private Iterator<EventBean> currentListIterator;
 
     /**
      * Ctor.
      * @param window - sorted map with events
      */
-    public PropertyIndexedEventTableIterator(Map<MultiKeyUntyped, Set<EventBean>> window)
+    public PropertyIndexedEventTableIterator(Map<T, Set<EventBean>> window)
     {
         this.window = window;
         keyIterator = window.keySet().iterator();
         if (keyIterator.hasNext())
         {
-            MultiKeyUntyped initialKey = keyIterator.next();
+            T initialKey = keyIterator.next();
             currentListIterator = window.get(initialKey).iterator();
         }
     }
@@ -52,7 +54,7 @@ public final class PropertyIndexedEventTableIterator implements Iterator<EventBe
             currentListIterator = null;
             if (keyIterator.hasNext())
             {
-                MultiKeyUntyped nextKey = keyIterator.next();
+                T nextKey = keyIterator.next();
                 currentListIterator = window.get(nextKey).iterator();
             }
         }

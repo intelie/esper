@@ -5,10 +5,7 @@ import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBeanComplexProps;
-import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportBean_S0;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportDatabaseService;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -43,6 +40,31 @@ public class TestDatabaseJoin extends TestCase
 
         epService = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epService.initialize();
+    }
+
+    public void test3Stream()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanTwo", SupportBeanTwo.class);
+
+        String stmtText = "select * from SupportBean.std:lastevent() sb, SupportBeanTwo.std:lastevent() sbt, " +
+                "sql:MyDB ['select myint from mytesttable'] as s1 " +
+                "  where sb.string = sbt.stringTwo and s1.myint = sbt.intPrimitiveTwo";
+
+        EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanTwo("T1", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean("T1", -1));
+
+        epService.getEPRuntime().sendEvent(new SupportBeanTwo("T2", 30));
+        epService.getEPRuntime().sendEvent(new SupportBean("T2", -1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "sb.string,sbt.stringTwo,s1.myint".split(","), new Object[] {"T2", "T2", 30});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("T3", -1));
+        epService.getEPRuntime().sendEvent(new SupportBeanTwo("T3", 40));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "sb.string,sbt.stringTwo,s1.myint".split(","), new Object[] {"T3", "T3", 40});
     }
 
     public void testTimeBatchEPL()

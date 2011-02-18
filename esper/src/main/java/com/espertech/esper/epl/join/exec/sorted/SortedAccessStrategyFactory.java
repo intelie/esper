@@ -23,11 +23,11 @@ public class SortedAccessStrategyFactory {
         if (rangeKeyPair.getType().isRange()) {
             QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) rangeKeyPair;
             int streamStart = streamRangeKey.getStartStreamNum();
-            EventPropertyGetter start = EventBeanUtility.getSafePropertyGetter(eventTypePerStream[streamStart], in.getPropertyStart());
+            EventPropertyGetter start = EventBeanUtility.getAssertPropertyGetter(eventTypePerStream[streamStart], in.getPropertyStart());
             boolean includeStart = rangeKeyPair.getType().isIncludeStart();
 
             int streamEnd = streamRangeKey.getEndStreamNum();
-            EventPropertyGetter end = EventBeanUtility.getSafePropertyGetter(eventTypePerStream[streamEnd], in.getPropertyEnd());
+            EventPropertyGetter end = EventBeanUtility.getAssertPropertyGetter(eventTypePerStream[streamEnd], in.getPropertyEnd());
             boolean includeEnd = rangeKeyPair.getType().isIncludeEnd();
             if (!rangeKeyPair.getType().isRangeInverted()) {
                 return new SortedAccessStrategyRange(start, includeStart, end, includeEnd, streamStart, streamEnd, in.isAllowRangeReversal());
@@ -39,7 +39,7 @@ public class SortedAccessStrategyFactory {
         else {
             QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) rangeKeyPair;
             int keyStreamNum = streamRangeKey.getKeyStreamNum();
-            EventPropertyGetter key = EventBeanUtility.getSafePropertyGetter(eventTypePerStream[keyStreamNum], relOp.getPropertyKey());
+            EventPropertyGetter key = EventBeanUtility.getAssertPropertyGetter(eventTypePerStream[keyStreamNum], relOp.getPropertyKey());
             if (rangeKeyPair.getType() == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
                 return new SortedAccessStrategyGE(key, keyStreamNum);
             }

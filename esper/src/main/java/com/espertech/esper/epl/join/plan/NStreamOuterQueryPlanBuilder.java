@@ -104,9 +104,8 @@ public class NStreamOuterQueryPlanBuilder
         // For each stream determine the query plan
         for (int streamNo = 0; streamNo < numStreams; streamNo++)
         {
-            // no plan for historical streams that are dependent upon other streams
-            if ((isHistorical[streamNo]) && (dependencyGraph.hasDependency(streamNo)))
-            {
+            if ((isHistorical[streamNo])) {
+                planNodeSpecs[streamNo] = new QueryPlanNodeNoOp();
                 continue;
             }
 

@@ -11,14 +11,12 @@ package com.espertech.esper.epl.join.table;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.SuperIterator;
 import com.espertech.esper.epl.join.exec.RangeIndexLookupValue;
 import com.espertech.esper.epl.join.exec.RangeIndexLookupValueEquals;
 import com.espertech.esper.epl.join.exec.RangeIndexLookupValueRange;
 import com.espertech.esper.epl.join.plan.QueryGraphRangeEnum;
 import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.filter.DoubleRange;
 import com.espertech.esper.filter.Range;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
@@ -62,7 +60,7 @@ public class PropertySortedEventTable implements EventTable
     {
         this.streamNum = streamNum;
         this.propertyName = propertyName;
-        propertyGetter = EventBeanUtility.getSafePropertyGetter(eventType, propertyName);
+        propertyGetter = EventBeanUtility.getAssertPropertyGetter(eventType, propertyName);
         propertyIndex = new TreeMap<Object, Set<EventBean>>();
         nullKeyedValues = new HashSet<EventBean>();
     }

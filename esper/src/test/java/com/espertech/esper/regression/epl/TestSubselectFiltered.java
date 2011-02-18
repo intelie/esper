@@ -45,6 +45,33 @@ public class TestSubselectFiltered extends TestCase
                 "select sum(intPrimitive) as sumi from SupportBean.win:keepall() where string = st2.key2 and s1.p11Long >= intPrimitive and s0.p01Long <= intPrimitive) " +
                 "from ST2.std:lastevent() st2, ST0.std:lastevent() s0, ST1.std:lastevent() s1";
         runAssertion3StreamKeyRangeCoercion(epl, false);
+
+        epl = "select (" +
+                "select sum(intPrimitive) as sumi from SupportBean.win:keepall() where string = st2.key2 and s1.p11Long > intPrimitive) " +
+                "from ST2.std:lastevent() st2, ST0.std:lastevent() s0, ST1.std:lastevent() s1";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("G", 21));
+        epService.getEPRuntime().sendEvent(new SupportBean("G", 13));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST2("ST2", "G", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", -1L));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST1("ST1", 20L));
+        assertEquals(13, listener.assertOneGetNewAndReset().get("sumi"));
+
+        stmt.destroy();
+        epl = "select (" +
+                "select sum(intPrimitive) as sumi from SupportBean.win:keepall() where string = st2.key2 and s1.p11Long < intPrimitive) " +
+                "from ST2.std:lastevent() st2, ST0.std:lastevent() s0, ST1.std:lastevent() s1";
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("G", 21));
+        epService.getEPRuntime().sendEvent(new SupportBean("G", 13));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST2("ST2", "G", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", -1L));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST1("ST1", 20L));
+        assertEquals(21, listener.assertOneGetNewAndReset().get("sumi"));
     }
 
     private void runAssertion3StreamKeyRangeCoercion(String epl, boolean isHasRangeReversal) {

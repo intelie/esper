@@ -2005,6 +2005,25 @@ public class EPStatementStartMethod
             String[] keyProps = JoinedPropUtil.getKeyProperties(joinProps.values());
             Class coercionTypes[] = JoinedPropUtil.getCoercionTypes(joinProps.values());
 
+            if (joinProps.size() == 1) {
+                if (!joinPropDesc.isMustCoerce()) {
+                    PropertyIndexedEventTableSingle table = new PropertyIndexedEventTableSingle(0, viewableEventType, indexedProps[0]);
+                    SubqTableLookupStrategy strategy = new SubqIndexedTableLookupStrategySingle(outerEventTypes, keyStreamNums[0], keyProps[0], table);
+                    if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                        queryPlanLog.info("local index, single-key index lookup on " + Arrays.toString(indexedProps) + " based on " + Arrays.toString(keyProps));
+                    }
+                    return new Pair<EventTable, SubqTableLookupStrategy>(table, strategy);
+                }
+                else {
+                    PropertyIndexedEventTableSingleCoerceAdd table = new PropertyIndexedEventTableSingleCoerceAdd(0, viewableEventType, indexedProps[0], coercionTypes[0]);
+                    SubqTableLookupStrategy strategy = new SubqIndexedTableLookupStrategySingleCoercing( outerEventTypes, keyStreamNums[0], keyProps[0], table, coercionTypes[0]);
+                    if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                        queryPlanLog.info("local index, coerced index lookup on " + Arrays.toString(indexedProps) + " based on " + Arrays.toString(keyProps));
+                    }
+                    return new Pair<EventTable, SubqTableLookupStrategy>(table, strategy);
+                }
+            }
+
             if (!joinPropDesc.isMustCoerce())
             {
                 PropertyIndexedEventTable table = new PropertyIndexedEventTable(0, viewableEventType, indexedProps);

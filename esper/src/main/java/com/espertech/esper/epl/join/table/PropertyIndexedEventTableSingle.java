@@ -8,59 +8,45 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.table;
 
-import java.util.*;
-
-import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * Index that organizes events by the event property values into hash buckets. Based on a HashMap
  * with {@link com.espertech.esper.collection.MultiKeyUntyped} keys that store the property values.
- *
- * Takes a list of property names as parameter. Doesn't care which event type the events have as long as the properties
- * exist. If the same event is added twice, the class throws an exception on add.
  */
-public class PropertyIndexedEventTable implements EventTable
+public class PropertyIndexedEventTableSingle implements EventTable
 {
     private final int streamNum;
-    private final String[] propertyNames;
+    private final String propertyName;
 
-    /**
-     * Getters for properties.
-     */
-    protected final EventPropertyGetter[] propertyGetters;
+    protected final EventPropertyGetter propertyGetter;
 
     /**
      * Index table.
      */
-    protected final Map<MultiKeyUntyped, Set<EventBean>> propertyIndex;
+    protected final Map<Object, Set<EventBean>> propertyIndex;
 
     /**
      * Ctor.
      * @param streamNum - the stream number that is indexed
      * @param eventType - types of events indexed
-     * @param propertyNames - property names to use for indexing
      */
-    public PropertyIndexedEventTable(int streamNum, EventType eventType, String[] propertyNames)
+    public PropertyIndexedEventTableSingle(int streamNum, EventType eventType, String propertyName)
     {
         this.streamNum = streamNum;
-        this.propertyNames = propertyNames;
+        this.propertyName = propertyName;
 
         // Init getters
-        propertyGetters = new EventPropertyGetter[propertyNames.length];
-        for (int i = 0; i < propertyNames.length; i++)
-        {
-            propertyGetters[i] = eventType.getGetter(propertyNames[i]);
-        }
-
-        propertyIndex = new HashMap<MultiKeyUntyped, Set<EventBean>>();
+        propertyGetter = EventBeanUtility.getAssertPropertyGetter(eventType, propertyName);
+        propertyIndex = new HashMap<Object, Set<EventBean>>();
     }
 
     /**
@@ -68,9 +54,9 @@ public class PropertyIndexedEventTable implements EventTable
      * @param event to get properties from for key
      * @return multi key
      */
-    protected MultiKeyUntyped getMultiKey(EventBean event)
+    protected Object getKey(EventBean event)
     {
-        return EventBeanUtility.getMultiKey(event, propertyGetters);
+        return propertyGetter.get(event);
     }
 
     /**
@@ -110,18 +96,17 @@ public class PropertyIndexedEventTable implements EventTable
 
     /**
      * Returns the set of events that have the same property value as the given event.
-     * @param keys to compare against
+     * @param key to compare against
      * @return set of events with property value, or null if none found (never returns zero-sized set)
      */
-    public Set<EventBean> lookup(Object[] keys)
+    public Set<EventBean> lookup(Object key)
     {
-        MultiKeyUntyped key = new MultiKeyUntyped(keys);
         return propertyIndex.get(key);
     }
 
     private void add(EventBean event)
     {
-        MultiKeyUntyped key = getMultiKey(event);
+        Object key = getKey(event);
 
         Set<EventBean> events = propertyIndex.get(key);
         if (events == null)
@@ -140,7 +125,7 @@ public class PropertyIndexedEventTable implements EventTable
 
     private void remove(EventBean event)
     {
-        MultiKeyUntyped key = getMultiKey(event);
+        Object key = getKey(event);
 
         Set<EventBean> events = propertyIndex.get(key);
         if (events == null)
@@ -177,7 +162,7 @@ public class PropertyIndexedEventTable implements EventTable
 
     public Iterator<EventBean> iterator()
     {
-        return new PropertyIndexedEventTableIterator<MultiKeyUntyped>(propertyIndex);
+        return new PropertyIndexedEventTableIterator<Object>(propertyIndex);
     }
 
     public void clear()
@@ -185,20 +170,12 @@ public class PropertyIndexedEventTable implements EventTable
         propertyIndex.clear();
     }
 
-    /**
-     * Returns index property names.
-     * @return property names
-     */
-    public String[] getPropertyNames() {
-        return propertyNames;
-    }
-
     public String toString()
     {
-        return "PropertyIndexedEventTable" +
+        return "PropertyIndexedEventTableSingle" +
                 " streamNum=" + streamNum +
-                " propertyNames=" + Arrays.toString(propertyNames);
+                " propertyName=" + propertyName;
     }
 
-    private static Log log = LogFactory.getLog(PropertyIndexedEventTable.class);
+    private static Log log = LogFactory.getLog(PropertyIndexedEventTableSingle.class);
 }

@@ -27,12 +27,16 @@ import java.util.*;
  */
 public class EventBeanUtility
 {
-    public static EventPropertyGetter getSafePropertyGetter(EventType type, String propertyName) {
+    public static EventPropertyGetter getAssertPropertyGetter(EventType type, String propertyName) {
         EventPropertyGetter getter = type.getGetter(propertyName);
         if (getter == null) {
-            throw new IllegalStateException("Property " + propertyName + " not found by table");
+            throw new IllegalStateException("Property " + propertyName + " not found in type " + type.getName());
         }
         return getter;
+    }
+
+    public static EventPropertyGetter getAssertPropertyGetter(EventType[] eventTypes, int keyStreamNum, String property) {
+        return getAssertPropertyGetter(eventTypes[keyStreamNum], property);
     }
 
     /**

@@ -147,9 +147,8 @@ public class NStreamQueryPlanBuilder
         QueryPlanNode[] planNodeSpecs = new QueryPlanNode[numStreams];
         for (int streamNo = 0; streamNo < numStreams; streamNo++)
         {
-            // no plan for historical streams that are dependent upon other streams
-            if ((isHistorical[streamNo]) && (dependencyGraph.hasDependency(streamNo)))
-            {
+            if ((isHistorical[streamNo])) {
+                planNodeSpecs[streamNo] = new QueryPlanNodeNoOp();
                 continue;
             }
 
@@ -257,7 +256,14 @@ public class NStreamQueryPlanBuilder
         {
             // Constructed keyed lookup strategy
             String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
-            IndexedTableLookupPlan tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
+
+            TableLookupPlan tableLookupPlan;
+            if (keyGenFields.length == 1) {
+                tableLookupPlan = new IndexedTableLookupPlanSingle(currentLookupStream, indexedStream, indexNum, keyGenFields[0]);
+            }
+            else {
+                tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
+            }
 
             // Determine coercion required
             CoercionDesc coercionTypes = CoercionUtil.getCoercionTypes(typesPerStream, currentLookupStream, indexedStream, keyGenFields, indexedStreamIndexProps);

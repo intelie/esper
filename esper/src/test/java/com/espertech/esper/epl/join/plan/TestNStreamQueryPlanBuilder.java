@@ -62,8 +62,8 @@ public class TestNStreamQueryPlanBuilder extends TestCase
         TableLookupNode tableLookupSpec = (TableLookupNode) nested.getChildNodes().get(0);
 
         // Check lookup strategy for first lookup
-        IndexedTableLookupPlan lookupStrategySpec = (IndexedTableLookupPlan) tableLookupSpec.getLookupStrategySpec();
-        assertTrue(Arrays.equals(lookupStrategySpec.getKeyProperties(), new String[] {"p01"} ));
+        IndexedTableLookupPlanSingle lookupStrategySpec = (IndexedTableLookupPlanSingle) tableLookupSpec.getLookupStrategySpec();
+        assertEquals("p01", lookupStrategySpec.getKeyProperty());
         assertEquals(0, lookupStrategySpec.getLookupStream());
         assertEquals(2, lookupStrategySpec.getIndexedStream());
         assertNotNull(lookupStrategySpec.getIndexNum());

@@ -34,17 +34,36 @@ public class EventTableFactory
             }
             else
             {
-                if (indexCoercionTypes == null || indexCoercionTypes.length == 0)
-                {
-                    table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps);
-                }
-                else
-                {
-                    if (coerceOnAddOnly) {
-                        table = new PropertyIndexedEventTableCoerceAdd(indexedStreamNum, eventType, indexProps, indexCoercionTypes);
+                // single index key
+                if (indexProps.length == 1) {
+                    if (indexCoercionTypes == null || indexCoercionTypes.length == 0)
+                    {
+                        table = new PropertyIndexedEventTableSingle(indexedStreamNum, eventType, indexProps[0]);
                     }
-                    else {
-                        table = new PropertyIndexedEventTableCoerceAll(indexedStreamNum, eventType, indexProps, indexCoercionTypes);
+                    else
+                    {
+                        if (coerceOnAddOnly) {
+                            table = new PropertyIndexedEventTableSingleCoerceAdd(indexedStreamNum, eventType, indexProps[0], indexCoercionTypes[0]);
+                        }
+                        else {
+                            table = new PropertyIndexedEventTableSingleCoerceAll(indexedStreamNum, eventType, indexProps[0], indexCoercionTypes[0]);
+                        }
+                    }
+                }
+                // Multiple index keys
+                else {
+                    if (indexCoercionTypes == null || indexCoercionTypes.length == 0)
+                    {
+                        table = new PropertyIndexedEventTable(indexedStreamNum, eventType, indexProps);
+                    }
+                    else
+                    {
+                        if (coerceOnAddOnly) {
+                            table = new PropertyIndexedEventTableCoerceAdd(indexedStreamNum, eventType, indexProps, indexCoercionTypes);
+                        }
+                        else {
+                            table = new PropertyIndexedEventTableCoerceAll(indexedStreamNum, eventType, indexProps, indexCoercionTypes);
+                        }
                     }
                 }
             }

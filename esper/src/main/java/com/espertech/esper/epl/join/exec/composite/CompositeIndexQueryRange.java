@@ -23,10 +23,10 @@ public class CompositeIndexQueryRange implements CompositeIndexQuery {
 
         if (rangeProp.getType().isRange()) {
             QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) rangeProp;
-            EventPropertyGetter start = EventBeanUtility.getSafePropertyGetter(typePerStream[subqRangeKey.getStartStreamNum()], in.getPropertyStart());
+            EventPropertyGetter start = EventBeanUtility.getAssertPropertyGetter(typePerStream[subqRangeKey.getStartStreamNum()], in.getPropertyStart());
             boolean includeStart = rangeProp.getType().isIncludeStart();
 
-            EventPropertyGetter end = EventBeanUtility.getSafePropertyGetter(typePerStream[subqRangeKey.getEndStreamNum()], in.getPropertyEnd());
+            EventPropertyGetter end = EventBeanUtility.getAssertPropertyGetter(typePerStream[subqRangeKey.getEndStreamNum()], in.getPropertyEnd());
             boolean includeEnd = rangeProp.getType().isIncludeEnd();
 
             if (!rangeProp.getType().isRangeInverted()) {
@@ -38,7 +38,7 @@ public class CompositeIndexQueryRange implements CompositeIndexQuery {
         }
         else {
             QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) rangeProp;
-            EventPropertyGetter key = EventBeanUtility.getSafePropertyGetter(typePerStream[subqRangeKey.getKeyStreamNum()], relOp.getPropertyKey());
+            EventPropertyGetter key = EventBeanUtility.getAssertPropertyGetter(typePerStream[subqRangeKey.getKeyStreamNum()], relOp.getPropertyKey());
             if (rangeProp.getType() == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
                 strategy = new CompositeAccessStrategyGE(key, coercionType, subqRangeKey.getKeyStreamNum());
             }

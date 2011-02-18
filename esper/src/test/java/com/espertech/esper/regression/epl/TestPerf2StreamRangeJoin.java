@@ -31,13 +31,6 @@ public class TestPerf2StreamRangeJoin extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
     }
 
-    // TODO PropertIndex without Multikey requirement
-    // TODO test duplicate specification
-    // TODO test remove stream
-    // TODO support for @Hint to disable optimizations, inner-join nested execution
-    // TODO 3 stream inner, outer (full, left, right)
-    // TODO 2 stream outer (full, left, right)
-
     public void testPerfKeyAndRangeOuterJoin() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);

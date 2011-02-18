@@ -15,7 +15,7 @@ public class CompositeIndexEnterRemoveRange implements CompositeIndexEnterRemove
     private CompositeIndexEnterRemove next;
 
     public CompositeIndexEnterRemoveRange(EventType eventType, String rangeProp, Class coercionType) {
-        this.propertyGetter = EventBeanUtility.getSafePropertyGetter(eventType, rangeProp);
+        this.propertyGetter = EventBeanUtility.getAssertPropertyGetter(eventType, rangeProp);
         this.coercionType = coercionType;
     }
 

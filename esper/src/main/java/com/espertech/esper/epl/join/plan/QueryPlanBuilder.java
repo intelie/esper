@@ -85,7 +85,7 @@ public class QueryPlanBuilder
         }
 
         // TODO - comment back in - for now all N-stream queries get executed by the outer query plan builder
-        boolean USE_NESTED_ITER = false;
+        boolean USE_NESTED_ITER = true;
         if (outerJoinDescList.isEmpty() && USE_NESTED_ITER)
         {
             QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream,

@@ -422,6 +422,7 @@ public class TestNamedWindowDelete extends TestCase
         sendSupportBean("E3", 3, 30, 3d, 30d);
         sendSupportBean("E4", 4, 40, 4d, 40d);
         sendSupportBean("E5", 5, 50, 500d, 5000d);
+        sendSupportBean("E6", 6, 60, 600d, 6000d);
         listenerWindow.reset();
 
         List<EPStatement> deleteStatements = new LinkedList<EPStatement>();
@@ -456,6 +457,20 @@ public class TestNamedWindowDelete extends TestCase
 
         sendSupportBeanTwo("T", -4, 4, -4, 4d);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E4"});
+
+        stmtTextDelete = "on SupportBeanTwo as s2 delete from MyWindow as win where win.intPrimitive <= doublePrimitiveTwo";
+        deleteStatements.add(epService.getEPAdministrator().createEPL(stmtTextDelete));
+        assertEquals(3, epService.getNamedWindowService().getNamedWindowIndexes("MyWindow").length);
+
+        sendSupportBeanTwo("T", 0, 0, 5, 1d);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E5"});
+
+        stmtTextDelete = "on SupportBeanTwo as s2 delete from MyWindow as win where win.intPrimitive not between s2.intPrimitiveTwo and s2.intBoxedTwo";
+        deleteStatements.add(epService.getEPAdministrator().createEPL(stmtTextDelete));
+        assertEquals(3, epService.getNamedWindowService().getNamedWindowIndexes("MyWindow").length);
+
+        sendSupportBeanTwo("T", 100, 200, 0, 0d);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E6"});
 
         // delete
         for (EPStatement stmt : deleteStatements) {

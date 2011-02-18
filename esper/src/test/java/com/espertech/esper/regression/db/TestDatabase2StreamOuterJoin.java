@@ -12,7 +12,7 @@ import com.espertech.esper.client.EventBean;
 import java.util.Properties;
 import java.math.BigDecimal;
 
-public class TestDatabaseOuterJoin extends TestCase
+public class TestDatabase2StreamOuterJoin extends TestCase
 {
     private final static String ALL_FIELDS = "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
 
@@ -34,48 +34,48 @@ public class TestDatabaseOuterJoin extends TestCase
 
     public void testOuterJoinLeftS0()
     {
-        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
+        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
                 SupportBean.class.getName() + " as s0 left outer join " +
-                " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
+                " sql:MyDB ['select " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
         tryOuterJoinResult(stmtText);
     }
 
     public void testOuterJoinRightS1()
     {
-        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
-                " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
+        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+                " sql:MyDB ['select " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
                 SupportBean.class.getName() + " as s0 on intPrimitive = mybigint";
         tryOuterJoinResult(stmtText);
     }
 
     public void testOuterJoinFullS0()
     {
-        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
-                " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 full outer join " +
+        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+                " sql:MyDB ['select " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 full outer join " +
                 SupportBean.class.getName() + " as s0 on intPrimitive = mybigint";
         tryOuterJoinResult(stmtText);
     }
 
     public void testOuterJoinFullS1()
     {
-        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
+        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
                 SupportBean.class.getName() + " as s0 full outer join " +
-                " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
+                " sql:MyDB ['select " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
         tryOuterJoinResult(stmtText);
     }
 
     public void testOuterJoinRightS0()
     {
-        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
+        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
                 SupportBean.class.getName() + " as s0 right outer join " +
-                " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
+                " sql:MyDB ['select " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 on intPrimitive = mybigint";
         tryOuterJoinNoResult(stmtText);
     }
 
     public void testOuterJoinLeftS1()
     {
-        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
-                " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 left outer join " +
+        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+                " sql:MyDB ['select " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 left outer join " +
                 SupportBean.class.getName() + " as s0 on intPrimitive = mybigint";
         tryOuterJoinNoResult(stmtText);
     }
@@ -83,10 +83,10 @@ public class TestDatabaseOuterJoin extends TestCase
     public void testLeftOuterJoinOnFilter()
     {
         String[] fields = "MyInt,myint".split(",");
-        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
+        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
                 SupportBean.class.getName() + " as s0 " +
                 " left outer join " +
-                " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 " +
+                " sql:MyDB ['select " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 " +
                 "on string = myvarchar";
 
         EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
@@ -118,8 +118,8 @@ public class TestDatabaseOuterJoin extends TestCase
     public void testRightOuterJoinOnFilter()
     {
         String[] fields = "MyInt,myint".split(",");
-        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
-                " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
+        String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from " +
+                " sql:MyDB ['select " + TestDatabase2StreamOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
                 SupportBean.class.getName() + " as s0 on string = myvarchar";
 
         EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);

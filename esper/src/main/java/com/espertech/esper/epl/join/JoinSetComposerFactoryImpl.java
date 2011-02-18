@@ -414,15 +414,29 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             // No coercion
             if (!keyCoercionTypes.isCoerce())
             {
-                PollResultIndexingStrategyIndex indexing = new PollResultIndexingStrategyIndex(polledViewStreamNum, polledViewType, indexPropertiesJoin);
-                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
-                return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+                if (indexPropertiesJoin.length == 1) {
+                    PollResultIndexingStrategyIndexSingle indexing = new PollResultIndexingStrategyIndexSingle(polledViewStreamNum, polledViewType, indexPropertiesJoin[0]);
+                    HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndexSingle(streamViewType, keyPropertiesJoin[0]);
+                    return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+                }
+                else {
+                    PollResultIndexingStrategyIndex indexing = new PollResultIndexingStrategyIndex(polledViewStreamNum, polledViewType, indexPropertiesJoin);
+                    HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
+                    return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+                }
             }
 
             // With coercion, same lookup strategy as the index coerces
-            PollResultIndexingStrategy indexing = new PollResultIndexingStrategyIndexCoerce(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes.getCoercionTypes());
-            HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
-            return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+            if (indexPropertiesJoin.length == 1) {
+                PollResultIndexingStrategy indexing = new PollResultIndexingStrategyIndexCoerceSingle(polledViewStreamNum, polledViewType, indexPropertiesJoin[0], keyCoercionTypes.getCoercionTypes()[0]);
+                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndexSingle(streamViewType, keyPropertiesJoin[0]);
+                return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+            }
+            else {
+                PollResultIndexingStrategy indexing = new PollResultIndexingStrategyIndexCoerce(polledViewStreamNum, polledViewType, indexPropertiesJoin, keyCoercionTypes.getCoercionTypes());
+                HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
+                return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+            }
         }
         else {
             CoercionDesc rangeCoercionTypes = CoercionUtil.getCoercionTypes(new EventType[] {streamViewType, polledViewType}, 0, 1, rangeEntries);

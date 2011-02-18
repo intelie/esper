@@ -64,8 +64,14 @@ public class TwoStreamQueryPlanBuilder
 
             // straight no-range case means direct index lookup
             if (valueZeroOne.getRangeEntries().isEmpty()) {
-                lookupPlans[0] = new IndexedTableLookupPlan(0, 1, indexOneName, queryGraph.getKeyProperties(0, 1));
-                lookupPlans[1] = new IndexedTableLookupPlan(1, 0, indexZeroName, queryGraph.getKeyProperties(1, 0));
+                if (keyProps.length == 1) {
+                    lookupPlans[0] = new IndexedTableLookupPlanSingle(0, 1, indexOneName, queryGraph.getKeyProperties(0, 1)[0]);
+                    lookupPlans[1] = new IndexedTableLookupPlanSingle(1, 0, indexZeroName, queryGraph.getKeyProperties(1, 0)[0]);
+                }
+                else {
+                    lookupPlans[0] = new IndexedTableLookupPlan(0, 1, indexOneName, queryGraph.getKeyProperties(0, 1));
+                    lookupPlans[1] = new IndexedTableLookupPlan(1, 0, indexZeroName, queryGraph.getKeyProperties(1, 0));
+                }
             }
             // we have ranges
             else {

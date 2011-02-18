@@ -333,9 +333,8 @@ public class NamedWindowRootView extends ViewSupport
             rangePropCoercionTypes[i] = rangeJoinedProps[index].getCoercionType();
         }
 
-        boolean mustCoerce = true;  // TODO coercion
         IndexKeyInfo info = new IndexKeyInfo(hashPropKey, hashPropStreamNums,
-                new CoercionDesc(mustCoerce, hashPropCoercionTypes), Arrays.asList(rangesDesc), new CoercionDesc(mustCoerce, rangePropCoercionTypes));
+                new CoercionDesc(true, hashPropCoercionTypes), Arrays.asList(rangesDesc), new CoercionDesc(true, rangePropCoercionTypes));
         return new Pair<IndexKeyInfo, EventTable>(info, tableDesc.getSecond());
     }
 
@@ -363,11 +362,21 @@ public class NamedWindowRootView extends ViewSupport
 
         SubqTableLookupStrategy lookupStrategy;
         if (keyProperties.length > 0 && rangeProperties.isEmpty()) {
-            if (!keyCoercionTypes.isCoerce()) {
-                lookupStrategy = new SubqIndexedTableLookupStrategy(streamTypesZeroIndexed, keyStreamNums, keyProperties, (PropertyIndexedEventTable) accessDesc.getSecond());
+            if (keyProperties.length == 1) {
+                if (!keyCoercionTypes.isCoerce()) {
+                    lookupStrategy = new SubqIndexedTableLookupStrategySingle(streamTypesZeroIndexed, keyStreamNums[0], keyProperties[0], (PropertyIndexedEventTableSingle) accessDesc.getSecond());
+                }
+                else {
+                    lookupStrategy = new SubqIndexedTableLookupStrategySingleCoercing(streamTypesZeroIndexed, keyStreamNums[0], keyProperties[0], (PropertyIndexedEventTableSingle) accessDesc.getSecond(), keyCoercionTypes.getCoercionTypes()[0]);
+                }
             }
             else {
-                lookupStrategy = new SubqIndexedTableLookupStrategyCoercing(streamTypesZeroIndexed, keyStreamNums, keyProperties, (PropertyIndexedEventTable) accessDesc.getSecond(), keyCoercionTypes.getCoercionTypes());
+                if (!keyCoercionTypes.isCoerce()) {
+                    lookupStrategy = new SubqIndexedTableLookupStrategy(streamTypesZeroIndexed, keyStreamNums, keyProperties, (PropertyIndexedEventTable) accessDesc.getSecond());
+                }
+                else {
+                    lookupStrategy = new SubqIndexedTableLookupStrategyCoercing(streamTypesZeroIndexed, keyStreamNums, keyProperties, (PropertyIndexedEventTable) accessDesc.getSecond(), keyCoercionTypes.getCoercionTypes());
+                }
             }
         }
         else if (keyProperties.length == 0 && (rangeProperties.size() == 1)) {
@@ -496,11 +505,20 @@ public class NamedWindowRootView extends ViewSupport
         IndexMultiKey indexMultiKey = tablePair.getFirst();
         Set<EventBean> result;
         if (indexMultiKey.getKeyProps().length > 0 && indexMultiKey.getRangeProps().length == 0) {
-            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-                queryPlanLog.info("hash-only index lookup, using keys " + Arrays.toString(keyIndexProps));
+            if (indexMultiKey.getKeyProps().length == 1) {
+                if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                    queryPlanLog.info("hash-only single-key index lookup, using key " + keyIndexProps[0]);
+                }
+                PropertyIndexedEventTableSingle table = (PropertyIndexedEventTableSingle) tablePair.getSecond();
+                result = table.lookup(keyValues[0]);
             }
-            PropertyIndexedEventTable table = (PropertyIndexedEventTable) tablePair.getSecond();
-            result = table.lookup(keyValues);
+            else {
+                if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                    queryPlanLog.info("hash-only index lookup, using keys " + Arrays.toString(keyIndexProps));
+                }
+                PropertyIndexedEventTable table = (PropertyIndexedEventTable) tablePair.getSecond();
+                result = table.lookup(keyValues);
+            }
         }
         else if (indexMultiKey.getKeyProps().length == 0 && indexMultiKey.getRangeProps().length == 1) {
             if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {

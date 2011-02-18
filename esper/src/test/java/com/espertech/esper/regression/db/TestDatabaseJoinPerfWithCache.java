@@ -158,7 +158,7 @@ public class TestDatabaseJoinPerfWithCache extends TestCase
         assertTrue(endTime - startTime < 500);
     }
 
-    public void testOuterJoin()
+    public void test2StreamOuterJoin()
     {
         String stmtText = "select string, mycol3, mycol1 from " +
                 " sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 right outer join " +
