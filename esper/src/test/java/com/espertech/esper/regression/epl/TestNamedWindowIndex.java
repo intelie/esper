@@ -311,6 +311,9 @@ public class TestNamedWindowIndex extends TestCase
 
         tryInvalid("create index IndexTwo on MyWindowX(f1, f1)",
                    "Error starting statement: A named window by name 'MyWindowX' does not exist [create index IndexTwo on MyWindowX(f1, f1)]");
+
+        tryInvalid("create index IndexTwo on MyWindowX(f1 bubu, f2)",
+                   "Invalid column index type 'bubu' encountered, please use any of the following index type names [BTREE, HASH] [create index IndexTwo on MyWindowX(f1 bubu, f2)]");
     }
 
     private void tryInvalid(String epl, String message) {

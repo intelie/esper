@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class QueryGraphValue
 {
-    private List<String> propertiesLeft;
-    private List<String> propertiesRight;
+    private List<String> propertiesValue;
+    private List<String> propertiesKey;
     private List<QueryGraphValueRange> rangeEntries;
 
     /**
@@ -27,8 +27,8 @@ public class QueryGraphValue
      */
     public QueryGraphValue()
     {
-        propertiesLeft = new LinkedList<String>();
-        propertiesRight = new LinkedList<String>();
+        propertiesValue = new LinkedList<String>();
+        propertiesKey = new LinkedList<String>();
         rangeEntries = new ArrayList<QueryGraphValueRange>();
     }
 
@@ -42,18 +42,18 @@ public class QueryGraphValue
      * @param indexProperty - index property
      * @return true if added and either property did not exist, false if either already existed
      */
-    public boolean add(String keyProperty, String indexProperty)
+    public boolean add(String indexProperty, String keyProperty)
     {
-        if (propertiesLeft.contains(keyProperty))
+        if (propertiesValue.contains(keyProperty))
         {
             return false;
         }
-        if (propertiesRight.contains(indexProperty))
+        if (propertiesKey.contains(indexProperty))
         {
             return false;
         }
-        propertiesLeft.add(keyProperty);
-        propertiesRight.add(indexProperty);
+        propertiesValue.add(keyProperty);
+        propertiesKey.add(indexProperty);
         return true;
     }
 
@@ -61,25 +61,25 @@ public class QueryGraphValue
      * Returns property names for left stream.
      * @return property names
      */
-    public List<String> getPropertiesLeft()
+    public List<String> getPropertiesValue()
     {
-        return propertiesLeft;
+        return propertiesValue;
     }
 
     /**
      * Returns property names for right stream.
      * @return property names
      */
-    public List<String> getPropertiesRight()
+    public List<String> getPropertiesKey()
     {
-        return propertiesRight;
+        return propertiesKey;
     }
 
     public String toString()
     {
         return "QueryGraphValue " +
-                " propertiesLeft=" + Arrays.toString(propertiesLeft.toArray()) +
-                " propertiesRight=" + Arrays.toString(propertiesRight.toArray()) +
+                " propertiesValue=" + Arrays.toString(propertiesValue.toArray()) +
+                " propertiesKey=" + Arrays.toString(propertiesKey.toArray()) +
                 " rangeEntries=" + Arrays.toString(rangeEntries.toArray());
     }
 

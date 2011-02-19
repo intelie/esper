@@ -118,7 +118,8 @@ public class NStreamQueryPlanBuilder
                                      boolean hasHistorical,
                                      boolean[] isHistorical,
                                      DependencyGraph dependencyGraph,
-                                     HistoricalStreamIndexList[] historicalStreamIndexLists)
+                                     HistoricalStreamIndexList[] historicalStreamIndexLists,
+                                     boolean hasForceNestedIter)
     {
         if (log.isDebugEnabled())
         {
@@ -145,9 +146,12 @@ public class NStreamQueryPlanBuilder
         }
 
         QueryPlanNode[] planNodeSpecs = new QueryPlanNode[numStreams];
+        int worstDepth = Integer.MAX_VALUE;
         for (int streamNo = 0; streamNo < numStreams; streamNo++)
         {
-            if ((isHistorical[streamNo])) {
+            // no plan for historical streams that are dependent upon other streams
+            if ((isHistorical[streamNo]) && (dependencyGraph.hasDependency(streamNo)))
+            {
                 planNodeSpecs[streamNo] = new QueryPlanNodeNoOp();
                 continue;
             }
@@ -159,6 +163,10 @@ public class NStreamQueryPlanBuilder
                 log.debug(".build For stream " + streamNo + " bestChain=" + Arrays.toString(bestChain));
             }
 
+            if (bestChainResult.depth < worstDepth) {
+                worstDepth = bestChainResult.depth;
+            }
+
             planNodeSpecs[streamNo] = createStreamPlan(streamNo, bestChain, queryGraph, indexSpecs, typesPerStream, isHistorical, historicalStreamIndexLists);
             if (log.isDebugEnabled())
             {
@@ -166,6 +174,10 @@ public class NStreamQueryPlanBuilder
             }
         }
 
+        // We use the merge/nested (outer) join algorithm instead.
+        if ((worstDepth < numStreams - 1) && (!hasForceNestedIter)) {
+            return null;
+        }
         return new QueryPlan(indexSpecs, planNodeSpecs);
     }
 
@@ -286,7 +298,7 @@ public class NStreamQueryPlanBuilder
 
         // sorted index lookup
         if ((indexedStreamIndexProps == null || indexedStreamIndexProps.length == 0) && (rangeStreamIndexProps != null && rangeStreamIndexProps.length == 1)) {
-            QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream, false);
+            QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream);
             QueryGraphValueRange range = value.getRangeEntries().get(0);
             return new SortedTableLookupPlan(currentLookupStream, indexedStream, indexNum, range);
         }
@@ -294,7 +306,7 @@ public class NStreamQueryPlanBuilder
         else
         {
             String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
-            QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream, false);
+            QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream);
             return new CompositeTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields, value.getRangeEntries());
         }
     }
@@ -427,7 +439,8 @@ public class NStreamQueryPlanBuilder
         for (int i = 0; i < nextStreams.length; i++)
         {
             int nextStream = nextStreams[i];
-            if (!queryGraph.isNavigablePropertyEquals(currentStream, nextStream))
+            boolean navigable = queryGraph.isNavigableAtAll(currentStream, nextStream);
+            if (!navigable)
             {
                 break;
             }

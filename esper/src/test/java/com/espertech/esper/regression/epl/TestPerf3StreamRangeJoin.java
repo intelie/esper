@@ -33,6 +33,9 @@ public class TestPerf3StreamRangeJoin extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
     }
 
+    /**
+     * This join algorithm profits from merge join cartesian indicated via @hint.
+     */
     public void testPerf3StreamKeyAndRange() {
         epService.getEPAdministrator().createEPL("create window ST0.win:keepall() as SupportBean_ST0");
         epService.getEPAdministrator().createEPL("@Name('I1') insert into ST0 select * from SupportBean_ST0");
@@ -48,41 +51,22 @@ public class TestPerf3StreamRangeJoin extends TestCase
         }
         log.info("Done preloading");
 
-        String epl = "select * from SupportBeanRange.std:lastevent() a " +
+        String epl = "@Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange.std:lastevent() a " +
                 "inner join ST0 st0 on st0.key0 = a.key " +
                 "inner join ST1 st1 on st1.key1 = a.key " +
                 "where " +
                 "st0.p00 between rangeStart and rangeEnd and st1.p10 between rangeStart and rangeEnd";
         runAssertion(epl);
 
-        epl = "select * from SupportBeanRange.std:lastevent() a, ST0 st0, ST1 st1 " +
+        epl = "@Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange.std:lastevent() a, ST0 st0, ST1 st1 " +
                 "where st0.key0 = a.key and st1.key1 = a.key and " +
                 "st0.p00 between rangeStart and rangeEnd and st1.p10 between rangeStart and rangeEnd";
         runAssertion(epl);
     }
 
-    private void runAssertion(String epl) {
-        stmt = epService.getEPAdministrator().createEPL(epl);
-        stmt.addListener(listener);
-
-        // Repeat
-        log.info("Querying");
-        long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 1000; i++)
-        {
-            System.out.println("Query #" + i);
-            epService.getEPRuntime().sendEvent(new SupportBeanRange("R", "G", 100, 101));
-            assertEquals(4, listener.getAndResetLastNewData().length);
-        }
-        log.info("Done Querying");
-        long endTime = System.currentTimeMillis();
-        log.info("delta=" + (endTime - startTime));
-
-        assertTrue((endTime - startTime) < 500);
-        stmt.destroy();
-    }
-
-    // TODO - Query could still be faster
+    /**
+     * This join algorithm uses merge join cartesian (not nested iteration).
+     */
     public void testPerf3StreamRangeOnly() {
         epService.getEPAdministrator().createEPL("create window ST0.win:keepall() as SupportBean_ST0");
         epService.getEPAdministrator().createEPL("@Name('I1') insert into ST0 select * from SupportBean_ST0");
@@ -122,6 +106,9 @@ public class TestPerf3StreamRangeJoin extends TestCase
         stmt.destroy();
     }
 
+    /**
+     * This join algorithm profits from nested iteration execution.
+     */
     public void testPerf3StreamUnidirectionalKeyAndRange() {
         epService.getEPAdministrator().createEPL("create window SBR.win:keepall() as SupportBeanRange");
         epService.getEPAdministrator().createEPL("@Name('I1') insert into SBR select * from SupportBeanRange");
@@ -152,12 +139,31 @@ public class TestPerf3StreamRangeJoin extends TestCase
             assertEquals(5, listener.getAndResetLastNewData().length);
         }
         log.info("Done Querying");
+        long delta = System.currentTimeMillis() - startTime;
+        log.info("delta=" + delta);
+
+        // This works best with a nested iteration join (and not a cardinal join)
+        assertTrue("delta=" + delta, delta < 500);
+        stmt.destroy();
+    }
+
+    private void runAssertion(String epl) {
+        stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        // Repeat
+        log.info("Querying");
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++)
+        {
+            epService.getEPRuntime().sendEvent(new SupportBeanRange("R", "G", 100, 101));
+            assertEquals(4, listener.getAndResetLastNewData().length);
+        }
+        log.info("Done Querying");
         long endTime = System.currentTimeMillis();
         log.info("delta=" + (endTime - startTime));
 
-        // This works best with a nested iteration join (and not a cardinal join)
         assertTrue((endTime - startTime) < 500);
         stmt.destroy();
     }
-    
 }

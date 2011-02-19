@@ -8,18 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
-import com.espertech.esper.core.StreamJoinAnalysisResult;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.spec.OuterJoinDesc;
-import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.annotation.HintEnum;
+import com.espertech.esper.core.StreamJoinAnalysisResult;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
+import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.type.OuterJoinType;
+import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 /**
@@ -27,6 +29,8 @@ import java.util.List;
  */
 public class QueryPlanBuilder
 {
+    private static final Log queryPlanLog = LogFactory.getLog(AuditPath.QUERYPLAN_LOG);
+
     /**
      * Build query plan using the filter.
      * @param typesPerStream - event types for each stream
@@ -51,7 +55,9 @@ public class QueryPlanBuilder
                                     DependencyGraph dependencyGraph,
                                     HistoricalStreamIndexList[] historicalStreamIndexLists,
                                     ExprEvaluatorContext exprEvaluatorContext,
-                                    StreamJoinAnalysisResult streamJoinAnalysisResult)
+                                    StreamJoinAnalysisResult streamJoinAnalysisResult,
+                                    boolean isQueryPlanLogging,
+                                    Annotation[] annotations)
             throws ExprValidationException
     {
         String methodName = ".getPlan ";
@@ -84,26 +90,44 @@ public class QueryPlanBuilder
             return queryPlan;
         }
 
-        // TODO - comment back in - for now all N-stream queries get executed by the outer query plan builder
-        boolean USE_NESTED_ITER = true;
-        if (outerJoinDescList.isEmpty() && USE_NESTED_ITER)
+        boolean hasPreferMergeJoin = HintEnum.PREFER_MERGE_JOIN.getHint(annotations) != null;
+        boolean hasForceNestedIter = HintEnum.FORCE_NESTED_ITER.getHint(annotations) != null;
+        boolean isAllInnerJoins = outerJoinDescList.isEmpty() || consistsOfAllInnerJoins(outerJoinDescList);
+        
+        if (isAllInnerJoins && !hasPreferMergeJoin)
         {
             QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream,
-                                    hasHistorical, isHistorical, dependencyGraph, historicalStreamIndexLists);
-            removeUnidirectional(queryPlan, streamJoinAnalysisResult);
+                                    hasHistorical, isHistorical, dependencyGraph, historicalStreamIndexLists,
+                                    hasForceNestedIter);
 
-            if (log.isDebugEnabled())
-            {
-                log.debug(methodName + "N-Stream no-outer-join queryPlan=" + queryPlan);
+            if (queryPlan != null) {
+                removeUnidirectional(queryPlan, streamJoinAnalysisResult);
+
+                if (log.isDebugEnabled())
+                {
+                    log.debug(methodName + "N-Stream inner-join queryPlan=" + queryPlan);
+                }
+                return queryPlan;
             }
 
-            return queryPlan;
+            if (isQueryPlanLogging && queryPlanLog.isInfoEnabled()) {
+                log.info("Switching to Outer-NStream algorithm for query plan");
+            }
         }
 
         QueryPlan queryPlan = NStreamOuterQueryPlanBuilder.build(queryGraph, outerJoinDescList, streamNames, typesPerStream,
                                     hasHistorical, isHistorical, dependencyGraph, historicalStreamIndexLists, exprEvaluatorContext);
         removeUnidirectional(queryPlan, streamJoinAnalysisResult);
         return queryPlan;
+    }
+
+    private static boolean consistsOfAllInnerJoins(List<OuterJoinDesc> outerJoinDescList) {
+        for (OuterJoinDesc desc : outerJoinDescList) {
+            if (desc.getOuterJoinType() != OuterJoinType.INNER) {
+                return false;
+            }
+        }
+        return true;
     }
 
     // Remove plans for non-unidirectional streams

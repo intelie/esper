@@ -17,6 +17,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.Viewable;
 import com.espertech.esper.core.StreamJoinAnalysisResult;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 /**
@@ -47,6 +48,7 @@ public interface JoinSetComposerFactory
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                    StreamJoinAnalysisResult joinAnalysisResult,
                                                    ExprEvaluatorContext exprEvaluatorContext,
-                                                   boolean queryPlanLogging)
+                                                   boolean queryPlanLogging,
+                                                   Annotation[] annotations)
             throws ExprValidationException;
 }

@@ -27,6 +27,7 @@ import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -57,7 +58,8 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                    StreamJoinAnalysisResult streamJoinAnalysisResult,
                                                    ExprEvaluatorContext exprEvaluatorContext,
-                                                   boolean queryPlanLogging)
+                                                   boolean queryPlanLogging,
+                                                   Annotation[] annotations)
             throws ExprValidationException
     {
         // Determine if there is a historical stream, and what dependencies exist
@@ -124,7 +126,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
 
         QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, queryGraph, streamNames,
                 hasHistorical, isHistorical, historicalDependencyGraph, historicalStreamIndexLists, exprEvaluatorContext,
-                streamJoinAnalysisResult);
+                streamJoinAnalysisResult, queryPlanLogging, annotations);
 
         // remove unused indexes - consider all streams or all unidirectional
         HashSet<String> usedIndexes = new HashSet<String>();
@@ -399,7 +401,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         // index and key property names
         String[] keyPropertiesJoin = queryGraph.getKeyProperties(streamViewStreamNum, polledViewStreamNum);
         String[] indexPropertiesJoin = queryGraph.getIndexProperties(streamViewStreamNum, polledViewStreamNum);
-        List<QueryGraphValueRange> rangeEntries = queryGraph.getGraphValue(streamViewStreamNum, polledViewStreamNum, false).getRangeEntries();
+        List<QueryGraphValueRange> rangeEntries = queryGraph.getGraphValue(streamViewStreamNum, polledViewStreamNum).getRangeEntries();
 
         // If the analysis revealed no join columns, must use the brute-force full table scan
         if (((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0)) && rangeEntries.isEmpty())

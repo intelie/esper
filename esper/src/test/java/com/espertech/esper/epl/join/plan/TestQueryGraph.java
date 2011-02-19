@@ -23,13 +23,13 @@ public class TestQueryGraph extends TestCase
         queryGraph.add(0, "p00", 1, "p10");
         queryGraph.add(1, "p10", 2, "p20");
 
-        assertFalse(queryGraph.isNavigablePropertyEquals(0, 2));
+        assertFalse(queryGraph.isNavigableAtAll(0, 2));
         assertNull(queryGraph.getKeyProperties(0, 2));
         assertNull(queryGraph.getIndexProperties(0, 2));
 
         QueryGraph.fillEquivalentNav(queryGraph);
 
-        assertTrue(queryGraph.isNavigablePropertyEquals(0, 2));
+        assertTrue(queryGraph.isNavigableAtAll(0, 2));
         String[] expectedOne = new String[] {"p00"};
         String[] expectedTwo = new String[] {"p20"};
         assertTrue(Arrays.equals(expectedOne, queryGraph.getKeyProperties(0, 2)));
@@ -52,7 +52,7 @@ public class TestQueryGraph extends TestCase
                 {
                     continue;
                 }
-                assertTrue("Not navigable: i=" + i + " j=" + j, queryGraph.isNavigablePropertyEquals(i, j));
+                assertTrue("Not navigable: i=" + i + " j=" + j, queryGraph.isNavigableAtAll(i, j));
             }
         }
     }
@@ -90,24 +90,24 @@ public class TestQueryGraph extends TestCase
 
     public void testIsNavigable()
     {
-        assertFalse(queryGraph.isNavigablePropertyEquals(0, 1));
-        assertFalse(queryGraph.isNavigablePropertyEquals(0, 2));
-        assertFalse(queryGraph.isNavigablePropertyEquals(1, 2));
+        assertFalse(queryGraph.isNavigableAtAll(0, 1));
+        assertFalse(queryGraph.isNavigableAtAll(0, 2));
+        assertFalse(queryGraph.isNavigableAtAll(1, 2));
 
         queryGraph.add(0, "p1", 1, "p2");
-        assertTrue(queryGraph.isNavigablePropertyEquals(0, 1));
-        assertFalse(queryGraph.isNavigablePropertyEquals(0, 2));
-        assertFalse(queryGraph.isNavigablePropertyEquals(1, 2));
+        assertTrue(queryGraph.isNavigableAtAll(0, 1));
+        assertFalse(queryGraph.isNavigableAtAll(0, 2));
+        assertFalse(queryGraph.isNavigableAtAll(1, 2));
 
         queryGraph.add(2, "p1", 1, "p2");
-        assertTrue(queryGraph.isNavigablePropertyEquals(0, 1));
-        assertFalse(queryGraph.isNavigablePropertyEquals(0, 2));
-        assertTrue(queryGraph.isNavigablePropertyEquals(1, 2));
+        assertTrue(queryGraph.isNavigableAtAll(0, 1));
+        assertFalse(queryGraph.isNavigableAtAll(0, 2));
+        assertTrue(queryGraph.isNavigableAtAll(1, 2));
 
         queryGraph.add(2, "p1", 0, "p2");
-        assertTrue(queryGraph.isNavigablePropertyEquals(0, 1));
-        assertTrue(queryGraph.isNavigablePropertyEquals(0, 2));
-        assertTrue(queryGraph.isNavigablePropertyEquals(1, 2));
+        assertTrue(queryGraph.isNavigableAtAll(0, 1));
+        assertTrue(queryGraph.isNavigableAtAll(0, 2));
+        assertTrue(queryGraph.isNavigableAtAll(1, 2));
     }
 
     public void testGetNavigableStreams()

@@ -657,7 +657,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                         type = CreateIndexType.valueOf(typeName.toUpperCase());
                     }
                     catch (RuntimeException ex) {
-                        throw new ASTWalkException("Invalid column index type '" + type + "' encountered, please use any of the following index type names " + Arrays.asList(CreateIndexType.values()));
+                        throw new ASTWalkException("Invalid column index type '" + typeName + "' encountered, please use any of the following index type names " + Arrays.asList(CreateIndexType.values()));
                     }
                 }
                 columns.add(new CreateIndexItem(columnName, type));

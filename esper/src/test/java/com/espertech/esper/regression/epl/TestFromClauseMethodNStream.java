@@ -19,6 +19,7 @@ public class TestFromClauseMethodNStream extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getLogging().setEnableQueryPlan(true);
         config.addEventType(SupportBeanInt.class);
         config.addImport(SupportJoinMethods.class.getName());
         config.addVariable("var1", Integer.class, 0);

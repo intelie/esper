@@ -40,7 +40,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
 
     public void testBuild()
     {
-        QueryPlan plan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream, false, isHistorical, dependencyGraph, null);
+        QueryPlan plan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream, false, isHistorical, dependencyGraph, null, false);
 
         log.debug(".testBuild plan=" + plan);
     }

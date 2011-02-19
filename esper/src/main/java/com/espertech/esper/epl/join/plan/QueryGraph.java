@@ -62,7 +62,13 @@ public class QueryGraph
             throw new IllegalArgumentException("Streams supplied are the same");
         }
 
-        QueryGraphKey key = new QueryGraphKey(streamLeft, streamRight);
+        boolean addedLeft = addInteral(streamLeft, propertyLeft, streamRight, propertyRight);
+        boolean addedRight = addInteral(streamRight, propertyRight, streamLeft, propertyLeft);
+        return addedLeft || addedRight;
+    }
+
+    private boolean addInteral(int streamLookup, String propertyLookup, int streamIndexed, String propertyIndexed) {
+        QueryGraphKey key = new QueryGraphKey(streamLookup, streamIndexed);
         QueryGraphValue value = streamJoinMap.get(key);
 
         if (value == null)
@@ -71,36 +77,17 @@ public class QueryGraph
             streamJoinMap.put(key, value);
         }
 
-        if (streamLeft > streamRight)
-        {
-            return value.add(propertyRight, propertyLeft);
-        }
-        else
-        {
-            return value.add(propertyLeft, propertyRight);
-        }
+        return value.add(propertyLookup, propertyIndexed);
     }
 
-    /**
-     * Returns true if there is a relationship between streams via equal properties.
-     * @param streamFrom - from stream number
-     * @param streamTo - to stream number
-     * @return true if relationship exists, false if not
-     */
-    public boolean isNavigablePropertyEquals(int streamFrom, int streamTo)
+    public boolean isNavigableAtAll(int streamFrom, int streamTo)
     {
         QueryGraphKey key = new QueryGraphKey(streamFrom, streamTo);
         QueryGraphValue value = streamJoinMap.get(key);
         if (value == null) {
             return false;
         }
-        return (!value.getPropertiesLeft().isEmpty());
-    }
-
-    public boolean isNavigableAtAll(int streamFrom, int streamTo)
-    {
-        QueryGraphKey key = new QueryGraphKey(streamFrom, streamTo);
-        return streamJoinMap.containsKey(key);
+        return !value.getRangeEntries().isEmpty() || !value.getPropertiesValue().isEmpty();
     }
 
     /**
@@ -121,8 +108,8 @@ public class QueryGraph
         return result;
     }
 
-    public QueryGraphValue getGraphValue(int streamLookup, int streamIndexed, boolean canReorder) {
-        QueryGraphKey key = new QueryGraphKey(streamLookup, streamIndexed, canReorder);
+    public QueryGraphValue getGraphValue(int streamLookup, int streamIndexed) {
+        QueryGraphKey key = new QueryGraphKey(streamLookup, streamIndexed);
         QueryGraphValue value = streamJoinMap.get(key);
         if (value != null) {
             return value;
@@ -146,16 +133,12 @@ public class QueryGraph
             return null;
         }
 
-        if (streamLookup > streamIndexed)
-        {
-            return value.getPropertiesLeft().toArray(new String[value.getPropertiesLeft().size()]);
-        }
-        return value.getPropertiesRight().toArray(new String[value.getPropertiesRight().size()]);
+        return value.getPropertiesValue().toArray(new String[value.getPropertiesValue().size()]);
     }
 
     public String[] getRangeProperties(int streamLookup, int streamIndexed)
     {
-        QueryGraphKey key = new QueryGraphKey(streamLookup, streamIndexed, false);
+        QueryGraphKey key = new QueryGraphKey(streamLookup, streamIndexed);
         QueryGraphValue value = streamJoinMap.get(key);
 
         if (value == null)
@@ -182,11 +165,7 @@ public class QueryGraph
             return null;
         }
 
-        if (streamLookup > streamIndexed)
-        {
-            return value.getPropertiesRight().toArray(new String[value.getPropertiesRight().size()]);
-        }
-        return value.getPropertiesLeft().toArray(new String[value.getPropertiesLeft().size()]);
+        return value.getPropertiesKey().toArray(new String[value.getPropertiesKey().size()]);
     }
 
     /**
@@ -368,7 +347,7 @@ public class QueryGraph
     }
 
     private QueryGraphValue getCreateValue(int streamKey, int streamValue) {
-        QueryGraphKey key = new QueryGraphKey(streamKey, streamValue, false);
+        QueryGraphKey key = new QueryGraphKey(streamKey, streamValue);
         QueryGraphValue value = streamJoinMap.get(key);
 
         if (value == null)

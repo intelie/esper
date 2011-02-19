@@ -45,8 +45,8 @@ public class TwoStreamQueryPlanBuilder
             String[] indexProps = queryGraph.getIndexProperties(0, 1);
             CoercionDesc keyCoercionTypes = CoercionUtil.getCoercionTypes(typesPerStream, 0, 1, keyProps, indexProps);
 
-            QueryGraphValue valueZeroOne = queryGraph.getGraphValue(0, 1, false);
-            QueryGraphValue valueOneZero = queryGraph.getGraphValue(1, 0, false);
+            QueryGraphValue valueZeroOne = queryGraph.getGraphValue(0, 1);
+            QueryGraphValue valueOneZero = queryGraph.getGraphValue(1, 0);
             String[] oneRangeIndexedProps = QueryGraphValueRange.getPropertyNamesValues(valueZeroOne.getRangeEntries());
             String[] zeroRangeIndexedProps = QueryGraphValueRange.getPropertyNamesValues(valueOneZero.getRangeEntries());
             CoercionDesc oneRangeCoercionTypes = CoercionUtil.getCoercionTypes(typesPerStream, 0, 1, valueZeroOne.getRangeEntries());

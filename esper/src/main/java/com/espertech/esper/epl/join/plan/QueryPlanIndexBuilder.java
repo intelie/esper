@@ -56,7 +56,7 @@ public class QueryPlanIndexBuilder
                 String[] keyProps = queryGraph.getKeyProperties(streamLookup, streamIndexed);
                 String[] rangeProps = queryGraph.getRangeProperties(streamLookup, streamIndexed);
                 CoercionDesc indexCoercionTypes = CoercionUtil.getCoercionTypes(typePerStream, streamLookup, streamIndexed, keyProps, indexProps);
-                CoercionDesc rangeCoercionTypes = CoercionUtil.getCoercionTypes(typePerStream, streamLookup, streamIndexed, queryGraph.getGraphValue(streamLookup, streamIndexed, false).getRangeEntries());
+                CoercionDesc rangeCoercionTypes = CoercionUtil.getCoercionTypes(typePerStream, streamLookup, streamIndexed, queryGraph.getGraphValue(streamLookup, streamIndexed).getRangeEntries());
 
                 if (indexProps == null && rangeProps == null) {
                     continue;
@@ -134,7 +134,7 @@ public class QueryPlanIndexBuilder
             }
 
             // handle range lookups
-            List<QueryGraphValueRange> rangeDescs = queryGraph.getGraphValue(lookupStream, 0, false).getRangeEntries();
+            List<QueryGraphValueRange> rangeDescs = queryGraph.getGraphValue(lookupStream, 0).getRangeEntries();
             if (rangeDescs.isEmpty()) {
                 continue;
             }

@@ -54,7 +54,10 @@ public enum HintEnum
      * For use with subqueries and on-select, on-merge, on-update and on-delete to specify the query engine neither
      * build an implicit index nor use an existing index, always performing a full table scan.
      */
-    SET_NOINDEX("SET_NOINDEX", false, false);
+    SET_NOINDEX("SET_NOINDEX", false, false),
+
+    FORCE_NESTED_ITER("FORCE_NESTED_ITER", false, false),
+    PREFER_MERGE_JOIN("PREFER_MERGE_JOIN", false, false);
 
     private final String value;
     private final boolean acceptsParameters;

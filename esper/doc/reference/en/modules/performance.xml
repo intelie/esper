@@ -605,6 +605,10 @@ select a.symbol, avgA, avgB from StreamAvgA.std:lastevent() a, StreamAvgB.std:la
 			</para>
 
 			<para>
+				The hints for use with joins, outer joins, unidirectional joins, relational and non-relational join query planning are described in <xref linkend="epl-join-hints"/>.
+			</para>
+
+			<para>
 				The hint for use with <literal>group by</literal> to specify how state for groups is reclaimed is described in <xref linkend="epl-groupby-hints"/> and <xref linkend="view-std-groupwin"/>.
 			</para>
 
@@ -643,6 +647,31 @@ select a.symbol, avgA, avgB from StreamAvgA.std:lastevent() a, StreamAvgB.std:la
 				For example, the below statement could be faster to evaluate:
 			</para>
 			<programlisting><![CDATA[select * from MyEvent(field1="value" and MyHelperLibrary.filter(field1, field2, field3, field4*field5))]]></programlisting>
+		</sect2>
+
+		<sect2 id="perf-tips-17">
+			<title>Expression Evaluation Order and Early Exit</title>
+
+			<para>
+				The term "early exit" refers to when the engine can evaluate an expression without a complete evaluation of all sub-expressions.
+			</para>
+
+			<para>
+				Consider an expression such as follows:
+			</para>
+			<programlisting><![CDATA[where expr1 and expr2 and expr3]]></programlisting>
+
+			<para>
+				If expr1 is false the engine does not need to evaluate expr2 and expr3. Therefore when using the <literal>AND</literal> logical operator consider reordering expressions placing the most-selective expression first and less selective expressions thereafter.
+			</para>
+
+			<para>
+				The same is true for the <literal>OR</literal> logical operator: If expr1 is true the engine does not need to evaluate expr2 and expr3. Therefore when using the <literal>OR</literal> logical operator consider reordering expressions placing the least-selective expression first and more selective expressions thereafter. 
+			</para>
+
+			<para>
+				The order of expressions (here: expr1, expr2 and expr3) does not make a difference for the join and subquery query planner.
+			</para>
 		</sect2>
 
     </sect1>

@@ -2508,195 +2508,8 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 				Your <literal>insert into</literal> clause may also directly instantiate and populate application underlying event objects or <literal>Map</literal> event objects. This is described in greater detail in <xref linkend="eventrep-insertinto"/>.
 			</para>
 		</sect2>
-
 	</sect1>
-
-    <sect1 id="epl-join">
-        <title>Joining Event Streams</title>
-
-		<indexterm><primary>join</primary></indexterm>
-		<indexterm><primary>EPL</primary><secondary>join</secondary></indexterm>
-
-		<para>
-			Two or more event streams can be part of the <literal>from</literal> clause and thus both (all) streams determine the resulting events. The <literal>where</literal> clause lists the join conditions that Esper uses to relate events in the two or more streams. Reference and historical data such as stored in your relational database, and data returned by a method invocation, can also be included in joins. Please see <xref linkend="histdata_overview"/> and <xref linkend="joining_method"/> for details.
-		</para>
-
-		<para>
-			Each point in time that an event arrives to one of the event streams, the two event streams are joined and output events are produced according to the <literal>where</literal> clause.
-		</para>
-
-		<para>
-			This example joins 2 event streams. The first event stream consists of fraud warning events for which we keep the last 30 minutes. The second stream is withdrawal events for which we consider the last 30 seconds. The streams are joined on account number.
-		</para>
-<programlisting><![CDATA[select fraud.accountNumber as accntNum, fraud.warning as warn, withdraw.amount as amount,
-       max(fraud.timestamp, withdraw.timestamp) as timestamp, 'withdrawlFraud' as desc
-  from com.espertech.esper.example.atm.FraudWarningEvent.win:time(30 min) as fraud,
-       com.espertech.esper.example.atm.WithdrawalEvent.win:time(30 sec) as withdraw
- where fraud.accountNumber = withdraw.accountNumber]]></programlisting>
-
-		<para>
-			Joins can also include one or more pattern statements as the next example shows:
-		</para>
-<programlisting><![CDATA[select * from FraudWarningEvent.win:time(30 min) as fraud,
-    pattern [every w=WithdrawalEvent -> PINChangeEvent(acct=w.acct)].std:lastevent() as withdraw
- where fraud.accountNumber = withdraw.w.accountNumber]]></programlisting>
-
-		<para>
-			The statement above joins the last 30 minutes of fraud warnings with a pattern. The pattern consists of every withdrawal event that is followed by a PIN change event for the same account number. It joins the two event streams on account number. The last-event view instucts the join to only consider the last pattern match.
-		</para>
-
-		<para>
-			In a join and outer join, your statement must declare a data window view or other view onto each stream. Streams that are marked as unidirectional and named windows as well as database or methods in a join are an exception and do not require a view to be specified. If you are joining an event to itself via contained-event selection, views also do not need to be specified.
-		</para>
-
-		<para>
-			The next example joins all FraudWarningEvent events that arrived since the statement was started, with the last 20 seconds of PINChangeEvent events:
-		</para>
-<programlisting><![CDATA[select * from FraudWarningEvent.win:keepall() as fraud, PINChangeEvent.win:time(20 sec) as pin
- where fraud.accountNumber = pin.accountNumber]]></programlisting>
-
-		<para>
-			The above example employed the special keep-all view that retains all events.
-		</para>
-
-    </sect1>
-
-    <sect1 id="epl-outerjoin">
-        <title>Outer and Inner Joins</title>
-
-		<indexterm><primary>outer join</primary></indexterm>
-		<indexterm><primary>inner join</primary></indexterm>
-		<indexterm><primary>EPL</primary><secondary>outer join</secondary></indexterm>
-		<indexterm><primary>EPL</primary><secondary>inner join</secondary></indexterm>
-
-		<para>
-			Esper supports left outer joins, right outer joins, full outer joins and inner joins in any combination between an unlimited number of event streams. Outer and inner joins can also join reference and historical data as explained in <xref linkend="histdata_overview"/>, as well as join data returned by a method invocation as outlined in <xref linkend="joining_method"/>.
-		</para>
-
-		<para>
-			The keywords <literal>left, right, full</literal> and <literal>inner</literal> control the type of the join between two streams. The <literal>on</literal> clause specifies one or more properties that join each stream. The synopsis is as follows:
-		</para>
-
-<synopsis>...from <emphasis>stream_def</emphasis> [as name] 
-  ((left|right|full outer) | inner) join <emphasis>stream_def</emphasis> 
-  on <emphasis>property</emphasis> = <emphasis>property</emphasis> [and <emphasis>property</emphasis> = <emphasis>property</emphasis> ...]
-  [ ((left|right|full outer) | inner) join <emphasis>stream_def</emphasis> on ...]...
-</synopsis>
-
-		<para>
-			If the outer join is a left outer join, there will be an output event for each event of the stream on the left-hand side of the clause. For example, in the left outer join shown below we will get output for each event in the stream RfidEvent, even if the event does not match any event in the event stream OrderList.
-		</para>
-
-<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
-       left outer join
-       OrderList.win:length(10000) as orderlist
-     on rfid.itemId = orderList.itemId]]></programlisting>
-		
-		<para>
-			Similarly, if the join is a Right Outer Join, then there will be an output event for each event of the stream on the right-hand side of the clause. For example, in the right outer join shown below we will get output for each event in the stream OrderList, even if the event does not match any event in the event stream RfidEvent.
-		</para>
-
-<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
-       right outer join
-       OrderList.win:length(10000) as orderlist
-       on rfid.itemId = orderList.itemId]]></programlisting>
-
-		<para>
-			For all types of outer joins, if the join condition is not met, the select list is computed with the event properties of the arrived event while all other event properties are considered to be null.
-		</para>
-		
-		<para>
-			The next type of outer join is a full outer join. In a full outer join, each point in time that an event arrives to one of the event streams, one or more output events are produced. In the example below, when either an RfidEvent or an OrderList event arrive, one or more output event is produced. The next example shows a full outer join that joins on multiple properties:
-		</para>
-
-<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
-       full outer join
-       OrderList.win:length(10000) as orderlist
-       on rfid.itemId = orderList.itemId and rfid.assetId = orderList.assetId]]></programlisting>
-
-		<para>
-			The last type of join is an inner join. In an inner join, the engine produces an output event for each event of the stream on the left-hand side that matches at least one event on the right hand side considering the join properties. For example, in the inner join shown below we will get output for each event in the RfidEvent stream that matches one or more events in the OrderList data window:
-		</para>
-
-<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
-       inner join
-       OrderList.win:length(10000) as orderlist
-       on rfid.itemId = orderList.itemId and rfid.assetId = orderList.assetId]]></programlisting>
-
-		<para>
-			Patterns as streams in a join follow this rule: If no data window view is declared for the pattern then the pattern stream retains the last match. Thus a pattern must have matched at least once for the last row to become available in a join. Multiple rows from a pattern stream may be retained by declaring a data window view onto a pattern using the <literal>pattern [...].</literal><emphasis>view_specification</emphasis> syntax.
-		</para>
-
-		<para>
-			Finally, this example outer joins multiple streams. Here the RfidEvent stream is outer joined to both ProductName and LocationDescription via left outer join:
-		</para>
-
-<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
-      left outer join ProductName.win:keepall() as refprod
-        on rfid.productId = refprod.prodId
-      left outer join LocationDescription.win:keepall() as refdesc
-        on rfid.location = refdesc.locId]]></programlisting>
-        
-        <para>The <literal>on</literal> clause may only employ the <literal>=</literal> equals operator and property names. Any other operators must be placed in the <literal>where</literal>-clause.</para>
-    </sect1>
-
-    <sect1 id="epl-unidirectional">
-        <title>Unidirectional Joins</title>
-
-		<indexterm><primary>unidirectional joins</primary></indexterm>
-		<indexterm><primary>EPL</primary><secondary>join, unidirectional</secondary></indexterm>
-		<indexterm><primary>EPL</primary><secondary>outer join, unidirectional</secondary></indexterm>
-
-		<para>
-			In a join or outer join your statement lists multiple event streams, views and/or patterns in the <literal>from</literal> clause. As events arrive into the engine, each of the streams (views, patterns) provides insert and remove stream events. The engine evaluates each insert and remove stream event provided by each stream, and joins or outer joins each event against data window contents of each stream, and thus generates insert and remove stream join results.
-		</para>
-			
-		<para>
-		    The direction of the join execution depends on which stream or streams are currently providing an insert or remove stream event for executing the join. A join is thus multidirectional, or bidirectional when only two streams are joined.
-			A join can be made unidirectional if your application does not want new results when events arrive on a given stream or streams.
-		</para>
-
-		<para>
-			The <literal>unidirectional</literal> keyword can be used in the <literal>from</literal> clause to identify a single stream that provides the events to execute the join. If the keyword is present for a stream, all other streams in the <literal>from</literal> clause become passive streams. When events arrive or leave a data window of a passive stream then the join does not generate join results. 
-		</para>
-
-		<para>
-			For example, consider a use case that requires us to join stock tick events (TickEvent) and news events (NewsEvent). The <literal>unidirectional</literal> keyword allows to generate results only when TickEvent events arrive, and not when NewsEvent arrive or leave the 10-second time window:
-		</para>
-		<programlisting><![CDATA[select * from TickEvent unidirectional, NewsEvent.win:time(10 sec) 
-where tick.symbol = news.symbol]]></programlisting>
-
-		<para>
-			Aggregation functions in a <literal>unidirectional</literal> join aggregate within the context of each unidirectional event evaluation and are not cumulative.
-		</para>
-		<para>
-			The count function in the next query returns, for each TickEvent, the number of matching NewEvent events:
-		</para>
-		<programlisting><![CDATA[select count(*) from TickEvent unidirectional, NewsEvent.win:time(10 sec) 
-where tick.symbol = news.symbol]]></programlisting>
-
-		<para>
-			The following restrictions apply to unidirectional joins:
-		</para>
-
-		<orderedlist spacing="compact">
-			<listitem>
-				<para>
-					The <literal>unidirectional</literal> keyword can only be specified for a single stream in the <literal>from</literal> clause. 
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Receiving data from a unidirectional join via the pull API (<literal>iterator</literal> method) is not allowed. This is because the engine holds no state for the single stream that provides the events to execute the join.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					The stream that declares the <literal>unidirectional</literal> keyword cannot declare a data window view or other view for that stream, since remove stream events are not processed for the single stream.
-				</para>
-			</listitem>
-		</orderedlist>
-    </sect1>
+	
 
     <sect1 id="epl-subqueries">
         <title>Subqueries</title>
@@ -2843,7 +2656,7 @@ select * from pattern [
 		</para>
 
 		<para>
-			Performance of your statement containing one or more subqueries principally depends on two parameters. First, if your subquery correlates one or more columns in the subquery stream with the enclosing statement's streams via equals '=', the engine automatically builds the appropriate indexes for fast row retrieval based on the key values correlated (joined). The second parameter is the number of rows found in the subquery stream and the complexity of the filter criteria (<literal>where</literal> clause), as each row in the subquery stream must evaluate against the <literal>where</literal> clause filter.
+			Performance of your statement containing one or more subqueries principally depends on two parameters. First, if your subquery correlates one or more columns in the subquery stream with the enclosing statement's streams, the engine automatically builds the appropriate indexes for fast row retrieval based on the key values correlated (joined). The second parameter is the number of rows found in the subquery stream and the complexity of the filter criteria (<literal>where</literal> clause), as each row in the subquery stream must evaluate against the <literal>where</literal> clause filter.
 		</para>
 
 		<sect2 id="epl-subqueries-exists">
@@ -3119,6 +2932,332 @@ select
   from SettlementEvent as se]]></programlisting>
 			
 		</sect2>
+    </sect1>
+
+
+    <sect1 id="epl-join">
+        <title>Joining Event Streams</title>
+		<indexterm><primary>join</primary></indexterm>
+		<indexterm><primary>EPL</primary><secondary>join</secondary></indexterm>
+		
+		<sect2 id="epl-join-introducing">
+			<title>Introducing Joins</title>
+
+			<para>
+				Two or more event streams can be part of the <literal>from</literal>-clause and thus both (all) streams determine the resulting events. This section summarizes the important concepts. The sections that follow present more detail on each topic.
+			</para>
+			
+			<para>
+				The default join is an inner join which produces output events only when there is at least one match in all streams.
+			</para>
+
+			<para>
+				Consider the sample statement shown next:
+			</para>
+			<programlisting><![CDATA[select * from TickEvent.std:lastevent(), NewsEvent.std:lastevent()]]></programlisting>
+
+			<para>
+				The above statement outputs the last TickEvent and the last NewsEvent in one output event when either a TickEvent or a NewsEvent arrives. If no TickEvent was received before a NewsEvent arrives, no output occurs. Similarly when no NewsEvent was received before a TickEvent arrives, no output occurs.
+			</para>
+
+			<para>
+				The <literal>where</literal>-clause lists the join conditions that Esper uses to relate events in the two or more streams. 
+			</para>
+
+			<para>
+				The next example statement retains the last TickEvent and last NewsEvent per symbol, and joins the two streams based on their symbol value:
+			</para>
+			<programlisting><![CDATA[select * from TickEvent.std:unique(symbol) as t, NewsEvent.std:unique(symbol) as n
+where t.symbol = n.symbol]]></programlisting>
+
+			<para>
+				As before, when a TickEvent arrives for a symbol that has no matching NewsEvent then there is no output event.
+			</para>
+
+			<para>
+				An outer join does not require each event in either stream to have a matching event. The full outer join is useful when output is desired when no match is found. The different outer join types (full, left, right) are explained in more detail below.
+			</para>
+
+			<para>
+				This example statement is an outer-join and also returns the last TickEvent and last NewsEvent per symbol: 
+			</para>
+			<programlisting><![CDATA[select * from TickEvent.std:unique(symbol) as t
+full outer join NewsEvent.std:unique(symbol) as n on t.symbol = n.symbol]]></programlisting>
+
+			<para>
+				In the sample statement above, when a TickEvent arrives for a symbol that has no matching NewsEvent, or when a NewsEvent arrives for a symbol that has no matching TickEvent, the statement still produces an output event with a null column value for the missing event.
+			</para>
+
+			<para>
+				Note that each of the sample queries above defines a data window. The sample queries above use the last-event data window (std:lastevent) or the unique data window (std:unique). A data window serves to indicate the subset of events to join from each stream and may be required depending on the join.
+			</para>
+
+			<para>
+				In above queries, when either a TickEvent arrives or when a NewsEvent arrives then the query evaluates and there is output. The same holds true if additional streams are added to the <literal>from</literal>-clause: Each of the streams in the <literal>from</literal>-clause trigger the join to evaluate.
+			</para>
+			
+			<para>
+				The <literal>unidirectional</literal> keyword instructs the engine to evaluate the join only when an event arrives from the single stream that was marked with the <literal>unidirectional</literal> keyword. In this case no data window should be specified for the stream marked as <literal>unidirectional</literal> since the keyword implies that the current event of that stream triggers the join.
+			</para>
+			
+			<para>
+				Here is the sample statement above with <literal>unidirectional</literal> keyword, so that output occurs only when a TickEvent arrives and not when a NewsEvent arrives:
+			</para>
+			<programlisting><![CDATA[select * from TickEvent as t unidirectional, NewsEvent.std:unique(symbol) as n 
+where t.symbol = n.symbol]]></programlisting>
+			
+			<para>
+				It is oftentimes the case that an aggregation (count, sum, average) only needs to be calculated in the context of an arriving event or timer. Consider using the <literal>unidirectional</literal> keyword when aggregating over joined streams.
+			</para>
+
+			<para>
+				An EPL pattern is a normal citizen also providing a stream of data consisting of pattern matches. A time pattern, for example, can be useful to evaluate a join and produce output upon each interval.
+			</para>
+			
+			<para>
+				This sample statement includes a pattern that fires every 5 seconds and thus triggers the join to evaluate and produce output, computing an aggregated total quantity per symbol every 5 seconds:
+			</para>
+			<programlisting><![CDATA[select symbol, sum(qty) from pattern[every timer:interval(5 sec)] unidirectional, 
+  TickEvent.std:unique(symbol) t, NewsEvent.std:unique(symbol) as n 
+where t.symbol = n.symbol group by symbol]]></programlisting>
+
+			<para>
+				Named windows as well as reference and historical data such as stored in your relational database, and data returned by a method invocation, can also be included in joins as discussed in <xref linkend="histdata_overview"/> and <xref linkend="joining_method"/>.
+			</para>
+			
+			<para>
+				Related to joins are subqueries: A subquery is a <literal>select</literal> within another statement, see <xref linkend="epl-subqueries"/>
+			</para>
+			
+			<para>
+				The engine performs extensive query analysis and planning, building internal indexes and strategies as required to allow fast evaluation of many types of queries.
+			</para>
+		</sect2>
+
+		<sect2 id="epl-join-inner">
+			<title>Inner (Default) Joins</title>			
+	
+			<para>
+				Each point in time that an event arrives to one of the event streams, the two event streams are joined and output events are produced according to the <literal>where</literal> clause when matching events are found for all joined streams.
+			</para>
+	
+			<para>
+				This example joins 2 event streams. The first event stream consists of fraud warning events for which we keep the last 30 minutes. The second stream is withdrawal events for which we consider the last 30 seconds. The streams are joined on account number.
+			</para>
+<programlisting><![CDATA[select fraud.accountNumber as accntNum, fraud.warning as warn, withdraw.amount as amount,
+       max(fraud.timestamp, withdraw.timestamp) as timestamp, 'withdrawlFraud' as desc
+  from com.espertech.esper.example.atm.FraudWarningEvent.win:time(30 min) as fraud,
+       com.espertech.esper.example.atm.WithdrawalEvent.win:time(30 sec) as withdraw
+ where fraud.accountNumber = withdraw.accountNumber]]></programlisting>
+
+			<para>
+				Joins can also include one or more pattern statements as the next example shows:
+			</para>
+<programlisting><![CDATA[select * from FraudWarningEvent.win:time(30 min) as fraud,
+    pattern [every w=WithdrawalEvent -> PINChangeEvent(acct=w.acct)].std:lastevent() as withdraw
+ where fraud.accountNumber = withdraw.w.accountNumber]]></programlisting>
+	
+			<para>
+				The statement above joins the last 30 minutes of fraud warnings with a pattern. The pattern consists of every withdrawal event that is followed by a PIN change event for the same account number. It joins the two event streams on account number. The last-event view instucts the join to only consider the last pattern match.
+			</para>
+	
+			<para>
+				In a join and outer join, your statement must declare a data window view or other view onto each stream. Streams that are marked as unidirectional and named windows as well as database or methods in a join are an exception and do not require a view to be specified. If you are joining an event to itself via contained-event selection, views also do not need to be specified.
+			</para>
+	
+			<para>
+				The next example joins all FraudWarningEvent events that arrived since the statement was started, with the last 20 seconds of PINChangeEvent events:
+			</para>
+<programlisting><![CDATA[select * from FraudWarningEvent.win:keepall() as fraud, PINChangeEvent.win:time(20 sec) as pin
+ where fraud.accountNumber = pin.accountNumber]]></programlisting>
+
+			<para>
+				The above example employed the special keep-all view that retains all events.
+			</para>			
+		</sect2>
+
+		<sect2 id="epl-outerjoin">
+			<title>Outer, Left and Right Joins</title>
+	
+			<indexterm><primary>outer join</primary></indexterm>
+			<indexterm><primary>inner join</primary></indexterm>
+			<indexterm><primary>EPL</primary><secondary>outer join</secondary></indexterm>
+			<indexterm><primary>EPL</primary><secondary>inner join</secondary></indexterm>
+	
+			<para>
+				Esper supports left outer joins, right outer joins, full outer joins and inner joins in any combination between an unlimited number of event streams. Outer and inner joins can also join reference and historical data as explained in <xref linkend="histdata_overview"/>, as well as join data returned by a method invocation as outlined in <xref linkend="joining_method"/>.
+			</para>
+	
+			<para>
+				The keywords <literal>left, right, full</literal> and <literal>inner</literal> control the type of the join between two streams. The <literal>on</literal> clause specifies one or more properties that join each stream. The synopsis is as follows:
+			</para>
+
+<synopsis>...from <emphasis>stream_def</emphasis> [as name] 
+  ((left|right|full outer) | inner) join <emphasis>stream_def</emphasis> 
+  on <emphasis>property</emphasis> = <emphasis>property</emphasis> [and <emphasis>property</emphasis> = <emphasis>property</emphasis> ...]
+  [ ((left|right|full outer) | inner) join <emphasis>stream_def</emphasis> on ...]...
+</synopsis>
+
+			<para>
+				If the outer join is a left outer join, there will be an output event for each event of the stream on the left-hand side of the clause. For example, in the left outer join shown below we will get output for each event in the stream RfidEvent, even if the event does not match any event in the event stream OrderList.
+			</para>
+
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
+       left outer join
+       OrderList.win:length(10000) as orderlist
+     on rfid.itemId = orderList.itemId]]></programlisting>
+		
+			<para>
+				Similarly, if the join is a Right Outer Join, then there will be an output event for each event of the stream on the right-hand side of the clause. For example, in the right outer join shown below we will get output for each event in the stream OrderList, even if the event does not match any event in the event stream RfidEvent.
+			</para>
+
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
+       right outer join
+       OrderList.win:length(10000) as orderlist
+       on rfid.itemId = orderList.itemId]]></programlisting>
+
+			<para>
+				For all types of outer joins, if the join condition is not met, the select list is computed with the event properties of the arrived event while all other event properties are considered to be null.
+			</para>
+			
+			<para>
+				The next type of outer join is a full outer join. In a full outer join, each point in time that an event arrives to one of the event streams, one or more output events are produced. In the example below, when either an RfidEvent or an OrderList event arrive, one or more output event is produced. The next example shows a full outer join that joins on multiple properties:
+			</para>
+
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
+       full outer join
+       OrderList.win:length(10000) as orderlist
+       on rfid.itemId = orderList.itemId and rfid.assetId = orderList.assetId]]></programlisting>
+
+			<para>
+				The last type of join is an inner join. In an inner join, the engine produces an output event for each event of the stream on the left-hand side that matches at least one event on the right hand side considering the join properties. For example, in the inner join shown below we will get output for each event in the RfidEvent stream that matches one or more events in the OrderList data window:
+			</para>
+
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
+       inner join
+       OrderList.win:length(10000) as orderlist
+       on rfid.itemId = orderList.itemId and rfid.assetId = orderList.assetId]]></programlisting>
+
+			<para>
+				Patterns as streams in a join follow this rule: If no data window view is declared for the pattern then the pattern stream retains the last match. Thus a pattern must have matched at least once for the last row to become available in a join. Multiple rows from a pattern stream may be retained by declaring a data window view onto a pattern using the <literal>pattern [...].</literal><emphasis>view_specification</emphasis> syntax.
+			</para>
+	
+			<para>
+				Finally, this example outer joins multiple streams. Here the RfidEvent stream is outer joined to both ProductName and LocationDescription via left outer join:
+			</para>
+
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
+      left outer join ProductName.win:keepall() as refprod
+        on rfid.productId = refprod.prodId
+      left outer join LocationDescription.win:keepall() as refdesc
+        on rfid.location = refdesc.locId]]></programlisting>
+        
+			<para>The <literal>on</literal> clause may only employ the <literal>=</literal> equals operator and property names. Any other operators must be placed in the <literal>where</literal>-clause.</para>
+		</sect2>
+
+		<sect2 id="epl-unidirectional">
+			<title>Unidirectional Joins</title>
+	
+			<indexterm><primary>unidirectional joins</primary></indexterm>
+			<indexterm><primary>EPL</primary><secondary>join, unidirectional</secondary></indexterm>
+			<indexterm><primary>EPL</primary><secondary>outer join, unidirectional</secondary></indexterm>
+	
+			<para>
+				In a join or outer join your statement lists multiple event streams, views and/or patterns in the <literal>from</literal> clause. As events arrive into the engine, each of the streams (views, patterns) provides insert and remove stream events. The engine evaluates each insert and remove stream event provided by each stream, and joins or outer joins each event against data window contents of each stream, and thus generates insert and remove stream join results.
+			</para>
+				
+			<para>
+				The direction of the join execution depends on which stream or streams are currently providing an insert or remove stream event for executing the join. A join is thus multidirectional, or bidirectional when only two streams are joined.
+				A join can be made unidirectional if your application does not want new results when events arrive on a given stream or streams.
+			</para>
+	
+			<para>
+				The <literal>unidirectional</literal> keyword can be used in the <literal>from</literal> clause to identify a single stream that provides the events to execute the join. If the keyword is present for a stream, all other streams in the <literal>from</literal> clause become passive streams. When events arrive or leave a data window of a passive stream then the join does not generate join results. 
+			</para>
+	
+			<para>
+				For example, consider a use case that requires us to join stock tick events (TickEvent) and news events (NewsEvent). The <literal>unidirectional</literal> keyword allows to generate results only when TickEvent events arrive, and not when NewsEvent arrive or leave the 10-second time window:
+			</para>
+			<programlisting><![CDATA[select * from TickEvent unidirectional, NewsEvent.win:time(10 sec) 
+where tick.symbol = news.symbol]]></programlisting>
+
+			<para>
+				Aggregation functions in a <literal>unidirectional</literal> join aggregate within the context of each unidirectional event evaluation and are not cumulative. Thereby aggregation functions when used with <literal>unidirectional</literal> may evaluate faster as they do not need to consider a remove stream (data removed from data windows or named windows).
+			</para>
+			
+			<para>
+				The count function in the next query returns, for each TickEvent, the number of matching NewEvent events:
+			</para>
+			<programlisting><![CDATA[select count(*) from TickEvent unidirectional, NewsEvent.win:time(10 sec) 
+where tick.symbol = news.symbol]]></programlisting>
+	
+			<para>
+				The following restrictions apply to unidirectional joins:
+			</para>
+	
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						The <literal>unidirectional</literal> keyword can only be specified for a single stream in the <literal>from</literal> clause. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Receiving data from a unidirectional join via the pull API (<literal>iterator</literal> method) is not allowed. This is because the engine holds no state for the single stream that provides the events to execute the join.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The stream that declares the <literal>unidirectional</literal> keyword cannot declare a data window view or other view for that stream, since remove stream events are not processed for the single stream.
+					</para>
+				</listitem>
+			</orderedlist>
+		</sect2>
+
+		<sect2 id="epl-join-hints">
+			<title>Hints Related to Joins</title>			
+			<para>
+				When joining 3 or more streams (including any relational or non-relational sources as below) it can sometimes help to provide the query planner instructions how to best execute the join. The engine compiles a query plan for the EPL statement at statement creation time. You can output the query plan to logging (see configuration).
+			</para>
+			
+			<para>
+				An outer join that specifies only <literal>inner</literal> keywords for all streams is equivalent to an default (inner) join. The following two statements are equivalent:
+			</para>
+			<programlisting><![CDATA[select * from TickEvent.std:lastevent(), 
+    NewsEvent.std:lastevent() where tick.symbol = news.symbol]]></programlisting>
+
+			<para>
+				Equivalent to:
+			</para>
+			<programlisting><![CDATA[select * from TickEvent.std:lastevent() 
+	inner join NewsEvent.std:lastevent() on tick.symbol = news.symbol]]></programlisting>
+			
+			<para>
+				For all types of joins, the query planner determines a query graph: The term is used here for all the information regarding what properties or expressions are used to join the streams. The query graph thus includes the where-clause expressions as well as outer-join on-clauses if this statement is an outer join. The query planner also computes a dependency graph which includes information about all historical data streams (relational and non-relational as below) and their input needs. 
+			</para>
+			
+			<para>
+				For default (inner) joins the query planner first attempts to find a path of execution as a nested iteration. For each stream the query planner selects the best order of streams available for the nested iteration considering the query graph and dependency graph. If the full depth of the join is achievable via nested iteration for all streams without full table scan then the query planner uses that nested iteration plan. If not, then the query planner re-plans considering a merge join (Cartesian) approach instead.
+			</para>
+			
+			<para>
+				Specify the @Hint('PREFER_MERGE_JOIN') to instruct the query planner to prefer a merge join plan instead of a nested iteration plan. Specify the @Hint('FORCE_NESTED_ITER') to instruct the query planner to always use a nested iteration plan. 
+			</para>
+
+			<para>
+				For example, consider the below statement. Depending on the number of matching rows in OrderBookOne and OrderBookTwo (named windows in this example, and assumed to be defined elsewhere) the performance of the join may be better using the merge join plan.
+			</para>
+			<programlisting><![CDATA[@Hint('PREFER_MERGE_JOIN') 
+select * from TickEvent.std:lastevent() t, 
+	OrderBookOne ob1, OrderBookOne ob2
+where ob1.symbol = t.symbol and ob2.symbol = t.symbol 
+and ob1.price between t.buy and t.sell and ob2.price between t.buy and t.sell]]></programlisting>
+
+			<para>
+				For outer joins the query planner considers nested iteration and merge join (Cartesian) equally and above hints don't apply.
+			</para>
+		</sect2>
+			
     </sect1>
 
 	<sect1 id="histdata_overview" revision="1">
@@ -4548,13 +4687,15 @@ merge [into] <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasi
 			</para>
 
 			<para>
-				You do not need to explicitly create an index unless using on-demand (fire-and-forget) queries. Therefore you do not need to explicitly create an index for <literal>on-select</literal>, <literal>on-update</literal>, <literal>on-delete</literal> as well as subqueries or consuming statements against named windows.
+				You do not need to explicitly create an index unless using on-demand (fire-and-forget) queries. Therefore you do not need to explicitly create an index for <literal>on-select</literal>, <literal>on-merge</literal>, <literal>on-update</literal>, <literal>on-delete</literal> as well as subqueries or consuming statements against named windows.
+				However if the engine finds an explicitly-created index matching the requirements of such on-query or subqueries it uses that index instead.
 			</para>
 
 			<para>
 				Please use the following syntax to create an explicit index on a named window:
 			</para>
-			<synopsis>create index <emphasis>index_name</emphasis> on <emphasis>named_window_name</emphasis> (<emphasis>property</emphasis>[, property] [,...] )</synopsis>
+			<synopsis>create index <emphasis>index_name</emphasis> on <emphasis>named_window_name</emphasis> (<emphasis>property</emphasis> [hash|btree] 
+    [, property] [hash|btree] [,...] )</synopsis>
 			
 			<para>
 				The <emphasis>index_name</emphasis> is the name assigned to the index. The name uniquely identifies the index and is used in engine logging.
@@ -4565,7 +4706,13 @@ merge [into] <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasi
 			</para>
 
 			<para>
-				The list of <emphasis>property</emphasis> names are the properties of events within the named window to include in the index.
+				The list of <emphasis>property</emphasis> names are the properties of events within the named window to include in the index. Following each property name you may specify the optional <literal>hash</literal> or <literal>btree</literal> keyword.
+			</para>
+			
+			<para>
+				If you specify no keyword or the <literal>hash</literal> keyword for a property, the index will be a hash-based (unsorted) index in respect to that property. If you specify the <literal>btree</literal> keyword, the index will be a binary-tree-based sorted index in respect to that property.
+				You may combine <literal>hash</literal> and <literal>btree</literal> properties for the same index.
+				Specify <literal>btree</literal> for a property if you expect to perform numerical or string comparison using relational operators (&lt;, &gt;, &gt;=, &lt;=), the <literal>between</literal> or the <literal>in</literal> keyword for ranges and inverted ranges.
 			</para>
 
 			<para>
@@ -4577,7 +4724,7 @@ create window UserProfileWindow.win:time(1 hour) select * from UserProfile]]></p
 create index UserProfileIndex on UserProfileWindow(userId)]]></programlisting>
 
 			<para>
-				Next, execute a on-demand fire-and-forget query as shown below, herein we use the prepared version to demonstrate:
+				Next, execute an on-demand fire-and-forget query as shown below, herein we use the prepared version to demonstrate:
 			</para>
 			<programlisting><![CDATA[String query = "select * from UserProfileWindow where userId='Joe'";
 EPOnDemandPreparedQuery prepared = epRuntime.prepareQuery(query);
@@ -4587,8 +4734,23 @@ EPOnDemandQueryResult result = prepared.execute();
 prepared.execute();	// execute a second time]]></programlisting>
 
 			<para>
-				The engine builds a hash code -based index useful for direct comparison via equals (=), filter expressions that look for ranges or use <literal>in, between </literal> do not benefit from the hash-based index. Named windows that hold a revision event type or a variant stream event type may not be indexed.
+				By default, the engine builds a hash code -based index useful for direct comparison via equals (=). Filter expressions that look for ranges or use <literal>in, between </literal> do not benefit from the hash-based index and should use the <literal>btree</literal> keyword.
 			</para>			
+
+			<para>
+				The next example creates a composite index over two fields <literal>symbol</literal> and <literal>buyPrice</literal>:
+			</para>			
+
+			<programlisting><![CDATA[// create a named window
+create window TickEventWindow.win:time(1 hour) as (symbol string, buyPrice double)]]></programlisting>
+			<programlisting><![CDATA[// create an index 
+create index idx1 on TickEventWindow(symbol hash, buyPrice btree)]]></programlisting>
+
+			<para>
+				A sample fire-and-forget query is shown below (this time the API calls are not shown):
+			</para>
+			<programlisting><![CDATA[// query performance excellent in the face of large number of rows
+select * from TickEventWindow where symbol='GE' and buyPrice between 10 and 20]]></programlisting>
 		</sect2>
 
 		<sect2 id="named_versioning" revision="1">

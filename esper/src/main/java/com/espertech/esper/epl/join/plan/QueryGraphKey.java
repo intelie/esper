@@ -24,22 +24,6 @@ public class QueryGraphKey
      */
     public QueryGraphKey(int streamOne, int streamTwo)
     {
-        this(streamOne, streamTwo, true);
-    }
-
-    /**
-     * Ctor.
-     * @param streamOne - from stream
-     * @param streamTwo - to stream
-     */
-    public QueryGraphKey(int streamOne, int streamTwo, boolean canReorder)
-    {
-        if (streamOne > streamTwo && canReorder)
-        {
-            int temp = streamTwo;
-            streamTwo = streamOne;
-            streamOne = temp;
-        }
         streams = new UniformPair<Integer>(streamOne, streamTwo);
     }
 
