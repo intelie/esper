@@ -17,14 +17,14 @@ public class OnMergeMatchedDeleteAction implements OnMergeMatchedAction
 {
     private static final long serialVersionUID = 0L;
 
-    private Expression optionalCondition;
+    private Expression whereClause;
 
     /**
      * Ctor.
-     * @param optionalCondition condition for action, or null if none required
+     * @param whereClause condition for action, or null if none required
      */
-    public OnMergeMatchedDeleteAction(Expression optionalCondition) {
-        this.optionalCondition = optionalCondition;
+    public OnMergeMatchedDeleteAction(Expression whereClause) {
+        this.whereClause = whereClause;
     }
 
     /**
@@ -37,25 +37,24 @@ public class OnMergeMatchedDeleteAction implements OnMergeMatchedAction
      * Returns the action condition, or null if undefined.
      * @return condition
      */
-    public Expression getOptionalCondition() {
-        return optionalCondition;
+    public Expression getWhereClause() {
+        return whereClause;
     }
 
     /**
      * Sets the action condition, or null if undefined.
-     * @param optionalCondition to set, or null to remove the condition
+     * @param whereClause to set, or null to remove the condition
      */
-    public void setOptionalCondition(Expression optionalCondition) {
-        this.optionalCondition = optionalCondition;
+    public void setWhereClause(Expression whereClause) {
+        this.whereClause = whereClause;
     }
 
     @Override
     public void toEPL(StringWriter writer) {
-        writer.write("when matched");
-        if (optionalCondition != null) {
-            writer.write(" and ");
-            optionalCondition.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-        }
         writer.write(" then delete");
+        if (whereClause != null) {
+            writer.write(" where ");
+            whereClause.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+        }
     }
 }

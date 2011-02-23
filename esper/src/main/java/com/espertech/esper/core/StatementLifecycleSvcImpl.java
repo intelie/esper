@@ -215,9 +215,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
         // For insert-into streams, create a lock taken out as soon as an event is inserted
         // Makes the processing between chained statements more predictable.
-        if (statementSpec.getInsertIntoDesc() != null)
+        if (statementSpec.getInsertIntoDesc() != null || statementSpec.getOnTriggerDesc() instanceof OnTriggerMergeDesc)
         {
-            String insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeName();
+            String insertIntoStreamName = null;
+            if (statementSpec.getInsertIntoDesc() != null) {
+                insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeName();
+            }
+            else {
+                insertIntoStreamName = "merge";
+            }
             String latchFactoryNameBack = "insert_stream_B_" + insertIntoStreamName + "_" + statementId;
             String latchFactoryNameFront = "insert_stream_F_" + insertIntoStreamName + "_" + statementId;
             long msecTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getInsertIntoDispatchTimeout();
@@ -1106,25 +1112,30 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
         else if (onTriggerDesc instanceof OnTriggerMergeDesc) {
             OnTriggerMergeDesc merge = (OnTriggerMergeDesc) onTriggerDesc;
-            for (OnTriggerMergeItem item : merge.getItems())
-            {
-                if (item.getOptionalMatchCond() != null) {
-                    item.getOptionalMatchCond().accept(visitor);
+            for (OnTriggerMergeMatched matched : merge.getItems()) {
+                if (matched.getOptionalMatchCond() != null) {
+                    matched.getOptionalMatchCond().accept(visitor);
                 }
-
-                if (item instanceof OnTriggerMergeItemUpdate) {
-                    OnTriggerMergeItemUpdate update = (OnTriggerMergeItemUpdate) item;
-                    for (OnTriggerSetAssignment assignment : update.getAssignments())
-                    {
-                        assignment.getExpression().accept(visitor);
+                for (OnTriggerMergeAction action : matched.getActions())
+                {
+                    if (action.getOptionalWhereClause() != null) {
+                        action.getOptionalWhereClause().accept(visitor);
                     }
-                }
-                if (item instanceof OnTriggerMergeItemInsert) {
-                    OnTriggerMergeItemInsert insert = (OnTriggerMergeItemInsert) item;
-                    for (SelectClauseElementRaw element : insert.getSelectClause()) {
-                        if (element instanceof SelectClauseExprRawSpec) {
-                            SelectClauseExprRawSpec selectExpr = (SelectClauseExprRawSpec) element;
-                            selectExpr.getSelectExpression().accept(visitor);
+
+                    if (action instanceof OnTriggerMergeActionUpdate) {
+                        OnTriggerMergeActionUpdate update = (OnTriggerMergeActionUpdate) action;
+                        for (OnTriggerSetAssignment assignment : update.getAssignments())
+                        {
+                            assignment.getExpression().accept(visitor);
+                        }
+                    }
+                    if (action instanceof OnTriggerMergeActionInsert) {
+                        OnTriggerMergeActionInsert insert = (OnTriggerMergeActionInsert) action;
+                        for (SelectClauseElementRaw element : insert.getSelectClause()) {
+                            if (element instanceof SelectClauseExprRawSpec) {
+                                SelectClauseExprRawSpec selectExpr = (SelectClauseExprRawSpec) element;
+                                selectExpr.getSelectExpression().accept(visitor);
+                            }
                         }
                     }
                 }

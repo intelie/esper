@@ -65,7 +65,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
     private List<SelectClauseElementRaw> propertySelectRaw;
     private PropertyEvalSpec propertyEvalSpec;
-    private List<OnTriggerMergeItem> mergeInstructions;
+    private List<OnTriggerMergeMatched> mergeMatcheds;
+    private List<OnTriggerMergeAction> mergeActions;
 
     private final EngineImportService engineImportService;
     private final VariableService variableService;
@@ -488,6 +489,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case FOR:
                 leaveForClause(node);
                 break;
+            case MERGE_MAT:
+            case MERGE_UNM:
+                leaveMergeMatchedUnmatched(node);
+                break;
+            case MERGE_DEL:
+                leaveMergeDelClause(node);
+                break;
             case MERGE_UPD:
                 leaveMergeUpdClause(node);
                 break;
@@ -790,8 +798,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 asName = typeChildNode.getChild(1).getText();
             }
 
-            OnTriggerMergeDesc desc = new OnTriggerMergeDesc(windowName, asName, mergeInstructions == null ? Collections.<OnTriggerMergeItem>emptyList() : mergeInstructions);
-            statementSpec.setOnTriggerDesc(desc);            
+            OnTriggerMergeDesc desc = new OnTriggerMergeDesc(windowName, asName, mergeMatcheds == null ? Collections.<OnTriggerMergeMatched>emptyList() : mergeMatcheds);
+            statementSpec.setOnTriggerDesc(desc);
         }
         else if (typeChildNode.getType() != ON_SET_EXPR)
         {
@@ -881,36 +889,60 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.getForClauseSpec().getClauses().add(new ForClauseItemSpec(ident, expressions));
     }
 
+    private void leaveMergeMatchedUnmatched(Tree node)
+    {
+        log.debug(".leaveMergeMatchedUnmatched");
+
+        boolean matched = node.getType() == MERGE_MAT;
+        if (mergeMatcheds == null) {
+            mergeMatcheds = new ArrayList<OnTriggerMergeMatched>();
+        }
+        ExprNode filterSpec = null;
+        if (node.getChildCount() > 0) {
+            filterSpec = ASTUtil.getRemoveExpr(node.getChild(node.getChildCount() - 1), astExprNodeMap);
+        }
+        mergeMatcheds.add(new OnTriggerMergeMatched(matched, filterSpec, mergeActions));
+        mergeActions = null;
+    }
+
+    private void leaveMergeDelClause(Tree node)
+    {
+        log.debug(".leaveMergeDelClause");
+
+        if (mergeActions == null) {
+            mergeActions = new ArrayList<OnTriggerMergeAction>();
+        }
+        Tree whereCondNode = ASTUtil.findFirstNode(node, WHERE_EXPR);
+        ExprNode whereCond = whereCondNode != null ? ASTUtil.getRemoveExpr(whereCondNode.getChild(0), astExprNodeMap) : null;
+        mergeActions.add(new OnTriggerMergeActionDelete(whereCond));
+    }
+
     private void leaveMergeUpdClause(Tree node)
     {
         log.debug(".leaveMergeUpdClause");
 
-        if (mergeInstructions == null) {
-            mergeInstructions = new ArrayList<OnTriggerMergeItem>();
+        if (mergeActions == null) {
+            mergeActions = new ArrayList<OnTriggerMergeAction>();
         }
-        ExprNode filterSpec = null;
-        if ((node.getChild(0).getType() != INSERT) && (node.getChild(0).getType() != DELETE)) {
-            filterSpec = ASTUtil.getRemoveExpr(node.getChild(0), astExprNodeMap);
-        }
+        Tree whereCondNode = ASTUtil.findFirstNode(node, WHERE_EXPR);
+        ExprNode whereCond = whereCondNode != null ? ASTUtil.getRemoveExpr(whereCondNode.getChild(0), astExprNodeMap) : null;
 
-        boolean isDelete = ASTUtil.findFirstNode(node, DELETE) != null;
-        if (isDelete) {
-            mergeInstructions.add(new OnTriggerMergeItemDelete(filterSpec));
-        }
-        else {
-            List<OnTriggerSetAssignment> sets = getOnTriggerSetAssignments(node, astExprNodeMap);
-            mergeInstructions.add(new OnTriggerMergeItemUpdate(filterSpec, sets));
-        }
+        List<OnTriggerSetAssignment> sets = getOnTriggerSetAssignments(node, astExprNodeMap);
+        mergeActions.add(new OnTriggerMergeActionUpdate(whereCond, sets));
     }
 
     private void leaveMergeInsClause(Tree node)
     {
         log.debug(".leaveMergeInsClause");
 
-        ExprNode filterSpec = null;
-        for (int i = 0; i < node.getChildCount(); i++) {
-            filterSpec = ASTUtil.getRemoveExpr(node.getChild(i), astExprNodeMap);
-        }
+        Tree whereCondNode = ASTUtil.findFirstNode(node, WHERE_EXPR);
+        ExprNode whereCond = whereCondNode != null ? ASTUtil.getRemoveExpr(whereCondNode.getChild(0), astExprNodeMap) : null;
+
+        List<SelectClauseElementRaw> expressions = new ArrayList<SelectClauseElementRaw>(statementSpec.getSelectClauseSpec().getSelectExprList());
+        statementSpec.getSelectClauseSpec().getSelectExprList().clear();
+
+        Tree optInsertNameNode = ASTUtil.findFirstNode(node, CLASS_IDENT);
+        String optionalInsertName = optInsertNameNode != null ? optInsertNameNode.getText() : null;
 
         List<String> columsList = Collections.emptyList();
         for (int i = 0; i < node.getChildCount(); i++) {
@@ -919,13 +951,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        List<SelectClauseElementRaw> expressions = new ArrayList<SelectClauseElementRaw>(statementSpec.getSelectClauseSpec().getSelectExprList());
-        statementSpec.getSelectClauseSpec().getSelectExprList().clear();
-
-        if (mergeInstructions == null) {
-            mergeInstructions = new ArrayList<OnTriggerMergeItem>();
+        if (mergeActions == null) {
+            mergeActions = new ArrayList<OnTriggerMergeAction>();
         }
-        mergeInstructions.add(new OnTriggerMergeItemInsert(filterSpec, columsList, expressions));
+        mergeActions.add(new OnTriggerMergeActionInsert(whereCond, optionalInsertName, columsList, expressions));
     }
 
     private void leaveUpdateExpr(Tree node)

@@ -15,18 +15,24 @@ import java.util.List;
 /**
  * Specification for the merge statement insert-part.
  */
-public class OnTriggerMergeItemInsert extends OnTriggerMergeItem
+public class OnTriggerMergeActionInsert extends OnTriggerMergeAction
 {
     private static final long serialVersionUID = -657179063417985357L;
-    
+
+    private final String optionalStreamName;
     private final List<String> columns;
     private final List<SelectClauseElementRaw> selectClause;
     private transient List<SelectClauseElementCompiled> selectClauseCompiled;
 
-    public OnTriggerMergeItemInsert(ExprNode optionalMatchCond, List<String> columns, List<SelectClauseElementRaw> selectClause) {
-        super(optionalMatchCond);
+    public OnTriggerMergeActionInsert(ExprNode optionalWhereClause, String optionalStreamName, List<String> columns, List<SelectClauseElementRaw> selectClause) {
+        super(optionalWhereClause);
+        this.optionalStreamName = optionalStreamName;
         this.columns = columns;
         this.selectClause = selectClause;
+    }
+
+    public String getOptionalStreamName() {
+        return optionalStreamName;
     }
 
     public List<String> getColumns() {

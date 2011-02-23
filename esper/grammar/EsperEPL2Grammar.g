@@ -270,8 +270,11 @@ tokens
 	CREATE_SCHEMA_EXPR_QUAL;
 	CREATE_SCHEMA_EXPR_INH;
 	VARIANT_LIST;
+	MERGE_UNM;
+	MERGE_MAT;
 	MERGE_UPD;
 	MERGE_INS;
+	MERGE_DEL;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -686,19 +689,35 @@ mergeItem
 	;
 	
 mergeMatched
-	:	WHEN MATCHED (AND_EXPR expression)? THEN
-		(
-		  (i=UPDATE SET onSetAssignment (COMMA onSetAssignment)*)
-		| d=DELETE 		
-		)
-		-> ^(MERGE_UPD expression? $i? $d? onSetAssignment*)
+	:	WHEN MATCHED (AND_EXPR expression)? mergeMatchedItem+
+		-> ^(MERGE_MAT mergeMatchedItem+ expression?)
 	;
 
+mergeMatchedItem
+	:	THEN 
+		(
+		  ( u=UPDATE SET onSetAssignment (COMMA onSetAssignment)*) (WHERE whereClause)?
+		  | d=DELETE (WHERE whereClause)? 
+		  | mergeInsert
+		  )
+		-> {d != null}? ^(MERGE_DEL whereClause? INT_TYPE["dummy"])
+		-> {u != null}? ^(MERGE_UPD onSetAssignment* whereClause?)
+		-> mergeInsert
+	;		
+
 mergeUnmatched
-	:	WHEN NOT_EXPR MATCHED (AND_EXPR expression)? THEN
-		INSERT (LPAREN columnList RPAREN)? SELECT selectionList
-		-> ^(MERGE_INS selectionList columnList? expression?)
-	;	
+	:	WHEN NOT_EXPR MATCHED (AND_EXPR expression)? mergeUnmatchedItem+
+		-> ^(MERGE_UNM mergeUnmatchedItem+ expression?)
+	;
+	
+mergeUnmatchedItem
+	:	THEN! mergeInsert
+	;		
+	
+mergeInsert
+	: 	INSERT (INTO classIdentifier)? (LPAREN columnList RPAREN)? SELECT selectionList (WHERE whereClause)?
+		-> ^(MERGE_INS selectionList classIdentifier? columnList? whereClause?)
+	;
 	
 onSelectExpr	
 @init  { paraphrases.push("on-select clause"); }

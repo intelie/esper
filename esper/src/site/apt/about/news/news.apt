@@ -1,6 +1,6 @@
 News
 
-* January 19, 2010  -  Esper 4.1.0 - Update release
+* January 19, 2010  -  Esper 4.2.0 - Update release
 
   * Support for on-merge which provides an atomic update-insert-delete (aka. upsert or merge) operation for use with named windows
   

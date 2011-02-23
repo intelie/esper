@@ -10,25 +10,15 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
 
-import java.io.Serializable;
-
 /**
- * Specification for the merge statement insert/update/delete-part.
+ * Specification for the merge statement delete-part.
  */
-public abstract class OnTriggerMergeItem implements Serializable
+public class OnTriggerMergeActionDelete extends OnTriggerMergeAction
 {
-    private ExprNode optionalMatchCond;
+    private static final long serialVersionUID = 8183386154578818969L;
 
-    protected OnTriggerMergeItem(ExprNode optionalMatchCond) {
-        this.optionalMatchCond = optionalMatchCond;
-    }
-
-    public ExprNode getOptionalMatchCond() {
-        return optionalMatchCond;
-    }
-
-    public void setOptionalMatchCond(ExprNode optionalMatchCond) {
-        this.optionalMatchCond = optionalMatchCond;
+    public OnTriggerMergeActionDelete(ExprNode optionalMatchCond) {
+        super(optionalMatchCond);
     }
 }
 

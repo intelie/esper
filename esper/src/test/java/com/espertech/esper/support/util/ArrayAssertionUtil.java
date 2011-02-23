@@ -431,6 +431,10 @@ public class ArrayAssertionUtil
         TestCase.assertEquals(numMatches, expected.length);
     }
 
+    public static void assertPropsPerRow(Iterator<EventBean> received, String[] props, Object[][] propertiesPerRow) {
+        assertPropsPerRow(ArrayAssertionUtil.iteratorToArray(received), props, propertiesPerRow);
+    }
+
     public static void assertPropsPerRow(EventBean[] received, Object[][] propertiesPerRow)
     {
         if (propertiesPerRow == null)

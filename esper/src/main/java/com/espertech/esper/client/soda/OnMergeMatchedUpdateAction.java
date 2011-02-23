@@ -20,7 +20,7 @@ public class OnMergeMatchedUpdateAction implements OnMergeMatchedAction
     private static final long serialVersionUID = 0L;
 
     private List<AssignmentPair> assignments = Collections.emptyList();
-    private Expression optionalCondition;
+    private Expression whereClause;
 
     /**
      * Ctor.
@@ -31,27 +31,27 @@ public class OnMergeMatchedUpdateAction implements OnMergeMatchedAction
     /**
      * Ctor.
      * @param assignments assignments of values to columns
-     * @param optionalCondition optional condition or null
+     * @param whereClause optional condition or null
      */
-    public OnMergeMatchedUpdateAction(List<AssignmentPair> assignments, Expression optionalCondition) {
+    public OnMergeMatchedUpdateAction(List<AssignmentPair> assignments, Expression whereClause) {
         this.assignments = assignments;
-        this.optionalCondition = optionalCondition;
+        this.whereClause = whereClause;
     }
 
     /**
      * Returns the action condition, or null if undefined.
      * @return condition
      */
-    public Expression getOptionalCondition() {
-        return optionalCondition;
+    public Expression getWhereClause() {
+        return whereClause;
     }
 
     /**
      * Sets the action condition, or null if undefined.
-     * @param optionalCondition to set, or null to remove the condition
+     * @param whereClause to set, or null to remove the condition
      */
-    public void setOptionalCondition(Expression optionalCondition) {
-        this.optionalCondition = optionalCondition;
+    public void setWhereClause(Expression whereClause) {
+        this.whereClause = whereClause;
     }
 
     /**
@@ -72,11 +72,6 @@ public class OnMergeMatchedUpdateAction implements OnMergeMatchedAction
 
     @Override
     public void toEPL(StringWriter writer) {
-        writer.write("when matched");
-        if (optionalCondition != null) {
-            writer.write(" and ");
-            optionalCondition.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-        }
         writer.write(" then update set ");
         String delimiter = "";
         for (AssignmentPair pair : assignments)
@@ -86,6 +81,10 @@ public class OnMergeMatchedUpdateAction implements OnMergeMatchedAction
             writer.write(" = ");
             pair.getValue().toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             delimiter = ", ";
+        }
+        if (whereClause != null) {
+            writer.write(" where ");
+            whereClause.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
         }
     }
 }

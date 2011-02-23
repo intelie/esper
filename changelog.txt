@@ -1,7 +1,16 @@
 Esper Changelog
 ===================
 
-Changes in version 4.1.0
+Changes in version 4.2.0
+------------------------
+Major API or EPL changes
+  - The on-merge clause has been extended to allow multiple actions (multiple then-clauses), to allow insert-into a stream other then the currently-merged named window
+    and adding support for an optional where-clause for each action.
+  - The query planning and indexing for joins, subqueries, on-merge/select/update/delete, fire-and-forget queries and create-index has been enhanced to support btree indexes for use with 
+    ranges, inverted ranges and relational operator queries. 
+  - Reduced memory use for hash indexes on single columns.
+
+Changes in version 4.2.0
 ------------------------
 Major API or EPL changes
   - Support for on-merge which provides an atomic update-insert-delete (aka. upsert or merge) operation for use with named windows

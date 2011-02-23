@@ -5,6 +5,7 @@ import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.regression.view.TestFilterPropertySimple;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
+import com.espertech.esper.support.bean.SupportBean_ST0;
 import com.espertech.esper.support.bean.bookexample.OrderBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -32,6 +33,93 @@ public class TestNamedWindowMerge extends TestCase {
         epService.initialize();
         nwListener = new SupportUpdateListener();
         mergeListener = new SupportUpdateListener();
+    }
+
+    public void testMultiactionDeleteUpdate() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_ST0", SupportBean_ST0.class);
+
+        EPStatement nmStmt = epService.getEPAdministrator().createEPL("create window Win.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("insert into Win select * from SupportBean");
+        String epl = "on SupportBean_ST0 as st0 merge Win as win where st0.key0 = win.string " +
+                "when matched " +
+                "then delete where intPrimitive < 0 " +
+                "then update set intPrimitive = st0.p00 where intPrimitive = 3000 or p00 = 3000 " +
+                "then delete where intPrimitive = 1000 " +
+                "then update set intPrimitive = 999 where intPrimitive = 1000 " +
+                "then update set intPrimitive = 1999 where intPrimitive = 2000 " +
+                "then delete where intPrimitive = 2000 ";
+        epService.getEPAdministrator().createEPL(epl);
+        String[] fields = "string,intPrimitive".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", "E1", 0));
+        ArrayAssertionUtil.assertPropsPerRow(nmStmt.iterator(), fields, new Object[][] {{"E1", 1}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", -1));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", "E2", 0));
+        ArrayAssertionUtil.assertPropsPerRow(nmStmt.iterator(), fields, new Object[][] {{"E1", 1}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 3000));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", "E3", 3));
+        ArrayAssertionUtil.assertPropsPerRow(nmStmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E3", 3}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 4));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", "E4", 3000));
+        ArrayAssertionUtil.assertPropsPerRow(nmStmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E3", 3}, {"E4", 3000}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E5", 1000));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", "E5", 0));
+        ArrayAssertionUtil.assertPropsPerRow(nmStmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E3", 3}, {"E4", 3000}, {"E5", 999}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E6", 2000));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", "E6", 0));
+        ArrayAssertionUtil.assertPropsPerRow(nmStmt.iterator(), fields, new Object[][] {{"E1", 1}, {"E3", 3}, {"E4", 3000}, {"E5", 999}, {"E6", 1999}});
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
+        assertEquals(epl.trim(), model.toEPL().trim());
+        EPStatement merged = epService.getEPAdministrator().create(model);
+        assertEquals(merged.getText().trim(), model.toEPL().trim());        
+     }
+    
+    public void testOnMergeInsertStream() throws Exception {
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        SupportUpdateListener listenerThree = new SupportUpdateListener();
+        SupportUpdateListener listenerFour = new SupportUpdateListener();
+
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_ST0", SupportBean_ST0.class);
+        
+        epService.getEPAdministrator().createEPL("create schema WinSchema as (v1 string, v2 int)");
+        EPStatement nmStmt = epService.getEPAdministrator().createEPL("create window Win.win:keepall() as WinSchema");
+        String epl = "on SupportBean_ST0 as st0 merge Win as win where win.v1 = st0.key0 " +
+                "when not matched " +
+                "then insert into StreamOne select * " +
+                "then insert into StreamTwo select st0.id as id, st0.key0 as key0 " +
+                "then insert into StreamThree(id, key0) select st0.id, st0.key0 " +
+                "then insert into StreamFour select id, key0 where key0 = \"K2\" " +
+                "then insert into Win select key0 as v1, p00 as v2";
+        epService.getEPAdministrator().createEPL(epl);
+
+        epService.getEPAdministrator().createEPL("select * from StreamOne").addListener(listenerOne);
+        epService.getEPAdministrator().createEPL("select * from StreamTwo").addListener(listenerTwo);
+        epService.getEPAdministrator().createEPL("select * from StreamThree").addListener(listenerThree);
+        epService.getEPAdministrator().createEPL("select * from StreamFour").addListener(listenerFour);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID1", "K1", 1));
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), "id,key0".split(","), new Object[] {"ID1", "K1"});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), "id,key0".split(","), new Object[] {"ID1", "K1"});
+        ArrayAssertionUtil.assertProps(listenerThree.assertOneGetNewAndReset(), "id,key0".split(","), new Object[] {"ID1", "K1"});
+        assertFalse(listenerFour.isInvoked());
+        
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID1", "K2", 2));
+        ArrayAssertionUtil.assertProps(listenerFour.assertOneGetNewAndReset(), "id,key0".split(","), new Object[] {"ID1", "K2"});
+
+        ArrayAssertionUtil.assertPropsPerRow(nmStmt.iterator(), "v1,v2".split(","), new Object[][] {{"K1", 1}, {"K2", 2}});
+        
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
+        assertEquals(epl.trim(), model.toEPL().trim());
+        EPStatement merged = epService.getEPAdministrator().create(model);
+        assertEquals(merged.getText().trim(), model.toEPL().trim());
     }
 
     public void testDocExample() throws Exception {
@@ -259,13 +347,13 @@ public class TestNamedWindowMerge extends TestCase {
         tryInvalid(epl, "Incorrect syntax near 'update' (a reserved keyword) expecting 'insert' but found 'update' at line 1 column 97 [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then update set intPrimitive = 1]");
 
         epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when matched then insert select *";
-        tryInvalid(epl, "Incorrect syntax near 'insert' (a reserved keyword) at line 1 column 93 [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when matched then insert select *]");
+        tryInvalid(epl, "Error starting statement: Exception encountered in when-not-matched (clause 1): Event type named 'MergeWindow' has already been declared with differing column name or type information: Type 'MergeWindow' is not compatible [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when matched then insert select *]");
 
         epl = "on SupportBean as up merge MergeWindow as mv";
         tryInvalid(epl, "Unexpected end of input string, check for an invalid identifier or missing additional keywords near 'mv' at line 1 column 42  [on SupportBean as up merge MergeWindow as mv]");
 
         epl = "on SupportBean as up merge MergeWindow as mv where a=b when matched";
-        tryInvalid(epl, "Incorrect syntax near 'matched' (a reserved keyword) expecting 'then' but found end of input at line 1 column 60 [on SupportBean as up merge MergeWindow as mv where a=b when matched]");
+        tryInvalid(epl, "Unexpected end of input string, check for an invalid identifier or missing additional keywords near 'matched' (a reserved keyword) at line 1 column 60  [on SupportBean as up merge MergeWindow as mv where a=b when matched]");
 
         epl = "on SupportBean as up merge MergeWindow as mv where a=b when matched and then delete";
         tryInvalid(epl, "Incorrect syntax near 'then' (a reserved keyword) at line 1 column 72 [on SupportBean as up merge MergeWindow as mv where a=b when matched and then delete]");
@@ -278,6 +366,9 @@ public class TestNamedWindowMerge extends TestCase {
 
         epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive";
         tryInvalid(epl, "Error starting statement: Property named 'intPrimitive' is not valid in any stream [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive]");
+
+        epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select * where string = 'A'";
+        tryInvalid(epl, "Error starting statement: Property named 'string' is not valid in any stream [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select * where string = 'A']");
     }
 
     public void tryInvalid(String epl, String expected) {

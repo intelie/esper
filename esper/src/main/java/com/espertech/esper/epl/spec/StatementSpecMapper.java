@@ -235,39 +235,46 @@ public class StatementSpecMapper
         else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_MERGE)
         {
             OnTriggerMergeDesc trigger = (OnTriggerMergeDesc) onTriggerDesc;
-            OnMergeClause clause = OnMergeClause.create(trigger.getWindowName(), trigger.getOptionalAsName());
-            for (OnTriggerMergeItem item : trigger.getItems())
-            {
-                OnMergeMatchedAction action;
-                if (item instanceof OnTriggerMergeItemDelete) {
-                    OnTriggerMergeItemDelete delete = (OnTriggerMergeItemDelete) item;
-                    Expression optionalCondition = delete.getOptionalMatchCond() == null ? null : unmapExpressionDeep(delete.getOptionalMatchCond(), unmapContext);
-                    action = new OnMergeMatchedDeleteAction(optionalCondition);
-                }
-                else if (item instanceof OnTriggerMergeItemUpdate) {
-                    OnTriggerMergeItemUpdate merge = (OnTriggerMergeItemUpdate) item;
-                    List<AssignmentPair> assignments = new ArrayList<AssignmentPair>();
-                    for (OnTriggerSetAssignment pair : merge.getAssignments())
-                    {
-                        Expression expr = unmapExpressionDeep(pair.getExpression(), unmapContext);
-                        assignments.add(new AssignmentPair(pair.getVariableName(), expr));
+            List<OnMergeMatchItem> matchItems = new ArrayList<OnMergeMatchItem>();
+            for (OnTriggerMergeMatched matched : trigger.getItems()) {
+
+                List<OnMergeMatchedAction> actions = new ArrayList<OnMergeMatchedAction>();
+                Expression matchCond = matched.getOptionalMatchCond() != null ? unmapExpressionDeep(matched.getOptionalMatchCond(), unmapContext) : null;
+                OnMergeMatchItem matchItem = new OnMergeMatchItem(matched.isMatchedUnmatched(), matchCond, actions);
+                for (OnTriggerMergeAction actionitem : matched.getActions())
+                {
+                    OnMergeMatchedAction action;
+                    if (actionitem instanceof OnTriggerMergeActionDelete) {
+                        OnTriggerMergeActionDelete delete = (OnTriggerMergeActionDelete) actionitem;
+                        Expression optionalCondition = delete.getOptionalWhereClause() == null ? null : unmapExpressionDeep(delete.getOptionalWhereClause(), unmapContext);
+                        action = new OnMergeMatchedDeleteAction(optionalCondition);
                     }
-                    Expression optionalCondition = merge.getOptionalMatchCond() == null ? null : unmapExpressionDeep(merge.getOptionalMatchCond(), unmapContext);
-                    action = new OnMergeMatchedUpdateAction(assignments, optionalCondition);
+                    else if (actionitem instanceof OnTriggerMergeActionUpdate) {
+                        OnTriggerMergeActionUpdate merge = (OnTriggerMergeActionUpdate) actionitem;
+                        List<AssignmentPair> assignments = new ArrayList<AssignmentPair>();
+                        for (OnTriggerSetAssignment pair : merge.getAssignments())
+                        {
+                            Expression expr = unmapExpressionDeep(pair.getExpression(), unmapContext);
+                            assignments.add(new AssignmentPair(pair.getVariableName(), expr));
+                        }
+                        Expression optionalCondition = merge.getOptionalWhereClause() == null ? null : unmapExpressionDeep(merge.getOptionalWhereClause(), unmapContext);
+                        action = new OnMergeMatchedUpdateAction(assignments, optionalCondition);
+                    }
+                    else if (actionitem instanceof OnTriggerMergeActionInsert) {
+                        OnTriggerMergeActionInsert insert = (OnTriggerMergeActionInsert) actionitem;
+                        List<String> columnNames = new ArrayList<String>(insert.getColumns());
+                        List<SelectClauseElement> select = unmapSelectClauseElements(insert.getSelectClause(), unmapContext);
+                        Expression optionalCondition = insert.getOptionalWhereClause() == null ? null : unmapExpressionDeep(insert.getOptionalWhereClause(), unmapContext);
+                        action = new OnMergeMatchedInsertAction(columnNames, select, optionalCondition, insert.getOptionalStreamName());
+                    }
+                    else {
+                        throw new IllegalArgumentException("Unrecognized merged action type '" + actionitem.getClass() + "'");
+                    }
+                    actions.add(action);
                 }
-                else if (item instanceof OnTriggerMergeItemInsert) {
-                    OnTriggerMergeItemInsert insert = (OnTriggerMergeItemInsert) item;
-                    List<String> columnNames = new ArrayList<String>(insert.getColumns());
-                    List<SelectClauseElement> select = unmapSelectClauseElements(insert.getSelectClause(), unmapContext);
-                    Expression optionalCondition = insert.getOptionalMatchCond() == null ? null : unmapExpressionDeep(insert.getOptionalMatchCond(), unmapContext);
-                    action = new OnMergeMatchedInsertAction(columnNames, select, optionalCondition);
-                }
-                else {
-                    throw new IllegalArgumentException("Unrecognized merged action type '" + item.getClass() + "'");
-                }
-                clause.addAction(action);
+                matchItems.add(matchItem);
             }
-            model.setOnExpr(clause);
+            model.setOnExpr(OnMergeClause.create(trigger.getWindowName(), trigger.getOptionalAsName(), matchItems));
         }
         else {
             throw new IllegalArgumentException("Type of on-clause not handled: " + onTriggerDesc.getOnTriggerType());
@@ -663,39 +670,44 @@ public class StatementSpecMapper
         else if (onExpr instanceof OnMergeClause)
         {
             OnMergeClause merge = (OnMergeClause) onExpr;
-            List<OnTriggerMergeItem> items = new ArrayList<OnTriggerMergeItem>();
-            for (OnMergeMatchedAction action : merge.getActions())
-            {
-                OnTriggerMergeItem item;
-                if (action instanceof OnMergeMatchedDeleteAction) {
-                    OnMergeMatchedDeleteAction delete = (OnMergeMatchedDeleteAction) action;
-                    ExprNode optionalCondition = delete.getOptionalCondition() == null ? null : mapExpressionDeep(delete.getOptionalCondition(), mapContext);
-                    item = new OnTriggerMergeItemDelete(optionalCondition);
-                }
-                else if (action instanceof OnMergeMatchedUpdateAction) {
-                    OnMergeMatchedUpdateAction update = (OnMergeMatchedUpdateAction) action;
-                    List<OnTriggerSetAssignment> assignments = new ArrayList<OnTriggerSetAssignment>();
-                    for (AssignmentPair pair : update.getAssignments())
-                    {
-                        ExprNode expr = mapExpressionDeep(pair.getValue(), mapContext);
-                        assignments.add(new OnTriggerSetAssignment(pair.getName(), expr));
+            List<OnTriggerMergeMatched> matcheds = new ArrayList<OnTriggerMergeMatched>();
+            for (OnMergeMatchItem matchItem : merge.getMatchItems()) {
+                List<OnTriggerMergeAction> actions = new ArrayList<OnTriggerMergeAction>();
+                for (OnMergeMatchedAction action : matchItem.getActions())
+                {
+                    OnTriggerMergeAction actionItem;
+                    if (action instanceof OnMergeMatchedDeleteAction) {
+                        OnMergeMatchedDeleteAction delete = (OnMergeMatchedDeleteAction) action;
+                        ExprNode optionalCondition = delete.getWhereClause() == null ? null : mapExpressionDeep(delete.getWhereClause(), mapContext);
+                        actionItem = new OnTriggerMergeActionDelete(optionalCondition);
                     }
-                    ExprNode optionalCondition = update.getOptionalCondition() == null ? null : mapExpressionDeep(update.getOptionalCondition(), mapContext);
-                    item = new OnTriggerMergeItemUpdate(optionalCondition, assignments);
+                    else if (action instanceof OnMergeMatchedUpdateAction) {
+                        OnMergeMatchedUpdateAction update = (OnMergeMatchedUpdateAction) action;
+                        List<OnTriggerSetAssignment> assignments = new ArrayList<OnTriggerSetAssignment>();
+                        for (AssignmentPair pair : update.getAssignments())
+                        {
+                            ExprNode expr = mapExpressionDeep(pair.getValue(), mapContext);
+                            assignments.add(new OnTriggerSetAssignment(pair.getName(), expr));
+                        }
+                        ExprNode optionalCondition = update.getWhereClause() == null ? null : mapExpressionDeep(update.getWhereClause(), mapContext);
+                        actionItem = new OnTriggerMergeActionUpdate(optionalCondition, assignments);
+                    }
+                    else if (action instanceof OnMergeMatchedInsertAction) {
+                        OnMergeMatchedInsertAction insert = (OnMergeMatchedInsertAction) action;
+                        List<String> columnNames = new ArrayList<String>(insert.getColumnNames());
+                        List<SelectClauseElementRaw> select = mapSelectClauseElements(insert.getSelectList(), mapContext);
+                        ExprNode optionalCondition = insert.getWhereClause() == null ? null : mapExpressionDeep(insert.getWhereClause(), mapContext);
+                        actionItem = new OnTriggerMergeActionInsert(optionalCondition, insert.getOptionalStreamName(), columnNames, select);
+                    }
+                    else {
+                        throw new IllegalArgumentException("Unrecognized merged action type '" + action.getClass() + "'");
+                    }
+                    actions.add(actionItem);
                 }
-                else if (action instanceof OnMergeMatchedInsertAction) {
-                    OnMergeMatchedInsertAction insert = (OnMergeMatchedInsertAction) action;
-                    List<String> columnNames = new ArrayList<String>(insert.getColumnNames());
-                    List<SelectClauseElementRaw> select = mapSelectClauseElements(insert.getSelectList(), mapContext);
-                    ExprNode optionalCondition = insert.getOptionalCondition() == null ? null : mapExpressionDeep(insert.getOptionalCondition(), mapContext);
-                    item = new OnTriggerMergeItemInsert(optionalCondition, columnNames, select);
-                }
-                else {
-                    throw new IllegalArgumentException("Unrecognized merged action type '" + action.getClass() + "'");
-                }
-                items.add(item);
+                ExprNode optionalCondition = matchItem.getOptionalCondition() == null ? null : mapExpressionDeep(matchItem.getOptionalCondition(), mapContext);
+                matcheds.add(new OnTriggerMergeMatched(matchItem.isMatched(), optionalCondition, actions));
             }
-            OnTriggerMergeDesc mergeDesc = new OnTriggerMergeDesc(merge.getWindowName(), merge.getOptionalAsName(), items);
+            OnTriggerMergeDesc mergeDesc = new OnTriggerMergeDesc(merge.getWindowName(), merge.getOptionalAsName(), matcheds);
             raw.setOnTriggerDesc(mergeDesc);
         }
         else

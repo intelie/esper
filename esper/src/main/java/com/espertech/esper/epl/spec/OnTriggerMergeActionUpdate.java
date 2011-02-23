@@ -15,13 +15,13 @@ import java.util.List;
 /**
  * Specification for the merge statement update-part.
  */
-public class OnTriggerMergeItemUpdate extends OnTriggerMergeItem
+public class OnTriggerMergeActionUpdate extends OnTriggerMergeAction
 {
     private static final long serialVersionUID = 726673263717907039L;
     
     private List<OnTriggerSetAssignment> assignments;
 
-    public OnTriggerMergeItemUpdate(ExprNode optionalMatchCond, List<OnTriggerSetAssignment> assignments) {
+    public OnTriggerMergeActionUpdate(ExprNode optionalMatchCond, List<OnTriggerSetAssignment> assignments) {
         super(optionalMatchCond);
         this.assignments = assignments;
     }

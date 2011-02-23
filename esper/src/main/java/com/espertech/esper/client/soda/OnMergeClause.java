@@ -21,13 +21,13 @@ public class OnMergeClause extends OnClause
 
     private String windowName;
     private String optionalAsName;
-    private List<OnMergeMatchedAction> actions;
+    private List<OnMergeMatchItem> matchItems;
 
     /**
      * Ctor.
      */
     public OnMergeClause() {
-        actions = new ArrayList<OnMergeMatchedAction>();
+        matchItems = new ArrayList<OnMergeMatchItem>();
     }
 
     /**
@@ -36,9 +36,9 @@ public class OnMergeClause extends OnClause
      * @param optionalAsName is the optional as-provided name
      * @return on-update clause without assignments
      */
-    public static OnMergeClause create(String windowName, String optionalAsName)
+    public static OnMergeClause create(String windowName, String optionalAsName, List<OnMergeMatchItem> matchItems)
     {
-        return new OnMergeClause(windowName, optionalAsName);
+        return new OnMergeClause(windowName, optionalAsName, matchItems);
     }
 
     /**
@@ -46,11 +46,12 @@ public class OnMergeClause extends OnClause
      * @param windowName is the named window name
      * @param optionalAsName is the as-provided name of the named window
      */
-    public OnMergeClause(String windowName, String optionalAsName)
+    public OnMergeClause(String windowName, String optionalAsName, List<OnMergeMatchItem> matchItems)
     {
         this.windowName = windowName;
         this.optionalAsName = optionalAsName;
-        actions = new ArrayList<OnMergeMatchedAction>();
+        this.matchItems = matchItems;
+        matchItems = new ArrayList<OnMergeMatchItem>();
     }
 
     /**
@@ -71,11 +72,9 @@ public class OnMergeClause extends OnClause
         {
             writer.write(" where ");
             optionalWhereClause.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            writer.write(" ");
         }
-        for (OnMergeMatchedAction action : actions) {
-            action.toEPL(writer);
-            writer.write(" ");
+        for (OnMergeMatchItem item : matchItems) {
+            item.toEPL(writer);
         }
     }
 
@@ -120,9 +119,9 @@ public class OnMergeClause extends OnClause
      * @param action to add
      * @return clause
      */
-    public OnMergeClause addAction(OnMergeMatchedAction action)
+    public OnMergeClause addAction(OnMergeMatchItem action)
     {
-        actions.add(action);
+        matchItems.add(action);
         return this;
     }
 
@@ -130,15 +129,15 @@ public class OnMergeClause extends OnClause
      * Returns all actions.
      * @return actions
      */
-    public List<OnMergeMatchedAction> getActions() {
-        return actions;
+    public List<OnMergeMatchItem> getMatchItems() {
+        return matchItems;
     }
 
     /**
      * Sets all actions.
-     * @param actions to set
+     * @param matchItems to set
      */
-    public void setActions(List<OnMergeMatchedAction> actions) {
-        this.actions = actions;
+    public void setMatchItems(List<OnMergeMatchItem> matchItems) {
+        this.matchItems = matchItems;
     }
 }

@@ -1004,6 +1004,52 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals("win3", desc.getAdditionalRightNodes()[0].getStreamOrPropertyName());
     }
 
+    public void testOnMerge() throws Exception
+    {
+        String text = "on MyEvent ev " +
+                "merge MyWindow " +
+                "where a not in (b) " +
+                "when matched and y=100 " +
+                "  then insert into xyz1 select g1,g2 where u>2" +
+                "  then update set a=b where e like '%a' " +
+                "  then delete where myvar " +
+                "  then delete " +
+                "when not matched and y=2 " +
+                "  then insert into xyz select * where e=4" +
+                "  then insert select * where t=2";
+
+        StatementSpecRaw spec = parseAndWalkEPL(text).getStatementSpec();
+        OnTriggerMergeDesc merge = (OnTriggerMergeDesc) spec.getOnTriggerDesc();
+        assertEquals(2, merge.getItems().size());
+        assertTrue(spec.getFilterExprRootNode() instanceof ExprInNode);
+
+        OnTriggerMergeMatched first = merge.getItems().get(0);
+        assertEquals(4, first.getActions().size());
+        assertTrue(first.isMatchedUnmatched());
+        assertTrue(first.getOptionalMatchCond() instanceof ExprEqualsNode);
+
+        OnTriggerMergeActionInsert insertOne = (OnTriggerMergeActionInsert) first.getActions().get(0);
+        assertEquals("xyz1", insertOne.getOptionalStreamName());
+        assertEquals(0, insertOne.getColumns().size());
+        assertEquals(2, insertOne.getSelectClause().size());
+        assertTrue(insertOne.getOptionalWhereClause() instanceof ExprRelationalOpNode);
+
+        OnTriggerMergeActionUpdate updateOne = (OnTriggerMergeActionUpdate) first.getActions().get(1);
+        assertEquals(1, updateOne.getAssignments().size());
+        assertTrue(updateOne.getOptionalWhereClause() instanceof ExprLikeNode);
+
+        OnTriggerMergeActionDelete delOne = (OnTriggerMergeActionDelete) first.getActions().get(2);
+        assertTrue(delOne.getOptionalWhereClause() instanceof ExprIdentNode);
+
+        OnTriggerMergeActionDelete delTwo = (OnTriggerMergeActionDelete) first.getActions().get(3);
+        assertNull(delTwo.getOptionalWhereClause());
+
+        OnTriggerMergeMatched second = merge.getItems().get(1);
+        assertFalse(second.isMatchedUnmatched());
+        assertTrue(second.getOptionalMatchCond() instanceof ExprEqualsNode);
+        assertEquals(2, second.getActions().size());
+    }
+
     public void testWalkPattern() throws Exception
     {
         String text = "every g=" + SupportBean.class.getName() + "(string=\"IBM\", intPrimitive != 1) where timer:within(20)";

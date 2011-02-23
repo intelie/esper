@@ -8,24 +8,27 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import java.util.List;
+import com.espertech.esper.epl.expression.ExprNode;
+
+import java.io.Serializable;
 
 /**
- * Specification for the merge statement.
+ * Specification for the merge statement insert/update/delete-part.
  */
-public class OnTriggerMergeDesc extends OnTriggerWindowDesc
+public abstract class OnTriggerMergeEntry implements Serializable
 {
-    private static final long serialVersionUID = 3388811105339812571L;
-    
-    private List<OnTriggerMergeMatched> items;
+    private ExprNode optionalMatchCond;
 
-    public OnTriggerMergeDesc(String windowName, String optionalAsName, List<OnTriggerMergeMatched> items) {
-        super(windowName, optionalAsName, OnTriggerType.ON_MERGE);
-        this.items = items;
+    protected OnTriggerMergeEntry(ExprNode optionalMatchCond) {
+        this.optionalMatchCond = optionalMatchCond;
     }
 
-    public List<OnTriggerMergeMatched> getItems() {
-        return items;
+    public ExprNode getOptionalMatchCond() {
+        return optionalMatchCond;
+    }
+
+    public void setOptionalMatchCond(ExprNode optionalMatchCond) {
+        this.optionalMatchCond = optionalMatchCond;
     }
 }
 

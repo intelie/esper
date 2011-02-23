@@ -4559,15 +4559,20 @@ where ord.id = win.id or flush.id = win.id]]></programlisting>
 			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>stream_name</emphasis>]
 merge [into] <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
 [where <emphasis>criteria_expression</emphasis>]
-  when [not] matched [ and <emphasis>search_condition</emphasis> ]
+  when [not] matched [and <emphasis>search_condition</emphasis>]
     then [
-      insert [ (<emphasis>property_name</emphasis> [, property_name] [,...]) ] 
+      insert [into <emphasis>streamname</emphasis>]
+          [ (<emphasis>property_name</emphasis> [, property_name] [,...]) ] 
           select <emphasis>select_expression</emphasis> [, <emphasis>select_expression</emphasis>[,...]]
+          [where <emphasis>filter_expression</emphasis>]
       |
       update set <emphasis>property_name</emphasis> = <emphasis>expression</emphasis> [, <emphasis>property_name</emphasis> = <emphasis>expression</emphasis> [,...]]
+          [where <emphasis>filter_expression</emphasis>]
       |
       delete
-    ]  
+          [where <emphasis>filter_expression</emphasis>]
+    ]
+    [then [insert|update|delete]] [,then ...]
   [when ...  then ... [...]] 
 </synopsis>
 				
@@ -4581,30 +4586,43 @@ merge [into] <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasi
 				
 			<para>
 				The optional <literal>where</literal> clause contains a <emphasis>criteria_expression</emphasis> that correlates the arriving (triggering) event to the events to be considered of the named window.
+				We recommend specifying a criteria expression that is as specific as possible.
 			</para>
 			
 			<para>
-			    Following the <literal>where</literal> clause are one or more <literal>when matched</literal> or <literal>when not matched</literal> clauses in any order. Each may have an additional search condition associated. It follows the <literal>then</literal> keyword followed by either an <literal>insert</literal>, <literal>update</literal> or <literal>delete</literal> keyword. 
+			    Following the <literal>where</literal> clause is one or more <literal>when matched</literal> or <literal>when not matched</literal> clauses in any order. Each may have an additional search condition associated.
 			</para>
 
 			<para>
-			    After <literal>when not matched</literal> only the <literal>insert</literal> keyword and action are available. After <literal>insert</literal> follows an optional list of columns inserted, the <literal>select</literal> keyword and one or more select clause expressions. The wildcard (<literal>*</literal>) is available in the select clause as well. 
+			    After each <literal>when [not] matched</literal> follow one or more <literal>then</literal> clauses that each contain the action to take: Either an <literal>insert</literal>, <literal>update</literal> or <literal>delete</literal> keyword. 
 			</para>
 
 			<para>
-			    After <literal>when matched</literal> only the <literal>update</literal> or <literal>delete</literal> keywords and actions are available. After <literal>update</literal> follows the <literal>set</literal> keyword and one or more assignment pairs.
+			    After <literal>when not matched</literal> only <literal>insert</literal> action(s) are available. After <literal>when matched</literal> any <literal>insert</literal>, <literal>update</literal> and <literal>delete</literal> action(s) are available.
 			</para>
 
 			<para>
-			  When according to the where-clause <emphasis>criteria_expression</emphasis> the engine finds no events in the named window that match the condition, the engine evaluates each <emphasis>when not matched</emphasis> clause. If the optional search condition returns true or no search condition was provided then the engine performs the insert action as specified.
+			    After <literal>insert</literal> follows, optionally, the <literal>into</literal> keyword followed by the stream name or named window to insert-into. If no <literal>into</literal> and stream name is specified, the insert applies to the current named window. It follows an optional list of columns inserted. It follows the required <literal>select</literal> keyword and one or more select clause expressions. The wildcard (<literal>*</literal>) is available in the select clause as well. It follows an optional where-clause that may return Boolean false to indicate that the action should not be applied. 
+			</para>
+
+			<para>
+			     After <literal>update</literal> follows the <literal>set</literal> keyword and one or more assignment pairs. It follows an optional where-clause that may return Boolean false to indicate that the action should not be applied. 
+			</para>
+
+			<para>
+			     After <literal>delete</literal> follows an optional where-clause that may return Boolean false to indicate that the action should not be applied. 
+			</para>
+
+			<para>
+			  When according to the where-clause <emphasis>criteria_expression</emphasis> the engine finds no events in the named window that match the condition, the engine evaluates each <emphasis>when not matched</emphasis> clause. If the optional search condition returns true or no search condition was provided then the engine performs all of the actions listed after each <literal>then</literal>.
 			</para>
 			
 			<para>
-			  When according to the where-clause <emphasis>criteria_expression</emphasis> the engine finds one or more events in the named window that match the condition, the engine evaluates each <emphasis>when matched</emphasis> clause. If the optional search condition returns true or no search condition was provided the engine performs an update or delete action as specified.
+			  When according to the where-clause <emphasis>criteria_expression</emphasis> the engine finds one or more events in the named window that match the condition, the engine evaluates each <emphasis>when matched</emphasis> clause. If the optional search condition returns true or no search condition was provided the engine performs all of the actions listed after each <literal>then</literal>.
 			</para>
 
 			<para>
-				The engine executes <literal>when matched</literal> and <literal>when not matched</literal> in the order specified. If the optional search condition returns true or no search condition was specified then the engine takes the associated action. When the action completed the engine proceeds to the next matching event, if any. After completing all matching events the engine continues to the next triggering event if any.
+				The engine executes <literal>when matched</literal> and <literal>when not matched</literal> in the order specified. If the optional search condition returns true or no search condition was specified then the engine takes the associated action (or multiple actions for multiple <literal>then</literal> keywords). When the block of actions completed the engine proceeds to the next matching event, if any. After completing all matching events the engine continues to the next triggering event if any.
 			</para>
 			
 			<para>
@@ -4663,6 +4681,46 @@ merge [into] <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasi
 
 			<para>
 				In the above example the <literal>oe.deletedFlag=true</literal> search condition instructs the engine to take the delete action only if the deleted-flag is set.
+			</para>
+
+			<para>
+				You may specify multiple actions by providing multiple <literal>then</literal> keywords each followed by an action. Each of the <literal>insert</literal>, <literal>update</literal> and <literal>delete</literal> actions can itself have a where-clause as well.
+				If a where-clause exists for an action, the engine evaluates the where-clause and applies the action only if the where-clause returns Boolean true.
+			</para>
+			
+			<para>
+				This example specifies two update actions and uses the where-clause to trigger different update behavior depending on whether the order event price is less then zero:
+			</para>
+			<programlisting><![CDATA[on OrderEvent oe
+  merge OrderWindow pw
+  where pw.orderId = oe.orderId
+  when matched
+    then update set pw.quantity = 0, pw.price = 0 where oe.price < 0
+    then update set pw.quantity = oe.quantity, pw.price = oe.price where oe.price >= 0]]></programlisting>
+
+			<para>
+				To insert events into another stream and not the named window, use <literal>insert</literal> <literal>into</literal> <emphasis>streamname</emphasis>.
+			</para>
+			
+			<para>
+				In the next example each matched-clause contains two actions, one action to insert a log event and a second action to insert, delete or update:
+			</para>
+			
+			<programlisting><![CDATA[on OrderEvent oe
+  merge OrderWindow pw
+  where pw.orderId = oe.orderId
+  when not matched 
+    then insert into LogEvent select 'this is an insert' as name
+    then insert select *
+  when matched and oe.deletedFlag=true
+    then insert into LogEvent select 'this is a delete' as name
+    then delete
+  when matched
+    then insert into LogEvent select 'this is a update' as name
+    then update set pw.quantity = oe.quantity, pw.price = oe.price]]></programlisting>
+    
+			<para>
+				While the engine evaluates and executes all actions listed under the same matched-clause in order, you may not rely on updated field values of an earlier action to trigger the where-clause of a later action. Similarly you should avoid simultaneous update and delete actions for the same match: the engine does not guarantee whether the update or the delete take final affect.
 			</para>
 
 			<para>				

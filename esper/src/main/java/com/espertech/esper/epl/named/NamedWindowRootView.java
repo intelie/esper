@@ -240,7 +240,7 @@ public class NamedWindowRootView extends ViewSupport
         else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_MERGE)
         {
             OnTriggerMergeDesc desc = (OnTriggerMergeDesc) onTriggerDesc;
-            return new NamedWindowOnMergeView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc, filterEventType, createWindowStatementHandle, metricReportingService);
+            return new NamedWindowOnMergeView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc, filterEventType, createWindowStatementHandle, metricReportingService, internalEventRouter, namedWindowEventType.getName());
         }
         else
         {

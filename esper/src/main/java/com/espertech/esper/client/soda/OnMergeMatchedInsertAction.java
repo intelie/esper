@@ -21,18 +21,20 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
 
     private List<String> columnNames = Collections.emptyList();
     private List<SelectClauseElement> selectList = Collections.emptyList();
-    private Expression optionalCondition;
+    private Expression whereClause;
+    private String optionalStreamName;
 
     /**
      * Ctor.
      * @param columnNames insert-into column names, or empty list if none provided
      * @param selectList select expression list
-     * @param optionalCondition optional condition or null
+     * @param whereClause optional condition or null
      */
-    public OnMergeMatchedInsertAction(List<String> columnNames, List<SelectClauseElement> selectList, Expression optionalCondition) {
+    public OnMergeMatchedInsertAction(List<String> columnNames, List<SelectClauseElement> selectList, Expression whereClause, String optionalStreamName) {
         this.columnNames = columnNames;
         this.selectList = selectList;
-        this.optionalCondition = optionalCondition;
+        this.whereClause = whereClause;
+        this.optionalStreamName = optionalStreamName;
     }
 
     /**
@@ -45,16 +47,16 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
      * Returns the action condition, or null if undefined.
      * @return condition
      */
-    public Expression getOptionalCondition() {
-        return optionalCondition;
+    public Expression getWhereClause() {
+        return whereClause;
     }
 
     /**
      * Sets the action condition, or null if undefined.
-     * @param optionalCondition to set, or null to remove the condition
+     * @param whereClause to set, or null to remove the condition
      */
-    public void setOptionalCondition(Expression optionalCondition) {
-        this.optionalCondition = optionalCondition;
+    public void setWhereClause(Expression whereClause) {
+        this.whereClause = whereClause;
     }
 
     /**
@@ -89,15 +91,21 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
         this.selectList = selectList;
     }
 
+    public String getOptionalStreamName() {
+        return optionalStreamName;
+    }
+
+    public void setOptionalStreamName(String optionalStreamName) {
+        this.optionalStreamName = optionalStreamName;
+    }
+
     @Override
     public void toEPL(StringWriter writer) {
-        writer.write("when not matched");
-
-        if (optionalCondition != null) {
-            writer.write(" and ");
-            optionalCondition.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-        }
         writer.write(" then insert");
+        if (optionalStreamName != null) {
+            writer.write(" into ");
+            writer.write(optionalStreamName);
+        }
 
         if (columnNames.size() > 0)
         {
@@ -118,6 +126,10 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
             writer.write(delimiter);
             element.toEPLElement(writer);
             delimiter = ", ";
+        }
+        if (whereClause != null) {
+            writer.write(" where ");
+            whereClause.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
         }
     }
 }

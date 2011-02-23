@@ -99,11 +99,21 @@ mergeItem
 	;
 
 mergeMatched
-	:	^(m=MERGE_UPD valueExpr? UPDATE? DELETE? onSetAssignment* { leaveNode($m); })
+	:	^(m=MERGE_MAT mergeMatchedItem+ valueExpr? { leaveNode($m); })
+	;
+
+mergeMatchedItem
+	:	^(m=MERGE_UPD onSetAssignment* whereClause[false]? { leaveNode($m); })
+	|	^(d=MERGE_DEL whereClause[false]? INT_TYPE { leaveNode($d); })
+	|	mergeInsert
 	;
 
 mergeUnmatched
-	:	^(um=MERGE_INS selectionList exprCol? valueExpr? { leaveNode($um); })
+	:	^(m=MERGE_UNM mergeInsert+ valueExpr? { leaveNode($m); })
+	;
+	
+mergeInsert
+	:	^(um=MERGE_INS selectionList CLASS_IDENT? exprCol? whereClause[false]? { leaveNode($um); })
 	;
 	
 updateExpr
