@@ -10,7 +10,6 @@ import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.DualWorkQueue;
 import com.espertech.esper.collection.ThreadWorkQueue;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.schedule.ScheduleHandle;
@@ -55,9 +54,14 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
 
         isolatedTimeEvalContext = new ExprEvaluatorContext()
         {
-            public TimeProvider getTimeProvider()
-            {
+            private ExpressionResultCacheService expressionResultCacheService = new ExpressionResultCacheService();
+
+            public TimeProvider getTimeProvider() {
                 return services.getSchedulingService();
+            }
+
+            public ExpressionResultCacheService getExpressionResultCacheService() {
+                return expressionResultCacheService;
             }
         };
 

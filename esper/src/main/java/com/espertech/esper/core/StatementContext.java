@@ -70,6 +70,7 @@ public final class StatementContext implements ExprEvaluatorContext
     private final StatementFilterVersion statementFilterVersion;
     private final Annotation[] annotations;
     private final ExceptionHandlingService exceptionHandlingService;
+    private final ExpressionResultCacheService expressionResultCacheService;
 
     /**
      * Constructor.
@@ -131,7 +132,8 @@ public final class StatementContext implements ExprEvaluatorContext
                               ViewService viewService,
                               StatementFilterVersion statementFilterVersion,
                               Annotation[] annotations,
-                              ExceptionHandlingService exceptionHandlingService)
+                              ExceptionHandlingService exceptionHandlingService,
+                              ExpressionResultCacheService expressionResultCacheService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -165,6 +167,7 @@ public final class StatementContext implements ExprEvaluatorContext
         this.statementFilterVersion = statementFilterVersion;
         this.annotations = annotations;
         this.exceptionHandlingService = exceptionHandlingService;
+        this.expressionResultCacheService = expressionResultCacheService;
     }
 
     /**
@@ -486,6 +489,10 @@ public final class StatementContext implements ExprEvaluatorContext
     public Annotation[] getAnnotations()
     {
         return annotations;
+    }
+
+    public ExpressionResultCacheService getExpressionResultCacheService() {
+        return expressionResultCacheService;
     }
 
     public String toString()

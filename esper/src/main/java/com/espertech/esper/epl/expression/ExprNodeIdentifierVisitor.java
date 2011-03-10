@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -36,6 +37,10 @@ public class ExprNodeIdentifierVisitor implements ExprNodeVisitor
 
     public boolean isVisit(ExprNode exprNode)
     {
+        if (exprNode instanceof ExprLambdaGoesNode) {
+            return false;
+        }
+        
         if (isVisitAggregateNodes)
         {
             return true;

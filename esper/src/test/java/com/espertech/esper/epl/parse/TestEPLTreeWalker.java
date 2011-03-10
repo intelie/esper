@@ -713,7 +713,7 @@ public class TestEPLTreeWalker extends TestCase
 
         List<ViewSpec> viewSpecs = walker.getStatementSpec().getStreamSpecs().get(0).getViewSpecs();
         ExprNode node = viewSpecs.get(0).getObjectParameters().get(0);
-        node.validate(null, null, null, null, null, null);
+        node.validate(null, null, null, null, null, null, null);
         Object[] intParams = (Object[]) ((ExprArrayNode) node).evaluate(null, true, null);
         assertEquals(10, intParams[0]);
         assertEquals(11, intParams[1]);
@@ -724,7 +724,7 @@ public class TestEPLTreeWalker extends TestCase
         walker = parseAndWalkEPL(text);
         viewSpecs = walker.getStatementSpec().getStreamSpecs().get(0).getViewSpecs();
         ExprNode param = viewSpecs.get(0).getObjectParameters().get(0);
-        param.validate(null, null, null, null, null, null);
+        param.validate(null, null, null, null, null, null, null);
         Object[] objParams = (Object[]) ((ExprArrayNode) param).evaluate(null, true, null);
         assertEquals(false, objParams[0]);
         assertEquals(11.2, objParams[1]);
@@ -1126,7 +1126,7 @@ public class TestEPLTreeWalker extends TestCase
 
     public void testWalkPluginAggregationFunction() throws Exception
     {
-        EngineImportService engineImportService = new EngineImportServiceImpl(true);
+        EngineImportService engineImportService = new EngineImportServiceImpl(true, true, true);
         engineImportService.addAggregation("concat", SupportPluginAggregationMethodOne.class.getName());
 
         String text = "select * from " + SupportBean.class.getName() + " group by concat(1)";
@@ -1218,19 +1218,6 @@ public class TestEPLTreeWalker extends TestCase
         assertTrue((Boolean) tryRelationalOp("'a' not like 'ab'"));
     }
 
-    public void testWalkStaticFunc() throws Exception
-    {
-        String text = "select MyClass.someFunc(1) from SupportBean_N";
-        EPLTreeWalker walker = parseAndWalkEPL(text);
-
-        SelectClauseExprRawSpec spec = getSelectExprSpec(walker.getStatementSpec(), 0);
-        ExprStaticMethodNode staticMethod = (ExprStaticMethodNode) spec.getSelectExpression();
-        assertEquals("MyClass", staticMethod.getClassName());
-        assertEquals("someFunc", staticMethod.getChainSpec().get(0).getName());
-        assertEquals(1, staticMethod.getChainSpec().get(0).getParameters().size());
-        assertEquals("1", staticMethod.getChainSpec().get(0).getParameters().get(0).toExpressionString());
-    }
-
     public void testWalkDBJoinStatement() throws Exception
     {
         String className = SupportBean.class.getName();
@@ -1305,7 +1292,7 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals("time", viewSpec.getObjectName());
         assertEquals(1, viewSpec.getObjectParameters().size());
         ExprTimePeriod exprNode = (ExprTimePeriod) viewSpec.getObjectParameters().get(0);
-        exprNode.validate(null, null, null, null, null, null);
+        exprNode.validate(null, null, null, null, null, null, null);
         return ((Double) exprNode.evaluate(null, true, null)).doubleValue();
     }
 
@@ -1337,7 +1324,7 @@ public class TestEPLTreeWalker extends TestCase
 
     public static EPLTreeWalker parseAndWalkEPL(String expression) throws Exception
     {
-        return parseAndWalkEPL(expression, new EngineImportServiceImpl(true), new VariableServiceImpl(0, null, SupportEventAdapterService.getService(), null));
+        return parseAndWalkEPL(expression, new EngineImportServiceImpl(true, true, true), new VariableServiceImpl(0, null, SupportEventAdapterService.getService(), null));
     }
 
     private static EPLTreeWalker parseAndWalkEPL(String expression, EngineImportService engineImportService, VariableService variableService) throws Exception
@@ -1362,7 +1349,7 @@ public class TestEPLTreeWalker extends TestCase
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         ExprNode exprNode = walker.getStatementSpec().getFilterRootNode().getChildNodes().get(0);
         ExprBitWiseNode bitWiseNode = (ExprBitWiseNode) (exprNode);
-        bitWiseNode.getValidatedSubtree(null, null, null, null, null, null);
+        bitWiseNode.getValidatedSubtree(null, null, null, null, null, null, null);
         return bitWiseNode.evaluate(null, false, null);
     }
 
@@ -1372,7 +1359,7 @@ public class TestEPLTreeWalker extends TestCase
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         ExprNode exprNode = (walker.getStatementSpec().getFilterRootNode().getChildNodes().get(0));
-        exprNode = exprNode.getValidatedSubtree(null, null, null, null, null, null);
+        exprNode = exprNode.getValidatedSubtree(null, null, null, null, null, null, null);
         return exprNode.getExprEvaluator().evaluate(null, false, null);
     }
 
@@ -1382,7 +1369,7 @@ public class TestEPLTreeWalker extends TestCase
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         ExprNode filterExprNode = walker.getStatementSpec().getFilterRootNode();
-        filterExprNode.getValidatedSubtree(null, null, null, null, null, null);
+        filterExprNode.getValidatedSubtree(null, null, null, null, null, null, null);
         return filterExprNode.getExprEvaluator().evaluate(null, false, null);
     }
 

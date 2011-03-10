@@ -337,6 +337,16 @@ public class AggSvcGroupByReclaimAged extends AggregationServiceBase
         }
     }
 
+    public Collection<EventBean> getCollection(int column) {
+        if (column < aggregators.length) {
+            return null;
+        }
+        else {
+            AggregationAccessorSlotPair pair = accessors[column - aggregators.length];
+            return pair.getAccessor().getCollectionReadOnly(currentAggregatorAccesses[pair.getSlot()]);
+        }
+    }
+
     private static interface EvaluationFunction
     {
         public Double getLongValue();

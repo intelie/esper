@@ -36,18 +36,30 @@ public class EngineImportServiceImpl implements EngineImportService
     private final Map<String, Pair<String, String>> singleRowFunctions;
     private final Map<String, ConfigurationMethodRef> methodInvocationRef;
     private final boolean allowExtendedAggregationFunc;
+    private final boolean isUdfCache;
+    private final boolean isDuckType;
 
     /**
 	 * Ctor
      * @param allowExtendedAggregationFunc true to allow non-SQL standard builtin agg functions.
 	 */
-	public EngineImportServiceImpl(boolean allowExtendedAggregationFunc)
+	public EngineImportServiceImpl(boolean allowExtendedAggregationFunc, boolean isUdfCache, boolean isDuckType)
     {
         imports = new ArrayList<String>();
         aggregationFunctions = new HashMap<String, String>();
         singleRowFunctions = new HashMap<String, Pair<String, String>>();
         methodInvocationRef = new HashMap<String, ConfigurationMethodRef>();
         this.allowExtendedAggregationFunc = allowExtendedAggregationFunc;
+        this.isUdfCache = isUdfCache;
+        this.isDuckType = isDuckType;
+    }
+
+    public boolean isUdfCache() {
+        return isUdfCache;
+    }
+
+    public boolean isDuckType() {
+        return isDuckType;
     }
 
     public ConfigurationMethodRef getConfigurationMethodRef(String className)
@@ -368,7 +380,7 @@ public class EngineImportServiceImpl implements EngineImportService
             message += "static ";
         }
         else {
-            message += "instance ";
+            message += "instance or enumeration ";
         }
 
         if (paramTypes.length > 0)

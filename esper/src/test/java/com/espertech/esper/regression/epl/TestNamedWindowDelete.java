@@ -7,10 +7,7 @@ import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.core.EPStatementSPI;
 import com.espertech.esper.core.StatementType;
 import com.espertech.esper.epl.named.NamedWindowProcessor;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBeanTwo;
-import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportBean_B;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -30,6 +27,7 @@ public class TestNamedWindowDelete extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getLogging().setEnableQueryPlan(true);
         epService = (EPServiceProviderSPI) EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listenerWindow = new SupportUpdateListener();
@@ -401,6 +399,16 @@ public class TestNamedWindowDelete extends TestCase
         {
             stmt.destroy();
         }
+
+        // test single-two-field index reuse
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_ST0", SupportBean_ST0.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("create window WinOne.win:keepall() as SupportBean");
+        epService.getEPAdministrator().createEPL("on SupportBean_ST0 select * from WinOne where string = key0");
+        assertEquals(1, epService.getNamedWindowService().getNamedWindowIndexes("WinOne").length);
+
+        epService.getEPAdministrator().createEPL("on SupportBean_ST0 select * from WinOne where string = key0 and intPrimitive = p00");
+        assertEquals(2, epService.getNamedWindowService().getNamedWindowIndexes("WinOne").length);
     }
 
     public void testCoercionRangeMultiPropIndexes()

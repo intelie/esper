@@ -135,8 +135,8 @@ public class SupportBeanComplexProps implements Serializable, SupportMarkerInter
 			this.nestedValue = nestedValue;
             this.nestedNested = new SupportBeanSpecialGetterNestedNested(nestedNestedValue);
 		}
-	
-		public String getNestedValue() 
+
+		public String getNestedValue()
 		{
 			return nestedValue;
 		}

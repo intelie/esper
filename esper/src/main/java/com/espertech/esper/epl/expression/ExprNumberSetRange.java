@@ -5,6 +5,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.RangeParameter;
 import com.espertech.esper.util.JavaClassHelper;
@@ -46,7 +47,7 @@ public class ExprNumberSetRange extends ExprNode implements ExprEvaluator
         return node instanceof ExprNumberSetRange;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
     {
         evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
         Class typeOne = evaluators[0].getType();

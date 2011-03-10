@@ -54,7 +54,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
         // Must have exactly 1 subnodes
         try
         {
-            minNode.validate(null, null, null, null, null, null);
+            minNode.validate(null, null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -67,7 +67,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
         minNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            minNode.validate(null, null, null, null, null, null);
+            minNode.validate(null, null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

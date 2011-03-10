@@ -12,6 +12,7 @@
 	<!ENTITY references SYSTEM "modules/references.xml">
 	<!ENTITY operatorreference SYSTEM "modules/operatorreference.xml">
 	<!ENTITY functionreference SYSTEM "modules/functionreference.xml">
+	<!ENTITY enumerationreference SYSTEM "modules/enumerationreference.xml">
 	<!ENTITY viewreference SYSTEM "modules/viewreference.xml">
 	<!ENTITY processingmodel SYSTEM "modules/processingmodel.xml">
 	<!ENTITY extension SYSTEM "modules/extension.xml">
@@ -128,6 +129,8 @@
     &operatorreference;
 
     &functionreference;
+
+    &enumerationreference;
 
     &viewreference;
 

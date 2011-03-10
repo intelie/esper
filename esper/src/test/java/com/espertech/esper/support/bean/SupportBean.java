@@ -1,6 +1,7 @@
 package com.espertech.esper.support.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class SupportBean implements Serializable
 {
@@ -23,6 +24,7 @@ public class SupportBean implements Serializable
     private Byte byteBoxed;
     private Float floatBoxed;
     private Double doubleBoxed;
+    private BigDecimal bigDecimal;
 
     private SupportEnum enumValue;
 
@@ -224,5 +226,13 @@ public class SupportBean implements Serializable
     public String toString()
     {
         return this.getClass().getSimpleName() + "(" + string + ", " + intPrimitive + ")";
+    }
+
+    public BigDecimal getBigDecimal() {
+        return bigDecimal;
+    }
+
+    public void setBigDecimal(BigDecimal bigDecimal) {
+        this.bigDecimal = bigDecimal;
     }
 }

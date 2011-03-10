@@ -8,6 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.agg;
 
+import com.espertech.esper.client.EventBean;
+
+import java.util.Collection;
+import java.util.Iterator;
+
 /**
  * Interface for use by aggregate expression nodes representing aggregate functions such as 'sum' or 'avg' to use
  * to obtain the current value for the function at time of expression evaluation.
@@ -20,4 +25,6 @@ public interface AggregationResultFuture
      * @return current aggragation state
      */
     public Object getValue(int column);
+
+    public Collection<EventBean> getCollection(int column);
 }

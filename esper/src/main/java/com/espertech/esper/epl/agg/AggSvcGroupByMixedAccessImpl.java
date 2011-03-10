@@ -14,6 +14,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -138,6 +139,16 @@ public class AggSvcGroupByMixedAccessImpl extends AggregationServiceBase
         else {
             AggregationAccessorSlotPair pair = accessors[column - aggregators.length];
             return pair.getAccessor().getValue(currentAggregatorRow.getAccesses()[pair.getSlot()]);
+        }
+    }
+    
+    public Collection<EventBean> getCollection(int column) {
+        if (column < aggregators.length) {
+            return null;
+        }
+        else {
+            AggregationAccessorSlotPair pair = accessors[column - aggregators.length];
+            return pair.getAccessor().getCollectionReadOnly(currentAggregatorRow.getAccesses()[pair.getSlot()]);
         }
     }
 }

@@ -218,6 +218,11 @@ public class NamedWindowRootView extends ViewSupport
         // Determine strategy for deletion and index table to use (if any)
         Pair<NamedWindowLookupStrategy,EventTable> strategy = getStrategyPair(joinExpr, filterEventType);
 
+        if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
+            queryPlanLog.info("Strategy " + strategy.getFirst());
+            queryPlanLog.info("Table " + strategy.getSecond());
+        }
+
         // If a new table is required, add that table to be updated
         if (strategy.getSecond() != null)
         {
@@ -641,7 +646,9 @@ public class NamedWindowRootView extends ViewSupport
         tablePerSingleLookup.put(locking, strategyTablePair.getSecond());
 
         if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-            queryPlanLog.info("existing index: " + strategyTablePair.getSecond());
+            queryPlanLog.info("shared index");
+            queryPlanLog.info("strategy " + strategyTablePair.getFirst());
+            queryPlanLog.info("table " + strategyTablePair.getSecond());
         }
         return locking;
     }

@@ -14,6 +14,8 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
+import java.util.Collection;
+
 /**
  * Implementation for handling aggregation without any grouping (no group-by).
  */
@@ -83,6 +85,16 @@ public class AggSvcGroupAllMixedAccessImpl extends AggregationServiceBase
         else {
             AggregationAccessorSlotPair pair = accessors[column - aggregators.length];
             return pair.getAccessor().getValue(accesses[pair.getSlot()]);
+        }
+    }
+
+    public Collection<EventBean> getCollection(int column) {
+        if (column < aggregators.length) {
+            return null;
+        }
+        else {
+            AggregationAccessorSlotPair pair = accessors[column - aggregators.length];
+            return pair.getAccessor().getCollectionReadOnly(accesses[pair.getSlot()]);
         }
     }
 

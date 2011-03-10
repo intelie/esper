@@ -745,6 +745,9 @@ public class JavaClassHelper
         {
             for (Class type : types)
             {
+                if (types[0] == type) {
+                    continue;
+                }
                 if (isJavaBuiltinDataType(type))
                 {
                     throw new CoercionException("Cannot coerce to " + types[0].getName() + " type " + type.getName());

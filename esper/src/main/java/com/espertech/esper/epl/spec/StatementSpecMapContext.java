@@ -8,14 +8,17 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.epl.core.EngineImportService;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.named.NamedWindowService;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.pattern.PatternNodeFactory;
 import com.espertech.esper.schedule.SchedulingService;
 
-import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Context for mapping a SODA statement to a statement specification, or multiple for subqueries,
@@ -29,9 +32,11 @@ public class StatementSpecMapContext
     private final SchedulingService schedulingService;
     private final String engineURI;
     private final PatternNodeFactory patternNodeFactory;
+    private final NamedWindowService namedWindowService;
 
     private boolean hasVariables;
     private Set<String> variableNames;
+    private Map<String, ExpressionDeclItem> expressionDeclarations;
 
     /**
      * Ctor.
@@ -39,7 +44,7 @@ public class StatementSpecMapContext
      * @param variableService variable names
      * @param configuration the configuration
      */
-    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, String engineURI, PatternNodeFactory patternNodeFactory)
+    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, String engineURI, PatternNodeFactory patternNodeFactory, NamedWindowService namedWindowService)
     {
         this.engineImportService = engineImportService;
         this.variableService = variableService;
@@ -48,6 +53,7 @@ public class StatementSpecMapContext
         this.schedulingService = schedulingService;
         this.engineURI = engineURI;
         this.patternNodeFactory = patternNodeFactory;
+        this.namedWindowService = namedWindowService;
     }
 
     /**
@@ -115,5 +121,20 @@ public class StatementSpecMapContext
 
     public PatternNodeFactory getPatternNodeFactory() {
         return patternNodeFactory;
+    }
+
+    public NamedWindowService getNamedWindowService() {
+        return namedWindowService;
+    }
+
+    public Map<String, ExpressionDeclItem> getExpressionDeclarations() {
+        return expressionDeclarations;
+    }
+
+    public void addExpressionDeclarations(ExpressionDeclItem item) {
+        if (expressionDeclarations == null) {
+            expressionDeclarations = new HashMap<String, ExpressionDeclItem>();
+        }
+        expressionDeclarations.put(item.getName(), item);
     }
 }

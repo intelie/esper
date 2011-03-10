@@ -10,8 +10,9 @@ package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+
+import java.util.Collection;
 
 /**
  * A null object implementation of the AggregationService
@@ -33,6 +34,10 @@ public class AggregationServiceNull implements AggregationService {
     }
 
     public Object getValue(int column) {
+        return null;
+    }
+
+    public Collection<EventBean> getCollection(int column) {
         return null;
     }
 

@@ -15,6 +15,7 @@ import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndexMap;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Iterator;
 
 public class ExprPreviousEvalWindow implements ExprPreviousEval
@@ -67,5 +68,21 @@ public class ExprPreviousEvalWindow implements ExprPreviousEval
 
         eventsPerStream[streamNumber] = originalEvent;
         return result;
+    }
+
+    public Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
+        Collection<EventBean> events;
+        if (randomAccessGetter != null)
+        {
+            RandomAccessByIndex randomAccess = randomAccessGetter.getAccessor();
+            events = randomAccess.getWindowCollectionReadOnly();
+        }
+        else
+        {
+            EventBean evalEvent = eventsPerStream[streamNumber];
+            RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.getAccessor(evalEvent);
+            events = relativeAccess.getWindowToEventCollReadOnly(evalEvent);
+        }
+        return events;
     }
 }

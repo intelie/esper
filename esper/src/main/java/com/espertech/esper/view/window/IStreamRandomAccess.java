@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.ViewUpdatedCollection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -132,6 +133,10 @@ public class IStreamRandomAccess implements RandomAccessByIndex, ViewUpdatedColl
     public Iterator<EventBean> getWindowIterator()
     {
         return arrayList.iterator();
+    }
+
+    public Collection<EventBean> getWindowCollectionReadOnly() {
+        return arrayList;
     }
 
     public int getWindowCount()

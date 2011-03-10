@@ -24,7 +24,7 @@ public class TestAggregationServiceGroupByImpl extends TestCase
             aggregators[i] = new SupportAggregator();
         }
         ExprEvaluator evaluators[] = new ExprEvaluator[] { new SupportExprNode(5).getExprEvaluator(), new SupportExprNode(2).getExprEvaluator() };
-        methodResolutionService = new MethodResolutionServiceImpl(null, null, true);
+        methodResolutionService = new MethodResolutionServiceImpl(null, null);
 
         service = new AggSvcGroupByNoAccessImpl(evaluators, aggregators, methodResolutionService);
 

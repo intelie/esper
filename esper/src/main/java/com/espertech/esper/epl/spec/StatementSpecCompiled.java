@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.epl.declexpr.ExprDeclaredNode;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprSubselectNode;
 
@@ -35,6 +36,7 @@ public class StatementSpecCompiled
     private final OutputLimitSpec outputLimitSpec;
     private final List<OrderByItem> orderByList;
     private final List<ExprSubselectNode> subSelectExpressions;
+    private final List<ExprDeclaredNode> declaredExpressions;
     private final Set<String> variableReferences;
     private final RowLimitSpec rowLimitSpec;
     private final Set<String> eventTypeReferences;
@@ -84,6 +86,7 @@ public class StatementSpecCompiled
                                  OutputLimitSpec outputLimitSpec,
                                  List<OrderByItem> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions,
+                                 List<ExprDeclaredNode> declaredExpressions,
                                  Set<String> variableReferences,
                                  RowLimitSpec rowLimitSpec,
                                  Set<String> eventTypeReferences,
@@ -109,6 +112,7 @@ public class StatementSpecCompiled
         this.outputLimitSpec = outputLimitSpec;
         this.orderByList = orderByList;
         this.subSelectExpressions = subSelectExpressions;
+        this.declaredExpressions = declaredExpressions;
         this.variableReferences = variableReferences;
         this.rowLimitSpec = rowLimitSpec;
         this.eventTypeReferences = eventTypeReferences;
@@ -140,6 +144,7 @@ public class StatementSpecCompiled
         outputLimitSpec = null;
         orderByList = new ArrayList<OrderByItem>();
         subSelectExpressions = new ArrayList<ExprSubselectNode>();
+        declaredExpressions = new ArrayList<ExprDeclaredNode>();
         variableReferences = new HashSet<String>();
         rowLimitSpec = null;
         eventTypeReferences = new HashSet<String>();
@@ -393,5 +398,9 @@ public class StatementSpecCompiled
     public Map<Integer, List<ExprNode>> getSqlParameters()
     {
         return sqlParameters;
+    }
+
+    public List<ExprDeclaredNode> getDeclaredExpressions() {
+        return declaredExpressions;
     }
 }

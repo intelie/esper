@@ -350,15 +350,15 @@ public class TestSubscriberBind extends TestCase
         stmt.setSubscriber(subscriber);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
-        ArrayAssertionUtil.assertProps(subscriber.getAndResetIndicateIStream().get(0), fields, new Object[] {"E1", 1});
+        ArrayAssertionUtil.assertPropsMap(subscriber.getAndResetIndicateIStream().get(0), fields, new Object[]{"E1", 1});
         assertEquals(0, subscriber.getAndResetIndicateRStream().size());
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 10));
-        ArrayAssertionUtil.assertProps(subscriber.getAndResetIndicateIStream().get(0), fields, new Object[] {"E2", 10});
+        ArrayAssertionUtil.assertPropsMap(subscriber.getAndResetIndicateIStream().get(0), fields, new Object[]{"E2", 10});
         assertEquals(0, subscriber.getAndResetIndicateRStream().size());
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 2));
-        ArrayAssertionUtil.assertProps(subscriber.getAndResetIndicateIStream().get(0), fields, new Object[] {"E1", 2});
-        ArrayAssertionUtil.assertProps(subscriber.getAndResetIndicateRStream().get(0), fields, new Object[] {"E1", 1});
+        ArrayAssertionUtil.assertPropsMap(subscriber.getAndResetIndicateIStream().get(0), fields, new Object[]{"E1", 2});
+        ArrayAssertionUtil.assertPropsMap(subscriber.getAndResetIndicateRStream().get(0), fields, new Object[]{"E1", 1});
     }
 }

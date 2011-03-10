@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.enummethod.dot.ExprDotStaticMethodWrap;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,25 +17,32 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-public class ExprStaticMethodEvalInvoke implements ExprEvaluator
+public class ExprDotEvalStaticMethod implements ExprEvaluator
 {
-    private static final Log log = LogFactory.getLog(ExprStaticMethodEvalInvoke.class);
+    private static final Log log = LogFactory.getLog(ExprDotEvalStaticMethod.class);
 
     private final String classOrPropertyName;
 	private final FastMethod staticMethod;
     private final ExprEvaluator[] childEvals;
     private final boolean isConstantParameters;
     private final ExprDotEval[] chainEval;
+    private final ExprDotStaticMethodWrap resultWrapLambda;
 
     private boolean isCachedResult;
     private Object cachedResult;
 
-    public ExprStaticMethodEvalInvoke(String classOrPropertyName, FastMethod staticMethod, ExprEvaluator[] childEvals, boolean constantParameters, ExprDotEval[] chainEval)
+    public ExprDotEvalStaticMethod(String classOrPropertyName,
+                                   FastMethod staticMethod,
+                                   ExprEvaluator[] childEvals,
+                                   boolean constantParameters,
+                                   ExprDotStaticMethodWrap resultWrapLambda,
+                                   ExprDotEval[] chainEval)
     {
         this.classOrPropertyName = classOrPropertyName;
         this.staticMethod = staticMethod;
         this.childEvals = childEvals;
-        isConstantParameters = constantParameters;
+        this.isConstantParameters = constantParameters;
+        this.resultWrapLambda = resultWrapLambda;
         this.chainEval = chainEval;
     }
 
@@ -75,6 +83,10 @@ public class ExprStaticMethodEvalInvoke implements ExprEvaluator
             {
                 cachedResult = result;
                 isCachedResult = true;
+            }
+
+            if (resultWrapLambda != null) {
+                result = resultWrapLambda.convert(result);
             }
 
             if (chainEval.length == 0) {

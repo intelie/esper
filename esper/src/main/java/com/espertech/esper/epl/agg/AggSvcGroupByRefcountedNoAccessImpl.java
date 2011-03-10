@@ -14,10 +14,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Implementation for handling aggregation with grouping by group-keys.
@@ -149,5 +146,9 @@ public class AggSvcGroupByRefcountedNoAccessImpl extends AggregationServiceBase
     public Object getValue(int column)
     {
         return currentAggregatorRow[column].getValue();
+    }
+
+    public Collection<EventBean> getCollection(int column) {
+        return null;
     }
 }

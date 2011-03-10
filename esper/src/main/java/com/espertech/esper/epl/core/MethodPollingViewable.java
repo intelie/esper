@@ -22,6 +22,7 @@ import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.epl.spec.MethodStreamSpec;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
@@ -99,7 +100,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
 
     public void validate(EngineImportService engineImportService, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider,
                          VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot,
-                         SchedulingService schedulingService, String engineURI, Map<Integer, List<ExprNode>> sqlParameters) throws ExprValidationException {
+                         SchedulingService schedulingService, String engineURI, Map<Integer, List<ExprNode>> sqlParameters, EventAdapterService eventAdapterService) throws ExprValidationException {
         Class[] paramTypes = new Class[inputParameters.size()];
         int count = 0;
         validatedExprNodes = new ExprEvaluator[inputParameters.size()];
@@ -108,7 +109,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
 
         for (ExprNode exprNode : inputParameters)
         {
-            ExprNode validated = exprNode.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+            ExprNode validated = exprNode.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
             ExprEvaluator evaluator = validated.getExprEvaluator();
             validatedExprNodes[count] = evaluator;
             paramTypes[count] = evaluator.getType();

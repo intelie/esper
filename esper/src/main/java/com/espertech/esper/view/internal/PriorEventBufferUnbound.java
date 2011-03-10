@@ -13,6 +13,7 @@ import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.view.window.RandomAccessByIndex;
 import com.espertech.esper.collection.RollingEventBuffer;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -80,6 +81,10 @@ public class PriorEventBufferUnbound implements ViewUpdatedCollection, RandomAcc
     public Iterator<EventBean> getWindowIterator()
     {
         // no requirement for window iterator support
+        return null;
+    }
+
+    public Collection<EventBean> getWindowCollectionReadOnly() {
         return null;
     }
 

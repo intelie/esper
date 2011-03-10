@@ -611,4 +611,16 @@ public class EventBeanUtility
         }
         return result;
     }
+
+    public static boolean compareReferences(EventBean[] reference, EventBean[] eventsPerStream) {
+        if (reference.length != eventsPerStream.length) {
+            return false;
+        }
+        for (int i = 0; i < reference.length; i++) {
+            if (reference[i] != eventsPerStream[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

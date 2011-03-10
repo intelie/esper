@@ -212,7 +212,12 @@ public class MethodResolver
 				for(Object param : paramTypes)
 				{
 					params.append(appendString);
-					params.append(param.toString());
+                    if (param == null) {
+                        params.append("(null)");
+                    }
+                    else {
+					    params.append(param.toString());
+                    }
 					appendString = ", ";
 				}
 			}

@@ -106,8 +106,8 @@ public class TestSubselectUnfiltered extends TestCase {
         stmt.addListener(listener);
 
         // check type
-        assertEquals(int.class, stmt.getEventType().getPropertyType("idS3"));
-        assertEquals(int.class, stmt.getEventType().getPropertyType("idS4"));
+        assertEquals(Integer.class, stmt.getEventType().getPropertyType("idS3"));
+        assertEquals(Integer.class, stmt.getEventType().getPropertyType("idS4"));
 
         // test no event, should return null
         epService.getEPRuntime().sendEvent(new SupportBean_S0(0));
@@ -223,7 +223,7 @@ public class TestSubselectUnfiltered extends TestCase {
         stmt.addListener(listener);
 
         // check type
-        assertEquals(int.class, stmt.getEventType().getPropertyType("idS1"));
+        assertEquals(Integer.class, stmt.getEventType().getPropertyType("idS1"));
 
         // test no event, should return null
         epService.getEPRuntime().sendEvent(new SupportBean_S0(0));
@@ -251,7 +251,7 @@ public class TestSubselectUnfiltered extends TestCase {
         stmt.addListener(listener);
 
         // check type
-        assertEquals(double.class, stmt.getEventType().getPropertyType("idS1"));
+        assertEquals(Double.class, stmt.getEventType().getPropertyType("idS1"));
 
         // test no event, should return null
         epService.getEPRuntime().sendEvent(new SupportBean_S0(0));
@@ -404,7 +404,7 @@ public class TestSubselectUnfiltered extends TestCase {
         stmt.addListener(listener);
 
         // check type
-        assertEquals(int.class, stmt.getEventType().getPropertyType(columnName));
+        assertEquals(Integer.class, stmt.getEventType().getPropertyType(columnName));
 
         // test no event, should return null
         epService.getEPRuntime().sendEvent(new SupportBean_S0(0));
@@ -431,7 +431,7 @@ public class TestSubselectUnfiltered extends TestCase {
         stmt.addListener(listener);
 
         // check type
-        assertEquals(int.class, stmt.getEventType().getPropertyType(columnName));
+        assertEquals(Integer.class, stmt.getEventType().getPropertyType(columnName));
 
         // test no event, should return null
         epService.getEPRuntime().sendEvent(new SupportBean_S0(0));

@@ -72,4 +72,8 @@ public class NamedWindowLookupStrategyTableScan implements NamedWindowLookupStra
 
         return removeEvents.toArray(new EventBean[removeEvents.size()]);
     }
+
+    public String toString() {
+        return "NamedWindowLookupStrategyTableScan";
+    }
 }

@@ -3,6 +3,9 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Represents the aggregation accessor that provides the result for the "first" aggregation function without index.
  */
@@ -31,5 +34,13 @@ public class AggregationAccessorFirst implements AggregationAccessor
         }
         eventsPerStream[streamNum] = bean;
         return childNode.evaluate(eventsPerStream, true, null);
+    }
+
+    public Collection<EventBean> getCollectionReadOnly(AggregationAccess access) {
+        EventBean bean = access.getFirstValue();
+        if (bean == null) {
+            return null;
+        }
+        return Collections.singletonList(bean);
     }
 }

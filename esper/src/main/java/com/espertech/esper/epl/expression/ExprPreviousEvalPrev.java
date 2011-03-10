@@ -14,6 +14,9 @@ import com.espertech.esper.view.window.RandomAccessByIndexGetter;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndexMap;
 
+import java.util.Collection;
+import java.util.Collections;
+
 public class ExprPreviousEvalPrev implements ExprPreviousEval
 {
     private final int streamNumber;
@@ -39,6 +42,32 @@ public class ExprPreviousEvalPrev implements ExprPreviousEval
 
     public Object evaluate(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
     {
+        EventBean substituteEvent = getSubstitute(eventsPerStream, exprEvaluatorContext);
+        if (substituteEvent == null)
+        {
+            return null;
+        }
+
+        // Substitute original event with prior event, evaluate inner expression
+        EventBean originalEvent = eventsPerStream[streamNumber];
+        eventsPerStream[streamNumber] = substituteEvent;
+        Object evalResult = evalNode.evaluate(eventsPerStream, true, exprEvaluatorContext);
+        eventsPerStream[streamNumber] = originalEvent;
+
+        return evalResult;
+    }
+
+    public Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
+        EventBean substituteEvent = getSubstitute(eventsPerStream, context);
+        if (substituteEvent == null)
+        {
+            return null;
+        }
+        return Collections.singletonList(substituteEvent);
+    }
+
+    private EventBean getSubstitute(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext) {
+
         // Use constant if supplied
         Integer index;
         if (isConstantIndex)
@@ -79,17 +108,6 @@ public class ExprPreviousEvalPrev implements ExprPreviousEval
                 substituteEvent = relativeAccess.getRelativeToEnd(evalEvent, index);
             }
         }
-        if (substituteEvent == null)
-        {
-            return null;
-        }
-
-        // Substitute original event with prior event, evaluate inner expression
-        EventBean originalEvent = eventsPerStream[streamNumber];
-        eventsPerStream[streamNumber] = substituteEvent;
-        Object evalResult = evalNode.evaluate(eventsPerStream, true, exprEvaluatorContext);
-        eventsPerStream[streamNumber] = originalEvent;
-
-        return evalResult;
+        return substituteEvent;
     }
 }

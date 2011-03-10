@@ -10,6 +10,7 @@ package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EventBean;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -34,6 +35,8 @@ public interface RandomAccessByIndex
     public EventBean getNewDataTail(int index);
 
     public Iterator<EventBean> getWindowIterator();
+
+    public Collection<EventBean> getWindowCollectionReadOnly();
 
     public int getWindowCount();
 }

@@ -9,11 +9,13 @@
 package com.espertech.esper.view.ext;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.ArrayMaxEventCollectionRO;
 import com.espertech.esper.collection.ArrayMaxEventIterator;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.view.window.RandomAccessByIndex;
 import com.espertech.esper.view.window.RandomAccessByIndexObserver;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
@@ -134,6 +136,11 @@ public class IStreamSortedRandomAccess implements RandomAccessByIndex
     {
         initCache();
         return new ArrayMaxEventIterator(cache, cacheFilledTo);
+    }
+
+    public Collection<EventBean> getWindowCollectionReadOnly() {
+        initCache();
+        return new ArrayMaxEventCollectionRO(cache, cacheFilledTo);
     }
 
     public int getWindowCount()

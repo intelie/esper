@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Represents a subselect in an expression tree.
  */
-public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluator
+public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluator, ExprEvaluatorLambda
 {
     private static final Log log = LogFactory.getLog(ExprSubselectNode.class);
 
@@ -67,6 +67,7 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
      * @return evaluation result
      */
     public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
+    public abstract Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
 
     public abstract boolean isAllowMultiColumnSelect();
 
@@ -125,6 +126,15 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
             matchingEvents = singleNullRowEventSet;
         }
         return evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
+    }
+
+    public Collection<EventBean> evaluateGetROCollection(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        Collection<EventBean> matchingEvents = strategy.lookup(eventsPerStream);
+        if (subselectAggregationPreprocessor != null) {
+            subselectAggregationPreprocessor.evaluate(eventsPerStream, matchingEvents, exprEvaluatorContext);
+            matchingEvents = singleNullRowEventSet;
+        }
+        return evaluateGetColl(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
     }
 
     /**

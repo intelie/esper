@@ -97,7 +97,7 @@ public class SelectExprProcessorFactory
                     StreamTypeService type = new StreamTypeServiceImpl(synthetic.getResultEventType(), null, false, engineURI);
                     groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
                     for (int i = 0; i < item.getExpressions().size(); i++) {
-                        groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+                        groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
                     }
                     forDelivery = true;
                 }

@@ -130,6 +130,7 @@ tokens
 	USING='using';
 	MERGE='merge';
 	MATCHED='matched';
+	EXPRESSIONDECL='expression';
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -563,20 +564,35 @@ tokens
 
 startPatternExpressionRule
 	:	annotationNoEnum*
+		expressionDecl*
 		patternExpression
 		EOF!
 	;
 	
 startEPLExpressionRule 
 	:	annotationEnum*	
+		expressionDecl*
 		eplExpression
 		EOF
-		-> ^(EPL_EXPR annotationEnum* eplExpression) 
+		-> ^(EPL_EXPR annotationEnum* expressionDecl* eplExpression) 
 	;
 
 startEventPropertyRule 
 	:	eventProperty
 		EOF!
+	;
+
+//----------------------------------------------------------------------------
+// Expression Declaration
+//----------------------------------------------------------------------------
+expressionDecl
+    	:	EXPRESSIONDECL i=IDENT LCURLY expressionLambdaDecl? expression RCURLY
+		-> ^(EXPRESSIONDECL $i expression expressionLambdaDecl?)
+    	;
+
+expressionLambdaDecl
+	:	(i=IDENT | (LPAREN columnList RPAREN)) GOES
+		-> ^(GOES $i? columnList?)	
 	;
 
 //----------------------------------------------------------------------------
@@ -935,7 +951,8 @@ selectionList
 
 selectionListElement
   @init { String identifier = null; } 
-	:   	s=STAR -> WILDCARD_SELECT[$s]
+	:   	s=STAR
+		-> WILDCARD_SELECT[$s]
 	|	(streamSelector) => streamSelector
 	|	expression (AS i=keywordAllowedIdent { identifier = i.getTree().toString(); } )?
 		-> {identifier != null}? ^(SELECTION_ELEMENT_EXPR expression IDENT[identifier])
@@ -1288,7 +1305,9 @@ unaryExpression
 	| eventPropertyOrLibFunction
 	| (builtinFunc) => (builtinFunc)
 	| arrayExpression
-	| subSelectExpression
+	| subSelectExpression (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	    -> {$d != null}? ^(DOT_EXPR subSelectExpression libFunctionNoClass+)
+	    -> subSelectExpression
 	| existsSubSelectExpression
 	;
 	    
@@ -1347,10 +1366,16 @@ builtinFunc
 	| lastAggregation
 	| windowAggregation
 	| COALESCE^ LPAREN! expression COMMA! expression (COMMA! expression)* RPAREN!
-	| PREVIOUS^ LPAREN! expression (COMMA! expression)? RPAREN!
-	| PREVIOUSTAIL^ LPAREN! expression (COMMA! expression)? RPAREN!
+	| PREVIOUS LPAREN expression (COMMA expression)? RPAREN (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(PREVIOUS expression+) libFunctionNoClass+)
+	  -> ^(PREVIOUS expression+)	   
+	| PREVIOUSTAIL LPAREN expression (COMMA expression)? RPAREN (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(PREVIOUSTAIL expression+) libFunctionNoClass+)
+	  -> ^(PREVIOUSTAIL expression+)	   
 	| PREVIOUSCOUNT^ LPAREN! expression RPAREN!
-	| PREVIOUSWINDOW^ LPAREN! expression RPAREN!
+	| PREVIOUSWINDOW LPAREN expression RPAREN (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(PREVIOUSWINDOW expression) libFunctionNoClass+)
+	  -> ^(PREVIOUSWINDOW expression)	   
 	| PRIOR^ LPAREN! NUM_INT COMMA! eventProperty RPAREN!
 	// MIN and MAX can also be "Math.min" static function and "min(price)" aggregation function and "min(a, b, c...)" built-in function
 	// therefore handled in code via libFunction as below
@@ -1362,17 +1387,20 @@ builtinFunc
 	;
 	
 firstAggregation
-	: FIRST LPAREN accessAggExpr (COMMA expression)? RPAREN
+	: FIRST LPAREN accessAggExpr (COMMA expression)? RPAREN (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(FIRST_AGGREG accessAggExpr expression?) libFunctionNoClass+)
 	  -> ^(FIRST_AGGREG accessAggExpr expression?)
 	;
 
 lastAggregation
-	: LAST LPAREN accessAggExpr (COMMA expression)? RPAREN
+	: LAST LPAREN accessAggExpr (COMMA expression)? RPAREN (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(LAST_AGGREG accessAggExpr expression?) libFunctionNoClass+)
 	  -> ^(LAST_AGGREG accessAggExpr expression?)
 	;
 	
 windowAggregation
-	: WINDOW LPAREN accessAggExpr RPAREN
+	: WINDOW LPAREN accessAggExpr RPAREN (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(WINDOW_AGGREG accessAggExpr) libFunctionNoClass+)
 	  -> ^(WINDOW_AGGREG accessAggExpr)
 	;
 
@@ -1411,12 +1439,17 @@ funcIdent
 	: escapableIdent
 	| max=MAX -> IDENT[$max]
 	| min=MIN -> IDENT[$min]
+	| w=WHERE -> IDENT[$w]
 	;
 	
 libFunctionArgs
-	: (ALL! | DISTINCT)? expression (COMMA! expression)*
+	: (ALL! | DISTINCT)? libFunctionArgItem (COMMA! libFunctionArgItem)*
 	;
 	
+libFunctionArgItem
+	: expressionLambdaDecl? expression
+	;
+
 betweenList
 	: concatenationExpr AND_EXPR! concatenationExpr
 	;
@@ -1869,6 +1902,7 @@ stringconstant
 FOLLOWMAX_BEGIN : '-[';
 FOLLOWMAX_END   : ']>';
 FOLLOWED_BY 	: '->';
+GOES 		: '=>';
 EQUALS 		: '=';
 SQL_NE 		: '<>';
 QUESTION 	: '?';

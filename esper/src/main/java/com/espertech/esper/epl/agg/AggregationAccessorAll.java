@@ -1,9 +1,11 @@
 package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.IteratorCollectionRO;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -45,5 +47,12 @@ public class AggregationAccessorAll implements AggregationAccessor
         }
 
         return array;
+    }
+
+    public Collection<EventBean> getCollectionReadOnly(AggregationAccess access) {
+        if (access.size() == 0) {
+            return null;
+        }
+        return access.collectionReadOnly();
     }
 }

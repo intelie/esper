@@ -8,10 +8,16 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.enummethod.dot.ExprDotStaticMethodWrap;
+import com.espertech.esper.epl.enummethod.dot.ExprDotStaticMethodWrapFactory;
+import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
+import com.espertech.esper.epl.enummethod.dot.ValidationContext;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -80,7 +86,7 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
 	{
         StringBuilder buffer = new StringBuilder();
 		buffer.append(functionName);
-        ExprNodeUtility.toExpressionString(chainSpec, buffer);
+        ExprNodeUtility.toExpressionString(chainSpec, buffer, true);
 		return buffer.toString();
 	}
 
@@ -103,9 +109,9 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
         return other.clazz == this.clazz && other.functionName.endsWith(this.functionName);
 	}
 
-	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
 	{
-        ExprNodeUtility.validate(chainSpec, streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext);
+        ExprNodeUtility.validate(chainSpec, streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
 
         // get first chain item
         List<ExprChainedSpec> chainList = new ArrayList<ExprChainedSpec>(chainSpec);
@@ -119,6 +125,9 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
         boolean allConstants = true;
         for(ExprNode childNode : firstItem.getParameters())
 		{
+            if (childNode instanceof ExprLambdaGoesNode) {
+                throw new ExprValidationException("Unexpected lambda-expression encountered as parameter to UDF or static method");
+            }
             ExprEvaluator eval = childNode.getExprEvaluator();
             childEvals[count] = eval;
 			paramTypes[count] = eval.getType();
@@ -133,9 +142,10 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
 
         // Try to resolve the method
         FastMethod staticMethod;
+        Method method;
 		try
 		{
-			Method method = methodResolutionService.resolveMethod(clazz.getName(), firstItem.getName(), paramTypes);
+			method = methodResolutionService.resolveMethod(clazz.getName(), firstItem.getName(), paramTypes);
 			FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
 			staticMethod = declaringClass.getMethod(method);
 		}
@@ -144,8 +154,13 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
 			throw new ExprValidationException(e.getMessage());
 		}
 
-        ExprDotEval[] eval = ExprDotNodeUtility.getChainEvaluators(staticMethod.getReturnType(), chainList, methodResolutionService, false);
-        evaluator = new ExprStaticMethodEvalInvoke(clazz.getName(), staticMethod, childEvals, isConstantParameters, eval);
+        // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
+        ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.make(method, eventAdapterService, chainList);
+        EventType optionalLambdaType = optionalLambdaWrap != null ? optionalLambdaWrap.getEventType() : null;
+
+        ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+        ExprDotEval[] eval = ExprDotNodeUtility.getChainEvaluators(staticMethod.getReturnType(), optionalLambdaType, chainList, validationContext, false, streamTypeService).getSecond();
+        evaluator = new ExprDotEvalStaticMethod(clazz.getName(), staticMethod, childEvals, isConstantParameters, optionalLambdaWrap, eval);
 	}
 
     @Override
@@ -161,7 +176,7 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
     }
 
     @Override
-    protected void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
+    public void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
         super.acceptChildnodes(visitor, parent);
         ExprNode.acceptChain(visitor, chainSpec, this);
     }

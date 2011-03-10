@@ -28,6 +28,8 @@ public interface MethodResolutionService
      */
     public boolean isUdfCache();
 
+    public boolean isDuckType();
+
     /**
      * Resolves a given method name and list of parameter types to an instance or static method exposed by the given class.
      * @param clazz is the class to look for a fitting method

@@ -47,6 +47,18 @@ public class TestStreamExpr extends TestCase
         stmt.addListener(listener);
 
         runAssertionChainedParam(stmt, subexpr);
+
+        // test property hosts a method
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanStaticOuter", SupportBeanStaticOuter.class);
+        stmt = epService.getEPAdministrator().createEPL("select inside.getMyString() as val," +
+                "inside.insideTwo.getMyOtherString() as val2 " +
+                "from SupportBeanStaticOuter");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanStaticOuter());
+        EventBean result = listener.assertOneGetNewAndReset();
+        assertEquals("hello", result.get("val"));
+        assertEquals("hello2", result.get("val2"));
     }
 
     private void runAssertionChainedParam(EPStatement stmt, String subexpr) {
@@ -299,7 +311,7 @@ public class TestStreamExpr extends TestCase
         tryInvalid("select s0.getString(1,2,3) from " + SupportBean.class.getName() + " as s0", null);
 
         tryInvalid("select s0.abc() from " + SupportBean.class.getName() + " as s0",
-                   "Error starting statement: Could not find instance method named 'abc' in class 'com.espertech.esper.support.bean.SupportBean' taking no parameters [select s0.abc() from com.espertech.esper.support.bean.SupportBean as s0]");
+                   "Error starting statement: Could not find instance or enumeration method named 'abc' in class 'com.espertech.esper.support.bean.SupportBean' taking no parameters [select s0.abc() from com.espertech.esper.support.bean.SupportBean as s0]");
     }
 
     private void tryInvalid(String clause, String message)

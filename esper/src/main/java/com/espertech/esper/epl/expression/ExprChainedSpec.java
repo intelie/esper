@@ -72,4 +72,12 @@ public class ExprChainedSpec implements Serializable
         result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ExprChainedSpec{" +
+                "name='" + name + '\'' +
+                ", parameters=" + parameters +
+                '}';
+    }
 }

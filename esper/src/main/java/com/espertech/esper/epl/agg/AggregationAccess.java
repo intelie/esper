@@ -10,6 +10,7 @@ package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.client.EventBean;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -63,6 +64,12 @@ public interface AggregationAccess
      * @return group event iterator
      */
     public Iterator<EventBean> iterator();
+
+    /**
+     * Returns all events for the group.
+     * @return group event iterator
+     */
+    public Collection<EventBean> collectionReadOnly();
 
     /**
      * Returns the number of events in the group.

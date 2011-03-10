@@ -43,6 +43,7 @@ public class EPStatementObjectModel implements Serializable
     private static final long serialVersionUID = 0L;
 
     private List<AnnotationPart> annotations;
+    private List<ExpressionDeclaration> expressionDeclarations;
     private UpdateClause updateClause;
     private CreateVariableClause createVariable;
     private CreateWindowClause createWindow;
@@ -310,6 +311,7 @@ public class EPStatementObjectModel implements Serializable
         StringWriter writer = new StringWriter();
 
         AnnotationPart.toEPL(writer, annotations);
+        ExpressionDeclaration.toEPL(writer, expressionDeclarations);
 
         if (createIndex != null)
         {
@@ -643,5 +645,13 @@ public class EPStatementObjectModel implements Serializable
      */
     public void setForClause(ForClause forClause) {
         this.forClause = forClause;
+    }
+
+    public List<ExpressionDeclaration> getExpressionDeclarations() {
+        return expressionDeclarations;
+    }
+
+    public void setExpressionDeclarations(List<ExpressionDeclaration> expressionDeclarations) {
+        this.expressionDeclarations = expressionDeclarations;
     }
 }

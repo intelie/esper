@@ -11,9 +11,11 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.enummethod.dot.ValidationContext;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,7 +96,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
 	{
         StringBuilder buffer = new StringBuilder();
 		buffer.append(streamName);
-        ExprNodeUtility.toExpressionString(chainSpec, buffer);
+        ExprNodeUtility.toExpressionString(chainSpec, buffer, true);
 		return buffer.toString();
 	}
 
@@ -120,7 +122,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
         return true;
 	}
 
-	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
 	{
         String[] streams = streamTypeService.getStreamNames();
         for (int i = 0; i < streams.length; i++)
@@ -140,7 +142,8 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
         EventType eventType = streamTypeService.getEventTypes()[streamNum];
         Class type = eventType.getUnderlyingType();
 
-        evaluators = ExprDotNodeUtility.getChainEvaluators(type, chainSpec, methodResolutionService, false);
+        ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+        evaluators = ExprDotNodeUtility.getChainEvaluators(type, null, chainSpec, validationContext, false, streamTypeService).getSecond();
 	}
 
 	public Class getType()
@@ -188,7 +191,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
     }
 
     @Override
-    protected void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
+    public void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
         super.acceptChildnodes(visitor, parent);
         ExprNode.acceptChain(visitor, chainSpec, this);
     }

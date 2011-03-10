@@ -8,8 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
-import com.espertech.esper.collection.Pair;
-
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,7 @@ public class StaticMethodExpression extends ExpressionBase
     private static final long serialVersionUID = -8876482797010708113L;
 
     private String className;
-    private List<Pair<String, List<Expression>>> chain = new ArrayList<Pair<String, List<Expression>>>();
+    private List<DotExpressionItem> chain = new ArrayList<DotExpressionItem>();
 
     /**
      * Ctor.
@@ -46,14 +44,14 @@ public class StaticMethodExpression extends ExpressionBase
                 parameterList.add(new ConstantExpression(parameters[i]));
             }
         }
-        chain.add(new Pair<String, List<Expression>>(method, parameterList));
+        chain.add(new DotExpressionItem(method, parameterList, false));
     }
 
     /**
      * Returns the chain of method invocations, each pair a method name and list of parameter expressions
      * @return method chain
      */
-    public List<Pair<String, List<Expression>>> getChain()
+    public List<DotExpressionItem> getChain()
     {
         return chain;
     }
@@ -62,7 +60,7 @@ public class StaticMethodExpression extends ExpressionBase
      * Sets the chain of method invocations, each pair a method name and list of parameter expressions
      * @param chain method chain
      */
-    public void setChain(List<Pair<String, List<Expression>>> chain) {
+    public void setChain(List<DotExpressionItem> chain) {
         this.chain = chain;
     }
 
@@ -71,7 +69,7 @@ public class StaticMethodExpression extends ExpressionBase
      * @param className class name providing the static method
      * @param chain method chain
      */
-    public StaticMethodExpression(String className, List<Pair<String, List<Expression>>> chain)
+    public StaticMethodExpression(String className, List<DotExpressionItem> chain)
     {
         this.className = className;
         this.chain = chain;
@@ -85,7 +83,7 @@ public class StaticMethodExpression extends ExpressionBase
     public void toPrecedenceFreeEPL(StringWriter writer)
     {
         writer.write(className);
-        DotExpression.renderChain(chain, writer);
+        DotExpressionItem.render(chain, writer, true);
     }
 
     /**

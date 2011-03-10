@@ -3,6 +3,7 @@ package com.espertech.esper.epl.property;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.core.ExpressionResultCacheService;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.*;
@@ -58,6 +59,10 @@ public class PropertyEvaluatorFactory
             {
                 return timeProvider;
             }
+
+            public ExpressionResultCacheService getExpressionResultCacheService() {
+                return null;
+            }
         };
 
         streamEventTypes.add(sourceEventType);
@@ -96,7 +101,7 @@ public class PropertyEvaluatorFactory
                 boolean[] isIStreamOnly = new boolean[streamNames.size()];
                 Arrays.fill(isIStreamOnly, true);
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(whereTypes, whereStreamNames, isIStreamOnly, engineURI, false);
-                whereClauses[i] = atom.getOptionalWhereClause().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, validateContext).getExprEvaluator();
+                whereClauses[i] = atom.getOptionalWhereClause().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, validateContext, eventAdapterService).getExprEvaluator();
             }
 
             // validate select clause
@@ -124,7 +129,7 @@ public class PropertyEvaluatorFactory
                     else if (raw instanceof SelectClauseExprRawSpec)
                     {
                         SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                        ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, validateContext);
+                        ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, validateContext, eventAdapterService);
                         String resultName = exprSpec.getOptionalAsName();
                         if (resultName == null)
                         {

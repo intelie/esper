@@ -9,13 +9,10 @@
 package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.ReversedArrayEventIterator;
 import com.espertech.esper.collection.ViewUpdatedCollection;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Provides relative access to insert stream events for certain window.
@@ -99,6 +96,10 @@ public class IStreamRelativeAccess implements RelativeAccessByEventNIndex, ViewU
     public Iterator<EventBean> getWindowToEvent(Object evalEvent)
     {
         return new ReversedArrayEventIterator(lastNewData);
+    }
+
+    public Collection<EventBean> getWindowToEventCollReadOnly(Object evalEvent) {
+        return Arrays.asList(lastNewData);
     }
 
     public int getWindowToEventCount(EventBean evalEvent)

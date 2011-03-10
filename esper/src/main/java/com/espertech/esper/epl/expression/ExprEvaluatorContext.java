@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.core.ExpressionResultCacheService;
 import com.espertech.esper.schedule.TimeProvider;
 
 /**
@@ -20,4 +21,6 @@ public interface ExprEvaluatorContext
      * @return time provider
      */
     public TimeProvider getTimeProvider();
+
+    public ExpressionResultCacheService getExpressionResultCacheService();
 }

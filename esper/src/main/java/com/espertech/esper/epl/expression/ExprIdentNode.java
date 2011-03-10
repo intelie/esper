@@ -15,6 +15,7 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.LevenshteinDistance;
 
@@ -125,7 +126,7 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
         }
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
     {
         Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
         resolvedStreamName = propertyInfoPair.getSecond();
@@ -378,5 +379,16 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
         if (unresolvedPropertyName != null ? !unresolvedPropertyName.equals(other.unresolvedPropertyName) : other.unresolvedPropertyName != null)
             return false;
         return true;
+    }
+
+    public static Pair<PropertyResolutionDescriptor, String> getTypeFromStream(StreamTypeService streamTypeService, String propertyNameNestable)
+                    throws ExprValidationPropertyException {
+        String streamOrProp = null;
+        String prop = propertyNameNestable;
+        if (propertyNameNestable.indexOf('.') != -1) {
+            prop = propertyNameNestable.substring(propertyNameNestable.indexOf('.') + 1);
+            streamOrProp = propertyNameNestable.substring(0, propertyNameNestable.indexOf('.'));
+        }
+        return getTypeFromStream(streamTypeService, prop, streamOrProp);
     }
 }

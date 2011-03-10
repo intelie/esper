@@ -14,6 +14,7 @@ import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.core.MethodResolutionService;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -104,5 +105,9 @@ public class AggSvcGroupByNoAccessImpl extends AggregationServiceBase
     public Object getValue(int column)
     {
         return currentAggregatorRow[column].getValue();
+    }
+
+    public Collection<EventBean> getCollection(int column) {
+        return null;
     }
 }

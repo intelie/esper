@@ -5,6 +5,8 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
+import java.util.Collection;
+
 /**
  * Aggregation service for use when only first/last/window aggregation functions are used an none other.
  */
@@ -52,6 +54,12 @@ public class AggSvcGroupAllAccessOnlyImpl implements AggregationService, Aggrega
     {
         AggregationAccessorSlotPair pair = accessors[column];
         return pair.getAccessor().getValue(accesses[pair.getSlot()]);
+    }
+
+    public Collection<EventBean> getCollection(int column)
+    {
+        AggregationAccessorSlotPair pair = accessors[column];
+        return pair.getAccessor().getCollectionReadOnly(accesses[pair.getSlot()]);
     }
 
     public void clearResults()

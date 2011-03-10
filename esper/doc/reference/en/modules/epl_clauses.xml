@@ -44,7 +44,7 @@
 		</orderedlist>
 
         <para>
-			EPL provides the concept of <emphasis>named window</emphasis>. Named windows are data windows that can be inserted-into and deleted-from by one or more statements, and that can queried by one or more statements. Named windows have a global character, being visible and shared across an engine instance beyond a single statement. Use the <literal>CREATE WINDOW</literal> clause to create named windows. Use the <literal>INSERT INTO</literal> clause to insert data into a named window, the <literal>ON DELETE</literal> clause to remove events from a named window, the <literal>ON UPDATE</literal> clause to update events held by a named window and the <literal>ON SELECT</literal> clause to perform a query triggered by a pattern or arriving event on a named window. Finally, the name of the named window can occur in a statement's <literal>FROM</literal> clause to query a named window or include the named window in a join or subquery.
+			EPL provides the concept of <emphasis>named window</emphasis>. Named windows are data windows that can be inserted-into and deleted-from by one or more statements, and that can queried by one or more statements. Named windows have a global character, being visible and shared across an engine instance beyond a single statement. Use the <literal>CREATE WINDOW</literal> clause to create named windows. Use the <literal>ON MERGE</literal> clause to atomically merge events into named window state, the <literal>INSERT INTO</literal> clause to insert data into a named window, the <literal>ON DELETE</literal> clause to remove events from a named window, the <literal>ON UPDATE</literal> clause to update events held by a named window and the <literal>ON SELECT</literal> clause to perform a query triggered by a pattern or arriving event on a named window. Finally, the name of the named window can occur in a statement's <literal>FROM</literal> clause to query a named window or include the named window in a join or subquery.
         </para>
 
         <para>
@@ -82,7 +82,9 @@
 			EPL queries follow the below syntax. EPL queries can be simple queries or more complex queries. A simple select contains only a <literal>select</literal> clause and a single stream definition. Complex EPL queries can be build that feature a more elaborate select list utilizing expressions, may join multiple streams, may contain a <literal>where</literal> clause with search conditions and so on.
 		</para>
 
-<synopsis>[insert into <emphasis>insert_into_def</emphasis>]
+<synopsis>[<emphasis>annotations</emphasis>]
+[<emphasis>expression_declarations</emphasis>]
+[insert into <emphasis>insert_into_def</emphasis>]
 select <emphasis>select_list</emphasis>
 from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis> [as name]] [,...]
 [where <emphasis>search_conditions</emphasis>]
@@ -685,6 +687,105 @@ select ipaddress, count(*) from SecurityFilter.win:time(60 sec) group by ipaddre
 					The type value of a <literal>Hook</literal> annotation defines the type of hook and the <literal>hook</literal> value is an imported or fully-qualified class name providing the callback implementation.
 				</para>
 			</sect3>
+		</sect2>
+
+		<sect2 id="epl-syntax-expression-decl">
+			<title>Expression Declaration</title>
+			<indexterm><primary>expression declaration</primary></indexterm>
+			<indexterm><primary>lambda</primary><secondary>expression declaration</secondary></indexterm>
+
+			<para>
+				An EPL statement can contain expression declarations. Expressions that are common to multiple places in an EPL statement can be moved to a named expression declaration and reused within the statement without duplicating the expression itself.
+			</para>
+			
+			<para>
+				An expression declaration follows the lambda-style expression syntax. This syntax was chosen as it typically allows for a shorter and more concise expression body that can be easier to read then most procedural code. 
+			</para>
+			
+			<para>
+				The syntax for an expression declaration is:
+			</para>
+			<synopsis>expression <emphasis>expression_name</emphasis> { <emphasis>expression_body</emphasis> }</synopsis>
+			
+			<para>
+				An expression declaration consists of the expression name and an expression body. The <emphasis>expression_name</emphasis> is any identifier. The <emphasis>expression_body</emphasis> contains optional parameters and the expression.
+				The parameter types and the return type of the expression is determined by the engine and do not need to be specified.
+			</para>
+			
+			<para>
+				Please note the following limitation: Parameters to a declared expression can only be a stream name. For limitations as to the type of expression that can be used in the expression body please see below.
+			</para>
+		
+			<para>
+				In the expression body the <literal>=&gt;</literal> lambda operator reads as "goes to". The left side of the lambda operator specifies the input parameters (if any) and the right side holds the expression. The lambda expression <literal>x => x * x</literal> is read "x goes to x times x".
+			</para>
+		
+			<para>
+				In the expression body, if your expression takes no parameters, you may simply specify the expression and do not need the <literal>=&gt;</literal> lambda operator.
+			</para>
+			
+			<para>
+				If your expression takes one parameters, specify the input parameter name followed by the <literal>=&gt;</literal> lambda operator and followed by the expression. The synopsis for use with a single input parameter is:
+			</para>
+			<synopsis>expression_body:   <emphasis>input_param_name</emphasis> => <emphasis>expression</emphasis> </synopsis>
+			
+			<para>
+				If your expression takes two or more parameters, specify the input parameter names in parenthesis followed by the <literal>=&gt;</literal> lambda operator followed by the expression. The synopsis for use with a multiple input parameter is:
+			</para>
+			<synopsis>expression_body:   (<emphasis>input_param</emphasis> [,<emphasis>input_param</emphasis> [,...]]) => <emphasis>expression</emphasis> </synopsis>
+
+			<para>
+				The following example declares an expression that returns two times PI (ratio of the circumference of a circle to its diameter) and demonstrates its use in a select-clause:
+			</para>
+			<programlisting><![CDATA[expression twoPI { Math.PI * 2} select twoPI() from SampleEvent]]></programlisting>
+
+			<para>
+				The next example declares an expression that accepts one parameter: a MarketData event. The expression computes a new "mid" price based on the buy and sell price:
+			</para>
+			<programlisting><![CDATA[expression midPrice { x => x.buy + x.sell / 2 } 
+select midPrice(md) from MarketDataEvent as md]]></programlisting>
+
+			<para>
+				A further example that demonstrates two parameters is listed next. The example joins two streams and uses the price value from MarketDataEvent and the sentiment value of NewsEvent to compute a weighted sentiment:
+			</para>
+			<programlisting><![CDATA[expression weightedSentiment { (x, y) => x.price * y.sentiment } 
+select weightedSentiment(md, news) 
+from MarketDataEvent.std:lastevent() as md, NewsEvent.std:lastevent() news]]></programlisting>
+
+			<para>
+				Any expression can be used in the expression body including aggregations, variables, subqueries or further declared expressions. Sub-queries, when used without <literal>in</literal> or <literal>exists</literal>, must be placed within parenthesis.
+			</para>
+			
+			<para>
+			    An example subquery within a declared expression is shown next:
+			</para>
+			<programlisting><![CDATA[expression newsSubq(md) { 
+    (select sentiment from NewsEvent.std:unique(symbol) where symbol = md.symbol) 
+} 
+select newsSubq(mdstream)
+from MarketDataEvent mdstream]]></programlisting>
+
+			<para>
+				When using declared expressions please note these limitations:
+			</para>
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						Parameters to a declared expression can currently only be a stream name.
+					</para>
+				</listitem>
+			</orderedlist>
+			
+			<para>
+				The following scope rules apply for declared expressions:
+			</para>			
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						The scope of the expression body of a declared expression only includes the parameters explicitly listed.
+					</para>
+				</listitem>
+			</orderedlist>
 		</sect2>
     </sect1>
 

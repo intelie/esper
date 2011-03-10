@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -76,6 +77,10 @@ public class AggregationServiceMatchRecognizeImpl implements AggregationServiceM
     public Object getValue(int column)
     {
         return aggregatorsAll[column].getValue();
+    }
+
+    public Collection<EventBean> getCollection(int column) {
+        return null;
     }
 
     public void clearResults()

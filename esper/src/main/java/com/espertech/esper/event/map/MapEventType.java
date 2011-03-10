@@ -140,7 +140,15 @@ public class MapEventType implements EventTypeSPI
             }
 
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyName, false);
+            Property property = null;
+            try {
+                property = PropertyParser.parse(propertyName, false);
+            }
+            catch (Exception ex) {
+                // cannot parse property, return type
+                return simplePropertyTypes.get(propertyName);
+            }
+
             if (property instanceof IndexedProperty)
             {
                 IndexedProperty indexedProp = (IndexedProperty) property;

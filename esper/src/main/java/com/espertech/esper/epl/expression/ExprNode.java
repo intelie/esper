@@ -11,7 +11,9 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.*;
+import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;
@@ -83,18 +85,26 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
                                         ViewResourceDelegate viewResourceDelegate,
                                         TimeProvider timeProvider,
                                         VariableService variableService,
-                                        ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+                                        ExprEvaluatorContext exprEvaluatorContext,
+                                        EventAdapterService eventAdapterService) throws ExprValidationException
     {
         ExprNode result = this;
+        if (this instanceof ExprLambdaGoesNode) {
+            return this;
+        }
 
         for (int i = 0; i < childNodes.size(); i++)
         {
-            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext));
+            ExprNode childNode = childNodes.get(i);
+            if (childNode instanceof ExprLambdaGoesNode) {
+                continue;
+            }
+            childNodes.set(i, childNode.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService));
         }
 
         try
         {
-            validate(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext);
+            validate(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
         }
         catch(ExprValidationException e)
         {
@@ -103,17 +113,17 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
                 ExprIdentNode identNode = (ExprIdentNode) this;
                 try
                 {
-                    result = resolveStaticMethodOrField(identNode, streamTypeService, methodResolutionService, e, timeProvider, variableService, exprEvaluatorContext);
+                    result = resolveStaticMethodOrField(identNode, streamTypeService, methodResolutionService, e, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
                 }
                 catch(ExprValidationException ex)
                 {
-                    result = resolveAsStreamName(identNode, streamTypeService, e, exprEvaluatorContext);
+                    result = resolveAsStreamName(identNode, streamTypeService, e, exprEvaluatorContext, eventAdapterService);
                 }
             }
-            else if (this instanceof ExprStaticMethodNode)
+            else if (this instanceof ExprDotNode)
             {
-                ExprStaticMethodNode staticMethodNode = (ExprStaticMethodNode) this;
-                result = resolveInstanceMethod(staticMethodNode, streamTypeService, methodResolutionService, e, exprEvaluatorContext);
+                ExprDotNode staticMethodNode = (ExprDotNode) this;
+                result = resolveInstanceMethod(staticMethodNode, streamTypeService, methodResolutionService, e, exprEvaluatorContext, eventAdapterService);
             }
             else
             {
@@ -124,10 +134,10 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
         return result;
     }
 
-    private ExprNode resolveInstanceMethod(ExprStaticMethodNode staticMethodNode, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException existingException, ExprEvaluatorContext exprEvaluatorContext)
+    private ExprNode resolveInstanceMethod(ExprDotNode staticMethodNode, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException existingException, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService)
             throws ExprValidationException
     {
-        String streamName = staticMethodNode.getClassName();
+        String streamName = staticMethodNode.getChainSpec().get(0).getName();
 
         boolean streamFound = false;
         for (String name : streamTypeService.getStreamNames())
@@ -138,10 +148,17 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             }
         }
 
-        ExprStreamInstanceMethodNode exprStream = new ExprStreamInstanceMethodNode(streamName, staticMethodNode.getChainSpec());
+        List<ExprChainedSpec> remainingChain = new ArrayList<ExprChainedSpec>(staticMethodNode.getChainSpec());
+        remainingChain.remove(0);
+
+        if (remainingChain.isEmpty()) {
+            throw existingException;
+        }
+
+        ExprStreamInstanceMethodNode exprStream = new ExprStreamInstanceMethodNode(streamName, remainingChain);
         try
         {
-            exprStream.validate(streamTypeService, methodResolutionService, null, null, null, exprEvaluatorContext);
+            exprStream.validate(streamTypeService, methodResolutionService, null, null, null, exprEvaluatorContext, eventAdapterService);
         }
         catch (ExprValidationException ex)
         {
@@ -155,14 +172,14 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
         return exprStream;
     }
 
-    private ExprNode resolveAsStreamName(ExprIdentNode identNode, StreamTypeService streamTypeService, ExprValidationException existingException, ExprEvaluatorContext exprEvaluatorContext)
+    private ExprNode resolveAsStreamName(ExprIdentNode identNode, StreamTypeService streamTypeService, ExprValidationException existingException, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService)
             throws ExprValidationException
     {
         ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNode(identNode.getUnresolvedPropertyName(), false);
 
         try
         {
-            exprStream.validate(streamTypeService, null, null, null, null, exprEvaluatorContext);
+            exprStream.validate(streamTypeService, null, null, null, null, exprEvaluatorContext, eventAdapterService);
         }
         catch (ExprValidationException ex)
         {
@@ -214,7 +231,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
      * @param visitor to apply
      * @param parent node
      */
-    protected void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
+    public void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
     {
         if (visitor.isVisit(this))
         {
@@ -266,7 +283,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
     // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
     // this method tries to resolve the mapped property as a static method.
     // Assumes that this is an ExprIdentNode.
-    private ExprNode resolveStaticMethodOrField(ExprIdentNode identNode, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext)
+    private ExprNode resolveStaticMethodOrField(ExprIdentNode identNode, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService)
     throws ExprValidationException
     {
         // Reconstruct the original string
@@ -291,21 +308,23 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             }
         }
 
-        // If there is a class name, assume a static method is possible
+        // If there is a class name, assume a static method is possible.
         if (parse.getClassName() != null)
         {
             List<ExprNode> parameters = Collections.singletonList((ExprNode) new ExprConstantNode(parse.getArgString()));
-            List<ExprChainedSpec> chain = Collections.singletonList(new ExprChainedSpec(parse.getMethodName(), parameters));
-            ExprNode result = new ExprStaticMethodNode(parse.getClassName(), chain, methodResolutionService.isUdfCache());
+            List<ExprChainedSpec> chain = new ArrayList<ExprChainedSpec>();
+            chain.add(new ExprChainedSpec(parse.getClassName(), Collections.<ExprNode>emptyList()));
+            chain.add(new ExprChainedSpec(parse.getMethodName(), parameters));
+            ExprNode result = new ExprDotNode(chain, methodResolutionService.isDuckType(), methodResolutionService.isUdfCache());
 
             // Validate
             try
             {
-                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
             }
             catch(ExprValidationException e)
             {
-                throw new ExprValidationException("Failed to resolve " + mappedProperty + " as either an event property or as a static method invocation");
+                throw new ExprValidationException("Failed to resolve " + mappedProperty + ": " + e.getMessage());
             }
 
             return result;
@@ -323,7 +342,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             // Validate
             try
             {
-                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
             }
             catch (RuntimeException e)
             {
@@ -351,7 +370,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             // Validate
             try
             {
-                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext);
+                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
             }
             catch (RuntimeException e)
             {

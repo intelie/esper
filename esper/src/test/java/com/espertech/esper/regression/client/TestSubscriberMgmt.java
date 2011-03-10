@@ -67,8 +67,8 @@ public class TestSubscriberMgmt extends TestCase
         stmt.setSubscriber(subscriberSetVariable);
 
         epService.getEPRuntime().sendEvent(new SupportBean("def", 1));
-        ArrayAssertionUtil.assertProps(subscriberCreateVariable.getAndResetIndicate().get(0), fields, new Object[] {"def"});
-        ArrayAssertionUtil.assertProps(subscriberSetVariable.getAndResetIndicate().get(0), fields, new Object[] {"def"});
+        ArrayAssertionUtil.assertPropsMap(subscriberCreateVariable.getAndResetIndicate().get(0), fields, new Object[]{"def"});
+        ArrayAssertionUtil.assertPropsMap(subscriberSetVariable.getAndResetIndicate().get(0), fields, new Object[]{"def"});
     }
 
     public void testNamedWindow()
@@ -85,7 +85,7 @@ public class TestSubscriberMgmt extends TestCase
         stmt.setSubscriber(subscriberInsertInto);
         
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
-        ArrayAssertionUtil.assertProps(subscriberNamedWindow.getAndResetIndicate().get(0), fields, new Object[] {"E1", 1});
+        ArrayAssertionUtil.assertPropsMap(subscriberNamedWindow.getAndResetIndicate().get(0), fields, new Object[]{"E1", 1});
         ArrayAssertionUtil.assertPropsPerRow(subscriberInsertInto.getAndResetIndicate(), new Object[][] {{"E1", 1}});
 
         // test on-delete
@@ -95,7 +95,7 @@ public class TestSubscriberMgmt extends TestCase
         stmt.setSubscriber(subscriberDelete);
 
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0, 1L, ""));
-        ArrayAssertionUtil.assertProps(subscriberDelete.getAndResetIndicate().get(0), fields, new Object[] {"E1", 1});
+        ArrayAssertionUtil.assertPropsMap(subscriberDelete.getAndResetIndicate().get(0), fields, new Object[]{"E1", 1});
 
         // test on-select
         SubscriberMap subscriberSelect = new SubscriberMap();
@@ -105,7 +105,7 @@ public class TestSubscriberMgmt extends TestCase
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("M1", 0, 1L, ""));
-        ArrayAssertionUtil.assertProps(subscriberSelect.getAndResetIndicate().get(0), fields, new Object[] {"E2", 2});
+        ArrayAssertionUtil.assertPropsMap(subscriberSelect.getAndResetIndicate().get(0), fields, new Object[]{"E2", 2});
     }
 
     public void testSimpleSelectUpdateOnly()

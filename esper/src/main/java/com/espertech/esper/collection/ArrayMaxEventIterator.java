@@ -35,7 +35,7 @@ public class ArrayMaxEventIterator implements Iterator<EventBean>
 
     public boolean hasNext()
     {
-        if ((events == null) || (position >= events.length) || (position > maxNumEvents))
+        if ((events == null) || (position >= events.length) || (position >= maxNumEvents))
         {
             return false;
         }
@@ -44,7 +44,7 @@ public class ArrayMaxEventIterator implements Iterator<EventBean>
 
     public EventBean next()
     {
-        if ((events == null) || (position >= events.length) || (position > maxNumEvents))
+        if ((events == null) || (position >= events.length) || (position >= maxNumEvents))
         {
             throw new NoSuchElementException();
         }

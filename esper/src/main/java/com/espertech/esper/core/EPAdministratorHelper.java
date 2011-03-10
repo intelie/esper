@@ -9,16 +9,16 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.antlr.ASTUtil;
+import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.client.EPStatementSyntaxException;
-import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.parse.*;
 import com.espertech.esper.epl.spec.PatternStreamSpecRaw;
 import com.espertech.esper.epl.spec.SelectClauseElementWildcard;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
-import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.pattern.PatternNodeFactory;
 import com.espertech.esper.schedule.SchedulingService;

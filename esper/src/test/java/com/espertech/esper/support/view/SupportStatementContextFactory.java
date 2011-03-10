@@ -60,7 +60,7 @@ public class SupportStatementContextFactory
                 new PatternObjectResolutionServiceImpl(null),
                 null,
                 null,
-                new MethodResolutionServiceImpl(new EngineImportServiceImpl(true), null, true),
+                new MethodResolutionServiceImpl(new EngineImportServiceImpl(true, true, true), null),
                 null,
                 null,
                 null,
@@ -75,6 +75,7 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 new StatementFilterVersion(),
+                null,
                 null,
                 null);
     }

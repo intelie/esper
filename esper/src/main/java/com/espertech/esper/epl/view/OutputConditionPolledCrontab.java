@@ -57,7 +57,7 @@ public final class OutputConditionPolledCrontab implements OutputConditionPolled
         int count = 0;
         for (ExprNode parameters : scheduleSpecExpressionList)
         {
-            ExprNode node = parameters.getValidatedSubtree(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context);
+            ExprNode node = parameters.getValidatedSubtree(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context, context.getEventAdapterService());
             expressions[count++] = node.getExprEvaluator();
         }
 

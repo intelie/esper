@@ -21,7 +21,7 @@ public class TestAggregationServiceFactory extends TestCase
         selectAggregateNodes = new LinkedList<ExprAggregateNode>();
         havingAggregateNodes = new LinkedList<ExprAggregateNode>();
         orderByAggregateNodes = new LinkedList<ExprAggregateNode>();
-        methodResolutionService = new MethodResolutionServiceImpl(null, null, true);
+        methodResolutionService = new MethodResolutionServiceImpl(null, null);
     }
 
     public void testGetService() throws Exception

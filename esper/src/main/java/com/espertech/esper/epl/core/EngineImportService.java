@@ -116,4 +116,8 @@ public interface EngineImportService
      * @return aggregation func node
      */
     public ExprNode resolveAggExtendedBuiltin(String name, boolean isDistinct);
+
+    public boolean isDuckType();
+
+    public boolean isUdfCache();
 }

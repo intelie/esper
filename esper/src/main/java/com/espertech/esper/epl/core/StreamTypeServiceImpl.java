@@ -13,6 +13,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.util.LevenshteinDistance;
 
 import java.util.LinkedHashMap;
@@ -106,6 +107,10 @@ public class StreamTypeServiceImpl implements StreamTypeService
             eventTypes[count] = entry.getValue().getFirst();
             count++;
         }
+    }
+
+    public void setRequireStreamNames(boolean requireStreamNames) {
+        this.requireStreamNames = requireStreamNames;
     }
 
     public boolean isOnDemandStreams() {
@@ -439,5 +444,21 @@ public class StreamTypeServiceImpl implements StreamTypeService
         }
 
         return new PropertyResolutionDescriptor(streamName, streamType, propertyName, index, propertyType);
+    }
+
+    public String getEngineURIQualifier() {
+        return engineURIQualifier;
+    }
+
+    public boolean hasPropertyAgnosticType() {
+        for (EventType type : eventTypes) {
+            if (type instanceof EventTypeSPI) {
+                EventTypeSPI spi = (EventTypeSPI) type;
+                if (spi.getMetadata().isPropertyAgnostic()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

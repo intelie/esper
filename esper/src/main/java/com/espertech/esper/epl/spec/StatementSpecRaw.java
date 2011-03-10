@@ -20,6 +20,7 @@ import java.io.Serializable;
  */
 public class StatementSpecRaw implements MetaDefItem, Serializable
 {
+    private ExpressionDeclDesc expressionDeclDesc;
     private OnTriggerDesc onTriggerDesc;
     private UpdateDesc updateDesc;
     private CreateWindowDesc createWindowDesc;
@@ -448,5 +449,13 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     public void setSubstitutionParameters(List<ExprSubstitutionNode> substitutionParameters)
     {
         this.substitutionParameters = substitutionParameters;
+    }
+
+    public ExpressionDeclDesc getExpressionDeclDesc() {
+        return expressionDeclDesc;
+    }
+
+    public void setExpressionDeclDesc(ExpressionDeclDesc expressionDeclDesc) {
+        this.expressionDeclDesc = expressionDeclDesc;
     }
 }

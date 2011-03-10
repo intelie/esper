@@ -11,9 +11,7 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.ArrayEventIterator;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation of access function for single-stream (not joins).
@@ -136,6 +134,13 @@ public class AggregationAccessJoinImpl implements AggregationAccess
             initArray();
         }
         return new ArrayEventIterator(array);
+    }
+
+    public Collection<EventBean> collectionReadOnly() {
+        if (array == null) {
+            initArray();
+        }
+        return Arrays.asList(array);
     }
 
     public int size()

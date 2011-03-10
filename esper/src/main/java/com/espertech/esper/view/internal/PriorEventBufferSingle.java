@@ -115,6 +115,10 @@ public class PriorEventBufferSingle implements ViewUpdatedCollection, RelativeAc
         return 0;
     }
 
+    public Collection<EventBean> getWindowToEventCollReadOnly(Object evalEvent) {
+        return null;
+    }
+
     public void destroy()
     {
         // No action required

@@ -5,6 +5,7 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,6 +66,11 @@ public class AggSvcGroupByAccessOnlyImpl implements AggregationService, Aggregat
     {
         AggregationAccessorSlotPair pair = accessors[column];
         return pair.getAccessor().getValue(currentAccess[pair.getSlot()]);
+    }
+
+    public Collection<EventBean> getCollection(int column) {
+        AggregationAccessorSlotPair pair = accessors[column];
+        return pair.getAccessor().getCollectionReadOnly(currentAccess[pair.getSlot()]);
     }
 
     public void clearResults()

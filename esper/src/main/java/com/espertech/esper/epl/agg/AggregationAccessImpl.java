@@ -11,6 +11,7 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.client.EventBean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -88,9 +89,12 @@ public class AggregationAccessImpl implements AggregationAccess
         return events.get(events.size() - 1);
     }
 
-    public Iterator<EventBean> iterator()
-    {
+    public Iterator<EventBean> iterator() {
         return events.iterator();
+    }
+
+    public Collection<EventBean> collectionReadOnly() {
+        return events;
     }
 
     public int size()

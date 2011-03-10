@@ -9,23 +9,26 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.ViewCapDataWindowAccess;
 import com.espertech.esper.view.window.RandomAccessByIndexGetter;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndexMap;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * Represents the 'prev' previous event function in an expression node tree.
  */
-public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, ExprEvaluator
+public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, ExprEvaluator, ExprEvaluatorLambda
 {
     private static final long serialVersionUID = 0L;
 
@@ -35,6 +38,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
     private int streamNumber;
     private Integer constantIndexNumber;
     private boolean isConstantIndex;
+    private EventType enumerationMethodType;
 
     private transient ExprPreviousEval evaluator;
 
@@ -52,7 +56,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
         return null;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
     {
         if ((this.getChildNodes().size() > 2) || (this.getChildNodes().isEmpty()))
         {
@@ -110,6 +114,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
             ExprStreamUnderlyingNode streamNode = (ExprStreamUnderlyingNode) this.getChildNodes().get(1);
             streamNumber = streamNode.getStreamId();
             resultType = JavaClassHelper.getBoxedType(this.getChildNodes().get(1).getExprEvaluator().getType());
+            enumerationMethodType = streamTypeService.getEventTypes()[streamNode.getStreamId()];
         }
         else
         {
@@ -148,6 +153,18 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
     public boolean isConstantResult()
     {
         return false;
+    }
+
+    public Collection<EventBean> evaluateGetROCollection(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        if (!isNewData) {
+            return null;
+        }
+
+        return evaluator.evaluateGetColl(eventsPerStream, context);
+    }
+
+    public EventType getEventTypeIterator() throws ExprValidationException {
+        return enumerationMethodType;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

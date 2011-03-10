@@ -6,6 +6,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.MultiKeyUntyped;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -40,6 +41,10 @@ public class SupportAggregationService implements AggregationService
 
     public Object getValue(int column)
     {
+        return null;
+    }
+
+    public Collection<EventBean> getCollection(int column) {
         return null;
     }
 

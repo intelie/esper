@@ -16,16 +16,18 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class ExprAccessAggNode extends ExprAggregateNode
+public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluatorLambda
 {
     private static final long serialVersionUID = -6088874732989061687L;
     
     private final AggregationAccessType accessType;
     private final boolean isWildcard;
     private final String streamWildcard;
+    private EventType containedType;
 
     /**
      * Ctor.
@@ -51,6 +53,10 @@ public class ExprAccessAggNode extends ExprAggregateNode
                 throw new ExprValidationException(getErrorPrefix() + " requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
             }
             streamNum = 0;
+            if (streamTypeService.getStreamNames().length == 0) {    // could be the case for
+                throw new ExprValidationException(getErrorPrefix() + " requires that at least one stream is provided");
+            }
+            containedType = streamTypeService.getEventTypes()[0];
             resultType = streamTypeService.getEventTypes()[0].getUnderlyingType();
             final Class returnType = resultType;
             evaluator = new ExprEvaluator() {
@@ -183,6 +189,14 @@ public class ExprAccessAggNode extends ExprAggregateNode
     public String getStreamWildcard()
     {
         return streamWildcard;
+    }
+
+    public Collection<EventBean> evaluateGetROCollection(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        return super.aggregationResultFuture.getCollection(column);
+    }
+
+    public EventType getEventTypeIterator() {
+        return containedType;
     }
 
     @Override

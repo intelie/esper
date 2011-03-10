@@ -13,6 +13,7 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.schedule.TimeProvider;
@@ -286,31 +287,43 @@ public class ExprNodeUtility
         return null;
     }
 
-    protected static void toExpressionString(List<ExprChainedSpec> chainSpec, StringBuilder buffer)
+    protected static void toExpressionString(List<ExprChainedSpec> chainSpec, StringBuilder buffer, boolean prefixDot)
     {
+        String delimiterOuter = "";
+        if (prefixDot) {
+            delimiterOuter = ".";
+        }
+        boolean isFirst = true;
         for (ExprChainedSpec element : chainSpec) {
-            buffer.append(".");
+            buffer.append(delimiterOuter);
             buffer.append(element.getName());
-            buffer.append("(");
 
-            String delimiter = "";
-            for (ExprNode param : element.getParameters()) {
-                buffer.append(delimiter);
-                delimiter = ", ";
-                buffer.append(param.toExpressionString());
+            // the first item without dot-prefix and empty parameters should not be appended with parenthesis
+            if (!isFirst || prefixDot || !element.getParameters().isEmpty()) {
+                buffer.append("(");
+
+                String delimiter = "";
+                for (ExprNode param : element.getParameters()) {
+                    buffer.append(delimiter);
+                    delimiter = ", ";
+                    buffer.append(param.toExpressionString());
+                }
+                buffer.append(")");
             }
-            buffer.append(")");
+
+            delimiterOuter = ".";            
+            isFirst = false;
         }
     }
 
 
-    public static void validate(List<ExprChainedSpec> chainSpec, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException {
+    public static void validate(List<ExprChainedSpec> chainSpec, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException {
 
         // validate all parameters
         for (ExprChainedSpec chainElement : chainSpec) {
             List<ExprNode> validated = new ArrayList<ExprNode>();
             for (ExprNode expr : chainElement.getParameters()) {
-                validated.add(expr.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext));
+                validated.add(expr.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService));
             }
             chainElement.setParameters(validated);
         }

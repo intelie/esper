@@ -200,7 +200,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
             Iterator iterator = ((Iterable) object).iterator();
             if (!iterator.hasNext())
             {
-                return null;
+                return new EventBean[0];
             }
             ArrayDeque<EventBean> events = new ArrayDeque<EventBean>();
             while (iterator.hasNext())

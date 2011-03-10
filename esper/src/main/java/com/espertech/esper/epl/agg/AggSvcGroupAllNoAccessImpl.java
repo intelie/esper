@@ -12,7 +12,8 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.agg.AggregationMethod;
+
+import java.util.Collection;
 
 /**
  * Implementation for handling aggregation without any grouping (no group-by).
@@ -55,6 +56,10 @@ public class AggSvcGroupAllNoAccessImpl extends AggregationServiceBase
     public Object getValue(int column)
     {
         return aggregators[column].getValue();
+    }
+
+    public Collection<EventBean> getCollection(int column) {
+        return null;
     }
 
     public void clearResults()

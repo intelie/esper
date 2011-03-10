@@ -3,6 +3,9 @@ package com.espertech.esper.epl.agg;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Represents the aggregation accessor that provides the result for the "first" and "last" aggregation function with index.
  */
@@ -35,6 +38,23 @@ public class AggregationAccessorFirstLastIndex implements AggregationAccessor
 
     public Object getValue(AggregationAccess access) {
 
+        EventBean bean = getBean(access);
+        if (bean == null) {
+            return null;
+        }
+        eventsPerStream[streamNum] = bean;
+        return childNode.evaluate(eventsPerStream, true, null);
+    }
+
+    public Collection<EventBean> getCollectionReadOnly(AggregationAccess access) {
+        EventBean bean = getBean(access);
+        if (bean == null) {
+            return null;
+        }
+        return Collections.singletonList(bean);
+    }
+
+    private EventBean getBean(AggregationAccess access) {
         EventBean bean;
         int index = constant;
         if (index == -1) {
@@ -50,10 +70,6 @@ public class AggregationAccessorFirstLastIndex implements AggregationAccessor
         else {
             bean = access.getLastNthValue(index);
         }
-        if (bean == null) {
-            return null;
-        }
-        eventsPerStream[streamNum] = bean;
-        return childNode.evaluate(eventsPerStream, true, null);
+        return bean;
     }
 }

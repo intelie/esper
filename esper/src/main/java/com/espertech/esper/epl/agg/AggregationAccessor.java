@@ -1,5 +1,9 @@
 package com.espertech.esper.epl.agg;
 
+import com.espertech.esper.client.EventBean;
+
+import java.util.Collection;
+
 /**
  * Accessor for first/last/window access aggregation functions.
  */
@@ -11,4 +15,6 @@ public interface AggregationAccessor
      * @return value
      */
     public Object getValue(AggregationAccess access);
+
+    public Collection<EventBean> getCollectionReadOnly(AggregationAccess access);
 }

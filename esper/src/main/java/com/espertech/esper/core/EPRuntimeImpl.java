@@ -98,9 +98,14 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         routedExternal = new AtomicLong();
         engineFilterAndDispatchTimeContext = new ExprEvaluatorContext()
         {
-            public TimeProvider getTimeProvider()
-            {
+            private ExpressionResultCacheService expressionResultCacheService = new ExpressionResultCacheService();
+
+            public TimeProvider getTimeProvider() {
                 return services.getSchedulingService();
+            }
+
+            public ExpressionResultCacheService getExpressionResultCacheService() {
+                return expressionResultCacheService;
             }
         };
 

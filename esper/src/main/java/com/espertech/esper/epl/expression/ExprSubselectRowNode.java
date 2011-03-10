@@ -9,12 +9,15 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,7 +47,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
             return rawEventType.getUnderlyingType();
         }
         if (selectClause.length == 1) {
-            return selectClause[0].getExprEvaluator().getType();
+            return JavaClassHelper.getBoxedType(selectClause[0].getExprEvaluator().getType());
         }
         return null;
     }
@@ -72,8 +75,60 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         return type;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
     {
+    }
+
+    public Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext context) {
+        if (matchingEvents == null)
+        {
+            return null;
+        }
+        if (matchingEvents.size() == 0)
+        {
+            return null;
+        }
+
+        if (filterExpr == null && selectClause == null) {
+            return matchingEvents;
+        }
+
+        // Evaluate filter
+        EventBean[] events = new EventBean[eventsPerStream.length + 1];
+        System.arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
+
+        if (filterExpr != null)
+        {
+            ArrayDeque<EventBean> filtered = new ArrayDeque<EventBean>();
+            for (EventBean subselectEvent : matchingEvents)
+            {
+                // Prepare filter expression event list
+                events[0] = subselectEvent;
+
+                Boolean pass = (Boolean) filterExpr.evaluate(events, true, context);
+                if ((pass != null) && (pass))
+                {
+                    filtered.add(subselectEvent);
+                }
+            }
+
+            if (selectClause == null)
+            {
+                return filtered;
+            }
+        }
+
+        return null;    // should not get here, as there is no event type returned when there is a select-clause
+    }
+
+    public EventType getEventTypeIterator() throws ExprValidationException {
+        if (selectClause == null)   // wildcards allowed
+        {
+            return rawEventType;
+        }
+
+        // only if selecting wildcard do we allow lambda functions
+        return null;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)

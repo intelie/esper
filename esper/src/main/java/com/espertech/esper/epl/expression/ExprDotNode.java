@@ -8,87 +8,193 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.enummethod.dot.*;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Represents an Dot-operator expression, for use when "(expression).method(...).method(...)"
  */
-public class ExprDotNode extends ExprNode implements ExprEvaluator, ExprNodeInnerNodeProvider
+public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
 {
     private static final long serialVersionUID = 8105121208330622813L;
 
-    private transient ExprDotEval[] eval;
-    private transient ExprEvaluator childEvaluator;
-
     private final List<ExprChainedSpec> chainSpec;
     private final boolean isDuckTyping;
+    private final boolean isUDFCache;
 
-    public ExprDotNode(List<ExprChainedSpec> chainSpec, boolean isDuckTyping)
+    private ExprEvaluator exprEvaluator;
+    private boolean isReturnsConstantResult;
+
+    public ExprDotNode(List<ExprChainedSpec> chainSpec, boolean isDuckTyping, boolean isUDFCache)
     {
         this.chainSpec = chainSpec;
         this.isDuckTyping = isDuckTyping;
+        this.isUDFCache = isUDFCache;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
     {
         // validate all parameters
-        ExprNodeUtility.validate(chainSpec, streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext);
+        ExprNodeUtility.validate(chainSpec, streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+        ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
 
-        Class inputType = this.getChildNodes().get(0).getExprEvaluator().getType();
+        // The root node expression may provide the input value:
+        //   Such as "window(*).doIt(...)" or "(select * from Window).doIt()" or "prevwindow(sb).doIt(...)", in which case the expression to act on is a child expression
+        //
+        if (!this.getChildNodes().isEmpty()) {
+            // the root expression is the first child node
+            ExprNode rootNode = this.getChildNodes().get(0);
+            ExprEvaluator rootNodeEvaluator = rootNode.getExprEvaluator();
+            Class rootNodeType = rootNodeEvaluator.getType();
 
-        // get no-duck evaluation
-        // this is always attempted first to ensure we can also be fully-typed.
-        eval = ExprDotNodeUtility.getChainEvaluators(inputType, chainSpec, methodResolutionService, isDuckTyping);
+            // the root expression may also provide a lambda-function input (Iterator<EventBean>)
+            // Determine lambda-type and evaluator if any for root node
+            ExprEvaluatorLambda rootLambdaEvaluator = null;
+            EventType rootLambdaEventType = null;
 
-        if ((eval == null) && (isDuckTyping)) {
+            if (rootNodeEvaluator instanceof ExprEvaluatorLambda) {
+                rootLambdaEvaluator = (ExprEvaluatorLambda) rootNodeEvaluator;
+                rootLambdaEventType = rootLambdaEvaluator.getEventTypeIterator();
+                if (rootLambdaEventType == null) {  // not eligible if returning null
+                    rootLambdaEvaluator = null;
+                }
+            }
+            else if (rootNode instanceof ExprIdentNode) {
+                ExprIdentNode identNode = (ExprIdentNode) rootNode;
+                int streamId = identNode.getStreamId();
+                EventType streamType = streamTypeService.getEventTypes()[streamId];
+                EventPropertyGetter getter = streamType.getGetter(identNode.getResolvedPropertyName());
+                FragmentEventType fragmentEventType = streamType.getFragmentType(identNode.getResolvedPropertyName());
+                if (getter != null && fragmentEventType != null && fragmentEventType.isIndexed()) {
+                    rootLambdaEvaluator = new PropertyExprEvaluatorLambda(identNode.getResolvedPropertyName(), streamId, fragmentEventType.getFragmentType(), getter);
+                    rootLambdaEventType = fragmentEventType.getFragmentType();
+                }
+            }
 
-            eval = new ExprDotEval[chainSpec.size()];
+            UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(rootNodeType, rootLambdaEventType, chainSpec, validationContext, isDuckTyping, streamTypeService);
+            exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, rootLambdaEvaluator, evals.getFirst(), evals.getSecond());
+        }
+        else {
+            // There no root node, in this case the classname or property name is provided as part of the chain.
+            // Such as "MyClass.myStaticLib(...)" or "mycollectionproperty.doIt(...)"
+            //
+            List<ExprChainedSpec> modifiedChain = new ArrayList<ExprChainedSpec>(chainSpec);
+            ExprChainedSpec firstItem = modifiedChain.remove(0);
 
-            int count = 0;
-            for (ExprChainedSpec chain : chainSpec) {
+            Pair<PropertyResolutionDescriptor, String> propertyInfoPair = null;
+            try {
+                if (!streamTypeService.hasPropertyAgnosticType()) {
+                    propertyInfoPair = ExprIdentNode.getTypeFromStream(streamTypeService, firstItem.getName());
+                }
+            }
+            catch (ExprValidationPropertyException ex) {
+                // not a property
+            }
 
-                ExprEvaluator[] paramEvals = new ExprEvaluator[chain.getParameters().size()];
-                Class[] paramTypes = new Class[chain.getParameters().size()];
-                for (int i = 0; i < chain.getParameters().size(); i++) {
-                    paramEvals[i] = chain.getParameters().get(i).getExprEvaluator();
-                    paramTypes[i] = paramEvals[i].getType();
+            // If property then treat it as such
+            if (propertyInfoPair != null) {
+                int streamId = propertyInfoPair.getFirst().getStreamNum();
+                EventType streamType = streamTypeService.getEventTypes()[streamId];
+                EventPropertyGetter getter = streamType.getGetter(propertyInfoPair.getFirst().getPropertyName());
+                FragmentEventType fragmentEventType = streamType.getFragmentType(propertyInfoPair.getFirst().getPropertyName());
+
+                ExprEvaluatorLambda rootLambdaEvaluator = null;
+                EventType rootLambdaEventType = null;
+                if (getter != null && fragmentEventType != null && fragmentEventType.isIndexed()) {
+                    rootLambdaEvaluator = new PropertyExprEvaluatorLambda(propertyInfoPair.getFirst().getPropertyName(), streamId, fragmentEventType.getFragmentType(), getter);
+                    rootLambdaEventType = fragmentEventType.getFragmentType();
                 }
 
-                eval[count] = new ExprDotMethodEvalDuck(methodResolutionService, chain.getName(), paramTypes, paramEvals);
-                count++;
+                ExprEvaluator rootNodeEvaluator = new PropertyExprEvaluatorNonLambda(streamId, getter, propertyInfoPair.getFirst().getPropertyType());
+                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(propertyInfoPair.getFirst().getPropertyType(), rootLambdaEventType, modifiedChain, validationContext, isDuckTyping, streamTypeService);
+                exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, rootLambdaEvaluator, evals.getFirst(), evals.getSecond());
+            }
+            else {
+
+                // If class then resolve as class
+                ExprChainedSpec secondItem = modifiedChain.remove(0);
+
+                // Get the types of the parameters for the first invocation
+                Class[] paramTypes = new Class[secondItem.getParameters().size()];
+                ExprEvaluator[] childEvals = new ExprEvaluator[secondItem.getParameters().size()];
+                int count = 0;
+
+                boolean allConstants = true;
+                for(ExprNode childNode : secondItem.getParameters())
+                {
+                    if (childNode instanceof ExprLambdaGoesNode) {
+                        throw new ExprValidationException("Unexpected lambda-expression encountered as parameter to UDF or static method");
+                    }
+                    ExprEvaluator eval = childNode.getExprEvaluator();
+                    childEvals[count] = eval;
+                    paramTypes[count] = eval.getType();
+                    count++;
+                    if (!(childNode.isConstantResult()))
+                    {
+                        allConstants = false;
+                    }
+                }
+                boolean isConstantParameters = allConstants && isUDFCache;
+                isReturnsConstantResult = isConstantParameters && modifiedChain.isEmpty();
+
+                // Try to resolve the method
+                String className = firstItem.getName();
+                Method method;
+                FastMethod staticMethod;
+                try
+                {
+                    method = methodResolutionService.resolveMethod(firstItem.getName(), secondItem.getName(), paramTypes);
+                    FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
+                    staticMethod = declaringClass.getMethod(method);
+                }
+                catch(Exception e)
+                {
+                    throw new ExprValidationException(e.getMessage());
+                }
+
+                // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
+                ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.make(method, eventAdapterService, modifiedChain);
+                EventType optionalLambdaType = optionalLambdaWrap != null ? optionalLambdaWrap.getEventType() : null;
+
+                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(staticMethod.getReturnType(), optionalLambdaType, modifiedChain, validationContext, false, streamTypeService);
+                exprEvaluator = new ExprDotEvalStaticMethod(className, staticMethod, childEvals, isConstantParameters, optionalLambdaWrap, evals.getSecond());
             }
         }
-
-        childEvaluator = this.getChildNodes().get(0).getExprEvaluator();
     }
 
-    @Override
     public void accept(ExprNodeVisitor visitor) {
         super.accept(visitor);
         ExprNode.acceptChain(visitor, chainSpec);
     }
 
-    @Override
     public void accept(ExprNodeVisitorWithParent visitor) {
         super.accept(visitor);
         ExprNode.acceptChain(visitor, chainSpec);
     }
 
-    @Override
-    protected void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
+    public void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
         super.acceptChildnodes(visitor, parent);
         ExprNode.acceptChain(visitor, chainSpec, this);
     }
 
-    @Override
     protected void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
         ExprNode.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
     }
@@ -100,42 +206,23 @@ public class ExprDotNode extends ExprNode implements ExprEvaluator, ExprNodeInne
 
     public ExprEvaluator getExprEvaluator()
     {
-        return this;
+        return exprEvaluator;
     }
 
     public boolean isConstantResult()
     {
-        return false;
-    }
-
-    public Class getType()
-    {
-        return eval[eval.length - 1].getResultType();
-    }
-
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
-    {
-        Object inner = childEvaluator.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-        if (inner == null) {
-            return null;
-        }
-
-        for (ExprDotEval methodEval : eval) {
-            inner = methodEval.evaluate(inner, eventsPerStream, isNewData, exprEvaluatorContext);
-            if (inner == null) {
-                break;
-            }
-        }
-        return inner;
+        return isReturnsConstantResult;
     }
 
     public String toExpressionString()
     {
         StringBuilder buffer = new StringBuilder();
-		buffer.append('(');
-        buffer.append(this.getChildNodes().get(0).toExpressionString());
-		buffer.append(")");
-        ExprNodeUtility.toExpressionString(chainSpec, buffer);
+        if (!this.getChildNodes().isEmpty()) {
+            buffer.append('(');
+            buffer.append(this.getChildNodes().get(0).toExpressionString());
+            buffer.append(")");
+        }
+        ExprNodeUtility.toExpressionString(chainSpec, buffer, !this.getChildNodes().isEmpty());
 		return buffer.toString();
     }
 

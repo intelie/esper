@@ -10,6 +10,7 @@ package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EventBean;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -29,5 +30,7 @@ public interface RelativeAccessByEventNIndex
 
     public Iterator<EventBean> getWindowToEvent(Object evalEvent);
 
-    public int getWindowToEventCount(EventBean evalEvent);   
+    public Collection<EventBean> getWindowToEventCollReadOnly(Object evalEvent);
+
+    public int getWindowToEventCount(EventBean evalEvent);
 }

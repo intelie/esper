@@ -31,7 +31,7 @@ public class EsperHttpRequestHandler implements HttpRequestHandler {
     public EsperHttpRequestHandler(final EPServiceProviderSPI engineSPI) {
         super();
         this.engineSPI = engineSPI;
-        this.methods = new MethodResolutionServiceImpl(engineSPI.getEngineImportService(), engineSPI.getTimeProvider(), false);
+        this.methods = new MethodResolutionServiceImpl(engineSPI.getEngineImportService(), engineSPI.getTimeProvider());
     }
 
     public void handle(

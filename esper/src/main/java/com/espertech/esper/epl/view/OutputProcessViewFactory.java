@@ -66,10 +66,10 @@ public class OutputProcessViewFactory
 
         if (outputLimitSpec != null) {
             if (outputLimitSpec.getAfterTimePeriodExpr() != null) {
-                outputLimitSpec.getAfterTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
+                outputLimitSpec.getAfterTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
             }
             if (outputLimitSpec.getTimePeriodExpr() != null) {
-                outputLimitSpec.getTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext);
+                outputLimitSpec.getTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
             }
         }
 

@@ -189,6 +189,7 @@ public class TestResultSetProcessorFactory extends TestCase
                 null,
                 null,
                 null,
+                null,
                 new HashSet<String>(),
                 new Annotation[0],
                 null,

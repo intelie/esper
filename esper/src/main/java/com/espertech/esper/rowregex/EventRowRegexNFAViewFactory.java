@@ -135,7 +135,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
 
             StreamTypeService typeServiceDefines = new StreamTypeServiceImpl(typesDefine, streamNamesDefine, isIStreamOnly, statementContext.getEngineURI(), false);
             ExprNode exprNodeResult = handlePreviousFunctions(defineItem.getExpression());
-            ExprNode validated = exprNodeResult.getValidatedSubtree(typeServiceDefines, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+            ExprNode validated = exprNodeResult.getValidatedSubtree(typeServiceDefines, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
             defineItem.setExpression(validated);
 
             ExprAggregateNode.getAggregatesBottomUp(validated, aggregateNodes);
@@ -179,11 +179,11 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
 
                 for (ExprNode child : aggregateNode.getChildNodes())
                 {
-                    ExprNode validated = child.getValidatedSubtree(typeServiceAggregateMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+                    ExprNode validated = child.getValidatedSubtree(typeServiceAggregateMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
                     validated.accept(visitor);
                     aggregateNode.getChildNodes().set(count++, new ExprNodeValidated(validated));
                 }
-                aggregateNode.validate(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+                aggregateNode.validate(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
 
                 // verify properties used within the aggregation
                 Set<Integer> aggregatedStreams = new HashSet<Integer>();
@@ -264,7 +264,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             List<ExprNode> validated = new ArrayList<ExprNode>();
             for (ExprNode partitionExpr : matchRecognizeSpec.getPartitionByExpressions())
             {
-                validated.add(partitionExpr.getValidatedSubtree(typeServicePartition, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext));
+                validated.add(partitionExpr.getValidatedSubtree(typeServicePartition, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService()));
             }
             matchRecognizeSpec.setPartitionByExpressions(validated);
         }
@@ -275,7 +275,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
     {
         try
         {
-            return measureNode.getValidatedSubtree(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+            return measureNode.getValidatedSubtree(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
         }
         catch (ExprValidationPropertyException e)
         {

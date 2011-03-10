@@ -161,4 +161,8 @@ public class PatternContext implements ExprEvaluatorContext
     public StatementFilterVersion getStatementFilterVersion() {
         return statementContext.getStatementFilterVersion();
     }
+
+    public ExpressionResultCacheService getExpressionResultCacheService() {
+        return statementContext.getExpressionResultCacheService();
+    }
 }

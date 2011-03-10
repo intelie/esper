@@ -37,7 +37,7 @@ public class WorkerThread extends Thread {
         this.engine = engine;
         this.runnable = runnable;
         this.socket = socket;
-        this.methods = new MethodResolutionServiceImpl(engine.getEngineImportService(), engine.getTimeProvider(), false);
+        this.methods = new MethodResolutionServiceImpl(engine.getEngineImportService(), engine.getTimeProvider());
 
         if ((dataType == null) || (dataType == DataType.OBJECT)) {
             ois = new ObjectInputStream(socket.getInputStream());

@@ -13,6 +13,7 @@ import com.espertech.esper.view.window.RandomAccessByIndex;
 import com.espertech.esper.view.window.RandomAccessByIndexObserver;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeMap;
 
@@ -131,6 +132,11 @@ public class IStreamTimeOrderRandomAccess implements RandomAccessByIndex
     {
         initCache();
         return cache.iterator();
+    }
+
+    public Collection<EventBean> getWindowCollectionReadOnly() {
+        initCache();
+        return cache;
     }
 
     public int getWindowCount()

@@ -15,7 +15,7 @@ public class TestExprPlugInAggFunctionNode extends TestCase
 
     public void testGetType() throws Exception
     {
-        plugInNode.validate(null, null, null, null, null, null);
+        plugInNode.validate(null, null, null, null, null, null, null);
         assertEquals(int.class, plugInNode.getType());
     }
 

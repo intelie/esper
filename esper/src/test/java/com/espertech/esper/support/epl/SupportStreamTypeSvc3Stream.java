@@ -73,4 +73,12 @@ public class SupportStreamTypeSvc3Stream implements StreamTypeService
     public boolean isOnDemandStreams() {
         return impl.isOnDemandStreams();
     }
+
+    public String getEngineURIQualifier() {
+        return "default";
+    }
+
+    public boolean hasPropertyAgnosticType() {
+        return false;
+    }
 }

@@ -5,6 +5,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.rowregex.RegexPartitionStateRandomAccess;
 import com.espertech.esper.rowregex.RegexPartitionStateRandomAccessGetter;
 import com.espertech.esper.schedule.TimeProvider;
@@ -27,7 +28,7 @@ public class ExprPreviousMatchRecognizeNode extends ExprNode implements ExprEval
     private transient ExprEvaluator evaluator;
     private int assignedIndex;
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

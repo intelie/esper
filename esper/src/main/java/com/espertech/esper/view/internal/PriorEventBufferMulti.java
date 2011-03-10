@@ -9,14 +9,11 @@
 package com.espertech.esper.view.internal;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.collection.RollingEventBuffer;
 import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
-import com.espertech.esper.collection.RollingEventBuffer;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Buffers view-posted insert stream (new data) and remove stream (old data) events for
@@ -140,6 +137,12 @@ public class PriorEventBufferMulti implements ViewUpdatedCollection, RelativeAcc
     {
         // No requirements to return events related to the end of the current buffer
         return null;  
+    }
+
+    public Collection<EventBean> getWindowToEventCollReadOnly(Object evalEvent)
+    {
+        // No requirements to return events related to the end of the current buffer
+        return null;
     }
 
     public void destroy()

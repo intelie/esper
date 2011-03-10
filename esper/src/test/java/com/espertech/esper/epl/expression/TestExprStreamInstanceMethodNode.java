@@ -90,7 +90,7 @@ public class TestExprStreamInstanceMethodNode extends TestCase
     {
         try
         {
-            node.validate(streamTypeService, null, null, null, null, null);
+            node.validate(streamTypeService, null, null, null, null, null, null);
             fail();
         }
         catch(ExprValidationException ex)

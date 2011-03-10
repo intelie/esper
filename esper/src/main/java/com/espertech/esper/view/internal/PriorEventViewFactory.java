@@ -191,6 +191,10 @@ public class PriorEventViewFactory implements ViewFactory
             return null;
         }
 
+        public Collection<EventBean> getWindowToEventCollReadOnly(Object evalEvent) {
+            return null;
+        }
+
         public int getWindowToEventCount(EventBean evalEvent)
         {
             return 0;

@@ -125,7 +125,7 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
     private void topValidate(ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext) {
         try
         {
-            exprNode.validate(null, null, null, null, null, exprEvaluatorContext);
+            exprNode.validate(null, null, null, null, null, exprEvaluatorContext, null);
         }
         catch (ExprValidationException e)
         {

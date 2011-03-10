@@ -426,7 +426,9 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      */
     protected static EngineImportService makeEngineImportService(ConfigurationInformation configSnapshot)
     {
-        EngineImportServiceImpl engineImportService = new EngineImportServiceImpl(configSnapshot.getEngineDefaults().getExpression().isExtendedAggregation());
+        ConfigurationEngineDefaults.Expression expression = configSnapshot.getEngineDefaults().getExpression();
+        EngineImportServiceImpl engineImportService = new EngineImportServiceImpl(expression.isExtendedAggregation(),
+                expression.isUdfCache(), expression.isDuckTyping());
         engineImportService.addMethodRefs(configSnapshot.getMethodInvocationReferences());
 
         // Add auto-imports

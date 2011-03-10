@@ -255,7 +255,7 @@ public class TestSelectExprStreamSelector extends TestCase
         selectTestView.addListener(testListener);
 
         EventType type = selectTestView.getEventType();
-        assertEquals(21, type.getPropertyNames().length);
+        assertEquals(22, type.getPropertyNames().length);
         assertEquals(Pair.class, type.getUnderlyingType());
         assertEquals(int.class, type.getPropertyType("a"));
         assertEquals(int.class, type.getPropertyType("b"));

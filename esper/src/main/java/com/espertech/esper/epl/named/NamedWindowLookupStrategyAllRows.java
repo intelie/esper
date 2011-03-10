@@ -39,4 +39,8 @@ public class NamedWindowLookupStrategyAllRows implements NamedWindowLookupStrate
         }
         return events.toArray(new EventBean[events.size()]);
     }
+
+    public String toString() {
+        return "NamedWindowLookupStrategyAllRows";
+    }
 }

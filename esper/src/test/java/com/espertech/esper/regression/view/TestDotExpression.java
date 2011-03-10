@@ -25,9 +25,9 @@ public class TestDotExpression extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportChainTop", SupportChainTop.class);
 
         tryInvalid("select (abc).noSuchMethod() from SupportBean abc",
-                "Error starting statement: Could not find instance method named 'noSuchMethod' in class 'com.espertech.esper.support.bean.SupportBean' taking no parameters [select (abc).noSuchMethod() from SupportBean abc]");
+                "Error starting statement: Could not find instance or enumeration method named 'noSuchMethod' in class 'com.espertech.esper.support.bean.SupportBean' taking no parameters [select (abc).noSuchMethod() from SupportBean abc]");
         tryInvalid("select (abc).getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc",
-                "Error starting statement: Could not find instance method named 'noSuchMethod' in class 'com.espertech.esper.support.bean.SupportChainChildOne' taking no parameters [select (abc).getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc]");
+                "Error starting statement: Could not find instance or enumeration method named 'noSuchMethod' in class 'com.espertech.esper.support.bean.SupportChainChildOne' taking no parameters [select (abc).getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc]");
     }
 
     public void testChainedUnparameterized() {

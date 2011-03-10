@@ -88,4 +88,10 @@ public class NamedWindowLookupStrategyIndexed implements NamedWindowLookupStrate
 
         return removeEvents.toArray(new EventBean[removeEvents.size()]);
     }
+
+    public String toString() {
+        return "NamedWindowLookupStrategyIndexed{" +
+                "tableLookupStrategy=" + tableLookupStrategy +
+                '}';
+    }
 }

@@ -575,7 +575,7 @@ public class ArrayAssertionUtil
                 return;
             }
         }
-        Assert.assertEquals(propertyNames.length, propertiesThisRow.length);
+        Assert.assertEquals(propertiesThisRow.length, propertyNames.length);
 
         for (int j = 0; j < propertiesThisRow.length; j++)
         {
@@ -633,7 +633,7 @@ public class ArrayAssertionUtil
         }
     }
 
-    public static void assertProps(Map pojo, String[] propertyNames, Object... propertiesThisRow)
+    public static void assertPropsMap(Map pojo, String[] propertyNames, Object... propertiesThisRow)
     {
         if (propertiesThisRow == null)
         {
@@ -873,6 +873,20 @@ public class ArrayAssertionUtil
         return events.toArray(new EventBean[0]);
     }
 
+    public static Object[] iteratorToArrayObject(Iterator iterator)
+    {
+        if (iterator == null)
+        {
+            Assert.fail("Null iterator");
+        }
+        ArrayList<Object> items = new ArrayList<Object>();
+        for (;iterator.hasNext();)
+        {
+            items.add(iterator.next());
+        }
+        return items.toArray(new Object[items.size()]);
+    }
+
     public static Object[] iteratorToArrayUnderlying(Iterator<EventBean> iterator)
     {
         ArrayList<Object> events = new ArrayList<Object>();
@@ -883,7 +897,7 @@ public class ArrayAssertionUtil
         return events.toArray();
     }
 
-    public static int iteratorCount(Iterator<EventBean> iterator)
+    public static <T> int iteratorCount(Iterator<T> iterator)
     {
         int count = 0;
         for (;iterator.hasNext();)

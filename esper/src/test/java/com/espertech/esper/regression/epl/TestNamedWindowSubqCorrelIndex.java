@@ -19,6 +19,7 @@ public class TestNamedWindowSubqCorrelIndex extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getLogging().setEnableQueryPlan(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);

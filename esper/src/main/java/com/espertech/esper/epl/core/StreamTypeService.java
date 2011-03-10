@@ -82,4 +82,8 @@ public interface StreamTypeService
     public int getStreamNumForStreamName(String streamWildcard);
 
     public boolean isOnDemandStreams();
+
+    public String getEngineURIQualifier();
+
+    public boolean hasPropertyAgnosticType();
 }

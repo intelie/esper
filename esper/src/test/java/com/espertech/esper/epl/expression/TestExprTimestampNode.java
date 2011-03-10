@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.core.ExpressionResultCacheService;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.schedule.TimeProvider;
@@ -25,7 +26,7 @@ public class TestExprTimestampNode extends TestCase
         node.addChildNode(new SupportExprNode(1));
         try
         {
-            node.validate(null, null, null, null, null, null);
+            node.validate(null, null, null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -43,14 +44,16 @@ public class TestExprTimestampNode extends TestCase
                 return 99;
             }
         };
-        context = new ExprEvaluatorContext()
-        {
-            public TimeProvider getTimeProvider()
-            {
+        context = new ExprEvaluatorContext() {
+            public TimeProvider getTimeProvider() {
                 return provider;
             }
+
+            public ExpressionResultCacheService getExpressionResultCacheService() {
+                return null;
+            }
         };
-        node.validate(null, null, null, provider, null, null);
+        node.validate(null, null, null, provider, null, null, null);
         assertEquals(99L, node.evaluate(null, false, context));
     }
 

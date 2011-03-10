@@ -70,10 +70,21 @@ elementValue
     	;    
 
 //----------------------------------------------------------------------------
+// Expression Declaration
+//----------------------------------------------------------------------------
+expressionDecl
+	:	^(e=EXPRESSIONDECL IDENT valueExpr expressionLambdaDecl? ) { leaveNode($e); }
+	;
+
+expressionLambdaDecl
+	:	^(GOES (IDENT | exprCol))
+	;
+
+//----------------------------------------------------------------------------
 // EPL expression
 //----------------------------------------------------------------------------
 startEPLExpressionRule
-	:	^(EPL_EXPR annotation[true]* eplExpressionRule) { end(); }		
+	:	^(EPL_EXPR annotation[true]* expressionDecl* eplExpressionRule) { end(); }		
 	;
 
 eplExpressionRule
@@ -606,7 +617,11 @@ libFuncChain
 	;
 
 libFunctionWithClass
-	:  	^(l=LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? (valueExpr)*)
+	:  	^(l=LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? libFunctionArgItem*)
+	;
+	
+libFunctionArgItem
+	:	expressionLambdaDecl | valueExpr
 	;
 	
 libOrPropFunction

@@ -50,6 +50,26 @@ public class ExprNodeSummaryVisitor implements ExprNodeVisitor
         return !(hasProperties | hasAggregation | hasSubselect | hasStreamSelect | hasPreviousPrior);
     }
 
+    public boolean isHasProperties() {
+        return hasProperties;
+    }
+
+    public boolean isHasAggregation() {
+        return hasAggregation;
+    }
+
+    public boolean isHasSubselect() {
+        return hasSubselect;
+    }
+
+    public boolean isHasStreamSelect() {
+        return hasStreamSelect;
+    }
+
+    public boolean isHasPreviousPrior() {
+        return hasPreviousPrior;
+    }
+
     /**
      * Returns a message if the expression contains special-instruction expressions.
      * @return message

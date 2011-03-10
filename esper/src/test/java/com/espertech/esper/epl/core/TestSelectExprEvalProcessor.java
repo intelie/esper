@@ -30,7 +30,7 @@ public class TestSelectExprEvalProcessor extends TestCase
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
         SupportValueAddEventService vaeService = new SupportValueAddEventService();
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
-        MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(new EngineImportServiceImpl(true), null, true);
+        MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(new EngineImportServiceImpl(true, true, true), null);
 
         methodOne = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null, null);
 
