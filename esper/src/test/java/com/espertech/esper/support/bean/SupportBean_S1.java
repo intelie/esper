@@ -43,6 +43,13 @@ public class SupportBean_S1 implements Serializable
         this.p11 = p11;
     }
 
+    public SupportBean_S1(int id, String p10, String p11, String p12) {
+        this.id = id;
+        this.p10 = p10;
+        this.p11 = p11;
+        this.p12 = p12;
+    }
+
     public int getId()
     {
         return id;

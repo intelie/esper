@@ -240,6 +240,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         // Multiple different-result dispatches to same or different statements are needed in two situations:
         // a) an event comes in, triggers two insert-into statements inserting into the same named window and the window produces 2 results
         // b) a time batch is grouped in the named window, and a timer fires for both groups at the same time producing more then one result
+        // c) two on-merge/update/delete statements fire for the same arriving event each updating the named window
 
         // Most likely all dispatches go to different statements since most statements are not joins of
         // named windows that produce results at the same time. Therefore sort by statement handle.
@@ -280,6 +281,9 @@ public class NamedWindowServiceImpl implements NamedWindowService
             if (perStmtObj instanceof NamedWindowConsumerDispatchUnit)
             {
                 NamedWindowConsumerDispatchUnit unit = (NamedWindowConsumerDispatchUnit) perStmtObj;
+                if (unit.getDispatchTo() == null) {
+                    continue;
+                }
                 EventBean[] newData = unit.getDeltaData().getNewData();
                 EventBean[] oldData = unit.getDeltaData().getOldData();
 
@@ -320,6 +324,9 @@ public class NamedWindowServiceImpl implements NamedWindowService
             Map<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer = new LinkedHashMap<NamedWindowConsumerView, NamedWindowDeltaData>();
             for (NamedWindowConsumerDispatchUnit unit : list)   // for each unit
             {
+                if (unit.getDispatchTo() == null) {
+                    continue;
+                }
                 for (NamedWindowConsumerView consumerView : unit.getDispatchTo().get(handle))   // each consumer
                 {
                     NamedWindowDeltaData deltaForConsumer = deltaPerConsumer.get(consumerView);
