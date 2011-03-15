@@ -149,6 +149,9 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
             }
         }
         lastResult = newData;
+
+        // clear state from prior results
+        resultSetProcessor.clear();
     }
 
     public EventType getEventType()
