@@ -32,7 +32,7 @@ public enum EnumMethodEnum {
     ORDERBY("orderBy", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalOrderByAscDesc.class, EnumMethodEnumParams.ORDERBY),
     ORDERBYDESC("orderByDesc", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalOrderByAscDesc.class, EnumMethodEnumParams.ORDERBY),
     WHERE("where", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalWhere.class, EnumMethodEnumParams.WHERE_FP),
-
+    UNION("union", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalUnion.class, EnumMethodEnumParams.UNION_FP),
     REVERSE("reverse", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalReverse.class, EnumMethodEnumParams.EMPTY_FP),
     NOOP("esperInternalNoop", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalNoOp.class, EnumMethodEnumParams.EMPTY_FP),
     ;

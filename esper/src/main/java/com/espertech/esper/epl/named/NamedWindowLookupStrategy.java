@@ -25,4 +25,6 @@ public interface NamedWindowLookupStrategy
      * @param exprEvaluatorContext expression evaluation context
      */
     public EventBean[] lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext);
+
+    public String toQueryPlan();
 }

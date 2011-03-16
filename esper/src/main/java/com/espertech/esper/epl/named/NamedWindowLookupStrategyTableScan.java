@@ -74,6 +74,10 @@ public class NamedWindowLookupStrategyTableScan implements NamedWindowLookupStra
     }
 
     public String toString() {
-        return "NamedWindowLookupStrategyTableScan";
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan() {
+        return this.getClass().getSimpleName();
     }
 }

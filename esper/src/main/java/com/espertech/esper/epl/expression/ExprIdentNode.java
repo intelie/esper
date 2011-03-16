@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.collection.Pair;
@@ -72,6 +73,17 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
         }
         this.unresolvedPropertyName = unresolvedPropertyName;
         this.streamOrPropertyName = streamOrPropertyName;
+    }
+
+    public ExprIdentNode(EventType eventType, String propertyName, int streamNumber) {
+        unresolvedPropertyName = propertyName;
+        resolvedPropertyName = propertyName;
+        streamNum = streamNumber;
+        propertyGetter = eventType.getGetter(propertyName);
+        if (propertyGetter == null) {
+            throw new IllegalArgumentException("Ident-node constructor could not locate property " + propertyName);
+        }
+        propertyType = eventType.getPropertyType(propertyName);
     }
 
     public ExprEvaluator getExprEvaluator()

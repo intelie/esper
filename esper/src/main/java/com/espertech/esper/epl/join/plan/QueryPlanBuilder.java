@@ -92,7 +92,7 @@ public class QueryPlanBuilder
 
         boolean hasPreferMergeJoin = HintEnum.PREFER_MERGE_JOIN.getHint(annotations) != null;
         boolean hasForceNestedIter = HintEnum.FORCE_NESTED_ITER.getHint(annotations) != null;
-        boolean isAllInnerJoins = outerJoinDescList.isEmpty() || consistsOfAllInnerJoins(outerJoinDescList);
+        boolean isAllInnerJoins = outerJoinDescList.isEmpty() || OuterJoinDesc.consistsOfAllInnerJoins(outerJoinDescList);
         
         if (isAllInnerJoins && !hasPreferMergeJoin)
         {
@@ -119,15 +119,6 @@ public class QueryPlanBuilder
                                     hasHistorical, isHistorical, dependencyGraph, historicalStreamIndexLists, exprEvaluatorContext);
         removeUnidirectional(queryPlan, streamJoinAnalysisResult);
         return queryPlan;
-    }
-
-    private static boolean consistsOfAllInnerJoins(List<OuterJoinDesc> outerJoinDescList) {
-        for (OuterJoinDesc desc : outerJoinDescList) {
-            if (desc.getOuterJoinType() != OuterJoinType.INNER) {
-                return false;
-            }
-        }
-        return true;
     }
 
     // Remove plans for non-unidirectional streams

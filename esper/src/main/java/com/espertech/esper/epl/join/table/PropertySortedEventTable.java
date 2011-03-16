@@ -12,9 +12,9 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.SuperIterator;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValue;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValueEquals;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValueRange;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValue;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValueEquals;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValueRange;
 import com.espertech.esper.epl.join.plan.QueryGraphRangeEnum;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.filter.Range;
@@ -392,7 +392,11 @@ public class PropertySortedEventTable implements EventTable
 
     public String toString()
     {
-        return "PropertyIndexedEventTable" +
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan() {
+        return this.getClass().getSimpleName() +
                 " streamNum=" + streamNum +
                 " propertyName=" + propertyName;
     }

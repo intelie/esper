@@ -61,6 +61,3 @@ public interface EventPropertyGetter
      */
     public Object getFragment(EventBean eventBean) throws PropertyAccessException;
 }
-
-
-

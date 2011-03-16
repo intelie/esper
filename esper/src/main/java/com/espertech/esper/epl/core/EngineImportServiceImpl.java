@@ -380,7 +380,7 @@ public class EngineImportServiceImpl implements EngineImportService
             message += "static ";
         }
         else {
-            message += "instance or enumeration ";
+            message += "enumeration method or instance ";
         }
 
         if (paramTypes.length > 0)

@@ -10,7 +10,6 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.util.CollectionUtil;
 import com.espertech.esper.util.JavaClassHelper;
 
-import javax.tools.JavaCompiler;
 import java.io.StringWriter;
 import java.util.*;
 
@@ -28,7 +27,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
     }
 
     public abstract EventType[] getAddStreamTypes(List<String> goesToNames, EventType inputEventType, List<ExprDotEvalParam> bodiesAndParameters);
-    public abstract EnumEval getEnumEval(List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, int numStreamsIncoming);
+    public abstract EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, int numStreamsIncoming) throws ExprValidationException;
 
     public EnumMethodEnum getEnumMethodEnum() {
         return enumMethodEnum;
@@ -60,7 +59,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
             bodiesAndParameters.add(bodyAndParameter);
         }
 
-        this.enumEval = getEnumEval(bodiesAndParameters, eventType, streamCountIncoming);
+        this.enumEval = getEnumEval(streamTypeService, enumMethodUsedName, bodiesAndParameters, eventType, streamCountIncoming);
 
         // determine the stream ids of event properties asked for in the evaluator(s)
         HashSet<Integer> streamsRequired = new HashSet<Integer>();
@@ -208,10 +207,12 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
 
         // handle an expression that is a constant or other (not =>)
         if (!(parameterNode instanceof ExprLambdaGoesNode)) {
-            ExprNode validated = parameterNode.getValidatedSubtree(streamTypeService, validationContext.getMethodResolutionService(), validationContext.getViewResourceDelegate(), validationContext.getTimeProvider(), validationContext.getVariableService(), validationContext.getExprEvaluatorContext(), validationContext.getEventAdapterService());
+
+            // no node subtree validation is required here, the chain parameter validation has taken place in ExprDotNode.validate
+            // we validate the parameter type so that a uniform error message can be presented
             EnumMethodEnumParamType expectedType = footprint.getParams()[parameterNum].getType();
-            validateExpr(expectedType, validated.getExprEvaluator().getType(), parameterNum);
-            return new ExprDotEvalParamExpr(parameterNum, validated, validated.getExprEvaluator());
+            validateExpr(expectedType, parameterNode.getExprEvaluator().getType(), parameterNum);
+            return new ExprDotEvalParamExpr(parameterNum, parameterNode, parameterNode.getExprEvaluator());
         }
 
         ExprLambdaGoesNode goesNode = (ExprLambdaGoesNode) parameterNode;
@@ -254,10 +255,8 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         }
     }
 
-    @Override
     public String toString() {
-        return "ExprDotEvalLambdaBase{" +
-                "lambda=" + enumMethodEnum +
-                '}';
+        return this.getClass().getSimpleName() +
+                " lambda=" + enumMethodEnum;
     }
 }

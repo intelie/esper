@@ -8,32 +8,29 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprNode;
+
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * Property lists stored as a value for each stream-to-stream relationship, for use by {@link QueryGraph}.
  */
 public class QueryGraphValue
 {
-    private List<String> propertiesValue;
-    private List<String> propertiesKey;
-    private List<QueryGraphValueRange> rangeEntries;
+    private Map<String, QueryGraphValueEntry> entries;
 
     /**
      * Ctor.
      */
     public QueryGraphValue()
     {
-        propertiesValue = new LinkedList<String>();
-        propertiesKey = new LinkedList<String>();
-        rangeEntries = new ArrayList<QueryGraphValueRange>();
+        entries = new LinkedHashMap<String, QueryGraphValueEntry>();
     }
 
-    public List<QueryGraphValueRange> getRangeEntries() {
-        return rangeEntries;
+    public Map<String, QueryGraphValueEntry> getEntries() {
+        return entries;
     }
 
     /**
@@ -42,132 +39,121 @@ public class QueryGraphValue
      * @param indexProperty - index property
      * @return true if added and either property did not exist, false if either already existed
      */
-    public boolean add(String indexProperty, String keyProperty)
+    public boolean addStrictCompare(String keyProperty, ExprIdentNode keyPropNode, String indexProperty, ExprIdentNode indexPropNode)
     {
-        if (propertiesValue.contains(keyProperty))
-        {
-            return false;
+        QueryGraphValueEntry value = entries.get(indexProperty);
+        if (value instanceof QueryGraphValueEntryHashKeyedExpr) {
+            // if this index property exists and is compared to a constant, ignore the index prop
+            QueryGraphValueEntryHashKeyedExpr expr = (QueryGraphValueEntryHashKeyedExpr) value;
+            if (expr.isConstant()) {
+                return false;
+            }
         }
-        if (propertiesKey.contains(indexProperty))
-        {
-            return false;
+        if (value instanceof QueryGraphValueEntryHashKeyedProp) {
+            return false;   // second comparison, ignore
         }
-        propertiesValue.add(keyProperty);
-        propertiesKey.add(indexProperty);
+        
+        entries.put(indexProperty, new QueryGraphValueEntryHashKeyedProp(keyPropNode, keyProperty));
         return true;
     }
 
-    /**
-     * Returns property names for left stream.
-     * @return property names
-     */
-    public List<String> getPropertiesValue()
-    {
-        return propertiesValue;
-    }
-
-    /**
-     * Returns property names for right stream.
-     * @return property names
-     */
-    public List<String> getPropertiesKey()
-    {
-        return propertiesKey;
-    }
-
-    public String toString()
-    {
-        return "QueryGraphValue " +
-                " propertiesValue=" + Arrays.toString(propertiesValue.toArray()) +
-                " propertiesKey=" + Arrays.toString(propertiesKey.toArray()) +
-                " rangeEntries=" + Arrays.toString(rangeEntries.toArray());
-    }
-
-    public void addRange(QueryGraphRangeEnum rangeType, String propertyStart, String propertyEnd, String propertyValue) {
+    public void addRange(QueryGraphRangeEnum rangeType, ExprNode propertyStart, ExprNode propertyEnd, String propertyValue) {
         if (!rangeType.isRange()) {
             throw new IllegalArgumentException("Expected range type, received " + rangeType);
         }
 
         // duplicate can be removed right away
-        for (QueryGraphValueRange entry : rangeEntries) {
-            if (!entry.getPropertyValue().equals(propertyValue)) {
-                continue;
-            }
-            if (entry.getType() == rangeType) {
-                QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) entry;
-                if (in.getPropertyStart().equals(propertyStart) &&
-                    in.getPropertyEnd().equals(propertyEnd)) {
-                    return;
-                }
-            }
+        if (entries.containsKey(propertyValue)) {
+            return;
         }
 
-        rangeEntries.add(new QueryGraphValueRangeIn(rangeType, propertyStart, propertyEnd, propertyValue, true));
+        entries.put(propertyValue, new QueryGraphValueEntryRangeIn(rangeType, propertyStart, propertyEnd, true));
     }
 
-    public void addRelOp(String propertyKey, QueryGraphRangeEnum op, String propertyValue, boolean isBetweenOrIn) {
+    public void addRelOp(ExprNode propertyKey, QueryGraphRangeEnum op, String propertyValue, boolean isBetweenOrIn) {
 
         // Note: Read as follows:
         // System.out.println("If I have an index on '" + propertyValue + "' I'm evaluating " + propertyKey + " and finding all values of " + propertyValue + " " + op + " then " + propertyKey);
 
         // Check if there is an opportunity to convert this to a range or remove an earlier specification
-        List<QueryGraphValueRange> matches = new ArrayList<QueryGraphValueRange>();
-        for (QueryGraphValueRange entry : rangeEntries) {
-            if (!entry.getPropertyValue().equals(propertyValue)) {
-                continue;
-            }
-            // duplicate can be removed right away
-            if (entry.getType() == op) {
-                QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) entry;
-                if (relOp.getPropertyKey().equals(propertyKey)) {
-                    return;
-                }
-            }
-            matches.add(entry);
-        }
-
-        if (matches.isEmpty()) {
-            rangeEntries.add(new QueryGraphValueRangeRelOp(op, propertyKey, propertyValue, isBetweenOrIn));
+        QueryGraphValueEntry existing = entries.get(propertyValue);
+        if (existing == null) {
+            entries.put(propertyValue, new QueryGraphValueEntryRangeRelOp(op, propertyKey, isBetweenOrIn));
             return;
         }
 
-        // consolidate with an existing entry
-        List<QueryGraphValueRange> deletes = new ArrayList<QueryGraphValueRange>();
-        for (QueryGraphValueRange match : matches) {
-
-            if (match.getType().isRange()) {
-                continue;
-            }
-
-            if (match instanceof QueryGraphValueRangeRelOp) {
-                QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) match;
-                QueryGraphRangeConsolidateDesc opsDesc = QueryGraphRangeUtil.getCanConsolidate(op, match.getType());
-                if (opsDesc != null) {
-                    String start = !opsDesc.isReverse() ? relOp.getPropertyKey() : propertyKey;
-                    String end = !opsDesc.isReverse() ?  propertyKey : relOp.getPropertyKey();
-                    addRange(opsDesc.getType(), start, end, propertyValue);
-                    deletes.add(match);
-                }
-            }
+        if (!(existing instanceof QueryGraphValueEntryRangeRelOp)) {
+            return; // another comparison exists already, don't add range
         }
 
-        if (deletes.isEmpty()) {
-            rangeEntries.add(new QueryGraphValueRangeRelOp(op, propertyKey, propertyValue, isBetweenOrIn));
-        }
-        else {
-            rangeEntries.removeAll(deletes);
+        QueryGraphValueEntryRangeRelOp relOp = (QueryGraphValueEntryRangeRelOp) existing;
+        QueryGraphRangeConsolidateDesc opsDesc = QueryGraphRangeUtil.getCanConsolidate(op, relOp.getType());
+        if (opsDesc != null) {
+            ExprNode start = !opsDesc.isReverse() ? relOp.getExpression() : propertyKey;
+            ExprNode end = !opsDesc.isReverse() ?  propertyKey : relOp.getExpression();
+            entries.remove(propertyValue);
+            addRange(opsDesc.getType(), start, end, propertyValue);
         }
     }
 
-    public String[] getRangeEntriesValueProperties() {
-        if (rangeEntries.isEmpty()) {
-            return null;
+    public void addUnkeyedExpr(String indexedProp, ExprNode exprNodeNoIdent) {
+        entries.put(indexedProp, new QueryGraphValueEntryHashKeyedExpr(exprNodeNoIdent, false));
+    }
+
+    public void addKeyedExpr(String indexedProp, ExprNode exprNodeNoIdent) {
+        entries.put(indexedProp, new QueryGraphValueEntryHashKeyedExpr(exprNodeNoIdent, true));
+    }
+
+    public QueryGraphValuePairHashKeyIndex getHashKeyProps() {
+        List<QueryGraphValueEntryHashKeyed> keys = new ArrayList<QueryGraphValueEntryHashKeyed>();
+        Deque<String> indexed = new ArrayDeque<String>();
+        for (Map.Entry<String, QueryGraphValueEntry> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof QueryGraphValueEntryHashKeyed) {
+                QueryGraphValueEntryHashKeyed keyprop = (QueryGraphValueEntryHashKeyed) entry.getValue();
+                keys.add(keyprop);
+                indexed.add(entry.getKey());
+            }
         }
-        String[] props = new String[rangeEntries.size()];
-        for (int i = 0; i < rangeEntries.size(); i++) {
-            props[i] = rangeEntries.get(i).getPropertyValue();
+
+        String[] strictKeys = new String[indexed.size()];
+        int count = 0;
+        for (Map.Entry<String, QueryGraphValueEntry> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof QueryGraphValueEntryHashKeyed) {
+                if (entry.getValue() instanceof QueryGraphValueEntryHashKeyedProp) {
+                    QueryGraphValueEntryHashKeyedProp keyprop = (QueryGraphValueEntryHashKeyedProp) entry.getValue();
+                    strictKeys[count] = keyprop.getKeyProperty();
+                }
+                count++;
+            }
         }
-        return props;
+
+        return new QueryGraphValuePairHashKeyIndex(indexed.toArray(new String[indexed.size()]), keys, strictKeys);
+    }
+
+    public QueryGraphValuePairRangeIndex getRangeProps() {
+        Deque<String> indexed = new ArrayDeque<String>();
+        List<QueryGraphValueEntryRange> keys = new ArrayList<QueryGraphValueEntryRange>();
+        for (Map.Entry<String, QueryGraphValueEntry> entry : entries.entrySet()) {
+            if (entry.getValue() instanceof QueryGraphValueEntryRange) {
+                QueryGraphValueEntryRange keyprop = (QueryGraphValueEntryRange) entry.getValue();
+                keys.add(keyprop);
+                indexed.add(entry.getKey());
+            }
+        }
+        return new QueryGraphValuePairRangeIndex(indexed.toArray(new String[indexed.size()]), keys);
+    }
+
+    public String toString()
+    {
+        StringWriter writer = new StringWriter();
+        writer.append("QueryGraphValue ");
+        String delimiter = "";
+        for (Map.Entry<String, QueryGraphValueEntry> entry : entries.entrySet()) {
+            writer.append(delimiter);
+            writer.append(entry.getKey() + ": " + entry.getValue());
+            delimiter = ", ";
+        }
+        return writer.toString();
     }
 }
 

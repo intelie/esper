@@ -5,20 +5,20 @@ import java.util.List;
 
 public class IndexMultiKey {
 
-    private IndexedPropDesc[] keyProps;
-    private IndexedPropDesc[] rangeProps;
+    private IndexedPropDesc[] hashIndexedProps;
+    private IndexedPropDesc[] rangeIndexedProps;
 
-    public IndexMultiKey(List<IndexedPropDesc> keyProps, List<IndexedPropDesc> rangeProps) {
-        this.keyProps = keyProps.toArray(new IndexedPropDesc[keyProps.size()]);
-        this.rangeProps = rangeProps.toArray(new IndexedPropDesc[rangeProps.size()]);
+    public IndexMultiKey(List<IndexedPropDesc> hashIndexedProps, List<IndexedPropDesc> rangeIndexedProps) {
+        this.hashIndexedProps = hashIndexedProps.toArray(new IndexedPropDesc[hashIndexedProps.size()]);
+        this.rangeIndexedProps = rangeIndexedProps.toArray(new IndexedPropDesc[rangeIndexedProps.size()]);
     }
 
-    public IndexedPropDesc[] getKeyProps() {
-        return keyProps;
+    public IndexedPropDesc[] getHashIndexedProps() {
+        return hashIndexedProps;
     }
 
-    public IndexedPropDesc[] getRangeProps() {
-        return rangeProps;
+    public IndexedPropDesc[] getRangeIndexedProps() {
+        return rangeIndexedProps;
     }
 
     public boolean equals(Object o) {
@@ -27,15 +27,15 @@ public class IndexMultiKey {
 
         IndexMultiKey that = (IndexMultiKey) o;
 
-        if (!Arrays.equals(keyProps, that.keyProps)) return false;
-        if (!Arrays.equals(rangeProps, that.rangeProps)) return false;
+        if (!Arrays.equals(hashIndexedProps, that.hashIndexedProps)) return false;
+        if (!Arrays.equals(rangeIndexedProps, that.rangeIndexedProps)) return false;
 
         return true;
     }
 
     public int hashCode() {
-        int result = Arrays.hashCode(keyProps);
-        result = 31 * result + Arrays.hashCode(rangeProps);
+        int result = Arrays.hashCode(hashIndexedProps);
+        result = 31 * result + Arrays.hashCode(rangeIndexedProps);
         return result;
     }
 }

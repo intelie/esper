@@ -11,7 +11,7 @@ package com.espertech.esper.epl.named;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.lookup.SubqTableLookupStrategy;
+import com.espertech.esper.epl.lookup.SubordTableLookupStrategy;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,14 +25,14 @@ public class NamedWindowLookupStrategyIndexed implements NamedWindowLookupStrate
 {
     private final ExprEvaluator joinExpr;
     private final EventBean[] eventsPerStream;
-    private final SubqTableLookupStrategy tableLookupStrategy;
+    private final SubordTableLookupStrategy tableLookupStrategy;
 
     /**
      * Ctor.
      * @param joinExpr the validated where clause of the on-delete
      * @param tableLookupStrategy the strategy for looking up in an index the matching events using correlation
      */
-    public NamedWindowLookupStrategyIndexed(ExprEvaluator joinExpr, SubqTableLookupStrategy tableLookupStrategy)
+    public NamedWindowLookupStrategyIndexed(ExprEvaluator joinExpr, SubordTableLookupStrategy tableLookupStrategy)
     {
         this.joinExpr = joinExpr;
         this.eventsPerStream = new EventBean[2];
@@ -49,7 +49,7 @@ public class NamedWindowLookupStrategyIndexed implements NamedWindowLookupStrate
             eventsPerStream[1] = newEvent;
 
             // use index to find match
-            Collection<EventBean> matches = tableLookupStrategy.lookup(eventsPerStream);
+            Collection<EventBean> matches = tableLookupStrategy.lookup(eventsPerStream, exprEvaluatorContext);
             if ((matches == null) || (matches.isEmpty()))
             {
                 continue;
@@ -90,8 +90,10 @@ public class NamedWindowLookupStrategyIndexed implements NamedWindowLookupStrate
     }
 
     public String toString() {
-        return "NamedWindowLookupStrategyIndexed{" +
-                "tableLookupStrategy=" + tableLookupStrategy +
-                '}';
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan() {
+        return this.getClass().getSimpleName() + " " + " strategy " + tableLookupStrategy.toQueryPlan();
     }
 }

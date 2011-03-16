@@ -9,8 +9,8 @@
 package com.espertech.esper.core.deploy;
 
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderIsolated;
+import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.deploy.*;
 import com.espertech.esper.core.EPAdministratorSPI;
@@ -145,7 +145,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 try {
                     epService.compileEPL(item.getExpression());
                 }
-                catch (EPException ex) {
+                catch (RuntimeException ex) {
                     exceptions.add(new DeploymentItemException(ex.getMessage(), item.getExpression(), ex, item.getLineNumber()));
                 }
             }

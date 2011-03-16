@@ -1,7 +1,8 @@
 package com.espertech.esper.epl.join.exec.composite;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.event.EventBeanUtility;
 
 import java.util.Collection;
@@ -11,13 +12,13 @@ import java.util.TreeMap;
 
 public class CompositeAccessStrategyGE extends CompositeAccessStrategyRelOpBase implements CompositeAccessStrategy {
 
-    public CompositeAccessStrategyGE(EventPropertyGetter key, Class coercionType, int keyStreaNum) {
-        super(key, coercionType, keyStreaNum);
+    public CompositeAccessStrategyGE(boolean isNWOnTrigger, int lookupStream, int numStreams, ExprEvaluator key, Class coercionType) {
+        super(isNWOnTrigger, lookupStream, numStreams, key, coercionType);
     }
 
-    public Set<EventBean> lookup(EventBean event, Map parent, Set<EventBean> result, CompositeIndexQuery next) {
+    public Set<EventBean> lookup(EventBean event, Map parent, Set<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context) {
         TreeMap index = (TreeMap) parent;
-        Object comparable = key.get(event);
+        Object comparable = super.evaluateLookup(event, context);
         if (comparable == null) {
             return null;
         }
@@ -25,9 +26,9 @@ public class CompositeAccessStrategyGE extends CompositeAccessStrategyRelOpBase 
         return CompositeIndexQueryRange.handle(event, index.tailMap(comparable), null, result, next);
     }
 
-    public Collection<EventBean> lookup(EventBean[] eventPerStream, Map parent, Collection<EventBean> result, CompositeIndexQuery next) {
+    public Collection<EventBean> lookup(EventBean[] eventPerStream, Map parent, Collection<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context) {
         TreeMap index = (TreeMap) parent;
-        Object comparable = key.get(eventPerStream[keyStreamNum]);
+        Object comparable = super.evaluatePerStream(eventPerStream, context);
         if (comparable == null) {
             return null;
         }

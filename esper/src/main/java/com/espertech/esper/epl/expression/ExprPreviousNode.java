@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * Represents the 'prev' previous event function in an expression node tree.
  */
-public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, ExprEvaluator, ExprEvaluatorLambda
+public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, ExprEvaluator, ExprEvaluatorEnumeration
 {
     private static final long serialVersionUID = 0L;
 

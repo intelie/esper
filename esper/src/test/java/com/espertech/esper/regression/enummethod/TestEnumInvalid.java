@@ -37,7 +37,7 @@ public class TestEnumInvalid extends TestCase {
 
         // test not an enumeration method
         epl = "select contained.notAMethod(x=>x.boolPrimitive) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Could not find instance or enumeration method named 'notAMethod' in class 'java.util.List' with matching parameter number and expected parameter type(s) 'null (any type)' [select contained.notAMethod(x=>x.boolPrimitive) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Could not find enumeration method or instance method named 'notAMethod' in class 'java.util.List' with matching parameter number and expected parameter type(s) 'null (any type)' [select contained.notAMethod(x=>x.boolPrimitive) from SupportBean_ST0_Container]");
 
         // invalid lambda expression for non-lambda func
         epl = "select makeTest(x=>1) from SupportBean_ST0_Container";
@@ -45,7 +45,7 @@ public class TestEnumInvalid extends TestCase {
 
         // invalid lambda expression for non-lambda func
         epl = "select SupportBean_ST0_Container.makeTest(x=>1) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Unexpected lambda-expression encountered as parameter to UDF or static method [select SupportBean_ST0_Container.makeTest(x=>1) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Unexpected lambda-expression encountered as parameter to UDF or static method 'makeTest' and failed to resolve 'SupportBean_ST0_Container' as a property [select SupportBean_ST0_Container.makeTest(x=>1) from SupportBean_ST0_Container]");
 
         // invalid incompatible params
         epl = "select contained.take('a') from SupportBean_ST0_Container";

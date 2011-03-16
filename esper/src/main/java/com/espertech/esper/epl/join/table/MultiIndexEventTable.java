@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join.table;
 
 import com.espertech.esper.client.EventBean;
 
+import java.io.StringWriter;
 import java.util.Iterator;
 
 /**
@@ -68,5 +69,16 @@ public class MultiIndexEventTable implements EventTable
         {
             tables[i].clear();
         }
+    }
+
+    public String toQueryPlan() {
+        StringWriter buf = new StringWriter();
+        String delimiter = "";
+        for (EventTable table : tables) {
+            buf.append(delimiter);
+            buf.append(table.toQueryPlan());
+            delimiter = ", ";
+        }
+        return this.getClass().getSimpleName() + " " + buf.toString();
     }
 }

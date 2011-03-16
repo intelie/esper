@@ -8,9 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
-import com.espertech.esper.epl.join.exec.ExecNode;
-import com.espertech.esper.epl.join.exec.LookupInstructionExecNode;
-import com.espertech.esper.epl.join.exec.LookupInstructionExec;
+import com.espertech.esper.epl.join.exec.base.ExecNode;
+import com.espertech.esper.epl.join.exec.base.LookupInstructionExecNode;
+import com.espertech.esper.epl.join.exec.base.LookupInstructionExec;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.epl.join.assemble.BaseAssemblyNode;

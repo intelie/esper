@@ -1,5 +1,7 @@
 package com.espertech.esper.epl.join.exec;
 
+import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.LookupInstructionExec;
 import com.espertech.esper.support.epl.join.SupportRepositoryImpl;
 import com.espertech.esper.support.epl.join.SupportTableLookupStrategy;
 import com.espertech.esper.support.util.ArrayAssertionUtil;

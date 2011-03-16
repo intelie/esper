@@ -10,8 +10,10 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.collection.Pair;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Visitor that collects event property identifier information under expression nodes.
@@ -41,6 +43,14 @@ public class ExprNodeIdentifierCollectVisitor implements ExprNodeVisitor
     public List<ExprIdentNode> getExprProperties()
     {
         return exprProperties;
+    }
+
+    public Set<Integer> getStreamsRequired() {
+        Set<Integer> streams = new HashSet<Integer>();
+        for (ExprIdentNode node : exprProperties) {
+            streams.add(node.getStreamId());
+        }
+        return streams;
     }
 
     public void visit(ExprNode exprNode)

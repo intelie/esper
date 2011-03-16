@@ -10,9 +10,9 @@ package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.join.table.SubqueryRangeKeyDesc;
-import com.espertech.esper.epl.lookup.JoinedPropDesc;
-import com.espertech.esper.epl.lookup.JoinedPropPlan;
+import com.espertech.esper.epl.lookup.SubordPropHashKey;
+import com.espertech.esper.epl.lookup.SubordPropPlan;
+import com.espertech.esper.epl.lookup.SubordPropRangeKey;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.ArrayList;
@@ -51,18 +51,24 @@ public class QueryPlanIndexBuilder
                     continue;
                 }
 
-                // Sort index properties, but use the sorted properties only to eliminate duplicates
-                String[] indexProps = queryGraph.getIndexProperties(streamLookup, streamIndexed);
-                String[] keyProps = queryGraph.getKeyProperties(streamLookup, streamIndexed);
-                String[] rangeProps = queryGraph.getRangeProperties(streamLookup, streamIndexed);
-                CoercionDesc indexCoercionTypes = CoercionUtil.getCoercionTypes(typePerStream, streamLookup, streamIndexed, keyProps, indexProps);
-                CoercionDesc rangeCoercionTypes = CoercionUtil.getCoercionTypes(typePerStream, streamLookup, streamIndexed, queryGraph.getGraphValue(streamLookup, streamIndexed).getRangeEntries());
+                QueryGraphValue value = queryGraph.getGraphValue(streamLookup, streamIndexed);
+                QueryGraphValuePairHashKeyIndex hashKeyAndIndexProps = value.getHashKeyProps();
 
-                if (indexProps == null && rangeProps == null) {
+                // Sort index properties, but use the sorted properties only to eliminate duplicates
+                String[] hashIndexProps = hashKeyAndIndexProps.getIndexed();
+                List<QueryGraphValueEntryHashKeyed> hashKeyProps = hashKeyAndIndexProps.getKeys();
+                CoercionDesc indexCoercionTypes = CoercionUtil.getCoercionTypesHash(typePerStream, streamLookup, streamIndexed, hashKeyProps, hashIndexProps);
+
+                QueryGraphValuePairRangeIndex rangeAndIndexProps = value.getRangeProps();
+                String[] rangeIndexProps = rangeAndIndexProps.getIndexed();
+                List<QueryGraphValueEntryRange> rangeKeyProps = rangeAndIndexProps.getKeys();
+                CoercionDesc rangeCoercionTypes = CoercionUtil.getCoercionTypesRange(typePerStream, streamIndexed, rangeIndexProps, rangeKeyProps);
+
+                if (hashIndexProps.length == 0 && rangeIndexProps.length == 0) {
                     continue;
                 }
 
-                QueryPlanIndexItem proposed = new QueryPlanIndexItem(indexProps, indexCoercionTypes.getCoercionTypes(), rangeProps, rangeCoercionTypes.getCoercionTypes());
+                QueryPlanIndexItem proposed = new QueryPlanIndexItem(hashIndexProps, indexCoercionTypes.getCoercionTypes(), rangeIndexProps, rangeCoercionTypes.getCoercionTypes());
                 boolean found = false;
                 for (QueryPlanIndexItem index : indexesSet) {
                     if (proposed.equalsCompareSortedProps(index)) {
@@ -87,62 +93,80 @@ public class QueryPlanIndexBuilder
         return indexSpecs;
     }
 
-    public static JoinedPropPlan getJoinProps(ExprNode filterExpr, int outsideStreamCount, EventType[] allStreamTypesZeroIndexed)
+    public static SubordPropPlan getJoinProps(ExprNode filterExpr, int outsideStreamCount, EventType[] allStreamTypesZeroIndexed)
     {
         // No filter expression means full table scan
         if (filterExpr == null)
         {
-            return new JoinedPropPlan();
+            return new SubordPropPlan();
         }
 
         // analyze query graph
         QueryGraph queryGraph = new QueryGraph(outsideStreamCount + 1);
-        FilterExprAnalyzer.analyze(filterExpr, queryGraph);
+        FilterExprAnalyzer.analyze(filterExpr, queryGraph, false);
 
         // Build a list of streams and indexes
-        LinkedHashMap<String, JoinedPropDesc> joinProps = new LinkedHashMap<String, JoinedPropDesc>();
-        LinkedHashMap<String, SubqueryRangeKeyDesc> rangeProps = new LinkedHashMap<String, SubqueryRangeKeyDesc>();
-        boolean mustCoerce = false;
+        LinkedHashMap<String, SubordPropHashKey> joinProps = new LinkedHashMap<String, SubordPropHashKey>();
+        LinkedHashMap<String, SubordPropRangeKey> rangeProps = new LinkedHashMap<String, SubordPropRangeKey>();
         for (int stream = 0; stream <  outsideStreamCount; stream++)
         {
             int lookupStream = stream + 1;
 
+            QueryGraphValue queryGraphValue = queryGraph.getGraphValue(lookupStream, 0);
+            QueryGraphValuePairHashKeyIndex hashKeysAndIndexes = queryGraphValue.getHashKeyProps();
+
             // handle key-lookups
-            String[] keyPropertiesJoin = queryGraph.getKeyProperties(lookupStream, 0);
-            String[] indexPropertiesJoin = queryGraph.getIndexProperties(lookupStream, 0);
-            if ((keyPropertiesJoin != null) && (keyPropertiesJoin.length != 0))
+            List<QueryGraphValueEntryHashKeyed> keyPropertiesJoin = hashKeysAndIndexes.getKeys();
+            String[] indexPropertiesJoin = hashKeysAndIndexes.getIndexed();
+            if (!keyPropertiesJoin.isEmpty())
             {
-                if (keyPropertiesJoin.length != indexPropertiesJoin.length)
+                if (keyPropertiesJoin.size() != indexPropertiesJoin.length)
                 {
                     throw new IllegalStateException("Invalid query key and index property collection for stream " + stream);
                 }
 
-                for (int i = 0; i < keyPropertiesJoin.length; i++)
+                for (int i = 0; i < keyPropertiesJoin.size(); i++)
                 {
-                    Class keyPropType = JavaClassHelper.getBoxedType(allStreamTypesZeroIndexed[lookupStream].getPropertyType(keyPropertiesJoin[i]));
+                    QueryGraphValueEntryHashKeyed keyDesc = keyPropertiesJoin.get(i);
+                    ExprNode compareNode = keyDesc.getKeyExpr();
+
+                    Class keyPropType = JavaClassHelper.getBoxedType(compareNode.getExprEvaluator().getType());
                     Class indexedPropType = JavaClassHelper.getBoxedType(allStreamTypesZeroIndexed[0].getPropertyType(indexPropertiesJoin[i]));
                     Class coercionType = indexedPropType;
                     if (keyPropType != indexedPropType)
                     {
                         coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, indexedPropType);
-                        mustCoerce = true;
                     }
 
-                    JoinedPropDesc desc = new JoinedPropDesc(indexPropertiesJoin[i], coercionType, keyPropertiesJoin[i], stream);
+                    SubordPropHashKey desc;
+                    if (keyPropertiesJoin.get(i) instanceof QueryGraphValueEntryHashKeyedExpr) {
+                        QueryGraphValueEntryHashKeyedExpr keyExpr = (QueryGraphValueEntryHashKeyedExpr) keyPropertiesJoin.get(i);
+                        Integer keyStreamNum = keyExpr.isRequiresKey() ? stream : null;
+                        desc = new SubordPropHashKey(keyDesc, keyStreamNum, coercionType);
+                    }
+                    else {
+                        QueryGraphValueEntryHashKeyedProp prop = (QueryGraphValueEntryHashKeyedProp) keyDesc;
+                        desc = new SubordPropHashKey(prop, stream, coercionType);
+                    }
                     joinProps.put(indexPropertiesJoin[i], desc);
                 }
             }
 
             // handle range lookups
-            List<QueryGraphValueRange> rangeDescs = queryGraph.getGraphValue(lookupStream, 0).getRangeEntries();
+            QueryGraphValuePairRangeIndex rangeKeysAndIndexes = queryGraphValue.getRangeProps();
+            String[] rangeIndexes = rangeKeysAndIndexes.getIndexed();
+            List<QueryGraphValueEntryRange> rangeDescs = rangeKeysAndIndexes.getKeys();
             if (rangeDescs.isEmpty()) {
                 continue;
             }
 
             // get all ranges lookups
-            for (QueryGraphValueRange rangeDesc : rangeDescs) {
+            int count = -1;
+            for (QueryGraphValueEntryRange rangeDesc : rangeDescs) {
+                count++;
+                String rangeIndexProp = rangeIndexes[count];
 
-                SubqueryRangeKeyDesc subqRangeDesc = rangeProps.get(rangeDesc.getPropertyValue());
+                SubordPropRangeKey subqRangeDesc = rangeProps.get(rangeIndexProp);
 
                 // other streams may specify the start or end endpoint of a range, therefore this operation can be additive
                 if (subqRangeDesc != null) {
@@ -151,40 +175,38 @@ public class QueryPlanIndexBuilder
                     }
 
                     // see if we can make this additive by using a range
-                    QueryGraphValueRangeRelOp relOpOther = (QueryGraphValueRangeRelOp) subqRangeDesc.getRangeInfo();
-                    QueryGraphValueRangeRelOp relOpThis = (QueryGraphValueRangeRelOp) rangeDesc;
+                    QueryGraphValueEntryRangeRelOp relOpOther = (QueryGraphValueEntryRangeRelOp) subqRangeDesc.getRangeInfo();
+                    QueryGraphValueEntryRangeRelOp relOpThis = (QueryGraphValueEntryRangeRelOp) rangeDesc;
 
                     QueryGraphRangeConsolidateDesc opsDesc = QueryGraphRangeUtil.getCanConsolidate(relOpThis.getType(), relOpOther.getType());
                     if (opsDesc != null) {
-                        String start;
-                        String end;
+                        ExprNode start;
+                        ExprNode end;
                         int streamNumStart;
                         int streamNumEnd;
                         if (!opsDesc.isReverse()) {
-                            start = relOpOther.getPropertyKey();
-                            streamNumStart = subqRangeDesc.getKeyStreamNum();
-                            end = relOpThis.getPropertyKey();
+                            start = relOpOther.getExpression();
+                            end = relOpThis.getExpression();
                             streamNumEnd = stream;
                         }
                         else {
-                            start = relOpThis.getPropertyKey();
+                            start = relOpThis.getExpression();
                             streamNumStart = stream;
-                            end = relOpOther.getPropertyKey();
-                            streamNumEnd = subqRangeDesc.getKeyStreamNum();
+                            end = relOpOther.getExpression();
                         }
                         boolean allowRangeReversal = relOpOther.isBetweenPart() && relOpThis.isBetweenPart();
-                        QueryGraphValueRangeIn in = new QueryGraphValueRangeIn(opsDesc.getType(), start, end, rangeDesc.getPropertyValue(), allowRangeReversal);
+                        QueryGraphValueEntryRangeIn in = new QueryGraphValueEntryRangeIn(opsDesc.getType(), start, end, allowRangeReversal);
 
-                        Class indexedPropType = JavaClassHelper.getBoxedType(allStreamTypesZeroIndexed[0].getPropertyType(in.getPropertyValue()));
+                        Class indexedPropType = JavaClassHelper.getBoxedType(allStreamTypesZeroIndexed[0].getPropertyType(rangeIndexProp));
                         Class coercionType = indexedPropType;
-                        Class proposedType = CoercionUtil.getCoercionTypeRangeIn(indexedPropType, in.getPropertyStart(), allStreamTypesZeroIndexed[streamNumStart+1], in.getPropertyEnd(), allStreamTypesZeroIndexed[streamNumEnd+1]);
+                        Class proposedType = CoercionUtil.getCoercionTypeRangeIn(indexedPropType, in.getExprStart(), in.getExprEnd());
                         if (proposedType != null && proposedType != indexedPropType)
                         {
                             coercionType = proposedType;
                         }
 
-                        subqRangeDesc = new SubqueryRangeKeyDesc(streamNumStart, streamNumEnd, in, coercionType);
-                        rangeProps.put(relOpOther.getPropertyValue(), subqRangeDesc);
+                        subqRangeDesc = new SubordPropRangeKey(in, coercionType);
+                        rangeProps.put(rangeIndexProp, subqRangeDesc);
                     }
                     // ignore
                     continue;
@@ -192,31 +214,31 @@ public class QueryPlanIndexBuilder
 
                 // an existing entry has not been found
                 if (rangeDesc.getType().isRange()) {
-                    QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) rangeDesc;
-                    Class indexedPropType = JavaClassHelper.getBoxedType(allStreamTypesZeroIndexed[0].getPropertyType(in.getPropertyValue()));
+                    QueryGraphValueEntryRangeIn in = (QueryGraphValueEntryRangeIn) rangeDesc;
+                    Class indexedPropType = JavaClassHelper.getBoxedType(allStreamTypesZeroIndexed[0].getPropertyType(rangeIndexProp));
                     Class coercionType = indexedPropType;
-                    Class proposedType = CoercionUtil.getCoercionTypeRangeIn(indexedPropType, in.getPropertyStart(), allStreamTypesZeroIndexed[stream+1], in.getPropertyEnd(), allStreamTypesZeroIndexed[stream+1]);
+                    Class proposedType = CoercionUtil.getCoercionTypeRangeIn(indexedPropType, in.getExprStart(), in.getExprEnd());
                     if (proposedType != null && proposedType != indexedPropType)
                     {
                         coercionType = proposedType;
                     }
-                    subqRangeDesc = new SubqueryRangeKeyDesc(stream, stream, rangeDesc, coercionType);
+                    subqRangeDesc = new SubordPropRangeKey(rangeDesc, coercionType);
                 }
                 else {
-                    QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) rangeDesc;
-                    Class keyPropType = allStreamTypesZeroIndexed[lookupStream].getPropertyType(relOp.getPropertyKey());
-                    Class indexedPropType = JavaClassHelper.getBoxedType(allStreamTypesZeroIndexed[0].getPropertyType(relOp.getPropertyValue()));
+                    QueryGraphValueEntryRangeRelOp relOp = (QueryGraphValueEntryRangeRelOp) rangeDesc;
+                    Class keyPropType = relOp.getExpression().getExprEvaluator().getType();
+                    Class indexedPropType = JavaClassHelper.getBoxedType(allStreamTypesZeroIndexed[0].getPropertyType(rangeIndexProp));
                     Class coercionType = indexedPropType;
                     if (keyPropType != indexedPropType)
                     {
                         coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, indexedPropType);
                     }
-                    subqRangeDesc = new SubqueryRangeKeyDesc(stream, rangeDesc, coercionType);
+                    subqRangeDesc = new SubordPropRangeKey(rangeDesc, coercionType);
                 }
-                rangeProps.put(rangeDesc.getPropertyValue(), subqRangeDesc);
+                rangeProps.put(rangeIndexProp, subqRangeDesc);
             }
 
         }
-        return new JoinedPropPlan(joinProps, rangeProps, mustCoerce);
+        return new SubordPropPlan(joinProps, rangeProps);
     }
 }

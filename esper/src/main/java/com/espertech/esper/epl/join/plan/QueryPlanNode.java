@@ -13,7 +13,7 @@ import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Map;
 
-import com.espertech.esper.epl.join.exec.ExecNode;
+import com.espertech.esper.epl.join.exec.base.ExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.client.EventType;

@@ -11,7 +11,7 @@ package com.espertech.esper.epl.join.rep;
 import com.espertech.esper.client.EventBean;
 
 /**
- * This class supplies position information for {@link com.espertech.esper.epl.join.exec.LookupInstructionExec}
+ * This class supplies position information for {@link com.espertech.esper.epl.join.exec.base.LookupInstructionExec}
  * to use for iterating over events for lookup.
  */
 public class Cursor

@@ -9,14 +9,12 @@
 package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.exec.IndexedTableLookupStrategy;
-import com.espertech.esper.epl.join.exec.IndexedTableLookupStrategySingle;
-import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.IndexedTableLookupStrategySingle;
+import com.espertech.esper.epl.join.exec.base.IndexedTableLookupStrategySingleExpr;
+import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTableSingle;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -24,35 +22,45 @@ import java.util.Map;
  */
 public class IndexedTableLookupPlanSingle extends TableLookupPlan
 {
-    private String keyProperty;
+    private QueryGraphValueEntryHashKeyed hashKey;
 
     /**
      * Ctor.
      * @param lookupStream - stream that generates event to look up for
      * @param indexedStream - stream to index table lookup
      * @param indexNum - index number for the table containing the full unindexed contents
-     * @param keyProperty - properties to use in lookup event to access index
+     * @param hashKey - properties to use in lookup event to access index
      */
-    public IndexedTableLookupPlanSingle(int lookupStream, int indexedStream, String indexNum, String keyProperty)
+    public IndexedTableLookupPlanSingle(int lookupStream, int indexedStream, String indexNum, QueryGraphValueEntryHashKeyed hashKey)
     {
         super(lookupStream, indexedStream, indexNum);
-        this.keyProperty = keyProperty;
+        this.hashKey = hashKey;
     }
 
     public JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
     {
         PropertyIndexedEventTableSingle index = (PropertyIndexedEventTableSingle) indexesPerStream[this.getIndexedStream()].get(getIndexNum());
-        return new IndexedTableLookupStrategySingle(eventTypes[this.getLookupStream()], keyProperty, index);
+        if (hashKey instanceof QueryGraphValueEntryHashKeyedExpr) {
+            QueryGraphValueEntryHashKeyedExpr expr = (QueryGraphValueEntryHashKeyedExpr) hashKey;
+            return new IndexedTableLookupStrategySingleExpr(expr.getKeyExpr(), super.getLookupStream(), index);
+        }
+        else if (hashKey instanceof QueryGraphValueEntryHashKeyedProp) {
+            QueryGraphValueEntryHashKeyedProp prop = (QueryGraphValueEntryHashKeyedProp) hashKey;
+            return new IndexedTableLookupStrategySingle(eventTypes[this.getLookupStream()], prop.getKeyProperty(), index);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid hashkey instance " + hashKey);
+        }
     }
 
-    public String getKeyProperty() {
-        return keyProperty;
+    public QueryGraphValueEntryHashKeyed getHashKey() {
+        return hashKey;
     }
 
     public String toString()
     {
         return "IndexedTableLookupPlan " +
                 super.toString() +
-               " keyProperty=" + keyProperty;
+               " keyProperty=" + hashKey;
     }
 }

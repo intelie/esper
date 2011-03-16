@@ -1,8 +1,8 @@
 package com.espertech.esper.epl.join.plan;
 
 import junit.framework.TestCase;
-import com.espertech.esper.epl.join.exec.FullTableScanLookupStrategy;
-import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.FullTableScanLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
 

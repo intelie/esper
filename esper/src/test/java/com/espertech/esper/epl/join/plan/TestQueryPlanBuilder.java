@@ -44,7 +44,7 @@ public class TestQueryPlanBuilder extends TestCase
         plan = QueryPlanBuilder.getPlan(typesPerStream, descList, queryGraph, null, false, isHistorical, dependencyGraph, null, null, new StreamJoinAnalysisResult(2), true, null);
         assertPlan(plan);
 
-        FilterExprAnalyzer.analyze(SupportExprNodeFactory.makeEqualsNode(), queryGraph);
+        FilterExprAnalyzer.analyze(SupportExprNodeFactory.makeEqualsNode(), queryGraph, false);
         plan = QueryPlanBuilder.getPlan(typesPerStream, descList, queryGraph, null, false, isHistorical, dependencyGraph, null, null, new StreamJoinAnalysisResult(2), true, null);
         assertPlan(plan);
 

@@ -346,8 +346,8 @@ public class TestNamedWindowMerge extends TestCase {
         epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then update set intPrimitive = 1";
         tryInvalid(epl, "Incorrect syntax near 'update' (a reserved keyword) expecting 'insert' but found 'update' at line 1 column 97 [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then update set intPrimitive = 1]");
 
-        epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when matched then insert select *";
-        tryInvalid(epl, "Error starting statement: Exception encountered in when-not-matched (clause 1): Event type named 'MergeWindow' has already been declared with differing column name or type information: Type 'MergeWindow' is not compatible [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when matched then insert select *]");
+        epl = "on SupportBean_A as up merge MergeWindow as mv where mv.string=id when matched then insert select *";
+        tryInvalid(epl, "Error starting statement: Exception encountered in when-not-matched (clause 1): Event type named 'MergeWindow' has already been declared with differing column name or type information: Type 'MergeWindow' is not compatible [on SupportBean_A as up merge MergeWindow as mv where mv.string=id when matched then insert select *]");
 
         epl = "on SupportBean as up merge MergeWindow as mv";
         tryInvalid(epl, "Unexpected end of input string, check for an invalid identifier or missing additional keywords near 'mv' at line 1 column 42  [on SupportBean as up merge MergeWindow as mv]");
@@ -361,8 +361,8 @@ public class TestNamedWindowMerge extends TestCase {
         epl = "on SupportBean as up merge MergeWindow as mv where boolPrimitive=true when not matched then insert select *";
         tryInvalid(epl, "Error starting statement: Property named 'boolPrimitive' is ambigous as is valid for more then one stream [on SupportBean as up merge MergeWindow as mv where boolPrimitive=true when not matched then insert select *]");
 
-        epl = "on SupportBean as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive";
-        tryInvalid(epl, "Error starting statement: Exception encountered in when-not-matched (clause 1): Event type named 'MergeWindow' has already been declared with differing column name or type information: Type by name 'MergeWindow' is not a compatible type (target type underlying is 'SupportBean') [on SupportBean as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive]");
+        epl = "on SupportBean as up merge MergeWindow as mv where mv.string=up.string when not matched then insert select intPrimitive";
+        tryInvalid(epl, "Error starting statement: Exception encountered in when-not-matched (clause 1): Event type named 'MergeWindow' has already been declared with differing column name or type information: Type by name 'MergeWindow' is not a compatible type (target type underlying is 'SupportBean') [on SupportBean as up merge MergeWindow as mv where mv.string=up.string when not matched then insert select intPrimitive]");
 
         epl = "on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive";
         tryInvalid(epl, "Error starting statement: Property named 'intPrimitive' is not valid in any stream [on SupportBean_A as up merge MergeWindow as mv where mv.boolPrimitive=true when not matched then insert select intPrimitive]");

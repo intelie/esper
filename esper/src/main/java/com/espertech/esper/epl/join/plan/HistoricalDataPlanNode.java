@@ -10,11 +10,11 @@ package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
-import com.espertech.esper.epl.join.PollResultIndexingStrategy;
-import com.espertech.esper.epl.join.exec.ExecNode;
-import com.espertech.esper.epl.join.exec.HistoricalDataExecNode;
-import com.espertech.esper.epl.join.exec.HistoricalTableLookupStrategy;
+import com.espertech.esper.epl.join.base.HistoricalIndexLookupStrategy;
+import com.espertech.esper.epl.join.pollindex.PollResultIndexingStrategy;
+import com.espertech.esper.epl.join.exec.base.ExecNode;
+import com.espertech.esper.epl.join.exec.base.HistoricalDataExecNode;
+import com.espertech.esper.epl.join.exec.base.HistoricalTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.client.EventType;

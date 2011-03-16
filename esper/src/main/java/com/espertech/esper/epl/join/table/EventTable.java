@@ -46,4 +46,6 @@ public interface EventTable extends Iterable<EventBean>
      * Clear out index.
      */
     public void clear();
+
+    public String toQueryPlan();
 }

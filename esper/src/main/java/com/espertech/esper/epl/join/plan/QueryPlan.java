@@ -47,6 +47,10 @@ public class QueryPlan
 
     public String toString()
     {
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("QueryPlanNode\n");
         buffer.append(QueryPlanIndex.print(indexSpecs));

@@ -65,11 +65,11 @@ public class TestNStreamOuterQueryPlanBuilder extends TestCase
          *
          */
         outerInnerGraph.add(3, 2).add(2, 1).add(4, 3).add(1, 0).add(3, 5);
-        queryGraph.add(2, "", 3, "");
-        queryGraph.add(3, "", 4, "");
-        queryGraph.add(3, "", 5, "");
-        queryGraph.add(2, "", 1, "");
-        queryGraph.add(1, "", 0, "");
+        queryGraph.addStrictEquals(2, "", null, 3, "", null);
+        queryGraph.addStrictEquals(3, "", null, 4, "", null);
+        queryGraph.addStrictEquals(3, "", null, 5, "", null);
+        queryGraph.addStrictEquals(2, "", null, 1, "", null);
+        queryGraph.addStrictEquals(1, "", null, 0, "", null);
 
         Set<InterchangeablePair<Integer, Integer>> innerJoins = new HashSet<InterchangeablePair<Integer, Integer>>();
         InnerJoinGraph innerJoinGraph = new InnerJoinGraph(6, innerJoins);

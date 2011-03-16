@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.enummethod.eval;
 
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalEnumMethodBase;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalParam;
@@ -15,7 +16,7 @@ public class ExprDotEvalTake extends ExprDotEvalEnumMethodBase {
         return new EventType[] {};
     }
 
-    public EnumEval getEnumEval(List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, int numStreamsIncoming) {
+    public EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, int numStreamsIncoming) {
         ExprEvaluator sizeEval = bodiesAndParameters.get(0).getBodyEvaluator();
         if (getEnumMethodEnum() == EnumMethodEnum.TAKE) {
             return new EnumEvalTake(sizeEval, numStreamsIncoming);

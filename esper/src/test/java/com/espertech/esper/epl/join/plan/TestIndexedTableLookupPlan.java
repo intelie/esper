@@ -1,17 +1,16 @@
 package com.espertech.esper.epl.join.plan;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-import com.espertech.esper.epl.join.exec.IndexedTableLookupStrategy;
-import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.join.exec.base.IndexedTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
+import junit.framework.TestCase;
+
+import java.util.*;
 
 public class TestIndexedTableLookupPlan extends TestCase
 {
@@ -27,7 +26,9 @@ public class TestIndexedTableLookupPlan extends TestCase
 
     public void testLookup()
     {
-        IndexedTableLookupPlan spec = new IndexedTableLookupPlan(0, 1, "idx1", new String[] {"intBoxed"});
+        List<QueryGraphValueEntryHashKeyed> keys = new ArrayList<QueryGraphValueEntryHashKeyed>();
+        keys.add(new QueryGraphValueEntryHashKeyedProp(new ExprIdentNode(types[0], "intBoxed", 0), "intBoxed"));
+        IndexedTableLookupPlanMulti spec = new IndexedTableLookupPlanMulti(0, 1, "idx1", keys);
 
         Map<String,EventTable>[] indexes = new Map[2];
         indexes[0] = new HashMap<String,EventTable>();

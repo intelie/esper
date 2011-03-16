@@ -19,12 +19,14 @@ public class TestSubselectFiltered extends TestCase
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Sensor", SupportSensorEvent.class);
         config.addEventType("MyEvent", SupportBean.class);
+        config.addEventType("SupportBean", SupportBean.class);
         config.addEventType("S0", SupportBean_S0.class);
         config.addEventType("S1", SupportBean_S1.class);
         config.addEventType("S2", SupportBean_S2.class);
         config.addEventType("S3", SupportBean_S3.class);
         config.addEventType("S4", SupportBean_S4.class);
         config.addEventType("S5", SupportBean_S5.class);
+        config.addEventType("SupportBeanRange", SupportBeanRange.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
@@ -293,12 +295,11 @@ public class TestSubselectFiltered extends TestCase
 
     public void testWhereConstant()
     {
+        // single-column constant
         String stmtText = "select (select id from S1.win:length(1000) where p10='X') as ids1 from S0";
-
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
-        // test no event, should return null
         epService.getEPRuntime().sendEvent(new SupportBean_S1(-1, "Y"));
         epService.getEPRuntime().sendEvent(new SupportBean_S0(0));
         assertNull(listener.assertOneGetNewAndReset().get("ids1"));
@@ -313,10 +314,29 @@ public class TestSubselectFiltered extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
         assertEquals(1, listener.assertOneGetNewAndReset().get("ids1"));
 
-        // second X event
         epService.getEPRuntime().sendEvent(new SupportBean_S1(2, "X"));
         epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
         assertEquals(null, listener.assertOneGetNewAndReset().get("ids1"));
+        stmt.destroy();
+
+        // two-column constant
+        stmtText = "select (select id from S1.win:length(1000) where p10='X' and p11='Y') as ids1 from S0";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(1, "X", "Y"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(0));
+        assertEquals(1, listener.assertOneGetNewAndReset().get("ids1"));
+        stmt.destroy();
+
+        // single range
+        stmtText = "select (select string from SupportBean.std:lastevent() where intPrimitive between 10 and 20) as ids1 from S0";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 15));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(0));
+        assertEquals("E1", listener.assertOneGetNewAndReset().get("ids1"));
     }
 
     public void testWherePrevious()

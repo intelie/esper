@@ -17,10 +17,7 @@ import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  *
@@ -242,12 +239,16 @@ public class NStreamQueryPlanBuilder
     protected static TableLookupPlan createLookupPlan(QueryGraph queryGraph, int currentLookupStream, int indexedStream,
                                                QueryPlanIndex indexSpecs, EventType[] typesPerStream)
     {
-        String[] indexedStreamIndexProps = queryGraph.getIndexProperties(currentLookupStream, indexedStream);
-        String[] rangeStreamIndexProps = queryGraph.getRangeProperties(currentLookupStream, indexedStream);
-        String indexNum = indexSpecs.getIndexNum(indexedStreamIndexProps, rangeStreamIndexProps);
+        QueryGraphValue queryGraphValue = queryGraph.getGraphValue(currentLookupStream, indexedStream);
+        QueryGraphValuePairHashKeyIndex hashKeyProps = queryGraphValue.getHashKeyProps();
+        QueryGraphValuePairRangeIndex rangeProps = queryGraphValue.getRangeProps();
+
+        String[] hashIndexProps = hashKeyProps.getIndexed();
+        String[] rangeIndexProps = rangeProps.getIndexed();
+        String indexNum = indexSpecs.getIndexNum(hashIndexProps, rangeIndexProps);
 
         // full table scan - no lookups
-        if ((indexedStreamIndexProps == null || indexedStreamIndexProps.length == 0) && (rangeStreamIndexProps == null || rangeStreamIndexProps.length == 0)) {
+        if (hashIndexProps.length == 0 && rangeIndexProps.length == 0) {
             // We don't use a keyed index but use the full stream set as the stream does not have any indexes
 
             // If no such full set index exists yet, add to specs
@@ -260,29 +261,29 @@ public class NStreamQueryPlanBuilder
 
         if (indexNum == null)
         {
-            throw new IllegalStateException("Failed to query plan as index for " + Arrays.toString(indexedStreamIndexProps) + " and " + Arrays.toString(rangeStreamIndexProps) + " in the index specification");
+            throw new IllegalStateException("Failed to query plan as index for " + Arrays.toString(hashIndexProps) + " and " + Arrays.toString(rangeIndexProps) + " in the index specification");
         }
 
         // straight keyed-index lookup
-        if (indexedStreamIndexProps != null && indexedStreamIndexProps.length > 0 && (rangeStreamIndexProps == null || rangeStreamIndexProps.length == 0))
+        if (hashIndexProps.length > 0 && rangeIndexProps.length == 0)
         {
             // Constructed keyed lookup strategy
-            String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
+            List<QueryGraphValueEntryHashKeyed> hashKeys = hashKeyProps.getKeys();
 
             TableLookupPlan tableLookupPlan;
-            if (keyGenFields.length == 1) {
-                tableLookupPlan = new IndexedTableLookupPlanSingle(currentLookupStream, indexedStream, indexNum, keyGenFields[0]);
+            if (hashKeys.size() == 1) {
+                tableLookupPlan = new IndexedTableLookupPlanSingle(currentLookupStream, indexedStream, indexNum, hashKeys.get(0));
             }
             else {
-                tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);
+                tableLookupPlan = new IndexedTableLookupPlanMulti(currentLookupStream, indexedStream, indexNum, hashKeys);
             }
 
             // Determine coercion required
-            CoercionDesc coercionTypes = CoercionUtil.getCoercionTypes(typesPerStream, currentLookupStream, indexedStream, keyGenFields, indexedStreamIndexProps);
+            CoercionDesc coercionTypes = CoercionUtil.getCoercionTypesHash(typesPerStream, currentLookupStream, indexedStream, hashKeys, hashIndexProps);
             if (coercionTypes.isCoerce())
             {
                 // check if there already are coercion types for this index
-                Class[] existCoercionTypes = indexSpecs.getCoercionTypes(indexedStreamIndexProps);
+                Class[] existCoercionTypes = indexSpecs.getCoercionTypes(hashIndexProps);
                 if (existCoercionTypes != null)
                 {
                     for (int i = 0; i < existCoercionTypes.length; i++)
@@ -290,27 +291,24 @@ public class NStreamQueryPlanBuilder
                         coercionTypes.getCoercionTypes()[i] = JavaClassHelper.getCompareToCoercionType(existCoercionTypes[i], coercionTypes.getCoercionTypes()[i]);
                     }
                 }
-                indexSpecs.setCoercionTypes(indexedStreamIndexProps, coercionTypes.getCoercionTypes());
+                indexSpecs.setCoercionTypes(hashIndexProps, coercionTypes.getCoercionTypes());
             }
 
             return tableLookupPlan;
         }
 
         // sorted index lookup
-        if ((indexedStreamIndexProps == null || indexedStreamIndexProps.length == 0) && (rangeStreamIndexProps != null && rangeStreamIndexProps.length == 1)) {
-            QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream);
-            QueryGraphValueRange range = value.getRangeEntries().get(0);
+        if (hashIndexProps.length == 0 && rangeIndexProps.length == 1) {
+            QueryGraphValueEntryRange range = rangeProps.getKeys().get(0);
             return new SortedTableLookupPlan(currentLookupStream, indexedStream, indexNum, range);
         }
         // composite range and index lookup
-        else
-        {
-            String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
+        else {
+            List<QueryGraphValueEntryHashKeyed> hashKeys = hashKeyProps.getKeys();
             QueryGraphValue value = queryGraph.getGraphValue(currentLookupStream, indexedStream);
-            return new CompositeTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields, value.getRangeEntries());
+            return new CompositeTableLookupPlan(currentLookupStream, indexedStream, indexNum, hashKeys, rangeProps.getKeys());
         }
     }
-
 
     /**
      * Compute a best chain or path for lookups to take for the lookup stream passed in and the query

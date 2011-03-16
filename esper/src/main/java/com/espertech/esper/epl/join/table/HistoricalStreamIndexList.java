@@ -8,15 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.table;
 
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
-import com.espertech.esper.epl.join.JoinSetComposerFactoryImpl;
-import com.espertech.esper.epl.join.PollResultIndexingStrategy;
-import com.espertech.esper.epl.join.plan.QueryGraph;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.join.base.HistoricalIndexLookupStrategy;
+import com.espertech.esper.epl.join.base.JoinSetComposerFactoryImpl;
+import com.espertech.esper.epl.join.pollindex.PollResultIndexingStrategy;
+import com.espertech.esper.epl.join.plan.QueryGraph;
+import com.espertech.esper.epl.join.plan.QueryGraphValue;
+import com.espertech.esper.epl.join.plan.QueryGraphValueEntryHashKeyed;
+import com.espertech.esper.epl.join.plan.QueryGraphValuePairHashKeyIndex;
 import com.espertech.esper.util.JavaClassHelper;
 
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -82,14 +87,11 @@ public class HistoricalStreamIndexList
             indexesUsedByStreams = new LinkedHashMap<HistoricalStreamIndexDesc, List<Integer>>();
             for (int pollingStream : pollingStreams)
             {
-                String[] indexProperties = queryGraph.getIndexProperties(pollingStream, historicalStreamNum);
-                String[] keyProperties = queryGraph.getKeyProperties(pollingStream, historicalStreamNum);
-                if (keyProperties == null)
-                {
-                    keyProperties = new String[0];
-                    indexProperties = new String[0];
-                }
-                Class[] keyTypes = getPropertyTypes(typesPerStream[pollingStream], keyProperties);
+                QueryGraphValue queryGraphValue = queryGraph.getGraphValue(pollingStream, historicalStreamNum);
+                QueryGraphValuePairHashKeyIndex hashKeyProps = queryGraphValue.getHashKeyProps();
+                String[] indexProperties = hashKeyProps.getIndexed();
+
+                Class[] keyTypes = getPropertyTypes(hashKeyProps.getKeys());
                 Class[] indexTypes = getPropertyTypes(typesPerStream[historicalStreamNum], indexProperties);
 
                 HistoricalStreamIndexDesc desc = new HistoricalStreamIndexDesc(indexProperties, indexTypes, keyTypes);
@@ -129,6 +131,17 @@ public class HistoricalStreamIndexList
                         }
                         return new MultiIndexEventTable(tables);
                     }
+
+                    public String toQueryPlan() {
+                        StringWriter writer = new StringWriter();
+                        String delimiter = "";
+                        for (PollResultIndexingStrategy strategy : indexingStrategies) {
+                            writer.append(delimiter);
+                            writer.append(strategy.toQueryPlan());
+                            delimiter = ", ";
+                        }
+                        return this.getClass().getSimpleName() + " " + writer.toString();
+                    }
                 };
             }
         }
@@ -158,13 +171,18 @@ public class HistoricalStreamIndexList
         // Use one of the indexes built by the master index and a lookup strategy
         final int indexNumber = indexUsed;
         final HistoricalIndexLookupStrategy innerLookupStrategy = JoinSetComposerFactoryImpl.determineIndexing(queryGraph, typesPerStream[historicalStreamNum], typesPerStream[streamViewStreamNum], historicalStreamNum, streamViewStreamNum).getFirst();
+
         HistoricalIndexLookupStrategy lookupStrategy = new HistoricalIndexLookupStrategy()
         {
-            public Iterator<EventBean> lookup(EventBean lookupEvent, EventTable index)
+            public Iterator<EventBean> lookup(EventBean lookupEvent, EventTable index, ExprEvaluatorContext context)
             {
                 MultiIndexEventTable multiIndex = (MultiIndexEventTable) index;
                 EventTable indexToUse = multiIndex.getTables()[indexNumber];
-                return innerLookupStrategy.lookup(lookupEvent, indexToUse);
+                return innerLookupStrategy.lookup(lookupEvent, indexToUse, context);
+            }
+
+            public String toQueryPlan() {
+                return this.getClass().getSimpleName() + " inner: " + innerLookupStrategy.toQueryPlan();
             }
         };
 
@@ -180,4 +198,16 @@ public class HistoricalStreamIndexList
         }
         return types;
     }
+
+    private Class[] getPropertyTypes(List<QueryGraphValueEntryHashKeyed> hashKeys)
+    {
+        Class[] types = new Class[hashKeys.size()];
+        for (int i = 0; i < hashKeys.size(); i++)
+        {
+            types[i] = JavaClassHelper.getBoxedType(hashKeys.get(i).getKeyExpr().getExprEvaluator().getType());
+        }
+        return types;
+    }
+
+
 }

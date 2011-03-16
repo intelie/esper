@@ -17,7 +17,7 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.db.DataCache;
 import com.espertech.esper.epl.db.PollExecStrategy;
 import com.espertech.esper.epl.expression.*;
-import com.espertech.esper.epl.join.PollResultIndexingStrategy;
+import com.espertech.esper.epl.join.pollindex.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.epl.spec.MethodStreamSpec;
@@ -58,6 +58,10 @@ public class MethodPollingViewable implements HistoricalEventViewable
         public EventTable index(List<EventBean> pollResult, boolean isActiveCache)
         {
             return new UnindexedEventTableList(pollResult);
+        }
+
+        public String toQueryPlan() {
+            return this.getClass().getSimpleName() + " unindexed";
         }
     };
 

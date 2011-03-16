@@ -1,6 +1,6 @@
 package com.espertech.esper.epl.join.exec.composite;
 
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValue;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValue;
 
 import java.util.ArrayList;
 import java.util.List;

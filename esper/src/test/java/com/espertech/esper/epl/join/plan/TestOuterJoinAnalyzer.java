@@ -22,13 +22,13 @@ public class TestOuterJoinAnalyzer extends TestCase
         assertEquals(3, graph.getNumStreams());
 
         assertTrue(graph.isNavigableAtAll(0, 1));
-        assertEquals(1, graph.getKeyProperties(0, 1).length);
-        assertEquals("intPrimitive", graph.getKeyProperties(0, 1)[0]);
-        assertEquals(1, graph.getKeyProperties(1, 0).length);
-        assertEquals("intBoxed", graph.getKeyProperties(1, 0)[0]);
+        assertEquals(1, QueryGraphTestUtil.getStrictKeyProperties(graph, 0, 1).length);
+        assertEquals("intPrimitive", QueryGraphTestUtil.getStrictKeyProperties(graph, 0, 1)[0]);
+        assertEquals(1, QueryGraphTestUtil.getStrictKeyProperties(graph, 1, 0).length);
+        assertEquals("intBoxed", QueryGraphTestUtil.getStrictKeyProperties(graph, 1, 0)[0]);
 
         assertTrue(graph.isNavigableAtAll(1, 2));
-        assertEquals("string", graph.getKeyProperties(1, 2)[0]);
-        assertEquals("simpleProperty", graph.getKeyProperties(2, 1)[0]);
+        assertEquals("string", QueryGraphTestUtil.getStrictKeyProperties(graph, 1, 2)[0]);
+        assertEquals("simpleProperty", QueryGraphTestUtil.getStrictKeyProperties(graph, 2, 1)[0]);
     }
 }

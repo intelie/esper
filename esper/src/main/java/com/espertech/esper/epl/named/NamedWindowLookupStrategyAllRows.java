@@ -41,6 +41,10 @@ public class NamedWindowLookupStrategyAllRows implements NamedWindowLookupStrate
     }
 
     public String toString() {
-        return "NamedWindowLookupStrategyAllRows";
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan() {
+        return this.getClass().getSimpleName();
     }
 }

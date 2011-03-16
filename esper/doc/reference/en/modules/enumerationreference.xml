@@ -325,6 +325,17 @@
 						</entry>
 					</row>
 					<row>
+						<entry>union(source)</entry>
+						<entry>
+							<para>
+								Forms a union of the input elements with source elements.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-union"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>where(predicate lambda)</entry>
 						<entry>
 							<para>
@@ -1380,6 +1391,29 @@ from LocationReport</programlisting>
 				
 			<para>
 				If the input is null the method returns null. If the input is empty the method returns an empty map.
+			</para>
+		</sect2>
+
+		<sect2 id="enumeration-method-union">
+			<title>Union</title>
+
+			<para>
+				The <literal>union</literal> enumeration method forms a union of the input elements with source elements.
+			</para>
+
+			<para>
+				The enumeration method takes a single parameter that must itself return a collection of events (source). It appends the collection to the input elements and returns the appended collection of elements.
+			</para>
+
+			<para>
+				This example selects a union of all items that have an asset id of L001 or that are of type passenger:
+			</para>
+			<programlisting>select items.where(i => i.assetId = 'L001')
+    .union(items.where(i => i.type = 'P')) as itemsUnion
+from LocationReport</programlisting>
+			
+			<para>
+				If the input is null the method returns null.
 			</para>
 		</sect2>
 

@@ -15,9 +15,9 @@ import com.espertech.esper.core.*;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValue;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValueEquals;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValueRange;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValue;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValueEquals;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValueRange;
 import com.espertech.esper.epl.join.exec.composite.CompositeIndexLookup;
 import com.espertech.esper.epl.join.exec.composite.CompositeIndexLookupFactory;
 import com.espertech.esper.epl.join.plan.*;
@@ -54,7 +54,7 @@ public class NamedWindowRootView extends ViewSupport
     private final NamedWindowIndexRepository indexRepository;
     private Iterable<EventBean> dataWindowContents;
     private final Map<NamedWindowLookupStrategy, EventTable> tablePerMultiLookup;
-    private final Map<SubqTableLookupStrategy, EventTable> tablePerSingleLookup;
+    private final Map<SubordTableLookupStrategy, EventTable> tablePerSingleLookup;
     private final ValueAddEventProcessor revisionProcessor;
     private final ConcurrentHashMap<String, EventTable> explicitIndexes;
     private final boolean queryPlanLogging;
@@ -71,7 +71,7 @@ public class NamedWindowRootView extends ViewSupport
     {
         this.indexRepository = new NamedWindowIndexRepository();
         this.tablePerMultiLookup = new HashMap<NamedWindowLookupStrategy, EventTable>();
-        this.tablePerSingleLookup = new HashMap<SubqTableLookupStrategy, EventTable>();
+        this.tablePerSingleLookup = new HashMap<SubordTableLookupStrategy, EventTable>();
         this.explicitIndexes = new ConcurrentHashMap<String, EventTable>();
         this.revisionProcessor = revisionProcessor;
         this.statementResourceLock = statementResourceLock;
@@ -219,8 +219,8 @@ public class NamedWindowRootView extends ViewSupport
         Pair<NamedWindowLookupStrategy,EventTable> strategy = getStrategyPair(joinExpr, filterEventType);
 
         if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-            queryPlanLog.info("Strategy " + strategy.getFirst());
-            queryPlanLog.info("Table " + strategy.getSecond());
+            queryPlanLog.info("Strategy " + strategy.getFirst().toQueryPlan());
+            queryPlanLog.info("Table " + strategy.getSecond() == null ? "null" : strategy.getSecond().toQueryPlan());
         }
 
         // If a new table is required, add that table to be updated
@@ -267,7 +267,7 @@ public class NamedWindowRootView extends ViewSupport
         }
     }
     
-    private Pair<IndexKeyInfo, EventTable> findCreateIndex(JoinedPropPlan joinDesc) {
+    private Pair<IndexKeyInfo, EventTable> findCreateIndex(SubordPropPlan joinDesc) {
 
         if (joinDesc.getHashProps().isEmpty() && joinDesc.getRangeProps().isEmpty()) {
             return null;
@@ -276,9 +276,9 @@ public class NamedWindowRootView extends ViewSupport
         // hash property names and types
         String[] hashIndexPropsProvided = new String[joinDesc.getHashProps().size()];
         Class[] hashIndexCoercionType = new Class[joinDesc.getHashProps().size()];
-        JoinedPropDesc[] hashJoinedProps = new JoinedPropDesc[joinDesc.getHashProps().size()];
+        SubordPropHashKey[] hashJoinedProps = new SubordPropHashKey[joinDesc.getHashProps().size()];
         int count = 0;
-        for (Map.Entry<String, JoinedPropDesc> entry : joinDesc.getHashProps().entrySet()) {
+        for (Map.Entry<String, SubordPropHashKey> entry : joinDesc.getHashProps().entrySet()) {
             hashIndexPropsProvided[count] = entry.getKey();
             hashIndexCoercionType[count] = entry.getValue().getCoercionType();
             hashJoinedProps[count++] = entry.getValue();
@@ -287,9 +287,9 @@ public class NamedWindowRootView extends ViewSupport
         // hash property names and types
         String[] rangeIndexPropsProvided = new String[joinDesc.getRangeProps().size()];
         Class[] rangeIndexCoercionType = new Class[joinDesc.getRangeProps().size()];
-        SubqueryRangeKeyDesc[] rangeJoinedProps = new SubqueryRangeKeyDesc[joinDesc.getRangeProps().size()];
+        SubordPropRangeKey[] rangeJoinedProps = new SubordPropRangeKey[joinDesc.getRangeProps().size()];
         count = 0;
-        for (Map.Entry<String, SubqueryRangeKeyDesc> entry : joinDesc.getRangeProps().entrySet()) {
+        for (Map.Entry<String, SubordPropRangeKey> entry : joinDesc.getRangeProps().entrySet()) {
             rangeIndexPropsProvided[count] = entry.getKey();
             rangeIndexCoercionType[count] = entry.getValue().getCoercionType();
             rangeJoinedProps[count++] = entry.getValue();
@@ -309,25 +309,28 @@ public class NamedWindowRootView extends ViewSupport
         Pair<IndexMultiKey, EventTable> tableDesc = indexRepository.addTableCreateOrReuse(hashedProps, btreeProps, dataWindowContents, namedWindowEventType, true);
 
         // map the order of indexed columns (key) to the key information available
-        IndexedPropDesc[] indexedKeyProps = tableDesc.getFirst().getKeyProps();
-        String[] hashPropKey = new String[indexedKeyProps.length];
+        IndexedPropDesc[] indexedKeyProps = tableDesc.getFirst().getHashIndexedProps();
+        SubordPropHashKey[] hashesDesc = new SubordPropHashKey[indexedKeyProps.length];
         Class[] hashPropCoercionTypes = new Class[indexedKeyProps.length];
-        int[] hashPropStreamNums = new int[indexedKeyProps.length];
+        boolean isCoerceHash = false;
         for (int i = 0; i < indexedKeyProps.length; i++) {
             String indexField = indexedKeyProps[i].getIndexPropName();
             int index = CollectionUtil.findItem(hashIndexPropsProvided, indexField);
             if (index == -1) {
                 throw new IllegalStateException("Could not find index property for lookup '" + indexedKeyProps[i]);
             }
-            hashPropKey[i] = hashJoinedProps[index].getKeyPropName();
-            hashPropStreamNums[i] = hashJoinedProps[index].getKeyStreamId();
-            hashPropCoercionTypes[i] = hashJoinedProps[index].getCoercionType();
+            hashesDesc[i] = hashJoinedProps[index];
+            hashPropCoercionTypes[i] = indexedKeyProps[i].getCoercionType();
+            if (indexedKeyProps[i].getCoercionType() != hashesDesc[i].getHashKey().getKeyExpr().getExprEvaluator().getType()) {
+                isCoerceHash = true;
+            }
         }
 
         // map the order of range columns (range) to the range information available
-        indexedKeyProps = tableDesc.getFirst().getRangeProps();
-        SubqueryRangeKeyDesc[] rangesDesc = new SubqueryRangeKeyDesc[indexedKeyProps.length];
+        indexedKeyProps = tableDesc.getFirst().getRangeIndexedProps();
+        SubordPropRangeKey[] rangesDesc = new SubordPropRangeKey[indexedKeyProps.length];
         Class[] rangePropCoercionTypes = new Class[indexedKeyProps.length];
+        boolean isCoerceRange = false;
         for (int i = 0; i < indexedKeyProps.length; i++) {
             String indexField = indexedKeyProps[i].getIndexPropName();
             int index = CollectionUtil.findItem(rangeIndexPropsProvided, indexField);
@@ -336,67 +339,43 @@ public class NamedWindowRootView extends ViewSupport
             }
             rangesDesc[i] = rangeJoinedProps[index];
             rangePropCoercionTypes[i] = rangeJoinedProps[index].getCoercionType();
+            if (indexedKeyProps[i].getCoercionType() != rangePropCoercionTypes[i]) {
+                isCoerceRange = true;
+            }
         }
 
-        IndexKeyInfo info = new IndexKeyInfo(hashPropKey, hashPropStreamNums,
-                new CoercionDesc(true, hashPropCoercionTypes), Arrays.asList(rangesDesc), new CoercionDesc(true, rangePropCoercionTypes));
+        IndexKeyInfo info = new IndexKeyInfo(Arrays.asList(hashesDesc),
+                new CoercionDesc(isCoerceHash, hashPropCoercionTypes), Arrays.asList(rangesDesc), new CoercionDesc(isCoerceRange, rangePropCoercionTypes));
         return new Pair<IndexKeyInfo, EventTable>(info, tableDesc.getSecond());
     }
 
-    private Pair<SubqTableLookupStrategy,EventTable> getSubqueryStrategyPair(EventType[] streamTypesZeroIndexed, JoinedPropPlan joinDesc, int keyStreamOffset) {
+    private Pair<SubordTableLookupStrategy,EventTable> getSubqueryStrategyPair(EventType[] outerStreamTypes, SubordPropPlan joinDesc, boolean isNWOnTrigger) {
 
         Pair<IndexKeyInfo, EventTable> accessDesc = findCreateIndex(joinDesc);
 
         if (accessDesc == null) {
             return null;
         }
+        
+        IndexKeyInfo indexKeyInfo = accessDesc.getFirst();
+        EventTable eventTable = accessDesc.getSecond();
+        
+        List<SubordPropHashKey> hashKeys = indexKeyInfo.getOrderedHashProperties();
+        CoercionDesc hashKeyCoercionTypes = indexKeyInfo.getOrderedKeyCoercionTypes();
+        List<SubordPropRangeKey> rangeKeys = indexKeyInfo.getOrderedRangeDesc();
+        CoercionDesc rangeKeyCoercionTypes = indexKeyInfo.getOrderedRangeCoercionTypes();
+        
+        SubordTableLookupStrategy lookupStrategy = SubordinateTableLookupStrategyFactory.getLookupStrategy(outerStreamTypes,
+                hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, isNWOnTrigger, eventTable);
 
-        // enforce an offset on the key stream numbers to enable flexible use for subqueries and for named windows
-        int[] keyStreamNums = accessDesc.getFirst().getOrderedKeyStreamNums();
-        for (int i = 0; i < keyStreamNums.length; i++) {
-            keyStreamNums[i] = keyStreamNums[i] + keyStreamOffset;
-        }
-        for (SubqueryRangeKeyDesc range : accessDesc.getFirst().getOrderedRangeDesc()) {
-            range.incStreamNum(range.getKeyStreamNum() + keyStreamOffset);
-        }
-
-        String[] keyProperties = accessDesc.getFirst().getOrderedKeyProperties();
-        CoercionDesc keyCoercionTypes = accessDesc.getFirst().getOrderedKeyCoercionTypes();
-        List<SubqueryRangeKeyDesc> rangeProperties = accessDesc.getFirst().getOrderedRangeDesc();
-        CoercionDesc rangeCoercionTypes = accessDesc.getFirst().getOrderedRangeCoercionTypes();
-
-        SubqTableLookupStrategy lookupStrategy;
-        if (keyProperties.length > 0 && rangeProperties.isEmpty()) {
-            if (keyProperties.length == 1) {
-                if (!keyCoercionTypes.isCoerce()) {
-                    lookupStrategy = new SubqIndexedTableLookupStrategySingle(streamTypesZeroIndexed, keyStreamNums[0], keyProperties[0], (PropertyIndexedEventTableSingle) accessDesc.getSecond());
-                }
-                else {
-                    lookupStrategy = new SubqIndexedTableLookupStrategySingleCoercing(streamTypesZeroIndexed, keyStreamNums[0], keyProperties[0], (PropertyIndexedEventTableSingle) accessDesc.getSecond(), keyCoercionTypes.getCoercionTypes()[0]);
-                }
-            }
-            else {
-                if (!keyCoercionTypes.isCoerce()) {
-                    lookupStrategy = new SubqIndexedTableLookupStrategy(streamTypesZeroIndexed, keyStreamNums, keyProperties, (PropertyIndexedEventTable) accessDesc.getSecond());
-                }
-                else {
-                    lookupStrategy = new SubqIndexedTableLookupStrategyCoercing(streamTypesZeroIndexed, keyStreamNums, keyProperties, (PropertyIndexedEventTable) accessDesc.getSecond(), keyCoercionTypes.getCoercionTypes());
-                }
-            }
-        }
-        else if (keyProperties.length == 0 && (rangeProperties.size() == 1)) {
-            lookupStrategy = new SubqSortedTableLookupStrategy(streamTypesZeroIndexed, rangeProperties.get(0), (PropertySortedEventTable) accessDesc.getSecond());
-        }
-        else {
-            lookupStrategy = new SubqCompositeTableLookupStrategy(streamTypesZeroIndexed, keyStreamNums, keyProperties, keyCoercionTypes.getCoercionTypes(), rangeProperties, rangeCoercionTypes.getCoercionTypes(), (PropertyCompositeEventTable) accessDesc.getSecond());
-        }
-        return new Pair<SubqTableLookupStrategy,EventTable>(lookupStrategy, accessDesc.getSecond());
+        return new Pair<SubordTableLookupStrategy,EventTable>(lookupStrategy, eventTable);
     }
-
+    
     private Pair<NamedWindowLookupStrategy,EventTable> getStrategyPair(ExprNode joinExpr, EventType filterEventType)
     {
         EventType[] allStreamsZeroIndexed = new EventType[] {namedWindowEventType, filterEventType};
-        JoinedPropPlan joinedPropPlan = QueryPlanIndexBuilder.getJoinProps(joinExpr, 1, allStreamsZeroIndexed);
+        EventType[] outerStreams = new EventType[] {filterEventType};
+        SubordPropPlan joinedPropPlan = QueryPlanIndexBuilder.getJoinProps(joinExpr, 1, allStreamsZeroIndexed);
 
         // No join expression means delete all
         if (joinExpr == null)
@@ -405,7 +384,7 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         // Here the stream offset is 1 as the named window lookup provides the arriving event in stream 1
-        Pair<SubqTableLookupStrategy,EventTable> lookupPair = getSubqueryStrategyPair(allStreamsZeroIndexed, joinedPropPlan, 1);
+        Pair<SubordTableLookupStrategy,EventTable> lookupPair = getSubqueryStrategyPair(outerStreams, joinedPropPlan, true);
         
         if (lookupPair == null) {
             return new Pair<NamedWindowLookupStrategy,EventTable>(new NamedWindowLookupStrategyTableScan(joinExpr.getExprEvaluator(), dataWindowContents), null);
@@ -486,7 +465,7 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         // Compile key index lookup values
-        String[] keyIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getKeyProps());
+        String[] keyIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getHashIndexedProps());
         Object[] keyValues = new Object[keyIndexProps.length];
         for (int keyIndex = 0; keyIndex < keyIndexProps.length; keyIndex++) {
             for (FilterSpecParam param : filter.getParameters()) {
@@ -498,7 +477,7 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         // Analyze ranges - these may include key lookup value (EQUALS semantics)
-        String[] rangeIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getRangeProps());
+        String[] rangeIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getRangeIndexedProps());
         RangeIndexLookupValue[] rangeValues;
         if (rangeIndexProps.length > 0) {
             rangeValues = compileRangeLookupValues(rangeIndexProps, filter.getParameters());
@@ -509,33 +488,21 @@ public class NamedWindowRootView extends ViewSupport
 
         IndexMultiKey indexMultiKey = tablePair.getFirst();
         Set<EventBean> result;
-        if (indexMultiKey.getKeyProps().length > 0 && indexMultiKey.getRangeProps().length == 0) {
-            if (indexMultiKey.getKeyProps().length == 1) {
-                if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-                    queryPlanLog.info("hash-only single-key index lookup, using key " + keyIndexProps[0]);
-                }
+        if (indexMultiKey.getHashIndexedProps().length > 0 && indexMultiKey.getRangeIndexedProps().length == 0) {
+            if (indexMultiKey.getHashIndexedProps().length == 1) {
                 PropertyIndexedEventTableSingle table = (PropertyIndexedEventTableSingle) tablePair.getSecond();
                 result = table.lookup(keyValues[0]);
             }
             else {
-                if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-                    queryPlanLog.info("hash-only index lookup, using keys " + Arrays.toString(keyIndexProps));
-                }
                 PropertyIndexedEventTable table = (PropertyIndexedEventTable) tablePair.getSecond();
                 result = table.lookup(keyValues);
             }
         }
-        else if (indexMultiKey.getKeyProps().length == 0 && indexMultiKey.getRangeProps().length == 1) {
-            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-                queryPlanLog.info("btree-only index lookup, using key " + Arrays.toString(indexMultiKey.getRangeProps()));
-            }
+        else if (indexMultiKey.getHashIndexedProps().length == 0 && indexMultiKey.getRangeIndexedProps().length == 1) {
             PropertySortedEventTable table = (PropertySortedEventTable) tablePair.getSecond();
             result = table.lookupConstants(rangeValues[0]);
         }
         else {
-            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-                queryPlanLog.info("hash-btree-combination index lookup, using keys " + Arrays.toString(keyIndexProps) + " and " + Arrays.toString(indexMultiKey.getRangeProps()));
-            }
             PropertyCompositeEventTable table = (PropertyCompositeEventTable) tablePair.getSecond();
             Class[] rangeCoercion = table.getOptRangeCoercedTypes();
             CompositeIndexLookup lookup = CompositeIndexLookupFactory.make(keyValues, rangeValues, rangeCoercion);
@@ -623,37 +590,37 @@ public class NamedWindowRootView extends ViewSupport
         isChildBatching = batchView;
     }
 
-    public SubqTableLookupStrategy getAddSubqueryLookupStrategy(EventType[] eventTypesPerStream, JoinedPropPlan joinDesc, boolean fullTableScan) {
+    public SubordTableLookupStrategy getAddSubqueryLookupStrategy(EventType[] eventTypesPerStream, SubordPropPlan joinDesc, boolean fullTableScan) {
         // if there are no join criteria to use, return default copy strategy
         if (fullTableScan || (joinDesc.getHashProps().isEmpty() && joinDesc.getRangeProps().isEmpty())) {
             if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
                 queryPlanLog.info("shared, full table scan");
             }
-            return new SubqFullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
+            return new SubordFullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
         }
 
         // NOTE: key stream nums are relative to the outer streams, i.e. 0=first outer, 1=second outer (index stream is implied and not counted).
         // Here the stream offset for key is zero as in a subquery only the outer events are provided in events-per-stream.
-        Pair<SubqTableLookupStrategy,EventTable> strategyTablePair = getSubqueryStrategyPair(eventTypesPerStream, joinDesc, 0);
+        Pair<SubordTableLookupStrategy,EventTable> strategyTablePair = getSubqueryStrategyPair(eventTypesPerStream, joinDesc, false);
         if (strategyTablePair == null) {
             if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
                 queryPlanLog.info("shared, full table scan");
             }
-            return new SubqFullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
+            return new SubordFullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
         }
         
-        SubqIndexedTableLookupStrategyLocking locking = new SubqIndexedTableLookupStrategyLocking(strategyTablePair.getFirst(), statementResourceLock);
+        SubordIndexedTableLookupStrategyLocking locking = new SubordIndexedTableLookupStrategyLocking(strategyTablePair.getFirst(), statementResourceLock);
         tablePerSingleLookup.put(locking, strategyTablePair.getSecond());
 
         if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
             queryPlanLog.info("shared index");
-            queryPlanLog.info("strategy " + strategyTablePair.getFirst());
-            queryPlanLog.info("table " + strategyTablePair.getSecond());
+            queryPlanLog.info("strategy " + strategyTablePair.getFirst().toQueryPlan());
+            queryPlanLog.info("table " + strategyTablePair.getSecond().toQueryPlan());
         }
         return locking;
     }
 
-    public void removeSubqueryLookupStrategy(SubqTableLookupStrategy namedWindowSubqueryLookup) {
+    public void removeSubqueryLookupStrategy(SubordTableLookupStrategy namedWindowSubqueryLookup) {
         EventTable table = tablePerSingleLookup.remove(namedWindowSubqueryLookup);
         if (table != null) {
             indexRepository.removeTableReference(table);

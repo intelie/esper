@@ -40,7 +40,7 @@ public class OuterJoinAnalyzer
             {
                 for (int i = 0; i < outerJoinDesc.getAdditionalLeftNodes().length; i++)
                 {
-                    add(queryGraph, outerJoinDesc.getAdditionalLeftNodes()[i], outerJoinDesc.getAdditionalRightNodes()[i]);                    
+                    add(queryGraph, outerJoinDesc.getAdditionalLeftNodes()[i], outerJoinDesc.getAdditionalRightNodes()[i]);
                 }
             }
         }
@@ -50,7 +50,7 @@ public class OuterJoinAnalyzer
 
     private static void add(QueryGraph queryGraph, ExprIdentNode identNodeLeft, ExprIdentNode identNodeRight)
     {
-        queryGraph.add(identNodeLeft.getStreamId(), identNodeLeft.getResolvedPropertyName(),
-                identNodeRight.getStreamId(), identNodeRight.getResolvedPropertyName());
+        queryGraph.addStrictEquals(identNodeLeft.getStreamId(), identNodeLeft.getResolvedPropertyName(), identNodeLeft,
+                identNodeRight.getStreamId(), identNodeRight.getResolvedPropertyName(), identNodeRight);
     }
 }

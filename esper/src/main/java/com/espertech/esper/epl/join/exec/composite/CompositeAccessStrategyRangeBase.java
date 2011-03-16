@@ -1,25 +1,66 @@
 package com.espertech.esper.epl.join.exec.composite;
 
-import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 public abstract class CompositeAccessStrategyRangeBase {
-    protected EventPropertyGetter start;
-    protected boolean includeStart;
-    protected int startStreamNum;
+    protected final ExprEvaluator start;
+    protected final boolean includeStart;
 
-    protected EventPropertyGetter end;
-    protected boolean includeEnd;
-    protected int endStreamNum;
+    protected final ExprEvaluator end;
+    protected final boolean includeEnd;
 
-    protected Class coercionType;
+    private final EventBean[] events;
+    private final int lookupStream;
 
-    protected CompositeAccessStrategyRangeBase(EventPropertyGetter start, boolean includeStart, int startStreamNum, EventPropertyGetter end, boolean includeEnd, int endStreamNum, Class coercionType) {
+    protected final Class coercionType;
+    private final boolean isNWOnTrigger;
+
+    protected CompositeAccessStrategyRangeBase(boolean isNWOnTrigger, int lookupStream, int numStreams, ExprEvaluator start, boolean includeStart, ExprEvaluator end, boolean includeEnd, Class coercionType) {
         this.start = start;
         this.includeStart = includeStart;
-        this.startStreamNum = startStreamNum;
         this.end = end;
         this.includeEnd = includeEnd;
-        this.endStreamNum = endStreamNum;
         this.coercionType = coercionType;
+        this.isNWOnTrigger = isNWOnTrigger;
+
+        if (lookupStream != -1) {
+            events = new EventBean[lookupStream + 1];
+        }
+        else {
+            events = new EventBean[numStreams + 1];
+        }
+        this.lookupStream = lookupStream;
+    }
+
+    public Object evaluateLookupStart(EventBean event, ExprEvaluatorContext context) {
+        events[lookupStream] = event;
+        return start.evaluate(events, true, context);
+    }
+
+    public Object evaluateLookupEnd(EventBean event, ExprEvaluatorContext context) {
+        events[lookupStream] = event;
+        return end.evaluate(events, true, context);
+    }
+
+    public Object evaluatePerStreamStart(EventBean[] eventPerStream, ExprEvaluatorContext context) {
+        if (isNWOnTrigger) {
+            return start.evaluate(eventPerStream, true, context);
+        }
+        else {
+            System.arraycopy(eventPerStream, 0, events, 1, eventPerStream.length);
+            return start.evaluate(events, true, context);
+        }
+    }
+
+    public Object evaluatePerStreamEnd(EventBean[] eventPerStream, ExprEvaluatorContext context) {
+        if (isNWOnTrigger) {
+            return end.evaluate(eventPerStream, true, context);
+        }
+        else {
+            System.arraycopy(eventPerStream, 0, events, 1, eventPerStream.length);
+            return end.evaluate(events, true, context);
+        }
     }
 }

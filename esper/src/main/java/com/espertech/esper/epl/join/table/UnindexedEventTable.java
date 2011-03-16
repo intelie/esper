@@ -81,6 +81,11 @@ public class UnindexedEventTable implements EventTable
 
     public String toString()
     {
-        return "UnindexedEventTable streamNum=" + streamNum;
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan()
+    {
+        return this.getClass().getSimpleName() + " streamNum=" + streamNum;
     }
 }

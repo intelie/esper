@@ -5,18 +5,18 @@ import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.ExpressionResultCacheEntry;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprEvaluatorLambda;
+import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-public class PropertyExprEvaluatorLambda implements ExprEvaluatorLambda {
+public class PropertyExprEvaluatorLambda implements ExprEvaluatorEnumeration {
 
     private final String propertyNameCache;
     private final int streamId;
     private final EventType fragmentType;
     private final EventPropertyGetter getter;
-    
+
     public PropertyExprEvaluatorLambda(String propertyName, int streamId, EventType fragmentType, EventPropertyGetter getter) {
         this.streamId = streamId;
         this.propertyNameCache = Integer.toString(streamId) + "_" + propertyName;

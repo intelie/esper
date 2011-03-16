@@ -451,6 +451,12 @@ public class JavaClassHelper
             }
             return typeOne;
         }
+        if (typeOne == null) {
+            return typeTwo;
+        }
+        if (typeTwo == null) {
+            return typeOne;
+        }
         if (!isNumeric(typeOne) || !isNumeric(typeTwo))
         {
             String typeOneName = typeOne == null ? "(null)" : typeOne.getName();

@@ -192,6 +192,7 @@ public class TestEnumDocSamples extends TestCase {
         epService.getEPAdministrator().createEPL("select items.selectFrom(i => assetId) as itemAssetIds from LocationReport");
         epService.getEPAdministrator().createEPL("select items.take(5) as first5Items, items.takeLast(5) as last5Items from LocationReport");
         epService.getEPAdministrator().createEPL("select items.toMap(k => k.assetId, v => distance(v.location.x, v.location.y, 0, 0)) as assetDistance from LocationReport");
+        epService.getEPAdministrator().createEPL("select items.where(i => i.assetId = 'L001').union(items.where(i => i.type = 'P')) as itemsUnion from LocationReport");
         
         String epl = "expression myquery {itm =>\n" +
                 "  (select * from Zone.win:keepall()).where(z => inrect(z.rectangle, itm.location))\n" +

@@ -1,12 +1,11 @@
 package com.espertech.esper.epl.db;
 
+import com.espertech.esper.epl.join.pollindex.PollResultIndexingStrategy;
 import junit.framework.TestCase;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTableList;
-import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprConstantNode;
 import com.espertech.esper.epl.expression.ExprIdentNode;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
@@ -47,6 +46,10 @@ public class TestDatabasePollingViewable extends TestCase
             public EventTable index(List<EventBean> pollResult, boolean isActiveCache)
             {
                 return new UnindexedEventTableList(pollResult);
+            }
+
+            public String toQueryPlan() {
+                return this.getClass().getSimpleName() + " unindexed";
             }
         };        
     }

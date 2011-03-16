@@ -1704,7 +1704,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         log.debug(".leaveStreamExpr");
 
         // Determine the optional stream name
-        // Search for identifier node that carries the stream name in an "from Class.win:time().std:doit() as StreamName"
+        // Search for identifier node that carries the stream name in an "from Class.win:time().std:getEnumerationSource() as StreamName"
         Tree streamNameNode = null;
         for (int i = 1; i < node.getChildCount(); i++)
         {

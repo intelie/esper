@@ -13,7 +13,7 @@ import com.espertech.esper.client.annotation.Drop;
 import com.espertech.esper.client.annotation.Priority;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
-import com.espertech.esper.epl.join.JoinSetComposerFactoryImpl;
+import com.espertech.esper.epl.join.base.JoinSetComposerFactoryImpl;
 import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.epl.spec.CreateWindowDesc;
 import com.espertech.esper.epl.spec.OnTriggerDesc;

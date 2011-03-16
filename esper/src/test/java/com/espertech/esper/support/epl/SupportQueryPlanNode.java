@@ -1,7 +1,7 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.exec.ExecNode;
+import com.espertech.esper.epl.join.exec.base.ExecNode;
 import com.espertech.esper.epl.join.plan.QueryPlanNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;

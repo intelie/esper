@@ -23,6 +23,7 @@ public abstract class TestStmtBase extends TestCase
         configuration.addEventType("TxnEventA", TxnEventA.class.getName());
         configuration.addEventType("TxnEventB", TxnEventB.class.getName());
         configuration.addEventType("TxnEventC", TxnEventC.class.getName());
+        configuration.getEngineDefaults().getLogging().setEnableQueryPlan(true);
 
         epService = EPServiceProviderManager.getProvider("TestStmtBase", configuration);
         epService.initialize();

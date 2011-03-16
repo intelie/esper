@@ -11,7 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.join.JoinSetComposerFactory;
+import com.espertech.esper.epl.join.base.JoinSetComposerFactory;
 import com.espertech.esper.epl.metric.MetricReportingServiceSPI;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;

@@ -2,8 +2,8 @@ package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
-import junit.framework.TestCase;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import junit.framework.TestCase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +16,6 @@ public class TestQueryPlanIndexBuilder extends TestCase
     public void setUp()
     {
         queryGraph = new QueryGraph(5);
-        queryGraph.add(0, "p00", 1, "p10");
-        queryGraph.add(0, "p01", 2, "p20");
-        queryGraph.add(4, "p40", 3, "p30");
-        queryGraph.add(4, "p41", 3, "p31");
-        queryGraph.add(4, "p42", 2, "p21");
-
         types = new EventType[] {
                 SupportEventTypeFactory.createMapType(createType("p00,p01")),
                 SupportEventTypeFactory.createMapType(createType("p10")),
@@ -29,6 +23,12 @@ public class TestQueryPlanIndexBuilder extends TestCase
                 SupportEventTypeFactory.createMapType(createType("p30,p31")),
                 SupportEventTypeFactory.createMapType(createType("p40,p41,p42")),
             };
+
+        queryGraph.addStrictEquals(0, "p00", null, 1, "p10", null);
+        queryGraph.addStrictEquals(0, "p01", null, 2, "p20", null);
+        queryGraph.addStrictEquals(4, "p40", null, 3, "p30", null);
+        queryGraph.addStrictEquals(4, "p41", null, 3, "p31", null);
+        queryGraph.addStrictEquals(4, "p42", null, 2, "p21", null);
     }
 
     public void testBuildIndexSpec()
@@ -59,8 +59,8 @@ public class TestQueryPlanIndexBuilder extends TestCase
     public void testIndexAlreadyExists()
     {
         queryGraph = new QueryGraph(5);
-        queryGraph.add(0, "p00", 1, "p10");
-        queryGraph.add(0, "p00", 2, "p20");
+        queryGraph.addStrictEquals(0, "p00", null, 1, "p10", null);
+        queryGraph.addStrictEquals(0, "p00", null, 2, "p20", null);
 
         QueryPlanIndex[] indexes = QueryPlanIndexBuilder.buildIndexSpec(queryGraph, types);
 

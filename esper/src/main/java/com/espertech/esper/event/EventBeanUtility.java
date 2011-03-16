@@ -16,6 +16,8 @@ import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.MultiKeyUntypedEventPair;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.io.PrintWriter;
@@ -343,6 +345,34 @@ public class EventBeanUtility
             }
         }
         return new MultiKeyUntyped(keyValues);
+    }
+
+    public static MultiKeyUntyped getMultiKey(EventBean[] eventsPerStream, ExprEvaluator[] evaluators, ExprEvaluatorContext context, Class[] coercionTypes) {
+        Object[] keyValues = getPropertyArray(eventsPerStream, evaluators, context);
+        if (coercionTypes == null) {
+            return new MultiKeyUntyped(keyValues);
+        }
+        for (int i = 0; i < coercionTypes.length; i++)
+        {
+            Object key = keyValues[i];
+            if ((key != null) && (!key.getClass().equals(coercionTypes[i])))
+            {
+                if (key instanceof Number)
+                {
+                    key = JavaClassHelper.coerceBoxed((Number) key, coercionTypes[i]);
+                    keyValues[i] = key;
+                }
+            }
+        }
+        return new MultiKeyUntyped(keyValues);
+    }
+
+    private static Object[] getPropertyArray(EventBean[] eventsPerStream, ExprEvaluator[] evaluators, ExprEvaluatorContext context) {
+        Object[] keys = new Object[evaluators.length];
+        for (int i = 0; i < keys.length; i++) {
+            keys[i] = evaluators[i].evaluate(eventsPerStream, true, context);
+        }
+        return keys;
     }
 
     public static MultiKeyUntyped getMultiKey(EventBean[] eventPerStream, EventPropertyGetter[] propertyGetters, int[] keyStreamNums, Class[] coercionTypes) {

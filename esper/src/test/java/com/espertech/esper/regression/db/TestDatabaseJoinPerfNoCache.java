@@ -2,7 +2,6 @@ package com.espertech.esper.regression.db;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.support.bean.SupportBeanRange;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportDatabaseService;

@@ -13,6 +13,7 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Contains the ON-clause criteria in an outer join.
@@ -120,6 +121,15 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
 
         topValidate(andNode, exprEvaluatorContext);
         return representativeNode;
+    }
+
+    public static boolean consistsOfAllInnerJoins(List<OuterJoinDesc> outerJoinDescList) {
+        for (OuterJoinDesc desc : outerJoinDescList) {
+            if (desc.getOuterJoinType() != OuterJoinType.INNER) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void topValidate(ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext) {

@@ -114,8 +114,8 @@ public class NamedWindowIndexRepository
     }
 
     private boolean isExactMatch(IndexMultiKey existing, List<IndexedPropDesc> hashProps, List<IndexedPropDesc> btreeProps) {
-        boolean keyPropCompare = IndexedPropDesc.compare(Arrays.asList(existing.getKeyProps()), hashProps);
-        return keyPropCompare && IndexedPropDesc.compare(Arrays.asList(existing.getRangeProps()), btreeProps);
+        boolean keyPropCompare = IndexedPropDesc.compare(Arrays.asList(existing.getHashIndexedProps()), hashProps);
+        return keyPropCompare && IndexedPropDesc.compare(Arrays.asList(existing.getRangeIndexedProps()), btreeProps);
     }
 
     public void addTableReference(EventTable table) {
@@ -183,7 +183,7 @@ public class NamedWindowIndexRepository
         for (Map.Entry<IndexMultiKey, Pair<EventTable, Integer>> entry : tableIndexesRefCount.entrySet()) {
 
             boolean missed = false;
-            String[] indexedProps = IndexedPropDesc.getIndexProperties(entry.getKey().getKeyProps());
+            String[] indexedProps = IndexedPropDesc.getIndexProperties(entry.getKey().getHashIndexedProps());
             for (String indexedProp : indexedProps) {
                 if (!keyPropertyNames.contains(indexedProp)) {
                     missed = true;
@@ -191,7 +191,7 @@ public class NamedWindowIndexRepository
                 }
             }
 
-            String[] rangeIndexProps = IndexedPropDesc.getIndexProperties(entry.getKey().getRangeProps());
+            String[] rangeIndexProps = IndexedPropDesc.getIndexProperties(entry.getKey().getRangeIndexedProps());
             for (String rangeProp : rangeIndexProps) {
                 if (!rangePropertyNames.contains(rangeProp) && !keyPropertyNames.contains(rangeProp)) {
                     missed = true;
@@ -220,8 +220,8 @@ public class NamedWindowIndexRepository
             Comparator<IndexMultiKey> comparator = new Comparator<IndexMultiKey>() {
                 public int compare(IndexMultiKey o1, IndexMultiKey o2)
                 {
-                    String[] indexedProps1 = IndexedPropDesc.getIndexProperties(o1.getKeyProps());
-                    String[] indexedProps2 = IndexedPropDesc.getIndexProperties(o2.getKeyProps());
+                    String[] indexedProps1 = IndexedPropDesc.getIndexProperties(o1.getHashIndexedProps());
+                    String[] indexedProps2 = IndexedPropDesc.getIndexProperties(o2.getHashIndexedProps());
                     if (indexedProps1.length > indexedProps2.length) {
                         return -1;  // sort desc by count columns
                     }

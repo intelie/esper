@@ -1,12 +1,11 @@
 package com.espertech.esper.epl.join.exec.composite;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValue;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValueEquals;
-import com.espertech.esper.epl.join.exec.RangeIndexLookupValueRange;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValue;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValueEquals;
+import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValueRange;
 import com.espertech.esper.epl.join.plan.QueryGraphRangeEnum;
 import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.filter.DoubleRange;
 import com.espertech.esper.filter.Range;
 
 import java.util.Map;

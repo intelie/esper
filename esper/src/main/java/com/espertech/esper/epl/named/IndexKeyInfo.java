@@ -1,39 +1,34 @@
 package com.espertech.esper.epl.named;
 
 import com.espertech.esper.epl.join.plan.CoercionDesc;
-import com.espertech.esper.epl.join.table.SubqueryRangeKeyDesc;
+import com.espertech.esper.epl.lookup.SubordPropHashKey;
+import com.espertech.esper.epl.lookup.SubordPropRangeKey;
 
 import java.util.List;
 
 public class IndexKeyInfo {
 
-    private String[] orderedKeyProperties;
-    private int[] orderedKeyStreamNums;
+    private List<SubordPropHashKey> orderedKeyProperties;
     private CoercionDesc orderedKeyCoercionTypes;
-    private List<SubqueryRangeKeyDesc> orderedRangeDesc;
+    private List<SubordPropRangeKey> orderedRangeDesc;
     private CoercionDesc orderedRangeCoercionTypes;
 
-    public IndexKeyInfo(String[] orderedKeyProperties, int[] orderedKeyStreamNums, CoercionDesc orderedKeyCoercionTypes, List<SubqueryRangeKeyDesc> orderedRangeDesc, CoercionDesc orderedRangeCoercionTypes) {
+    public IndexKeyInfo(List<SubordPropHashKey> orderedKeyProperties, CoercionDesc orderedKeyCoercionTypes, List<SubordPropRangeKey> orderedRangeDesc, CoercionDesc orderedRangeCoercionTypes) {
         this.orderedKeyProperties = orderedKeyProperties;
-        this.orderedKeyStreamNums = orderedKeyStreamNums;
         this.orderedKeyCoercionTypes = orderedKeyCoercionTypes;
         this.orderedRangeDesc = orderedRangeDesc;
         this.orderedRangeCoercionTypes = orderedRangeCoercionTypes;
     }
 
-    public String[] getOrderedKeyProperties() {
+    public List<SubordPropHashKey> getOrderedHashProperties() {
         return orderedKeyProperties;
-    }
-
-    public int[] getOrderedKeyStreamNums() {
-        return orderedKeyStreamNums;
     }
 
     public CoercionDesc getOrderedKeyCoercionTypes() {
         return orderedKeyCoercionTypes;
     }
 
-    public List<SubqueryRangeKeyDesc> getOrderedRangeDesc() {
+    public List<SubordPropRangeKey> getOrderedRangeDesc() {
         return orderedRangeDesc;
     }
 

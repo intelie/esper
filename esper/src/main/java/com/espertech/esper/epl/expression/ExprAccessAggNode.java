@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluatorLambda
+public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluatorEnumeration
 {
     private static final long serialVersionUID = -6088874732989061687L;
     

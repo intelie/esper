@@ -161,9 +161,13 @@ public class PropertyCompositeEventTable implements EventTable
         index.clear();
     }
 
-    public String toString()
+    public String toString() {
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan()
     {
-        return "PropertyCompositeEventTable" +
+        return this.getClass().getName() +
                 " streamNum=" + streamNum +
                 " keys=" + Arrays.toString(optionalKeyedProps) +
                 " ranges=" + Arrays.toString(rangeProps);

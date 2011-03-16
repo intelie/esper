@@ -32,10 +32,102 @@ public class TestPerfNamedWindowSubquery extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testConstantValue() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        runConstantValueAssertion(false, false);
+        runConstantValueAssertion(true, false);
+        runConstantValueAssertion(true, true);
+    }
+
+    private void runConstantValueAssertion(boolean indexShare, boolean buildIndex) {
+        String createEpl = "create window MyWindow.win:keepall() as select * from SupportBean";
+        if (indexShare) {
+            createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
+        }
+        epService.getEPAdministrator().createEPL(createEpl);
+
+        if (buildIndex) {
+            epService.getEPAdministrator().createEPL("create index idx1 on MyWindow(string hash, intPrimitive btree)");
+        }
+        epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
+
+        // preload
+        for (int i = 0; i < 10000; i++) {
+            SupportBean bean = new SupportBean("E" + i, i);
+            bean.setDoublePrimitive(i);
+            epService.getEPRuntime().sendEvent(bean);
+        }
+
+        // single-field compare
+        String[] fields = "val".split(",");
+        String eplSingle = "select (select intPrimitive from MyWindow where string = 'E9734') as val from SupportBeanRange sbr";
+        EPStatement stmtSingle = epService.getEPAdministrator().createEPL(eplSingle);
+        stmtSingle.addListener(listener);
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            epService.getEPRuntime().sendEvent(new SupportBeanRange("R", "", -1, -1));
+            ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {9734});
+        }
+        long delta = System.currentTimeMillis() - startTime;
+        assertTrue("delta=" + delta, delta < 500);
+        stmtSingle.destroy();
+
+        // two-field compare
+        String eplTwoHash = "select (select intPrimitive from MyWindow where string = 'E9736' and intPrimitive = 9736) as val from SupportBeanRange sbr";
+        EPStatement stmtTwoHash = epService.getEPAdministrator().createEPL(eplTwoHash);
+        stmtTwoHash.addListener(listener);
+
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            epService.getEPRuntime().sendEvent(new SupportBeanRange("R", "", -1, -1));
+            ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {9736});
+        }
+        delta = System.currentTimeMillis() - startTime;
+        assertTrue("delta=" + delta, delta < 500);
+        stmtTwoHash.destroy();
+
+        // range compare single
+        if (buildIndex) {
+            epService.getEPAdministrator().createEPL("create index idx2 on MyWindow(intPrimitive btree)");
+        }
+        String eplSingleBTree = "select (select intPrimitive from MyWindow where intPrimitive between 9735 and 9735) as val from SupportBeanRange sbr";
+        EPStatement stmtSingleBtree = epService.getEPAdministrator().createEPL(eplSingleBTree);
+        stmtSingleBtree.addListener(listener);
+
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            epService.getEPRuntime().sendEvent(new SupportBeanRange("R", "", -1, -1));
+            ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {9735});
+        }
+        delta = System.currentTimeMillis() - startTime;
+        assertTrue("delta=" + delta, delta < 500);
+        stmtSingleBtree.destroy();
+
+        // range compare composite
+        String eplComposite = "select (select intPrimitive from MyWindow where string = 'E9738' and intPrimitive between 9738 and 9738) as val from SupportBeanRange sbr";
+        EPStatement stmtComposite = epService.getEPAdministrator().createEPL(eplComposite);
+        stmtComposite.addListener(listener);
+
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            epService.getEPRuntime().sendEvent(new SupportBeanRange("R", "", -1, -1));
+            ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {9738});
+        }
+        delta = System.currentTimeMillis() - startTime;
+        assertTrue("delta=" + delta, delta < 500);
+        stmtComposite.destroy();
+
+        // destroy all
+        epService.getEPAdministrator().destroyAllStatements();
+    }
+
     public void testKeyAndRange() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanRange", SupportBeanRange.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
-        
+
         runKeyAndRangeAssertion(false, false);
         runKeyAndRangeAssertion(true, false);
         runKeyAndRangeAssertion(true, true);

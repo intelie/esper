@@ -30,10 +30,45 @@ public class TestDatabaseJoinPerfWithCache extends TestCase
          */
         configDB.setLRUCache(100000);
         Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getLogging().setEnableQueryPlan(true);
         configuration.addDatabaseReference("MyDB", configDB);
 
         epServiceRetained = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epServiceRetained.initialize();
+    }
+
+    public void testConstants() {
+        epServiceRetained.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        String epl;
+
+        epl = "select * from SupportBean sbr, sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 = 951";
+        runAssertion(epl, "s1.mycol1", "951");
+
+        epl = "select * from SupportBean sbr, sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 = 950 and mycol1 = '950'";
+        runAssertion(epl, "s1.mycol1", "950");
+
+        epl = "select sum(s1.mycol3) as val from SupportBean sbr unidirectional, sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 between 950 and 953";
+        runAssertion(epl, "val", 950+951+952+953);
+
+        epl = "select sum(s1.mycol3) as val from SupportBean sbr unidirectional, sql:MyDB ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol1 = '950' and mycol3 between 950 and 953";
+        runAssertion(epl, "val", 950);
+    }
+
+    private void runAssertion(String epl, String field, Object expected) {
+        EPStatement statement = epServiceRetained.getEPAdministrator().createEPL(epl);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            epServiceRetained.getEPRuntime().sendEvent(new SupportBean("E", 0));
+            assertEquals(expected, listener.assertOneGetNewAndReset().get(field));
+        }
+        long endTime = System.currentTimeMillis();
+        long delta = endTime - startTime;
+        log.info("delta=" + delta);
+        assertTrue("Delta=" + delta, delta < 500);
     }
 
     public void testRangeIndex() {

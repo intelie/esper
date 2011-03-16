@@ -16,6 +16,7 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -172,7 +173,11 @@ public class PropertyIndexedEventTableSingle implements EventTable
 
     public String toString()
     {
-        return "PropertyIndexedEventTableSingle" +
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan() {
+        return this.getClass().getSimpleName() +
                 " streamNum=" + streamNum +
                 " propertyName=" + propertyName;
     }

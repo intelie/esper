@@ -18,6 +18,7 @@ import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.schedule.TimeProvider;
 
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -335,5 +336,16 @@ public class ExprNodeUtility
             result.addAll(chainElement.getParameters());
         }
         return result;
+    }
+
+    public static String printEvaluators(ExprEvaluator[] evaluators) {
+        StringWriter writer = new StringWriter();
+        String delimiter = "";
+        for (int i = 0; i < evaluators.length; i++) {
+            writer.append(delimiter);
+            writer.append(evaluators[i].getClass().getSimpleName());
+            delimiter = ", ";
+        }
+        return writer.toString();
     }
 }

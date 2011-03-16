@@ -4,27 +4,42 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.join.plan.QueryGraphValueEntryHashKeyed;
+import com.espertech.esper.epl.lookup.SubordPropHashKey;
 import com.espertech.esper.event.EventBeanUtility;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class CompositeIndexQueryKeyed implements CompositeIndexQuery {
 
-    private final EventPropertyGetter[] propertyGetters;
+    private final ExprEvaluator[] evaluators;
     private final Class[] keyCoercionTypes;
-    private final int[] keyStreamNum;
+    private final int lookupStream;
+    private final EventBean[] events;
+    private final boolean isNWOnTrigger;
+
     private CompositeIndexQuery next;
 
-    public CompositeIndexQueryKeyed(EventType[] typePerStream, String[] keysProps, int[] keyStreamNum, Class[] keyCoercionTypes) {
+
+    public CompositeIndexQueryKeyed(boolean isNWOnTrigger, int lookupStream, int numStreams, List<QueryGraphValueEntryHashKeyed> hashKeys, Class[] keyCoercionTypes) {
         this.keyCoercionTypes  = keyCoercionTypes;
-        this.keyStreamNum = keyStreamNum;
-        propertyGetters = new EventPropertyGetter[keysProps.length];
-        for (int i = 0; i < keysProps.length; i++)
-        {
-            int keyStream = keyStreamNum[i];
-            propertyGetters[i] = EventBeanUtility.getAssertPropertyGetter(typePerStream[keyStream], keysProps[i]);
+        this.evaluators = new ExprEvaluator[hashKeys.size()];
+        this.isNWOnTrigger = isNWOnTrigger;
+        this.lookupStream = lookupStream;
+
+        for (int i = 0; i < evaluators.length; i++) {
+            evaluators[i] = hashKeys.get(i).getKeyExpr().getExprEvaluator();
+        }
+        if (lookupStream != -1) {
+            events = new EventBean[lookupStream + 1];
+        }
+        else {
+            events = new EventBean[numStreams + 1];
         }
     }
 
@@ -32,22 +47,33 @@ public class CompositeIndexQueryKeyed implements CompositeIndexQuery {
         this.next = next;
     }
 
-    public Set<EventBean> get(EventBean event, Map parent) {
-        MultiKeyUntyped mk = EventBeanUtility.getMultiKey(event, propertyGetters, keyCoercionTypes);
+    public Set<EventBean> get(EventBean event, Map parent, ExprEvaluatorContext context) {
+        events[lookupStream] = event;
+        MultiKeyUntyped mk = EventBeanUtility.getMultiKey(events, evaluators, context, keyCoercionTypes);
         Map innerIndex = (Map) parent.get(mk);
         if (innerIndex == null) {
             return null;
         }
-        return next.get(event, innerIndex);
+        return next.get(event, innerIndex, context);
     }
 
-    public Collection<EventBean> get(EventBean[] eventsPerStream, Map parent) {
-        MultiKeyUntyped mk = EventBeanUtility.getMultiKey(eventsPerStream, propertyGetters, keyStreamNum, keyCoercionTypes);
+    public Collection<EventBean> get(EventBean[] eventsPerStream, Map parent, ExprEvaluatorContext context) {
+
+        EventBean[] eventsToUse;
+        if (isNWOnTrigger) {
+            eventsToUse = eventsPerStream;
+        }
+        else {
+            System.arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
+            eventsToUse = events;
+        }
+
+        MultiKeyUntyped mk = EventBeanUtility.getMultiKey(eventsToUse, evaluators, context, keyCoercionTypes);
         Map innerIndex = (Map) parent.get(mk);
         if (innerIndex == null) {
             return null;
         }
-        return next.get(eventsPerStream, innerIndex);
+        return next.get(eventsPerStream, innerIndex, context);
     }
 
     public void add(EventBean event, Map value, Set<EventBean> result) {

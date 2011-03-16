@@ -1,6 +1,6 @@
 package com.espertech.esper.support.epl;
 
-import com.espertech.esper.epl.join.exec.ExecNode;
+import com.espertech.esper.epl.join.exec.base.ExecNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;

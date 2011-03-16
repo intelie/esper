@@ -9,16 +9,8 @@
 package com.espertech.esper.epl.declexpr;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.core.ExpressionResultCacheEntry;
 import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprEvaluatorLambda;
-import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.ExpressionDeclItem;
-
-import java.util.Collection;
-import java.util.Map;
 
 public class ExprDeclaredEvalRewrite extends ExprDeclaredEvalBase {
     private final int[] streamAssignments;

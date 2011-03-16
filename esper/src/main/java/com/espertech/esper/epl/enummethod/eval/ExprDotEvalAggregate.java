@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.enummethod.eval;
 
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalParamLambda;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalEnumMethodBase;
@@ -10,7 +11,6 @@ import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class ExprDotEvalAggregate extends ExprDotEvalEnumMethodBase {
         return new EventType[] {typeResult, inputEventType};
     }
 
-    public EnumEval getEnumEval(List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, int numStreamsIncoming) {
+    public EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, int numStreamsIncoming) {
         ExprDotEvalParam initValueParam = bodiesAndParameters.get(0);
         ExprEvaluator initValueEval = initValueParam.getBodyEvaluator();
         resultType = JavaClassHelper.getBoxedType(initValueEval.getType());

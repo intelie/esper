@@ -72,14 +72,14 @@ public class TestExprNode extends TestCase
         assertEquals("E", result.getMethodName());
         assertEquals("hfhf f f f ", result.getArgString());
 
-        result = ExprNode.parseMappedProperty("c.d.doit(\"kf\"kf'kf\")");
+        result = ExprNode.parseMappedProperty("c.d.getEnumerationSource(\"kf\"kf'kf\")");
         assertEquals("c.d", result.getClassName());
-        assertEquals("doit", result.getMethodName());
+        assertEquals("getEnumerationSource", result.getMethodName());
         assertEquals("kf\"kf'kf", result.getArgString());
 
-        result = ExprNode.parseMappedProperty("c.d.doit('kf\"kf'kf\"')");
+        result = ExprNode.parseMappedProperty("c.d.getEnumerationSource('kf\"kf'kf\"')");
         assertEquals("c.d", result.getClassName());
-        assertEquals("doit", result.getMethodName());
+        assertEquals("getEnumerationSource", result.getMethodName());
         assertEquals("kf\"kf'kf\"", result.getArgString());
 
         result = ExprNode.parseMappedProperty("f('a')");

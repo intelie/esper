@@ -45,8 +45,8 @@ public class TestTwoStreamQueryPlanBuilder extends TestCase
     private QueryGraph makeQueryGraph()
     {
         QueryGraph graph = new QueryGraph(2);
-        graph.add(0, "p01", 1, "p11");
-        graph.add(0, "p02", 1, "p12");
+        graph.addStrictEquals(0, "p01", null, 1, "p11", null);
+        graph.addStrictEquals(0, "p02", null, 1, "p12", null);
         return graph;
     }
 }

@@ -271,8 +271,8 @@ public class TestExpressionDef extends TestCase {
 
         String fields[] = "val1,val2".split(",");
         String epl = "" +
-                "expression doit {1} " +
-                "select doit() as val1, doit()*5 as val2 from SupportBean";
+                "expression getEnumerationSource {1} " +
+                "select getEnumerationSource() as val1, getEnumerationSource()*5 as val2 from SupportBean";
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
         LambdaAssertionUtil.assertTypes(stmt.getEventType(), fields, new Class[]{Integer.class, Integer.class});

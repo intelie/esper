@@ -72,7 +72,11 @@ public class UnindexedEventTableList implements EventTable
 
     public String toString()
     {
-        return "UnindexedEventTableList";
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan() {
+        return this.getClass().getSimpleName();
     }
 
     public void clear()

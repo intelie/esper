@@ -52,4 +52,8 @@ public class EnumMethodEnumParams {
                     new EnumMethodFootprint(new EnumMethodParam(1, "predictate", EnumMethodEnumParamType.BOOLEAN)),
                     new EnumMethodFootprint(new EnumMethodParam(2, "(predictate, index)", EnumMethodEnumParamType.BOOLEAN))
             };
+
+    public static final EnumMethodFootprint[] UNION_FP = new EnumMethodFootprint[] {
+                    new EnumMethodFootprint(new EnumMethodParam(0, "collection", EnumMethodEnumParamType.ANY)),
+            };
 }

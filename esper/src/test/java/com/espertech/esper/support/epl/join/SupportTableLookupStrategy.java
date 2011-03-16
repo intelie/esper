@@ -1,6 +1,6 @@
 package com.espertech.esper.support.epl.join;
 
-import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.rep.Cursor;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;

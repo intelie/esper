@@ -1,6 +1,11 @@
 package com.espertech.esper.epl.join.plan;
 
+import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import junit.framework.TestCase;
+
+import java.util.Map;
+import java.util.StringTokenizer;
 
 public class TestQueryGraphValue extends TestCase {
 
@@ -33,46 +38,53 @@ public class TestQueryGraphValue extends TestCase {
                         Object[][] expected) {
 
         QueryGraphValue value = new QueryGraphValue();
-        value.addRelOp(propertyKeyOne, opOne, valueOne, true);
-        value.addRelOp(propertyKeyTwo, opTwo, valueTwo, true);
+        value.addRelOp(new ExprIdentNode(propertyKeyOne), opOne, valueOne, true);
+        value.addRelOp(new ExprIdentNode(propertyKeyTwo), opTwo, valueTwo, true);
         assertRanges(expected, value);
 
         value = new QueryGraphValue();
-        value.addRelOp(propertyKeyTwo, opTwo, valueTwo, true);
-        value.addRelOp(propertyKeyOne, opOne, valueOne, true);
+        value.addRelOp(new ExprIdentNode(propertyKeyTwo), opTwo, valueTwo, true);
+        value.addRelOp(new ExprIdentNode(propertyKeyOne), opOne, valueOne, true);
         assertRanges(expected, value);
     }
 
     public void testNoDup() {
 
         QueryGraphValue value = new QueryGraphValue();
-        value.addRelOp("b", QueryGraphRangeEnum.LESS_OR_EQUAL, "a", false);
-        value.addRelOp("b", QueryGraphRangeEnum.LESS_OR_EQUAL, "a", false);
+        value.addRelOp(new ExprIdentNode("b"), QueryGraphRangeEnum.LESS_OR_EQUAL, "a", false);
+        value.addRelOp(new ExprIdentNode("b"), QueryGraphRangeEnum.LESS_OR_EQUAL, "a", false);
         assertRanges(new Object[][] {{"b", null, null, QueryGraphRangeEnum.LESS_OR_EQUAL, "a"}}, value);
 
         value = new QueryGraphValue();
-        value.addRange(QueryGraphRangeEnum.RANGE_CLOSED, "b", "c", "a");
-        value.addRange(QueryGraphRangeEnum.RANGE_CLOSED, "b", "c", "a");
+        value.addRange(QueryGraphRangeEnum.RANGE_CLOSED, new ExprIdentNode("b"), new ExprIdentNode("c"), "a");
+        value.addRange(QueryGraphRangeEnum.RANGE_CLOSED, new ExprIdentNode("b"), new ExprIdentNode("c"), "a");
         assertRanges(new Object[][] {{null, "b", "c", QueryGraphRangeEnum.RANGE_CLOSED, "a"}}, value);
     }
 
     private void assertRanges(Object[][] ranges, QueryGraphValue value) {
-        assertEquals(ranges.length, value.getRangeEntries().size());
-        for (int i = 0; i < value.getRangeEntries().size(); i++) {
-            QueryGraphValueRange r =  value.getRangeEntries().get(i);
+        assertEquals(ranges.length, value.getEntries().size());
 
-            assertEquals(ranges[i][3], r.getType());
-            assertEquals(ranges[i][4], r.getPropertyValue());
+        int count = -1;
+        for (Map.Entry<String, QueryGraphValueEntry> entry : value.getEntries().entrySet()) {
+            count++;
+            QueryGraphValueEntryRange r = (QueryGraphValueEntryRange) entry.getValue();
 
-            if (r instanceof QueryGraphValueRangeRelOp) {
-                QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) r;
-                assertEquals(ranges[i][0], relOp.getPropertyKey());
+            assertEquals(ranges[count][3], r.getType());
+            assertEquals(ranges[count][4], entry.getKey());
+
+            if (r instanceof QueryGraphValueEntryRangeRelOp) {
+                QueryGraphValueEntryRangeRelOp relOp = (QueryGraphValueEntryRangeRelOp) r;
+                assertEquals(ranges[count][0], getProp(relOp.getExpression()));
             }
             else {
-                QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) r;
-                assertEquals(ranges[i][1], in.getPropertyStart());
-                assertEquals(ranges[i][2], in.getPropertyEnd());
+                QueryGraphValueEntryRangeIn in = (QueryGraphValueEntryRangeIn) r;
+                assertEquals(ranges[count][1], getProp(in.getExprStart()));
+                assertEquals(ranges[count][2], getProp(in.getExprEnd()));
             }
         }
+    }
+
+    private String getProp(ExprNode node) {
+        return ((ExprIdentNode) node).getUnresolvedPropertyName();
     }
 }

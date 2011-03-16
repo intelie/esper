@@ -1,14 +1,13 @@
 package com.espertech.esper.epl.join.exec.composite;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.plan.QueryGraphRangeEnum;
-import com.espertech.esper.epl.join.plan.QueryGraphValueRange;
-import com.espertech.esper.epl.join.plan.QueryGraphValueRangeIn;
-import com.espertech.esper.epl.join.plan.QueryGraphValueRangeRelOp;
-import com.espertech.esper.epl.join.table.SubqueryRangeKeyDesc;
-import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.epl.join.plan.QueryGraphValueEntryRange;
+import com.espertech.esper.epl.join.plan.QueryGraphValueEntryRangeIn;
+import com.espertech.esper.epl.join.plan.QueryGraphValueEntryRangeRelOp;
+import com.espertech.esper.epl.lookup.SubordPropRangeKey;
 
 import java.util.*;
 
@@ -17,39 +16,39 @@ public class CompositeIndexQueryRange implements CompositeIndexQuery {
     private final CompositeAccessStrategy strategy;
     private CompositeIndexQuery next;
 
-    public CompositeIndexQueryRange(EventType[] typePerStream, SubqueryRangeKeyDesc subqRangeKey, Class coercionType) {
+    public CompositeIndexQueryRange(boolean isNWOnTrigger, int lookupStream, int numStreams, SubordPropRangeKey subqRangeKey, Class coercionType) {
 
-        QueryGraphValueRange rangeProp = subqRangeKey.getRangeInfo();
+        QueryGraphValueEntryRange rangeProp = subqRangeKey.getRangeInfo();
 
         if (rangeProp.getType().isRange()) {
-            QueryGraphValueRangeIn in = (QueryGraphValueRangeIn) rangeProp;
-            EventPropertyGetter start = EventBeanUtility.getAssertPropertyGetter(typePerStream[subqRangeKey.getStartStreamNum()], in.getPropertyStart());
+            QueryGraphValueEntryRangeIn in = (QueryGraphValueEntryRangeIn) rangeProp;
+            ExprEvaluator start = in.getExprStart().getExprEvaluator();
             boolean includeStart = rangeProp.getType().isIncludeStart();
 
-            EventPropertyGetter end = EventBeanUtility.getAssertPropertyGetter(typePerStream[subqRangeKey.getEndStreamNum()], in.getPropertyEnd());
+            ExprEvaluator end = in.getExprEnd().getExprEvaluator();
             boolean includeEnd = rangeProp.getType().isIncludeEnd();
 
             if (!rangeProp.getType().isRangeInverted()) {
-                strategy = new CompositeAccessStrategyRangeNormal(start, includeStart, subqRangeKey.getStartStreamNum(), end, includeEnd, subqRangeKey.getEndStreamNum(), coercionType, ((QueryGraphValueRangeIn) rangeProp).isAllowRangeReversal());
+                strategy = new CompositeAccessStrategyRangeNormal(isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd, coercionType, ((QueryGraphValueEntryRangeIn) rangeProp).isAllowRangeReversal());
             }
             else {
-                strategy = new CompositeAccessStrategyRangeInverted(start, includeStart, subqRangeKey.getStartStreamNum(), end, includeEnd, subqRangeKey.getEndStreamNum(), coercionType);
+                strategy = new CompositeAccessStrategyRangeInverted(isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd, coercionType);
             }
         }
         else {
-            QueryGraphValueRangeRelOp relOp = (QueryGraphValueRangeRelOp) rangeProp;
-            EventPropertyGetter key = EventBeanUtility.getAssertPropertyGetter(typePerStream[subqRangeKey.getKeyStreamNum()], relOp.getPropertyKey());
+            QueryGraphValueEntryRangeRelOp relOp = (QueryGraphValueEntryRangeRelOp) rangeProp;
+            ExprEvaluator key = relOp.getExpression().getExprEvaluator();
             if (rangeProp.getType() == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
-                strategy = new CompositeAccessStrategyGE(key, coercionType, subqRangeKey.getKeyStreamNum());
+                strategy = new CompositeAccessStrategyGE(isNWOnTrigger, lookupStream, numStreams, key, coercionType);
             }
             else if (rangeProp.getType() == QueryGraphRangeEnum.GREATER) {
-                strategy = new CompositeAccessStrategyGT(key, coercionType, subqRangeKey.getKeyStreamNum());
+                strategy = new CompositeAccessStrategyGT(isNWOnTrigger, lookupStream, numStreams, key, coercionType);
             }
             else if (rangeProp.getType() == QueryGraphRangeEnum.LESS_OR_EQUAL) {
-                strategy = new CompositeAccessStrategyLE(key, coercionType, subqRangeKey.getKeyStreamNum());
+                strategy = new CompositeAccessStrategyLE(isNWOnTrigger, lookupStream, numStreams, key, coercionType);
             }
             else if (rangeProp.getType() == QueryGraphRangeEnum.LESS) {
-                strategy = new CompositeAccessStrategyLT(key, coercionType, subqRangeKey.getKeyStreamNum());
+                strategy = new CompositeAccessStrategyLT(isNWOnTrigger, lookupStream, numStreams, key, coercionType);
             }
             else {
                 throw new IllegalArgumentException("Comparison operator " + rangeProp.getType() + " not supported");
@@ -58,19 +57,19 @@ public class CompositeIndexQueryRange implements CompositeIndexQuery {
     }
 
     public void add(EventBean event, Map parent, Set<EventBean> result) {
-        strategy.lookup(event, parent, result, next);
+        strategy.lookup(event, parent, result, next, null);
     }
 
     public void add(EventBean[] eventsPerStream, Map parent, Collection<EventBean> result) {
-        strategy.lookup(eventsPerStream, parent, result, next);
+        strategy.lookup(eventsPerStream, parent, result, next, null);
     }
 
-    public Set<EventBean> get(EventBean event, Map parent) {
-        return strategy.lookup(event, parent, null, next);
+    public Set<EventBean> get(EventBean event, Map parent, ExprEvaluatorContext context) {
+        return strategy.lookup(event, parent, null, next, context);
     }
 
-    public Collection<EventBean> get(EventBean[] eventsPerStream, Map parent) {
-        return strategy.lookup(eventsPerStream, parent, null, next);
+    public Collection<EventBean> get(EventBean[] eventsPerStream, Map parent, ExprEvaluatorContext context) {
+        return strategy.lookup(eventsPerStream, parent, null, next, context);
     }
 
     protected static Set<EventBean> handle(EventBean event, SortedMap sortedMapOne, SortedMap sortedMapTwo, Set<EventBean> result, CompositeIndexQuery next) {

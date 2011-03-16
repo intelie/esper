@@ -13,16 +13,16 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.ExpressionResultCacheEntry;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprEvaluatorLambda;
+import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.ExpressionDeclItem;
 
 import java.util.Collection;
 import java.util.Map;
 
-public abstract class ExprDeclaredEvalBase implements ExprEvaluator, ExprEvaluatorLambda {
+public abstract class ExprDeclaredEvalBase implements ExprEvaluator, ExprEvaluatorEnumeration {
     private final ExprEvaluator innerEvaluator;
-    private final ExprEvaluatorLambda innerEvaluatorLambda;
+    private final ExprEvaluatorEnumeration innerEvaluatorLambda;
     private final ExpressionDeclItem prototype;
     private final boolean isCache;
 
@@ -31,8 +31,8 @@ public abstract class ExprDeclaredEvalBase implements ExprEvaluator, ExprEvaluat
     public ExprDeclaredEvalBase(ExprEvaluator innerEvaluator, ExpressionDeclItem prototype, boolean isCache) {
         this.innerEvaluator = innerEvaluator;
         this.prototype = prototype;
-        if (innerEvaluator instanceof ExprEvaluatorLambda) {
-            innerEvaluatorLambda = (ExprEvaluatorLambda) innerEvaluator;
+        if (innerEvaluator instanceof ExprEvaluatorEnumeration) {
+            innerEvaluatorLambda = (ExprEvaluatorEnumeration) innerEvaluator;
         }
         else {
             innerEvaluatorLambda = null;
@@ -93,8 +93,8 @@ public abstract class ExprDeclaredEvalBase implements ExprEvaluator, ExprEvaluat
     }
 
     public EventType getEventTypeIterator() throws ExprValidationException {
-        if (innerEvaluator instanceof ExprEvaluatorLambda) {
-            ExprEvaluatorLambda lambda = (ExprEvaluatorLambda) innerEvaluator;
+        if (innerEvaluator instanceof ExprEvaluatorEnumeration) {
+            ExprEvaluatorEnumeration lambda = (ExprEvaluatorEnumeration) innerEvaluator;
             return lambda.getEventTypeIterator();
         }
         return null;

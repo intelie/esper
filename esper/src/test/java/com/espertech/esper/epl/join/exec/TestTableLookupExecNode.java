@@ -2,6 +2,8 @@ package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.join.exec.base.IndexedTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.TableLookupExecNode;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;

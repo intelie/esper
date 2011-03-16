@@ -9,8 +9,8 @@
 package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.exec.CompositeTableLookupStrategy;
-import com.espertech.esper.epl.join.exec.JoinExecTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.CompositeTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
 
@@ -23,8 +23,8 @@ import java.util.Map;
  */
 public class CompositeTableLookupPlan extends TableLookupPlan
 {
-    private final String[] directKeys;
-    private final List<QueryGraphValueRange> rangeKeyPairs;
+    private final List<QueryGraphValueEntryHashKeyed> hashKeys;
+    private final List<QueryGraphValueEntryRange> rangeKeyPairs;
 
     /**
      * Ctor.
@@ -32,24 +32,24 @@ public class CompositeTableLookupPlan extends TableLookupPlan
      * @param indexedStream - stream to index table lookup
      * @param indexNum - index number for the table containing the full unindexed contents
      */
-    public CompositeTableLookupPlan(int lookupStream, int indexedStream, String indexNum, String[] directKeys, List<QueryGraphValueRange> rangeKeyPairs)
+    public CompositeTableLookupPlan(int lookupStream, int indexedStream, String indexNum, List<QueryGraphValueEntryHashKeyed> hashKeys, List<QueryGraphValueEntryRange> rangeKeyPairs)
     {
         super(lookupStream, indexedStream, indexNum);
-        this.directKeys = directKeys;
+        this.hashKeys = hashKeys;
         this.rangeKeyPairs = rangeKeyPairs;
     }
 
     public JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
     {
         PropertyCompositeEventTable index = (PropertyCompositeEventTable) indexesPerStream[this.getIndexedStream()].get(this.getIndexNum());
-        return new CompositeTableLookupStrategy(eventTypes[this.getLookupStream()], directKeys, rangeKeyPairs, index);
+        return new CompositeTableLookupStrategy(eventTypes[this.getLookupStream()], this.getLookupStream(), hashKeys, rangeKeyPairs, index);
     }
 
     public String toString()
     {
         return "CompositeTableLookupPlan " +
                 super.toString() +
-                " directKeys=" + Arrays.toString(directKeys) +
+                " directKeys=" + Arrays.toString(hashKeys.toArray()) +
                 " rangeKeys=" + Arrays.toString(rangeKeyPairs.toArray());
     }
 }

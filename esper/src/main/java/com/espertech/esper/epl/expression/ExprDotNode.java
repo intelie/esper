@@ -67,30 +67,10 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
 
             // the root expression may also provide a lambda-function input (Iterator<EventBean>)
             // Determine lambda-type and evaluator if any for root node
-            ExprEvaluatorLambda rootLambdaEvaluator = null;
-            EventType rootLambdaEventType = null;
+            Pair<ExprEvaluatorEnumeration, EventType> enumSrc = getEnumerationSource(rootNode, streamTypeService);
 
-            if (rootNodeEvaluator instanceof ExprEvaluatorLambda) {
-                rootLambdaEvaluator = (ExprEvaluatorLambda) rootNodeEvaluator;
-                rootLambdaEventType = rootLambdaEvaluator.getEventTypeIterator();
-                if (rootLambdaEventType == null) {  // not eligible if returning null
-                    rootLambdaEvaluator = null;
-                }
-            }
-            else if (rootNode instanceof ExprIdentNode) {
-                ExprIdentNode identNode = (ExprIdentNode) rootNode;
-                int streamId = identNode.getStreamId();
-                EventType streamType = streamTypeService.getEventTypes()[streamId];
-                EventPropertyGetter getter = streamType.getGetter(identNode.getResolvedPropertyName());
-                FragmentEventType fragmentEventType = streamType.getFragmentType(identNode.getResolvedPropertyName());
-                if (getter != null && fragmentEventType != null && fragmentEventType.isIndexed()) {
-                    rootLambdaEvaluator = new PropertyExprEvaluatorLambda(identNode.getResolvedPropertyName(), streamId, fragmentEventType.getFragmentType(), getter);
-                    rootLambdaEventType = fragmentEventType.getFragmentType();
-                }
-            }
-
-            UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(rootNodeType, rootLambdaEventType, chainSpec, validationContext, isDuckTyping, streamTypeService);
-            exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, rootLambdaEvaluator, evals.getFirst(), evals.getSecond());
+            UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(rootNodeType, enumSrc.getSecond(), chainSpec, validationContext, isDuckTyping, streamTypeService);
+            exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, enumSrc.getFirst(), evals.getFirst(), evals.getSecond());
         }
         else {
             // There no root node, in this case the classname or property name is provided as part of the chain.
@@ -116,7 +96,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
                 EventPropertyGetter getter = streamType.getGetter(propertyInfoPair.getFirst().getPropertyName());
                 FragmentEventType fragmentEventType = streamType.getFragmentType(propertyInfoPair.getFirst().getPropertyName());
 
-                ExprEvaluatorLambda rootLambdaEvaluator = null;
+                ExprEvaluatorEnumeration rootLambdaEvaluator = null;
                 EventType rootLambdaEventType = null;
                 if (getter != null && fragmentEventType != null && fragmentEventType.isIndexed()) {
                     rootLambdaEvaluator = new PropertyExprEvaluatorLambda(propertyInfoPair.getFirst().getPropertyName(), streamId, fragmentEventType.getFragmentType(), getter);
@@ -141,7 +121,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
                 for(ExprNode childNode : secondItem.getParameters())
                 {
                     if (childNode instanceof ExprLambdaGoesNode) {
-                        throw new ExprValidationException("Unexpected lambda-expression encountered as parameter to UDF or static method");
+                        throw new ExprValidationException("Unexpected lambda-expression encountered as parameter to UDF or static method '" + secondItem.getName() + "' and failed to resolve '" + firstItem.getName() + "' as a property");
                     }
                     ExprEvaluator eval = childNode.getExprEvaluator();
                     childEvals[count] = eval;
@@ -252,5 +232,31 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
     @Override
     public List<ExprNode> getAdditionalNodes() {
         return ExprNodeUtility.collectChainParameters(chainSpec);
+    }
+
+    public static Pair<ExprEvaluatorEnumeration, EventType> getEnumerationSource(ExprNode inputExpression, StreamTypeService streamTypeService) throws ExprValidationException {
+        ExprEvaluator rootNodeEvaluator = inputExpression.getExprEvaluator();
+        ExprEvaluatorEnumeration rootLambdaEvaluator = null;
+        EventType rootLambdaEventType = null;
+
+        if (rootNodeEvaluator instanceof ExprEvaluatorEnumeration) {
+            rootLambdaEvaluator = (ExprEvaluatorEnumeration) rootNodeEvaluator;
+            rootLambdaEventType = rootLambdaEvaluator.getEventTypeIterator();
+            if (rootLambdaEventType == null) {  // not eligible if returning null
+                rootLambdaEvaluator = null;
+            }
+        }
+        else if (inputExpression instanceof ExprIdentNode) {
+            ExprIdentNode identNode = (ExprIdentNode) inputExpression;
+            int streamId = identNode.getStreamId();
+            EventType streamType = streamTypeService.getEventTypes()[streamId];
+            EventPropertyGetter getter = streamType.getGetter(identNode.getResolvedPropertyName());
+            FragmentEventType fragmentEventType = streamType.getFragmentType(identNode.getResolvedPropertyName());
+            if (getter != null && fragmentEventType != null && fragmentEventType.isIndexed()) {
+                rootLambdaEvaluator = new PropertyExprEvaluatorLambda(identNode.getResolvedPropertyName(), streamId, fragmentEventType.getFragmentType(), getter);
+                rootLambdaEventType = fragmentEventType.getFragmentType();
+            }
+        }
+        return new Pair<ExprEvaluatorEnumeration, EventType>(rootLambdaEvaluator, rootLambdaEventType);
     }
 }

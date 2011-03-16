@@ -14,14 +14,14 @@ import com.espertech.esper.client.EventType;
 import java.util.Collection;
 import java.util.Map;
 
-public class ExprDotEvalRootChild implements ExprEvaluator, ExprEvaluatorLambda
+public class ExprDotEvalRootChild implements ExprEvaluator, ExprEvaluatorEnumeration
 {
     private final ExprEvaluator rootNodeEvaluator;
-    private final ExprEvaluatorLambda rootLambdaEvaluator;
+    private final ExprEvaluatorEnumeration rootLambdaEvaluator;
     private final ExprDotEval[] evalIteratorEventBean;
     private final ExprDotEval[] evalUnpacking;
 
-    public ExprDotEvalRootChild(ExprEvaluator rootNodeEvaluator, ExprEvaluatorLambda rootLambdaEvaluator, ExprDotEval[] evalIteratorEventBean, ExprDotEval[] evalUnpacking) {
+    public ExprDotEvalRootChild(ExprEvaluator rootNodeEvaluator, ExprEvaluatorEnumeration rootLambdaEvaluator, ExprDotEval[] evalIteratorEventBean, ExprDotEval[] evalUnpacking) {
         this.rootNodeEvaluator = rootNodeEvaluator;
         this.rootLambdaEvaluator = rootLambdaEvaluator;
         this.evalUnpacking = evalUnpacking;

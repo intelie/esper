@@ -1,8 +1,8 @@
 package com.espertech.esper.epl.join.plan;
 
-import com.espertech.esper.epl.join.exec.ExecNode;
-import com.espertech.esper.epl.join.exec.FullTableScanLookupStrategy;
-import com.espertech.esper.epl.join.exec.TableLookupExecNode;
+import com.espertech.esper.epl.join.exec.base.ExecNode;
+import com.espertech.esper.epl.join.exec.base.FullTableScanLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.TableLookupExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
 import com.espertech.esper.view.Viewable;

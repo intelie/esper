@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view;
 
-import com.espertech.esper.epl.join.PollResultIndexingStrategy;
+import com.espertech.esper.epl.join.pollindex.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.db.DataCache;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;

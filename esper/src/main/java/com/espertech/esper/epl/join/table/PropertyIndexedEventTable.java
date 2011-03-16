@@ -193,9 +193,13 @@ public class PropertyIndexedEventTable implements EventTable
         return propertyNames;
     }
 
-    public String toString()
+    public String toString() {
+        return toQueryPlan();
+    }
+
+    public String toQueryPlan()
     {
-        return "PropertyIndexedEventTable" +
+        return this.getClass().getSimpleName() +
                 " streamNum=" + streamNum +
                 " propertyNames=" + Arrays.toString(propertyNames);
     }
