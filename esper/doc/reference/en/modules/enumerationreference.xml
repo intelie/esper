@@ -105,6 +105,17 @@
 						</entry>
 					</row>
 					<row>
+						<entry>firstof()</entry>
+						<entry>
+							<para>
+								Returns the first element.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-firstof"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>firstof(predicate lambda)</entry>
 						<entry>
 							<para>
@@ -134,6 +145,17 @@
 							</para>
 							<para>
 								<xref linkend="enumeration-method-groupby"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>lastof()</entry>
+						<entry>
+							<para>
+								Returns the last element.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-lastof"/>.
 							</para>
 						</entry>
 					</row>
@@ -455,10 +477,10 @@
 				The syntax for enumeration methods is the same syntax as for any chained invocation:
 			</para>
 			<synopsis><emphasis>source</emphasis>.<emphasis>enum-method-name</emphasis>( [<emphasis>method_parameter</emphasis> [, <emphasis>method_parameter</emphasis> [,...]]])
-	  .[<emphasis>enum-method-name</emphasis>(...) [...]]</synopsis>
+	  .[ [<emphasis>enum-method-name</emphasis>(...) [...]] | <emphasis>property_name</emphasis>] </synopsis>
 	
 			<para>
-				Following the source (options outlined below), is the <literal>.</literal> (dot) operator and the <emphasis>enum-method-name</emphasis> enumeration method name. It follows in parenthesis a comma-separated list of method parameter expressions. Additional enumeration methods can be chained thereafter.
+				Following the source (options outlined below), is the <literal>.</literal> (dot) operator and the <emphasis>enum-method-name</emphasis> enumeration method name. It follows in parenthesis a comma-separated list of method parameter expressions. Additional enumeration methods can be chained thereafter. An event property name can follow for those enumeration methods returning an element.
 			</para>
 			
 			<para>
@@ -520,7 +542,11 @@ from LocationReport]]></programlisting>
 			</para>
 			
 			<para>
-				For enumeration methods that return a collection the engine outputs an implementation of the <literal>Collection</literal> interface that contains the selected value(s). The collection returned must be considered read-only. As Java does not allow resettable iterators, the <literal>Collection</literal> interface allows more flexibility to query size and navigate among collection elements. We recommend against down-casting a collection returned by the engine to a more specific subclass of the <literal>Collection</literal> interface.
+				For enumeration methods that return a collection, for example <literal>where</literal> and <literal>orderBy</literal>, the engine outputs an implementation of the <literal>Collection</literal> interface that contains the selected value(s). The collection returned must be considered read-only. As Java does not allow resettable iterators, the <literal>Collection</literal> interface allows more flexibility to query size and navigate among collection elements. We recommend against down-casting a collection returned by the engine to a more specific subclass of the <literal>Collection</literal> interface.
+			</para>
+			
+			<para>
+				For enumeration methods that returns an element, for example <literal>firstOf</literal>, <literal>lastOf</literal>, <literal>minBy</literal> and <literal>maxBy</literal> the engine outputs the underlying event. You may add an event property name after the enumeration method to return a property value.
 			</para>
 
 			<para>
@@ -1001,11 +1027,11 @@ from LocationReport</programlisting>
 			<title>FirstOf</title>
 
 			<para>
-				The <literal>firstof</literal> enumeration method returns the first element that satisfies a condition.
+				The <literal>firstOf</literal> enumeration method returns the first element or the first element that satisfies a condition.
 			</para>
 			
 			<para>
-				The method takes a predicate lambda expression yielding true or false. It applies the lambda expression to each element and returns the first element for which the expression returns true. The return type is the element itself and not a collection.
+				The method has two versions: The first version takes no parameters and returns the first element. The second version takes a predicate lambda expression yielding true or false. It applies the lambda expression to each element and returns the first element for which the expression returns true. The return type is the element itself and not a collection. You may append a property name to return the property value for the first element.
 			</para>
 
 			<para>
@@ -1013,6 +1039,11 @@ from LocationReport</programlisting>
 			</para>
 			<programlisting>select items.firstof(i =&gt; distance(i.location.x, i.location.y, 0, 0) &lt; 20) as firstcenter
 from LocationReport</programlisting>
+
+			<para>
+				The next sample EPL returns the first item's asset id:
+			</para>
+			<programlisting>select items.firstof().assetId as firstAssetId from LocationReport</programlisting>
 
 			<para>
 				If the input is null, empty or if none of the elements match the condition the method returns null.
@@ -1057,11 +1088,11 @@ from LocationReport</programlisting>
 			<title>LastOf</title>
 
 			<para>
-				The <literal>lastof</literal> enumeration method returns the last element that satisfies a condition.
+				The <literal>lastOf</literal> enumeration method returns the last element or the last element that satisfies a condition.
 			</para>
 			
 			<para>
-				The method takes a predicate lambda expression yielding true or false. It applies the lambda expression to each element and returns the last element for which the expression returns true. The return type is the element itself and not a collection.
+				The method has two versions: The first version takes no parameters and returns the last element. The second version takes a predicate lambda expression yielding true or false. It applies the lambda expression to each element and returns the last element for which the expression returns true. The return type is the element itself and not a collection. You may append a property name to return the property value for the last element.
 			</para>
 
 			<para>
@@ -1069,6 +1100,11 @@ from LocationReport</programlisting>
 			</para>
 			<programlisting>select items.lastof(i =&gt; distance(i.location.x, i.location.y, 0, 0) &lt; 20) as lastcenter 
 from LocationReport</programlisting>
+
+			<para>
+				The next sample EPL returns the last item's asset id:
+			</para>
+			<programlisting>select items.lastof().assetId as lastAssetId from LocationReport</programlisting>
 
 			<para>
 				If the input is null, empty or if none of the elements match the condition the method returns null.
@@ -1105,11 +1141,11 @@ from LocationReport</programlisting>
 			<title>MaxBy</title>
 
 			<para>
-				The <literal>maxBy</literal> enumeration method returns the element that provides the maximum value returned by the value-selector lambda expression when applied to each element.				
+				The <literal>maxBy</literal> enumeration method returns the element that provides the maximum value returned by the value-selector lambda expression when applied to each element.
 			</para>
 			
 			<para>
-				The enumeration method returns the element itself.
+				The enumeration method returns the element itself. You may append an event property name to return a property value of the element.
 			</para>
 
 			<para>
@@ -1117,6 +1153,11 @@ from LocationReport</programlisting>
 			</para>
 			<programlisting>select items.maxBy(i =&gt; distance(i.location.x, i.location.y, 0, 0)) as maxItemCenter 
 from LocationReport</programlisting>
+
+			<para>
+				The next sample returns the type of the item with the largest asset id (string comparison) among all items:
+			</para>
+			<programlisting>select items.maxBy(i =&gt; assetId).type as minAssetId from LocationReport</programlisting>
 
 			<para>
 				The transform expression must return a comparable type: Any primitive or boxed type or <literal>Comparable</literal> type is permitted.
@@ -1161,7 +1202,7 @@ from LocationReport</programlisting>
 			</para>
 			
 			<para>
-				The enumeration method returns the element itself.
+				The enumeration method returns the element itself. You may append an event property name to return a property value of the element.
 			</para>
 
 			<para>
@@ -1169,6 +1210,11 @@ from LocationReport</programlisting>
 			</para>
 			<programlisting>select items.minBy(i =&gt; distance(i.location.x, i.location.y, 0, 0)) as minItemCenter 
 from LocationReport</programlisting>
+
+			<para>
+				The next sample returns the type of the item with the smallest asset id (string comparison) among all items:
+			</para>
+			<programlisting>select items.minBy(i =&gt; assetId).type as minAssetId from LocationReport</programlisting>
 
 			<para>
 				The transform expression must return a comparable type: Any primitive or boxed or <literal>Comparable</literal> type is permitted.

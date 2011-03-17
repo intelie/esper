@@ -1426,13 +1426,13 @@ libFunction
 	;
 		
 libFunctionWithClass
-	: (classIdentifierNonGreedy DOT)? funcIdent LPAREN (libFunctionArgs)? RPAREN
-	  -> ^(LIB_FUNCTION classIdentifierNonGreedy? funcIdent libFunctionArgs?)
+	: (classIdentifierNonGreedy DOT)? funcIdent l=LPAREN (libFunctionArgs)? RPAREN
+	  -> ^(LIB_FUNCTION classIdentifierNonGreedy? funcIdent libFunctionArgs? $l?)
 	;	
 
 libFunctionNoClass
-	: funcIdent LPAREN (libFunctionArgs)? RPAREN
-	  -> ^(LIB_FUNCTION funcIdent libFunctionArgs?)
+	: funcIdent (l=LPAREN (libFunctionArgs)? RPAREN)?
+	  -> ^(LIB_FUNCTION funcIdent libFunctionArgs? $l?)
 	;	
 
 funcIdent

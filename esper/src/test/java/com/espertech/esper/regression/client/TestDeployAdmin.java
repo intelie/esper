@@ -281,7 +281,7 @@ public class TestDeployAdmin extends TestCase
             fail();
         }
         catch (DeploymentActionException ex) {
-            assertEquals("Deployment failed in module 'mymodule.one' : Error starting statement: Nestable map type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared Map type [create schema MySchemaOne (col1 Wrong)]", ex.getMessage());
+            assertEquals("Deployment failed in module 'mymodule.one' in expression 'create schema MySchemaOne (col1 Wrong)' : Error starting statement: Nestable map type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared Map type [create schema MySchemaOne (col1 Wrong)]", ex.getMessage());
             assertEquals(2,  ex.getExceptions().size());
             assertEquals("create schema MySchemaOne (col1 Wrong)", ex.getExceptions().get(0).getExpression());
             assertEquals("Error starting statement: Nestable map type configuration encountered an unexpected property type name 'Wrong' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared Map type [create schema MySchemaOne (col1 Wrong)]", ex.getExceptions().get(0).getInner().getMessage());

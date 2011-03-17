@@ -1,7 +1,5 @@
 package com.espertech.esper.client.deploy;
 
-import com.espertech.esper.client.EPException;
-
 /**
  * Inner exception to {@link DeploymentActionException} available on statement level.
  */

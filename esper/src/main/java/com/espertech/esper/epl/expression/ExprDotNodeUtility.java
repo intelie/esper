@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.core.StreamTypeService;
@@ -33,6 +34,7 @@ public class ExprDotNodeUtility
         List<ExprDotEval> methodEvals = new ArrayList<ExprDotEval>();
 
         Class currentInputType = inputType;
+        EventType currentEventType = null;
         EnumMethodEnum lastLambdaFunc = null;
         ExprChainedSpec lastElement = chainSpec.isEmpty() ? null : chainSpec.get(chainSpec.size() - 1);
 
@@ -80,8 +82,29 @@ public class ExprDotNodeUtility
                 eval.init(lambdaFunc, chain.getName(), lambdaType, currentInputType, chain.getParameters(), validationContext, streamTypeService);
                 methodEvals.add(eval);
                 currentInputType = eval.getResultType();
+                currentEventType = eval.getResultEventType();
                 lastLambdaFunc = lambdaFunc;
                 continue;
+            }
+
+            // try to resolve as property if the last method returned a type
+            if (currentEventType != null) {
+                Class type = currentEventType.getPropertyType(chain.getName());
+                EventPropertyGetter getter = currentEventType.getGetter(chain.getName());
+                if (type != null && getter != null) {
+                    ExprDotEvalProperty noduck = new ExprDotEvalProperty(getter, JavaClassHelper.getBoxedType(type));
+                    methodEvals.add(noduck);
+                    currentInputType = noduck.getResultType();
+                    continue;
+                }
+
+                // preresolve as method
+                try {
+                    validationContext.getMethodResolutionService().resolveMethod(currentInputType, chain.getName(), paramTypes);
+                }
+                catch (Exception ex) {
+                    throw new ExprValidationException("Could not resolve '" + chain.getName() + "' to a property of event type '" + currentEventType.getName() + "' or method on type '" + currentInputType + "'");
+                }
             }
 
             // Try to resolve the method

@@ -220,7 +220,7 @@ public class NamedWindowRootView extends ViewSupport
 
         if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
             queryPlanLog.info("Strategy " + strategy.getFirst().toQueryPlan());
-            queryPlanLog.info("Table " + strategy.getSecond() == null ? "null" : strategy.getSecond().toQueryPlan());
+            queryPlanLog.info("Table " + ((strategy.getSecond() == null) ? "N/A" : strategy.getSecond().toQueryPlan()));
         }
 
         // If a new table is required, add that table to be updated

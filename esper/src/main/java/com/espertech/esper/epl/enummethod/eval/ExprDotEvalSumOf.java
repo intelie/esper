@@ -47,4 +47,8 @@ public class ExprDotEvalSumOf extends ExprDotEvalEnumMethodBase {
     public Class getResultType() {
         return returnType;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }
 }

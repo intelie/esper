@@ -1936,7 +1936,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         {
             String className = node.getChild(0).getText();
             List<ExprChainedSpec> chained = getLibFuncChain(parent);
-            chained.add(0, new ExprChainedSpec(className, Collections.<ExprNode>emptyList()));
+            chained.add(0, new ExprChainedSpec(className, Collections.<ExprNode>emptyList(), true));
             astExprNodeMap.put(node, new ExprDotNode(chained, configurationInformation.getEngineDefaults().getExpression().isDuckTyping(), configurationInformation.getEngineDefaults().getExpression().isUdfCache()));
             return;
         }
@@ -1953,7 +1953,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             Pair<Class, String> classMethodPair = engineImportService.resolveSingleRow(childNodeText);
             List<ExprChainedSpec> spec = new ArrayList<ExprChainedSpec>();
             List<ExprNode> childExpressions = getExprNodesLibFunc(0, node, astExprNodeMap);
-            spec.add(new ExprChainedSpec(classMethodPair.getSecond(), childExpressions));
+            spec.add(new ExprChainedSpec(classMethodPair.getSecond(), childExpressions, true));
             astExprNodeMap.put(node, new ExprPlugInSingleRowNode(childNodeText, classMethodPair.getFirst(), spec, false));
             return;
         }
@@ -2052,7 +2052,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         boolean duckType = configurationInformation.getEngineDefaults().getExpression().isDuckTyping();
         boolean udfCache = configurationInformation.getEngineDefaults().getExpression().isUdfCache();
         if (!className.equals(chained.get(0).getName())) {
-            chained.add(0, new ExprChainedSpec(className, Collections.<ExprNode>emptyList()));
+            chained.add(0, new ExprChainedSpec(className, Collections.<ExprNode>emptyList(), true));
         }
 
         ExprDotNode dotNode = new ExprDotNode(chained, duckType, udfCache);
@@ -2210,14 +2210,14 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         // Error if more then 3 nodes with distinct since it's an aggregate function
-        if ((libNode.getChildCount() > 3) && (isDistinct))
+        if ((libNode.getChildCount() > 4) && (isDistinct))
         {
             throw new ASTWalkException("The distinct keyword is not valid in per-row min and max " +
                     "functions with multiple sub-expressions");
         }
 
         ExprNode minMaxNode;
-        if ((!isDistinct) && (libNode.getChildCount() > 2))
+        if ((!isDistinct) && (libNode.getChildCount() > 3))
         {
             // use the row function
             minMaxNode = new ExprMinMaxRowNode(minMaxTypeEnum);
@@ -3001,7 +3001,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             count++;
 
             List<ExprNode> parameters = getExprNodesLibFunc(count, chainElement, astExprNodeMap);
-            chained.add(new ExprChainedSpec(methodName, parameters));
+
+            boolean isProperty = chainElement.getChildCount() > 0 && chainElement.getChild(chainElement.getChildCount() - 1).getType() != LPAREN;
+            chained.add(new ExprChainedSpec(methodName, parameters, isProperty));
         }
         return chained;
     }

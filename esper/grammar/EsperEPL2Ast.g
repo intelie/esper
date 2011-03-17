@@ -617,7 +617,7 @@ libFuncChain
 	;
 
 libFunctionWithClass
-	:  	^(l=LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? libFunctionArgItem*)
+	:  	^(l=LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? libFunctionArgItem* LPAREN?)
 	;
 	
 libFunctionArgItem

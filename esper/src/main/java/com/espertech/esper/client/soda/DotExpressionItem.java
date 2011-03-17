@@ -19,7 +19,7 @@ public class DotExpressionItem implements Serializable
 {
     private String name;
     private List<Expression> parameters;
-    private boolean isProperty; // relevant if there are no parameters
+    private boolean property; // relevant if there are no parameters
 
     /**
      * Ctor.
@@ -30,7 +30,7 @@ public class DotExpressionItem implements Serializable
     public DotExpressionItem(String name, List<Expression> parameters, boolean isProperty) {
         this.name = name;
         this.parameters = parameters;
-        this.isProperty = isProperty;
+        this.property = isProperty;
     }
 
     public String getName() {
@@ -50,11 +50,11 @@ public class DotExpressionItem implements Serializable
     }
 
     public boolean isProperty() {
-        return isProperty;
+        return property;
     }
 
     public void setProperty(boolean property) {
-        isProperty = property;
+        this.property = property;
     }
 
     public ExpressionPrecedenceEnum getPrecedence()
@@ -63,30 +63,25 @@ public class DotExpressionItem implements Serializable
     }
 
     protected static void render(List<DotExpressionItem> chain, StringWriter writer, boolean prefixDot) {
-        String delimiterOuter = "";
-        if (prefixDot) {
-            delimiterOuter = ".";
-        }
-        boolean isFirst = true;
-
+        String delimiterOuter = prefixDot ? "." : "";
         for (DotExpressionItem item : chain)
         {
             writer.write(delimiterOuter);
             writer.write(item.name);
 
-            if (!isFirst || prefixDot || !item.parameters.isEmpty() || !item.isProperty) {
+            if (!item.isProperty() || !item.parameters.isEmpty()) {
                 writer.write("(");
-                String delimiter = "";
-                for (Expression param : item.parameters) {
-                    writer.write(delimiter);
-                    delimiter = ", ";
-                    param.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                if (!item.parameters.isEmpty()) {
+                    String delimiter = "";
+                    for (Expression param : item.parameters) {
+                        writer.write(delimiter);
+                        delimiter = ", ";
+                        param.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                    }
                 }
                 writer.write(")");
             }
-
             delimiterOuter = ".";
-            isFirst = false;
         }
     }
 }

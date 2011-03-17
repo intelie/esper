@@ -102,7 +102,7 @@ public class TestExprStreamInstanceMethodNode extends TestCase
     private List<ExprChainedSpec> makeSpec(String method, ExprNode...expr)
     {
         List<ExprChainedSpec> chained = new ArrayList<ExprChainedSpec>();
-        chained.add(new ExprChainedSpec(method, Arrays.asList(expr)));
+        chained.add(new ExprChainedSpec(method, Arrays.asList(expr), false));
         return chained;
     }
 

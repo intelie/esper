@@ -10,10 +10,15 @@ public class EnumEvalBase {
     protected EventBean[] eventsLambda;
 
     public EnumEvalBase(ExprEvaluator innerExpression, int streamCountIncoming) {
+        this(streamCountIncoming);
         this.innerExpression = innerExpression;
+    }
+
+    public EnumEvalBase(int streamCountIncoming) {
         this.streamNumLambda = streamCountIncoming;
         this.eventsLambda = new EventBean[streamCountIncoming + 1];
     }
+
 
     public EventBean[] getEventsPrototype() {
         return eventsLambda;

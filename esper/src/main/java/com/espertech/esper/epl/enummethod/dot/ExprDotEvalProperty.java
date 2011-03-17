@@ -1,30 +1,30 @@
 package com.espertech.esper.epl.enummethod.dot;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.collection.EventUnderlyingCollection;
-import com.espertech.esper.collection.EventUnderlyingIterator;
 import com.espertech.esper.epl.expression.ExprDotEval;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-import java.util.Collection;
-import java.util.Iterator;
+public class ExprDotEvalProperty implements ExprDotEval {
 
-public class ExprDotEvalUnpackCollEventBean implements ExprDotEval {
+    private final EventPropertyGetter getter;
+    private final Class returnType;
 
-    public ExprDotEvalUnpackCollEventBean() {
+    public ExprDotEvalProperty(EventPropertyGetter getter, Class returnType) {
+        this.getter = getter;
+        this.returnType = returnType;
     }
 
     public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-        if (target == null) {
+        if (!(target instanceof EventBean)) {
             return null;
         }
-        Collection<EventBean> it = (Collection<EventBean>) target;
-        return new EventUnderlyingCollection(it);
+        return getter.get((EventBean) target);
     }
 
     public Class getResultType() {
-        return Collection.class;
+        return returnType;
     }
 
     public EventType getResultEventType() {

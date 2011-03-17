@@ -28,4 +28,8 @@ public class ExprDotEvalGroupBy extends ExprDotEvalEnumMethodBase {
     public Class getResultType() {
         return Map.class;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }
 }

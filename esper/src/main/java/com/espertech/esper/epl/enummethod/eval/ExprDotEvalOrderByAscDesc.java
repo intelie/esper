@@ -26,4 +26,8 @@ public class ExprDotEvalOrderByAscDesc extends ExprDotEvalEnumMethodBase {
     public Class getResultType() {
         return underlyingType;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }
 }

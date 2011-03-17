@@ -4,6 +4,7 @@ import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.deploy.Module;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.bean.SupportBean_ST0;
@@ -110,6 +111,10 @@ public class TestEnumInvalid extends TestCase {
         // invalid incompatible params
         epl = "select contained.average(x => x.id) from SupportBean_ST0_Container";
         tryInvalid(epl, "Error starting statement: Error validating lambda-expression 'average', expected a number-type result for expression parameter 0 but received java.lang.String [select contained.average(x => x.id) from SupportBean_ST0_Container]");
+
+        // not a property
+        epl = "select contained.firstof().dummy from SupportBean_ST0_Container";
+        tryInvalid(epl, "Error starting statement: Could not resolve 'dummy' to a property of event type 'SupportBean_ST0' or method on type 'class com.espertech.esper.support.bean.SupportBean_ST0' [select contained.firstof().dummy from SupportBean_ST0_Container]");
     }
 
     private void tryInvalid(String epl, String message) {

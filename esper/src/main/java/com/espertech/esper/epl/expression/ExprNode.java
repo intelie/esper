@@ -313,8 +313,8 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
         {
             List<ExprNode> parameters = Collections.singletonList((ExprNode) new ExprConstantNode(parse.getArgString()));
             List<ExprChainedSpec> chain = new ArrayList<ExprChainedSpec>();
-            chain.add(new ExprChainedSpec(parse.getClassName(), Collections.<ExprNode>emptyList()));
-            chain.add(new ExprChainedSpec(parse.getMethodName(), parameters));
+            chain.add(new ExprChainedSpec(parse.getClassName(), Collections.<ExprNode>emptyList(), false));
+            chain.add(new ExprChainedSpec(parse.getMethodName(), parameters, false));
             ExprNode result = new ExprDotNode(chain, methodResolutionService.isDuckType(), methodResolutionService.isUdfCache());
 
             // Validate
@@ -336,7 +336,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
         {
             Pair<Class, String> classMethodPair = methodResolutionService.resolveSingleRow(functionName);
             List<ExprNode> params = Collections.singletonList((ExprNode) new ExprConstantNode(parse.getArgString()));
-            List<ExprChainedSpec> chain = Collections.singletonList(new ExprChainedSpec(classMethodPair.getSecond(), params));
+            List<ExprChainedSpec> chain = Collections.singletonList(new ExprChainedSpec(classMethodPair.getSecond(), params, false));
             ExprNode result = new ExprPlugInSingleRowNode(functionName, classMethodPair.getFirst(), chain, false);
 
             // Validate

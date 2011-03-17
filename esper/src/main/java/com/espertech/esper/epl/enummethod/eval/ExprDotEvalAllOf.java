@@ -22,4 +22,8 @@ public class ExprDotEvalAllOf extends ExprDotEvalEnumMethodBase {
     public Class getResultType() {
         return Boolean.class;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }
 }

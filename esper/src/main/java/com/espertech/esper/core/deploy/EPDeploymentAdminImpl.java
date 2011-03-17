@@ -245,7 +245,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             message += " in module url '" + module.getUri() + "'";
         }
         if (exceptions.size() > 0) {
-            message += " : " + exceptions.get(0).getMessage();
+            message += " in expression '" + exceptions.get(0).getExpression() + "' : " + exceptions.get(0).getMessage();
         }
         return new DeploymentActionException(message, exceptions);
     }

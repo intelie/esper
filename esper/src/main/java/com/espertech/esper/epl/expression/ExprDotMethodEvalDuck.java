@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -89,5 +90,9 @@ public class ExprDotMethodEvalDuck implements ExprDotEval
     public Class getResultType()
     {
         return Object.class;
+    }
+
+    public EventType getResultEventType() {
+        return null;
     }
 }

@@ -6,7 +6,7 @@ public class EnumMethodEnumParams {
                     new EnumMethodFootprint(),
             };
 
-    public static final EnumMethodFootprint[] EMPTY_PLUS_PRED_FP = new EnumMethodFootprint[] {
+    public static final EnumMethodFootprint[] SINGLE_PREDICATE_BOOL_OR_NONE = new EnumMethodFootprint[] {
                     new EnumMethodFootprint(),
                     new EnumMethodFootprint(new EnumMethodParam(1, "predicate", EnumMethodEnumParamType.BOOLEAN)),
             };

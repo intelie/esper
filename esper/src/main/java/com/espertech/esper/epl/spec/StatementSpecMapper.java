@@ -18,6 +18,7 @@ import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.epl.declexpr.ExprDeclaredNode;
+import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
@@ -1359,7 +1360,7 @@ public class StatementSpecMapper
         {
             StaticMethodExpression method = (StaticMethodExpression) expr;
             List<ExprChainedSpec> chained = mapChains(method.getChain(), mapContext);
-            chained.add(0, new ExprChainedSpec(method.getClassName(), Collections.<ExprNode>emptyList()));
+            chained.add(0, new ExprChainedSpec(method.getClassName(), Collections.<ExprNode>emptyList(), false));
             return new ExprDotNode(chained,
                     mapContext.getConfiguration().getEngineDefaults().getExpression().isDuckTyping(),
                     mapContext.getConfiguration().getEngineDefaults().getExpression().isUdfCache());
@@ -1604,6 +1605,10 @@ public class StatementSpecMapper
             return new ExprDotNode(chain,
                     mapContext.getConfiguration().getEngineDefaults().getExpression().isDuckTyping(),
                     mapContext.getConfiguration().getEngineDefaults().getExpression().isUdfCache());
+        }
+        else if (expr instanceof LambdaExpression) {
+            LambdaExpression base = (LambdaExpression) expr;
+            return new ExprLambdaGoesNode(new ArrayList<String>(base.getParameters()));
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
@@ -2018,7 +2023,7 @@ public class StatementSpecMapper
             ExprDotNode dotNode = (ExprDotNode) expr;
             DotExpression dotExpr = new DotExpression();
             for (ExprChainedSpec chain : dotNode.getChainSpec()) {
-                dotExpr.add(chain.getName(), unmapExpressionDeep(chain.getParameters(), unmapContext), true);
+                dotExpr.add(chain.getName(), unmapExpressionDeep(chain.getParameters(), unmapContext), chain.isProperty());
             }
             return dotExpr;
         }
@@ -2029,6 +2034,12 @@ public class StatementSpecMapper
             dotExpr.add(declNode.getPrototype().getName(),
                     unmapExpressionDeep(declNode.getChainParameters(), unmapContext));
             return dotExpr;
+        }
+        else if (expr instanceof ExprLambdaGoesNode)
+        {
+            ExprLambdaGoesNode lambdaNode = (ExprLambdaGoesNode) expr;
+            LambdaExpression lambdaExpr = new LambdaExpression(new ArrayList<String>(lambdaNode.getGoesToNames()));
+            return lambdaExpr;
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
@@ -2564,7 +2575,7 @@ public class StatementSpecMapper
     private static List<ExprChainedSpec> mapChains(List<DotExpressionItem> pairs, StatementSpecMapContext mapContext) {
         List<ExprChainedSpec> chains = new ArrayList<ExprChainedSpec>();
         for (DotExpressionItem item : pairs) {
-            chains.add(new ExprChainedSpec(item.getName(), mapExpressionDeep(item.getParameters(), mapContext)));
+            chains.add(new ExprChainedSpec(item.getName(), mapExpressionDeep(item.getParameters(), mapContext), false));
         }
         return chains;
     }
@@ -2572,7 +2583,7 @@ public class StatementSpecMapper
     private static List<DotExpressionItem> unmapChains(List<ExprChainedSpec> pairs, StatementSpecUnMapContext unmapContext, boolean isProperty) {
         List<DotExpressionItem> result = new ArrayList<DotExpressionItem>();
         for (ExprChainedSpec chain : pairs) {
-            result.add(new DotExpressionItem(chain.getName(), unmapExpressionDeep(chain.getParameters(), unmapContext), isProperty));
+            result.add(new DotExpressionItem(chain.getName(), unmapExpressionDeep(chain.getParameters(), unmapContext), chain.isProperty()));
         }
         return result;
     }

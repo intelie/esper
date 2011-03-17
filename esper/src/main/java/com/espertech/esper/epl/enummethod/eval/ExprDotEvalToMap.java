@@ -24,4 +24,8 @@ public class ExprDotEvalToMap extends ExprDotEvalEnumMethodBase {
     public Class getResultType() {
         return Map.class;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }
 }

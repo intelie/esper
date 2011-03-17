@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO finish off
 public class TestEnumUnion extends TestCase {
 
     private EPServiceProvider epService;

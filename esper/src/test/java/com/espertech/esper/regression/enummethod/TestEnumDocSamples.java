@@ -4,6 +4,7 @@ import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.support.bean.lrreport.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -175,31 +176,46 @@ public class TestEnumDocSamples extends TestCase {
     }
 
     public void testExpressions() {
-        epService.getEPAdministrator().createEPL("select items.where(p => p.type = 'P') from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.where((p, ind) => p.type = 'P' and ind > 2) from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.assetId) as assets from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.allof(i => distance(i.location.x, i.location.y, 0, 0) < 1000) as assets from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.average(i => distance(i.location.x, i.location.y, 0, 0)) as avgdistance from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.countof(i => distance(i.location.x, i.location.y, 0, 0) < 20) as cntcenter from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.firstof(i => distance(i.location.x, i.location.y, 0, 0) < 20) as firstcenter from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.lastof(i => distance(i.location.x, i.location.y, 0, 0) < 20) as lastcenter from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.where(i => i.type='L').groupby(i => assetIdPassenger) as luggagePerPerson from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.groupby(k => assetId, v => distance(v.location.x, v.location.y, 0, 0)) as distancePerItem from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.min(i => distance(i.location.x, i.location.y, 0, 0)) as mincenter from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.max(i => distance(i.location.x, i.location.y, 0, 0)) as maxcenter from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.minBy(i => distance(i.location.x, i.location.y, 0, 0)) as minItemCenter from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.orderBy(i => distance(i.location.x, i.location.y, 0, 0)) as itemsOrderedByDist from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.selectFrom(i => assetId) as itemAssetIds from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.take(5) as first5Items, items.takeLast(5) as last5Items from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.toMap(k => k.assetId, v => distance(v.location.x, v.location.y, 0, 0)) as assetDistance from LocationReport");
-        epService.getEPAdministrator().createEPL("select items.where(i => i.assetId = 'L001').union(items.where(i => i.type = 'P')) as itemsUnion from LocationReport");
+        assertStmt("select items.firstof().assetId as firstcenter from LocationReport");
+        assertStmt("select items.where(p => p.type = \"P\") from LocationReport");
+        assertStmt("select items.where((p, ind) => p.type = \"P\" and ind > 2) from LocationReport");
+        assertStmt("select items.aggregate(\"\", (result, item) => result || (case when result = \"\" then \"\" else \",\" end) || item.assetId) as assets from LocationReport");
+        assertStmt("select items.allof(i => distance(i.location.x, i.location.y, 0, 0) < 1000) as assets from LocationReport");
+        assertStmt("select items.average(i => distance(i.location.x, i.location.y, 0, 0)) as avgdistance from LocationReport");
+        assertStmt("select items.countof(i => distance(i.location.x, i.location.y, 0, 0) < 20) as cntcenter from LocationReport");
+        assertStmt("select items.firstof(i => distance(i.location.x, i.location.y, 0, 0) < 20) as firstcenter from LocationReport");
+        assertStmt("select items.lastof().assetId as firstcenter from LocationReport");
+        assertStmt("select items.lastof(i => distance(i.location.x, i.location.y, 0, 0) < 20) as lastcenter from LocationReport");
+        assertStmt("select items.where(i => i.type = \"L\").groupby(i => assetIdPassenger) as luggagePerPerson from LocationReport");
+        assertStmt("select items.where((p, ind) => p.type = \"P\" and ind > 2) from LocationReport");
+        assertStmt("select items.groupby(k => assetId, v => distance(v.location.x, v.location.y, 0, 0)) as distancePerItem from LocationReport");
+        assertStmt("select items.min(i => distance(i.location.x, i.location.y, 0, 0)) as mincenter from LocationReport");
+        assertStmt("select items.max(i => distance(i.location.x, i.location.y, 0, 0)) as maxcenter from LocationReport");
+        assertStmt("select items.minBy(i => distance(i.location.x, i.location.y, 0, 0)) as minItemCenter from LocationReport");
+        assertStmt("select items.minBy(i => distance(i.location.x, i.location.y, 0, 0)).assetId as minItemCenter from LocationReport");
+        assertStmt("select items.orderBy(i => distance(i.location.x, i.location.y, 0, 0)) as itemsOrderedByDist from LocationReport");
+        assertStmt("select items.selectFrom(i => assetId) as itemAssetIds from LocationReport");
+        assertStmt("select items.take(5) as first5Items, items.takeLast(5) as last5Items from LocationReport");
+        assertStmt("select items.toMap(k => k.assetId, v => distance(v.location.x, v.location.y, 0, 0)) as assetDistance from LocationReport");
+        assertStmt("select items.where(i => i.assetId = \"L001\").union(items.where(i => i.type = \"P\")) as itemsUnion from LocationReport");
         
-        String epl = "expression myquery {itm =>\n" +
-                "  (select * from Zone.win:keepall()).where(z => inrect(z.rectangle, itm.location))\n" +
-                "}\n" +
-                "select assetId, myquery(item) as subq, myquery(item).where(z => z.name = 'Z01') as assetItem\n" +
+        String epl = "expression myquery {itm => " +
+                "((select * from Zone.win:keepall())).where(z => inrect(z.rectangle, itm.location))" +
+                "} " +
+                "select assetId, myquery(item) as subq, (myquery(item)).where(z => z.name = \"Z01\") as assetItem " +
                 "from Item as item";
-        epService.getEPAdministrator().createEPL(epl);
+        assertStmt(epl);
+    }
+
+    private void assertStmt(String epl) {
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.destroy();
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(epl);
+        assertEquals(epl, model.toEPL());
+
+        stmt = epService.getEPAdministrator().create(model);
+        assertEquals(epl, stmt.getText());
     }
 
     private Zone[] toArrayZones(Collection<Zone> it) {

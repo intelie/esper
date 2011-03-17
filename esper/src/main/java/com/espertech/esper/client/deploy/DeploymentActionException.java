@@ -21,7 +21,7 @@ public class DeploymentActionException extends DeploymentException {
      * @param exceptions that occured deploying
      */
     public DeploymentActionException(String message, List<DeploymentItemException> exceptions) {
-        super(message);
+        super(message, exceptions.isEmpty() ? null : exceptions.get(0));
         this.exceptions = exceptions;
     }
 

@@ -43,4 +43,8 @@ public class ExprDotEvalAggregate extends ExprDotEvalEnumMethodBase {
     public Class getResultType() {
         return resultType;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }
 }

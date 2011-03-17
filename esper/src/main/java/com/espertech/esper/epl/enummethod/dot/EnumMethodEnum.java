@@ -12,18 +12,18 @@ public enum EnumMethodEnum {
     TOMAP("toMap", EnumMethodReturnType.VALUE, ExprDotEvalToMap.class, EnumMethodEnumParams.MAP),
     GROUPBY("groupBy", EnumMethodReturnType.VALUE, ExprDotEvalGroupBy.class, EnumMethodEnumParams.GROUP),
 
-    COUNTOF("countOf", EnumMethodReturnType.VALUE, ExprDotEvalCountOf.class, EnumMethodEnumParams.EMPTY_PLUS_PRED_FP),
-    MIN("min", EnumMethodReturnType.VALUE, ExprDotEvalMin.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
-    MAX("max", EnumMethodReturnType.VALUE, ExprDotEvalMax.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
+    COUNTOF("countOf", EnumMethodReturnType.VALUE, ExprDotEvalCountOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL_OR_NONE),
+    MIN("min", EnumMethodReturnType.VALUE, ExprDotEvalMinMax.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
+    MAX("max", EnumMethodReturnType.VALUE, ExprDotEvalMinMax.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
     AVERAGE("average", EnumMethodReturnType.VALUE, ExprDotEvalAverage.class, EnumMethodEnumParams.SINGLE_PREDICATE_NUMERIC),
     SUMOF("sumOf", EnumMethodReturnType.VALUE, ExprDotEvalSumOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_NUMERIC),
 
     SELECTFROM("selectFrom", EnumMethodReturnType.ITERATOR_VALUE, ExprDotEvalSelectFrom.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
 
-    FIRST("firstOf", EnumMethodReturnType.BEAN, ExprDotEvalFirstOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL),
-    LAST("lastOf", EnumMethodReturnType.BEAN, ExprDotEvalLastOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL),
-    MINBY("minBy", EnumMethodReturnType.BEAN, ExprDotEvalMinBy.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
-    MAXBY("maxBy", EnumMethodReturnType.BEAN, ExprDotEvalMaxBy.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
+    FIRST("firstOf", EnumMethodReturnType.BEAN, ExprDotEvalFirstLastOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL_OR_NONE),
+    LAST("lastOf", EnumMethodReturnType.BEAN, ExprDotEvalFirstLastOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL_OR_NONE),
+    MINBY("minBy", EnumMethodReturnType.BEAN, ExprDotEvalMinByMaxBy.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
+    MAXBY("maxBy", EnumMethodReturnType.BEAN, ExprDotEvalMinByMaxBy.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
 
     TAKE("take", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalTake.class, EnumMethodEnumParams.SINGLE_NUMERIC_FP),
     TAKELAST("takeLast", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalTake.class, EnumMethodEnumParams.SINGLE_NUMERIC_FP),

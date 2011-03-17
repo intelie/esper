@@ -37,4 +37,8 @@ public class ExprDotEvalWhere extends ExprDotEvalEnumMethodBase {
     public Class getResultType() {
         return Collection.class;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }
 }

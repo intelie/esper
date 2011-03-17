@@ -29,4 +29,8 @@ public class ExprDotEvalTake extends ExprDotEvalEnumMethodBase {
     public Class getResultType() {
         return Collection.class;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }
 }

@@ -17,11 +17,13 @@ public class ExprChainedSpec implements Serializable
     
     private String name;
     private List<ExprNode> parameters;
+    private boolean property;
 
-    public ExprChainedSpec(String name, List<ExprNode> parameters)
+    public ExprChainedSpec(String name, List<ExprNode> parameters, boolean property)
     {
         this.name = name;
         this.parameters = parameters;
+        this.property = property;
     }
 
     public String getName()
@@ -32,6 +34,10 @@ public class ExprChainedSpec implements Serializable
     public List<ExprNode> getParameters()
     {
         return parameters;
+    }
+
+    public boolean isProperty() {
+        return property;
     }
 
     public void setParameters(List<ExprNode> parameters) {

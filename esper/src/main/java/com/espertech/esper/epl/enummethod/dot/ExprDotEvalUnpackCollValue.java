@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.enummethod.dot;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprDotEval;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
@@ -22,4 +23,8 @@ public class ExprDotEvalUnpackCollValue implements ExprDotEval {
     public Class getResultType() {
         return Collection.class;
     }
+
+    public EventType getResultEventType() {
+        return null;
+    }    
 }

@@ -853,14 +853,14 @@ public class MapEventType implements EventTypeSPI
             if (!setTwoTypeFound) {
                 return "The property '" + propName + "' is not provided but required";
             }
+            if (setTwoType == null)
+            {
+                continue;
+            }
             if (((setTwoType == null) && (setOneType != null)) ||
                  (setTwoType != null) && (setOneType == null))
             {
                 return "Type by name '" + otherName + "' in property '" + propName + "' incompatible with null-type or property name not found in target";
-            }
-            if (setTwoType == null)
-            {
-                continue;
             }
 
             if ((setTwoType instanceof Class) && (setOneType instanceof Class))

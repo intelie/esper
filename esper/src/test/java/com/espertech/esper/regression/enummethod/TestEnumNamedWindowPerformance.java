@@ -61,7 +61,7 @@ public class TestEnumNamedWindowPerformance extends TestCase {
         stmt.addListener(listener);
 
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 5000; i++) {
             epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID", "K50", 1050));
             EventBean event = listener.assertOneGetNewAndReset();
             for (int j = 0; j < 10; j++) {

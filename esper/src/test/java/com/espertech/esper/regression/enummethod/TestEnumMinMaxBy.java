@@ -28,26 +28,33 @@ public class TestEnumMinMaxBy extends TestCase {
 
     public void testMinMaxBy() {
 
-        String[] fields = "val0,val1".split(",");
+        String[] fields = "val0,val1,val2,val3".split(",");
         String eplFragment = "select " +
                 "contained.minBy(x => p00) as val0," +
-                "contained.maxBy(x => p00) as val1 " +
+                "contained.maxBy(x => p00) as val1," +
+                "contained.minBy(x => p00).id as val2," +
+                "contained.maxBy(x => p00).p00 as val3 " +
                 "from Bean";
         EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
         stmtFragment.addListener(listener);
-        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{SupportBean_ST0.class, SupportBean_ST0.class});
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{SupportBean_ST0.class, SupportBean_ST0.class, String.class, Integer.class});
 
         SupportBean_ST0_Container bean = SupportBean_ST0_Container.make2Value("E1,12", "E2,11", "E2,2");
         epService.getEPRuntime().sendEvent(bean);
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields,
-                new Object[]{bean.getContained().get(2), bean.getContained().get(0)});
+                new Object[]{bean.getContained().get(2), bean.getContained().get(0), "E2", 12});
+
+        bean = SupportBean_ST0_Container.make2Value("E1,12");
+        epService.getEPRuntime().sendEvent(bean);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields,
+                new Object[]{bean.getContained().get(0), bean.getContained().get(0), "E1", 12});
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value(null));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields,
-                new Object[]{null, null});
+                new Object[]{null, null, null, null});
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value());
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields,
-                new Object[]{null, null});
+                new Object[]{null, null, null, null});
     }
 }
