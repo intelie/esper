@@ -47,7 +47,11 @@ public class ExprPreviousEvalCount implements ExprPreviousEval
         return size;
     }
 
-    public Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
+    public Collection<EventBean> evaluateGetCollEvents(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
         return null;
     }
+
+    public Collection evaluateGetCollScalar(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
+        return null;
+    }    
 }

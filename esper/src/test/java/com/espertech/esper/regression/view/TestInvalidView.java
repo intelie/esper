@@ -123,11 +123,11 @@ public class TestInvalidView extends TestCase
 
         // class in method invocation not found
         exceptionText = getStatementExceptionView("select unknownClass.method() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting statement: Could not load class by name 'unknownClass', please check imports [select unknownClass.method() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting statement: Failed to resolve 'unknownClass' to a property or class name: Could not load class by name 'unknownClass', please check imports [select unknownClass.method() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
 
         // method not found
         exceptionText = getStatementExceptionView("select Math.unknownMethod() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting statement: Could not find static method named 'unknownMethod' in class 'java.lang.Math' taking no parameters [select Math.unknownMethod() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting statement: Failed to resolve 'Math' to a property or class name: Could not find static method named 'unknownMethod' in class 'java.lang.Math' taking no parameters [select Math.unknownMethod() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
 
         // invalid property in group-by
         exceptionText = getStatementExceptionView("select intPrimitive from " + EVENT_ALLTYPES + ".win:length(1) group by xxx");

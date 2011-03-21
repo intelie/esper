@@ -14,14 +14,15 @@ public class EnumEvalSelectFrom extends EnumEvalBase implements EnumEval {
         super(innerExpression, streamCountIncoming);
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
 
         if (target.isEmpty()) {
             return target;
         }
 
+        Collection<EventBean> beans = (Collection<EventBean>) target;
         Deque queue = new ArrayDeque();
-        for (EventBean next : target) {
+        for (EventBean next : beans) {
             eventsLambda[streamNumLambda] = next;
 
             Object item = innerExpression.evaluate(eventsLambda, isNewData, context);

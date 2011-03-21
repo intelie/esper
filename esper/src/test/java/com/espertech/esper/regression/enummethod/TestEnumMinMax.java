@@ -1,10 +1,8 @@
 package com.espertech.esper.regression.enummethod;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -22,12 +20,13 @@ public class TestEnumMinMax extends TestCase {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Bean", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    public void testMinMax() {
+    public void testMinMaxEvents() {
 
         String[] fields = "val0,val1".split(",");
         String eplFragment = "select " +
@@ -49,5 +48,50 @@ public class TestEnumMinMax extends TestCase {
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value());
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null, null});
+    }
+
+    public void testMinMaxScalar() {
+
+        String[] fields = "val0,val1".split(",");
+        String eplFragment = "select " +
+                "strvals.min() as val0, " +
+                "strvals.max() as val1 " +
+                "from SupportCollection";
+        EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{String.class, String.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E2,E1,E5,E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{"E1", "E5"});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{"E1", "E1"});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null, null});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null, null});
+    }
+
+    public void testInvalid() {
+        String epl;
+
+        epl = "select strvals.min(x=> x) from SupportCollection";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'min' and 1-parameter footprint, expecting collection of events as input, received collection of String [select strvals.min(x=> x) from SupportCollection]");
+
+        epl = "select contained.min() from Bean";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collecton of events of type 'com.espertech.esper.support.bean.SupportBean_ST0' [select contained.min() from Bean]");
+    }
+
+    private void tryInvalid(String epl, String message) {
+        try
+        {
+            epService.getEPAdministrator().createEPL(epl);
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals(message, ex.getMessage());
+        }
     }
 }

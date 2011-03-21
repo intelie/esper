@@ -52,7 +52,7 @@ public class ExprDotEvalStaticMethod implements ExprEvaluator
             return staticMethod.getReturnType();
         }
         else {
-            return chainEval[chainEval.length - 1].getResultType();
+            return chainEval[chainEval.length - 1].getTypeInfo().getScalar();
         }
     }
 

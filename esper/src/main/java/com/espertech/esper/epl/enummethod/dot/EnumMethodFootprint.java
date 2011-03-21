@@ -4,10 +4,16 @@ import java.io.StringWriter;
 
 public class EnumMethodFootprint {
 
+    private final EnumMethodInputEnum input;
     private final EnumMethodParam[] params;
 
-    public EnumMethodFootprint(EnumMethodParam... params) {
+    public EnumMethodFootprint(EnumMethodInputEnum input, EnumMethodParam... params) {
+        this.input = input;
         this.params = params;
+    }
+
+    public EnumMethodInputEnum getInput() {
+        return input;
     }
 
     public EnumMethodParam[] getParams() {

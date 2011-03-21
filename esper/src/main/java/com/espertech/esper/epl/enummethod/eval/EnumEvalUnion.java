@@ -1,7 +1,6 @@
 package com.espertech.esper.epl.enummethod.eval;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 
@@ -12,23 +11,32 @@ public class EnumEvalUnion implements EnumEval {
 
     private final EventBean[] events;
     private final ExprEvaluatorEnumeration evaluator;
+    private final boolean scalar;
 
-    public EnumEvalUnion(int numStreams, ExprEvaluatorEnumeration evaluator) {
+    public EnumEvalUnion(int numStreams, ExprEvaluatorEnumeration evaluator, boolean scalar) {
         this.events = new EventBean[numStreams];
         this.evaluator = evaluator;
+        this.scalar = scalar;
     }
 
     public EventBean[] getEventsPrototype() {
         return events;
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
         if (target == null) {
             return null;
         }
 
-        Collection<EventBean> set = evaluator.evaluateGetROCollection(events, isNewData, context);
-        if (set == null && set.isEmpty()) {
+        Collection set;
+        if (scalar) {
+            set = evaluator.evaluateGetROCollectionScalar(events, isNewData, context);
+        }
+        else {
+            set = evaluator.evaluateGetROCollectionEvents(events, isNewData, context);
+        }
+        
+        if (set == null || set.isEmpty()) {
             return target;
         }
 

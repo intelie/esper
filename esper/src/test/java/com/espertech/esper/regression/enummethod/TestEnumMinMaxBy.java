@@ -1,11 +1,9 @@
 package com.espertech.esper.regression.enummethod;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean_ST0;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -21,6 +19,7 @@ public class TestEnumMinMaxBy extends TestCase {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Bean", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
@@ -56,5 +55,23 @@ public class TestEnumMinMaxBy extends TestCase {
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value());
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields,
                 new Object[]{null, null, null, null});
+    }
+
+    public void testInvalid() {
+        String epl;
+
+        epl = "select strvals.minby(x => x != 'E1') from SupportCollection";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'minby' and 1-parameter footprint, expecting collection of events as input, received collection of String [select strvals.minby(x => x != 'E1') from SupportCollection]");
+    }
+
+    private void tryInvalid(String epl, String message) {
+        try
+        {
+            epService.getEPAdministrator().createEPL(epl);
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals(message, ex.getMessage());
+        }
     }
 }

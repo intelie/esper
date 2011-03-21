@@ -6,20 +6,24 @@
 		<indexterm><primary>lambda</primary><secondary>built-in expressions</secondary></indexterm>
 		
 		<para>
-			Esper provides built-in enumeration methods that work with lambda expressions to perform common tasks on subquery results, named windows, event properties or other sources of data that are or can be projected to a collection of events.
+			Esper provides built-in enumeration methods that work with lambda expressions to perform common tasks on subquery results, named windows, event properties or inputs that are or can be projected to a collection of events, scalar values or objects.
 		</para>
 
 		<para>
-			A lambda expression is an anonymous expression.  Lambda expressions are useful for encapsulating user-defined expressions that are applied to each element in a set of source data. This section discusses built-in enumeration methods and their lambda expression parameters.
+			A lambda expression is an anonymous expression.  Lambda expressions are useful for encapsulating user-defined expressions that are applied to each element in a collection. This section discusses built-in enumeration methods and their lambda expression parameters.
 		</para>
 		
 		<para>
-			All lambda expressions use the lambda operator <literal>=&gt;</literal>, which is read as "goes to". The left side of the lambda operator specifies the lambda expression input parameter(s) (if any) and the right side holds the expression. The lambda expression x => x * x is read "x goes to x times x.". 
+			Lambda expressions use the lambda operator <literal>=&gt;</literal>, which is read as "goes to". The left side of the lambda operator specifies the lambda expression input parameter(s) (if any) and the right side holds the expression. The lambda expression x => x * x is read "x goes to x times x.". 
 			Lambda expressions are also used for expression declaration as discussed in <xref linkend="epl-syntax-expression-decl"/>.
 		</para>
 		
 		<para>
-			When writing lambdas, you do not have to specify a type for the input parameter(s) or output result(s) because the engine can infer all types based on the source of data and the expression body. So if you are querying an RFIDEvent, for example, then the input variable is inferred to be an RFIDEvent event, which means you have access to its properties and methods.
+			When writing lambdas, you do not have to specify a type for the input parameter(s) or output result(s) because the engine can infer all types based on the input and the expression body. So if you are querying an RFIDEvent, for example, then the input variable is inferred to be an RFIDEvent event, which means you have access to its properties and methods.
+		</para>
+	
+		<para>
+			The term <emphasis>element</emphasis> in respect to enumeration methods means a single event, scalar value or object in a collection that is the input to an enumeraton method. The term <emphasis>collection</emphasis> means a sequence or group of elements.
 		</para>
 		
 		<para>
@@ -68,6 +72,17 @@
 							</para>
 							<para>
 								<xref linkend="enumeration-method-anyof"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>average()</entry>
+						<entry>
+							<para>
+								Computes the average of values obtained from numeric elements.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-average"/>.
 							</para>
 						</entry>
 					</row>
@@ -171,6 +186,17 @@
 						</entry>
 					</row>
 					<row>
+						<entry>max()</entry>
+						<entry>
+							<para>
+								Returns the maximum value among a collection of numeric elements.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-max"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>max(value-selector lambda)</entry>
 						<entry>
 							<para>
@@ -189,6 +215,17 @@
 							</para>
 							<para>
 								<xref linkend="enumeration-method-maxby"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>min()</entry>
+						<entry>
+							<para>
+								Returns the minimum value among a collection of numeric elements.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-max"/>.
 							</para>
 						</entry>
 					</row>
@@ -215,10 +252,32 @@
 						</entry>
 					</row>
 					<row>
+						<entry>orderBy()</entry>
+						<entry>
+							<para>
+								Sorts the elements in ascending order.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-orderby"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>orderBy(key-selector lambda)</entry>
 						<entry>
 							<para>
 								Sorts the elements in ascending order according to a key.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-orderby"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>orderByDesc()</entry>
+						<entry>
+							<para>
+								Sorts the elements in descending order.
 							</para>
 							<para>
 								<xref linkend="enumeration-method-orderby"/>.
@@ -252,6 +311,17 @@
 						<entry>
 							<para>
 								Transforms each element resulting in a collection of transformed elements.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-selectfrom"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>sumOf()</entry>
+						<entry>
+							<para>
+								Computes the sum from a collection of numeric elements.
 							</para>
 							<para>
 								<xref linkend="enumeration-method-selectfrom"/>.
@@ -421,10 +491,10 @@
 			The <literal>Item</literal> event is defined as follows (access methods not shown for brevity):
 		</para>
 		<programlisting><![CDATA[public class Item {
-  String assetId;                        // passenger or luggage asset id
-  Location location;                  // (x,y) location
-  boolean luggage;                  // true if this item is a luggage piece
-  String assetIdPassenger;   // if the item is luggage, contains passenger associated
+  String assetId;             // passenger or luggage asset id
+  Location location;          // (x,y) location
+  boolean luggage;            // true if this item is a luggage piece
+  String assetIdPassenger;    // if the item is luggage, contains passenger associated
 ...]]></programlisting>
 
 		<para>
@@ -476,25 +546,25 @@
 			<para>
 				The syntax for enumeration methods is the same syntax as for any chained invocation:
 			</para>
-			<synopsis><emphasis>source</emphasis>.<emphasis>enum-method-name</emphasis>( [<emphasis>method_parameter</emphasis> [, <emphasis>method_parameter</emphasis> [,...]]])
-	  .[ [<emphasis>enum-method-name</emphasis>(...) [...]] | <emphasis>property_name</emphasis>] </synopsis>
+			<synopsis><emphasis>input_coll</emphasis>.<emphasis>enum_method)name</emphasis>( [<emphasis>method_parameter</emphasis> [, <emphasis>method_parameter</emphasis> [,...]]])
+	  .[ [<emphasis>enum_method_name</emphasis>(...) [...]] | <emphasis>property_name</emphasis>] </synopsis>
 	
 			<para>
-				Following the source (options outlined below), is the <literal>.</literal> (dot) operator and the <emphasis>enum-method-name</emphasis> enumeration method name. It follows in parenthesis a comma-separated list of method parameter expressions. Additional enumeration methods can be chained thereafter. An event property name can follow for those enumeration methods returning an element.
+				Following the <emphasis>input_coll</emphasis> input collection (options outlined below), is the <literal>.</literal> (dot) operator and the <emphasis>enum_method_name</emphasis> enumeration method name. It follows in parenthesis a comma-separated list of method parameter expressions. Additional enumeration methods can be chained thereafter. An event property name can follow for those enumeration methods returning an event-typed (non-scalar) element.
 			</para>
 			
 			<para>
-				If the method parameter is a lambda expression that itself has a single lambda-parameter, specify the lambda-parameter name followed by the <literal>=&gt;</literal> lambda operator and followed by the expression. The synopsis for use with a single lambda-parameter is:
+				If the method parameter is a lambda expression with a single lambda-parameter, specify the lambda-parameter name followed by the <literal>=&gt;</literal> lambda operator and followed by the expression. The synopsis for use with a single lambda-parameter is:
 			</para>
 			<synopsis>method_parameter: <emphasis>lamda_param</emphasis> =&gt; <emphasis>lamda_expression</emphasis></synopsis>
 	
 			<para>
-				If the method parameter is a lambda expression that itself has a two or more lambda-parameters, specify the lambda parameter names in parenthesis followed by the => lambda operator followed by the expression. The synopsis for use with multiple lambda-parameters is:
+				If the method parameter is a lambda expression with two or more lambda-parameters, specify the lambda parameter names in parenthesis followed by the => lambda operator followed by the expression. The synopsis for use with multiple lambda-parameters is:
 			</para>
 			<synopsis>method_parameter: (<emphasis>lamda_param</emphasis> [,<emphasis>lamda_param</emphasis> [,...]]) => <emphasis>lamda_expression</emphasis></synopsis>
 		
 			<para>
-				Generally for lambda expressions, the engine applies the lambda expression to each element in the source. The expression yields a result that, depending on the particular enumeration method, is used for aggregation, as a filter or for output, for example.
+				Generally for lambda expressions, the engine applies the lambda expression to each element in the input collection. The expression yields a result that, depending on the particular enumeration method, is used for aggregation, as a filter or for output, for example.
 			</para>
 		</sect2>
 	
@@ -535,10 +605,15 @@ from LocationReport]]></programlisting>
 			<para>
 				It is not necessary to use classes for event representation. The example above applies the same to Map or XML underlying events.
 			</para>		
+			
+			<para>
+			   For most enumeration methods the input can be any collection of events, scalar values or objects. For some enumeration methods limitations apply that are documented below. For example, the <literal>sumOf</literal> enumeration method requires a collection of numeric scalar values if used without parameters.
+			   If the input to <literal>sumOf</literal> is a collection of events the enumeration method requires a lambda expression as parameter that yields the numeric value to use to compute the sum.
+			</para>
 	
 			<para>
-				The source of elements in most examples of this section in is the event property <literal>items</literal> provided by the <literal>LocationReport</literal> event class. 
-				There are many other sources for elements are listed below. Most examples herein use an event property as a source simply because the example can thus be brief and does not need to refer to a subquery or named window or other concept.
+				Many examples of this section operate on the collection returned by the event property <literal>items</literal> in the <literal>LocationReport</literal> event class. 
+				There are many other inputs yielding collections as listed below. Most examples herein use an event property as a input simply because the example can thus be brief and does not need to refer to a subquery or named window or other concept.
 			</para>
 			
 			<para>
@@ -546,7 +621,11 @@ from LocationReport]]></programlisting>
 			</para>
 			
 			<para>
-				For enumeration methods that returns an element, for example <literal>firstOf</literal>, <literal>lastOf</literal>, <literal>minBy</literal> and <literal>maxBy</literal> the engine outputs the underlying event. You may add an event property name after the enumeration method to return a property value.
+				For enumeration methods that return an element, for example <literal>firstOf</literal>, <literal>lastOf</literal>, <literal>minBy</literal> and <literal>maxBy</literal> the engine outputs the scalar value or the underlying event if operating on events. You may add an event property name after the enumeration method to return a property value.
+			</para>
+			
+			<para>
+				Enumeration methods generally retain the order of elements provided by the collection.
 			</para>
 
 			<para>
@@ -554,11 +633,6 @@ from LocationReport]]></programlisting>
 			</para>
 		
 			<orderedlist spacing="compact">
-				<listitem>
-					<para>
-						The source for enumeration method must be one of he sources discussed below, yielding a collection of events or a projection to a collection of events. A collection of atomic or primitive values is not a valid source for enumeration methods.
-					</para>
-				</listitem>
 				<listitem>
 					<para>
 						Enumeration methods returning a collection return a read-only implementation of the <literal>Collection</literal> interface. You may not use any of the write-methods such as <literal>add</literal> or <literal>remove</literal> on a result collection.
@@ -569,11 +643,11 @@ from LocationReport]]></programlisting>
 		
 	</sect1>
 
-	<sect1 id="enumeration-sources">
-		<title>Data Sources</title>
+	<sect1 id="enumeration-inputs">
+		<title>Inputs</title>
 		
 		<para>
-			The source of data for built-in enumeration methods and their lambda expressions can be any of the following:
+			The input of data for built-in enumeration methods is a collection of scalar values, events or other objects. Input can originate from any of the following:
 		</para>
 		
 		<orderedlist spacing="compact">
@@ -620,21 +694,21 @@ from LocationReport]]></programlisting>
 		</orderedlist>
 		
 		<sect2 id="enumeration-ds-subquery">
-			<title>Subquery Results and Enumeration Methods</title>
+			<title>Subquery Results</title>
 			
 			<para>
 				Subqueries can return the rows of another stream's data window or rows from a named window. By providing a where-clause the rows returned by a subquery can be correlated to data provided by stream(s) in the from-clause. See <xref linkend="epl-subqueries"/>.
 			</para>
 			
 			<para>
-				The subquery must select <literal>(*)</literal> wildcard for use with enumeration methods.
+				A subquery that selects <literal>(*)</literal> wildcard provides a collection of events as input. A subquery that selects a single value expression provides a collection of scalar values as input. Subqueries that selects multiple value expressions are not allowed as input to enumeration methods.
 			</para>
 
 			<para>
 				The following example uses a subquery to retrieve all zones for each location report item where the location falls within the rectangle of the zone. Please see a description of example events and functions above.
 			</para>
 			<programlisting><![CDATA[select assetId,
-  (select * from Zone.win:keepall()).where(z => inrect(z.rectangle, location)) as zones
+  (select * from Zone.std:unique(name)).where(z => inrect(z.rectangle, location)) as zones
 from Item]]></programlisting>
 
 			<para>
@@ -645,7 +719,7 @@ from Item]]></programlisting>
 				This sample EPL declares the same query as above in an expression declaration:
 			</para>
 			<programlisting><![CDATA[expression myquery {itm =>
-  (select * from Zone.win:keepall()).where(z => inrect(z.rectangle, itm.location))
+  (select * from Zone.std:unique(name)).where(z => inrect(z.rectangle, itm.location))
 }
 select assetId, myquery(item) as subq, 
     myquery(item).where(z => z.zone = 'Z01') as assetItem
@@ -656,19 +730,29 @@ from Item as item]]></programlisting>
 			</para>
 			
 			<para>
+				Place a single column in the subquery select-clause to provide a collection of scalar values as input.
+			</para>
+			
+			<para>
+				The next example selects all names of zones and orders the names returning an order collection of string names every 30 seconds:
+			</para>
+			<programlisting><![CDATA[select (select name from Zone.std:unique(name)).orderBy() as orderedZones
+from pattern[every timer:interval(30)]]]></programlisting>
+
+			<para>
 				Note that the engine can cache intermediate results thereby is not forced to re-evaluate the subquery for each occurrence in the <literal>select</literal>-clause.
 			</para>
 		</sect2>
 
 		<sect2 id="enumeration-ds-namedwindow">
-			<title>Named Window and Enumeration Methods</title>
+			<title>Named Window</title>
 			
 			<para>
 				Named windows are globally-visible data windows. See <xref linkend="named_overview"/>.
 			</para>
 			
 			<para>
-				You may specify the named window name as a source for an enumeration method and can optionally provide a correlation where-clause. The syntax is equivalent to a sub-query against a named window but much shorter.
+				You may specify the named window name as input for an enumeration method and can optionally provide a correlation where-clause. The syntax is equivalent to a sub-query against a named window but much shorter.
 			</para>
 
 			<para>
@@ -712,14 +796,14 @@ from Item]]></programlisting>
 		</sect2>
 
 		<sect2 id="enumeration-ds-property">
-			<title>Event Property and Enumeration Methods</title>
+			<title>Event Property</title>
 			
 			<para>
-				Indexed event properties are properties that are a collection, array or iterator of objects or events.
+				Indexed event properties are event properties that are a collection, array or iterable of scalar values or objects. 
 			</para>
 			
 			<para>
-				The <literal>LocationReport</literal> event from the example contains a list of <literal>Item</literal> events. Such an indexed property is eligible for direct use as a data source. 
+				The <literal>LocationReport</literal> event from the example contains a list of <literal>Item</literal> events. Any indexed property (list, array, collection, iterable) is eligible for use as input  to an enumeration method. If the indexed property contains non-scalar objects the objects are treated as events and can be used as input to enumeration methods as a collection of events.
 			</para>
 			
 			<para>
@@ -727,17 +811,23 @@ from Item]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select items.where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems
 from LocationReport]]></programlisting>			
+
+			<para>
+			   The following example consists of two statements: The first statement declares an a new event type and the second statement invokes the <literal>sequenceEqual</literal> method to compare sequences contained in two properties of the same event:
+			</para>
+			<programlisting><![CDATA[create schema MyEvent (seqone String[], seqtwo String[])]]></programlisting>			
+			<programlisting><![CDATA[select seqone.sequenceEquals(seqtwo) from MyEvent]]></programlisting>			
 		</sect2>
 
 		<sect2 id="enumeration-ds-accessagg">
-			<title>Data Window Aggregation and Enumeration Methods</title>
+			<title>Data Window Aggregation</title>
 			
 			<para>
 				Data window aggregation functions return events present in a stream's current data window. They are aggregation functions and as such sensitive to the presence of <literal>group by</literal>. See <xref linkend="epl-function-aggregation-dwtrack"/>.
 			</para>
 			
 			<para>
-				When using data window aggregation functions as source to a built-in enumeration method you must specify the <literal>*</literal> wildcard. Use any of the <literal>window</literal>, <literal>first</literal> or <literal>last</literal> functions.
+				When using data window aggregation functions as input to a built-in enumeration method you can specify the <literal>*</literal> wildcard to provide a collection of events as input. Or you can specify a property name in the data window aggregation function to provide a collection of scala values as input. Use any of the <literal>window</literal>, <literal>first</literal> or <literal>last</literal> functions.
 			</para>
 			
 			<para>
@@ -751,17 +841,23 @@ from LocationReport]]></programlisting>
 			<programlisting><![CDATA[select window(*).where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems
 from Item(type='P').win:time(10) group by assetId]]></programlisting>
 			
+			<para>
+				The next sample query instead selects the asset id property of all events and returns an ordered collection:
+			</para>
+			<programlisting><![CDATA[select window(assetId).orderBy() as orderedAssetIds
+from Item.win:time(10) group by assetId]]></programlisting>
+
 		</sect2>
 
 		<sect2 id="enumeration-ds-prev">
-			<title><literal>prev</literal>, <literal>prevwindow</literal> and <literal>prevtail</literal> Single-Row Functions and Enumeration Methods</title>
+			<title><literal>prev</literal>, <literal>prevwindow</literal> and <literal>prevtail</literal> Single-Row Functions as Input</title>
 			
 			<para>
 				The <literal>prev</literal>, <literal>prevwindow</literal> and <literal>prevtail</literal> single-row functions allow access into a stream's data window however are not aggregation functions and and as such not sensitive to the presence of <literal>group by</literal>. See <xref linkend="epl-single-row-function-ref-previouswindow"/>.
 			</para>
 			
 			<para>
-				When using any of the <literal>prev</literal> single-row functions as source to a built-in enumeration method you must specify the stream name as a parameter to the function, and may not specify an event property.
+				When using any of the <literal>prev</literal> single-row functions as input to a built-in enumeration method you can specify the stream name as a parameter to the function or an event property. The input to the enumeration method is a collection of events if you specify the stream name, or a collection of scalar value if you specify an event property.
 			</para>
 			
 			<para>
@@ -775,13 +871,19 @@ from Item(type='P').win:time(10) group by assetId]]></programlisting>
 			<programlisting><![CDATA[select prevwindow(items)
     .where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems
 from Item(type='P').win:time(10) as items]]></programlisting>
+
+			<para>
+				This sample query demonstrates the use of the <literal>prevwindow</literal> function to return a collection of scalar values (collection of asset id) as input to <literal>orderby</literal>:
+			</para>
+			<programlisting><![CDATA[select prevwindow(assetId).orderBy() as orderedAssetIds
+from Item.win:time(10) as items]]></programlisting>
 		</sect2>
                 
 		<sect2 id="enumeration-ds-udf">
-			<title>Single-Row Function or UDF and Enumeration Methods</title>
+			<title>Single-Row Function or UDF</title>
 			
 			<para>
-				Your single-row or user-defined function can return either an array or any collection that implements the <literal>Iterable</literal> interface. For arrays, the array component type and for collections, the iterable generic type should be the class providing event properties.
+				Your single-row or user-defined function can return either an array or any collection that implements either the <literal>Collection</literal> or <literal>Iterable</literal> interface. For arrays, the array component type and for collections, the collection or iterable generic type should be the class providing event properties.
 			</para>
 
 			<para>
@@ -810,13 +912,30 @@ from Item as item]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select getZones().where(z => inrect(z.rectangle, item.location)) as zones
 from Item as item]]></programlisting>			
+
+			<para>
+				Your single-row or user-defined function can also return an array, collection or iterable or scalar values.
+			</para>
+
+			<para>
+				For example, the static method <literal>getZoneNames()</literal> returns a list of zone names:
+			</para>
+			<programlisting><![CDATA[public static String[] getZoneNames() { 
+  return new String[] { "Z1", "Z2"};
+}]]></programlisting>
+
+			<para>
+				The following query returns zone names every 30 seconds and excludes zone Z1:
+			</para>
+			<programlisting><![CDATA[select getZoneNames().where(z => z != "Z1")
+from pattern[every timer:interval(30)]]]></programlisting>			
 		</sect2>
 
 		<sect2 id="enumeration-ds-lambda">
-			<title>Declared Expression and Enumeration Methods</title>
+			<title>Declared Expression</title>
 			
 			<para>
-				A declared expression may return source data for an enumeration method.
+				A declared expression may return input data for an enumeration method.
 			</para>
 
 			<para>
@@ -895,7 +1014,7 @@ select lostLuggage(lr) as val1, nearestOwner(lr) as val2 from LocationReport lr]
 			</para>
 			
 			<para>
-				Via the <literal>aggregate</literal> method you may perform a calculation over elements. The method initializes the aggregated value by evaluating the expression provided in the first parameter. The method then calls the lambda expression of the second parameter once for each element in the source. The lambda expression receives the last aggregated value and the element from the source. The result of the expression replaces the previous aggregated value and returns the final result after completing all elements.
+				Via the <literal>aggregate</literal> method you may perform a calculation over elements. The method initializes the aggregated value by evaluating the expression provided in the first parameter. The method then calls the lambda expression of the second parameter once for each element in the input. The lambda expression receives the last aggregated value and the element from the input. The result of the expression replaces the previous aggregated value and returns the final result after completing all elements.
 			</para>
 
 			<para>
@@ -922,7 +1041,7 @@ from LocationReport</programlisting>
 			</para>
 
 			<para>
-				The type value returned by the initialization expression must match to the type of value returned by the accumulator lambda expression.
+				The type value returned by the initialization expression must match to the type of value returned by the accumulator lambda expression. 
 			</para>
 
 			<para>
@@ -1372,7 +1491,7 @@ from LocationReport</programlisting>
 from LocationReport</programlisting>
 				
 			<para>
-				The second version of the <literal>where</literal> represents the index of the source element starting at zero for the first element.
+				The second version of the <literal>where</literal> represents the index of the input element starting at zero for the first element.
 			</para>				
 			
 			<para>
@@ -1404,7 +1523,7 @@ from LocationReport</programlisting>
 from LocationReport</programlisting>
 				
 			<para>
-				The second version provides the index of the source element starting at zero for the last element (reverse index).
+				The second version provides the index of the input element starting at zero for the last element (reverse index).
 			</para>				
 			
 			<para>
@@ -1444,11 +1563,11 @@ from LocationReport</programlisting>
 			<title>Union</title>
 
 			<para>
-				The <literal>union</literal> enumeration method forms a union of the input elements with source elements.
+				The <literal>union</literal> enumeration method forms a union of the input elements with the elements that the parameter expression yields.
 			</para>
 
 			<para>
-				The enumeration method takes a single parameter that must itself return a collection of events (source). It appends the collection to the input elements and returns the appended collection of elements.
+				The enumeration method takes a single parameter that must itself return a collection of events (input). It appends the collection to the input elements and returns the appended collection of elements.
 			</para>
 
 			<para>
@@ -1480,7 +1599,7 @@ from LocationReport</programlisting>
 			<programlisting>select items.where(p => p.type = 'P') from LocationReport</programlisting>
 				
 			<para>
-				The second version of the <literal>where</literal> represents the index of the source element starting at zero for the first element.
+				The second version of the <literal>where</literal> represents the index of the input element starting at zero for the first element.
 			</para>				
 			
 			<para>

@@ -79,14 +79,14 @@ public class ExprSubselectRowNode extends ExprSubselectNode
     {
     }
 
-    public Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext context) {
+    public Collection<EventBean> evaluateGetCollEvents(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext context) {
         if (matchingEvents == null)
         {
             return null;
         }
         if (matchingEvents.size() == 0)
         {
-            return null;
+            return Collections.emptyList();
         }
 
         if (filterExpr == null && selectClause == null) {
@@ -94,11 +94,11 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         }
 
         // Evaluate filter
-        EventBean[] events = new EventBean[eventsPerStream.length + 1];
-        System.arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
-
         if (filterExpr != null)
         {
+            EventBean[] events = new EventBean[eventsPerStream.length + 1];
+            System.arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
+
             ArrayDeque<EventBean> filtered = new ArrayDeque<EventBean>();
             for (EventBean subselectEvent : matchingEvents)
             {
@@ -121,7 +121,49 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         return null;    // should not get here, as there is no event type returned when there is a select-clause
     }
 
-    public EventType getEventTypeIterator() throws ExprValidationException {
+    public Collection evaluateGetCollScalar(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext context) {
+        if (matchingEvents == null)
+        {
+            return null;
+        }
+        if (matchingEvents.size() == 0)
+        {
+            return Collections.emptyList();
+        }
+        if (selectClauseEvaluator == null || selectClauseEvaluator.length < 1) {
+            return null;
+        }
+
+        List result = new ArrayList();
+        EventBean[] events = new EventBean[eventsPerStream.length + 1];
+        System.arraycopy(eventsPerStream, 0, events, 1, eventsPerStream.length);
+        if (filterExpr != null)
+        {
+            for (EventBean subselectEvent : matchingEvents)
+            {
+                // Prepare filter expression event list
+                events[0] = subselectEvent;
+
+                Boolean pass = (Boolean) filterExpr.evaluate(events, true, context);
+                if ((pass != null) && (pass))
+                {
+                    result.add(selectClauseEvaluator[0].evaluate(events, isNewData, context));
+                }
+            }
+        }
+        else {
+            for (EventBean subselectEvent : matchingEvents)
+            {
+                // Prepare filter expression event list
+                events[0] = subselectEvent;
+                result.add(selectClauseEvaluator[0].evaluate(events, isNewData, context));
+            }
+        }
+
+        return result;
+    }
+
+    public EventType getEventTypeCollection() throws ExprValidationException {
         if (selectClause == null)   // wildcards allowed
         {
             return rawEventType;
@@ -129,6 +171,17 @@ public class ExprSubselectRowNode extends ExprSubselectNode
 
         // only if selecting wildcard do we allow lambda functions
         return null;
+    }
+
+    public Class getComponentTypeCollection() throws ExprValidationException {
+        if (selectClause == null)   // wildcards allowed
+        {
+            return null;
+        }
+        if (selectClauseEvaluator.length > 1) {
+            return null;
+        }
+        return selectClauseEvaluator[0].getType();
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)

@@ -155,16 +155,29 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
         return false;
     }
 
-    public Collection<EventBean> evaluateGetROCollection(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+    public Collection<EventBean> evaluateGetROCollectionEvents(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
         if (!isNewData) {
             return null;
         }
-
-        return evaluator.evaluateGetColl(eventsPerStream, context);
+        return evaluator.evaluateGetCollEvents(eventsPerStream, context);
     }
 
-    public EventType getEventTypeIterator() throws ExprValidationException {
+    public Collection evaluateGetROCollectionScalar(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        if (!isNewData) {
+            return null;
+        }
+        return evaluator.evaluateGetCollScalar(eventsPerStream, context);
+    }
+
+    public EventType getEventTypeCollection() throws ExprValidationException {
         return enumerationMethodType;
+    }
+
+    public Class getComponentTypeCollection() throws ExprValidationException {
+        if (resultType.isArray()) {
+            return resultType.getComponentType();
+        }
+        return resultType;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

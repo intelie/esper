@@ -8,5 +8,5 @@ import java.util.Collection;
 public interface EnumEval {
 
     public EventBean[] getEventsPrototype();
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context);
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context);
 }

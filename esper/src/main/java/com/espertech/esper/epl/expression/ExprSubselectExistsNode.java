@@ -89,15 +89,22 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
         return false;
     }
 
-    public Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext context) {
+    public Collection<EventBean> evaluateGetCollEvents(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext context) {
         return null;
     }
 
-    public EventType getEventTypeIterator() {
+    public EventType getEventTypeCollection() {
         return null;
     }
 
-    @Override
+    public Class getComponentTypeCollection() throws ExprValidationException {
+        return null;
+    }
+
+    public Collection evaluateGetCollScalar(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
+        return null;
+    }
+
     public boolean isAllowMultiColumnSelect() {
         return false;
     }    

@@ -12,8 +12,9 @@ public class EnumEvalFirstOf extends EnumEvalBase implements EnumEval {
         super(innerExpression, streamCountIncoming);
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
-        for (EventBean next : target) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
+        Collection<EventBean> beans = (Collection<EventBean>) target;
+        for (EventBean next : beans) {
             eventsLambda[streamNumLambda] = next;
 
             Object pass = innerExpression.evaluate(eventsLambda, isNewData, context);

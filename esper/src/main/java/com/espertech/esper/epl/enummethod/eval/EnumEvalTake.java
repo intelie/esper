@@ -22,7 +22,7 @@ public class EnumEvalTake implements EnumEval {
         return events;
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
 
         Object sizeObj = sizeEval.evaluate(events, isNewData, context);
         if (sizeObj == null) {
@@ -47,7 +47,7 @@ public class EnumEvalTake implements EnumEval {
         }
 
         ArrayList<Object> result = new ArrayList<Object>(size);
-        for (EventBean next : target) {
+        for (Object next : target) {
             if (result.size() >= size) {
                 break;
             }

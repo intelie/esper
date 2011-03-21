@@ -98,11 +98,19 @@ public class ExprSubselectAllSomeAnyNode extends ExprSubselectNode
         return evalStrategy.evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
     }
 
-    public Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext context) {
+    public Collection<EventBean> evaluateGetCollEvents(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext context) {
         return null;
     }
 
-    public EventType getEventTypeIterator() {
+    public Collection evaluateGetCollScalar(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
+        return null;
+    }
+
+    public EventType getEventTypeCollection() {
+        return null;
+    }
+
+    public Class getComponentTypeCollection() throws ExprValidationException {
         return null;
     }
 

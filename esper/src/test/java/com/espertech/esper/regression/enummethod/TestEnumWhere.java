@@ -5,8 +5,10 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
@@ -21,12 +23,13 @@ public class TestEnumWhere extends TestCase {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Bean", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    public void testWhere() {
+    public void testWhereEvents() {
 
         String epl = "select " +
                 "contained.where(x => p00 = 9) as val0," +
@@ -58,6 +61,47 @@ public class TestEnumWhere extends TestCase {
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value());
         LambdaAssertionUtil.assertST0Id(listener, "val0", "");
         LambdaAssertionUtil.assertST0Id(listener, "val1", "");
+        listener.reset();
+    }
+
+    public void testWhereString() {
+
+        String[] fields = "val0,val1".split(",");
+        String eplFragment = "select " +
+                "strvals.where(x => x not like '%1%') as val0, " +
+                "strvals.where((x, i) => x not like '%1%' and i > 1) as val1 " +
+                "from SupportCollection";
+        EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Collection.class, Collection.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2,E3"));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E2", "E3");
+        LambdaAssertionUtil.assertValues(listener, "val1", "E3");
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E4,E2,E1"));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E4", "E2");
+        LambdaAssertionUtil.assertValues(listener, "val1", new String[0]);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
+        LambdaAssertionUtil.assertValues(listener, "val0", new String[0]);
+        LambdaAssertionUtil.assertValues(listener, "val1", new String[0]);
+        listener.reset();
+
+        stmtFragment.destroy();
+
+        // test boolean
+        eplFragment = "select " +
+                "boolvals.where(x => x) as val0 " +
+                "from SupportCollection";
+        stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), "val0".split(","), new Class[]{Collection.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeBoolean("true,true,false"));
+        LambdaAssertionUtil.assertValues(listener, "val0", true, true);
         listener.reset();
     }
 }

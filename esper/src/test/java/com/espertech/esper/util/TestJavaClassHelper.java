@@ -7,11 +7,11 @@ import java.io.BufferedReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
 
 public class TestJavaClassHelper extends TestCase
 {

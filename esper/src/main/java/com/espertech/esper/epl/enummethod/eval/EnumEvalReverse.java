@@ -19,7 +19,7 @@ public class EnumEvalReverse implements EnumEval {
         return events;
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
         if (target.isEmpty()) {
             return target;
         }

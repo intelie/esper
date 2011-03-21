@@ -25,6 +25,7 @@ public class TestEnumDocSamples extends TestCase {
         config.addEventType("Zone", Zone.class);
         config.addPlugInSingleRowFunction("inrect", LRUtil.class.getName(), "inrect");
         config.addPlugInSingleRowFunction("distance", LRUtil.class.getName(), "distance");
+        config.addPlugInSingleRowFunction("getZoneNames", Zone.class.getName(), "getZoneNames");
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
@@ -198,7 +199,13 @@ public class TestEnumDocSamples extends TestCase {
         assertStmt("select items.take(5) as first5Items, items.takeLast(5) as last5Items from LocationReport");
         assertStmt("select items.toMap(k => k.assetId, v => distance(v.location.x, v.location.y, 0, 0)) as assetDistance from LocationReport");
         assertStmt("select items.where(i => i.assetId = \"L001\").union(items.where(i => i.type = \"P\")) as itemsUnion from LocationReport");
-        
+        assertStmt("select ((select name from Zone.std:unique(name))).orderBy() as orderedZones from pattern [every timer:interval(30)]");
+        assertStmt("create schema MyEvent as (seqone String[], seqtwo String[])");
+        assertStmt("select seqone.sequenceEquals(seqtwo) from MyEvent");
+        assertStmt("select (window(assetId)).orderBy() as orderedAssetIds from Item.win:time(10) group by assetId");
+        assertStmt("select (prevwindow(assetId)).orderBy() as orderedAssetIds from Item.win:time(10) as items");
+        assertStmt("select getZoneNames().where(z => z != \"Z1\") from pattern [every timer:interval(30)]");
+
         String epl = "expression myquery {itm => " +
                 "((select * from Zone.win:keepall())).where(z => inrect(z.rectangle, itm.location))" +
                 "} " +

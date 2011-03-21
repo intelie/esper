@@ -6,6 +6,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.support.bean.SupportBean_ST0;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -21,13 +22,40 @@ public class TestEnumFirstLastOf extends TestCase {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Bean", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    // TODO test invalid chain: selectFrom(...).where(...)
-    //
+    public void testFirstLastScalar() {
+
+        String[] fields = "val0,val1,val2,val3".split(",");
+        String eplFragment = "select " +
+                "strvals.firstOf() as val0, " +
+                "strvals.lastOf() as val1, " +
+                "strvals.firstOf(x => x like '%1%') as val2, " +
+                "strvals.lastOf(x => x like '%1%') as val3 " +
+                " from SupportCollection";
+        EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{String.class, String.class, String.class, String.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2,E3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", "E3", "E1", "E1"});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", "E1", "E1", "E1"});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E2,E3,E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", "E4", null, null});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null});
+    }
 
     public void testFirstLastProperty() {
 
@@ -41,16 +69,16 @@ public class TestEnumFirstLastOf extends TestCase {
         LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Integer.class, Integer.class});
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value("E1,1", "E2,9", "E3,3"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, 3});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{1, 3});
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value("E1,1"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {1, 1});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{1, 1});
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value(null));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null, null});
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value());
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null, null});
     }
 
     public void testFirstLastNoPred() {

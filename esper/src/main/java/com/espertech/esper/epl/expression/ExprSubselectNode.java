@@ -67,7 +67,8 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
      * @return evaluation result
      */
     public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
-    public abstract Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
+    public abstract Collection<EventBean> evaluateGetCollEvents(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
+    public abstract Collection evaluateGetCollScalar(EventBean[] eventsPerStream, boolean isNewData, Collection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
 
     public abstract boolean isAllowMultiColumnSelect();
 
@@ -128,13 +129,22 @@ public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluato
         return evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
     }
 
-    public Collection<EventBean> evaluateGetROCollection(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+    public Collection<EventBean> evaluateGetROCollectionEvents(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
         Collection<EventBean> matchingEvents = strategy.lookup(eventsPerStream, exprEvaluatorContext);
         if (subselectAggregationPreprocessor != null) {
             subselectAggregationPreprocessor.evaluate(eventsPerStream, matchingEvents, exprEvaluatorContext);
             matchingEvents = singleNullRowEventSet;
         }
-        return evaluateGetColl(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
+        return evaluateGetCollEvents(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
+    }
+
+    public Collection evaluateGetROCollectionScalar(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        Collection<EventBean> matchingEvents = strategy.lookup(eventsPerStream, context);
+        if (subselectAggregationPreprocessor != null) {
+            subselectAggregationPreprocessor.evaluate(eventsPerStream, matchingEvents, context);
+            matchingEvents = singleNullRowEventSet;
+        }
+        return evaluateGetCollScalar(eventsPerStream, isNewData, matchingEvents, context);
     }
 
     /**

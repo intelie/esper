@@ -8,14 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.enummethod.dot.ExprDotStaticMethodWrap;
-import com.espertech.esper.epl.enummethod.dot.ExprDotStaticMethodWrapFactory;
-import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
-import com.espertech.esper.epl.enummethod.dot.ValidationContext;
+import com.espertech.esper.epl.enummethod.dot.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
@@ -156,10 +152,10 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
 
         // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
         ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.make(method, eventAdapterService, chainList);
-        EventType optionalLambdaType = optionalLambdaWrap != null ? optionalLambdaWrap.getEventType() : null;
+        ExprDotEvalTypeInfo typeInfo = optionalLambdaWrap != null ? optionalLambdaWrap.getTypeInfo() : ExprDotEvalTypeInfo.scalarOrUnderlying(method.getReturnType());
 
         ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
-        ExprDotEval[] eval = ExprDotNodeUtility.getChainEvaluators(staticMethod.getReturnType(), optionalLambdaType, chainList, validationContext, false, streamTypeService).getSecond();
+        ExprDotEval[] eval = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainList, validationContext, false, streamTypeService).getSecond();
         evaluator = new ExprDotEvalStaticMethod(clazz.getName(), staticMethod, childEvals, isConstantParameters, optionalLambdaWrap, eval);
 	}
 

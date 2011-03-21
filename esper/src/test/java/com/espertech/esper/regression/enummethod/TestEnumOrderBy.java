@@ -1,13 +1,12 @@
 package com.espertech.esper.regression.enummethod;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean_ST0;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
@@ -22,12 +21,13 @@ public class TestEnumOrderBy extends TestCase {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Bean", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    public void testOrderBy() {
+    public void testOrderByEvents() {
 
         String[] fields = "val0,val1,val2,val3,val4,val5".split(",");
         String eplFragment = "select " +
@@ -71,5 +71,57 @@ public class TestEnumOrderBy extends TestCase {
             LambdaAssertionUtil.assertST0Id(listener, field, "");
         }
         listener.reset();
+    }
+
+    public void testOrderByScalar() {
+
+        String[] fields = "val0,val1".split(",");
+        String eplFragment = "select " +
+                "strvals.orderBy() as val0, " +
+                "strvals.orderByDesc() as val1 " +
+                "from SupportCollection";
+        EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Collection.class, Collection.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E2,E1,E5,E4"));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E1", "E2", "E4", "E5");
+        LambdaAssertionUtil.assertValues(listener, "val1", "E5", "E4", "E2", "E1");
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1"));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
+        LambdaAssertionUtil.assertValues(listener, "val1", "E1");
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
+        LambdaAssertionUtil.assertValues(listener, "val0", null);
+        LambdaAssertionUtil.assertValues(listener, "val1", null);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
+        LambdaAssertionUtil.assertValues(listener, "val0");
+        LambdaAssertionUtil.assertValues(listener, "val1");
+    }
+
+    public void testInvalid() {
+        String epl;
+
+        epl = "select strvals.orderBy(x=> x) from SupportCollection";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'orderBy' and 1-parameter footprint, expecting collection of events as input, received collection of String [select strvals.orderBy(x=> x) from SupportCollection]");
+
+        epl = "select contained.orderBy() from Bean";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collecton of events of type 'com.espertech.esper.support.bean.SupportBean_ST0' [select contained.orderBy() from Bean]");
+    }
+
+    private void tryInvalid(String epl, String message) {
+        try
+        {
+            epService.getEPAdministrator().createEPL(epl);
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals(message, ex.getMessage());
+        }
     }
 }

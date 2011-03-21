@@ -1,16 +1,15 @@
 package com.espertech.esper.epl.enummethod.dot;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprDotEval;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 public class ExprDotEvalUnpackCollValue implements ExprDotEval {
 
-    public ExprDotEvalUnpackCollValue() {
+    private final ExprDotEvalTypeInfo typeInfo;
+
+    public ExprDotEvalUnpackCollValue(ExprDotEvalTypeInfo typeInfo) {
+        this.typeInfo = typeInfo;
     }
 
     public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
@@ -20,11 +19,7 @@ public class ExprDotEvalUnpackCollValue implements ExprDotEval {
         return target;
     }
 
-    public Class getResultType() {
-        return Collection.class;
+    public ExprDotEvalTypeInfo getTypeInfo() {
+        return typeInfo;
     }
-
-    public EventType getResultEventType() {
-        return null;
-    }    
 }

@@ -1,7 +1,6 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.enummethod.dot.ExprDotEvalEnumMethodBase;
 
 import java.lang.ref.SoftReference;
 import java.util.*;
@@ -29,24 +28,24 @@ public class ExpressionResultCacheService {
     private IdentityHashMap<Object, SoftReference<ExpressionResultCacheEntry<EventBean[], Collection<EventBean>>>> exprDeclCacheCollection;
     private IdentityHashMap<Object, SoftReference<ExpressionResultCacheEntry<Long[], Object>>> enumMethodCache;
 
-    private Deque<ExprDotEvalEnumMethodBase> lambdaCallStack;
+    private Deque<ExpressionResultCacheStackEntry> callStack;
     private Deque<Long> lastValueCacheStack;
 
-    public void pushLambda(ExprDotEvalEnumMethodBase lambda) {
-        if (lambdaCallStack == null) {
-            lambdaCallStack = new ArrayDeque<ExprDotEvalEnumMethodBase>();
+    public void pushStack(ExpressionResultCacheStackEntry lambda) {
+        if (callStack == null) {
+            callStack = new ArrayDeque<ExpressionResultCacheStackEntry>();
             lastValueCacheStack = new ArrayDeque<Long>(10);
         }
-        lambdaCallStack.push(lambda);
+        callStack.push(lambda);
     }
 
     public boolean popLambda() {
-        lambdaCallStack.remove();
-        return lambdaCallStack.isEmpty();
+        callStack.remove();
+        return callStack.isEmpty();
     }    
 
-    public Deque<ExprDotEvalEnumMethodBase> peekLambdaStack() {
-        return lambdaCallStack;
+    public Deque<ExpressionResultCacheStackEntry> getStack() {
+        return callStack;
     }
 
     public ExpressionResultCacheEntry<EventBean, Collection<EventBean>> getPropertyColl(String propertyNameFullyQualified, EventBean reference) {

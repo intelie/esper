@@ -15,12 +15,12 @@ import java.util.List;
 
 public class LambdaAssertionUtil {
 
-    public static void assertValues(SupportUpdateListener listener, String field, String... expected) {
+    public static void assertValues(SupportUpdateListener listener, String field, Object... expected) {
         if (expected == null) {
-            Assert.assertNull(listener.assertOneGetNewAndReset().get(field));
+            Assert.assertNull(listener.assertOneGetNew().get(field));
             return;
         }
-        Object[] arr = ((Collection) listener.assertOneGetNewAndReset().get("val0")).toArray();
+        Object[] arr = ((Collection) listener.assertOneGetNew().get(field)).toArray();
         ArrayAssertionUtil.assertEqualsExactOrder(arr, expected);
     }
 

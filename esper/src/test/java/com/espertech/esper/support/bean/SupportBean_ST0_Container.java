@@ -12,9 +12,15 @@ public class SupportBean_ST0_Container {
     }
 
     private List<SupportBean_ST0> contained;
+    private List<SupportBean_ST0> second;
 
     public SupportBean_ST0_Container(List<SupportBean_ST0> contained) {
         this.contained = contained;
+    }
+
+    public SupportBean_ST0_Container(List<SupportBean_ST0> contained, List<SupportBean_ST0> second) {
+        this.contained = contained;
+        this.second = second;
     }
 
     public static List<SupportBean_ST0> makeSampleList() {
@@ -41,16 +47,20 @@ public class SupportBean_ST0_Container {
         return new SupportBean_ST0_Container(contained);
     }
 
-    public static SupportBean_ST0_Container make2Value(String ... values) {
+    public static List<SupportBean_ST0> make2ValueList(String ... values) {
         if (values == null) {
-            return new SupportBean_ST0_Container(null);
+            return null;
         }
-        List<SupportBean_ST0> contained = new ArrayList<SupportBean_ST0>();
+        List<SupportBean_ST0> result = new ArrayList<SupportBean_ST0>();
         for (int i = 0; i < values.length; i++) {
             String[] pair = values[i].split(",");
-            contained.add(new SupportBean_ST0(pair[0], Integer.parseInt(pair[1])));
+            result.add(new SupportBean_ST0(pair[0], Integer.parseInt(pair[1])));
         }
-        return new SupportBean_ST0_Container(contained);
+        return result;
+    }
+
+    public static SupportBean_ST0_Container make2Value(String ... values) {
+        return new SupportBean_ST0_Container(make2ValueList(values));
     }
 
     public List<SupportBean_ST0> getContained() {

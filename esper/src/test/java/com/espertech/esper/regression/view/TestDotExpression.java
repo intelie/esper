@@ -99,8 +99,8 @@ public class TestDotExpression extends TestCase
                 };
         for (int i = 0; i < rows.length; i++) {
             EventPropertyDescriptor prop = stmt.getEventType().getPropertyDescriptors()[i];
-            assertEquals(rows[i][0], prop.getPropertyName());
-            assertEquals(rows[i][1], prop.getPropertyType());
+            assertEquals("failed for " + rows[i][0], rows[i][0], prop.getPropertyName());
+            assertEquals("failed for " + rows[i][0], rows[i][1], prop.getPropertyType());
         }
 
         epService.getEPRuntime().sendEvent(bean);

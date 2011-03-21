@@ -2,6 +2,7 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,12 +19,7 @@ public class ExprDotEvalArraySize implements ExprDotEval
         return Array.getLength(target);
     }
 
-    public Class getResultType()
-    {
-        return Integer.class;
-    }
-
-    public EventType getResultEventType() {
-        return null;
+    public ExprDotEvalTypeInfo getTypeInfo() {
+        return ExprDotEvalTypeInfo.scalarOrUnderlying(Integer.class);
     }
 }

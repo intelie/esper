@@ -1,11 +1,9 @@
 package com.espertech.esper.regression.enummethod;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -26,12 +24,13 @@ public class TestEnumAverage extends TestCase {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Bean", SupportBean_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    public void testAverage() {
+    public void testAverageEvents() {
 
         String[] fields = "val0,val1,val2,val3".split(",");
         String eplFragment = "select " +
@@ -60,6 +59,40 @@ public class TestEnumAverage extends TestCase {
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {(2+4)/2d, (3d+6d)/2d, (4L+8L)/2d, new BigDecimal((5+10)/2d)});
     }
 
+    public void testAverageScalar() {
+
+        String[] fields = "val0,val1".split(",");
+        String eplFragment = "select " +
+                "intvals.average() as val0," +
+                "bdvals.average() as val1 " +
+                "from SupportCollection";
+        EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Double.class, BigDecimal.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeNumeric("1,2,3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {2d, new BigDecimal(2d)});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeNumeric("1,null,3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {2d, new BigDecimal(2d)});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeNumeric("4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {4d, new BigDecimal(4d)});
+    }
+
+    public void testInvalid() {
+        String epl;
+
+        epl = "select strvals.average() from SupportCollection";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received collection of String [select strvals.average() from SupportCollection]");
+
+        epl = "select intvals.average(x => x*2) from SupportCollection";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'average' and 1-parameter footprint, expecting collection of events as input, received collection of Integer [select intvals.average(x => x*2) from SupportCollection]");
+
+        epl = "select beans.average() from Bean";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collecton of events of type 'com.espertech.esper.support.bean.SupportBean' [select beans.average() from Bean]");
+    }
+
     private SupportBean make(Integer intBoxed, Double doubleBoxed, Long longBoxed, int bigDecimal) {
         SupportBean bean = new SupportBean();
         bean.setIntBoxed(intBoxed);
@@ -67,5 +100,16 @@ public class TestEnumAverage extends TestCase {
         bean.setLongBoxed(longBoxed);
         bean.setBigDecimal(new BigDecimal(bigDecimal));
         return bean;
+    }
+
+    private void tryInvalid(String epl, String message) {
+        try
+        {
+            epService.getEPAdministrator().createEPL(epl);
+            fail();
+        }
+        catch (EPStatementException ex) {
+            assertEquals(message, ex.getMessage());
+        }
     }
 }

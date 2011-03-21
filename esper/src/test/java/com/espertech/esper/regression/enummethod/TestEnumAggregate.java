@@ -1,14 +1,16 @@
 package com.espertech.esper.regression.enummethod;
 
-import com.espertech.esper.client.*;
+import com.espertech.esper.client.Configuration;
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
-
-import java.util.StringTokenizer;
 
 public class TestEnumAggregate extends TestCase {
 
@@ -19,12 +21,13 @@ public class TestEnumAggregate extends TestCase {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Bean", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    public void testAggregate() {
+    public void testAggregateEvents() {
 
         String[] fields = new String[] {"val0", "val1", "val2"};
         String eplFragment = "select " +
@@ -51,6 +54,39 @@ public class TestEnumAggregate extends TestCase {
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value("E1,12"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields,
                 new Object[]{12, ", E1", "E1"});
+    }
 
+    public void testAggregateScalar() {
+
+        String[] fields = "val0".split(",");
+        String eplFragment = "select " +
+                "strvals.aggregate('', (result, item) => result || '+' || item) as val0 " +
+                "from SupportCollection";
+        EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{String.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2,E3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"+E1+E2+E3"});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"+E1"});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {""});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null});
+        stmtFragment.destroy();
+
+        eplFragment = "select " +
+                "Collections.nCopies(1, 5).aggregate(0, (result, v) => result + v) as val0 " +
+                "from SupportCollection";
+        stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{String.class, Integer.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"+E1+E2+E3", 6});
     }
 }

@@ -17,10 +17,11 @@ public class EnumEvalToMap extends EnumEvalBase implements EnumEval {
         this.secondExpression = secondExpression;
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
         Map map = new HashMap();
 
-        for (EventBean next : target) {
+        Collection<EventBean> beans = (Collection<EventBean>) target;
+        for (EventBean next : beans) {
             eventsLambda[streamNumLambda] = next;
 
             Object key = innerExpression.evaluate(eventsLambda, isNewData, context);

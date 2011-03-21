@@ -19,8 +19,11 @@ public class EnumEvalBase {
         this.eventsLambda = new EventBean[streamCountIncoming + 1];
     }
 
-
     public EventBean[] getEventsPrototype() {
         return eventsLambda;
+    }
+
+    public ExprEvaluator getInnerExpression() {
+        return innerExpression;
     }
 }

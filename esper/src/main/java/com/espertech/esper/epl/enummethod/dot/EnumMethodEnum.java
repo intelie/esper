@@ -4,53 +4,49 @@ import com.espertech.esper.epl.enummethod.eval.*;
 
 public enum EnumMethodEnum {
 
-    AGGREGATE("aggregate", EnumMethodReturnType.VALUE, ExprDotEvalAggregate.class, EnumMethodEnumParams.AGGREGATE_FP),
+    AGGREGATE("aggregate", ExprDotEvalAggregate.class, EnumMethodEnumParams.AGGREGATE_FP),
 
-    ALLOF("allOf", EnumMethodReturnType.VALUE, ExprDotEvalAllOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL),
-    ANYOF("anyOf", EnumMethodReturnType.VALUE, ExprDotEvalAnyOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL),
+    ALLOF("allOf", ExprDotEvalAllOfAnyOf.class, EnumMethodEnumParams.ALLOF_ANYOF),
+    ANYOF("anyOf", ExprDotEvalAllOfAnyOf.class, EnumMethodEnumParams.ALLOF_ANYOF),
 
-    TOMAP("toMap", EnumMethodReturnType.VALUE, ExprDotEvalToMap.class, EnumMethodEnumParams.MAP),
-    GROUPBY("groupBy", EnumMethodReturnType.VALUE, ExprDotEvalGroupBy.class, EnumMethodEnumParams.GROUP),
+    TOMAP("toMap", ExprDotEvalToMap.class, EnumMethodEnumParams.MAP),
+    GROUPBY("groupBy", ExprDotEvalGroupBy.class, EnumMethodEnumParams.GROUP),
 
-    COUNTOF("countOf", EnumMethodReturnType.VALUE, ExprDotEvalCountOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL_OR_NONE),
-    MIN("min", EnumMethodReturnType.VALUE, ExprDotEvalMinMax.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
-    MAX("max", EnumMethodReturnType.VALUE, ExprDotEvalMinMax.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
-    AVERAGE("average", EnumMethodReturnType.VALUE, ExprDotEvalAverage.class, EnumMethodEnumParams.SINGLE_PREDICATE_NUMERIC),
-    SUMOF("sumOf", EnumMethodReturnType.VALUE, ExprDotEvalSumOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_NUMERIC),
+    COUNTOF("countOf", ExprDotEvalCountOf.class, EnumMethodEnumParams.COUNTOF_FIRST_LAST),
+    MIN("min", ExprDotEvalMinMax.class, EnumMethodEnumParams.MIN_MAX),
+    MAX("max", ExprDotEvalMinMax.class, EnumMethodEnumParams.MIN_MAX),
+    AVERAGE("average", ExprDotEvalAverage.class, EnumMethodEnumParams.AVERAGE_SUMOF),
+    SUMOF("sumOf", ExprDotEvalSumOf.class, EnumMethodEnumParams.AVERAGE_SUMOF),
 
-    SELECTFROM("selectFrom", EnumMethodReturnType.ITERATOR_VALUE, ExprDotEvalSelectFrom.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
+    SELECTFROM("selectFrom", ExprDotEvalSelectFrom.class, EnumMethodEnumParams.SELECTFROM_MINBY_MAXBY),
 
-    FIRST("firstOf", EnumMethodReturnType.BEAN, ExprDotEvalFirstLastOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL_OR_NONE),
-    LAST("lastOf", EnumMethodReturnType.BEAN, ExprDotEvalFirstLastOf.class, EnumMethodEnumParams.SINGLE_PREDICATE_BOOL_OR_NONE),
-    MINBY("minBy", EnumMethodReturnType.BEAN, ExprDotEvalMinByMaxBy.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
-    MAXBY("maxBy", EnumMethodReturnType.BEAN, ExprDotEvalMinByMaxBy.class, EnumMethodEnumParams.SINGLE_PREDICATE_ANY),
+    FIRST("firstOf", ExprDotEvalFirstLastOf.class, EnumMethodEnumParams.COUNTOF_FIRST_LAST),
+    LAST("lastOf", ExprDotEvalFirstLastOf.class, EnumMethodEnumParams.COUNTOF_FIRST_LAST),
+    MINBY("minBy", ExprDotEvalMinByMaxBy.class, EnumMethodEnumParams.SELECTFROM_MINBY_MAXBY),
+    MAXBY("maxBy", ExprDotEvalMinByMaxBy.class, EnumMethodEnumParams.SELECTFROM_MINBY_MAXBY),
 
-    TAKE("take", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalTake.class, EnumMethodEnumParams.SINGLE_NUMERIC_FP),
-    TAKELAST("takeLast", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalTake.class, EnumMethodEnumParams.SINGLE_NUMERIC_FP),
-    TAKEWHILE("takeWhile", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalTakeWhile.class, EnumMethodEnumParams.WHERE_FP),
-    TAKEWHILELAST("takeWhileLast", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalTakeWhile.class, EnumMethodEnumParams.WHERE_FP),
-    ORDERBY("orderBy", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalOrderByAscDesc.class, EnumMethodEnumParams.ORDERBY),
-    ORDERBYDESC("orderByDesc", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalOrderByAscDesc.class, EnumMethodEnumParams.ORDERBY),
-    WHERE("where", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalWhere.class, EnumMethodEnumParams.WHERE_FP),
-    UNION("union", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalUnion.class, EnumMethodEnumParams.UNION_FP),
-    REVERSE("reverse", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalReverse.class, EnumMethodEnumParams.EMPTY_FP),
-    NOOP("esperInternalNoop", EnumMethodReturnType.ITERATOR_BEAN, ExprDotEvalNoOp.class, EnumMethodEnumParams.EMPTY_FP),
+    TAKE("take", ExprDotEvalTakeAndTakeLast.class, EnumMethodEnumParams.TAKE_TAKELAST),
+    TAKELAST("takeLast", ExprDotEvalTakeAndTakeLast.class, EnumMethodEnumParams.TAKE_TAKELAST),
+    TAKEWHILE("takeWhile", ExprDotEvalTakeWhileAndLast.class, EnumMethodEnumParams.WHERE_FP),
+    TAKEWHILELAST("takeWhileLast", ExprDotEvalTakeWhileAndLast.class, EnumMethodEnumParams.WHERE_FP),
+    ORDERBY("orderBy", ExprDotEvalOrderByAscDesc.class, EnumMethodEnumParams.ORDERBY),
+    ORDERBYDESC("orderByDesc", ExprDotEvalOrderByAscDesc.class, EnumMethodEnumParams.ORDERBY),
+    WHERE("where", ExprDotEvalWhere.class, EnumMethodEnumParams.WHERE_FP),
+    UNION("union", ExprDotEvalUnion.class, EnumMethodEnumParams.UNION_FP),
+    REVERSE("reverse", ExprDotEvalReverse.class, EnumMethodEnumParams.NOOP_REVERSE),
+    NOOP("esperInternalNoop", ExprDotEvalNoOp.class, EnumMethodEnumParams.NOOP_REVERSE),
+
+    SEQUENCE_EQUALS("sequenceequals", ExprDotEvalSequenceEqual.class, EnumMethodEnumParams.SEQ_EQUALS_FP),
     ;
 
-    private String nameCamel;
-    private EnumMethodReturnType returnValueType;
-    private Class implementation;
-    private EnumMethodFootprint[] footprints;
+    private final String nameCamel;
+    private final Class implementation;
+    private final EnumMethodFootprint[] footprints;
 
-    private EnumMethodEnum(String nameCamel, EnumMethodReturnType returnValueType, Class implementation, EnumMethodFootprint[] footprints) {
+    private EnumMethodEnum(String nameCamel, Class implementation, EnumMethodFootprint[] footprints) {
         this.nameCamel = nameCamel;
-        this.returnValueType = returnValueType;
         this.implementation = implementation;
         this.footprints = footprints;
-    }
-
-    public EnumMethodReturnType getReturnValueType() {
-        return returnValueType;
     }
 
     public String getNameCamel() {

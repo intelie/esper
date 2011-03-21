@@ -296,6 +296,9 @@ public class MapEventType implements EventTypeSPI
         else if (nestedType instanceof Class)
         {
             Class simpleClass = (Class) nestedType;
+            if (JavaClassHelper.isJavaBuiltinDataType(simpleClass)) {
+                return null;
+            }
             EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false, false, false);
             return nestedEventType.getPropertyType(propertyNested);
         }

@@ -3,12 +3,12 @@ package com.espertech.esper.regression.enummethod;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-import javax.management.monitor.StringMonitor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +23,13 @@ public class TestEnumUnion extends TestCase {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("SupportBean_ST0_Container", SupportBean_ST0_Container.class);
         config.addEventType("SupportBean", SupportBean.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    public void testWhere() {
+    public void testUnionWhere() {
 
         String epl = "expression one {" +
                 "  x => x.contained.where(y => p00 = 10)" +
@@ -78,6 +79,18 @@ public class TestEnumUnion extends TestCase {
         
         Collection maps = (Collection) listener.assertOneGetNewAndReset().get("val");
         assertEquals(2, maps.size());
+    }
+
+    public void testUnionScalar() {
+
+        String epl = "select strvals.union(strvalstwo) as val0 from SupportCollection as bean";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmt.getEventType(), "val0".split(","), new Class[]{Collection.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2", "E3,E4"));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E1", "E2", "E3", "E4");
+        listener.reset();
     }
 
     public void testInvalid() {

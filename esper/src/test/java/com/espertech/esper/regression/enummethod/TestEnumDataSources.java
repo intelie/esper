@@ -1,10 +1,7 @@
 package com.espertech.esper.regression.enummethod;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportBean_ST0;
-import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.bean.lrreport.LocationReportFactory;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -26,16 +23,19 @@ public class TestEnumDataSources extends TestCase {
         config.addEventType("SupportBean_A", SupportBean_A.class);
         config.addEventType("SupportBean_ST0", SupportBean_ST0.class);
         config.addEventType("SupportBean_ST0_Container", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         config.addImport(LocationReportFactory.class);
         config.getEngineDefaults().getExpression().setUdfCache(false);
         config.addPlugInSingleRowFunction("makeSampleList", SupportBean_ST0_Container.class.getName(), "makeSampleList");
         config.addPlugInSingleRowFunction("makeSampleArray", SupportBean_ST0_Container.class.getName(), "makeSampleArray");
+        config.addPlugInSingleRowFunction("makeSampleListString", SupportCollection.class.getName(), "makeSampleListString");
+        config.addPlugInSingleRowFunction("makeSampleArrayString", SupportCollection.class.getName(), "makeSampleArrayString");
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    public void testSortedWindow() {
+    public void testPrevWindowSorted() {
         EPStatement stmt = epService.getEPAdministrator().createEPL("select prevwindow(st0) as val0, prevwindow(st0).esperInternalNoop() as val1 " +
                 "from SupportBean_ST0.ext:sort(3, p00 asc) as st0");
         stmt.addListener(listener);
@@ -55,6 +55,30 @@ public class TestEnumDataSources extends TestCase {
 
         epService.getEPRuntime().sendEvent(new SupportBean_ST0("E5", 3));
         LambdaAssertionUtil.assertST0Id(listener, "val1", "E5,E3,E1");
+        listener.reset();
+        stmt.destroy();
+
+        // Scalar version
+        String[] fields = new String[] {"val0"};
+        EPStatement stmtScalar = epService.getEPAdministrator().createEPL("select prevwindow(id).where(x => x not like '%ignore%') as val0 " +
+                "from SupportBean_ST0.win:keepall() as st0");
+        stmtScalar.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtScalar.getEventType(), fields, new Class[]{Collection.class});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("E1", 5));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("E2ignore", 6));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("E3", 4));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E3", "E1");
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ignoreE5", 3));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E3", "E1");
         listener.reset();
     }
 
@@ -111,6 +135,38 @@ public class TestEnumDataSources extends TestCase {
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
         assertEquals(false, listener.assertOneGetNewAndReset().get("allOfX"));
         stmtSubselect.destroy();
+
+        // test subselect scalar return
+        String eplSubselectScalar = "select (select id from SupportBean_ST0.win:keepall()).allOf(x => x  like '%B%') as allOfX from SupportBean.win:keepall()";
+        EPStatement stmtSubselectScalar = epService.getEPAdministrator().createEPL(eplSubselectScalar);
+        stmtSubselectScalar.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("B1", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        assertEquals(true, listener.assertOneGetNewAndReset().get("allOfX"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("A1", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+        assertEquals(false, listener.assertOneGetNewAndReset().get("allOfX"));
+        stmtSubselectScalar.destroy();
+
+        // test subselect-correlated scalar return
+        String eplSubselectScalarCorrelated = "select (select key0 from SupportBean_ST0.win:keepall() st0 where st0.id = sb.string).allOf(x => x  like '%hello%') as allOfX from SupportBean.win:keepall() sb";
+        EPStatement stmtSubselectScalarCorrlated = epService.getEPAdministrator().createEPL(eplSubselectScalarCorrelated);
+        stmtSubselectScalarCorrlated.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("A1", "hello", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        assertEquals(null, listener.assertOneGetNewAndReset().get("allOfX"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("A2", "hello", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 1));
+        assertEquals(true, listener.assertOneGetNewAndReset().get("allOfX"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("A3", "test", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("A3", 1));
+        assertEquals(false, listener.assertOneGetNewAndReset().get("allOfX"));
+        stmtSubselectScalarCorrlated.destroy();
     }
 
     public void testAccessAggregation() {
@@ -137,6 +193,28 @@ public class TestEnumDataSources extends TestCase {
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, true, true, false});
 
         stmtWindowAgg.destroy();
+
+        // test scalar: window(*) and first(*)
+        String eplWindowAggScalar = "select " +
+                "window(intPrimitive).allOf(x => x < 5) as val0," +
+                "first(intPrimitive).allOf(x => x < 5) as val1," +
+                "first(intPrimitive, 1).allOf(x => x < 5) as val2," +
+                "last(intPrimitive).allOf(x => x < 5) as val3," +
+                "last(intPrimitive, 1).allOf(x => x < 5) as val4" +
+                " from SupportBean.win:length(2)";
+        EPStatement stmtWindowAggScalar = epService.getEPAdministrator().createEPL(eplWindowAggScalar);
+        stmtWindowAggScalar.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{true, true, null, true, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 10));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{false, true, false, false, true});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, true, true, false});
+
+        stmtWindowAggScalar.destroy();
     }
 
     public void testProperty() {
@@ -151,8 +229,18 @@ public class TestEnumDataSources extends TestCase {
 
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make3Value("ID1,KEY1,10"));
         assertEquals(false, listener.assertOneGetNewAndReset().get("allOfX"));
-
         stmtFragment.destroy();
+
+        // test array and iterable
+        String[] fields = "val0,val1".split(",");
+        eplFragment = "select intarray.sumof() as val0, " +
+                "intiterable.sumOf() as val1 " +
+                " from SupportCollection.win:keepall()";
+        stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeNumeric("5,6,7"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {5+6+7, 5+6+7});
     }
 
     public void testPrevFuncs() {
@@ -165,6 +253,28 @@ public class TestEnumDataSources extends TestCase {
                 " from SupportBean.win:length(2) as sb";
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{true, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 10));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, true, false});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 2));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, true});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 3));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{true, true, true});
+        stmt.destroy();
+
+        // test scalar prevwindow(property) etc
+        String eplScalar = "select " +
+                "prevwindow(intPrimitive).allOf(x => x < 5) as val0," +
+                "prev(intPrimitive,1).allOf(x => x < 5) as val1," +
+                "prevtail(intPrimitive,1).allOf(x => x < 5) as val2" +
+                " from SupportBean.win:length(2) as sb";
+        EPStatement stmtScalar = epService.getEPAdministrator().createEPL(eplScalar);
+        stmtScalar.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{true, null, null});
@@ -211,6 +321,42 @@ public class TestEnumDataSources extends TestCase {
         epService.getEPRuntime().sendEvent(new SupportBean());
         for (String field : fields) {
             SupportBean_ST0[] result = toArray((Collection) listener.assertOneGetNew().get(field));
+            assertEquals(0, result.length);
+        }
+        listener.reset();
+        stmt.destroy();
+
+        // test UDF returning scalar values collection
+        fields = "val0,val1,val2,val3".split(",");
+        epService.getEPAdministrator().getConfiguration().addImport(SupportCollection.class);
+        String eplScalar = "select " +
+                "SupportCollection.makeSampleListString().where(x => x != 'E1') as val0, " +
+                "SupportCollection.makeSampleArrayString().where(x => x != 'E1') as val1, " +
+                "makeSampleListString().where(x => x != 'E1') as val2, " +
+                "makeSampleArrayString().where(x => x != 'E1') as val3 " +
+                "from SupportBean.win:length(2) as sb";
+        EPStatement stmtScalar = epService.getEPAdministrator().createEPL(eplScalar);
+        stmtScalar.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtScalar.getEventType(), fields, new Class[] {Collection.class, Collection.class, Collection.class, Collection.class});
+
+        SupportCollection.setSampleCSV("E1,E2,E3");
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        for (String field : fields) {
+            LambdaAssertionUtil.assertValues(listener, field, "E2", "E3");
+        }
+        listener.reset();
+
+        SupportCollection.setSampleCSV(null);
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        for (String field : fields) {
+            LambdaAssertionUtil.assertValues(listener, field, null);
+        }
+        listener.reset();
+
+        SupportCollection.setSampleCSV("");
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        for (String field : fields) {
+            LambdaAssertionUtil.assertValues(listener, field);
         }
         listener.reset();
     }

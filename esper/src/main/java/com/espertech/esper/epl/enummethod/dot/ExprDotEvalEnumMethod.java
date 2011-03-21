@@ -12,8 +12,7 @@ public interface ExprDotEvalEnumMethod extends ExprDotEval {
 
     public void init(EnumMethodEnum lambda,
                      String lambdaUsedName,
-                     EventType eventType,
-                     Class currentInputType,
+                     ExprDotEvalTypeInfo currentInputType,
                      List<ExprNode> parameters,
                      ValidationContext validationContext,
                      StreamTypeService streamTypeService) throws ExprValidationException;

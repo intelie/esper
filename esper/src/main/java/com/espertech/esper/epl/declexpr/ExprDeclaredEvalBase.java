@@ -69,7 +69,7 @@ public abstract class ExprDeclaredEvalBase implements ExprEvaluator, ExprEvaluat
         return result;
     }
 
-    public final Collection<EventBean> evaluateGetROCollection(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+    public final Collection<EventBean> evaluateGetROCollectionEvents(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
 
         // rewrite streams
         EventBean[] events = getEventsPerStreamRewritten(eventsPerStream);
@@ -81,21 +81,52 @@ public abstract class ExprDeclaredEvalBase implements ExprEvaluator, ExprEvaluat
                 return entry.getResult();
             }
 
-            result = innerEvaluatorLambda.evaluateGetROCollection(events, isNewData, context);
+            result = innerEvaluatorLambda.evaluateGetROCollectionEvents(events, isNewData, context);
             context.getExpressionResultCacheService().saveDeclaredExpressionLastColl(prototype, events, result);
             return result;
         }
         else {
-            result = innerEvaluatorLambda.evaluateGetROCollection(events, isNewData, context);
+            result = innerEvaluatorLambda.evaluateGetROCollectionEvents(events, isNewData, context);
         }
 
         return result;
     }
 
-    public EventType getEventTypeIterator() throws ExprValidationException {
+    public Collection evaluateGetROCollectionScalar(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+
+        // rewrite streams
+        EventBean[] events = getEventsPerStreamRewritten(eventsPerStream);
+
+        Collection result;
+        if (isCache) {
+            ExpressionResultCacheEntry<EventBean[], Collection<EventBean>> entry = context.getExpressionResultCacheService().getDeclaredExpressionLastColl(prototype, events);
+            if (entry != null) {
+                return entry.getResult();
+            }
+
+            result = innerEvaluatorLambda.evaluateGetROCollectionScalar(events, isNewData, context);
+            context.getExpressionResultCacheService().saveDeclaredExpressionLastColl(prototype, events, result);
+            return result;
+        }
+        else {
+            result = innerEvaluatorLambda.evaluateGetROCollectionScalar(events, isNewData, context);
+        }
+
+        return result;
+    }
+
+    public Class getComponentTypeCollection() throws ExprValidationException {
         if (innerEvaluator instanceof ExprEvaluatorEnumeration) {
             ExprEvaluatorEnumeration lambda = (ExprEvaluatorEnumeration) innerEvaluator;
-            return lambda.getEventTypeIterator();
+            return lambda.getComponentTypeCollection();
+        }
+        return null;
+    }
+
+    public EventType getEventTypeCollection() throws ExprValidationException {
+        if (innerEvaluator instanceof ExprEvaluatorEnumeration) {
+            ExprEvaluatorEnumeration lambda = (ExprEvaluatorEnumeration) innerEvaluator;
+            return lambda.getEventTypeCollection();
         }
         return null;
     }

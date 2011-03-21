@@ -8,13 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
 import com.espertech.esper.epl.enummethod.dot.ValidationContext;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
@@ -142,8 +143,9 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
         EventType eventType = streamTypeService.getEventTypes()[streamNum];
         Class type = eventType.getUnderlyingType();
 
+        ExprDotEvalTypeInfo typeInfo = ExprDotEvalTypeInfo.scalarOrUnderlying(type);
         ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
-        evaluators = ExprDotNodeUtility.getChainEvaluators(type, null, chainSpec, validationContext, false, streamTypeService).getSecond();
+        evaluators = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainSpec, validationContext, false, streamTypeService).getSecond();
 	}
 
 	public Class getType()
@@ -152,7 +154,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
         {
             throw new IllegalStateException("Stream underlying node has not been validated");
         }
-        return evaluators[evaluators.length - 1].getResultType();
+        return evaluators[evaluators.length - 1].getTypeInfo().getScalar();
 	}
 
 	public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)

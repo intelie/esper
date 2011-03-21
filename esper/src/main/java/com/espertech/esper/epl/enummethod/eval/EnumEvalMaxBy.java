@@ -12,11 +12,12 @@ public class EnumEvalMaxBy extends EnumEvalBase implements EnumEval {
         super(innerExpression, streamCountIncoming);
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
         Comparable maxKey = null;
         EventBean result = null;
 
-        for (EventBean next : target) {
+        Collection<EventBean> beans = (Collection<EventBean>) target;
+        for (EventBean next : beans) {
             eventsLambda[streamNumLambda] = next;
 
             Object comparable = innerExpression.evaluate(eventsLambda, isNewData, context);

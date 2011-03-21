@@ -6,6 +6,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalEnumMethodBase;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalParam;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalParamLambda;
+import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.math.BigDecimal;
@@ -14,16 +15,26 @@ import java.util.List;
 
 public class ExprDotEvalSumOf extends ExprDotEvalEnumMethodBase {
 
-    private Class returnType;
-
-    public EventType[] getAddStreamTypes(List<String> goesToNames, EventType inputEventType, List<ExprDotEvalParam> bodiesAndParameters) {
+    public EventType[] getAddStreamTypes(String enumMethodUsedName, List<String> goesToNames, EventType inputEventType, Class collectionComponentType, List<ExprDotEvalParam> bodiesAndParameters) {
         return new EventType[] {inputEventType};
     }
 
-    public EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, int numStreamsIncoming) {
-        ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters.get(0);
-        Class evalType = first.getBodyEvaluator().getType();
+    public EnumEval getEnumEval(StreamTypeService streamTypeService, String enumMethodUsedName, List<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Class collectionComponentType, int numStreamsIncoming) {
 
+        if (bodiesAndParameters.isEmpty()) {
+            AggregationMethod aggMethod = getAggregator(collectionComponentType);
+            super.setTypeInfo(ExprDotEvalTypeInfo.scalarOrUnderlying(JavaClassHelper.getBoxedType(aggMethod.getValueType())));
+            return new EnumEvalSumScalar(numStreamsIncoming, aggMethod);
+        }
+
+        ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters.get(0);
+        AggregationMethod aggMethod = getAggregator(first.getBodyEvaluator().getType());
+        Class returnType = JavaClassHelper.getBoxedType(aggMethod.getValueType());
+        super.setTypeInfo(ExprDotEvalTypeInfo.scalarOrUnderlying(returnType));
+        return new EnumEvalSumEvents(first.getBodyEvaluator(), first.getStreamCountIncoming(), aggMethod);
+    }
+
+    private static AggregationMethod getAggregator(Class evalType) {
         AggregationMethod aggMethod;
         if (JavaClassHelper.isFloatingPointClass(evalType)) {
             aggMethod = new DoubleSumAggregator();
@@ -40,15 +51,6 @@ public class ExprDotEvalSumOf extends ExprDotEvalEnumMethodBase {
         else {
             aggMethod = new IntegerSumAggregator();
         }
-        returnType = JavaClassHelper.getBoxedType(aggMethod.getValueType());
-        return new EnumEvalSum(first.getBodyEvaluator(), first.getStreamCountIncoming(), aggMethod);
-    }
-
-    public Class getResultType() {
-        return returnType;
-    }
-
-    public EventType getResultEventType() {
-        return null;
+        return aggMethod;
     }
 }

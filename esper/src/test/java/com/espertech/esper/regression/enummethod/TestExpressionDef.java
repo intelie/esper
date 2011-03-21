@@ -2,10 +2,7 @@ package com.espertech.esper.regression.enummethod;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBean_ST0;
-import com.espertech.esper.support.bean.SupportBean_ST0_Container;
-import com.espertech.esper.support.bean.SupportBean_ST1;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -26,6 +23,7 @@ public class TestExpressionDef extends TestCase {
         config.addEventType("SupportBean_ST0", SupportBean_ST0.class);
         config.addEventType("SupportBean_ST1", SupportBean_ST1.class);
         config.addEventType("SupportBean_ST0_Container", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
@@ -207,6 +205,21 @@ public class TestExpressionDef extends TestCase {
         out = toArray((Collection)listener.assertOneGetNewAndReset().get("val1"));
         assertEquals(1, out.length);
         assertEquals("E2", out[0].getString());
+    }
+
+    public void testScalarReturn() {
+        String epl = "" +
+                "expression scalarfilter {s => " +
+                "   strvals.where(y => y != 'E1') " +
+                "} " +
+                "select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmt.getEventType(), "val1".split(","), new Class[]{Collection.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1,E2,E3,E4"));
+        LambdaAssertionUtil.assertValues(listener, "val1", "E3", "E4");
     }
 
     public void testEventTypeAndSODA() {

@@ -16,9 +16,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 
 import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluatorEnumeration
 {
@@ -27,7 +25,8 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
     private final AggregationAccessType accessType;
     private final boolean isWildcard;
     private final String streamWildcard;
-    private EventType containedType;
+    private transient EventType containedType;
+    private transient ScalarCollectionEvaluator scalarCollectionEvaluator;
 
     /**
      * Ctor.
@@ -129,6 +128,7 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
             }
             resultType = this.getChildNodes().get(0).getExprEvaluator().getType();
             evaluator = this.getChildNodes().get(0).getExprEvaluator();
+            scalarCollectionEvaluator = new ScalarCollectionEvaluator(evaluator, streamNum, resultType);
         }
 
         if (this.getChildNodes().size() > 1) {
@@ -191,12 +191,32 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
         return streamWildcard;
     }
 
-    public Collection<EventBean> evaluateGetROCollection(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+    public Collection<EventBean> evaluateGetROCollectionEvents(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
         return super.aggregationResultFuture.getCollection(column);
     }
 
-    public EventType getEventTypeIterator() {
+    public Collection evaluateGetROCollectionScalar(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+        Collection<EventBean> events = evaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+        if (events == null) {
+            return null;
+        }
+        if (events.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Deque list = new ArrayDeque();
+        for (EventBean bean : events) {
+            list.add(scalarCollectionEvaluator.evaluate(bean, isNewData, context));
+        }
+        return list;
+    }
+
+    public EventType getEventTypeCollection() {
         return containedType;
+    }
+
+    public Class getComponentTypeCollection() throws ExprValidationException {
+        return scalarCollectionEvaluator == null ? null : scalarCollectionEvaluator.componentType;
     }
 
     @Override
@@ -216,5 +236,28 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
 
     private String getErrorPrefix() {
         return "The '" + accessType.toString().toLowerCase() + "' aggregation function";
+    }
+
+    private static class ScalarCollectionEvaluator {
+        private final ExprEvaluator scalarEvaluator;
+        private final int streamId;
+        private final Class componentType;
+        private final EventBean[] eventsPerStream;
+
+        private ScalarCollectionEvaluator(ExprEvaluator scalarEvaluator, int streamId, Class componentType) {
+            this.scalarEvaluator = scalarEvaluator;
+            this.streamId = streamId;
+            this.componentType = componentType;
+            this.eventsPerStream = new EventBean[streamId + 1];
+        }
+
+        public Object evaluate(EventBean event, boolean isNewData, ExprEvaluatorContext context) {
+            eventsPerStream[streamId] = event;
+            return scalarEvaluator.evaluate(eventsPerStream, isNewData, context);
+        }
+
+        public Class getComponentType() {
+            return componentType;
+        }
     }
 }

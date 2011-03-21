@@ -22,7 +22,7 @@ public class EnumEvalTakeLast implements EnumEval {
         return events;
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
 
         Object sizeObj = sizeEval.evaluate(events, isNewData, context);
         if (sizeObj == null) {
@@ -43,15 +43,15 @@ public class EnumEvalTakeLast implements EnumEval {
         }
 
         if (size == 1) {
-            EventBean last = null;
-            for (EventBean next : target) {
+            Object last = null;
+            for (Object next : target) {
                 last = next;
             }
             return Collections.singletonList(last);
         }
 
         ArrayList<Object> result = new ArrayList<Object>();
-        for (EventBean next : target) {
+        for (Object next : target) {
             result.add(next);
             if (result.size() > size) {
                 result.remove(0);

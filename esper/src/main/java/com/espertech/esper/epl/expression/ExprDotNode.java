@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
+import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
@@ -21,11 +22,13 @@ import com.espertech.esper.epl.enummethod.dot.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.JavaClassHelper;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +59,15 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
         ExprNodeUtility.validate(chainSpec, streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
         ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
 
+        // determine if there are enumeration method expressions in the chain
+        boolean hasEnumerationMethod = false;
+        for (ExprChainedSpec chain : chainSpec) {
+            if (EnumMethodEnum.isLambda(chain.getName())) {
+                hasEnumerationMethod = true;
+                break;
+            }
+        }
+
         // The root node expression may provide the input value:
         //   Such as "window(*).doIt(...)" or "(select * from Window).doIt()" or "prevwindow(sb).doIt(...)", in which case the expression to act on is a child expression
         //
@@ -63,14 +75,21 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
             // the root expression is the first child node
             ExprNode rootNode = this.getChildNodes().get(0);
             ExprEvaluator rootNodeEvaluator = rootNode.getExprEvaluator();
-            Class rootNodeType = rootNodeEvaluator.getType();
 
             // the root expression may also provide a lambda-function input (Iterator<EventBean>)
-            // Determine lambda-type and evaluator if any for root node
-            Pair<ExprEvaluatorEnumeration, EventType> enumSrc = getEnumerationSource(rootNode, streamTypeService);
+            // Determine collection-type and evaluator if any for root node
+            Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> enumSrc = getEnumerationSource(rootNode, streamTypeService, hasEnumerationMethod);
 
-            UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(rootNodeType, enumSrc.getSecond(), chainSpec, validationContext, isDuckTyping, streamTypeService);
-            exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, enumSrc.getFirst(), evals.getFirst(), evals.getSecond());
+            ExprDotEvalTypeInfo typeInfo;
+            if (enumSrc.getSecond() == null) {
+                typeInfo = ExprDotEvalTypeInfo.scalarOrUnderlying(rootNodeEvaluator.getType());    // not a collection type, treat as scalar
+            }
+            else {
+                typeInfo = enumSrc.getSecond();
+            }
+
+            UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainSpec, validationContext, isDuckTyping, streamTypeService);
+            exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, enumSrc.getFirst(), enumSrc.getSecond(), evals.getFirst(), evals.getSecond());
         }
         else {
             // There no root node, in this case the classname or property name is provided as part of the chain.
@@ -81,7 +100,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
 
             Pair<PropertyResolutionDescriptor, String> propertyInfoPair = null;
             try {
-                if (!streamTypeService.hasPropertyAgnosticType()) {
+                if (!streamTypeService.hasPropertyAgnosticType() && (firstItem.isProperty() || firstItem.getParameters().isEmpty())) {
                     propertyInfoPair = ExprIdentNode.getTypeFromStream(streamTypeService, firstItem.getName());
                 }
             }
@@ -91,21 +110,16 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
 
             // If property then treat it as such
             if (propertyInfoPair != null) {
+
                 int streamId = propertyInfoPair.getFirst().getStreamNum();
                 EventType streamType = streamTypeService.getEventTypes()[streamId];
                 EventPropertyGetter getter = streamType.getGetter(propertyInfoPair.getFirst().getPropertyName());
-                FragmentEventType fragmentEventType = streamType.getFragmentType(propertyInfoPair.getFirst().getPropertyName());
 
-                ExprEvaluatorEnumeration rootLambdaEvaluator = null;
-                EventType rootLambdaEventType = null;
-                if (getter != null && fragmentEventType != null && fragmentEventType.isIndexed()) {
-                    rootLambdaEvaluator = new PropertyExprEvaluatorLambda(propertyInfoPair.getFirst().getPropertyName(), streamId, fragmentEventType.getFragmentType(), getter);
-                    rootLambdaEventType = fragmentEventType.getFragmentType();
-                }
+                Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> propertyEval = getPropertyEnumerationSource(propertyInfoPair.getFirst().getPropertyName(), streamId, streamType, hasEnumerationMethod);
 
                 ExprEvaluator rootNodeEvaluator = new PropertyExprEvaluatorNonLambda(streamId, getter, propertyInfoPair.getFirst().getPropertyType());
-                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(propertyInfoPair.getFirst().getPropertyType(), rootLambdaEventType, modifiedChain, validationContext, isDuckTyping, streamTypeService);
-                exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, rootLambdaEvaluator, evals.getFirst(), evals.getSecond());
+                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(propertyEval.getSecond(), modifiedChain, validationContext, isDuckTyping, streamTypeService);
+                exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, propertyEval.getFirst(), propertyEval.getSecond(), evals.getFirst(), evals.getSecond());
             }
             else {
 
@@ -135,7 +149,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
                 boolean isConstantParameters = allConstants && isUDFCache;
                 isReturnsConstantResult = isConstantParameters && modifiedChain.isEmpty();
 
-                // Try to resolve the method
+                // Resolve the method - last choice
                 String className = firstItem.getName();
                 Method method;
                 FastMethod staticMethod;
@@ -147,14 +161,15 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
                 }
                 catch(Exception e)
                 {
-                    throw new ExprValidationException(e.getMessage());
+                    String message = "Failed to resolve '" + firstItem.getName() + "' to a property or class name: " + e.getMessage();
+                    throw new ExprValidationException(message, e);
                 }
 
                 // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
                 ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.make(method, eventAdapterService, modifiedChain);
-                EventType optionalLambdaType = optionalLambdaWrap != null ? optionalLambdaWrap.getEventType() : null;
+                ExprDotEvalTypeInfo typeInfo = optionalLambdaWrap != null ? optionalLambdaWrap.getTypeInfo() : ExprDotEvalTypeInfo.scalarOrUnderlying(method.getReturnType());
 
-                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(staticMethod.getReturnType(), optionalLambdaType, modifiedChain, validationContext, false, streamTypeService);
+                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(typeInfo, modifiedChain, validationContext, false, streamTypeService);
                 exprEvaluator = new ExprDotEvalStaticMethod(className, staticMethod, childEvals, isConstantParameters, optionalLambdaWrap, evals.getSecond());
             }
         }
@@ -234,29 +249,67 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
         return ExprNodeUtility.collectChainParameters(chainSpec);
     }
 
-    public static Pair<ExprEvaluatorEnumeration, EventType> getEnumerationSource(ExprNode inputExpression, StreamTypeService streamTypeService) throws ExprValidationException {
+    public static Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> getEnumerationSource(ExprNode inputExpression, StreamTypeService streamTypeService, boolean hasEnumerationMethod) throws ExprValidationException {
         ExprEvaluator rootNodeEvaluator = inputExpression.getExprEvaluator();
         ExprEvaluatorEnumeration rootLambdaEvaluator = null;
-        EventType rootLambdaEventType = null;
+        ExprDotEvalTypeInfo info = null;
 
         if (rootNodeEvaluator instanceof ExprEvaluatorEnumeration) {
             rootLambdaEvaluator = (ExprEvaluatorEnumeration) rootNodeEvaluator;
-            rootLambdaEventType = rootLambdaEvaluator.getEventTypeIterator();
-            if (rootLambdaEventType == null) {  // not eligible if returning null
-                rootLambdaEvaluator = null;
+
+            if (rootLambdaEvaluator.getEventTypeCollection() != null) {
+                info = ExprDotEvalTypeInfo.eventColl(rootLambdaEvaluator.getEventTypeCollection());
+            }
+            else if (rootLambdaEvaluator.getComponentTypeCollection() != null) {
+                info = ExprDotEvalTypeInfo.componentColl(rootLambdaEvaluator.getComponentTypeCollection());
             }
         }
         else if (inputExpression instanceof ExprIdentNode) {
             ExprIdentNode identNode = (ExprIdentNode) inputExpression;
             int streamId = identNode.getStreamId();
             EventType streamType = streamTypeService.getEventTypes()[streamId];
-            EventPropertyGetter getter = streamType.getGetter(identNode.getResolvedPropertyName());
-            FragmentEventType fragmentEventType = streamType.getFragmentType(identNode.getResolvedPropertyName());
-            if (getter != null && fragmentEventType != null && fragmentEventType.isIndexed()) {
-                rootLambdaEvaluator = new PropertyExprEvaluatorLambda(identNode.getResolvedPropertyName(), streamId, fragmentEventType.getFragmentType(), getter);
-                rootLambdaEventType = fragmentEventType.getFragmentType();
+            return getPropertyEnumerationSource(identNode.getResolvedPropertyName(), streamId, streamType, hasEnumerationMethod);
+        }
+        return new Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo>(rootLambdaEvaluator, info);
+    }
+
+    public static Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> getPropertyEnumerationSource(String propertyName, int streamId, EventType streamType, boolean hasEnumerationMethod) {
+
+
+        EventPropertyGetter getter = streamType.getGetter(propertyName);
+        FragmentEventType fragmentEventType = streamType.getFragmentType(propertyName);
+        Class propertyType = streamType.getPropertyType(propertyName);
+        ExprDotEvalTypeInfo typeInfo = ExprDotEvalTypeInfo.scalarOrUnderlying(propertyType);  // assume scalar for now
+
+        // no enumeration methods, no need to expose as an enumeration
+        if (!hasEnumerationMethod) {
+            return new Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo>(null, typeInfo);
+        }
+
+        ExprEvaluatorEnumeration enumEvaluator = null;
+        if (getter != null && fragmentEventType != null && fragmentEventType.isIndexed()) {
+            enumEvaluator = new PropertyExprEvaluatorEventCollection(propertyName, streamId, fragmentEventType.getFragmentType(), getter);
+            typeInfo = ExprDotEvalTypeInfo.eventColl(fragmentEventType.getFragmentType());
+        }
+        else {
+            EventPropertyDescriptor desc = streamType.getPropertyDescriptor(propertyName);
+            if (desc != null && desc.isIndexed() && !desc.isRequiresIndex() && desc.getPropertyComponentType() != null) {
+                if (JavaClassHelper.isImplementsInterface(propertyType, Collection.class)) {
+                    enumEvaluator = new PropertyExprEvaluatorScalarCollection(propertyName, streamId, getter, desc.getPropertyComponentType());
+                }
+                else if (JavaClassHelper.isImplementsInterface(propertyType, Iterable.class)) {
+                    enumEvaluator = new PropertyExprEvaluatorScalarIterable(propertyName, streamId, getter, desc.getPropertyComponentType());
+                }
+                else if (propertyType.isArray()) {
+                    enumEvaluator = new PropertyExprEvaluatorScalarArray(propertyName, streamId, getter, desc.getPropertyComponentType());
+                }
+                else {
+                    throw new IllegalStateException("Property indicated indexed-type but failed to find proper collection adapter for use with enumeration methods");
+                }
+                typeInfo = ExprDotEvalTypeInfo.componentColl(desc.getPropertyComponentType());
             }
         }
-        return new Pair<ExprEvaluatorEnumeration, EventType>(rootLambdaEvaluator, rootLambdaEventType);
+        return new Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo>(enumEvaluator, typeInfo);
     }
 }
+

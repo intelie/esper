@@ -15,8 +15,7 @@ import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndexMap;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 public class ExprPreviousEvalWindow implements ExprPreviousEval
 {
@@ -70,7 +69,7 @@ public class ExprPreviousEvalWindow implements ExprPreviousEval
         return result;
     }
 
-    public Collection<EventBean> evaluateGetColl(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
+    public Collection<EventBean> evaluateGetCollEvents(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
         Collection<EventBean> events;
         if (randomAccessGetter != null)
         {
@@ -85,4 +84,36 @@ public class ExprPreviousEvalWindow implements ExprPreviousEval
         }
         return events;
     }
+
+    public Collection evaluateGetCollScalar(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
+        Iterator<EventBean> events;
+        int size;
+        if (randomAccessGetter != null)
+        {
+            RandomAccessByIndex randomAccess = randomAccessGetter.getAccessor();
+            events = randomAccess.getWindowIterator();
+            size = (int) randomAccess.getWindowCount();
+        }
+        else
+        {
+            EventBean evalEvent = eventsPerStream[streamNumber];
+            RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.getAccessor(evalEvent);
+            size = relativeAccess.getWindowToEventCount(evalEvent);
+            events = relativeAccess.getWindowToEvent(evalEvent);
+        }
+
+        if (size <= 0) {
+            return Collections.emptyList();
+        }
+
+        EventBean originalEvent = eventsPerStream[streamNumber];
+        Deque deque = new ArrayDeque(size);
+        for (int i = 0; i < size; i++) {
+            eventsPerStream[streamNumber] = events.next();
+            Object evalResult = evalNode.evaluate(eventsPerStream, true, context);
+            deque.add(evalResult);
+        }
+        eventsPerStream[streamNumber] = originalEvent;
+        return deque;
+    }    
 }

@@ -5,6 +5,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.SupportCollection;
 import com.espertech.esper.support.bean.lambda.LambdaAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -21,12 +22,13 @@ public class TestEnumReverse extends TestCase {
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("Bean", SupportBean_ST0_Container.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    public void testReverse() {
+    public void testReverseEvents() {
 
         String epl = "select contained.reverse() as val from Bean";
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
@@ -52,5 +54,31 @@ public class TestEnumReverse extends TestCase {
         epService.getEPRuntime().sendEvent(SupportBean_ST0_Container.make2Value());
         LambdaAssertionUtil.assertST0Id(listener, "val", "");
         listener.reset();
+    }
+
+    public void testReverseScalar() {
+
+        String[] fields = "val0".split(",");
+        String eplFragment = "select " +
+                "strvals.reverse() as val0 " +
+                "from SupportCollection";
+        EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
+        stmtFragment.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{Collection.class, Collection.class});
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E2,E1,E5,E4"));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E4", "E5", "E1", "E2");
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString("E1"));
+        LambdaAssertionUtil.assertValues(listener, "val0", "E1");
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
+        LambdaAssertionUtil.assertValues(listener, "val0", null);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
+        LambdaAssertionUtil.assertValues(listener, "val0");
     }
 }

@@ -12,10 +12,11 @@ public class EnumEvalGroupByKeySelector extends EnumEvalBase implements EnumEval
         super(innerExpression, streamCountIncoming);
     }
 
-    public Object evaluateLambda(Collection<EventBean> target, boolean isNewData, ExprEvaluatorContext context) {
+    public Object evaluateEnumMethod(Collection target, boolean isNewData, ExprEvaluatorContext context) {
         Map<Object, Collection> result = new LinkedHashMap<Object, Collection>();
 
-        for (EventBean next : target) {
+        Collection<EventBean> beans = (Collection<EventBean>) target;
+        for (EventBean next : beans) {
             eventsLambda[streamNumLambda] = next;
 
             Object key = innerExpression.evaluate(eventsLambda, isNewData, context);

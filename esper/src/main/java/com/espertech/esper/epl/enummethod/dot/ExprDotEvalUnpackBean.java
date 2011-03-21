@@ -7,10 +7,10 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 public class ExprDotEvalUnpackBean implements ExprDotEval {
 
-    private final Class returnType;
+    private final ExprDotEvalTypeInfo returnType;
 
     public ExprDotEvalUnpackBean(EventType lambdaType) {
-        returnType = lambdaType.getUnderlyingType();
+        returnType = ExprDotEvalTypeInfo.scalarOrUnderlying(lambdaType.getUnderlyingType());
     }
 
     public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
@@ -21,11 +21,7 @@ public class ExprDotEvalUnpackBean implements ExprDotEval {
         return event.getUnderlying();
     }
 
-    public Class getResultType() {
+    public ExprDotEvalTypeInfo getTypeInfo() {
         return returnType;
-    }
-
-    public EventType getResultEventType() {
-        return null;
     }
 }

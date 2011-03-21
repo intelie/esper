@@ -4,11 +4,7 @@ import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatementException;
-import com.espertech.esper.client.deploy.Module;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBeanComplexProps;
-import com.espertech.esper.support.bean.SupportBean_ST0;
-import com.espertech.esper.support.bean.SupportBean_ST0_Container;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
@@ -23,6 +19,7 @@ public class TestEnumInvalid extends TestCase {
         config.addEventType("SupportBean_ST0", SupportBean_ST0.class);
         config.addEventType("SupportBean_ST0_Container", SupportBean_ST0_Container.class);
         config.addEventType("SupportBeanComplexProps", SupportBeanComplexProps.class);
+        config.addEventType("SupportCollection", SupportCollection.class);
         config.addImport(SupportBean_ST0_Container.class);
         config.addPlugInSingleRowFunction("makeTest", SupportBean_ST0_Container.class.getName(), "makeTest");
         epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -32,9 +29,13 @@ public class TestEnumInvalid extends TestCase {
     public void testInvalid() {
         String epl;
 
+        // primitive array property
+        epl = "select arrayProperty.where(x=>x.boolPrimitive) from SupportBeanComplexProps";
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where': Failed to resolve property 'x.boolPrimitive' to a stream or nested property in a stream [select arrayProperty.where(x=>x.boolPrimitive) from SupportBeanComplexProps]");
+
         // property not there
         epl = "select contained.where(x=>x.dummy = 1) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Error validating lambda-expression 'where': Failed to resolve property 'x.dummy' to a stream or nested property in a stream [select contained.where(x=>x.dummy = 1) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where': Failed to resolve property 'x.dummy' to a stream or nested property in a stream [select contained.where(x=>x.dummy = 1) from SupportBean_ST0_Container]");
 
         // test not an enumeration method
         epl = "select contained.notAMethod(x=>x.boolPrimitive) from SupportBean_ST0_Container";
@@ -78,43 +79,39 @@ public class TestEnumInvalid extends TestCase {
 
         // subselect multiple columns
         epl = "select (select string, intPrimitive from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0";
-        tryInvalid(epl, "Error starting statement: Cannot invoke method 'where' on this return type, for subqueries select the (*) wildcard operator [select (select string, intPrimitive from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0]");
-
-        // enummethod on primitive
-        epl = "select window(intPrimitive).where(x => x > 5) from SupportBean.win:keepall()";
-        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'where', expecting event-typed sequence as input, received int(Array) [select window(intPrimitive).where(x => x > 5) from SupportBean.win:keepall()]");
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'where', expecting collection of event-type or scalar values as input, received an incompatible type [select (select string, intPrimitive from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0]");
 
         // subselect individual column
         epl = "select (select string from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0";
-        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'where', expecting event-typed sequence as input, received java.lang.String [select (select string from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where': Failed to resolve property 'x.boolPrimitive' to a stream or nested property in a stream [select (select string from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0]");
 
         // aggregation
         epl = "select avg(intPrimitive).where(x=>x.boolPrimitive) from SupportBean_ST0";
         tryInvalid(epl, "Incorrect syntax near '.' at line 1 column 24, please check the select clause near reserved keyword 'where' [select avg(intPrimitive).where(x=>x.boolPrimitive) from SupportBean_ST0]");
 
-        // primitive array property
-        epl = "select arrayProperty.where(x=>x.boolPrimitive) from SupportBeanComplexProps";
-        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'where', expecting event-typed sequence as input, received int(Array) [select arrayProperty.where(x=>x.boolPrimitive) from SupportBeanComplexProps]");
-        
         // invalid incompatible params
         epl = "select contained.allOf(x => 1) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Error validating lambda-expression 'allOf', expected a boolean-type result for expression parameter 0 but received java.lang.Integer [select contained.allOf(x => 1) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received java.lang.Integer [select contained.allOf(x => 1) from SupportBean_ST0_Container]");
 
         // invalid incompatible params
         epl = "select contained.allOf(x => 1) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Error validating lambda-expression 'allOf', expected a boolean-type result for expression parameter 0 but received java.lang.Integer [select contained.allOf(x => 1) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received java.lang.Integer [select contained.allOf(x => 1) from SupportBean_ST0_Container]");
 
         // invalid incompatible params
         epl = "select contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Error validating lambda-expression 'aggregate': Implicit conversion from datatype 'Integer' to string is not allowed [select contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'aggregate': Implicit conversion from datatype 'Integer' to string is not allowed [select contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container]");
 
         // invalid incompatible params
         epl = "select contained.average(x => x.id) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Error validating lambda-expression 'average', expected a number-type result for expression parameter 0 but received java.lang.String [select contained.average(x => x.id) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'average', expected a number-type result for expression parameter 0 but received java.lang.String [select contained.average(x => x.id) from SupportBean_ST0_Container]");
 
         // not a property
         epl = "select contained.firstof().dummy from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Could not resolve 'dummy' to a property of event type 'SupportBean_ST0' or method on type 'class com.espertech.esper.support.bean.SupportBean_ST0' [select contained.firstof().dummy from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Could not find event property, enumeration method or instance method named 'dummy in event type 'SupportBean_ST0' [select contained.firstof().dummy from SupportBean_ST0_Container]");
+
+        // not a property
+        epl = "select contained.selectFrom(x => key0).toMap(x=>x, y=>y) from SupportBean_ST0_Container";
+        tryInvalid(epl, "Error starting statement: Invalid input for built-in enumeration method 'toMap' and 2-parameter footprint, expecting collection of events as input, received collection of String [select contained.selectFrom(x => key0).toMap(x=>x, y=>y) from SupportBean_ST0_Container]");
     }
 
     private void tryInvalid(String epl, String message) {

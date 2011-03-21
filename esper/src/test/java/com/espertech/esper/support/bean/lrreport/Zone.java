@@ -17,4 +17,8 @@ public class Zone {
     public Rectangle getRectangle() {
         return rectangle;
     }
+
+    public static String[] getZoneNames() {
+        return new String[] {"Z1", "Z2"};
+    }
 }
