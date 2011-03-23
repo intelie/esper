@@ -115,7 +115,7 @@ public class TestInvalidView extends TestCase
 
         // invalid property in select
         exceptionText = getStatementExceptionView("select a[2].m('a') from " + EVENT_ALLTYPES + ".win:length(1)");
-        assertEquals("Error starting statement: Property named 'a[2].m('a')' is not valid in any stream [select a[2].m('a') from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
+        assertEquals("Error starting statement: Failed to resolve enumeration method, date-time method or mapped property 'a[2].m('a')': Failed to resolve 'a[2]' to a property or class name: Could not load class by name 'a[2]', please check imports [select a[2].m('a') from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
 
         // select clause uses same "as" name twice
         exceptionText = getStatementExceptionView("select 2 as m, 2 as m from " + EVENT_ALLTYPES + ".win:length(1)");

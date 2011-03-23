@@ -3,10 +3,10 @@
         
 	<sect1 id="enumeration-intro">
 		<title>Overview</title>
-		<indexterm><primary>lambda</primary><secondary>built-in expressions</secondary></indexterm>
+		<indexterm><primary>methods</primary><secondary>enumeration</secondary></indexterm>
 		
 		<para>
-			Esper provides built-in enumeration methods that work with lambda expressions to perform common tasks on subquery results, named windows, event properties or inputs that are or can be projected to a collection of events, scalar values or objects.
+			EPL provides enumeration methods that work with lambda expressions to perform common tasks on subquery results, named windows, event properties or inputs that are or can be projected to a collection of events, scalar values or objects.
 		</para>
 
 		<para>
@@ -318,13 +318,24 @@
 						</entry>
 					</row>
 					<row>
+						<entry>sequenceEqual(second)</entry>
+						<entry>
+							<para>
+								Determines whether two collections are equal by comparing each element (<literal>equals</literal> semantics apply).
+							</para>
+							<para>
+								<xref linkend="enumeration-method-sequenceequal"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>sumOf()</entry>
 						<entry>
 							<para>
 								Computes the sum from a collection of numeric elements.
 							</para>
 							<para>
-								<xref linkend="enumeration-method-selectfrom"/>.
+								<xref linkend="enumeration-method-sumof"/>.
 							</para>
 						</entry>
 					</row>
@@ -335,7 +346,7 @@
 								Computes the sum by invoking a projection expression on each element.
 							</para>
 							<para>
-								<xref linkend="enumeration-method-selectfrom"/>.
+								<xref linkend="enumeration-method-sumof"/>.
 							</para>
 						</entry>
 					</row>
@@ -546,7 +557,7 @@
 			<para>
 				The syntax for enumeration methods is the same syntax as for any chained invocation:
 			</para>
-			<synopsis><emphasis>input_coll</emphasis>.<emphasis>enum_method)name</emphasis>( [<emphasis>method_parameter</emphasis> [, <emphasis>method_parameter</emphasis> [,...]]])
+			<synopsis><emphasis>input_coll</emphasis>.<emphasis>enum_method_name</emphasis>( [<emphasis>method_parameter</emphasis> [, <emphasis>method_parameter</emphasis> [,...]]])
 	  .[ [<emphasis>enum_method_name</emphasis>(...) [...]] | <emphasis>property_name</emphasis>] </synopsis>
 	
 			<para>
@@ -791,6 +802,16 @@ from pattern[every timer:interval(30)]]]></programlisting>
 from Item]]></programlisting>
 
 			<para>
+				You may prefix property names provided by the named window with the name to disambiguate property names.
+			</para>
+
+			<para>
+				This sample query prefixed the <literal>name</literal> property and returns the count of matching zones:
+			</para>
+			<programlisting><![CDATA[select ZoneWindow(ZoneWindow.name in ('Z1', 'Z2', 'Z3')).countof()) as zoneCount
+from Item]]></programlisting>
+
+			<para>
 				The engine internally interprets the shortcut syntax and creates a subquery from it. Thus all indexing and query planning for subqueries against named windows apply here as well.
 			</para>
 		</sect2>
@@ -816,7 +837,7 @@ from LocationReport]]></programlisting>
 			   The following example consists of two statements: The first statement declares an a new event type and the second statement invokes the <literal>sequenceEqual</literal> method to compare sequences contained in two properties of the same event:
 			</para>
 			<programlisting><![CDATA[create schema MyEvent (seqone String[], seqtwo String[])]]></programlisting>			
-			<programlisting><![CDATA[select seqone.sequenceEquals(seqtwo) from MyEvent]]></programlisting>			
+			<programlisting><![CDATA[select seqone.sequenceEqual(seqtwo) from MyEvent]]></programlisting>			
 		</sect2>
 
 		<sect2 id="enumeration-ds-accessagg">
@@ -1406,6 +1427,27 @@ from LocationReport</programlisting>
 
 			<para>
 				If the input is null the method returns null. If the input is empty the method returns an empty collection.
+			</para>
+		</sect2>
+
+		<sect2 id="enumeration-method-sequenceequal">
+			<title>SequenceEqual</title>
+
+			<para>
+				The <literal>sequenceEqual</literal> enumeration method determines whether two collections are equal by comparing each element.
+			</para>
+
+			<para>
+				The method enumerates the two source collections in parallel and compares corresponding elements by using the <literal>equals</literal> method to compare. The method takes a single parameter expression that must return a collection containing elements of the same type as the input. The method returns true if the two source sequences are of equal length and their corresponding elements are equal.
+			</para>
+
+			<para>
+				The following example compares the asset id of all items to the asset ids returned by a method <literal>ItemUtil.redListed()</literal> which is assumed to return a list of asset id of string type:
+			</para>
+			<programlisting>select items.selectFrom(i => assetId).sequenceEquals(ItemUtil.redListed()) from LocationReport</programlisting>
+
+			<para>
+				If the input is null the method returns null.
 			</para>
 		</sect2>
 

@@ -62,7 +62,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
         // determine if there are enumeration method expressions in the chain
         boolean hasEnumerationMethod = false;
         for (ExprChainedSpec chain : chainSpec) {
-            if (EnumMethodEnum.isLambda(chain.getName())) {
+            if (EnumMethodEnum.isEnumerationMethod(chain.getName())) {
                 hasEnumerationMethod = true;
                 break;
             }

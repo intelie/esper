@@ -9,9 +9,11 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
+import com.espertech.esper.epl.datetime.ExprDotEvalDTFactory;
 import com.espertech.esper.epl.enummethod.dot.*;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.map.MapEventType;
@@ -20,10 +22,7 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExprDotNodeUtility
 {
@@ -39,27 +38,29 @@ public class ExprDotNodeUtility
         EnumMethodEnum lastLambdaFunc = null;
         ExprChainedSpec lastElement = chainSpec.isEmpty() ? null : chainSpec.get(chainSpec.size() - 1);
 
-        for (ExprChainedSpec chain : chainSpec) {
+        Deque<ExprChainedSpec> chainSpecStack = new ArrayDeque<ExprChainedSpec>(chainSpec);
+        while (!chainSpecStack.isEmpty()) {
+            ExprChainedSpec chainElement = chainSpecStack.removeFirst();
             lastLambdaFunc = null;  // reset
 
             // compile parameters for chain element
-            ExprEvaluator[] paramEvals = new ExprEvaluator[chain.getParameters().size()];
-            Class[] paramTypes = new Class[chain.getParameters().size()];
-            for (int i = 0; i < chain.getParameters().size(); i++) {
-                paramEvals[i] = chain.getParameters().get(i).getExprEvaluator();
+            ExprEvaluator[] paramEvals = new ExprEvaluator[chainElement.getParameters().size()];
+            Class[] paramTypes = new Class[chainElement.getParameters().size()];
+            for (int i = 0; i < chainElement.getParameters().size(); i++) {
+                paramEvals[i] = chainElement.getParameters().get(i).getExprEvaluator();
                 paramTypes[i] = paramEvals[i].getType();
             }
 
             // check if special 'size' method
             if ( (currentInputType.isScalar() && currentInputType.getScalar().isArray()) ||
                  (currentInputType.getComponent() != null)) {
-                if (chain.getName().toLowerCase().equals("size") && paramTypes.length == 0 && lastElement == chain) {
+                if (chainElement.getName().toLowerCase().equals("size") && paramTypes.length == 0 && lastElement == chainElement) {
                     ExprDotEvalArraySize sizeExpr = new ExprDotEvalArraySize();
                     methodEvals.add(sizeExpr);
                     currentInputType = sizeExpr.getTypeInfo();
                     continue;
                 }
-                if (chain.getName().toLowerCase().equals("get") && paramTypes.length == 1 && JavaClassHelper.getBoxedType(paramTypes[0]) == Integer.class) {
+                if (chainElement.getName().toLowerCase().equals("get") && paramTypes.length == 1 && JavaClassHelper.getBoxedType(paramTypes[0]) == Integer.class) {
                     Class componentType = currentInputType.getComponent() != null ? currentInputType.getComponent() : currentInputType.getScalar().getComponentType();
                     ExprDotEvalArrayGet get = new ExprDotEvalArrayGet(paramEvals[0], componentType);
                     methodEvals.add(get);
@@ -69,23 +70,35 @@ public class ExprDotNodeUtility
             }
 
             // resolve lambda
-            if (EnumMethodEnum.isLambda(chain.getName())) {
-                EnumMethodEnum lambdaFunc = EnumMethodEnum.fromName(chain.getName());
-                ExprDotEvalEnumMethod eval = (ExprDotEvalEnumMethod) JavaClassHelper.instantiate(ExprDotEval.class, lambdaFunc.getImplementation().getName());
-                eval.init(lambdaFunc, chain.getName(), currentInputType, chain.getParameters(), validationContext, streamTypeService);
+            if (EnumMethodEnum.isEnumerationMethod(chainElement.getName())) {
+                EnumMethodEnum enumerationMethod = EnumMethodEnum.fromName(chainElement.getName());
+                ExprDotEvalEnumMethod eval = (ExprDotEvalEnumMethod) JavaClassHelper.instantiate(ExprDotEvalEnumMethod.class, enumerationMethod.getImplementation().getName());
+                eval.init(enumerationMethod, chainElement.getName(), currentInputType, chainElement.getParameters(), validationContext, streamTypeService);
                 currentInputType = eval.getTypeInfo();
                 if (currentInputType == null) {
-                    throw new IllegalStateException("Enumeration method '" + chain.getName() + "' has not returned type information");
+                    throw new IllegalStateException("Enumeration method '" + chainElement.getName() + "' has not returned type information");
                 }
                 methodEvals.add(eval);
-                lastLambdaFunc = lambdaFunc;
+                lastLambdaFunc = enumerationMethod;
+                continue;
+            }
+
+            // resolve datetime
+            if (DatetimeMethodEnum.isDateTimeMethod(chainElement.getName())) {
+                DatetimeMethodEnum datetimeMethod = DatetimeMethodEnum.fromName(chainElement.getName());
+                Pair<ExprDotEval, ExprDotEvalTypeInfo> pair = ExprDotEvalDTFactory.validateMake(chainSpecStack, datetimeMethod, chainElement.getName(), currentInputType, chainElement.getParameters());
+                currentInputType = pair.getSecond();
+                if (currentInputType == null) {
+                    throw new IllegalStateException("Date-time method '" + chainElement.getName() + "' has not returned type information");
+                }
+                methodEvals.add(pair.getFirst());
                 continue;
             }
 
             // try to resolve as property if the last method returned a type
             if (currentInputType.getEventType() != null) {
-                Class type = currentInputType.getEventType().getPropertyType(chain.getName());
-                EventPropertyGetter getter = currentInputType.getEventType().getGetter(chain.getName());
+                Class type = currentInputType.getEventType().getPropertyType(chainElement.getName());
+                EventPropertyGetter getter = currentInputType.getEventType().getGetter(chainElement.getName());
                 if (type != null && getter != null) {
                     ExprDotEvalProperty noduck = new ExprDotEvalProperty(getter, ExprDotEvalTypeInfo.scalarOrUnderlying(JavaClassHelper.getBoxedType(type)));
                     methodEvals.add(noduck);
@@ -96,11 +109,11 @@ public class ExprDotNodeUtility
                 // preresolve as method
                 try {
                     if (currentInputType.isScalar()) {
-                        validationContext.getMethodResolutionService().resolveMethod(currentInputType.getScalar(), chain.getName(), paramTypes);
+                        validationContext.getMethodResolutionService().resolveMethod(currentInputType.getScalar(), chainElement.getName(), paramTypes);
                     }
                 }
                 catch (Exception ex) {
-                    throw new ExprValidationException("Could not resolve '" + chain.getName() + "' to a property of event type '" + currentInputType.getEventType().getName() + "' or method on type '" + currentInputType + "'");
+                    throw new ExprValidationException("Could not resolve '" + chainElement.getName() + "' to a property of event type '" + currentInputType.getEventType().getName() + "' or method on type '" + currentInputType + "'");
                 }
             }
 
@@ -108,7 +121,7 @@ public class ExprDotNodeUtility
             if (currentInputType.isScalar()) {
                 try
                 {
-                    Method method = validationContext.getMethodResolutionService().resolveMethod(currentInputType.getScalar(), chain.getName(), paramTypes);
+                    Method method = validationContext.getMethodResolutionService().resolveMethod(currentInputType.getScalar(), chainElement.getName(), paramTypes);
                     FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
                     FastMethod fastMethod = declaringClass.getMethod(method);
                     ExprDotMethodEvalNoDuck noduck = new ExprDotMethodEvalNoDuck(fastMethod, paramEvals);
@@ -121,7 +134,7 @@ public class ExprDotNodeUtility
                         throw new ExprValidationException(e.getMessage(), e);
                     }
                     else {
-                        ExprDotMethodEvalDuck duck = new ExprDotMethodEvalDuck(validationContext.getMethodResolutionService(), chain.getName(), paramTypes, paramEvals);
+                        ExprDotMethodEvalDuck duck = new ExprDotMethodEvalDuck(validationContext.getMethodResolutionService(), chainElement.getName(), paramTypes, paramEvals);
                         methodEvals.add(duck);
                         currentInputType = duck.getTypeInfo();
                     }
@@ -130,7 +143,7 @@ public class ExprDotNodeUtility
             }
 
             String message = "Could not find event property, enumeration method or instance method named '" +
-                    chain.getName() + " in " + currentInputType.toTypeName();
+                    chainElement.getName() + " in " + currentInputType.toTypeName();
             throw new ExprValidationException(message);
         }
 

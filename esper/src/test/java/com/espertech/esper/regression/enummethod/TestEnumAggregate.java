@@ -78,15 +78,5 @@ public class TestEnumAggregate extends TestCase {
         epService.getEPRuntime().sendEvent(SupportCollection.makeString(null));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null});
         stmtFragment.destroy();
-
-        eplFragment = "select " +
-                "Collections.nCopies(1, 5).aggregate(0, (result, v) => result + v) as val0 " +
-                "from SupportCollection";
-        stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
-        stmtFragment.addListener(listener);
-        LambdaAssertionUtil.assertTypes(stmtFragment.getEventType(), fields, new Class[]{String.class, Integer.class});
-
-        epService.getEPRuntime().sendEvent(SupportCollection.makeString(""));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"+E1+E2+E3", 6});
     }
 }

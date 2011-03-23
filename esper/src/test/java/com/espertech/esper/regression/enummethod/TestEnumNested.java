@@ -48,7 +48,7 @@ public class TestEnumNested extends TestCase {
 
     public void testMinByWhere() {
 
-        String eplFragment = "select sales.where(x => x.buyer = persons.minBy(x => age)) as val from PersonSales";
+        String eplFragment = "select sales.where(x => x.buyer = persons.minBy(y => age)) as val from PersonSales";
         EPStatement stmtFragment = epService.getEPAdministrator().createEPL(eplFragment);
         stmtFragment.addListener(listener);
 

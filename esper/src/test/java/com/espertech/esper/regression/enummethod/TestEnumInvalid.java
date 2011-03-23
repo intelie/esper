@@ -31,15 +31,15 @@ public class TestEnumInvalid extends TestCase {
 
         // primitive array property
         epl = "select arrayProperty.where(x=>x.boolPrimitive) from SupportBeanComplexProps";
-        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where': Failed to resolve property 'x.boolPrimitive' to a stream or nested property in a stream [select arrayProperty.where(x=>x.boolPrimitive) from SupportBeanComplexProps]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where' parameter 0: Failed to resolve property 'x.boolPrimitive' to a stream or nested property in a stream [select arrayProperty.where(x=>x.boolPrimitive) from SupportBeanComplexProps]");
 
         // property not there
         epl = "select contained.where(x=>x.dummy = 1) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where': Failed to resolve property 'x.dummy' to a stream or nested property in a stream [select contained.where(x=>x.dummy = 1) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where' parameter 0: Failed to resolve property 'x.dummy' to a stream or nested property in a stream [select contained.where(x=>x.dummy = 1) from SupportBean_ST0_Container]");
 
         // test not an enumeration method
         epl = "select contained.notAMethod(x=>x.boolPrimitive) from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Could not find enumeration method or instance method named 'notAMethod' in class 'java.util.List' with matching parameter number and expected parameter type(s) 'null (any type)' [select contained.notAMethod(x=>x.boolPrimitive) from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Could not find enumeration method, date-time method or instance method named 'notAMethod' in class 'java.util.List' with matching parameter number and expected parameter type(s) 'null (any type)' [select contained.notAMethod(x=>x.boolPrimitive) from SupportBean_ST0_Container]");
 
         // invalid lambda expression for non-lambda func
         epl = "select makeTest(x=>1) from SupportBean_ST0_Container";
@@ -51,7 +51,7 @@ public class TestEnumInvalid extends TestCase {
 
         // invalid incompatible params
         epl = "select contained.take('a') from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Failed to resolve property 'contained.take('a')' to a stream or nested property in a stream [select contained.take('a') from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Failed to resolve enumeration method, date-time method or mapped property 'contained.take('a')': Error validating enumeration method 'take', expected a number-type result for expression parameter 0 but received java.lang.String [select contained.take('a') from SupportBean_ST0_Container]");
 
         // invalid incompatible params
         epl = "select contained.take(x => x.p00) from SupportBean_ST0_Container";
@@ -83,7 +83,7 @@ public class TestEnumInvalid extends TestCase {
 
         // subselect individual column
         epl = "select (select string from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0";
-        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where': Failed to resolve property 'x.boolPrimitive' to a stream or nested property in a stream [select (select string from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'where' parameter 0: Failed to resolve property 'x.boolPrimitive' to a stream or nested property in a stream [select (select string from SupportBean.std:lastevent()).where(x=>x.boolPrimitive) from SupportBean_ST0]");
 
         // aggregation
         epl = "select avg(intPrimitive).where(x=>x.boolPrimitive) from SupportBean_ST0";
@@ -99,7 +99,7 @@ public class TestEnumInvalid extends TestCase {
 
         // invalid incompatible params
         epl = "select contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container";
-        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'aggregate': Implicit conversion from datatype 'Integer' to string is not allowed [select contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container]");
+        tryInvalid(epl, "Error starting statement: Error validating enumeration method 'aggregate' parameter 1: Implicit conversion from datatype 'Integer' to string is not allowed [select contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container]");
 
         // invalid incompatible params
         epl = "select contained.average(x => x.id) from SupportBean_ST0_Container";

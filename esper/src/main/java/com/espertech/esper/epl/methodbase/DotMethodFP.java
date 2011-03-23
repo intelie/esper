@@ -1,22 +1,22 @@
-package com.espertech.esper.epl.enummethod.dot;
+package com.espertech.esper.epl.methodbase;
 
 import java.io.StringWriter;
 
-public class EnumMethodFootprint {
+public class DotMethodFP {
 
-    private final EnumMethodInputEnum input;
-    private final EnumMethodParam[] params;
+    private final DotMethodFPInputEnum input;
+    private final DotMethodFPParam[] params;
 
-    public EnumMethodFootprint(EnumMethodInputEnum input, EnumMethodParam... params) {
+    public DotMethodFP(DotMethodFPInputEnum input, DotMethodFPParam... params) {
         this.input = input;
         this.params = params;
     }
 
-    public EnumMethodInputEnum getInput() {
+    public DotMethodFPInputEnum getInput() {
         return input;
     }
 
-    public EnumMethodParam[] getParams() {
+    public DotMethodFPParam[] getParams() {
         return params;
     }
 
@@ -26,7 +26,7 @@ public class EnumMethodFootprint {
         }
         StringWriter buf = new StringWriter();
         String delimiter = "";
-        for (EnumMethodParam param : params) {
+        for (DotMethodFPParam param : params) {
             buf.append(delimiter);
 
             if (param.getLambdaParamNum() == 0) {
@@ -46,13 +46,13 @@ public class EnumMethodFootprint {
         return buf.toString();
     }
 
-    public static String toStringProvided(EnumMethodFootprintProvided provided) {
+    public static String toStringProvided(DotMethodFPProvided provided) {
         if (provided.getParams().length == 0) {
             return "no parameters";
         }
         StringWriter buf = new StringWriter();
         String delimiter = "";
-        for (EnumMethodParamProvided param : provided.getParams()) {
+        for (DotMethodFPProvidedParam param : provided.getParams()) {
             buf.append(delimiter);
 
             if (param.getLambdaParamNum() == 0) {

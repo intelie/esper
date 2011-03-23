@@ -8,10 +8,10 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.enummethod.eval.EnumEval;
 import com.espertech.esper.epl.expression.*;
+import com.espertech.esper.epl.methodbase.*;
 import com.espertech.esper.util.CollectionUtil;
 import com.espertech.esper.util.JavaClassHelper;
 
-import java.io.StringWriter;
 import java.util.*;
 
 public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod, ExpressionResultCacheStackEntry {
@@ -49,22 +49,22 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         }
 
         // compile parameter abstract for validation against available footprints
-        EnumMethodFootprintProvided footprintProvided = getProvidedFootprint(parameters);
+        DotMethodFPProvided footprintProvided = DotMethodUtil.getProvidedFootprint(parameters);
 
         // validate parameters
-        EnumMethodFootprint footprint = validateParameters(enumMethodEnum, enumMethodUsedName, footprintProvided);
+        DotMethodFP footprint = DotMethodUtil.validateParameters(enumMethodEnum.getFootprints(), DotMethodTypeEnum.ENUM, enumMethodUsedName, footprintProvided);
 
         // validate input criteria met for this footprint
-        if (footprint.getInput() != EnumMethodInputEnum.ANY) {
+        if (footprint.getInput() != DotMethodFPInputEnum.ANY) {
             String message = "Invalid input for built-in enumeration method '" + enumMethodUsedName + "' and " + footprint.getParams().length + "-parameter footprint, expecting collection of ";
             String received = " as input, received " + typeInfo.toTypeName();
-            if (footprint.getInput() == EnumMethodInputEnum.EVENTCOLL && typeInfo.getEventTypeColl() == null) {
+            if (footprint.getInput() == DotMethodFPInputEnum.EVENTCOLL && typeInfo.getEventTypeColl() == null) {
                 throw new ExprValidationException(message + "events" + received);
             }
             if (footprint.getInput().isScalar() && typeInfo.getComponent() == null) {
                 throw new ExprValidationException(message + "values (typically scalar values)" + received);
             }
-            if (footprint.getInput() == EnumMethodInputEnum.SCALAR_NUMERIC && !JavaClassHelper.isNumeric(collectionComponentType)) {
+            if (footprint.getInput() == DotMethodFPInputEnum.SCALAR_NUMERIC && !JavaClassHelper.isNumeric(collectionComponentType)) {
                 throw new ExprValidationException(message + "numeric values" + received);
             }
         }
@@ -117,69 +117,6 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         return typeInfo;
     }
 
-    private EnumMethodFootprint validateParameters(EnumMethodEnum enumMethod, String enumMethodUsedName, EnumMethodFootprintProvided providedFootprint)
-        throws ExprValidationException
-    {
-        EnumMethodFootprint[] footprints = enumMethod.getFootprints();
-
-        EnumMethodFootprint found = null;
-        EnumMethodFootprint bestMatch = null;
-        for (EnumMethodFootprint footprint : footprints) {
-
-            EnumMethodParam[] requiredParams = footprint.getParams();
-            if (requiredParams.length != providedFootprint.getParams().length) {
-                continue;
-            }
-
-            if (bestMatch == null) {    // take first if number of parameters matches
-                bestMatch = footprint;
-            }
-
-            boolean paramMatch = true;
-            int count = 0;
-            for (EnumMethodParam requiredParam : requiredParams) {
-
-                EnumMethodParamProvided providedParam = providedFootprint.getParams()[count++];
-                if (requiredParam.getLambdaParamNum() != providedParam.getLambdaParamNum()) {
-                    paramMatch = false;
-                }
-            }
-
-            if (paramMatch) {
-                found = footprint;
-                break;
-            }
-        }
-
-        if (found != null) {
-            return found;
-        }
-
-        String message = "Parameters mismatch for enumeration method '" + enumMethodUsedName + "', the method ";
-        if (bestMatch != null) {
-            StringWriter buf = new StringWriter();
-            buf.append(bestMatch.toStringFootprint());
-            buf.append(", but receives ");
-            buf.append(EnumMethodFootprint.toStringProvided(providedFootprint));
-            throw new ExprValidationException(message + "requires " + buf.toString());
-        }
-
-        if (footprints.length == 1) {
-            throw new ExprValidationException(message + "requires " + footprints[0].toStringFootprint());
-        }
-        else {
-            StringWriter buf = new StringWriter();
-            String delimiter = "";
-            for (EnumMethodFootprint footprint : footprints) {
-                buf.append(delimiter);
-                buf.append(footprint.toStringFootprint());
-                delimiter = ", or ";
-            }
-            throw new ExprValidationException(message + "has multiple footprints accepting " + buf +
-                    ", but receives " + EnumMethodFootprint.toStringProvided(providedFootprint));
-        }
-    }
-
     public Object evaluate(Object target, EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext) {
         if (cache) {
             ExpressionResultCacheEntry<Long[], Object> cacheValue = exprEvaluatorContext.getExpressionResultCacheService().getEnumerationMethodLastValue(this);
@@ -213,19 +150,6 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         }
     }
 
-    private static EnumMethodFootprintProvided getProvidedFootprint(List<ExprNode> parameters) {
-        List<EnumMethodParamProvided> params = new ArrayList<EnumMethodParamProvided>();
-        for (ExprNode node : parameters) {
-            if (!(node instanceof ExprLambdaGoesNode)) {
-                params.add(new EnumMethodParamProvided(0));
-                continue;
-            }
-            ExprLambdaGoesNode goesNode = (ExprLambdaGoesNode) node;
-            params.add(new EnumMethodParamProvided(goesNode.getGoesToNames().size()));
-        }
-        return new EnumMethodFootprintProvided(params.toArray(new EnumMethodParamProvided[params.size()]));
-    }
-
     private ExprDotEvalParam getBodyAndParameter(String enumMethodUsedName,
                                                  int parameterNum,
                                                  ExprNode parameterNode,
@@ -234,15 +158,13 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
                                                  ValidationContext validationContext,
                                                  StreamTypeService streamTypeService,
                                                  List<ExprDotEvalParam> priorParameters,
-                                                 EnumMethodFootprint footprint) throws ExprValidationException {
+                                                 DotMethodFP footprint) throws ExprValidationException {
 
         // handle an expression that is a constant or other (not =>)
         if (!(parameterNode instanceof ExprLambdaGoesNode)) {
 
             // no node subtree validation is required here, the chain parameter validation has taken place in ExprDotNode.validate
-            // we validate the parameter type so that a uniform error message can be presented
-            EnumMethodEnumParamType expectedType = footprint.getParams()[parameterNum].getType();
-            validateExpr(expectedType, parameterNode.getExprEvaluator().getType(), parameterNum);
+            // validation of parameter types has taken place in footprint matching
             return new ExprDotEvalParamExpr(parameterNum, parameterNode, parameterNode.getExprEvaluator());
         }
 
@@ -251,6 +173,8 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         // Get secondary
         EventType[] additionalTypes = getAddStreamTypes(enumMethodUsedName, goesNode.getGoesToNames(), inputEventType, collectionComponentType, priorParameters);
         String[] additionalStreamNames = goesNode.getGoesToNames().toArray(new String[goesNode.getGoesToNames().size()]);
+
+        validateDuplicateStreamNames(streamTypeService.getStreamNames(), additionalStreamNames);
 
         // add name and type to list of known types
         EventType[] addTypes = (EventType[]) CollectionUtil.expandAddElement(streamTypeService.getEventTypes(), additionalTypes);
@@ -268,21 +192,23 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         }
 
         ExprEvaluator filterEvaluator = filter.getExprEvaluator();
-        EnumMethodEnumParamType expectedType = footprint.getParams()[parameterNum].getType();
-        validateExpr(expectedType, filterEvaluator.getType(), parameterNum);
+        DotMethodFPParamTypeEnum expectedType = footprint.getParams()[parameterNum].getType();
+        // Lambda-methods don't use a specific expected return-type, so passing null for type is fine.
+        DotMethodUtil.validateSpecificType(enumMethodUsedName, DotMethodTypeEnum.ENUM, expectedType, null, filterEvaluator.getType(), parameterNum);
 
         int numStreamsIncoming = streamTypeService.getEventTypes().length;
         return new ExprDotEvalParamLambda(parameterNum, filter, filterEvaluator,
                 numStreamsIncoming, goesNode.getGoesToNames(), additionalTypes);
     }
 
-    private void validateExpr(EnumMethodEnumParamType expectedType, Class returnType, int parameterNum)
-        throws ExprValidationException{
-        if (expectedType == EnumMethodEnumParamType.BOOLEAN && (!JavaClassHelper.isBoolean(returnType))) {
-            throw new ExprValidationException("Error validating enumeration method '" + enumMethodUsedName + "', expected a boolean-type result for expression parameter " + parameterNum + " but received " + JavaClassHelper.getClassNameFullyQualPretty(returnType));
-        }
-        if (expectedType == EnumMethodEnumParamType.NUMERIC && (!JavaClassHelper.isNumeric(returnType))) {
-            throw new ExprValidationException("Error validating enumeration method '" + enumMethodUsedName + "', expected a number-type result for expression parameter " + parameterNum + " but received " + JavaClassHelper.getClassNameFullyQualPretty(returnType));
+    private void validateDuplicateStreamNames(String[] streamNames, String[] additionalStreamNames) throws ExprValidationException {
+        for (int added = 0; added < additionalStreamNames.length; added++) {
+            for (int exist = 0; exist < streamNames.length; exist++) {
+                if (streamNames[exist] != null && streamNames[exist].equalsIgnoreCase(additionalStreamNames[added])) {
+                    String message = "Error validating enumeration method '" + enumMethodUsedName + "', the lambda-parameter name '" + additionalStreamNames[added] + "' has already been declared in this context";
+                    throw new ExprValidationException(message);
+                }
+            }
         }
     }
 

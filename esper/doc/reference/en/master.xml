@@ -13,6 +13,7 @@
 	<!ENTITY operatorreference SYSTEM "modules/operatorreference.xml">
 	<!ENTITY functionreference SYSTEM "modules/functionreference.xml">
 	<!ENTITY enumerationreference SYSTEM "modules/enumerationreference.xml">
+	<!ENTITY datetimereference SYSTEM "modules/datetimereference.xml">
 	<!ENTITY viewreference SYSTEM "modules/viewreference.xml">
 	<!ENTITY processingmodel SYSTEM "modules/processingmodel.xml">
 	<!ENTITY extension SYSTEM "modules/extension.xml">
@@ -131,6 +132,8 @@
     &functionreference;
 
     &enumerationreference;
+
+    &datetimereference;
 
     &viewreference;
 

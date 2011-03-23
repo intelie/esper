@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.enummethod.dot;
 
 import com.espertech.esper.epl.enummethod.eval.*;
+import com.espertech.esper.epl.methodbase.DotMethodFP;
 
 public enum EnumMethodEnum {
 
@@ -36,14 +37,14 @@ public enum EnumMethodEnum {
     REVERSE("reverse", ExprDotEvalReverse.class, EnumMethodEnumParams.NOOP_REVERSE),
     NOOP("esperInternalNoop", ExprDotEvalNoOp.class, EnumMethodEnumParams.NOOP_REVERSE),
 
-    SEQUENCE_EQUALS("sequenceequals", ExprDotEvalSequenceEqual.class, EnumMethodEnumParams.SEQ_EQUALS_FP),
+    SEQUENCE_EQUAL("sequenceequal", ExprDotEvalSequenceEqual.class, EnumMethodEnumParams.SEQ_EQUALS_FP),
     ;
 
     private final String nameCamel;
     private final Class implementation;
-    private final EnumMethodFootprint[] footprints;
+    private final DotMethodFP[] footprints;
 
-    private EnumMethodEnum(String nameCamel, Class implementation, EnumMethodFootprint[] footprints) {
+    private EnumMethodEnum(String nameCamel, Class implementation, DotMethodFP[] footprints) {
         this.nameCamel = nameCamel;
         this.implementation = implementation;
         this.footprints = footprints;
@@ -53,11 +54,11 @@ public enum EnumMethodEnum {
         return nameCamel;
     }
 
-    public EnumMethodFootprint[] getFootprints() {
+    public DotMethodFP[] getFootprints() {
         return footprints;
     }
 
-    public static boolean isLambda(String name) {
+    public static boolean isEnumerationMethod(String name) {
         for (EnumMethodEnum e : EnumMethodEnum.values()) {
             if (e.getNameCamel().toLowerCase().equals(name.toLowerCase())) {
                 return true;

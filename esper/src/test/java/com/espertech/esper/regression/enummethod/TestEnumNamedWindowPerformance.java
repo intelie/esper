@@ -82,7 +82,7 @@ public class TestEnumNamedWindowPerformance extends TestCase {
 
         // test expression reuse
         String epl =    "expression q {" +
-                        "  x => Win(string = x.key0).where(x => intPrimitive = x.p00)" +
+                        "  x => Win(string = x.key0).where(y => intPrimitive = x.p00)" +
                         "}" +
                         "select " +
                         "q(st0) as val0, " +

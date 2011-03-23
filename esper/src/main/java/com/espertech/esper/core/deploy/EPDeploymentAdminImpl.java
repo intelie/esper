@@ -245,9 +245,24 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             message += " in module url '" + module.getUri() + "'";
         }
         if (exceptions.size() > 0) {
-            message += " in expression '" + exceptions.get(0).getExpression() + "' : " + exceptions.get(0).getMessage();
+            message += " in expression '" + getAbbreviated(exceptions.get(0).getExpression()) + "' : " + exceptions.get(0).getMessage();
         }
         return new DeploymentActionException(message, exceptions);
+    }
+
+    private String getAbbreviated(String expression) {
+        if (expression.length() < 60) {
+            return replaceNewline(expression);
+        }
+        String subtext = expression.substring(0, 50) + "...(" + expression.length() + " chars)";
+        return replaceNewline(subtext);
+    }
+
+    private String replaceNewline(String text) {
+        text = text.replaceAll("\\n","");
+        text = text.replaceAll("\\t","");
+        text = text.replaceAll("\\r","");
+        return text;
     }
 
     public Module parse(String eplModuleText) throws IOException, ParseException

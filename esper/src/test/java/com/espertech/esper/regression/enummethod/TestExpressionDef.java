@@ -29,6 +29,27 @@ public class TestExpressionDef extends TestCase {
         listener = new SupportUpdateListener();
     }
 
+    public void testAnnotationOrder() {
+        String epl = "expression scalar {1} @Name('test') select scalar() from SupportBean_ST0";
+        runAssertionAnnotation(epl);
+
+        epl = "@Name('test') expression scalar {1} select scalar() from SupportBean_ST0";
+        runAssertionAnnotation(epl);
+    }
+
+    private void runAssertionAnnotation(String epl) {
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        assertEquals(Integer.class, stmt.getEventType().getPropertyType("scalar()"));
+        assertEquals("test", stmt.getName());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("E1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "scalar()".split(","), new Object[] {1});
+
+        stmt.destroy();
+    }
+
     public void testSubqueryCross() {
         String fields[] = new String[] {"val1"};
         String epl = "" +
@@ -128,11 +149,12 @@ public class TestExpressionDef extends TestCase {
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{"E2", "ST1"});
     }
 
-    public void testSubqueryNamedWindowLambda() {
+    public void testSubqueryNamedWindowUncorrelated() {
         epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as (val0 string, val1 int)");
         epService.getEPAdministrator().createEPL("insert into MyWindow (val0, val1) select string, intPrimitive from SupportBean");
 
-        String[] fields = "val0".split(",");
+        String[] fieldsSelected = "c0,c1".split(",");
+        String[] fieldsInside = "val0".split(",");
         String epl = "" +
                 "expression subqnamedwin {" +
                 "  MyWindow.where(x => x.val1 > 10).orderBy(x => x.val0)" +
@@ -140,25 +162,90 @@ public class TestExpressionDef extends TestCase {
                 "select subqnamedwin() as c0, subqnamedwin().where(x => x.val1 < 100) as c1 from SupportBean_ST0 as t";
         EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
         stmt.addListener(listener);
-        LambdaAssertionUtil.assertTypes(stmt.getEventType(), "c0,c1".split(","), new Class[]{Collection.class, Collection.class});
+        LambdaAssertionUtil.assertTypes(stmt.getEventType(), fieldsSelected, new Class[]{Collection.class, Collection.class});
 
         epService.getEPRuntime().sendEvent(new SupportBean("E0", 0));
         epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID0", 0));
-        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c0")), fields, null);
-        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c1")), fields, null);
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c0")), fieldsInside, null);
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c1")), fieldsInside, null);
         listener.reset();
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 11));
         epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID1", 0));
-        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection)listener.assertOneGetNew().get("c0")), fields, new Object[][] {{"E1"}});
-        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection)listener.assertOneGetNew().get("c1")), fields, new Object[][] {{"E1"}});
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection)listener.assertOneGetNew().get("c0")), fieldsInside, new Object[][] {{"E1"}});
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection)listener.assertOneGetNew().get("c1")), fieldsInside, new Object[][] {{"E1"}});
         listener.reset();
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 500));
         epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID2", 0));
-        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c0")), fields, new Object[][]{{"E1"}, {"E2"}});
-        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c1")), fields, new Object[][]{{"E1"}});
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c0")), fieldsInside, new Object[][]{{"E1"}, {"E2"}});
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c1")), fieldsInside, new Object[][]{{"E1"}});
         listener.reset();
+    }
+
+    public void testSubqueryNamedWindowCorrelated() {
+
+        String epl =    "expression subqnamedwin {" +
+                        "  x => MyWindow(val0 = x.key0).where(y => val1 > 10)" +
+                        "} " +
+                        "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
+        runAssertionSubqNWCorrelated(epl);
+
+        // more or less prefixes
+        epl =           "expression subqnamedwin {" +
+                        "  x => MyWindow(val0 = x.key0).where(y => y.val1 > 10)" +
+                        "} " +
+                        "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
+        runAssertionSubqNWCorrelated(epl);
+
+        // with property-explicit stream name
+        epl =    "expression subqnamedwin {" +
+                        "  x => MyWindow(MyWindow.val0 = x.key0).where(y => y.val1 > 10)" +
+                        "} " +
+                        "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
+        runAssertionSubqNWCorrelated(epl);
+
+        // test ambiguous property names
+        epService.getEPAdministrator().createEPL("create window MyWindowTwo.win:keepall() as (id string, p00 int)");
+        epService.getEPAdministrator().createEPL("insert into MyWindowTwo (id, p00) select string, intPrimitive from SupportBean");
+        epl =    "expression subqnamedwin {" +
+                        "  x => MyWindowTwo(MyWindowTwo.id = x.id).where(y => y.p00 > 10)" +
+                        "} " +
+                        "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+    }
+
+    private void runAssertionSubqNWCorrelated(String epl) {
+        String[] fieldSelected = "c0".split(",");
+        String[] fieldInside = "val0".split(",");
+
+        epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as (val0 string, val1 int)");
+        epService.getEPAdministrator().createEPL("insert into MyWindow (val0, val1) select string, intPrimitive from SupportBean");
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        LambdaAssertionUtil.assertTypes(stmt.getEventType(), fieldSelected, new Class[]{Collection.class});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E0", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID0", "x", 0));
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c0")), fieldInside, null);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 11));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID1", "x", 0));
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c0")), fieldInside, null);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 12));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ID2", "E2", 0));
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c0")), fieldInside, new Object[][]{{"E2"}});
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 13));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("E3", "E3", 0));
+        ArrayAssertionUtil.assertPropsPerRow(toArrayMap((Collection) listener.assertOneGetNew().get("c0")), fieldInside, new Object[][]{{"E3"}});
+        listener.reset();
+
+        epService.getEPAdministrator().destroyAllStatements();
     }
 
     public void testAggregationNoAccess() {
@@ -337,6 +424,9 @@ public class TestExpressionDef extends TestCase {
         String epl = "expression abc {(select * from SupportBean_ST0.std:lastevent() as st0 where p00=intPrimitive)} select abc() from SupportBean";
         tryInvalid(epl, "Error starting statement: Property named 'intPrimitive' is not valid in any stream [expression abc {(select * from SupportBean_ST0.std:lastevent() as st0 where p00=intPrimitive)} select abc() from SupportBean]");
 
+        epl = "expression abc {x=>strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str";
+        tryInvalid(epl, "Error starting statement: Error validating expression declaration 'abc': Error validating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str]");
+
         epl = "expression abc {avg(intPrimitive)} select abc() from SupportBean";
         tryInvalid(epl, "Error starting statement: Error validating expression declaration 'abc': Property named 'intPrimitive' is not valid in any stream [expression abc {avg(intPrimitive)} select abc() from SupportBean]");
 
@@ -390,6 +480,9 @@ public class TestExpressionDef extends TestCase {
     }
 
     private Map[] toArrayMap(Collection it) {
+        if (it == null) {
+            return null;
+        }
         List<Map> result = new ArrayList<Map>();
         for (Object item : it) {
             Map map = (Map) item;

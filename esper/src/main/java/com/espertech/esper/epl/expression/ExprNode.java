@@ -117,6 +117,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
                 }
                 catch(ExprValidationException ex)
                 {
+                    e = ex;
                     result = resolveAsStreamName(identNode, streamTypeService, e, exprEvaluatorContext, eventAdapterService);
                 }
             }
@@ -324,7 +325,7 @@ public abstract class ExprNode implements ExprValidator, MetaDefItem, Serializab
             }
             catch(ExprValidationException e)
             {
-                throw new ExprValidationException("Failed to resolve " + mappedProperty + ": " + e.getMessage());
+                throw new ExprValidationException("Failed to resolve enumeration method, date-time method or mapped property '" + mappedProperty + "': " + e.getMessage());
             }
 
             return result;

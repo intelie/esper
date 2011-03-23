@@ -13,7 +13,7 @@ public class ExprDotStaticMethodWrapFactory {
 
     public static ExprDotStaticMethodWrap make(Method method, EventAdapterService eventAdapterService, List<ExprChainedSpec> modifiedChain) {
 
-        if (modifiedChain.isEmpty() || (!EnumMethodEnum.isLambda(modifiedChain.get(0).getName()))) {
+        if (modifiedChain.isEmpty() || (!EnumMethodEnum.isEnumerationMethod(modifiedChain.get(0).getName()))) {
             return null;
         }
 

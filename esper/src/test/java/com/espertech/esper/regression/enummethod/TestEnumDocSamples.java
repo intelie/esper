@@ -201,7 +201,7 @@ public class TestEnumDocSamples extends TestCase {
         assertStmt("select items.where(i => i.assetId = \"L001\").union(items.where(i => i.type = \"P\")) as itemsUnion from LocationReport");
         assertStmt("select ((select name from Zone.std:unique(name))).orderBy() as orderedZones from pattern [every timer:interval(30)]");
         assertStmt("create schema MyEvent as (seqone String[], seqtwo String[])");
-        assertStmt("select seqone.sequenceEquals(seqtwo) from MyEvent");
+        assertStmt("select seqone.sequenceEqual(seqtwo) from MyEvent");
         assertStmt("select (window(assetId)).orderBy() as orderedAssetIds from Item.win:time(10) group by assetId");
         assertStmt("select (prevwindow(assetId)).orderBy() as orderedAssetIds from Item.win:time(10) as items");
         assertStmt("select getZoneNames().where(z => z != \"Z1\") from pattern [every timer:interval(30)]");

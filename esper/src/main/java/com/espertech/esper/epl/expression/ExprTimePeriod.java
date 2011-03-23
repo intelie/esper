@@ -4,6 +4,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
+import com.espertech.esper.epl.datetime.TimePeriod;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
@@ -337,6 +338,61 @@ public class ExprTimePeriod extends ExprNode implements ExprEvaluator
             return ((Number) value).doubleValue();
         }
         return ((Number) value).doubleValue();
+    }
+
+    public TimePeriod evaluateGetTimePeriod(EventBean[] eventsPerStream, boolean newData, ExprEvaluatorContext context) {
+        int exprCtr = 0;
+
+        Integer year = null;
+        if (hasYear){
+            year = getInt(evaluators[exprCtr++].evaluate(eventsPerStream, newData, context));
+        }
+
+        Integer month = null;
+        if (hasMonth) {
+            month = getInt(evaluators[exprCtr++].evaluate(eventsPerStream, newData, context));
+        }
+
+        Integer week = null;
+        if (hasWeek) {
+            week = getInt(evaluators[exprCtr++].evaluate(eventsPerStream, newData, context));
+        }
+
+        Integer day = null;
+        if (hasDay) {
+            day = getInt(evaluators[exprCtr++].evaluate(eventsPerStream, newData, context));
+        }
+
+        Integer hours = null;
+        if (hasHour) {
+            hours = getInt(evaluators[exprCtr++].evaluate(eventsPerStream, newData, context));
+        }
+
+        Integer minutes = null;
+        if (hasMinute)
+        {
+            minutes = getInt(evaluators[exprCtr++].evaluate(eventsPerStream, newData, context));
+        }
+
+        Integer seconds = null;
+        if (hasSecond)
+        {
+            seconds = getInt(evaluators[exprCtr++].evaluate(eventsPerStream, newData, context));
+        }
+
+        Integer milliseconds = null;
+        if (hasMillisecond)
+        {
+            milliseconds = getInt(evaluators[exprCtr++].evaluate(eventsPerStream, newData, context));
+        }
+        return new TimePeriod(year, month, week, day, hours, minutes, seconds, milliseconds);
+    }
+
+    private Integer getInt(Object evaluated) {
+        if (evaluated == null) {
+            return null;
+        }
+        return ((Number) evaluated).intValue();
     }
 
     public static interface TimePeriodAdder {

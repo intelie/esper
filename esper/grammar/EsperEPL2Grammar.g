@@ -563,15 +563,13 @@ tokens
 }
 
 startPatternExpressionRule
-	:	annotationNoEnum*
-		expressionDecl*
+	:	(annotationNoEnum | expressionDecl)*
 		patternExpression
 		EOF!
 	;
 	
 startEPLExpressionRule 
-	:	annotationEnum*	
-		expressionDecl*
+	:	(annotationEnum | expressionDecl)*
 		eplExpression
 		EOF
 		-> ^(EPL_EXPR annotationEnum* expressionDecl* eplExpression) 
@@ -1383,7 +1381,9 @@ builtinFunc
 	| TYPEOF^ LPAREN! expression RPAREN!
 	| CAST^ LPAREN! expression (COMMA! | AS!) classIdentifier RPAREN!
 	| EXISTS^ LPAREN! eventProperty RPAREN!
-	| CURRENT_TIMESTAMP^ (LPAREN! RPAREN!)?
+	| CURRENT_TIMESTAMP (LPAREN RPAREN)? (d=DOT libFunctionNoClass (d=DOT libFunctionNoClass)* )?
+	  -> {$d != null}? ^(DOT_EXPR ^(CURRENT_TIMESTAMP) libFunctionNoClass+)
+	  -> ^(CURRENT_TIMESTAMP)
 	;
 	
 firstAggregation
@@ -1440,6 +1440,7 @@ funcIdent
 	| max=MAX -> IDENT[$max]
 	| min=MIN -> IDENT[$min]
 	| w=WHERE -> IDENT[$w]
+	| s=SET -> IDENT[$s]
 	;
 	
 libFunctionArgs
@@ -1447,7 +1448,7 @@ libFunctionArgs
 	;
 	
 libFunctionArgItem
-	: expressionLambdaDecl? expression
+	: expressionLambdaDecl? expressionWithTime
 	;
 
 betweenList

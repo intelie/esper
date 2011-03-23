@@ -75,7 +75,6 @@ public class TestEPLParser extends TestCase
         assertIsInvalid("select count(* *) from b.win:length(1)");
         assertIsInvalid("select count(*2) from b.win:length(1)");
         assertIsInvalid("select count(distinct *) from b.win:length(1)");
-        assertIsInvalid("select max(distinct *) from b.win:length(1)");
         assertIsInvalid("select median() from b.win:length(1)");
         assertIsInvalid("select stddev() from b.win:length(1)");
         assertIsInvalid("select stddev(distinct) from b.win:length(1)");

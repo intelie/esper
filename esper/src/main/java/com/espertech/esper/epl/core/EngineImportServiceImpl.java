@@ -380,7 +380,7 @@ public class EngineImportServiceImpl implements EngineImportService
             message += "static ";
         }
         else {
-            message += "enumeration method or instance ";
+            message += "enumeration method, date-time method or instance ";
         }
 
         if (paramTypes.length > 0)

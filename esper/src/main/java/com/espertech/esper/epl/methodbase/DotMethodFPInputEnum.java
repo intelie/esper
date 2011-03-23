@@ -1,6 +1,6 @@
-package com.espertech.esper.epl.enummethod.dot;
+package com.espertech.esper.epl.methodbase;
 
-public enum EnumMethodInputEnum {
+public enum DotMethodFPInputEnum {
     SCALAR_NUMERIC,
     SCALAR_ANY,
     EVENTCOLL,

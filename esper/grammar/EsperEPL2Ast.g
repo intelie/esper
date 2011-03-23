@@ -84,7 +84,7 @@ expressionLambdaDecl
 // EPL expression
 //----------------------------------------------------------------------------
 startEPLExpressionRule
-	:	^(EPL_EXPR annotation[true]* expressionDecl* eplExpressionRule) { end(); }		
+	:	^(EPL_EXPR (annotation[true] | expressionDecl)* eplExpressionRule) { end(); }		
 	;
 
 eplExpressionRule
@@ -621,7 +621,7 @@ libFunctionWithClass
 	;
 	
 libFunctionArgItem
-	:	expressionLambdaDecl | valueExpr
+	:	expressionLambdaDecl | valueExprWithTime
 	;
 	
 libOrPropFunction

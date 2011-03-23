@@ -1,71 +1,76 @@
 package com.espertech.esper.epl.enummethod.dot;
 
+import com.espertech.esper.epl.methodbase.DotMethodFP;
+import com.espertech.esper.epl.methodbase.DotMethodFPInputEnum;
+import com.espertech.esper.epl.methodbase.DotMethodFPParam;
+import com.espertech.esper.epl.methodbase.DotMethodFPParamTypeEnum;
+
 public class EnumMethodEnumParams {
 
-    public static final EnumMethodFootprint[] NOOP_REVERSE = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY),
+    public static final DotMethodFP[] NOOP_REVERSE = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.ANY),
             };
 
-    public static final EnumMethodFootprint[] COUNTOF_FIRST_LAST = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY),
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY, new EnumMethodParam(1, "predicate", EnumMethodEnumParamType.BOOLEAN)),
+    public static final DotMethodFP[] COUNTOF_FIRST_LAST = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.ANY),
+                    new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(1, "predicate", DotMethodFPParamTypeEnum.BOOLEAN)),
             };
 
-    public static final EnumMethodFootprint[] TAKE_TAKELAST = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY),
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY, new EnumMethodParam(0, "count", EnumMethodEnumParamType.NUMERIC)),
+    public static final DotMethodFP[] TAKE_TAKELAST = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.ANY),
+                    new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(0, "count", DotMethodFPParamTypeEnum.NUMERIC)),
             };
 
-    public static final EnumMethodFootprint[] AGGREGATE_FP = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY,
-                                            new EnumMethodParam(0, "initialization-value", EnumMethodEnumParamType.ANY),
-                                            new EnumMethodParam(2, "(result, next)", EnumMethodEnumParamType.ANY)),
+    public static final DotMethodFP[] AGGREGATE_FP = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.ANY,
+                                            new DotMethodFPParam(0, "initialization-value", DotMethodFPParamTypeEnum.ANY),
+                                            new DotMethodFPParam(2, "(result, next)", DotMethodFPParamTypeEnum.ANY)),
             };
 
-    public static final EnumMethodFootprint[] ALLOF_ANYOF = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY, new EnumMethodParam(1, "predicate", EnumMethodEnumParamType.BOOLEAN)),
+    public static final DotMethodFP[] ALLOF_ANYOF = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(1, "predicate", DotMethodFPParamTypeEnum.BOOLEAN)),
             };
 
-    public static final EnumMethodFootprint[] MIN_MAX = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.SCALAR_ANY),
-                    new EnumMethodFootprint(EnumMethodInputEnum.EVENTCOLL, new EnumMethodParam(1, "predicate", EnumMethodEnumParamType.ANY)),
+    public static final DotMethodFP[] MIN_MAX = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY),
+                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "predicate", DotMethodFPParamTypeEnum.ANY)),
             };
 
-    public static final EnumMethodFootprint[] SELECTFROM_MINBY_MAXBY = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.EVENTCOLL, new EnumMethodParam(1, "predicate", EnumMethodEnumParamType.ANY)),
+    public static final DotMethodFP[] SELECTFROM_MINBY_MAXBY = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "predicate", DotMethodFPParamTypeEnum.ANY)),
             };
 
-    public static final EnumMethodFootprint[] AVERAGE_SUMOF = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.SCALAR_NUMERIC),
-                    new EnumMethodFootprint(EnumMethodInputEnum.EVENTCOLL, new EnumMethodParam(1, "predicate", EnumMethodEnumParamType.NUMERIC))
+    public static final DotMethodFP[] AVERAGE_SUMOF = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_NUMERIC),
+                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "predicate", DotMethodFPParamTypeEnum.NUMERIC))
             };
 
-    public static final EnumMethodFootprint[] MAP = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.EVENTCOLL, new EnumMethodParam(1, "key-selector", EnumMethodEnumParamType.ANY),
-                                            new EnumMethodParam(1, "value-selector", EnumMethodEnumParamType.ANY)),
+    public static final DotMethodFP[] MAP = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "key-selector", DotMethodFPParamTypeEnum.ANY),
+                                            new DotMethodFPParam(1, "value-selector", DotMethodFPParamTypeEnum.ANY)),
             };
 
-    public static final EnumMethodFootprint[] GROUP = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.EVENTCOLL, new EnumMethodParam(1, "key-selector", EnumMethodEnumParamType.ANY)),
-                    new EnumMethodFootprint(EnumMethodInputEnum.EVENTCOLL, new EnumMethodParam(1, "key-selector", EnumMethodEnumParamType.ANY),
-                                            new EnumMethodParam(1, "value-selector", EnumMethodEnumParamType.ANY)),
+    public static final DotMethodFP[] GROUP = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "key-selector", DotMethodFPParamTypeEnum.ANY)),
+                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "key-selector", DotMethodFPParamTypeEnum.ANY),
+                                            new DotMethodFPParam(1, "value-selector", DotMethodFPParamTypeEnum.ANY)),
             };
 
-    public static final EnumMethodFootprint[] ORDERBY = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.SCALAR_ANY),
-                    new EnumMethodFootprint(EnumMethodInputEnum.EVENTCOLL, new EnumMethodParam(1, "compare-selector", EnumMethodEnumParamType.ANY)),
+    public static final DotMethodFP[] ORDERBY = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY),
+                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "compare-selector", DotMethodFPParamTypeEnum.ANY)),
             };
 
-    public static final EnumMethodFootprint[] WHERE_FP = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY, new EnumMethodParam(1, "predictate", EnumMethodEnumParamType.BOOLEAN)),
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY, new EnumMethodParam(2, "(predictate, index)", EnumMethodEnumParamType.BOOLEAN))
+    public static final DotMethodFP[] WHERE_FP = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(1, "predictate", DotMethodFPParamTypeEnum.BOOLEAN)),
+                    new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(2, "(predictate, index)", DotMethodFPParamTypeEnum.BOOLEAN))
             };
 
-    public static final EnumMethodFootprint[] UNION_FP = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.ANY, new EnumMethodParam(0, "collection", EnumMethodEnumParamType.ANY)),
+    public static final DotMethodFP[] UNION_FP = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(0, "collection", DotMethodFPParamTypeEnum.ANY)),
             };
 
-    public static final EnumMethodFootprint[] SEQ_EQUALS_FP = new EnumMethodFootprint[] {
-                    new EnumMethodFootprint(EnumMethodInputEnum.SCALAR_ANY, new EnumMethodParam(0, "sequence", EnumMethodEnumParamType.ANY)),
+    public static final DotMethodFP[] SEQ_EQUALS_FP = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(0, "sequence", DotMethodFPParamTypeEnum.ANY)),
             };
 }

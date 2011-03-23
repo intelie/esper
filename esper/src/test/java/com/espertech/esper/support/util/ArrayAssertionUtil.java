@@ -1053,6 +1053,18 @@ public class ArrayAssertionUtil
         return result;
     }
 
+    public static Object[] addArrayObjectArr(Object[] ...more)
+    {
+        List list = new ArrayList();
+        for (int i = 0; i < more.length; i++)
+        {
+            for (int j = 0; j < more[i].length; j++) {
+                list.add(more[i][j]);
+            }
+        }
+        return list.toArray();
+    }
+
     private static final Log log = LogFactory.getLog(ArrayAssertionUtil.class);
 
     public static EventBean[] sort(Iterator<EventBean> oldevents, final String property) {
