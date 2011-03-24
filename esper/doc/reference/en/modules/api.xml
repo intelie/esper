@@ -1380,11 +1380,11 @@ listener or subscriber instances then such shared state should be thread-safe.
 				<title>Threading Service Provider Interface</title>
 				
 				<para>
-					The service-provider interface <literal>EPServiceSPI</literal> is an extension API that allows to manage engine-level queues and thread pools .
+					The service-provider interface <literal>EPServiceProviderSPI</literal> is an extension API that allows to manage engine-level queues and thread pools .
 				</para>
 				
 				<para>
-					The service-provider interface <literal>EPServiceSPI</literal> is considered an extension API and subject to change between release versions.
+					The service-provider interface <literal>EPServiceProviderSPI</literal> is considered an extension API and subject to change between release versions.
 				</para>
 
 				<para>
@@ -1598,6 +1598,10 @@ runtime.sendEvent(new CurrentTimeSpanEvent(startTime.getTime() + 10*60*1000, 100
 			<title>Additional Time-Related APIs</title>
 			<para>
 				Consider using the service-provider interface <literal>EPRuntimeSPI</literal> <literal>EPRuntimeIsolatedSPI</literal>. The two interfaces are service-provider interfaces that expose additional function to manage statement schedules. However the SPI interfaces should be considered an extension API and are subject to change between release versions.
+			</para>
+			
+			<para>
+				Additional engine-internal SPI interfaces can be obtained by downcasting <literal>EPServiceProvider</literal> to <literal>EPServiceProviderSPI</literal>. For example the <literal>SchedulingServiceSPI</literal> exposes schedule information per statement (downcast from <literal>SchedulingService</literal>). Engine-internal SPI are subject to change between versions.
 			</para>
 		</sect2>
     </sect1>
