@@ -565,25 +565,19 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
         catch (EPStatementException ex)
         {
-            stmtIdToDescMap.remove(statementId);
-            stmtNameToIdMap.remove(statement.getName());
-            stmtNameToStmtMap.remove(statement.getName());
+            handleRemove(statementId, statement.getName());
             log.debug(".start Error starting statement", ex);
             throw ex;
         }
         catch (ExprValidationException ex)
         {
-            stmtIdToDescMap.remove(statementId);
-            stmtNameToIdMap.remove(statement.getName());
-            stmtNameToStmtMap.remove(statement.getName());
+            handleRemove(statementId, statement.getName());
             log.debug(".start Error starting statement", ex);
             throw new EPStatementException("Error starting statement: " + ex.getMessage(), statement.getText());
         }
         catch (ViewProcessingException ex)
         {
-            stmtIdToDescMap.remove(statementId);
-            stmtNameToIdMap.remove(statement.getName());
-            stmtNameToStmtMap.remove(statement.getName());
+            handleRemove(statementId, statement.getName());
             log.debug(".start Error starting statement", ex);
             throw new EPStatementException("Error starting statement: " + ex.getMessage(), statement.getText());
         }
@@ -600,6 +594,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         statement.setCurrentState(EPStatementState.STARTED, timeLastStateChange);
 
         dispatchStatementLifecycleEvent(new StatementLifecycleEvent(statement, StatementLifecycleEvent.LifecycleEventType.STATECHANGE));
+    }
+
+    private void handleRemove(String statementId, String statementName) {
+        stmtIdToDescMap.remove(statementId);
+        stmtNameToIdMap.remove(statementName);
+        stmtNameToStmtMap.remove(statementName);
+        services.getStatementEventTypeRefService().removeReferencesStatement(statementName);
     }
 
     public synchronized void stop(String statementId)

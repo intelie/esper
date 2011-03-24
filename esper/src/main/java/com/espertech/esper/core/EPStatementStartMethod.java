@@ -236,7 +236,7 @@ public class EPStatementStartMethod
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
 
         SubSelectStreamCollection subSelectStreamDesc = createSubSelectStreams(true, statementSpec.getAnnotations());
-        
+
         // Create streams
         Viewable eventStreamParentViewable;
         final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
@@ -293,157 +293,6 @@ public class EPStatementStartMethod
             throw new ExprValidationException("Unknown stream specification type: " + streamSpec);
         }
 
-        View onExprView;
-        final EventType streamEventType = eventStreamParentViewable.getEventType();
-
-        ResultSetProcessor resultSetProcessor;
-        // For on-delete and on-select and on-update triggers
-        if (statementSpec.getOnTriggerDesc() instanceof OnTriggerWindowDesc)
-        {
-            // Determine event types
-            OnTriggerWindowDesc onTriggerDesc = (OnTriggerWindowDesc) statementSpec.getOnTriggerDesc();
-            NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onTriggerDesc.getWindowName());
-            EventType namedWindowType = processor.getNamedWindowType();
-            statementContext.getDynamicReferenceEventTypes().add(onTriggerDesc.getWindowName());
-
-            String namedWindowName = onTriggerDesc.getOptionalAsName();
-            if (namedWindowName == null)
-            {
-                namedWindowName = "stream_0";
-            }
-            String streamName = streamSpec.getOptionalStreamName();
-            if (streamName == null)
-            {
-                streamName = "stream_1";
-            }
-            String namedWindowTypeName = onTriggerDesc.getWindowName();
-
-            // Materialize sub-select views
-            // 0 - named window stream
-            // 1 - arriving stream
-            startSubSelect(subSelectStreamDesc, new String[]{namedWindowName, streamSpec.getOptionalStreamName()}, new EventType[] {processor.getNamedWindowType(), streamEventType}, new String[]{namedWindowTypeName, triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
-
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowName, streamName}, new boolean[] {false, true}, services.getEngineURI(), false);
-            if (onTriggerDesc instanceof OnTriggerWindowUpdateDesc) {
-                OnTriggerWindowUpdateDesc updateDesc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
-                for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())
-                {
-                    ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
-                    assignment.setExpression(validated);
-                    validateNoAggregations(validated, "Aggregation functions may not be used within an on-update-clause");
-                }
-            }
-            if (onTriggerDesc instanceof OnTriggerMergeDesc) {
-                OnTriggerMergeDesc mergeDesc = (OnTriggerMergeDesc) onTriggerDesc;
-                StreamTypeService twoStream = new StreamTypeServiceImpl(new EventType[] {processor.getNamedWindowType(), streamEventType},
-                        new String[] {namedWindowName, streamName}, new boolean[] {true, true}, statementContext.getEngineURI(), false);
-                StreamTypeService triggerStream = new StreamTypeServiceImpl(streamEventType, streamName, true, statementContext.getEngineURI());
-                validateMergeDesc(mergeDesc, statementContext, twoStream, triggerStream);
-            }
-
-            // validate join expression
-            ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
-                    namedWindowType, namedWindowName, namedWindowTypeName,
-                    streamEventType, streamName, triggereventTypeName);
-
-            // validate filter, output rate limiting
-            validateNodes(statementSpec, statementContext, typeService, null);
-
-            // Construct a processor for results; for use in on-select to process selection results
-            // Use a wildcard select if the select-clause is empty, such as for on-delete.
-            // For on-select the select clause is not empty.
-            if (statementSpec.getSelectClauseSpec().getSelectExprList().size() == 0)
-            {
-                statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
-            }
-            resultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                    statementSpec, statementContext, typeService, null, new boolean[0], true);
-
-            InternalEventRouter routerService = null;
-            boolean addToFront = false;
-            if (statementSpec.getInsertIntoDesc() != null) {
-                routerService = services.getInternalEventRouter();
-                addToFront = statementContext.getNamedWindowService().isNamedWindow(statementSpec.getInsertIntoDesc().getEventTypeName());
-            }
-            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, addToFront, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext, statementSpec.getSelectClauseSpec().isDistinct());
-            eventStreamParentViewable.addView(onExprView);
-        }
-        // variable assignments
-        else if (statementSpec.getOnTriggerDesc() instanceof OnTriggerSetDesc)
-        {
-            OnTriggerSetDesc desc = (OnTriggerSetDesc) statementSpec.getOnTriggerDesc();
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, new boolean[] {true}, services.getEngineURI(), false);
-
-            // Materialize sub-select views
-            startSubSelect(subSelectStreamDesc, new String[]{streamSpec.getOptionalStreamName()}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
-
-            for (OnTriggerSetAssignment assignment : desc.getAssignments())
-            {
-                ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
-                assignment.setExpression(validated);
-            }
-
-            try {
-                onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService(), statementContext);
-            }
-            catch (VariableValueException ex) {
-                throw new ExprValidationException("Error in variable assignment: " + ex.getMessage(), ex);
-            }
-            eventStreamParentViewable.addView(onExprView);
-        }
-        // split-stream use case
-        else 
-        {
-            OnTriggerSplitStreamDesc desc = (OnTriggerSplitStreamDesc) statementSpec.getOnTriggerDesc();
-            String streamName = streamSpec.getOptionalStreamName();
-            if (streamName == null)
-            {
-                streamName = "stream_0";
-            }
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamName}, new boolean[] {true}, services.getEngineURI(), false);
-            if (statementSpec.getInsertIntoDesc() == null)
-            {
-                throw new ExprValidationException("Required insert-into clause is not provided, the clause is required for split-stream syntax");
-            }
-            if ((!statementSpec.getGroupByExpressions().isEmpty()) || (statementSpec.getHavingExprRootNode() != null) || (!statementSpec.getOrderByList().isEmpty()))
-            {
-                throw new ExprValidationException("A group-by clause, having-clause or order-by clause is not allowed for the split stream syntax");
-            }
-
-            // Materialize sub-select views
-            startSubSelect(subSelectStreamDesc, new String[]{streamSpec.getOptionalStreamName()}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
-
-            validateNodes(statementSpec, statementContext, typeService, null);
-
-            ResultSetProcessor[] processors = new ResultSetProcessor[desc.getSplitStreams().size() + 1];
-            ExprNode[] whereClauses = new ExprNode[desc.getSplitStreams().size() + 1];
-            processors[0] = ResultSetProcessorFactory.getProcessor(
-                    statementSpec, statementContext, typeService, null, new boolean[0], false);
-            whereClauses[0] = statementSpec.getFilterRootNode();
-            boolean[] isNamedWindowInsert = new boolean[desc.getSplitStreams().size() + 1];
-            isNamedWindowInsert[0] = false;
-
-            int index = 1;
-            for (OnTriggerSplitStream splits : desc.getSplitStreams())
-            {
-                StatementSpecCompiled splitSpec = new StatementSpecCompiled();
-                splitSpec.setInsertIntoDesc(splits.getInsertInto());
-                splitSpec.setSelectClauseSpec(StatementLifecycleSvcImpl.compileSelectAllowSubselect(splits.getSelectClause()));
-                splitSpec.setFilterExprRootNode(splits.getWhereClause());
-                validateNodes(splitSpec, statementContext, typeService, null);
-
-                processors[index] = ResultSetProcessorFactory.getProcessor(
-                    splitSpec, statementContext, typeService, null, new boolean[0], false);
-                whereClauses[index] = splitSpec.getFilterRootNode();
-                isNamedWindowInsert[index] = statementContext.getNamedWindowService().isNamedWindow(splits.getInsertInto().getEventTypeName());
-
-                index++;
-            }
-
-            onExprView = new RouteResultView(desc.isFirst(), streamEventType, statementContext.getEpStatementHandle(), services.getInternalEventRouter(), isNamedWindowInsert, processors, whereClauses, statementContext);
-            eventStreamParentViewable.addView(onExprView);
-        }
-
         // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
         {
@@ -463,24 +312,185 @@ public class EPStatementStartMethod
             }
         };
 
-        // For on-delete, create an output processor that passes on as a wildcard the underlying event
-        if ((statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_DELETE) ||
-            (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SET) ||
-            (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_UPDATE) ||
-            (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_MERGE))
-        {
-            StatementSpecCompiled defaultSelectAllSpec = new StatementSpecCompiled();
-            defaultSelectAllSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
+        View onExprView;
+        try {
+            final EventType streamEventType = eventStreamParentViewable.getEventType();
 
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"trigger_stream"}, new boolean[] {true}, services.getEngineURI(), false);
-            ResultSetProcessor outputResultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                    defaultSelectAllSpec, statementContext, streamTypeService, null, new boolean[0], true);
+            ResultSetProcessor resultSetProcessor;
+            // For on-delete and on-select and on-update triggers
+            if (statementSpec.getOnTriggerDesc() instanceof OnTriggerWindowDesc)
+            {
+                // Determine event types
+                OnTriggerWindowDesc onTriggerDesc = (OnTriggerWindowDesc) statementSpec.getOnTriggerDesc();
+                NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onTriggerDesc.getWindowName());
+                EventType namedWindowType = processor.getNamedWindowType();
+                statementContext.getDynamicReferenceEventTypes().add(onTriggerDesc.getWindowName());
 
-            // Attach output view
-            OutputProcessView outputView = OutputProcessViewFactory.makeView(outputResultSetProcessor, defaultSelectAllSpec, statementContext, services.getInternalEventRouter());
-            onExprView.addView(outputView);
-            onExprView = outputView;
+                String namedWindowName = onTriggerDesc.getOptionalAsName();
+                if (namedWindowName == null)
+                {
+                    namedWindowName = "stream_0";
+                }
+                String streamName = streamSpec.getOptionalStreamName();
+                if (streamName == null)
+                {
+                    streamName = "stream_1";
+                }
+                String namedWindowTypeName = onTriggerDesc.getWindowName();
+
+                // Materialize sub-select views
+                // 0 - named window stream
+                // 1 - arriving stream
+                startSubSelect(subSelectStreamDesc, new String[]{namedWindowName, streamSpec.getOptionalStreamName()}, new EventType[] {processor.getNamedWindowType(), streamEventType}, new String[]{namedWindowTypeName, triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
+
+                StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowName, streamName}, new boolean[] {false, true}, services.getEngineURI(), false);
+                if (onTriggerDesc instanceof OnTriggerWindowUpdateDesc) {
+                    OnTriggerWindowUpdateDesc updateDesc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
+                    for (OnTriggerSetAssignment assignment : updateDesc.getAssignments())
+                    {
+                        ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+                        assignment.setExpression(validated);
+                        validateNoAggregations(validated, "Aggregation functions may not be used within an on-update-clause");
+                    }
+                }
+                if (onTriggerDesc instanceof OnTriggerMergeDesc) {
+                    OnTriggerMergeDesc mergeDesc = (OnTriggerMergeDesc) onTriggerDesc;
+                    StreamTypeService twoStream = new StreamTypeServiceImpl(new EventType[] {processor.getNamedWindowType(), streamEventType},
+                            new String[] {namedWindowName, streamName}, new boolean[] {true, true}, statementContext.getEngineURI(), false);
+                    StreamTypeService triggerStream = new StreamTypeServiceImpl(streamEventType, streamName, true, statementContext.getEngineURI());
+                    validateMergeDesc(mergeDesc, statementContext, twoStream, triggerStream);
+                }
+
+                // validate join expression
+                ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
+                        namedWindowType, namedWindowName, namedWindowTypeName,
+                        streamEventType, streamName, triggereventTypeName);
+
+                // validate filter, output rate limiting
+                validateNodes(statementSpec, statementContext, typeService, null);
+
+                // Construct a processor for results; for use in on-select to process selection results
+                // Use a wildcard select if the select-clause is empty, such as for on-delete.
+                // For on-select the select clause is not empty.
+                if (statementSpec.getSelectClauseSpec().getSelectExprList().size() == 0)
+                {
+                    statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
+                }
+                resultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                        statementSpec, statementContext, typeService, null, new boolean[0], true);
+
+                InternalEventRouter routerService = null;
+                boolean addToFront = false;
+                if (statementSpec.getInsertIntoDesc() != null) {
+                    routerService = services.getInternalEventRouter();
+                    addToFront = statementContext.getNamedWindowService().isNamedWindow(statementSpec.getInsertIntoDesc().getEventTypeName());
+                }
+                onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, addToFront, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext, statementSpec.getSelectClauseSpec().isDistinct());
+                eventStreamParentViewable.addView(onExprView);
+            }
+            // variable assignments
+            else if (statementSpec.getOnTriggerDesc() instanceof OnTriggerSetDesc)
+            {
+                OnTriggerSetDesc desc = (OnTriggerSetDesc) statementSpec.getOnTriggerDesc();
+                StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, new boolean[] {true}, services.getEngineURI(), false);
+
+                // Materialize sub-select views
+                startSubSelect(subSelectStreamDesc, new String[]{streamSpec.getOptionalStreamName()}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
+
+                for (OnTriggerSetAssignment assignment : desc.getAssignments())
+                {
+                    ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext);
+                    assignment.setExpression(validated);
+                }
+
+                try {
+                    onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService(), statementContext);
+                }
+                catch (VariableValueException ex) {
+                    throw new ExprValidationException("Error in variable assignment: " + ex.getMessage(), ex);
+                }
+                eventStreamParentViewable.addView(onExprView);
+            }
+            // split-stream use case
+            else
+            {
+                OnTriggerSplitStreamDesc desc = (OnTriggerSplitStreamDesc) statementSpec.getOnTriggerDesc();
+                String streamName = streamSpec.getOptionalStreamName();
+                if (streamName == null)
+                {
+                    streamName = "stream_0";
+                }
+                StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamName}, new boolean[] {true}, services.getEngineURI(), false);
+                if (statementSpec.getInsertIntoDesc() == null)
+                {
+                    throw new ExprValidationException("Required insert-into clause is not provided, the clause is required for split-stream syntax");
+                }
+                if ((!statementSpec.getGroupByExpressions().isEmpty()) || (statementSpec.getHavingExprRootNode() != null) || (!statementSpec.getOrderByList().isEmpty()))
+                {
+                    throw new ExprValidationException("A group-by clause, having-clause or order-by clause is not allowed for the split stream syntax");
+                }
+
+                // Materialize sub-select views
+                startSubSelect(subSelectStreamDesc, new String[]{streamSpec.getOptionalStreamName()}, new EventType[] {streamEventType}, new String[]{triggereventTypeName}, stopCallbacks, statementSpec.getAnnotations());
+
+                validateNodes(statementSpec, statementContext, typeService, null);
+
+                ResultSetProcessor[] processors = new ResultSetProcessor[desc.getSplitStreams().size() + 1];
+                ExprNode[] whereClauses = new ExprNode[desc.getSplitStreams().size() + 1];
+                processors[0] = ResultSetProcessorFactory.getProcessor(
+                        statementSpec, statementContext, typeService, null, new boolean[0], false);
+                whereClauses[0] = statementSpec.getFilterRootNode();
+                boolean[] isNamedWindowInsert = new boolean[desc.getSplitStreams().size() + 1];
+                isNamedWindowInsert[0] = false;
+
+                int index = 1;
+                for (OnTriggerSplitStream splits : desc.getSplitStreams())
+                {
+                    StatementSpecCompiled splitSpec = new StatementSpecCompiled();
+                    splitSpec.setInsertIntoDesc(splits.getInsertInto());
+                    splitSpec.setSelectClauseSpec(StatementLifecycleSvcImpl.compileSelectAllowSubselect(splits.getSelectClause()));
+                    splitSpec.setFilterExprRootNode(splits.getWhereClause());
+                    validateNodes(splitSpec, statementContext, typeService, null);
+
+                    processors[index] = ResultSetProcessorFactory.getProcessor(
+                        splitSpec, statementContext, typeService, null, new boolean[0], false);
+                    whereClauses[index] = splitSpec.getFilterRootNode();
+                    isNamedWindowInsert[index] = statementContext.getNamedWindowService().isNamedWindow(splits.getInsertInto().getEventTypeName());
+
+                    index++;
+                }
+
+                onExprView = new RouteResultView(desc.isFirst(), streamEventType, statementContext.getEpStatementHandle(), services.getInternalEventRouter(), isNamedWindowInsert, processors, whereClauses, statementContext);
+                eventStreamParentViewable.addView(onExprView);
+            }
+
+            // For on-delete, create an output processor that passes on as a wildcard the underlying event
+            if ((statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_DELETE) ||
+                (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SET) ||
+                (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_UPDATE) ||
+                (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_MERGE))
+            {
+                StatementSpecCompiled defaultSelectAllSpec = new StatementSpecCompiled();
+                defaultSelectAllSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
+
+                StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"trigger_stream"}, new boolean[] {true}, services.getEngineURI(), false);
+                ResultSetProcessor outputResultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                        defaultSelectAllSpec, statementContext, streamTypeService, null, new boolean[0], true);
+
+                // Attach output view
+                OutputProcessView outputView = OutputProcessViewFactory.makeView(outputResultSetProcessor, defaultSelectAllSpec, statementContext, services.getInternalEventRouter());
+                onExprView.addView(outputView);
+                onExprView = outputView;
+            }
         }
+        catch (ExprValidationException ex) {
+            handleException(stopMethod);
+            throw ex;
+        }
+        catch (RuntimeException ex) {
+            handleException(stopMethod);
+            throw ex;
+        }        
 
         log.debug(".start Statement start completed");
 
@@ -1043,114 +1053,135 @@ public class EPStatementStartMethod
             }
         };
 
-        // Validate views that require validation, specifically streams that don't have
-        // sub-views such as DB SQL joins
-        for (int stream = 0; stream < eventStreamParentViewable.length; stream++)
-        {
-            Viewable viewable = eventStreamParentViewable[stream];
-            if (viewable instanceof ValidatedView)
-            {
-                ValidatedView validatedView = (ValidatedView) viewable;
-                validatedView.validate(services.getEngineImportService(), 
-                        typeService,
-                        statementContext.getMethodResolutionService(),
-                        statementContext.getTimeProvider(),
-                        statementContext.getVariableService(), statementContext,
-                        services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(),
-                        statementSpec.getSqlParameters());
-            }
-            if (viewable instanceof HistoricalEventViewable)
-            {
-                HistoricalEventViewable historicalView = (HistoricalEventViewable) viewable;
-                if (historicalView.getRequiredStreams().contains(stream))
-                {
-                    throw new ExprValidationException("Parameters for historical stream " + stream + " indicate that the stream is subordinate to itself as stream parameters originate in the same stream");
-                }
-            }
-        }
-
-        // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
-        // May return null if we don't need to post-process results posted by views or joins.
-        ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                statementSpec, statementContext, typeService, viewResourceDelegate, joinAnalysisResult.getUnidirectionalInd(), true);
-
-        // Validate where-clause filter tree, outer join clause and output limit expression
-        validateNodes(statementSpec, statementContext, typeService, viewResourceDelegate);
-
-        // Materialize views
-        Viewable[] streamViews = new Viewable[streamEventTypes.length];
-        for (int i = 0; i < streamViews.length; i++)
-        {
-            streamViews[i] = services.getViewService().createViews(eventStreamParentViewable[i], unmaterializedViewChain[i].getViewFactoryChain(), statementContext);
-        }
-
-        // For just 1 event stream without joins, handle the one-table process separatly.
         Viewable finalView;
-        JoinPreloadMethod joinPreloadMethod = null;
-        if (streamNames.length == 1)
-        {
-            finalView = handleSimpleSelect(streamViews[0], resultSetProcessor, statementContext);
-        }
-        else
-        {
-            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, resultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks, joinAnalysisResult);
-            finalView = pair.getFirst();
-            joinPreloadMethod = pair.getSecond();
-        }
 
-        // Replay any named window data, for later consumers of named data windows
-        boolean hasNamedWindow = false;
-        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
-        {
-            StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
-            if (streamSpec instanceof NamedWindowConsumerStreamSpec)
+        try {
+            // Validate views that require validation, specifically streams that don't have
+            // sub-views such as DB SQL joins
+            for (int stream = 0; stream < eventStreamParentViewable.length; stream++)
             {
-                hasNamedWindow = true;
-                NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
-                NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
-                NamedWindowTailView consumerView = processor.getTailView();
-                NamedWindowConsumerView view = (NamedWindowConsumerView) eventStreamParentViewable[i];
-
-                // preload view for stream unless the expiry policy is batch window
-                ArrayList<EventBean> eventsInWindow = new ArrayList<EventBean>();
-                if (!consumerView.isParentBatchWindow())
+                Viewable viewable = eventStreamParentViewable[stream];
+                if (viewable instanceof ValidatedView)
                 {
-                    for (EventBean aConsumerView : consumerView)
+                    ValidatedView validatedView = (ValidatedView) viewable;
+                    validatedView.validate(services.getEngineImportService(),
+                            typeService,
+                            statementContext.getMethodResolutionService(),
+                            statementContext.getTimeProvider(),
+                            statementContext.getVariableService(), statementContext,
+                            services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(),
+                            statementSpec.getSqlParameters());
+                }
+                if (viewable instanceof HistoricalEventViewable)
+                {
+                    HistoricalEventViewable historicalView = (HistoricalEventViewable) viewable;
+                    if (historicalView.getRequiredStreams().contains(stream))
                     {
-                        eventsInWindow.add(aConsumerView);
-                    }
-                }
-                if (!eventsInWindow.isEmpty() && !isRecoveringResilient)
-                {
-                    EventBean[] newEvents = eventsInWindow.toArray(new EventBean[eventsInWindow.size()]);
-                    view.update(newEvents, null);
-                    if (joinPreloadMethod != null && !joinPreloadMethod.isPreloading() && statementContext.getEpStatementHandle().getOptionalDispatchable() != null) {
-                        statementContext.getEpStatementHandle().getOptionalDispatchable().execute(statementContext);
-                    }
-                }
-
-                // in a join, preload indexes, if any
-                if (joinPreloadMethod != null)
-                {
-                    joinPreloadMethod.preloadFromBuffer(i);
-                }
-                else
-                {
-                    if (statementContext.getEpStatementHandle().getOptionalDispatchable() != null) {
-                        statementContext.getEpStatementHandle().getOptionalDispatchable().execute(statementContext);                        
+                        throw new ExprValidationException("Parameters for historical stream " + stream + " indicate that the stream is subordinate to itself as stream parameters originate in the same stream");
                     }
                 }
             }
+
+            // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
+            // May return null if we don't need to post-process results posted by views or joins.
+            ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                    statementSpec, statementContext, typeService, viewResourceDelegate, joinAnalysisResult.getUnidirectionalInd(), true);
+
+            // Validate where-clause filter tree, outer join clause and output limit expression
+            validateNodes(statementSpec, statementContext, typeService, viewResourceDelegate);
+
+            // Materialize views
+            Viewable[] streamViews = new Viewable[streamEventTypes.length];
+            for (int i = 0; i < streamViews.length; i++)
+            {
+                streamViews[i] = services.getViewService().createViews(eventStreamParentViewable[i], unmaterializedViewChain[i].getViewFactoryChain(), statementContext);
+            }
+
+            // For just 1 event stream without joins, handle the one-table process separatly.
+            JoinPreloadMethod joinPreloadMethod = null;
+            if (streamNames.length == 1)
+            {
+                finalView = handleSimpleSelect(streamViews[0], resultSetProcessor, statementContext);
+            }
+            else
+            {
+                Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, resultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks, joinAnalysisResult);
+                finalView = pair.getFirst();
+                joinPreloadMethod = pair.getSecond();
+            }
+
+            // Replay any named window data, for later consumers of named data windows
+            boolean hasNamedWindow = false;
+            for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
+            {
+                StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
+                if (streamSpec instanceof NamedWindowConsumerStreamSpec)
+                {
+                    hasNamedWindow = true;
+                    NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+                    NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+                    NamedWindowTailView consumerView = processor.getTailView();
+                    NamedWindowConsumerView view = (NamedWindowConsumerView) eventStreamParentViewable[i];
+
+                    // preload view for stream unless the expiry policy is batch window
+                    ArrayList<EventBean> eventsInWindow = new ArrayList<EventBean>();
+                    if (!consumerView.isParentBatchWindow())
+                    {
+                        for (EventBean aConsumerView : consumerView)
+                        {
+                            eventsInWindow.add(aConsumerView);
+                        }
+                    }
+                    if (!eventsInWindow.isEmpty() && !isRecoveringResilient)
+                    {
+                        EventBean[] newEvents = eventsInWindow.toArray(new EventBean[eventsInWindow.size()]);
+                        view.update(newEvents, null);
+                        if (joinPreloadMethod != null && !joinPreloadMethod.isPreloading() && statementContext.getEpStatementHandle().getOptionalDispatchable() != null) {
+                            statementContext.getEpStatementHandle().getOptionalDispatchable().execute(statementContext);
+                        }
+                    }
+
+                    // in a join, preload indexes, if any
+                    if (joinPreloadMethod != null)
+                    {
+                        joinPreloadMethod.preloadFromBuffer(i);
+                    }
+                    else
+                    {
+                        if (statementContext.getEpStatementHandle().getOptionalDispatchable() != null) {
+                            statementContext.getEpStatementHandle().getOptionalDispatchable().execute(statementContext);
+                        }
+                    }
+                }
+            }
+            // last, for aggregation we need to send the current join results to the result set processor
+            if ((hasNamedWindow) && (joinPreloadMethod != null) && (!isRecoveringResilient))
+            {
+                joinPreloadMethod.preloadAggregation(resultSetProcessor);
+            }
         }
-        // last, for aggregation we need to send the current join results to the result set processor
-        if ((hasNamedWindow) && (joinPreloadMethod != null) && (!isRecoveringResilient))
-        {
-            joinPreloadMethod.preloadAggregation(resultSetProcessor);
+        catch (ExprValidationException ex) {
+            handleException(stopMethod);
+            throw ex;
+        }
+        catch (RuntimeException ex) {
+            handleException(stopMethod);
+            throw ex;
         }
 
         log.debug(".start Statement start completed");
 
         return new EPStatementStartResult(finalView, stopMethod);
+    }
+
+    private void handleException(EPStatementStopMethod stopMethod) {
+        try {
+            stopMethod.stop();
+        }
+        catch (RuntimeException e) {
+            log.debug("Failed to perform statement stop for statement '" + this.statementContext.getStatementName() +
+                "' expression '" + statementContext.getExpression() + "' : " + e.getMessage());
+        }
     }
 
     private boolean[] getHasIStreamOnly(boolean[] isNamedWindow, ViewFactoryChain[] unmaterializedViewChain)
@@ -1226,7 +1257,7 @@ public class EPStatementStartMethod
             countProviderNonpolling++;
         }
 
-        // if there is only one stream providing data, the analysis is done 
+        // if there is only one stream providing data, the analysis is done
         if (countProviderNonpolling == 1)
         {
             return analysisResult;
@@ -1234,7 +1265,7 @@ public class EPStatementStartMethod
         // there are multiple driving streams, verify the presence of a view for insert/remove stream
 
         // validation of join views works differently for unidirectional as there can be self-joins that don't require a view
-        // see if this is a self-join in which all streams are filters and filter specification is the same. 
+        // see if this is a self-join in which all streams are filters and filter specification is the same.
         FilterSpecCompiled unidirectionalFilterSpec = null;
         FilterSpecCompiled lastFilterSpec = null;
         boolean pureSelfJoin = true;
@@ -1261,7 +1292,7 @@ public class EPStatementStartMethod
             {
                 unidirectionalFilterSpec = filterSpec;
             }
-        }        
+        }
 
         // self-join without views and not unidirectional
         if ((pureSelfJoin) && (unidirectionalFilterSpec == null))
@@ -1353,7 +1384,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            preloadMethod = new JoinPreloadMethodImpl(streamNames.length, composer); 
+            preloadMethod = new JoinPreloadMethodImpl(streamNames.length, composer);
         }
 
         // Create buffer for each view. Point buffer to dispatchable for join.
@@ -1912,7 +1943,7 @@ public class EPStatementStartMethod
 
             // Preload
             if (namedWindowSubqueryLookup == null) {
-                if (filterStreamSpec instanceof NamedWindowConsumerStreamSpec) 
+                if (filterStreamSpec instanceof NamedWindowConsumerStreamSpec)
                 {
                     NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec ;
                     NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
@@ -2068,7 +2099,7 @@ public class EPStatementStartMethod
                 return new Pair<EventTable, TableLookupStrategy>(table, strategy);
             }
             else
-            {                
+            {
                 PropertyIndTableCoerceAdd table = new PropertyIndTableCoerceAdd(0, viewableEventType, indexedProps, coercionTypes);
                 TableLookupStrategy strategy = new IndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
                 if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
