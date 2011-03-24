@@ -22,15 +22,15 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.spec.*;
+import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.map.MapEventType;
+import com.espertech.esper.util.UuidGenerator;
 import com.espertech.esper.view.StatementStopService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * View for the on-delete statement that handles removing events from a named window.
@@ -65,6 +65,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
                                  StatementContext statementContext,
                                  OnTriggerMergeDesc onTriggerDesc,
                                  EventType triggeringEventType,
+                                 String triggeringStreamName,
                                  EPStatementHandle createWindowStatementHandle,
                                  MetricReportingService metricReportingService,
                                  InternalEventRouter internalEventRouter,
@@ -79,7 +80,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
         this.namedWindowName = namedWindowName;
         eventTypeSPI = (EventTypeSPI) removeStreamView.getEventType();
 
-        setup(onTriggerDesc, triggeringEventType, statementContext);
+        setup(onTriggerDesc, triggeringEventType, triggeringStreamName, statementContext);
     }
 
     public void handleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
@@ -90,7 +91,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
 
         if ((matchingEvents == null) || (matchingEvents.length == 0)){
             for (EventBean triggerEvent : triggerEvents) {
-                eventsPerStream[0] = triggerEvent;
+                eventsPerStream[1] = triggerEvent;
                 for (NamedWindowOnMergeMatch action : unmatched) {
                     if (!action.isApplies(eventsPerStream, super.getExprEvaluatorContext())) {
                         continue;
@@ -150,7 +151,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
         return new ArrayEventIterator(lastResult);
     }
 
-    private void setup(OnTriggerMergeDesc onTriggerDesc, EventType triggeringEventType, StatementContext statementContext)
+    private void setup(OnTriggerMergeDesc onTriggerDesc, EventType triggeringEventType, String triggeringStreamName, StatementContext statementContext)
         throws ExprValidationException {
 
         matched = new ArrayList<NamedWindowOnMergeMatch>();
@@ -163,7 +164,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
                 try {
                     if (item instanceof OnTriggerMergeActionInsert) {
                         OnTriggerMergeActionInsert insertDesc = (OnTriggerMergeActionInsert) item;
-                        actions.add(setupInsert(insertDesc, triggeringEventType, statementContext));
+                        actions.add(setupInsert(insertDesc, triggeringEventType, triggeringStreamName, statementContext));
                     }
                     else if (item instanceof OnTriggerMergeActionUpdate) {
                         OnTriggerMergeActionUpdate updateDesc = (OnTriggerMergeActionUpdate) item;
@@ -197,7 +198,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
         }
     }
 
-    private NamedWindowOnMergeActionIns setupInsert(OnTriggerMergeActionInsert desc, EventType triggeringEventType, StatementContext statementContext)
+    private NamedWindowOnMergeActionIns setupInsert(OnTriggerMergeActionInsert desc, EventType triggeringEventType, String triggeringStreamName, StatementContext statementContext)
         throws ExprValidationException {
 
         // Compile insert-into info
@@ -207,18 +208,33 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
         for (String col : desc.getColumns()) {
             insertIntoDesc.add(col);
         }
-        boolean isUsingWildcard = false;    // Refactor me
+
+        // rewrite any wildcards to use "stream.wildcard"
+        if (triggeringStreamName == null) {
+            triggeringStreamName = UuidGenerator.generate();
+        }
+        List<SelectClauseElementCompiled> selectNoWildcard = new ArrayList<SelectClauseElementCompiled>();
         for (SelectClauseElementCompiled element : selectClause)
         {
-            if (element instanceof SelectClauseElementWildcard)
+            if (!(element instanceof SelectClauseElementWildcard))
             {
-                isUsingWildcard = true;
+                selectNoWildcard.add(element);
+                continue;
             }
+            SelectClauseStreamCompiledSpec streamSelect = new SelectClauseStreamCompiledSpec(triggeringStreamName, null);
+            streamSelect.setStreamNumber(1);
+            selectNoWildcard.add(streamSelect);
         }
 
+        // Set up event types for select-clause evaluation: The first type does not contain anything as its the named window row which is not present for insert
+        EventType dummyTypeNoProperties = new MapEventType(EventTypeMetadata.createAnonymous("merge_named_window_insert"), "merge_named_window_insert", null, Collections.<String, Object>emptyMap(), null, null);
+        EventType[] eventTypes = new EventType[] {dummyTypeNoProperties, triggeringEventType};
+        String[] streamNames = new String[] {UuidGenerator.generate(), triggeringStreamName};
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventTypes, streamNames, new boolean[1], statementContext.getEngineURI(), false);
+
+        // Get select expr processor
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {triggeringEventType}, new String[] {null}, new boolean[1], statementContext.getEngineURI(), false);
-        SelectExprProcessor insertHelper = SelectExprProcessorFactory.getProcessor(selectClause, isUsingWildcard, insertIntoDesc, null, streamTypeService,
+        SelectExprProcessor insertHelper = SelectExprProcessorFactory.getProcessor(selectNoWildcard, false, insertIntoDesc, null, streamTypeService,
                 statementContext.getEventAdapterService(), statementResultService, statementContext.getValueAddEventService(), selectExprEventTypeRegistry,
                 statementContext.getMethodResolutionService(), statementContext, statementContext.getVariableService(), statementContext.getTimeProvider(), statementContext.getEngineURI(), statementContext.getStatementId());
         ExprEvaluator filterEval = desc.getOptionalWhereClause() == null ? null : desc.getOptionalWhereClause().getExprEvaluator();

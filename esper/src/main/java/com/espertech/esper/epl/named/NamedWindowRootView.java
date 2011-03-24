@@ -212,7 +212,7 @@ public class NamedWindowRootView extends ViewSupport
      * @return base view for on-trigger expression
      * @throws com.espertech.esper.epl.expression.ExprValidationException when expression validation fails
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, boolean addToFront, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, String filterStreamName, StatementStopService statementStopService, InternalEventRouter internalEventRouter, boolean addToFront, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService, StatementContext statementContext, boolean isDistinct)
             throws ExprValidationException
     {
         // Determine strategy for deletion and index table to use (if any)
@@ -245,7 +245,7 @@ public class NamedWindowRootView extends ViewSupport
         else if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_MERGE)
         {
             OnTriggerMergeDesc desc = (OnTriggerMergeDesc) onTriggerDesc;
-            return new NamedWindowOnMergeView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc, filterEventType, createWindowStatementHandle, metricReportingService, internalEventRouter, namedWindowEventType.getName());
+            return new NamedWindowOnMergeView(statementStopService, strategy.getFirst(), this, statementResultService, statementContext, desc, filterEventType, filterStreamName, createWindowStatementHandle, metricReportingService, internalEventRouter, namedWindowEventType.getName());
         }
         else
         {

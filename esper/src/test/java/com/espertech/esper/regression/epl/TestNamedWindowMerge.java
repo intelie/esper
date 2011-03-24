@@ -5,6 +5,7 @@ import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.regression.view.TestFilterPropertySimple;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
+import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean_ST0;
 import com.espertech.esper.support.bean.bookexample.OrderBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -28,11 +29,31 @@ public class TestNamedWindowMerge extends TestCase {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventType("SupportBean", SupportBean.class);
         config.addEventType("SupportBean_A", SupportBean_A.class);
+        config.addEventType("SupportBean_S0", SupportBean_S0.class);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         nwListener = new SupportUpdateListener();
         mergeListener = new SupportUpdateListener();
+    }
+
+    public void testSubqueryNotMatched() {
+        EPStatement stmt = epService.getEPAdministrator().createEPL("create window WindowOne.std:unique(string) (string string, intPrimitive int)");
+        epService.getEPAdministrator().createEPL("create window WindowTwo.std:unique(val0) (val0 string, val1 int)");
+        epService.getEPAdministrator().createEPL("insert into WindowTwo select 'W2' as val0, id as val1 from SupportBean_S0");
+
+        String epl = "on SupportBean sb merge WindowOne w1 " +
+                "where sb.string = w1.string " +
+                "when not matched then insert select 'Y' as string, (select val1 from WindowTwo as w2 where w2.val0 = sb.string) as intPrimitive";
+        epService.getEPAdministrator().createEPL(epl);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(50));  // WindowTwo now has a row {W2, 1}
+        epService.getEPRuntime().sendEvent(new SupportBean("W2", 1));
+        ArrayAssertionUtil.assertPropsPerRow(stmt.iterator(), "string,intPrimitive".split(","), new Object[][] {{"Y", 50}});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(51));  // WindowTwo now has a row {W2, 1}
+        epService.getEPRuntime().sendEvent(new SupportBean("W2", 2));
+        ArrayAssertionUtil.assertPropsPerRow(stmt.iterator(), "string,intPrimitive".split(","), new Object[][] {{"Y", 51}});
     }
 
     public void testMultiactionDeleteUpdate() {
@@ -215,7 +236,7 @@ public class TestNamedWindowMerge extends TestCase {
                       "merge MyWindow nw " +
                       "where nw.c1 = sb.string " +
                       "when not matched then " +
-                      "insert select * " +
+                      "insert select string as c1, intPrimitive as c2 " +
                       "when matched then " +
                       "update set nw.c2=sb.intPrimitive";
         stmt = epService.getEPAdministrator().createEPL(epl);

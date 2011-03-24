@@ -527,13 +527,19 @@ public class SelectExprProcessorHelper
         {
             if (!selectedStreams.isEmpty()) {
                 EventType resultEventType;
-                if (underlyingEventType != null)
+                if (underlyingEventType != null)    // a single stream was selected via "stream.*" and there is no column name
                 {
+                    // recast as a Map-type
+                    if (underlyingEventType instanceof MapEventType && targetType instanceof MapEventType) {
+                        return new EvalSelectStreamWUnderlyingRecast(selectExprContext, selectedStreams.get(0).getStreamNumber(), targetType);
+                    }
+
+                    // wrap if no recast possible
                     resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeName(), underlyingEventType, selPropertyTypes, false, true);
                     return new EvalSelectStreamWUnderlying(selectExprContext, resultEventType, namedStreams, isUsingWildcard,
                             unnamedStreams, underlyingEventType, singleStreamWrapper, underlyingIsFragmentEvent, underlyingStreamNumber, underlyingPropertyEventGetter);
                 }
-                else
+                else    // there are onle or more streams selected with column name such as "stream.* as columnOne"
                 {
                     resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), selPropertyTypes, null, false, false, false, false, true);
                     return new EvalSelectStreamNoUnderlying(selectExprContext, resultEventType, namedStreams, isUsingWildcard);

@@ -41,6 +41,8 @@ import com.espertech.esper.epl.view.OutputConditionExpression;
 import com.espertech.esper.epl.view.OutputProcessView;
 import com.espertech.esper.epl.view.OutputProcessViewFactory;
 import com.espertech.esper.event.EventAdapterException;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.pattern.EvalRootNode;
@@ -51,6 +53,7 @@ import com.espertech.esper.rowregex.EventRowRegexNFAViewFactory;
 import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.StopCallback;
+import com.espertech.esper.util.UuidGenerator;
 import com.espertech.esper.view.*;
 import com.espertech.esper.view.internal.BufferView;
 import com.espertech.esper.view.internal.RouteResultView;
@@ -333,10 +336,7 @@ public class EPStatementStartMethod
             }
             if (onTriggerDesc instanceof OnTriggerMergeDesc) {
                 OnTriggerMergeDesc mergeDesc = (OnTriggerMergeDesc) onTriggerDesc;
-                StreamTypeService twoStream = new StreamTypeServiceImpl(new EventType[] {processor.getNamedWindowType(), streamEventType},
-                        new String[] {namedWindowName, streamName}, new boolean[] {true, true}, statementContext.getEngineURI(), false);
-                StreamTypeService triggerStream = new StreamTypeServiceImpl(streamEventType, streamName, true, statementContext.getEngineURI());
-                validateMergeDesc(mergeDesc, statementContext, twoStream, triggerStream);
+                validateMergeDesc(mergeDesc, statementContext, processor.getNamedWindowType(), namedWindowName,  streamEventType, streamName);
             }
 
             // validate join expression
@@ -365,7 +365,7 @@ public class EPStatementStartMethod
             if (statementSpec.getInsertIntoDesc() != null) {
                 addToFront = statementContext.getNamedWindowService().isNamedWindow(statementSpec.getInsertIntoDesc().getEventTypeName());
             }
-            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, addToFront, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext, statementSpec.getSelectClauseSpec().isDistinct());
+            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, streamSpec.getOptionalStreamName(), statementContext.getStatementStopService(), routerService, addToFront, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), statementContext, statementSpec.getSelectClauseSpec().isDistinct());
             eventStreamParentViewable.addView(onExprView);
         }
         // variable assignments
@@ -493,14 +493,20 @@ public class EPStatementStartMethod
         return validated;
     }
 
-    private void validateMergeDesc(OnTriggerMergeDesc mergeDesc, StatementContext statementContext, StreamTypeService twoStreamTypeSvc, StreamTypeService singleStreamTypeSvc)
+    private void validateMergeDesc(OnTriggerMergeDesc mergeDesc, StatementContext statementContext, EventType namedWindowType, String namedWindowName, EventType triggerStreamType, String triggerStreamName)
         throws ExprValidationException
     {
         String exprNodeErrorMessage = "Aggregation functions may not be used within an merge-clause";
         for (OnTriggerMergeMatched matchedItem : mergeDesc.getItems()) {
 
+            EventType dummyTypeNoProperties = new MapEventType(EventTypeMetadata.createAnonymous("merge_named_window_insert"), "merge_named_window_insert", null, Collections.<String, Object>emptyMap(), null, null);
+            StreamTypeService twoStreamTypeSvc = new StreamTypeServiceImpl(new EventType[] {namedWindowType, triggerStreamType},
+                    new String[] {namedWindowName, triggerStreamName}, new boolean[] {true, true}, statementContext.getEngineURI(), false);
+            StreamTypeService insertOnlyTypeSvc = new StreamTypeServiceImpl(new EventType[] {dummyTypeNoProperties, triggerStreamType},
+                    new String[] {UuidGenerator.generate(), triggerStreamName}, new boolean[] {true, true}, statementContext.getEngineURI(), false);
+
             if (matchedItem.getOptionalMatchCond() != null) {
-                StreamTypeService matchValidStreams = matchedItem.isMatchedUnmatched() ? twoStreamTypeSvc : singleStreamTypeSvc;
+                StreamTypeService matchValidStreams = matchedItem.isMatchedUnmatched() ? twoStreamTypeSvc : insertOnlyTypeSvc;
                 matchedItem.setOptionalMatchCond(validateExprNoAgg(matchedItem.getOptionalMatchCond(), matchValidStreams, statementContext, exprNodeErrorMessage));
             }
 
@@ -525,26 +531,27 @@ public class EPStatementStartMethod
                     OnTriggerMergeActionInsert insert = (OnTriggerMergeActionInsert) item;
                     List<SelectClauseElementCompiled> compiledSelect = new ArrayList<SelectClauseElementCompiled>();
                     if (insert.getOptionalWhereClause() != null) {
-                        insert.setOptionalWhereClause(validateExprNoAgg(insert.getOptionalWhereClause(), singleStreamTypeSvc, statementContext, exprNodeErrorMessage));
+                        insert.setOptionalWhereClause(validateExprNoAgg(insert.getOptionalWhereClause(), insertOnlyTypeSvc, statementContext, exprNodeErrorMessage));
                     }
                     int colIndex = 0;
+                    int contentStreamNumber = 1;
                     for (SelectClauseElementRaw raw : insert.getSelectClause())
                     {
                         if (raw instanceof SelectClauseStreamRawSpec)
                         {
                             SelectClauseStreamRawSpec rawStreamSpec = (SelectClauseStreamRawSpec) raw;
-                            if (!rawStreamSpec.getStreamName().equals(singleStreamTypeSvc.getStreamNames()[0]))
+                            if (!rawStreamSpec.getStreamName().equals(insertOnlyTypeSvc.getStreamNames()[contentStreamNumber]))
                             {
                                 throw new ExprValidationException("Stream by name '" + rawStreamSpec.getStreamName() + "' was not found");
                             }
                             SelectClauseStreamCompiledSpec streamSelectSpec = new SelectClauseStreamCompiledSpec(rawStreamSpec.getStreamName(), rawStreamSpec.getOptionalAsName());
-                            streamSelectSpec.setStreamNumber(0);
+                            streamSelectSpec.setStreamNumber(contentStreamNumber);
                             compiledSelect.add(streamSelectSpec);
                         }
                         else if (raw instanceof SelectClauseExprRawSpec)
                         {
                             SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                            ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(singleStreamTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
+                            ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(insertOnlyTypeSvc, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
                             String resultName = exprSpec.getOptionalAsName();
                             if (resultName == null)
                             {
