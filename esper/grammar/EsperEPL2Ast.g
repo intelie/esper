@@ -471,6 +471,7 @@ valueExpr
 	| 	subSelectRowExpr 
 	| 	subSelectExistsExpr
 	|	dotExpr
+	|	newExpr
 	;
 
 valueExprWithTime
@@ -610,6 +611,13 @@ arithmeticExpr
 	
 dotExpr
 	:	^(d=DOT_EXPR valueExpr libFunctionWithClass*) { leaveNode($d); }
+	;
+	
+newExpr	:	^(n=NEWKW newAssign*) { leaveNode($n); }
+	;
+
+newAssign
+	:	^(NEW_ITEM eventPropertyExpr[false] valueExpr?)
 	;
 
 libFuncChain

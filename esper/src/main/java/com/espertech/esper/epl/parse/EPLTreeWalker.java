@@ -511,6 +511,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case EXPRESSIONDECL:
                 leaveExpressionDecl(node);
                 break;
+            case NEWKW:
+                leaveNewKeyword(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -2844,6 +2847,38 @@ public class EPLTreeWalker extends EsperEPL2Ast
             statementSpec.setExpressionDeclDesc(new ExpressionDeclDesc());
         }
         statementSpec.getExpressionDeclDesc().getExpressions().add(declNode);
+    }
+
+    private void leaveNewKeyword(Tree node)
+    {
+        if (log.isDebugEnabled())
+        {
+            log.debug(".leaveNewKeyword");
+        }
+
+        List<String> columnNames = new ArrayList<String>();
+        List<ExprNode> expressions = new ArrayList<ExprNode>();
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Tree child = node.getChild(i);
+            if (child.getType() != NEW_ITEM) {
+                throw new IllegalStateException("Expected new-item node not found");
+            }
+            String property = ASTFilterSpecHelper.getPropertyName(child.getChild(0), 0);
+            columnNames.add(property);
+
+            ExprNode expr;
+            if (child.getChildCount() > 1) {
+                expr = astExprNodeMap.remove(child.getChild(1));
+            }
+            else {
+                expr = new ExprIdentNode(property);
+            }
+            expressions.add(expr);
+        }
+        String[] columns = columnNames.toArray(new String[columnNames.size()]);
+        ExprNewNode newNode = new ExprNewNode(columns);
+        newNode.getChildNodes().addAll(expressions);
+        astExprNodeMap.put(node, newNode);
     }
 
     private void leaveObserver(Tree node) throws ASTWalkException

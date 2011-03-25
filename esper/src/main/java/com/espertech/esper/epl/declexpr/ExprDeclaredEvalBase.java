@@ -41,7 +41,7 @@ public abstract class ExprDeclaredEvalBase implements ExprEvaluator, ExprEvaluat
     }
 
     public Map<String, Object> getEventType() throws ExprValidationException {
-        return null;
+        return innerEvaluator.getEventType();
     }
 
     public Class getType() {

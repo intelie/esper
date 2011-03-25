@@ -1,4 +1,4 @@
-<chapter id="enumerartionreference">
+<chapter id="enumerationreference">
     <title>EPL Reference: Enumeration Methods</title>
         
 	<sect1 id="enumeration-intro">
@@ -1417,13 +1417,22 @@ from LocationReport</programlisting>
 			</para>
 
 			<para>
-				The enumeration method applies a transformation lambda expression to each element and returns the result of each transformation as a collection.
+				The enumeration method applies a transformation lambda expression to each element and returns the result of each transformation as a collection. Use the <literal>new</literal> operator to yield multiple values for each element, see <xref linkend="epl-operator-new"/>.
 			</para>
 
 			<para>
 				The next EPL query returns a collection of asset ids:
 			</para>
 			<programlisting>select items.selectFrom(i => assetId) as itemAssetIds from LocationReport</programlisting>
+
+			<para>
+				This sample EPL query evaluates each item and returns the asset id as well as the distance from center for each item:
+			</para>
+			<programlisting>select items.selectFrom(i => 
+  new {
+    assetId, 
+    distanceCenter = distance(i.location.x, i.location.y, 0, 0)
+  } ) as itemInfo from LocationReport</programlisting>
 
 			<para>
 				If the input is null the method returns null. If the input is empty the method returns an empty collection.

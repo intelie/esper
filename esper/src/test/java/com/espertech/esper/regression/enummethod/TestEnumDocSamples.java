@@ -205,6 +205,7 @@ public class TestEnumDocSamples extends TestCase {
         assertStmt("select (window(assetId)).orderBy() as orderedAssetIds from Item.win:time(10) group by assetId");
         assertStmt("select (prevwindow(assetId)).orderBy() as orderedAssetIds from Item.win:time(10) as items");
         assertStmt("select getZoneNames().where(z => z != \"Z1\") from pattern [every timer:interval(30)]");
+        assertStmt("select items.selectFrom(i => new { assetId, distanceCenter = distance(i.location.x, i.location.y, 0, 0) }) as itemInfo from LocationReport");
 
         String epl = "expression myquery {itm => " +
                 "((select * from Zone.win:keepall())).where(z => inrect(z.rectangle, itm.location))" +

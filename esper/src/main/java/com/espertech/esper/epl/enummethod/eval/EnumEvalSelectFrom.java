@@ -26,7 +26,9 @@ public class EnumEvalSelectFrom extends EnumEvalBase implements EnumEval {
             eventsLambda[streamNumLambda] = next;
 
             Object item = innerExpression.evaluate(eventsLambda, isNewData, context);
-            queue.add(item);
+            if (item != null) {
+                queue.add(item);
+            }
         }
 
         return queue;

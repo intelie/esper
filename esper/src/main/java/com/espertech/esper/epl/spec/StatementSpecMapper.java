@@ -1475,6 +1475,10 @@ public class StatementSpecMapper
             TimePeriodExpression tpe = (TimePeriodExpression) expr;
             return new ExprTimePeriod(tpe.isHasYears(), tpe.isHasMonths(), tpe.isHasWeeks(), tpe.isHasDays(), tpe.isHasHours(), tpe.isHasMinutes(), tpe.isHasSeconds(), tpe.isHasMilliseconds());
         }
+        else if (expr instanceof NewOperatorExpression) {
+            NewOperatorExpression noe = (NewOperatorExpression) expr;
+            return new ExprNewNode(noe.getColumnNames().toArray(new String[noe.getColumnNames().size()]));
+        }
         else if (expr instanceof CompareListExpression)
         {
             CompareListExpression exp = (CompareListExpression) expr;
@@ -1963,6 +1967,11 @@ public class StatementSpecMapper
         else if (expr instanceof ExprNumberSetList)
         {
             return new CrontabParameterSetExpression();
+        }
+        else if (expr instanceof ExprNewNode)
+        {
+            ExprNewNode newNode = (ExprNewNode) expr;
+            return new NewOperatorExpression(new ArrayList<String>(Arrays.asList(newNode.getColumnNames())));
         }
         else if (expr instanceof ExprOrderedExpr)
         {

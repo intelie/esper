@@ -80,20 +80,6 @@ public class LocationReportFactory {
         return result;
     }
 
-    //people.Join(pets,
-    //                         person => person,
-    //                         pet => pet.Owner,
-    //                         (person, pet) =>
-    //                             new { OwnerName = person.Name, Pet = pet.Name });
-
-    // var passengers = item.where(li => p.groups[0] = 'passenger');
-    // var distances=luggageItems.join(passengers, li => li.getGroups()[1], p => assetId, (li, p) => {...})
-    // var luggageItems.join(passengers, li =>
-    //
-    // luggageItems.toDictionary(li => li, li => passengers.where(p => p.assertId != li.groups[1]).minBy(p => distance))
-    //
-
-    // ==> variable assignment would be GREAT!
     public static Item findPotentialNewOwner(LocationReport lr, Item luggageItem) {
 
         // for a given luggage find the owner that is nearest to it

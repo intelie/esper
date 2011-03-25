@@ -29,6 +29,37 @@ public class TestExpressionDef extends TestCase {
         listener = new SupportUpdateListener();
     }
 
+    public void testCaseNewMultiReturnNoElse() {
+        
+        String[] fieldsInner = "col1,col2".split(",");
+        String epl = "expression gettotal {" +
+                " x => case " +
+                "  when string = 'A' then new { col1 = 'X', col2 = 10 } " +
+                "  when string = 'B' then new { col1 = 'Y', col2 = 20 } " +
+                "end" +
+                "} " +
+                "insert into OtherStream select gettotal(sb) as val0 from SupportBean sb";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        assertEquals(Map.class, stmt.getEventType().getPropertyType("val0"));
+
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        epService.getEPAdministrator().createEPL("select val0.col1 as c1, val0.col2 as c2 from OtherStream").addListener(listenerTwo);
+        String[] fieldsConsume = "c1,c2".split(",");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertPropsMap((Map) listener.assertOneGetNewAndReset().get("val0"), fieldsInner, new Object[] {null, null});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), fieldsConsume, new Object[] {null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 2));
+        ArrayAssertionUtil.assertPropsMap((Map) listener.assertOneGetNewAndReset().get("val0"), fieldsInner, new Object[] {"X", 10});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), fieldsConsume, new Object[] {"X", 10});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("B", 3));
+        ArrayAssertionUtil.assertPropsMap((Map) listener.assertOneGetNewAndReset().get("val0"), fieldsInner, new Object[] {"Y", 20});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), fieldsConsume, new Object[] {"Y", 20});
+    }
+
     public void testAnnotationOrder() {
         String epl = "expression scalar {1} @Name('test') select scalar() from SupportBean_ST0";
         runAssertionAnnotation(epl);

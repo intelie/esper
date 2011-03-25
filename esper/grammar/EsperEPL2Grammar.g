@@ -131,6 +131,7 @@ tokens
 	MERGE='merge';
 	MATCHED='matched';
 	EXPRESSIONDECL='expression';
+	NEWKW='new';
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -276,6 +277,7 @@ tokens
 	MERGE_UPD;
 	MERGE_INS;
 	MERGE_DEL;
+	NEW_ITEM;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -1307,8 +1309,14 @@ unaryExpression
 	    -> {$d != null}? ^(DOT_EXPR subSelectExpression libFunctionNoClass+)
 	    -> subSelectExpression
 	| existsSubSelectExpression
+	| NEWKW LCURLY newAssign (COMMA newAssign)* RCURLY -> ^(NEWKW newAssign*) 
 	;
-	    
+	
+newAssign
+	:	eventProperty (EQUALS expression)?
+		-> ^(NEW_ITEM eventProperty expression?)
+	;
+	
 subSelectExpression 
 	:	subQueryExpr
 		-> ^(SUBSELECT_EXPR subQueryExpr)

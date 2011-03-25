@@ -39,6 +39,9 @@ public class SupportBean_ST0_Container {
     }
 
     public static SupportBean_ST0_Container make3Value(String ... values) {
+        if (values == null) {
+            return new SupportBean_ST0_Container(null);
+        }
         List<SupportBean_ST0> contained = new ArrayList<SupportBean_ST0>();
         for (int i = 0; i < values.length; i++) {
             String[] triplet = values[i].split(",");

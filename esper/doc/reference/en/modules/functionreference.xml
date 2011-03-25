@@ -221,9 +221,13 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			</para>
 			
 			<para>
+				The <literal>case</literal> expression is sometimes used with the <literal>new</literal> operator to return multiple results, see <xref linkend="epl-operator-new"/>.
+			</para>
+
+			<para>
 				The example below shows the first version of a <literal>case</literal> statement. It has a <literal>String</literal> return type and returns the value 'one'.
 			</para>
-			<programlisting>select case 1 when 1 then 'one' when 2 then 'two' else 'more' end from ...</programlisting>
+			<programlisting>select case myexpression when 1 then 'one' when 2 then 'two' else 'more' end from ...</programlisting>
 				
 			<para>
 				The second version of the <literal>case</literal> function takes a list of conditions. The next example has a <literal>Boolean</literal> return type and returns the boolean value true.

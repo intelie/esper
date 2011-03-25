@@ -15,6 +15,7 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
@@ -35,6 +36,7 @@ public class ExprCaseNode extends ExprNode implements ExprEvaluator
 
     private final boolean isCase2;
     private Class resultType;
+    private Map<String, Object> mapResultType;
     private boolean isNumericResult;
     private boolean mustCoerce;
 
@@ -68,10 +70,6 @@ public class ExprCaseNode extends ExprNode implements ExprEvaluator
         return isCase2;
     }
 
-    public Map<String, Object> getEventType() {
-        return null;
-    }
-
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
     {
         CaseAnalysis analysis = analyzeCase();
@@ -101,26 +99,53 @@ public class ExprCaseNode extends ExprNode implements ExprEvaluator
 
         // Determine type of each result (then-node and else node) child node expression
         List<Class> childTypes = new LinkedList<Class>();
+        List<Map<String, Object>> childMapTypes = new LinkedList<Map<String, Object>>();
         for (UniformPair<ExprEvaluator> pair : whenThenNodeList)
         {
+            if (pair.getSecond().getEventType() != null) {
+                childMapTypes.add(pair.getSecond().getEventType());
+                continue;
+            }
             childTypes.add(pair.getSecond().getType());
+
         }
         if (optionalElseExprNode != null)
         {
-            childTypes.add(optionalElseExprNode.getType());
-        }
-
-        // Determine common denominator type
-        try {
-            resultType = JavaClassHelper.getCommonCoercionType(childTypes.toArray(new Class[childTypes.size()]));
-            if (JavaClassHelper.isNumeric(resultType))
-            {
-                isNumericResult = true;
+            if (optionalElseExprNode.getEventType() != null) {
+                childMapTypes.add(optionalElseExprNode.getEventType());
+            }
+            else {
+                childTypes.add(optionalElseExprNode.getType());
             }
         }
-        catch (CoercionException ex)
-        {
-            throw new ExprValidationException("Implicit conversion not allowed: " + ex.getMessage());
+
+        if (!childMapTypes.isEmpty() && !childTypes.isEmpty()) {
+            throw new ExprValidationException("Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value");
+        }
+
+        if (childMapTypes.isEmpty()) {
+            // Determine common denominator type
+            try {
+                resultType = JavaClassHelper.getCommonCoercionType(childTypes.toArray(new Class[childTypes.size()]));
+                if (JavaClassHelper.isNumeric(resultType))
+                {
+                    isNumericResult = true;
+                }
+            }
+            catch (CoercionException ex)
+            {
+                throw new ExprValidationException("Implicit conversion not allowed: " + ex.getMessage());
+            }
+        }
+        else {
+            mapResultType = childMapTypes.get(0);
+            for (int i = 1; i < childMapTypes.size(); i++) {
+                Map<String, Object> other = childMapTypes.get(i);
+                String messageEquals = MapEventType.isDeepEqualsProperties("Case-when number " + i, mapResultType, other);
+                if (messageEquals != null) {
+                    throw new ExprValidationException("Incompatible case-when return types by new-operator in case-when number " + i + ": " + messageEquals);
+                }
+            }
         }
     }
 
@@ -132,6 +157,10 @@ public class ExprCaseNode extends ExprNode implements ExprEvaluator
     public Class getType()
     {
         return resultType;
+    }
+
+    public Map<String, Object> getEventType() {
+        return mapResultType;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
