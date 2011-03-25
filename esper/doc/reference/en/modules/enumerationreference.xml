@@ -186,10 +186,32 @@
 						</entry>
 					</row>
 					<row>
+						<entry>leastFrequent()</entry>
+						<entry>
+							<para>
+								Returns the least frequent value among a collection of values.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-leastfrequent"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>leastFrequent(transform lambda)</entry>
+						<entry>
+							<para>
+								Returns the least frequent value returned by the transform expression when applied to each element.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-leastfrequent"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry>max()</entry>
 						<entry>
 							<para>
-								Returns the maximum value among a collection of numeric elements.
+								Returns the maximum value among a collection of elements.
 							</para>
 							<para>
 								<xref linkend="enumeration-method-max"/>.
@@ -222,7 +244,7 @@
 						<entry>min()</entry>
 						<entry>
 							<para>
-								Returns the minimum value among a collection of numeric elements.
+								Returns the minimum value among a collection of elements.
 							</para>
 							<para>
 								<xref linkend="enumeration-method-max"/>.
@@ -248,6 +270,28 @@
 							</para>
 							<para>
 								<xref linkend="enumeration-method-minby"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>mostFrequent()</entry>
+						<entry>
+							<para>
+								Returns the most frequent value among a collection of values.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-mostfrequent"/>.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry>mostFrequent(transform lambda)</entry>
+						<entry>
+							<para>
+								Returns the most frequent value returned by the transform expression when applied to each element.
+							</para>
+							<para>
+								<xref linkend="enumeration-method-mostfrequent"/>.
 							</para>
 						</entry>
 					</row>
@@ -1251,6 +1295,27 @@ from LocationReport</programlisting>
 			</para>
 		</sect2>
 
+		<sect2 id="enumeration-method-leastfrequent">
+			<title>LeastFrequent</title>
+
+			<para>
+				The <literal>leastFrequent</literal> enumeration method returns the least frequent value among a collection of values, or the least frequent value after applying a transform expression to each element.
+			</para>
+			
+			<para>
+				The method has two versions: The first version takes no parameters and returns the least frequent value. The second version takes a transform lambda expression yielding the value to count occurrences for. The method applies the lambda expression to each element and returns the expression result value with the least number of occurrences. The return type is the type of value in the collection or the type of value returned by the transform lambda expression if one was provided.
+			</para>
+
+			<para>
+				The example EPL below returns the least frequent item type, counting the distinct item types among all items for the current LocationReport event:
+			</para>
+			<programlisting>select items.leastFrequent(i =&gt; type) as leastFreqType from LocationReport</programlisting>
+
+			<para>
+				If the input is null or empty the method returns null. The transform expression may also yield null. A null value can be returned as the most frequent value if the most frequent value is null. If multiple values have the same number of occurrences the method returns the first value with the least number of occurrences considering the ordering of the collection.
+			</para>
+		</sect2>
+
 		<sect2 id="enumeration-method-max">
 			<title>Max</title>
 
@@ -1362,6 +1427,27 @@ from LocationReport</programlisting>
 
 			<para>
 				If the input is null, empty or if none of the elements when transformed return a non-null value the method returns null.
+			</para>
+		</sect2>
+
+		<sect2 id="enumeration-method-mostfrequent">
+			<title>MostFrequent</title>
+
+			<para>
+				The <literal>mostFrequent</literal> enumeration method returns the most frequent value among a collection of values, or the most frequent value after applying a transform expression to each element.
+			</para>
+			
+			<para>
+				The method has two versions: The first version takes no parameters and returns the most frequent value. The second version takes a transform lambda expression yielding the value to count occurrences for. The method applies the lambda expression to each element and returns the expression result value with the most number of occurrences. The return type is the type of value in the collection or the type of value returned by the transform lambda expression if one was provided.
+			</para>
+
+			<para>
+				The example EPL below returns the least frequent item type, counting the distinct item types among all items for the current LocationReport event:
+			</para>
+			<programlisting>select items.leastFrequent(i =&gt; type) as leastFreqType from LocationReport</programlisting>
+
+			<para>
+				If the input is null or empty the method returns null. The transform expression may also yield null. A null value can be returned as the most frequent value if the most frequent value is null. If multiple values have the same number of occurrences the method returns the first value with the most number of occurrences considering the ordering of the collection.
 			</para>
 		</sect2>
 

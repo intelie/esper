@@ -120,7 +120,23 @@ public class ExprCaseNode extends ExprNode implements ExprEvaluator
         }
 
         if (!childMapTypes.isEmpty() && !childTypes.isEmpty()) {
-            throw new ExprValidationException("Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value");
+            String message = "Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value";
+            String check;
+            int count = -1;
+            for (UniformPair<ExprEvaluator> pair : whenThenNodeList) {
+                count++;
+                if (pair.getSecond().getType() != Map.class && pair.getSecond().getType() != null) {
+                    check = ", check when-condition number " + count;
+                    throw new ExprValidationException(message + check);
+                }
+            }
+            if (optionalElseExprNode != null) {
+                if (optionalElseExprNode.getType() != Map.class && optionalElseExprNode.getType() != null) {
+                    check = ", check the else-condition";
+                    throw new ExprValidationException(message + check);
+                }
+            }
+            throw new ExprValidationException(message);
         }
 
         if (childMapTypes.isEmpty()) {

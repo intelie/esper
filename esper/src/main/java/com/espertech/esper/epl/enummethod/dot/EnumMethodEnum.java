@@ -19,6 +19,9 @@ public enum EnumMethodEnum {
     AVERAGE("average", ExprDotEvalAverage.class, EnumMethodEnumParams.AVERAGE_SUMOF),
     SUMOF("sumOf", ExprDotEvalSumOf.class, EnumMethodEnumParams.AVERAGE_SUMOF),
 
+    MOSTFREQUENT("mostFrequent", ExprDotEvalMostLeastFrequent.class, EnumMethodEnumParams.MOST_LEAST_FREQ),
+    LEASTFREQUENT("leastFrequent", ExprDotEvalMostLeastFrequent.class, EnumMethodEnumParams.MOST_LEAST_FREQ),
+
     SELECTFROM("selectFrom", ExprDotEvalSelectFrom.class, EnumMethodEnumParams.SELECTFROM_MINBY_MAXBY),
 
     FIRST("firstOf", ExprDotEvalFirstLastOf.class, EnumMethodEnumParams.COUNTOF_FIRST_LAST),

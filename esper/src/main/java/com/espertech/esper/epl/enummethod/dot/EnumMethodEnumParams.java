@@ -45,6 +45,11 @@ public class EnumMethodEnumParams {
                     new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "predicate", DotMethodFPParamTypeEnum.NUMERIC))
             };
 
+    public static final DotMethodFP[] MOST_LEAST_FREQ = new DotMethodFP[] {
+                    new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY),
+                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "predicate", DotMethodFPParamTypeEnum.ANY))
+            };
+
     public static final DotMethodFP[] MAP = new DotMethodFP[] {
                     new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "key-selector", DotMethodFPParamTypeEnum.ANY),
                                             new DotMethodFPParam(1, "value-selector", DotMethodFPParamTypeEnum.ANY)),

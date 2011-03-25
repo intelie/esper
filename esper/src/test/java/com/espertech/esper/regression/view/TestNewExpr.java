@@ -148,7 +148,10 @@ public class TestNewExpr extends TestCase
         String epl;
 
         epl = "select case when true then new { col1 = 'a' } else 1 end from SupportBean";
-        tryInvalid(epl, "Error starting statement: Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value [select case when true then new { col1 = 'a' } else 1 end from SupportBean]");
+        tryInvalid(epl, "Error starting statement: Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value, check the else-condition [select case when true then new { col1 = 'a' } else 1 end from SupportBean]");
+
+        epl = "select case when true then new { col1 = 'a' } when false then 1 end from SupportBean";
+        tryInvalid(epl, "Error starting statement: Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value, check when-condition number 1 [select case when true then new { col1 = 'a' } when false then 1 end from SupportBean]");
 
         epl = "select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean";
         tryInvalid(epl, "Error starting statement: Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected class java.lang.String but receives class java.lang.Integer [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
