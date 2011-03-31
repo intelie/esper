@@ -295,9 +295,13 @@ public class NamedWindowServiceImpl implements NamedWindowService
                         variableService.setLocalVersion();
                     }
 
-                    for (NamedWindowConsumerView consumerView : unit.getDispatchTo().get(handle))
-                    {
-                        consumerView.update(newData, oldData);
+                    Map<EPStatementHandle, List<NamedWindowConsumerView>> entries = unit.getDispatchTo();
+                    List<NamedWindowConsumerView> items = entries.get(handle);
+                    if (items != null) {
+                        for (NamedWindowConsumerView consumerView : items)
+                        {
+                            consumerView.update(newData, oldData);
+                        }
                     }
 
                     // internal join processing, if applicable
