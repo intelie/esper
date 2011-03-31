@@ -46,8 +46,17 @@ public class ResultDeliveryStrategyTypeArr implements ResultDeliveryStrategy
 
     public void execute(UniformPair<EventBean[]> result)
     {
-        Object newData = convert(result.getFirst());
-        Object oldData = convert(result.getSecond());
+        Object newData;
+        Object oldData;
+
+        if (result == null) {
+            newData = null;
+            oldData = null;
+        }
+        else {
+            newData = convert(result.getFirst());
+            oldData = convert(result.getSecond());
+        }
 
         Object params[] = new Object[] {newData, oldData};
         try {

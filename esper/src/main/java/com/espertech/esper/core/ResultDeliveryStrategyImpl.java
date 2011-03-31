@@ -84,8 +84,12 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
     {
         if (startFastMethod != null)
         {
-            int countNew = count(result.getFirst());
-            int countOld = count(result.getSecond());
+            int countNew = 0;
+            int countOld = 0;
+            if (result != null) {
+                countNew = count(result.getFirst());
+                countOld = count(result.getSecond());
+            }
 
             Object[] params = new Object[] {countNew, countOld};
             try {

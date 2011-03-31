@@ -47,8 +47,17 @@ public class ResultDeliveryStrategyMap implements ResultDeliveryStrategy
 
     public void execute(UniformPair<EventBean[]> result)
     {
-        Map[] newData = convert(result.getFirst());
-        Map[] oldData = convert(result.getSecond());
+        Map[] newData;
+        Map[] oldData;
+
+        if (result == null) {
+            newData = null;
+            oldData = null;
+        }
+        else {
+            newData = convert(result.getFirst());
+            oldData = convert(result.getSecond());
+        }
 
         Object[] params = new Object[] {newData, oldData};
         try {
