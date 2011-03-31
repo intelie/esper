@@ -65,7 +65,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                                     CreateWindowDesc optCreateWindowDesc,
                                     boolean isFireAndForget,
                                     Annotation[] annotations,
-                                    EPIsolationUnitServices isolationUnitServices)
+                                    EPIsolationUnitServices isolationUnitServices,
+                                    String optionalCreateNamedWindowName)
     {
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
@@ -114,7 +115,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
 
         PatternContextFactory patternContextFactory = new PatternContextFactoryDefault();
 
-        ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(viewClasses);
+        ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(viewClasses, optionalCreateNamedWindowName);
         PatternObjectResolutionService patternResolutionService = new PatternObjectResolutionServiceImpl(patternObjectClasses);
 
         SchedulingServiceSPI schedulingService = engineServices.getSchedulingService();

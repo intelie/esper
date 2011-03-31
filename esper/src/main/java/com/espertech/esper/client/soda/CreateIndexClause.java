@@ -42,6 +42,12 @@ public class CreateIndexClause implements Serializable
         return new CreateIndexClause(indexName, windowName, properties);
     }
 
+    /**
+     * Ctor.
+     * @param indexName index name
+     * @param windowName named window name
+     * @param columns columns indexed
+     */
     public CreateIndexClause(String indexName, String windowName, List<CreateIndexColumn> columns) {
         this.indexName = indexName;
         this.windowName = windowName;

@@ -32,6 +32,7 @@ import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
 import com.espertech.esper.util.AuditPath;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,6 +100,10 @@ public class EPPreparedExecuteMethod
 
             processors[i] = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
             typesPerStream[i] = processors[i].getTailView().getEventType();
+
+            if (processors[i].getRootView().getViews().get(0) instanceof VirtualDWView) {
+                streamJoinAnalysisResult.getViewExternal()[i] = (VirtualDWView) processors[i].getRootView().getViews().get(0);
+            }
         }
 
         // compile filter to optimize access to named window

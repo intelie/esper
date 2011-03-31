@@ -9,12 +9,12 @@
 package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.join.exec.base.SortedTableLookupStrategy;
 import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
+import com.espertech.esper.epl.join.exec.base.SortedTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertySortedEventTable;
 
-import java.util.Map;
+import java.util.Collections;
 
 /**
  * Plan to perform an indexed table lookup.
@@ -37,9 +37,13 @@ public class SortedTableLookupPlan extends TableLookupPlan
         this.lookupStream = lookupStream;
     }
 
-    public JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
+    public TableLookupKeyDesc getKeyDescriptor() {
+        return new TableLookupKeyDesc(Collections.<QueryGraphValueEntryHashKeyed>emptyList(), Collections.singletonList(rangeKeyPair));
+    }
+
+    public JoinExecTableLookupStrategy makeStrategyInternal(EventTable eventTable, EventType[] eventTypes)
     {
-        PropertySortedEventTable index = (PropertySortedEventTable) indexesPerStream[this.getIndexedStream()].get(this.getIndexNum());
+        PropertySortedEventTable index = (PropertySortedEventTable) eventTable;
         return new SortedTableLookupStrategy(lookupStream, -1, rangeKeyPair, null, index);
     }
 

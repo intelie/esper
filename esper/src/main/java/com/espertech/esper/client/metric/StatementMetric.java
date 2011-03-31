@@ -138,6 +138,10 @@ public class StatementMetric extends MetricEvent
         numOutputRStream.addAndGet(numRStream);
     }
 
+    /**
+     * Returns the number of input events.
+     * @return number of input events
+     */
     public long getNumInput() {
         return numInput.get();
     }

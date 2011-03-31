@@ -1,0 +1,66 @@
+package com.espertech.esper.client.hook;
+
+import com.espertech.esper.client.EventBean;
+
+/**
+ * A virtual data window exposes externally-managed data transparently as a named window without the need
+ * to retain any data in memory.
+ * <p>
+ * An instance is associated to each named window that is backed by a virtual data window.
+ */
+public interface VirtualDataWindow {
+
+    /**
+     * Returns the lookup strategy for use by an EPL statement to obtain data.
+     * <p>
+     * This method is invoked one or more times at the time an EPL statement is created
+     * that performs a subquery, join, on-action or fire-and-forget query against the virtual data window.
+     * <p>
+     * The lookup strategy returned is used when the EPL statement for which it was created
+     * performs a read-operation against the managed data. Multiple lookup strategies
+     * for the same EPL statement are possible for join statements.
+     * <p>
+     * The context object passed in is derived from an analysis of the where-clause
+     * and lists the unique property names of the event type that are index fields, i.e.
+     * fields against which the lookup occurs.
+     * <p>
+     * The order of hash and btree properties provided by the context
+     * matches the order that lookup values are provided to the lookup strategy.
+     * @param desc hash and binary tree (sorted access for ranges) index fields
+     * @return lookup strategy, or null to veto the statement
+     */
+    public VirtualDataWindowLookup getLookup(VirtualDataWindowLookupContext desc);
+
+    /**
+     * This method is invoked when events are inserted-into or removed-from the
+     * virtual data window.
+     * <p>
+     * When a statement uses insert-into to insert events into the virtual data window
+     * the newData parameter carries the inserted event.
+     * <p>
+     * When a statement uses on-delete to delete events from the virtual data window
+     * the oldData parameter carries the deleted event.
+     * <p>
+     * When a statement uses on-merge to merge events with the virtual data window
+     * the events passed depends on the action: For then-delete the oldData carries the removed event,
+     * for then-update the newData carries the after-update event and the oldData carries the before-update event,
+     * for then-insert the newData carries the inserted event.
+     * <p>
+     * When a statement uses on-update to update events in the virtual data window
+     * the newData carries the after-update event and the oldData parameter carries the before-update event.
+     * <p>
+     * Implement as follows to post all inserted or removed events to consuming statements:
+     * context.getOutputStream().update(newData, oldData);
+     * <p>
+     * For data originating from the virtual data window use the sendEvent() method with "insert-into" statement
+     * to insert events.
+     * @param newData the insert stream
+     * @param oldData the remove stream
+     */
+    public void update(EventBean[] newData, EventBean[] oldData);
+
+    /**
+     * Called when the named window is stopped or destroyed.
+     */
+    public void destroy();
+}

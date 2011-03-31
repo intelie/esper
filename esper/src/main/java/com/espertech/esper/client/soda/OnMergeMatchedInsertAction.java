@@ -29,6 +29,7 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
      * @param columnNames insert-into column names, or empty list if none provided
      * @param selectList select expression list
      * @param whereClause optional condition or null
+     * @param optionalStreamName optionally a stream name for insert-into
      */
     public OnMergeMatchedInsertAction(List<String> columnNames, List<SelectClauseElement> selectList, Expression whereClause, String optionalStreamName) {
         this.columnNames = columnNames;
@@ -91,10 +92,18 @@ public class OnMergeMatchedInsertAction implements OnMergeMatchedAction
         this.selectList = selectList;
     }
 
+    /**
+     * Returns the insert-into stream name.
+     * @return stream name
+     */
     public String getOptionalStreamName() {
         return optionalStreamName;
     }
 
+    /**
+     * Sets the insert-into stream name.
+     * @param optionalStreamName stream name to insert into
+     */
     public void setOptionalStreamName(String optionalStreamName) {
         this.optionalStreamName = optionalStreamName;
     }

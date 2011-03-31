@@ -5,6 +5,7 @@ import com.espertech.esper.epl.join.exec.base.FullTableScanLookupStrategy;
 import com.espertech.esper.epl.join.exec.base.TableLookupExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.view.Viewable;
 import junit.framework.TestCase;
 
@@ -20,7 +21,7 @@ public class TestTableLookupPlan extends TestCase
         indexesPerStream[1].put("idx1", new UnindexedEventTable(0));
 
         TableLookupNode spec = new TableLookupNode(new FullTableScanLookupPlan(0, 1, "idx1"));
-        ExecNode execNode = spec.makeExec(indexesPerStream, null, new Viewable[2], null);
+        ExecNode execNode = spec.makeExec(indexesPerStream, null, new Viewable[2], null, new VirtualDWView[2]);
         TableLookupExecNode exec = (TableLookupExecNode) execNode;
 
         assertSame(indexesPerStream[1].get("idx1"), ((FullTableScanLookupStrategy) exec.getLookupStrategy()).getEventIndex());

@@ -29,10 +29,19 @@ public class CreateIndexColumn implements Serializable
     public CreateIndexColumn() {
     }
 
+    /**
+     * Ctor.
+     * @param columnName column name
+     */
     public CreateIndexColumn(String columnName) {
         this.columnName = columnName;
     }
 
+    /**
+     * Ctor.
+     * @param columnName colum name
+     * @param type index type
+     */
     public CreateIndexColumn(String columnName, CreateIndexColumnType type) {
         this.columnName = columnName;
         this.type = type;
@@ -51,18 +60,34 @@ public class CreateIndexColumn implements Serializable
         }
     }
 
+    /**
+     * Returns the column name.
+     * @return column name
+     */
     public String getColumnName() {
         return columnName;
     }
 
+    /**
+     * Set the column name.
+     * @param columnName name to set
+     */
     public void setColumnName(String columnName) {
         this.columnName = columnName;
     }
 
+    /**
+     * Returns the index type.
+     * @return index type
+     */
     public CreateIndexColumnType getType() {
         return type;
     }
 
+    /**
+     * Sets the index type.
+     * @param type of index
+     */
     public void setType(CreateIndexColumnType type) {
         this.type = type;
     }

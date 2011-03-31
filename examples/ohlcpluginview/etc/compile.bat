@@ -11,4 +11,4 @@ if not exist "..\target\classes" (
 
 set SOURCEPATH=..\src\main\java
 
-"%JAVA_HOME%"\bin\javac -d ..\target\classes -source 1.5 -sourcepath %SOURCEPATH% %SOURCEPATH%\com\espertech\esper\example\ohlc\OHLCMain.java
+"%JAVA_HOME%"\bin\javac -d ..\target\classes -source 1.6 -sourcepath %SOURCEPATH% %SOURCEPATH%\com\espertech\esper\example\ohlc\OHLCMain.java

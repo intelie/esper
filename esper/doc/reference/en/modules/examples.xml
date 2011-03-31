@@ -69,6 +69,14 @@
 						</entry>
 					</row>
 					<row>
+						<entry><xref linkend="examples-virtualdw"/></entry>
+						<entry>
+							<para>
+								This example demonstrates the use of virtual data window to expose a (large) external data store, without any need to keep events in memory, and without sacrificing query performance.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry><xref linkend="examples-ohlcpluginview"/></entry>
 						<entry>
 							<para>
@@ -164,7 +172,7 @@
 		<orderedlist>
 			<listitem>
 				<para>
-                    Make sure Java 1.5 or greater is installed and the JAVA_HOME environment variable is set.
+                    Make sure Java 1.6 or greater is installed and the JAVA_HOME environment variable is set.
                 </para>
 			</listitem>
 			<listitem>
@@ -894,6 +902,19 @@ select Part.zone from pattern [
 
 		<para>
 			This example handles very minimal temperature sensor events which are represented by <literal>java.util.Map</literal>. It creates a named window and fills it with a large number of events. It then executes a large number of pre-defined queries via on-select as well as performs a large number of fire-and-forget queries against the named window, and reports execution times.
+		</para>
+
+    </sect1>
+
+    <sect1 id="examples-virtualdw">
+        <title>Sample Virtual Data Window</title>
+
+		<para>
+			Virtual data windows are an extension API used to integrate external stores and expose the data therein as a named window.
+		</para>
+		
+		<para>
+		   See the <literal>virtualdw</literal> folder for example code, compile and run scripts.
 		</para>
 
     </sect1>

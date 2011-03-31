@@ -5,10 +5,9 @@ import java.io.StringWriter;
 import java.util.List;
 
 /**
- * Represents a single annotation.
+ * Represents a single expression declaration that applies to a given statement.
  */
 public class ExpressionDeclaration implements Serializable {
-    private static final long serialVersionUID = 2404842336644400196L;
 
     private String name;
     private List<String> parameterNames;
@@ -22,7 +21,9 @@ public class ExpressionDeclaration implements Serializable {
 
     /**
      * Ctor.
-     * @param name of annotation
+     * @param name of expression
+     * @param parameterNames expression paramater names
+     * @param expression the expression body
      */
     public ExpressionDeclaration(String name, List<String> parameterNames, Expression expression) {
         this.name = name;
@@ -47,18 +48,34 @@ public class ExpressionDeclaration implements Serializable {
         this.name = name;
     }
 
+    /**
+     * Returns the expression body.
+     * @return expression body
+     */
     public Expression getExpression() {
         return expression;
     }
 
+    /**
+     * Sets the expression body.
+     * @param expression body to set
+     */
     public void setExpression(Expression expression) {
         this.expression = expression;
     }
 
+    /**
+     * Returns the paramater names.
+     * @return paramater names
+     */
     public List<String> getParameterNames() {
         return parameterNames;
     }
 
+    /**
+     * Sets the paramater names.
+     * @param parameterNames paramater names to set
+     */
     public void setParameterNames(List<String> parameterNames) {
         this.parameterNames = parameterNames;
     }

@@ -11,6 +11,13 @@ package com.espertech.esper.client.soda;
 import java.io.StringWriter;
 import java.util.List;
 
+/**
+ * Lambda-expression is an expression of the form "parameter => body" where-in the "=>" reads as goes-to.
+ * <p>
+ * The form "x => x * x" reads as "x goes to x times x", for an example expression that yields x multiplied by x.
+ * <p>
+ * Used with expression declaration and with enumeration methods, for example, to parameterize by an expression.
+ */
 public class LambdaExpression extends ExpressionBase
 {
     private List<String> parameters;
@@ -21,14 +28,26 @@ public class LambdaExpression extends ExpressionBase
     public LambdaExpression() {
     }
 
+    /**
+     * Ctor.
+     * @param parameters the lambda expression parameters
+     */
     public LambdaExpression(List<String> parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * Returns the lambda expression parameters.
+     * @return lambda expression parameters
+     */
     public List<String> getParameters() {
         return parameters;
     }
 
+    /**
+     * Sets the lambda expression parameters.
+     * @param parameters lambda expression parameters
+     */
     public void setParameters(List<String> parameters) {
         this.parameters = parameters;
     }

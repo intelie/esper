@@ -56,7 +56,14 @@ public enum HintEnum
      */
     SET_NOINDEX("SET_NOINDEX", false, false),
 
+    /**
+     * For use with join query plans to force a nested iteration plan.
+     */
     FORCE_NESTED_ITER("FORCE_NESTED_ITER", false, false),
+
+    /**
+     * For use with join query plans to indicate preferance of the merge-join query plan.
+     */
     PREFER_MERGE_JOIN("PREFER_MERGE_JOIN", false, false);
 
     private final String value;

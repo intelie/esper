@@ -8,10 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.expression.ExprChainedSpec;
-import com.espertech.esper.epl.expression.ExprNode;
-
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +45,12 @@ public class DotExpression extends ExpressionBase
         chain.add(new DotExpressionItem(methodName, parameters, false));
     }
 
+    /**
+     * Add a method to the chain of methods after the dot, indicating the this segment is a property and does not need parenthesis and won't have paramaters.
+     * @param methodName method name
+     * @param parameters parameter expressions
+     * @param isProperty property flag
+     */
     public void add(String methodName, List<Expression> parameters, boolean isProperty)
     {
         chain.add(new DotExpressionItem(methodName, parameters, isProperty));

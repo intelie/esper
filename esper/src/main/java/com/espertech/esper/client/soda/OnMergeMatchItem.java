@@ -30,6 +30,12 @@ public class OnMergeMatchItem extends OnClause
         actions = new ArrayList<OnMergeMatchedAction>();
     }
 
+    /**
+     * Ctor.
+     * @param matched true for matched, false for not-matched
+     * @param optionalCondition an optional additional filter
+     * @param actions one or more actions to take
+     */
     public OnMergeMatchItem(boolean matched, Expression optionalCondition, List<OnMergeMatchedAction> actions) {
         this.matched = matched;
         this.optionalCondition = optionalCondition;
@@ -58,18 +64,34 @@ public class OnMergeMatchItem extends OnClause
         }
     }
 
+    /**
+     * Returns true for matched, and false for not-matched.
+     * @return matched or not-matched indicator
+     */
     public boolean isMatched() {
         return matched;
     }
 
+    /**
+     * Set to true for matched, and false for not-matched.
+     * @param matched matched or not-matched indicator
+     */
     public void setMatched(boolean matched) {
         this.matched = matched;
     }
 
+    /**
+     * Returns the condition to apply or null if none is provided.
+     * @return condition
+     */
     public Expression getOptionalCondition() {
         return optionalCondition;
     }
 
+    /**
+     * Sets the condition to apply or null if none is provided.
+     * @param optionalCondition condition to apply or null to have no condition
+     */
     public void setOptionalCondition(Expression optionalCondition) {
         this.optionalCondition = optionalCondition;
     }

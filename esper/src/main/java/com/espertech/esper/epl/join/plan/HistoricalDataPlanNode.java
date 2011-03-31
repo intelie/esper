@@ -18,6 +18,7 @@ import com.espertech.esper.epl.join.exec.base.HistoricalTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.Viewable;
@@ -55,7 +56,7 @@ public class HistoricalDataPlanNode extends QueryPlanNode
         this.outerJoinExprNode = exprNode;
     }
 
-    public ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
+    public ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal)
     {
         Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> pair = historicalStreamIndexLists[streamNum].getStrategy(lookupStreamNum);
         HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[streamNum];

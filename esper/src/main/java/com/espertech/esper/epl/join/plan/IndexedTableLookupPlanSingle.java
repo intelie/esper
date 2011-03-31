@@ -15,7 +15,7 @@ import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTableSingle;
 
-import java.util.Map;
+import java.util.Collections;
 
 /**
  * Plan to perform an indexed table lookup.
@@ -37,9 +37,13 @@ public class IndexedTableLookupPlanSingle extends TableLookupPlan
         this.hashKey = hashKey;
     }
 
-    public JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
+    public TableLookupKeyDesc getKeyDescriptor() {
+        return new TableLookupKeyDesc(Collections.singletonList(hashKey), Collections.<QueryGraphValueEntryRange>emptyList());
+    }
+
+    public JoinExecTableLookupStrategy makeStrategyInternal(EventTable eventTable, EventType[] eventTypes)
     {
-        PropertyIndexedEventTableSingle index = (PropertyIndexedEventTableSingle) indexesPerStream[this.getIndexedStream()].get(getIndexNum());
+        PropertyIndexedEventTableSingle index = (PropertyIndexedEventTableSingle) eventTable;
         if (hashKey instanceof QueryGraphValueEntryHashKeyedExpr) {
             QueryGraphValueEntryHashKeyedExpr expr = (QueryGraphValueEntryHashKeyedExpr) hashKey;
             return new IndexedTableLookupStrategySingleExpr(expr.getKeyExpr(), super.getLookupStream(), index);
@@ -61,6 +65,6 @@ public class IndexedTableLookupPlanSingle extends TableLookupPlan
     {
         return "IndexedTableLookupPlan " +
                 super.toString() +
-               " keyProperty=" + hashKey;
+               " keyProperty=" + getKeyDescriptor();
     }
 }

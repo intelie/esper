@@ -232,6 +232,17 @@ public class TestConfigurationParser extends TestCase
             assertEquals("com.mycompany.MyViewFactory" + i, entry.getFactoryClassName());
         }
 
+        // assert custom virtual data window implementations
+        List<ConfigurationPlugInVirtualDataWindow> configVDW = config.getPlugInVirtualDataWindows();
+        assertEquals(2, configVDW.size());
+        for (int i = 0; i < configVDW.size(); i++)
+        {
+            ConfigurationPlugInVirtualDataWindow entry = configVDW.get(i);
+            assertEquals("vdw" + i, entry.getNamespace());
+            assertEquals("myvdw" + i, entry.getName());
+            assertEquals("com.mycompany.MyVdwFactory" + i, entry.getFactoryClassName());
+        }
+
         // assert adapter loaders parsed
         List<ConfigurationPluginLoader> plugins = config.getPluginLoaders();
         assertEquals(2, plugins.size());

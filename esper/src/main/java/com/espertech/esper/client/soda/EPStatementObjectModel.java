@@ -647,10 +647,18 @@ public class EPStatementObjectModel implements Serializable
         this.forClause = forClause;
     }
 
+    /**
+     * Returns the expression declarations, if any.
+     * @return expression declarations
+     */
     public List<ExpressionDeclaration> getExpressionDeclarations() {
         return expressionDeclarations;
     }
 
+    /**
+     * Sets the expression declarations, if any.
+     * @param expressionDeclarations expression declarations to set
+     */
     public void setExpressionDeclarations(List<ExpressionDeclaration> expressionDeclarations) {
         this.expressionDeclarations = expressionDeclarations;
     }

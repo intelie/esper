@@ -12,6 +12,7 @@
 					<xs:element ref="esper:method-reference" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="esper:database-reference" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="esper:plugin-view" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="esper:plugin-virtualdw" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="esper:plugin-aggregation-function" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="esper:plugin-singlerow-function" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="esper:plugin-pattern-guard" minOccurs="0" maxOccurs="unbounded"/>
@@ -297,6 +298,13 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="plugin-view">
+		<xs:complexType>
+			<xs:attribute name="namespace" type="xs:string" use="required"/>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="factory-class" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="plugin-virtualdw">
 		<xs:complexType>
 			<xs:attribute name="namespace" type="xs:string" use="required"/>
 			<xs:attribute name="name" type="xs:string" use="required"/>

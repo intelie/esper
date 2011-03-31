@@ -1,5 +1,7 @@
 package com.espertech.esper.core;
 
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
+
 /**
  * Analysis result for joins. 
  */
@@ -12,6 +14,7 @@ public class StreamJoinAnalysisResult
     private boolean isPureSelfJoin;
     private boolean[] hasChildViews;
     private boolean[] isNamedWindow;
+    private VirtualDWView[] viewExternal;
 
     /**
      * Ctor.
@@ -26,6 +29,7 @@ public class StreamJoinAnalysisResult
         isUnidirectionalNonDriving = new boolean[numStreams];
         hasChildViews = new boolean[numStreams];
         isNamedWindow = new boolean[numStreams];
+        viewExternal = new VirtualDWView[numStreams];
     }
 
     /**
@@ -152,5 +156,9 @@ public class StreamJoinAnalysisResult
     public int getNumStreams()
     {
         return numStreams;
+    }
+
+    public VirtualDWView[] getViewExternal() {
+        return viewExternal;
     }
 }

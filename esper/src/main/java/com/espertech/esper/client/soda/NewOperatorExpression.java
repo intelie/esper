@@ -3,21 +3,45 @@ package com.espertech.esper.client.soda;
 import java.io.StringWriter;
 import java.util.List;
 
+/**
+ * The "new" operator is useful to format an event or event property from a list of column names and expressions.
+ * <p>
+ * Useful with enumeration methods and with case-when clauses that return multiple result values, for example.
+ * <p>
+ * Column names are part of the state and the number of column names must match the number of sub-expressions to the expression.
+ */
 public class NewOperatorExpression extends ExpressionBase {
 
     private List<String> columnNames;
 
+    /**
+     * Ctor.
+     */
     public NewOperatorExpression() {
     }
 
+    /**
+     * Ctor.
+     * <p>
+     * The list of column names should match the number of expressions provided hereunder.
+     * @param columnNames list of column names
+     */
     public NewOperatorExpression(List<String> columnNames) {
         this.columnNames = columnNames;
     }
 
+    /**
+     * Returns the column names.
+     * @return colum names
+     */
     public List<String> getColumnNames() {
         return columnNames;
     }
 
+    /**
+     * Sets the column names.
+     * @param columnNames colum names to set
+     */
     public void setColumnNames(List<String> columnNames) {
         this.columnNames = columnNames;
     }

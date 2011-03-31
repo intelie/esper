@@ -16,6 +16,7 @@ import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,9 +40,13 @@ public class IndexedTableLookupPlanMulti extends TableLookupPlan
         this.keyProperties = keyProperties;
     }
 
-    public JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
+    public TableLookupKeyDesc getKeyDescriptor() {
+        return new TableLookupKeyDesc(keyProperties, Collections.<QueryGraphValueEntryRange>emptyList());
+    }
+
+    public JoinExecTableLookupStrategy makeStrategyInternal(EventTable eventTable, EventType[] eventTypes)
     {
-        PropertyIndexedEventTable index = (PropertyIndexedEventTable) indexesPerStream[this.getIndexedStream()].get(getIndexNum());
+        PropertyIndexedEventTable index = (PropertyIndexedEventTable) eventTable;
         String[] keyProps = new String[keyProperties.size()];
         ExprEvaluator[] evaluators = new ExprEvaluator[keyProperties.size()];
         boolean isStrictlyProps = true;

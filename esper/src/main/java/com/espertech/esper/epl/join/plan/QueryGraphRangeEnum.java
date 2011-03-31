@@ -7,67 +7,69 @@ public enum QueryGraphRangeEnum {
     /**
      * Less (<).
      */
-    LESS(false),
+    LESS(false, "<"),
 
     /**
      * Less or equal (<=).
      */
-    LESS_OR_EQUAL(false),
+    LESS_OR_EQUAL(false, "<="),
 
     /**
      * Greater or equal (>=).
      */
-    GREATER_OR_EQUAL(false),
+    GREATER_OR_EQUAL(false, ">="),
 
     /**
      * Greater (>).
      */
-    GREATER(false),
+    GREATER(false, ">"),
 
     /**
      * Range contains neither endpoint, i.e. (a,b)
      */
-    RANGE_OPEN(true),
+    RANGE_OPEN(true, "(,)"),
 
     /**
      * Range contains low and high endpoint, i.e. [a,b]
      */
-    RANGE_CLOSED(true),
+    RANGE_CLOSED(true, "[,]"),
 
     /**
      * Range includes low endpoint but not high endpoint, i.e. [a,b)
      */
-    RANGE_HALF_OPEN(true),
+    RANGE_HALF_OPEN(true, "[,)"),
 
     /**
      * Range includes high endpoint but not low endpoint, i.e. (a,b]
      */
-    RANGE_HALF_CLOSED(true),
+    RANGE_HALF_CLOSED(true, "(,]"),
 
     /**
      * Inverted-Range contains neither endpoint, i.e. (a,b)
      */
-    NOT_RANGE_OPEN(true),
+    NOT_RANGE_OPEN(true, "-(,)"),
 
     /**
      * Inverted-Range contains low and high endpoint, i.e. [a,b]
      */
-    NOT_RANGE_CLOSED(true),
+    NOT_RANGE_CLOSED(true, "-[,]"),
 
     /**
      * Inverted-Range includes low endpoint but not high endpoint, i.e. [a,b)
      */
-    NOT_RANGE_HALF_OPEN(true),
+    NOT_RANGE_HALF_OPEN(true, "-[,)"),
 
     /**
      * Inverted-Range includes high endpoint but not low endpoint, i.e. (a,b]
      */
-    NOT_RANGE_HALF_CLOSED(true);
+    NOT_RANGE_HALF_CLOSED(true, "-(,])");
 
     private boolean range;
+    private String stringOp;
 
-    QueryGraphRangeEnum(boolean range) {
+    QueryGraphRangeEnum(boolean range, String stringOp) {
         this.range = range;
+        this.stringOp = stringOp;
     }
 
     public static QueryGraphRangeEnum mapFrom(FilterOperator op) {
@@ -184,5 +186,9 @@ public enum QueryGraphRangeEnum {
     public boolean isRangeInverted() {
         return isRange() && (this == NOT_RANGE_HALF_CLOSED || this == NOT_RANGE_HALF_OPEN ||
                 this == NOT_RANGE_OPEN || this == NOT_RANGE_CLOSED);
+    }
+
+    public String getStringOp() {
+        return stringOp;
     }
 }

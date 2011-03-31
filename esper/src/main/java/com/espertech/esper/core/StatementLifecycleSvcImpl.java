@@ -201,8 +201,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 }
             }
         }
-        
-        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc(), false, annotations, isolationUnitServices);
+
+        String optionalCreateNamedWindowName = statementSpec.getCreateWindowDesc() != null ? statementSpec.getCreateWindowDesc().getWindowName() : null;
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc(), false, annotations, isolationUnitServices, optionalCreateNamedWindowName);
         StatementSpecCompiled compiledSpec;
         try
         {
@@ -584,7 +585,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             stmtNameToIdMap.remove(statement.getName());
             stmtNameToStmtMap.remove(statement.getName());
             log.debug(".start Error starting statement", ex);
-            throw new EPStatementException("Error starting statement: " + ex.getMessage(), statement.getText());
+            throw new EPStatementException("Error starting statement: " + ex.getMessage(), ex, statement.getText());
         }
         catch (ViewProcessingException ex)
         {
@@ -592,7 +593,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             stmtNameToIdMap.remove(statement.getName());
             stmtNameToStmtMap.remove(statement.getName());
             log.debug(".start Error starting statement", ex);
-            throw new EPStatementException("Error starting statement: " + ex.getMessage(), statement.getText());
+            throw new EPStatementException("Error starting statement: " + ex.getMessage(), ex, statement.getText());
+        }
+        catch (RuntimeException ex)
+        {
+            stmtIdToDescMap.remove(statementId);
+            stmtNameToIdMap.remove(statement.getName());
+            stmtNameToStmtMap.remove(statement.getName());
+            log.debug(".start Error starting statement", ex);
+            throw new EPStatementException("Unexpected exception starting statement: " + ex.getMessage(), ex, statement.getText());
         }
 
         // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start

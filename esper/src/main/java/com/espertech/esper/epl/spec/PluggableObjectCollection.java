@@ -8,14 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.client.ConfigurationPlugInView;
 import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.ConfigurationPlugInPatternObject;
+import com.espertech.esper.client.ConfigurationPlugInView;
+import com.espertech.esper.client.ConfigurationPlugInVirtualDataWindow;
+import com.espertech.esper.collection.Pair;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Repository for pluggable objects of different types that follow a "namespace:name" notation.
@@ -38,9 +39,10 @@ public class PluggableObjectCollection
      * @param configurationPlugInViews is a list of configured plug-in view objects.
      * @throws ConfigurationException if the configured views don't resolve
      */
-    public void addViews(List<ConfigurationPlugInView> configurationPlugInViews) throws ConfigurationException
+    public void addViews(List<ConfigurationPlugInView> configurationPlugInViews, List<ConfigurationPlugInVirtualDataWindow> configurationPlugInVirtualDW) throws ConfigurationException
     {
         initViews(configurationPlugInViews);
+        initVirtualDW(configurationPlugInVirtualDW);
     }
 
     /**
@@ -110,45 +112,59 @@ public class PluggableObjectCollection
 
     private void initViews(List<ConfigurationPlugInView> configurationPlugInViews)
     {
-        if (configurationPlugInViews == null)
-        {
+        if (configurationPlugInViews == null) {
             return;
         }
 
-        for (ConfigurationPlugInView entry : configurationPlugInViews)
-        {
-            if (entry.getFactoryClassName() == null)
-            {
-                throw new ConfigurationException("Factory class name has not been supplied for object '" + entry.getName() + "'");
-            }
-            if (entry.getNamespace() == null)
-            {
-                throw new ConfigurationException("Namespace name has not been supplied for object '" + entry.getName() + "'");
-            }
-            if (entry.getName() == null)
-            {
-                throw new ConfigurationException("Name has not been supplied for object in namespace '" + entry.getNamespace() + "'");
-            }
-
-            Class clazz;
-            try
-            {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                clazz = Class.forName(entry.getFactoryClassName(), true, cl);
-            }
-            catch (ClassNotFoundException ex)
-            {
-                throw new ConfigurationException("View factory class " + entry.getFactoryClassName() + " could not be loaded");
-            }
-
-            Map<String, Pair<Class, PluggableObjectType>> namespaceMap = pluggables.get(entry.getNamespace());
-            if (namespaceMap == null)
-            {
-                namespaceMap = new HashMap<String, Pair<Class, PluggableObjectType>>();
-                pluggables.put(entry.getNamespace(), namespaceMap);
-            }
-            namespaceMap.put(entry.getName(), new Pair<Class, PluggableObjectType>(clazz, PluggableObjectType.VIEW));
+        for (ConfigurationPlugInView entry : configurationPlugInViews) {
+            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), PluggableObjectType.VIEW);
         }
+    }
+
+    private void initVirtualDW(List<ConfigurationPlugInVirtualDataWindow> configurationPlugInVirtualDataWindows)
+    {
+        if (configurationPlugInVirtualDataWindows == null) {
+            return;
+        }
+
+        for (ConfigurationPlugInVirtualDataWindow entry : configurationPlugInVirtualDataWindows) {
+            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), PluggableObjectType.VIRTUALDW);
+        }
+    }
+
+    private void handleAddPluggableObject(String factoryClassName, String namespace, String name, PluggableObjectType type) {
+
+        if (factoryClassName == null)
+        {
+            throw new ConfigurationException("Factory class name has not been supplied for object '" + name + "'");
+        }
+        if (namespace == null)
+        {
+            throw new ConfigurationException("Namespace name has not been supplied for object '" + name + "'");
+        }
+        if (name == null)
+        {
+            throw new ConfigurationException("Name has not been supplied for object in namespace '" + namespace + "'");
+        }
+
+        Class clazz;
+        try
+        {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            clazz = Class.forName(factoryClassName, true, cl);
+        }
+        catch (ClassNotFoundException ex)
+        {
+            throw new ConfigurationException("View factory class " + factoryClassName + " could not be loaded");
+        }
+
+        Map<String, Pair<Class, PluggableObjectType>> namespaceMap = pluggables.get(namespace);
+        if (namespaceMap == null)
+        {
+            namespaceMap = new HashMap<String, Pair<Class, PluggableObjectType>>();
+            pluggables.put(namespace, namespaceMap);
+        }
+        namespaceMap.put(name, new Pair<Class, PluggableObjectType>(clazz, type));
     }
 
     private void initPatterns(List<ConfigurationPlugInPatternObject> configEntries) throws ConfigurationException
@@ -160,55 +176,22 @@ public class PluggableObjectCollection
 
         for (ConfigurationPlugInPatternObject entry : configEntries)
         {
-            if (entry.getFactoryClassName() == null)
-            {
-                throw new ConfigurationException("Factory class name has not been supplied for object '" + entry.getName() + "'");
-            }
-            if (entry.getNamespace() == null)
-            {
-                throw new ConfigurationException("Namespace name has not been supplied for object '" + entry.getName() + "'");
-            }
-            if (entry.getName() == null)
-            {
-                throw new ConfigurationException("Name has not been supplied for object in namespace '" + entry.getNamespace() + "'");
-            }
-            if (entry.getPatternObjectType() == null)
-            {
+            if (entry.getPatternObjectType() == null) {
                 throw new ConfigurationException("Pattern object type has not been supplied for object '" + entry.getName() + "'");
             }
 
-            Class clazz;
-            try
-            {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                clazz = Class.forName(entry.getFactoryClassName(), true, cl);
-            }
-            catch (ClassNotFoundException ex)
-            {
-                throw new ConfigurationException("Pattern object factory class " + entry.getFactoryClassName() + " could not be loaded");
-            }
-
-            Map<String, Pair<Class, PluggableObjectType>> namespaceMap = pluggables.get(entry.getNamespace());
-            if (namespaceMap == null)
-            {
-                namespaceMap = new HashMap<String, Pair<Class, PluggableObjectType>>();
-                pluggables.put(entry.getNamespace(), namespaceMap);
-            }
-
             PluggableObjectType typeEnum;
-            if (entry.getPatternObjectType() == ConfigurationPlugInPatternObject.PatternObjectType.GUARD)
-            {
+            if (entry.getPatternObjectType() == ConfigurationPlugInPatternObject.PatternObjectType.GUARD) {
                 typeEnum =  PluggableObjectType.PATTERN_GUARD;
             }
-            else if (entry.getPatternObjectType() == ConfigurationPlugInPatternObject.PatternObjectType.OBSERVER)
-            {
+            else if (entry.getPatternObjectType() == ConfigurationPlugInPatternObject.PatternObjectType.OBSERVER) {
                 typeEnum =  PluggableObjectType.PATTERN_OBSERVER;
             }
-            else
-            {
+            else {
                 throw new IllegalArgumentException("Pattern object type '" + entry.getPatternObjectType() + "' not known");
             }
-            namespaceMap.put(entry.getName(), new Pair<Class, PluggableObjectType>(clazz, typeEnum));
+
+            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), typeEnum);
         }
     }
 

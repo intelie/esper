@@ -11,6 +11,7 @@ package com.espertech.esper.epl.join.plan;
 import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 
 import java.util.Map;
 
@@ -23,13 +24,22 @@ public abstract class TableLookupPlan
     private int indexedStream;
     private String indexNum;
 
+    public abstract JoinExecTableLookupStrategy makeStrategyInternal(EventTable eventTable, EventType[] eventTypes);
+    public abstract TableLookupKeyDesc getKeyDescriptor();
+
     /**
      * Instantiates the lookup plan into a execution strategy for the lookup.
      * @param indexesPerStream - tables for each stream
      * @param eventTypes - types of events in stream
      * @return lookup strategy instance
      */
-    public abstract JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes);
+    public final JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes, VirtualDWView[] viewExternals) {
+        EventTable eventTable = indexesPerStream[this.getIndexedStream()].get(getIndexNum());
+        if (viewExternals[indexedStream] != null) {
+            return viewExternals[indexedStream].getJoinLookupStrategy(eventTable, getKeyDescriptor(), lookupStream);
+        }
+        return makeStrategyInternal(eventTable, eventTypes);
+    }
 
     /**
      * Ctor.

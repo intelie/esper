@@ -11,7 +11,6 @@ package com.espertech.esper.epl.named;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.annotation.HintEnum;
 import com.espertech.esper.core.*;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprValidationException;
@@ -23,7 +22,6 @@ import com.espertech.esper.util.ManagedReadWriteLock;
 import com.espertech.esper.util.MetricUtil;
 import com.espertech.esper.view.ViewProcessingException;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -130,7 +128,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
 
     public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService,
                                              ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName, boolean isPrioritized,
-                                             ExprEvaluatorContext exprEvaluatorContext, Annotation[] annotations) throws ViewProcessingException
+                                             ExprEvaluatorContext exprEvaluatorContext, boolean isEnableSubqueryIndexShare) throws ViewProcessingException
     {
         if (processors.containsKey(name))
         {
@@ -142,7 +140,6 @@ public class NamedWindowServiceImpl implements NamedWindowService
             throw new ViewProcessingException("A lock for named window by name '" + name + "' is not allocated");
         }
 
-        boolean isEnableSubqueryIndexShare = HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE.getHint(annotations) != null;
         NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName, isPrioritized, exprEvaluatorContext, statementResourceLock, isEnableSubqueryIndexShare, enableQueryPlanLog, metricReportingService);
         processors.put(name, processor);
 

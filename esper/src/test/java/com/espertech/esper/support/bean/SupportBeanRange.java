@@ -25,6 +25,12 @@ public class SupportBeanRange implements Serializable
         this.keyLong = keyLong;
     }
 
+    public static SupportBeanRange makeKeyLong(String id, Long keyLong, int rangeStart, int rangeEnd) {
+        SupportBeanRange sbr = new SupportBeanRange(id, rangeStart, rangeEnd);
+        sbr.setKeyLong(keyLong);
+        return sbr;
+    }
+
     public static SupportBeanRange makeLong(String id, String key, Long rangeStartLong, Long rangeEndLong) {
         SupportBeanRange bean = new SupportBeanRange();
         bean.id = id;

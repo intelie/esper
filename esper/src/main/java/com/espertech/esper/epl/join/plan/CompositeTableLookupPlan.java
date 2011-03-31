@@ -15,6 +15,7 @@ import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyCompositeEventTable;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,9 +40,13 @@ public class CompositeTableLookupPlan extends TableLookupPlan
         this.rangeKeyPairs = rangeKeyPairs;
     }
 
-    public JoinExecTableLookupStrategy makeStrategy(Map<String,EventTable>[] indexesPerStream, EventType[] eventTypes)
+    public TableLookupKeyDesc getKeyDescriptor() {
+        return new TableLookupKeyDesc(hashKeys, rangeKeyPairs);
+    }
+
+    public JoinExecTableLookupStrategy makeStrategyInternal(EventTable eventTable, EventType[] eventTypes)
     {
-        PropertyCompositeEventTable index = (PropertyCompositeEventTable) indexesPerStream[this.getIndexedStream()].get(this.getIndexNum());
+        PropertyCompositeEventTable index = (PropertyCompositeEventTable) eventTable;
         return new CompositeTableLookupStrategy(eventTypes[this.getLookupStream()], this.getLookupStream(), hashKeys, rangeKeyPairs, index);
     }
 

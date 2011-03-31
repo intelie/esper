@@ -25,6 +25,7 @@ import com.espertech.esper.epl.join.table.*;
 import com.espertech.esper.epl.lookup.*;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.spec.*;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.filter.*;
 import com.espertech.esper.util.AuditPath;
@@ -269,10 +270,6 @@ public class NamedWindowRootView extends ViewSupport
     
     private Pair<IndexKeyInfo, EventTable> findCreateIndex(SubordPropPlan joinDesc) {
 
-        if (joinDesc.getHashProps().isEmpty() && joinDesc.getRangeProps().isEmpty()) {
-            return null;
-        }
-
         // hash property names and types
         String[] hashIndexPropsProvided = new String[joinDesc.getHashProps().size()];
         Class[] hashIndexCoercionType = new Class[joinDesc.getHashProps().size()];
@@ -306,7 +303,17 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         // Get or Create the table for this index (exact match or property names, type of index and coercion type is expected)
-        Pair<IndexMultiKey, EventTable> tableDesc = indexRepository.addTableCreateOrReuse(hashedProps, btreeProps, dataWindowContents, namedWindowEventType, true);
+        Pair<IndexMultiKey, EventTable> tableDesc;
+        if (this.getViews().get(0) instanceof VirtualDWView) {
+            VirtualDWView viewExternal = (VirtualDWView) this.getViews().get(0);
+            tableDesc = viewExternal.getSubordinateQueryDesc(hashedProps, btreeProps);
+        }
+        else {
+            if (joinDesc.getHashProps().isEmpty() && joinDesc.getRangeProps().isEmpty()) {
+                return null;
+            }
+            tableDesc = indexRepository.addTableCreateOrReuse(hashedProps, btreeProps, dataWindowContents, namedWindowEventType, true);
+        }
 
         // map the order of indexed columns (key) to the key information available
         IndexedPropDesc[] indexedKeyProps = tableDesc.getFirst().getHashIndexedProps();
@@ -349,7 +356,7 @@ public class NamedWindowRootView extends ViewSupport
         return new Pair<IndexKeyInfo, EventTable>(info, tableDesc.getSecond());
     }
 
-    private Pair<SubordTableLookupStrategy,EventTable> getSubqueryStrategyPair(EventType[] outerStreamTypes, SubordPropPlan joinDesc, boolean isNWOnTrigger) {
+    private Pair<SubordTableLookupStrategy, EventTable> getSubqueryStrategyPair(EventType[] outerStreamTypes, SubordPropPlan joinDesc, boolean isNWOnTrigger, boolean forceTableScan) {
 
         Pair<IndexKeyInfo, EventTable> accessDesc = findCreateIndex(joinDesc);
 
@@ -364,9 +371,22 @@ public class NamedWindowRootView extends ViewSupport
         CoercionDesc hashKeyCoercionTypes = indexKeyInfo.getOrderedKeyCoercionTypes();
         List<SubordPropRangeKey> rangeKeys = indexKeyInfo.getOrderedRangeDesc();
         CoercionDesc rangeKeyCoercionTypes = indexKeyInfo.getOrderedRangeCoercionTypes();
-        
-        SubordTableLookupStrategy lookupStrategy = SubordinateTableLookupStrategyFactory.getLookupStrategy(outerStreamTypes,
-                hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, isNWOnTrigger, eventTable);
+
+        SubordTableLookupStrategy lookupStrategy;
+        if (this.getViews().get(0) instanceof VirtualDWView) {
+            VirtualDWView viewExternal = (VirtualDWView) this.getViews().get(0);
+            lookupStrategy = viewExternal.getSubordinateLookupStrategy(outerStreamTypes,
+                    hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, isNWOnTrigger, eventTable);
+        }
+        else {
+            if (forceTableScan) {
+                lookupStrategy = null;
+            }
+            else {
+                lookupStrategy = SubordinateTableLookupStrategyFactory.getLookupStrategy(outerStreamTypes,
+                    hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, isNWOnTrigger, eventTable);
+            }
+        }
 
         return new Pair<SubordTableLookupStrategy,EventTable>(lookupStrategy, eventTable);
     }
@@ -378,19 +398,24 @@ public class NamedWindowRootView extends ViewSupport
         SubordPropPlan joinedPropPlan = QueryPlanIndexBuilder.getJoinProps(joinExpr, 1, allStreamsZeroIndexed);
 
         // No join expression means delete all
-        if (joinExpr == null)
+        if (joinExpr == null && (!(this.getViews().get(0) instanceof VirtualDWView)))
         {
             return new Pair<NamedWindowLookupStrategy,EventTable>(new NamedWindowLookupStrategyAllRows(dataWindowContents), null);
         }
 
         // Here the stream offset is 1 as the named window lookup provides the arriving event in stream 1
-        Pair<SubordTableLookupStrategy,EventTable> lookupPair = getSubqueryStrategyPair(outerStreams, joinedPropPlan, true);
+        Pair<SubordTableLookupStrategy,EventTable> lookupPair = getSubqueryStrategyPair(outerStreams, joinedPropPlan, true, false);
         
         if (lookupPair == null) {
             return new Pair<NamedWindowLookupStrategy,EventTable>(new NamedWindowLookupStrategyTableScan(joinExpr.getExprEvaluator(), dataWindowContents), null);
         }
 
-        return new Pair<NamedWindowLookupStrategy,EventTable>(new NamedWindowLookupStrategyIndexed(joinExpr.getExprEvaluator(), lookupPair.getFirst()), lookupPair.getSecond());
+        if (joinExpr == null) {   // it can be null when using virtual data window
+            return new Pair<NamedWindowLookupStrategy,EventTable>(new NamedWindowLookupStrategyIndexedUnfiltered(lookupPair.getFirst()), lookupPair.getSecond());
+        }
+        else {
+            return new Pair<NamedWindowLookupStrategy,EventTable>(new NamedWindowLookupStrategyIndexed(joinExpr.getExprEvaluator(), lookupPair.getFirst()), lookupPair.getSecond());
+        }
     }
 
     public void setParent(Viewable parent)
@@ -420,11 +445,22 @@ public class NamedWindowRootView extends ViewSupport
 
     /**
      * Return a snapshot using index lookup filters.
-     * @param filter to index lookup
+     * @param optionalFilter to index lookup
      * @return events
      */
-    public Collection<EventBean> snapshot(FilterSpecCompiled filter) {
-        if (filter.getParameters().isEmpty()) {
+    public Collection<EventBean> snapshot(FilterSpecCompiled optionalFilter) {
+
+        // Determine virtual data window
+        VirtualDWView virtualDataWindow = null;
+        if (this.getViews().get(0) instanceof VirtualDWView) {
+            virtualDataWindow = (VirtualDWView) this.getViews().get(0);
+        }
+
+        if (optionalFilter == null || optionalFilter.getParameters().isEmpty()) {
+            if (virtualDataWindow != null) {
+                Pair<IndexMultiKey,EventTable> pair = virtualDataWindow.getFireAndForgetDesc(Collections.<String>emptySet(), Collections.<String>emptySet());
+                return virtualDataWindow.getFireAndForgetData(pair.getSecond(), new Object[0], new RangeIndexLookupValue[0]);
+            }
             return null;
         }
 
@@ -432,7 +468,7 @@ public class NamedWindowRootView extends ViewSupport
         // Widening/Coercion is part of filter spec compile.
         Set<String> keysAvailable = new HashSet<String>();
         Set<String> rangesAvailable = new HashSet<String>();
-        for (FilterSpecParam param : filter.getParameters()) {
+        for (FilterSpecParam param : optionalFilter.getParameters()) {
             if (!(param instanceof FilterSpecParamConstant || param instanceof FilterSpecParamRange)) {
                 continue;
             }
@@ -456,7 +492,14 @@ public class NamedWindowRootView extends ViewSupport
         }
 
         // Find an index that matches the needs
-        Pair<IndexMultiKey, EventTable> tablePair = indexRepository.findTable(keysAvailable, rangesAvailable, explicitIndexes);
+        Pair<IndexMultiKey, EventTable> tablePair;
+        if (virtualDataWindow != null) {
+            tablePair = virtualDataWindow.getFireAndForgetDesc(keysAvailable, rangesAvailable);
+        }
+        else {
+            tablePair = indexRepository.findTable(keysAvailable, rangesAvailable, explicitIndexes);
+        }
+
         if (tablePair == null) {
             if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
                 queryPlanLog.info("no index found");
@@ -468,7 +511,7 @@ public class NamedWindowRootView extends ViewSupport
         String[] keyIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getHashIndexedProps());
         Object[] keyValues = new Object[keyIndexProps.length];
         for (int keyIndex = 0; keyIndex < keyIndexProps.length; keyIndex++) {
-            for (FilterSpecParam param : filter.getParameters()) {
+            for (FilterSpecParam param : optionalFilter.getParameters()) {
                 if (param.getPropertyName().equals(keyIndexProps[keyIndex])) {
                     keyValues[keyIndex] = param.getFilterValue(null);
                     break;
@@ -480,10 +523,14 @@ public class NamedWindowRootView extends ViewSupport
         String[] rangeIndexProps = IndexedPropDesc.getIndexProperties(tablePair.getFirst().getRangeIndexedProps());
         RangeIndexLookupValue[] rangeValues;
         if (rangeIndexProps.length > 0) {
-            rangeValues = compileRangeLookupValues(rangeIndexProps, filter.getParameters());
+            rangeValues = compileRangeLookupValues(rangeIndexProps, optionalFilter.getParameters());
         }
         else {
             rangeValues = new RangeIndexLookupValue[0];
+        }
+
+        if (virtualDataWindow != null) {
+            return virtualDataWindow.getFireAndForgetData(tablePair.getSecond(), keyValues, rangeValues);
         }
 
         IndexMultiKey indexMultiKey = tablePair.getFirst();
@@ -591,18 +638,11 @@ public class NamedWindowRootView extends ViewSupport
     }
 
     public SubordTableLookupStrategy getAddSubqueryLookupStrategy(EventType[] eventTypesPerStream, SubordPropPlan joinDesc, boolean fullTableScan) {
-        // if there are no join criteria to use, return default copy strategy
-        if (fullTableScan || (joinDesc.getHashProps().isEmpty() && joinDesc.getRangeProps().isEmpty())) {
-            if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
-                queryPlanLog.info("shared, full table scan");
-            }
-            return new SubordFullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
-        }
 
         // NOTE: key stream nums are relative to the outer streams, i.e. 0=first outer, 1=second outer (index stream is implied and not counted).
         // Here the stream offset for key is zero as in a subquery only the outer events are provided in events-per-stream.
-        Pair<SubordTableLookupStrategy,EventTable> strategyTablePair = getSubqueryStrategyPair(eventTypesPerStream, joinDesc, false);
-        if (strategyTablePair == null) {
+        Pair<SubordTableLookupStrategy,EventTable> strategyTablePair = getSubqueryStrategyPair(eventTypesPerStream, joinDesc, false, fullTableScan);
+        if (strategyTablePair == null || strategyTablePair.getFirst() == null) {
             if (queryPlanLogging && queryPlanLog.isInfoEnabled()) {
                 queryPlanLog.info("shared, full table scan");
             }

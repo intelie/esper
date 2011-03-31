@@ -8,13 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.List;
-
+/**
+ * Enumeration to represents the index type.
+ */
 public enum CreateIndexColumnType
 {
+    /**
+     * Hash-index.
+     */
     HASH,
+
+    /**
+     * Binary-tree (sorted) index.
+     */
     BTREE
 }

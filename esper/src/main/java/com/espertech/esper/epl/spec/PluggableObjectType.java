@@ -26,5 +26,10 @@ public enum PluggableObjectType
     /**
      * View object type.
      */
-    VIEW
+    VIEW,
+
+    /**
+     * Virtual data window object type.
+     */
+    VIRTUALDW
 }

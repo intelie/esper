@@ -34,6 +34,7 @@ public class OnMergeClause extends OnClause
      * Creates an on-update clause.
      * @param windowName is the named window name
      * @param optionalAsName is the optional as-provided name
+     * @param matchItems is the matched and non-matched action items
      * @return on-update clause without assignments
      */
     public static OnMergeClause create(String windowName, String optionalAsName, List<OnMergeMatchItem> matchItems)
@@ -45,6 +46,7 @@ public class OnMergeClause extends OnClause
      * Ctor.
      * @param windowName is the named window name
      * @param optionalAsName is the as-provided name of the named window
+     * @param matchItems is the matched and non-matched action items
      */
     public OnMergeClause(String windowName, String optionalAsName, List<OnMergeMatchItem> matchItems)
     {

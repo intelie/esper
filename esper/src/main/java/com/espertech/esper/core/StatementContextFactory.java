@@ -44,5 +44,6 @@ public interface StatementContextFactory
                                         CreateWindowDesc optCreateWindowDesc,
                                         boolean isFireAndForget,
                                         Annotation[] annotations,
-                                        EPIsolationUnitServices isolationUnitServices);
+                                        EPIsolationUnitServices isolationUnitServices,
+                                        String optionalCreateNamedWindowName);
 }

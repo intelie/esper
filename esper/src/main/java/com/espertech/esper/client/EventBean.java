@@ -49,12 +49,12 @@ public interface EventBean
     public Object getUnderlying();
 
     /**
-     * Returns {@link EventBean} or array of {@link EventBean} for a property name or property expression.
+     * Returns event beans or array of event bean for a property name or property expression.
      * <p>
      * For use with properties whose value is itself an event or whose value can be represented as
      * an event by the underlying event representation.
      * <p>
-     * The {@link EventType} of the {@link EventBean} instance(s) returned by this method can be determined by
+     * The {@link EventType} of the event bean instance(s) returned by this method can be determined by
      * {@link EventType#getFragmentType(String)}. Use {@link EventPropertyDescriptor} to
      * obtain a list of properties that return fragments from an event type.
      * <p>

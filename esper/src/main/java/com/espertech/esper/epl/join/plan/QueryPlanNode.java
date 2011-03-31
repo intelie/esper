@@ -17,6 +17,7 @@ import com.espertech.esper.epl.join.exec.base.ExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.view.Viewable;
 
@@ -27,13 +28,15 @@ public abstract class QueryPlanNode
 {
     /**
      * Make execution node from this specification.
+     *
      * @param indexesPerStream - tables build for each stream
      * @param streamTypes - event type of each stream
      * @param streamViews - viewable per stream for access to historical data
      * @param historicalStreamIndexLists index management for historical streams
+     * @param viewExternal
      * @return execution node matching spec
      */
-    public abstract ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists);
+    public abstract ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal);
 
     public abstract void addIndexes(HashSet<String> usedIndexes);
 

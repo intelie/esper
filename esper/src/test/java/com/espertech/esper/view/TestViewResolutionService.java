@@ -1,5 +1,6 @@
 package com.espertech.esper.view;
 
+import com.espertech.esper.client.ConfigurationPlugInVirtualDataWindow;
 import junit.framework.TestCase;
 import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.ConfigurationPlugInView;
@@ -10,6 +11,7 @@ import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public class TestViewResolutionService extends TestCase
 
     public void setUp()
     {
-        service = new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews());
+        service = new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews(), null);
     }
 
     public void testInitializeFromConfig() throws Exception
@@ -92,8 +94,8 @@ public class TestViewResolutionService extends TestCase
         }
 
         PluggableObjectCollection desc = new PluggableObjectCollection();
-        desc.addViews(configs);
-        return new ViewResolutionServiceImpl(desc);
+        desc.addViews(configs, Collections.<ConfigurationPlugInVirtualDataWindow>emptyList());
+        return new ViewResolutionServiceImpl(desc, null);
     }
 
     private static final Log log = LogFactory.getLog(TestViewResolutionService.class);

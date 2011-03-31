@@ -170,7 +170,13 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             indexesPerStream[streamNo] = new LinkedHashMap<String, EventTable>();
 
             for (Map.Entry<String, QueryPlanIndexItem> entry : items.entrySet()) {
-                EventTable index = EventTableFactory.buildIndex(streamNo, items.get(entry.getKey()), streamTypes[streamNo], false);
+                EventTable index;
+                if (streamJoinAnalysisResult.getViewExternal()[streamNo] != null) {
+                    index = streamJoinAnalysisResult.getViewExternal()[streamNo].getJoinIndexTable(items.get(entry.getKey()));
+                }
+                else {
+                    index = EventTableFactory.buildIndex(streamNo, items.get(entry.getKey()), streamTypes[streamNo], false);
+                }
                 indexesPerStream[streamNo].put(entry.getKey(), index);
             }
         }
@@ -187,7 +193,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 continue;
             }
 
-            ExecNode executionNode = planNode.makeExec(indexesPerStream, streamTypes, streamViews, historicalStreamIndexLists);
+            ExecNode executionNode = planNode.makeExec(indexesPerStream, streamTypes, streamViews, historicalStreamIndexLists, streamJoinAnalysisResult.getViewExternal());
 
             if (log.isDebugEnabled())
             {

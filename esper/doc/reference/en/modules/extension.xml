@@ -1,9 +1,391 @@
 <chapter id="extension">
 
-    <title>Extension and Plug-in</title>
+    <title>Integration and Extension</title>
+    
+    <sect1 id="extension-overview" revision="1">
+        <title>Overview</title>
+
+		<para>
+		  This chapter summarizes integration and describes in detail each of the extension APIs that allow integrating external data and/or extend engine functionality. 
+		</para>
+
+		<para>
+		  For information on input and output adapters that connect to an event transport and perform event transformation for incoming and outgoing on-the-wire event data, for use with streaming data, please see the EsperIO reference documentation. Consider using the Plug-in Loader API for creating a new adapter that starts or stops as part of the CEP engine initialization and destroy lifecycle, see <xref linkend="api-plugin"/>.
+		</para>
+		
+		<para>
+		  To join data that resides in a relational database and that is accessible via JDBC driver and SQL statement the engine offers a syntax for using SQL within EPL, see <xref linkend="histdata_overview"/>. A relational database input and output adapter for streaming input from and output to a relational database also exists (EsperIO).
+		</para>
+		
+		<para>
+		  To join data that resides in a non-relational store the engine offers a two means: FIrst, the virtual data window, as described below, for transparently integrating the external store as a named window. The second mechanism is a special join syntax based on static method invocation, see <xref linkend="joining_method"/>.
+		</para>
+    </sect1>
+    
+    <sect1 id="extension-virtualdw" revision="1">
+        <title>Virtual Data Window</title>
+        
+        <para>
+			Use a virtual data window if you have a (large) external data store that you want to access as a named window. The access is transparent: There is no need to use special syntax or join syntax. All regular queries including subqueries, joins, on-merge, on-select, on-insert, on-delete, on-update and fire-and-forget are supported with virtual data windows.
+        </para>
+        
+        <para>
+           There is no need to keep any data or events in memory with virtual data windows. The only requirement for virtual data windows is that all data rows returned are <literal>EventBean</literal> instances.
+        </para>
+
+        <para>
+			When implementing a virtual data window it is not necessary to send any events into the engine or to use insert-into. The event content is simply assumed to exist and accessible to the engine via the API implementation you provide. 
+        </para>
+        
+        <para>
+          The distribution ships with a sample virtual data window in the examples folder under the name <literal>virtualdw</literal>. The code snippets below are extracts from the example.
+        </para>
+        
+        <para>
+			We use the term <emphasis>store</emphasis> here to mean a source set of data that is managed by the virtual data window. We use the term <emphasis>store row</emphasis> or just <emphasis>row</emphasis> to mean a single data item provided by the store. We use the term <emphasis>lookup</emphasis>
+			to mean a read operation against the store returning zero, one or many rows.
+        </para>
+        
+        <para>
+           Virtual data windows allow high-performance low-latency lookup by exposing all relevant EPL query access path information. This makes it possible for the virtual data window to choose the desired access method into its store.
+        </para>
+        
+        <para>
+			The following steps are required to develop and use a virtual data window: 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement the interface <literal>com.espertech.esper.client.hook.VirtualDataWindowFactory</literal>.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Implement the interface <literal>com.espertech.esper.client.hook.VirtualDataWindow</literal>.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Implement the interface <literal>com.espertech.esper.client.hook.VirtualDataWindowLookup</literal>.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Register the factory class in the engine configuration.
+				</para>
+			</listitem>
+		</orderedlist>
+		
+		<para> 
+			Once you have completed above steps, the virtual data window is ready to use in EPL statements.
+		</para>       	
+		
+		<para>
+			The following restrictions apply to virtual data windows:
+		</para>
+	
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					The virtual data window may not be iterated via the <literal>iterator</literal> or <literal>safeIterator</literal> methods.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					A statement consuming a stream from a virtual data window does not get up-to-date state at statement creation time. For example, the EPL <literal>select count(*) from MySampleWindow</literal> always starts at count zero and not the count of events that are currently held in store.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					When a virtual data window itself originates new events, use insert-into to insert into the named window.
+				</para>
+			</listitem>
+		</orderedlist>
+		
+		<para>
+		  From a threading perspective, virtual data window implementation classes must be thread-safe if objects are shared between multiple named windows. If no objects are shared between multiple different named windows, thereby each object is only used for the same named window and other named windows receive a separate instance, it is no necessary that the implementation classes are thread-safe.
+		</para>
+
+		<sect2 id="extension-virtualdw-howto" revision="1">
+			<title>How to Use</title>
+			
+			<para>
+				Your application must first register the virtual data window factory as part of engine configuration:
+			</para>
+			
+			<programlisting><![CDATA[Configuration config = new Configuration();
+config.addPlugInVirtualDataWindow("sample", "samplevdw", 
+    SampleVirtualDataWindowFactory.class.getName());]]></programlisting>
+
+			<para>
+				Your application may then create a named window backed by a virtual data window.
+			</para>
+
+			<para>
+				For example, assume that the <literal>SampleEvent</literal> event type is declared as follows:
+			</para>				
+			<programlisting><![CDATA[create schema SampleEvent as (key1 string, key2 string, value1 int, value2 double)]]></programlisting>
+
+			<para>
+				The next EPL statement creates a named window <literal>MySampleWindow</literal> that provides <literal>SampleEvent</literal> events and is backed by a virtual data window provided by <literal>SampleVirtualDataWindowFactory</literal> as configured above:
+			</para>
+			<programlisting><![CDATA[create window MySampleWindow.sample:samplevdw() as SampleEvent]]></programlisting>
+			
+			<para>
+			    You may then access the named window, same as any other named window, for example by subquery, join, on-action, fire-and-forget query or by consuming its insert and remove stream. While this example uses Map-type events, the example code is the same for POJO or other events.
+			</para>
+			
+			<para>
+				Your application may obtain a reference to the virtual data window from the engine context.
+			</para>
+	
+			<para>
+			  This code snippet looks up the virtual data window by the named window name:
+			</para>
+			<programlisting><![CDATA[try {
+  return (VirtualDataWindow) epService.getContext().lookup("/virtualdw/MySampleWindow");
+}
+catch (NamingException e) {
+  throw new RuntimeException("Failed to look up virtual data window, is it created yet?");
+}]]></programlisting>
+
+			<sect3 id="extension-virtualdw-howto-access" revision="1">
+				<title>Query Access Path</title>
+				
+				<para>
+					When you application registers a subquery, join or on-action query or executes a fire-and-forget query against a virtual data window the engine interacts with the virtual data window. The interaction is a two-step process. 
+				</para>
+				
+				<para>
+					At time of EPL statement creation (once), the engine analyzes the EPL where-clause, if present. It then compiles a list of hash-index and binary tree (btree, i.e. sorted) index properties. It passes the property names that are queried as well as the operators (i.e. =, &gt;, range etc.) to the virtual data window. The virtual data window returns a lookup strategy object to the engine.
+				</para>
+				
+				<para>
+					At time of EPL statement execution (repeatedly as triggered) , the engine uses that lookup strategy object to execute a lookup. It passes to the lookup all actual key values (hash, btree including ranges) to make fast and efficient lookup achievable.
+				</para>
+				
+				<para>
+				    To explain in detail, assume that your application creates an EPL statement with a subquery as follows:
+				</para>
+				<programlisting><![CDATA[select (select * from MySampleWindow where key1 = 'A1') from OtherEvent]]></programlisting>
+				
+				<para>
+				  At the time of creation of the EPL query above the engine analyzes the EPL query. It determines that the subquery queries a virtual data window.  It determines from the where-clause that the lookup uses property <literal>key1</literal> and hash-equals semantics. The engine then provides this information as part of <literal>VirtualDataWindowLookupContext</literal> passed to the <literal>getLookup</literal> method. Your application may inspect hash and btree properties and may determine the appropriate store access method to use.
+				</para>
+				
+				<para>
+					The hash and btree property lookup information is for informational purposes, to enable fast and performant queries that returns the smallest number of rows possible. Your implementation classes may use some or none of the information provided and may also instead return some or perhaps even all rows, as is practical to your implementation. The <literal>where</literal>-clause still remains in effect and gets evaluated on all rows that are returned by the lookup strategy.
+				</para>
+
+				<para>
+				  Following the above example, the sub-query executes once when a <literal>OtherEvent</literal> event arrives. At time of execution the engine delivers the string value <literal>A1</literal> to the <literal>VirtualDataWindowLookup</literal> lookup implementation provided by your application. The lookup object queries the store and returns 
+				  store rows as <literal>EventBean</literal> instances.
+				</para>
+
+				<para>
+				    As a second example, consider an EPL join statement as follows:
+				</para>
+				<programlisting><![CDATA[select * from MySampleWindow, MyTriggerEvent where key1 = trigger1 and key2 = trigger2]]></programlisting>
+				
+				<para>
+					The engine analyzes the query and passes to the virtual data window the information that the lookup occurs on properties <literal>key1</literal> and <literal>key2</literal> under hash-equals semantics. When a <literal>MyTriggerEvent</literal> arrives, 
+					it passes the actual value of the <literal>trigger1</literal> and <literal>trigger2</literal> properties of the current MyTriggerEvent to the lookup.
+				</para>
+				
+				<para>
+				    As a last example, consider an EPL fire-and-forget statement as follows:
+				</para>
+				<programlisting><![CDATA[select * from MySampleWindow key1 = 'A2' and value1 between 0 and 1000]]></programlisting>
+				
+				<para>
+					The engine analyzes the query and passes to the virtual data window the lookup information.  The lookup occurs on property <literal>key1</literal> under hash-equals semantics and on property <literal>value1</literal> under btree-open-range semantics. When you application 
+					executes the fire-and-forget query the engine passes <literal>A2</literal> and the range endpoints <literal>0</literal> and <literal>1000</literal> to the lookup.
+				</para>
+				
+				<para>
+					For more information, please consult the JavaDoc API documentation for class <literal>com.espertech.esper.client.hook.VirtualDataWindow</literal>, <literal>VirtualDataWindowLookupContext</literal> or <literal>VirtualDataWindowLookupFieldDesc</literal>.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2 id="extension-virtualdw-vdwfactory" revision="1">
+			<title>Implementing the Factory</title>
+			
+			<para>
+				A virtual data window factory class is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Accept the factory context object as a parameter and return the <literal>VirtualDataWindow</literal> implementation.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The sample code shown here can be found among the examples in the distribution under <literal>virtualdw</literal>:
+			</para>
+			<programlisting><![CDATA[public class SampleVirtualDataWindowFactory implements VirtualDataWindowFactory {
+  public VirtualDataWindow create(VirtualDataWindowContext context) {
+    return new SampleVirtualDataWindow(context);
+  }
+}]]></programlisting>
+
+			<para>
+				Your factory class must implement the <literal>create</literal> method which receives a <literal>VirtualDataWindowContext</literal> object. This method is called once for each EPL that creates a virtual data window (see example <literal>create window</literal> above).
+			</para>
+    
+			<para>
+				The <literal>VirtualDataWindowContext</literal> provides to your application:
+			</para>
+			<programlisting><![CDATA[String namedWindowName;	// Name of named window being created.
+Object[] parameters;  // Any optional parameters provided as part of create-window.
+EventType eventType;  // The event type of events.
+EventBeanFactory eventFactory;  // A factory for creating EventBean instances from store rows.
+VirtualDataWindowOutStream outputStream;  // For stream output to consuming statements.
+StatementContext statementContext;  // Other EPL statement information.]]></programlisting>
+		</sect2>
+
+		<sect2 id="extension-virtualdw-vdw" revision="1">
+			<title>Implementing the Virtual Data Window</title>
+			
+			<para>
+				A virtual data window implementation is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Accept the lookup context object as a parameter and return the <literal>VirtualDataWindowLookup</literal> implementation.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Optionally, post insert and remove stream data.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The sample code shown here can be found among the examples in the distribution under <literal>virtualdw</literal>.
+			</para>
+
+			<para>
+			  The implementation class must implement the <literal>VirtualDataWindow</literal> interface like so:
+			</para>
+			<programlisting><![CDATA[public class SampleVirtualDataWindow implements VirtualDataWindow {
+
+  private final VirtualDataWindowContext context;
+  
+  public SampleVirtualDataWindow(VirtualDataWindowContext context) {
+    this.context = context;
+  } ...]]></programlisting>
+
+			<para>
+			  When the engine compiles an EPL statement and detects a virtual data window, the engine invokes the <literal>getLookup</literal> method indicating hash and btree access path information by passing a <literal>VirtualDataWindowLookupContext</literal> context. The lookup method must return a <literal>VirtualDataWindowLookup</literal> implementation that the EPL statement
+			  uses for all lookups until the EPL statement is stopped or destroyed.
+			</para>
+			
+			<para>
+			  The sample implementation does not use the hash and btree access path information and simply returns a lookup object: 
+			</para>
+			<programlisting><![CDATA[public VirtualDataWindowLookup getLookup(VirtualDataWindowLookupContext desc) {
+
+  // Place any code that interrogates the hash-index and btree-index fields here.
+
+  // Return the lookup strategy.
+  return new SampleVirtualDataWindowLookup(context);
+}]]></programlisting>
+
+			<para>
+				If your virtual data window returns null instead of a lookup object, the EPL query creation fails and throws an <literal>EPStatementException</literal>.
+			</para>
+
+			<para>
+			 The engine calls the <literal>update</literal> method when data changes because of on-merge, on-delete, on-update or insert-into. For example, if you have an on-merge statement that is triggered and that updates the virtual data window, the <literal>newData</literal> parameter receives the new (updated) event and the <literal>oldData</literal> parameters receives the event prior to the update. Your code may use these events to update the store or delete from the store, if needed.
+			</para>
+
+			<para>
+				If your application plans to consume data from the virtual data window, for example via <literal>select * from MySampleWindow</literal>, then the code must implement the <literal>update</literal> method to forward insert and remove stream events, as shown below, to receive the events in consuming statements. To post insert and remove stream data, use the <literal>VirtualDataWindowOutStream</literal> provided by the context object as follows. 
+			</para>
+			
+			<programlisting><![CDATA[public void update(EventBean[] newData, EventBean[] oldData) {
+  // This sample simply posts into the insert and remove stream what is received.
+  context.getOutputStream().update(newData, oldData);
+}]]></programlisting>
+
+			<para>
+				Your application should not use <literal>VirtualDataWindowOutStream</literal> to post new events that originate from the store. The object is intended for use with on-action EPL statements. Use insert-into instead for any new events that originate from the store.
+			</para>
+		</sect2>
+
+		<sect2 id="extension-virtualdw-lookup" revision="1">
+			<title>Implementing the Lookup</title>
+			
+			<para>
+				A lookup implementation is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Accept the lookup values as a parameter and return a set of <literal>EventBean</literal> instances.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The sample code shown here can be found among the examples in the distribution under <literal>virtualdw</literal>.
+			</para>
+
+			<para>
+			  The implementation class must implement the <literal>VirtualDataWindowLookup</literal> interface:
+			</para>
+			<programlisting><![CDATA[public class SampleVirtualDataWindowLookup implements VirtualDataWindowLookup {
+
+  private final VirtualDataWindowContext context;
+  
+  public SampleVirtualDataWindowLookup(VirtualDataWindowContext context) {
+    this.context = context;
+  } ...]]></programlisting>
+
+			<para>
+			  When an EPL query fires, the engine invokes the lookup and provides the actual lookup values. The lookup values are provided in the same exact order as the access path information that the engine provided when obtaining the lookup.
+			</para>
+			
+			<para>
+				Each store row must be wrapped as an <literal>EventBean</literal> instance. The context object provides an <literal>EventBeanFactory</literal> implementation returned by <literal>getEventFactory()</literal> that can be used to wrap rows.
+			</para>
+			
+			<para>
+			  The sample implementation does not use the lookup values and simply returns a hardcoded sample event: 
+			</para>
+			<programlisting><![CDATA[public Set<EventBean> lookup(Object[] lookupValues) {
+  // Add code to interogate lookup values here.
+
+  // Create sample event.
+  // This example uses Map events; Other underlying events such as POJO are exactly the same code.
+  Map<String, Object> eventData = new HashMap<String, Object>();
+  eventData.put("key1", "sample1");
+  eventData.put("key2", "sample2");
+  eventData.put("value1", 100);
+  eventData.put("value2", 1.5d);
+  EventBean event = context.getEventFactory().wrap(eventData);
+  return Collections.singleton(event);
+}]]></programlisting>
+
+			<para>
+				The <literal>lookupValues</literal> object array represents all actual joined property values or expression results if you where-clause criteria are expressions. The code may use these keys to for efficient store access.
+			</para>
+			
+			<para>
+				When a key value is a range, the key value is an instance of <literal>VirtualDataWindowKeyRange</literal>.
+			</para>
+		</sect2>
+
+    </sect1>
 
     <sect1 id="custom-singlerow-function" revision="1">
-        <title>Custom Single-Row Functions</title>
+        <title>Single-Row Function</title>
         
 		<indexterm><primary>plug-in</primary><secondary>single-row function</secondary></indexterm>
 		<indexterm><primary>single-row functions</primary><secondary>custom plug-in</secondary></indexterm>
@@ -90,7 +472,7 @@
 	</sect1>
 
     <sect1 id="custom-views" revision="1">
-        <title>Custom View Implementation</title>
+        <title>Derived-value and Data Window View</title>
         
 		<indexterm><primary>plug-in</primary><secondary>custom view</secondary></indexterm>
 		<indexterm><primary>views</primary><secondary>custom plug-in view</secondary></indexterm>
@@ -360,7 +742,7 @@ public EventType getEventType() {
 			<programlisting><![CDATA[select * from StockTick.custom:ohlc(timestamp, price)]]></programlisting>
 
 			<para>
-				Note that the view must implement additional interfaces if it acts as a data window view, or works in a grouping context, as discussed in more detail below.
+				Note that the view must implement additional interfaces if it acts as a data window view, or works in a grouping context, as discussed in detail below.
 			</para>		
 		</sect2>
 
@@ -405,7 +787,7 @@ public EventType getEventType() {
     </sect1>
 
     <sect1 id="custom-aggregation-function" revision="1">
-        <title>Custom Aggregation Functions</title>
+        <title>Aggregation Function</title>
         
 		<indexterm><primary>plug-in</primary><secondary>custom aggregation function</secondary></indexterm>
 		<indexterm><primary>aggregation functions</primary><secondary>custom plug-in</secondary></indexterm>
@@ -611,7 +993,7 @@ public EventType getEventType() {
 	</sect1>
 
     <sect1 id="custom-pattern-guard" revision="1">
-        <title>Custom Pattern Guard</title>
+        <title>Pattern Guard</title>
         
 		<indexterm><primary>plug-in</primary><secondary>custom pattern guard</secondary></indexterm>
 		<indexterm><primary>pattern guard</primary><secondary>custom plug-in</secondary></indexterm>
@@ -795,7 +1177,7 @@ public EventType getEventType() {
 	</sect1>
 
     <sect1 id="custom-pattern-observer" revision="1">
-        <title>Custom Pattern Observer</title>
+        <title>Pattern Observer</title>
         
 		<indexterm><primary>plug-in</primary><secondary>custom pattern observer</secondary></indexterm>
 		<indexterm><primary>pattern observer</primary><secondary>custom plug-in</secondary></indexterm>
@@ -985,10 +1367,10 @@ public EventType getEventType() {
 	</sect1>
 
     <sect1 id="custom-event-representation" revision="1">
-        <title>Custom Event Representation</title>
+        <title>Event Type And Event Object</title>
         
-		<indexterm><primary>plug-in</primary><secondary>custom event representation</secondary></indexterm>
-		<indexterm><primary>event representation</primary><secondary>custom</secondary></indexterm>
+		<indexterm><primary>plug-in</primary><secondary>custom event object</secondary></indexterm>
+		<indexterm><primary>event object</primary><secondary>custom</secondary></indexterm>
 		    
 		<para>
 			Creating a plug-in event representation can be useful under any of these conditions:

@@ -1,8 +1,6 @@
 package com.espertech.esper.epl.datetime.calop;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.datetime.DTDescription;
-import com.espertech.esper.epl.datetime.DTParameter;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.Calendar;

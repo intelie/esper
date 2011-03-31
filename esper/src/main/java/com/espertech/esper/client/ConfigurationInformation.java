@@ -77,6 +77,12 @@ public interface ConfigurationInformation
     public List<ConfigurationPlugInView> getPlugInViews();
 
     /**
+     * Returns a list of configured plug-in virtual data windows.
+     * @return list of plug-in virtual data windows
+     */
+    public List<ConfigurationPlugInVirtualDataWindow> getPlugInVirtualDataWindows();
+
+    /**
      * Returns a list of configured plugin loaders.
      * @return adapter loaders
      */

@@ -29,6 +29,17 @@ public class EPStatementException extends EPException
     }
 
     /**
+     * Ctor.
+     * @param message error message
+     * @param cause inner exception
+     * @param expression expression text
+     */
+    public EPStatementException(String message, Throwable cause, String expression) {
+        super(message, cause);
+        this.expression = expression;
+    }
+
+    /**
      * Returns expression text for statement.
      * @return expression text
      */

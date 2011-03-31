@@ -54,7 +54,7 @@ public interface EventAdapterService
      * @param eventType event type
      * @return event
      */
-    public EventBean adapterForTypedBean(Object bean, BeanEventType eventType);
+    public EventBean adapterForTypedBean(Object bean, EventType eventType);
 
     /**
      * Adds an event type to the registery available for use, and originating outside as a non-adapter.

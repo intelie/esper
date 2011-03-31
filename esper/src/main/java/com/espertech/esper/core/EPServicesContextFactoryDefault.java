@@ -84,7 +84,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService, schedulingMgmtService);
 
         PluggableObjectCollection plugInViews = new PluggableObjectCollection();
-        plugInViews.addViews(configSnapshot.getPlugInViews());
+        plugInViews.addViews(configSnapshot.getPlugInViews(), configSnapshot.getPlugInVirtualDataWindows());
         PluggableObjectCollection plugInPatternObj = new PluggableObjectCollection();
         plugInPatternObj.addPatternObjects(configSnapshot.getPlugInPatternObjects());
 

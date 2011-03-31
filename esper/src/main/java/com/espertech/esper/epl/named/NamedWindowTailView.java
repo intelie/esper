@@ -239,11 +239,9 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         createWindowStmtHandle.getStatementLock().acquireReadLock();
         try
         {
-            if (filter != null) {
-                Collection<EventBean> indexedResult = namedWindowRootView.snapshot(filter);
-                if (indexedResult != null) {
-                    return indexedResult;
-                }
+            Collection<EventBean> indexedResult = namedWindowRootView.snapshot(filter);
+            if (indexedResult != null) {
+                return indexedResult;
             }
             Iterator<EventBean> it = parent.iterator();
             if (!it.hasNext())

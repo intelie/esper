@@ -69,7 +69,7 @@ public class EngineEnvContext implements Context
 
     public void unbind(String name) throws NamingException
     {
-        throw new UnsupportedOperationException();
+        context.remove(name);
     }
 
     public void rename(Name oldName, Name newName) throws NamingException

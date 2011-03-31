@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.join.plan;
 
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import junit.framework.TestCase;
 import com.espertech.esper.epl.join.exec.base.FullTableScanLookupStrategy;
 import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
@@ -27,7 +28,7 @@ public class TestFullTableScanLookupPlan extends TestCase
         indexes[1] = new HashMap<String,EventTable>();
         indexes[1].put("idx2", unindexedEventIndex);
 
-        JoinExecTableLookupStrategy lookupStrategy = spec.makeStrategy(indexes, null);
+        JoinExecTableLookupStrategy lookupStrategy = spec.makeStrategy(indexes, null, new VirtualDWView[2]);
 
         FullTableScanLookupStrategy strategy = (FullTableScanLookupStrategy) lookupStrategy;
         assertEquals(unindexedEventIndex, strategy.getEventIndex());

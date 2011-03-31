@@ -15,6 +15,7 @@ import com.espertech.esper.epl.join.exec.base.TableOuterLookupExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.view.Viewable;
 
 import java.util.HashSet;
@@ -51,9 +52,9 @@ public class TableOuterLookupNode extends QueryPlanNode
                " tableLookupPlan=" + tableLookupPlan);
     }
 
-    public ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
+    public ExecNode makeExec(Map<String, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal)
     {
-        JoinExecTableLookupStrategy lookupStrategy = tableLookupPlan.makeStrategy(indexesPerStream, streamTypes);
+        JoinExecTableLookupStrategy lookupStrategy = tableLookupPlan.makeStrategy(indexesPerStream, streamTypes, viewExternal);
 
         return new TableOuterLookupExecNode(tableLookupPlan.getIndexedStream(), lookupStrategy);
     }

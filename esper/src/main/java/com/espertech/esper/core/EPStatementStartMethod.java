@@ -40,6 +40,8 @@ import com.espertech.esper.epl.view.FilterExprView;
 import com.espertech.esper.epl.view.OutputConditionExpression;
 import com.espertech.esper.epl.view.OutputProcessView;
 import com.espertech.esper.epl.view.OutputProcessViewFactory;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
+import com.espertech.esper.epl.virtualdw.VirtualDWViewFactory;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.map.MapEventType;
@@ -61,6 +63,7 @@ import com.espertech.esper.view.internal.SingleStreamDispatchView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.naming.NamingException;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
@@ -672,10 +675,6 @@ public class EPStatementStartMethod
         String windowName = statementSpec.getCreateWindowDesc().getWindowName();
         EventType windowType = filterStreamSpec.getFilterSpec().getFilterForEventType();
 
-        ValueAddEventProcessor optionalRevisionProcessor = statementContext.getValueAddEventService().getValueAddProcessor(windowName);
-        boolean isPrioritized = services.getEngineSettingsService().getEngineSettings().getExecution().isPrioritized();
-        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor, statementContext.getExpression(), statementContext.getStatementName(), isPrioritized, statementContext, statementSpec.getAnnotations());
-
         // Create streams and views
         Viewable eventStreamParentViewable;
         ViewFactoryChain unmaterializedViewChain;
@@ -695,6 +694,14 @@ public class EPStatementStartMethod
         // Create data window view factories
         unmaterializedViewChain = services.getViewService().createFactories(0, eventStreamParentViewable.getEventType(), filterStreamSpec.getViewSpecs(), filterStreamSpec.getOptions(), statementContext);
 
+        ValueAddEventProcessor optionalRevisionProcessor = statementContext.getValueAddEventService().getValueAddProcessor(windowName);
+        boolean isPrioritized = services.getEngineSettingsService().getEngineSettings().getExecution().isPrioritized();
+        boolean isEnableSubqueryIndexShare = HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE.getHint(statementSpec.getAnnotations()) != null;
+        if (!isEnableSubqueryIndexShare && unmaterializedViewChain.getViewFactoryChain().get(0) instanceof VirtualDWViewFactory) {
+            isEnableSubqueryIndexShare = true;  // index share is always enabled for virtual data window (otherwise it wouldn't make sense)
+        }
+        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor, statementContext.getExpression(), statementContext.getStatementName(), isPrioritized, statementContext, isEnableSubqueryIndexShare);
+
         // The root view of the named window
         NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(statementSpec.getCreateWindowDesc().getWindowName());
         View rootView = processor.getRootView();
@@ -707,6 +714,31 @@ public class EPStatementStartMethod
             throw new ExprValidationException(NamedWindowService.ERROR_MSG_DATAWINDOWS);
         }
 
+        // Materialize views
+        Viewable finalView = services.getViewService().createViews(rootView, unmaterializedViewChain.getViewFactoryChain(), statementContext);
+
+        // If this is a virtual data window implementation, bind it to the context for easy lookup
+        StopCallback envStopCallback = null;
+        if (finalView instanceof VirtualDWView) {
+            final String objectName = "/virtualdw/" + windowName;
+            final VirtualDWView virtualDWView = (VirtualDWView) finalView;
+            try {
+                services.getEngineEnvContext().bind(objectName, virtualDWView.getVirtualDataWindow());
+            }
+            catch (NamingException e) {
+                throw new ViewProcessingException("Invalid name for adding to context:" + e.getMessage(), e);
+            }
+            envStopCallback = new StopCallback() {
+                public void stop() {
+                    try {
+                        virtualDWView.destroy();
+                        services.getEngineEnvContext().unbind(objectName);
+                    } catch (NamingException e) {}
+                }
+            };
+        }
+        final StopCallback environmentStopCallback = envStopCallback;
+
         // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
         {
@@ -716,11 +748,11 @@ public class EPStatementStartMethod
                 services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), statementContext.getFilterService(), false,false, true);
                 String windowName = statementSpec.getCreateWindowDesc().getWindowName();
                 services.getNamedWindowService().removeProcessor(windowName);
+                if (environmentStopCallback != null) {
+                    environmentStopCallback.stop();
+                }
             }
         };
-
-        // Materialize views
-        Viewable finalView = services.getViewService().createViews(rootView, unmaterializedViewChain.getViewFactoryChain(), statementContext);
 
         // Attach tail view
         boolean isBatchView = finalView instanceof BatchingDataWindowView;
@@ -882,7 +914,7 @@ public class EPStatementStartMethod
         boolean[] isNamedWindow = new boolean[numStreams];
 
         // verify for joins that required views are present
-        StreamJoinAnalysisResult joinAnalysisResult = verifyJoinViews(statementSpec.getStreamSpecs());
+        StreamJoinAnalysisResult joinAnalysisResult = verifyJoinViews(statementSpec.getStreamSpecs(), statementContext.getNamedWindowService());
 
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
@@ -1189,7 +1221,7 @@ public class EPStatementStartMethod
      * @return analysis result
      * @throws ExprValidationException if constraints violated
      */
-    private StreamJoinAnalysisResult verifyJoinViews(List<StreamSpecCompiled> streamSpecs)
+    private StreamJoinAnalysisResult verifyJoinViews(List<StreamSpecCompiled> streamSpecs, NamedWindowService namedWindowService)
             throws ExprValidationException
     {
         StreamJoinAnalysisResult analysisResult = new StreamJoinAnalysisResult(streamSpecs.size());
@@ -1220,7 +1252,12 @@ public class EPStatementStartMethod
             }
             if (streamSpec instanceof NamedWindowConsumerStreamSpec)
             {
+                NamedWindowConsumerStreamSpec nwSpec = (NamedWindowConsumerStreamSpec) streamSpec;
                 analysisResult.setNamedWindow(i);
+                NamedWindowProcessor processor = namedWindowService.getProcessor(nwSpec.getWindowName());
+                if (processor.getRootView().getViews().get(0) instanceof VirtualDWView) {
+                    analysisResult.getViewExternal()[i] = (VirtualDWView) processor.getRootView().getViews().get(0);
+                }
             }
         }
         if ((unidirectionalStreamNumber != -1) && (analysisResult.getHasChildViews()[unidirectionalStreamNumber]))

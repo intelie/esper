@@ -729,7 +729,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         }
     }
 
-    public final EventBean adapterForTypedBean(Object bean, BeanEventType eventType)
+    public final EventBean adapterForTypedBean(Object bean, EventType eventType)
     {
         return new BeanEventBean(bean, eventType);
     }

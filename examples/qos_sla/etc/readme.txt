@@ -4,7 +4,7 @@ Esper Examples
 
 In order to compile and run the samples please follow the below instructions:
 
-1. Make sure Java 1.5 or greater is installed and the JAVA_HOME environment variable is set
+1. Make sure Java 1.6 or greater is installed and the JAVA_HOME environment variable is set
 
 2. Open a console window and change directory to esper/examples/etc
 

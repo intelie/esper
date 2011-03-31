@@ -11,6 +11,7 @@ package com.espertech.esper.view;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.spec.PluggableObjectType;
+import com.espertech.esper.epl.virtualdw.VirtualDWViewFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,14 +25,16 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
     private static final Log log = LogFactory.getLog(ViewResolutionServiceImpl.class);
 
     private final PluggableObjectCollection viewObjects;
+    private final String optionalNamedWindowName;
 
     /**
      * Ctor.
      * @param viewObjects is the view objects to use for resolving views, can be both built-in and plug-in views.
      */
-    public ViewResolutionServiceImpl(PluggableObjectCollection viewObjects)
+    public ViewResolutionServiceImpl(PluggableObjectCollection viewObjects, String optionalNamedWindowName)
     {
         this.viewObjects = viewObjects;
+        this.optionalNamedWindowName = optionalNamedWindowName;
     }
 
     public ViewFactory create(String nameSpace, String name) throws ViewProcessingException
@@ -49,9 +52,16 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
             Pair<Class, PluggableObjectType> pair = namespaceMap.get(name);
             if (pair != null)
             {
-                if (pair.getSecond() == PluggableObjectType.VIEW)
+                if (pair.getSecond() == PluggableObjectType.VIEW )
                 {
                     viewFactoryClass = pair.getFirst();
+                }
+                else if (pair.getSecond() == PluggableObjectType.VIRTUALDW)
+                {
+                    if (optionalNamedWindowName == null) {
+                        throw new ViewProcessingException("Virtual data window requires use with a named window in the create-window syntax");
+                    }
+                    return new VirtualDWViewFactory(pair.getFirst(), optionalNamedWindowName);
                 }
                 else
                 {

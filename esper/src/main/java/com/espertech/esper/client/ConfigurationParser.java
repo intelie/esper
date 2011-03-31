@@ -132,6 +132,10 @@ class ConfigurationParser {
             {
                 handlePlugInView(configuration, element);
             }
+            else if (nodeName.equals("plugin-virtualdw"))
+            {
+                handlePlugInVirtualDW(configuration, element);
+            }
             else if (nodeName.equals("plugin-aggregation-function"))
             {
                 handlePlugInAggregation(configuration, element);
@@ -565,6 +569,14 @@ class ConfigurationParser {
         String name = getRequiredAttribute(element, "name");
         String factoryClassName = getRequiredAttribute(element, "factory-class");
         configuration.addPlugInView(namespace, name, factoryClassName);
+    }
+
+    private static void handlePlugInVirtualDW(Configuration configuration, Element element)
+    {
+        String namespace = getRequiredAttribute(element, "namespace");
+        String name = getRequiredAttribute(element, "name");
+        String factoryClassName = getRequiredAttribute(element, "factory-class");
+        configuration.addPlugInVirtualDataWindow(namespace, name, factoryClassName);
     }
 
     private static void handlePlugInAggregation(Configuration configuration, Element element)

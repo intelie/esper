@@ -23,6 +23,7 @@ public class EngineMetric extends MetricEvent
      * @param engineURI engine URI
      * @param timestamp engine timestamp
      * @param inputCount number of input events
+     * @param inputCountDelta number of input events since last
      * @param scheduleDepth schedule depth
      */
     public EngineMetric(String engineURI, long timestamp, long inputCount, long inputCountDelta, long scheduleDepth)
