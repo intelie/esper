@@ -166,7 +166,7 @@ public class TestPropertyResolution extends TestCase
         }
         catch (EPException ex)
         {
-            assertEquals("Unable to determine which property to use for \"MyProperty\" because more than one property matched", ex.getMessage());
+            assertEquals("Unexpected exception starting statement: Unable to determine which property to use for \"MyProperty\" because more than one property matched [select MyProperty from com.espertech.esper.support.bean.SupportBeanDupProperty]", ex.getMessage());
             // expected
         }
     }

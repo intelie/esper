@@ -9,6 +9,7 @@ import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
 import com.espertech.esper.epl.expression.ExprDotNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorEnumeration;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.event.EventTypeUtility;
 
 import java.util.Iterator;
 import java.util.List;
@@ -37,15 +38,7 @@ public class ExprDotEvalUnion extends ExprDotEvalEnumMethodBase {
 
         EventType setType = enumSrc.getFirst().getEventTypeCollection();
         if (setType != inputEventType) {
-            boolean isSubtype = false;
-            if (setType.getSuperTypes() != null) {
-                for (Iterator<EventType> it = setType.getDeepSuperTypes(); it.hasNext();) {
-                    if (it.next() == inputEventType) {
-                        isSubtype = true;
-                    }
-                }
-            }
-
+            boolean isSubtype = EventTypeUtility.isTypeOrSubTypeOf(setType, inputEventType);
             if (!isSubtype) {
                 String message = "Enumeration method '" + enumMethodUsedName + "' expects event type '" + inputEventType.getName() + "' but receives event type '" + enumSrc.getFirst().getEventTypeCollection().getName() + "'";
                 throw new ExprValidationException(message);

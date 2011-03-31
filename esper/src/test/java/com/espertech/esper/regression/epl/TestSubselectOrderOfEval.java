@@ -1,9 +1,6 @@
 package com.espertech.esper.regression.epl;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -13,6 +10,35 @@ public class TestSubselectOrderOfEval extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
+
+    public void testCorrelatedSubqueryOrder() {
+        // ESPER-564
+
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getViewResources().setShareViews(true);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.getEPAdministrator().getConfiguration().addEventType("TradeEvent", TradeEvent.class);
+        listener = new SupportUpdateListener();
+
+        epService.getEPAdministrator().createEPL("select * from TradeEvent.std:lastevent()");
+
+        epService.getEPAdministrator().createEPL(
+                "select window(tl.*) as longItems, " +
+                "       (SELECT window(ts.*) AS shortItems FROM TradeEvent.win:time(20 minutes) as ts WHERE ts.securityID=tl.securityID) " +
+                "from TradeEvent.win:time(20 minutes) as tl " +
+                "where tl.securityID = 1000" +
+                "group by tl.securityID "
+        ).addListener(listener);
+		
+        epService.getEPRuntime().sendEvent(new TradeEvent(System.currentTimeMillis(), 1000, 50, 1));
+        assertEquals(1, ((Object[]) listener.assertOneGetNew().get("longItems")).length);
+        assertEquals(1, ((Object[]) listener.assertOneGetNew().get("shortItems")).length);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new TradeEvent(System.currentTimeMillis() + 10, 1000, 50, 1));
+        assertEquals(2, ((Object[]) listener.assertOneGetNew().get("longItems")).length);
+        assertEquals(2, ((Object[]) listener.assertOneGetNew().get("shortItems")).length);
+    }
 
     public void testOrderOfEvaluationSubselectFirst()
     {
@@ -66,5 +92,35 @@ public class TestSubselectOrderOfEval extends TestCase
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
         assertTrue(listener.getAndClearIsInvoked());
+    }
+
+    public static class TradeEvent {
+        private long time;
+        private int securityID;
+        private double price;
+        private long volume;
+
+        public TradeEvent(long time, int securityID, double price, long volume) {
+            this.time = time;
+            this.securityID = securityID;
+            this.price = price;
+            this.volume = volume;
+        }
+
+        public int getSecurityID() {
+            return securityID;
+        }
+
+        public long getTime() {
+            return time;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public long getVolume() {
+            return volume;
+        }
     }
 }

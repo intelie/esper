@@ -8,13 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.view.stream;
 
-import com.espertech.esper.core.StatementLock;
-import com.espertech.esper.view.EventStream;
-import com.espertech.esper.filter.FilterSpecCompiled;
-import com.espertech.esper.filter.FilterService;
-import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.core.EPStatementHandle;
+import com.espertech.esper.core.StatementLock;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.filter.FilterService;
+import com.espertech.esper.filter.FilterSpecCompiled;
+import com.espertech.esper.view.EventStream;
 
 /**
  * Service on top of the filter service for reuseing filter callbacks and their associated EventStream instances.
@@ -40,7 +40,7 @@ public interface StreamFactoryService
      * @return event stream representing active filter
      */
     public Pair<EventStream, StatementLock> createStream(final String statementId, FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
-                                    boolean isJoin, boolean isSubSelect, ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger);
+                                    boolean isJoin, boolean isSubSelect, ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger, boolean filterWithSameTypeSubselect);
 
     /**
      * Drop the event stream associated with the filter passed in.
@@ -52,7 +52,7 @@ public interface StreamFactoryService
      * @param isSubSelect true for subselects
      * @param isNamedWindowTrigger if a named window or trigger querying from named window
      */
-    public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin, boolean isSubSelect, boolean isNamedWindowTrigger);
+    public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin, boolean isSubSelect, boolean isNamedWindowTrigger, boolean filterWithSameTypeSubselect);
 
     /**
      * Destroy the service.

@@ -87,7 +87,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * @param epStatementHandle is the statement resource lock
      * @return newly createdStatement event stream, not reusing existing instances
      */
-    public Pair<EventStream, StatementLock> createStream(final String statementId, final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect, final ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger)
+    public Pair<EventStream, StatementLock> createStream(final String statementId, final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin, final boolean isSubSelect, final ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger, boolean filterWithSameTypeSubselect)
     {
         if (log.isDebugEnabled())
         {
@@ -96,7 +96,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
 
         // Check if a stream for this filter already exists
         Pair<EventStream, EPStatementHandleCallback> pair;
-        boolean forceNewStream = isJoin || (!isReuseViews) || isSubSelect || isNamedWindowTrigger;
+        boolean forceNewStream = isJoin || (!isReuseViews) || isSubSelect || isNamedWindowTrigger || filterWithSameTypeSubselect;
         if (forceNewStream)
         {
             pair = eventStreamsIdentity.get(filterSpec);
@@ -195,10 +195,10 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * See the method of the same name in {@link com.espertech.esper.view.stream.StreamFactoryService}.
      * @param filterSpec is the filter definition
      */
-    public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin, boolean isSubSelect, boolean isNamedWindowTrigger)
+    public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin, boolean isSubSelect, boolean isNamedWindowTrigger, boolean filterWithSameTypeSubselect)
     {
         Pair<EventStream, EPStatementHandleCallback> pair;
-        boolean forceNewStream = isJoin || (!isReuseViews) || isSubSelect || isNamedWindowTrigger;
+        boolean forceNewStream = isJoin || (!isReuseViews) || isSubSelect || isNamedWindowTrigger || filterWithSameTypeSubselect;
 
         if (forceNewStream)
         {
