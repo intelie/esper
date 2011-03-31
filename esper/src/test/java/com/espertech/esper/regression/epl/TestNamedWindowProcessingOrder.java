@@ -12,6 +12,9 @@ import com.espertech.esper.support.bean.SupportBean_B;
 import com.espertech.esper.core.StatementType;
 import com.espertech.esper.core.EPStatementSPI;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TestNamedWindowProcessingOrder extends TestCase
 {
     private EPServiceProvider epService;
@@ -24,6 +27,30 @@ public class TestNamedWindowProcessingOrder extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
+    }
+
+    public void testDispatchBackQueue() {
+        epService.getEPAdministrator().createEPL("create schema StartValueEvent as (dummy string)");
+        epService.getEPAdministrator().createEPL("create schema TestForwardEvent as (prop1 string)");
+        epService.getEPAdministrator().createEPL("create schema TestInputEvent as (dummy string)");
+        epService.getEPAdministrator().createEPL("insert into TestForwardEvent select'V1' as prop1 from TestInputEvent");
+
+        epService.getEPAdministrator().createEPL("create window NamedWin.std:unique(prop1) (prop1 string, prop2 string)");
+
+        epService.getEPAdministrator().createEPL("insert into NamedWin select 'V1' as prop1, 'O1' as prop2 from StartValueEvent");
+
+        epService.getEPAdministrator().createEPL("on TestForwardEvent update NamedWin as work set prop2 = 'U1' where work.prop1 = 'V1'");
+
+        String[] fields = "prop1,prop2".split(",");
+        String eplSelect = "select irstream prop1, prop2 from NamedWin";
+        epService.getEPAdministrator().createEPL(eplSelect).addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new HashMap<String, String>(), "StartValueEvent");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"V1", "O1"});
+
+        epService.getEPRuntime().sendEvent(new HashMap<String, String>(), "TestInputEvent");
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"V1", "O1"});
+        ArrayAssertionUtil.assertProps(listener.getAndResetLastNewData()[0], fields, new Object[] {"V1", "U1"});
     }
 
     public void testOrderedDeleteAndSelect()

@@ -763,6 +763,12 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 processThreadWorkQueueUnlatched(item);
             }
 
+            boolean haveDispatched = services.getNamedWindowService().dispatch(engineFilterAndDispatchTimeContext);
+            if (haveDispatched)
+            {
+                dispatch();
+            }
+
             if (!queues.getFrontQueue().isEmpty()) {
                 processThreadWorkQueue();
             }

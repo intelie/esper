@@ -534,6 +534,12 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
                 processThreadWorkQueueUnlatched(item);
             }
 
+            boolean haveDispatched = unisolatedServices.getNamedWindowService().dispatch(isolatedTimeEvalContext);
+            if (haveDispatched)
+            {
+                dispatch();
+            }
+
             if (!queues.getFrontQueue().isEmpty()) {
                 processThreadWorkQueue();
             }
