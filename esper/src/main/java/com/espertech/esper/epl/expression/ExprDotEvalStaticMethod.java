@@ -41,7 +41,12 @@ public class ExprDotEvalStaticMethod implements ExprEvaluator
         this.classOrPropertyName = classOrPropertyName;
         this.staticMethod = staticMethod;
         this.childEvals = childEvals;
-        this.isConstantParameters = constantParameters;
+        if (chainEval.length > 0) {
+            isConstantParameters = false;
+        }
+        else {
+            this.isConstantParameters = constantParameters;
+        }
         this.resultWrapLambda = resultWrapLambda;
         this.chainEval = chainEval;
     }
@@ -79,18 +84,9 @@ public class ExprDotEvalStaticMethod implements ExprEvaluator
 		try
 		{
             Object result = staticMethod.invoke(obj, args);
-            if (isConstantParameters)
-            {
-                cachedResult = result;
-                isCachedResult = true;
-            }
 
             if (resultWrapLambda != null) {
                 result = resultWrapLambda.convert(result);
-            }
-
-            if (chainEval.length == 0) {
-                return result;
             }
 
             for (int i = 0; i < chainEval.length; i++) {
@@ -98,6 +94,12 @@ public class ExprDotEvalStaticMethod implements ExprEvaluator
                 if (result == null) {
                     return result;
                 }
+            }
+
+            if (isConstantParameters)
+            {
+                cachedResult = result;
+                isCachedResult = true;
             }
             return result;
 		}

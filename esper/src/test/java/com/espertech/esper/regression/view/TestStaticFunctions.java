@@ -27,9 +27,27 @@ public class TestStaticFunctions extends TestCase
 	    epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
 	    epService.initialize();
 	    stream = " from " + SupportMarketDataBean.class.getName() +".win:length(5) ";
+        listener = new SupportUpdateListener();
 	}
 
-    public void testChained() {
+    public void testChainedInstance() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addImport(LevelZero.class);
+
+        epService.getEPAdministrator().createEPL("select " +
+                "LevelZero.getLevelOne().getLevelTwoValue() as val0 " +
+                "from SupportBean").addListener(listener);
+
+        LevelOne.setField("v1");
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "val0".split(","), new Object[] {"v1"});
+
+        LevelOne.setField("v2");
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "val0".split(","), new Object[] {"v2"});
+    }
+
+    public void testChainedStatic() {
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportChainTop", SupportChainTop.class);
         epService.getEPAdministrator().getConfiguration().addImport(SupportChainTop.class);
@@ -497,5 +515,23 @@ public class TestStaticFunctions extends TestCase
 	{
 		epService.getEPRuntime().sendEvent(new SupportMarketDataBean(symbol, price, volume, ""));
 	}
+
+    public static class LevelZero {
+        public static LevelOne getLevelOne() {
+            return new LevelOne();
+        }
+    }
+
+    public static class LevelOne {
+        private static String field;
+
+        public static void setField(String field) {
+            LevelOne.field = field;
+        }
+
+        public String getLevelTwoValue() {
+            return field;
+        }
+    }
 
 }

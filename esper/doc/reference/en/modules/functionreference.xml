@@ -1321,6 +1321,10 @@ group by symbol</programlisting>
 		 <para>
 			 User-defined functions can be also be invoked on instances of an event: Please see <xref linkend="epl-from-clause-stream-name"/> to invoke event instance methods on a named stream.
 		 </para>
+		 
+		 <para>
+			 Note that user-defined functions (not single-row functions) are candidate for caching their return result if the parameters passed are constants and they are not used chained. Please see below for details and configuration.
+		 </para>
 
 		 <para>
 			 The example below assumes a class <literal>MyClass</literal> that exposes a public static method <literal>myFunction</literal> accepting 2 parameters, and
