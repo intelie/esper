@@ -31,6 +31,21 @@ public class TestGroupByEventPerRow extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
     }
 
+    public void testUnaggregatedHaving() {
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select string from SupportBean group by string having intPrimitive > 5");
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 5));
+        assertFalse(listener.isInvoked());
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 6));
+        assertEquals("E1", listener.assertOneGetNewAndReset().get("string"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 7));
+        assertEquals("E3", listener.assertOneGetNewAndReset().get("string"));
+    }
+
     public void testWildcard() {
 
         // test no output limit

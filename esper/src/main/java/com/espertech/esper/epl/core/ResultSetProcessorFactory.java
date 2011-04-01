@@ -313,7 +313,8 @@ public class ResultSetProcessorFactory
         validateGroupBy(groupByNodes);
 
         // Validate the having-clause (selected aggregate nodes and all in group-by are allowed)
-        if (optionalHavingNode != null)
+        boolean hasAggregation = (!selectAggregateExprNodes.isEmpty()) || (!havingAggregateExprNodes.isEmpty()) || (!orderByAggregateExprNodes.isEmpty()) || (!propertiesAggregatedHaving.isEmpty());
+        if (optionalHavingNode != null && hasAggregation)
         {
             validateHaving(propertiesGroupBy, optionalHavingNode);
         }
@@ -365,7 +366,6 @@ public class ResultSetProcessorFactory
             return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionHavingEval, isSelectRStream, stmtContext);
         }
 
-        boolean hasAggregation = (!selectAggregateExprNodes.isEmpty()) || (!havingAggregateExprNodes.isEmpty()) || (!orderByAggregateExprNodes.isEmpty()) || (!propertiesAggregatedHaving.isEmpty());
         if ((groupByNodes.isEmpty()) && hasAggregation)
         {
             // (3)
