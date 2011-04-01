@@ -30,7 +30,7 @@ public class OutputConditionFirst implements OutputCondition
      * @param outputCallback is the method to invoke for output
      * @throws  ExprValidationException if validation of the output expressions fails
 	 */
-	public OutputConditionFirst(OutputLimitSpec outputLimitSpec, StatementContext statementContext, OutputCallback outputCallback, boolean isGrouped)
+	public OutputConditionFirst(OutputLimitSpec outputLimitSpec, StatementContext statementContext, OutputCallback outputCallback, boolean isGrouped, boolean isWithHavingClause)
             throws ExprValidationException
     {
 		if(outputCallback ==  null)
@@ -40,7 +40,7 @@ public class OutputConditionFirst implements OutputCondition
 		this.outputCallback = outputCallback;
 		OutputLimitSpec innerSpec = new OutputLimitSpec(outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), outputLimitSpec.getRateType(), OutputLimitLimitType.DEFAULT, outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getThenExpressions(), outputLimitSpec.getCrontabAtSchedule(), outputLimitSpec.getTimePeriodExpr(), outputLimitSpec.getAfterTimePeriodExpr(), outputLimitSpec.getAfterNumberOfEvents());
 		OutputCallback localCallback = createCallbackToLocal();
-		this.innerCondition = statementContext.getOutputConditionFactory().createCondition(innerSpec, statementContext, localCallback, isGrouped);
+		this.innerCondition = statementContext.getOutputConditionFactory().createCondition(innerSpec, statementContext, localCallback, isGrouped, isWithHavingClause);
 		this.witnessedFirst = false;
 	}
 

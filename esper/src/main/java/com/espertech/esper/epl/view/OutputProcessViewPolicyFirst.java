@@ -8,43 +8,43 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.util.AuditPath;
+import com.espertech.esper.epl.spec.OutputLimitLimitType;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.util.AuditPath;
+import com.espertech.esper.event.EventBeanUtility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
- * A view that prepares output events, batching incoming
- * events and invoking the result set processor as necessary.
+ * Handles output rate limiting for FIRST, only applicable with a having-clause and no group-by clause.
  * <p>
- * Handles output rate limiting or stabilizing.
+ * Without having-clause the order of processing won't matter therefore its handled by the
+ * {@link OutputProcessViewPolicy}. With group-by the {@link ResultSetProcessor} handles the per-group first criteria.
  */
-public class OutputProcessViewPolicy extends OutputProcessView
+public class OutputProcessViewPolicyFirst extends OutputProcessView
 {
     private final OutputCondition outputCondition;
-    private final OutputLimitLimitType outputLimitLimitType;
 
     // Posted events in ordered form (for applying to aggregates) and summarized per type
     // Using ArrayList as random access is a requirement.
     private List<UniformPair<EventBean[]>> viewEventsList = new ArrayList<UniformPair<EventBean[]>>();
 	private List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet = new ArrayList<UniformPair<Set<MultiKey<EventBean>>>>();
+    private boolean witnessedFirst;
 
-	private static final Log log = LogFactory.getLog(OutputProcessViewPolicy.class);
+	private static final Log log = LogFactory.getLog(OutputProcessViewPolicyFirst.class);
 
     /**
      * Ctor.
@@ -55,17 +55,17 @@ public class OutputProcessViewPolicy extends OutputProcessView
      * @param isInsertInto is true if the statement is a insert-into
      * @param outputStrategy is the method to use to produce output
      * @param isDistinct true for distinct
-     * @throws ExprValidationException if validation of the output expressions fails
+     * @throws com.espertech.esper.epl.expression.ExprValidationException if validation of the output expressions fails
      */
-    public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor,
-                          OutputStrategy outputStrategy,
-                          boolean isInsertInto,
-                          int streamCount,
-    					  OutputLimitSpec outputLimitSpec,
-    					  StatementContext statementContext,
-                          boolean isDistinct,
-                          boolean isGrouped,
-                          boolean isWithHavingClause)
+    public OutputProcessViewPolicyFirst(ResultSetProcessor resultSetProcessor,
+                                        OutputStrategy outputStrategy,
+                                        boolean isInsertInto,
+                                        int streamCount,
+                                        OutputLimitSpec outputLimitSpec,
+                                        StatementContext statementContext,
+                                        boolean isDistinct,
+                                        boolean isGrouped,
+                                        boolean isWithHavingClause)
             throws ExprValidationException
     {
         super(resultSetProcessor, outputStrategy, isInsertInto, statementContext, isDistinct, outputLimitSpec.getAfterTimePeriodExpr(), outputLimitSpec.getAfterNumberOfEvents());
@@ -78,7 +78,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);
     	this.outputCondition = statementContext.getOutputConditionFactory().createCondition(outputLimitSpec, statementContext, outputCallback, isGrouped, isWithHavingClause);
-        outputLimitLimitType = outputLimitSpec.getDisplayLimit();
     }
 
     /**
@@ -100,6 +99,43 @@ public class OutputProcessViewPolicy extends OutputProcessView
             return;
         }
 
+        if (!witnessedFirst) {
+            boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
+
+            // Process the events and get the result
+            viewEventsList.add(new UniformPair<EventBean[]>(newData, oldData));
+            UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processOutputLimitedView(viewEventsList, isGenerateSynthetic, OutputLimitLimitType.FIRST);
+            viewEventsList.clear();
+
+            if (newOldEvents == null || (newOldEvents.getFirst() == null && newOldEvents.getSecond() == null)) {
+                return; // nothing to indicate
+            }
+
+            witnessedFirst = true;
+
+            if (isDistinct)
+            {
+                newOldEvents.setFirst(EventBeanUtility.getDistinctByProp(newOldEvents.getFirst(), eventBeanReader));
+                newOldEvents.setSecond(EventBeanUtility.getDistinctByProp(newOldEvents.getSecond(), eventBeanReader));
+            }
+
+            boolean isGenerateNatural = statementResultService.isMakeNatural();
+            if ((!isGenerateSynthetic) && (!isGenerateNatural))
+            {
+                if (AuditPath.isAuditEnabled) {
+                    super.indicateEarlyReturn(newOldEvents);
+                }
+                return;
+            }
+
+            output(true, newOldEvents);
+        }
+        else {
+            viewEventsList.add(new UniformPair<EventBean[]>(newData, oldData));
+            resultSetProcessor.processOutputLimitedView(viewEventsList, false, OutputLimitLimitType.FIRST);
+            viewEventsList.clear();
+        }
+
         int newDataLength = 0;
         int oldDataLength = 0;
         if(newData != null)
@@ -110,9 +146,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
         {
         	oldDataLength = oldData.length;
         }
-
-        // add the incoming events to the event batches
-        viewEventsList.add(new UniformPair<EventBean[]>(newData, oldData));
 
         outputCondition.updateOutputCondition(newDataLength, oldDataLength);
     }
@@ -136,6 +169,85 @@ public class OutputProcessViewPolicy extends OutputProcessView
             return;
         }
 
+        // add the incoming events to the event batches
+        if (!witnessedFirst) {
+            Set<MultiKey<EventBean>> copyNew;
+            if (newEvents != null)
+            {
+                copyNew = new LinkedHashSet<MultiKey<EventBean>>(newEvents);
+            }
+            else
+            {
+                copyNew = new LinkedHashSet<MultiKey<EventBean>>();
+            }
+
+            Set<MultiKey<EventBean>> copyOld;
+            if (oldEvents != null)
+            {
+                copyOld = new LinkedHashSet<MultiKey<EventBean>>(oldEvents);
+            }
+            else
+            {
+                copyOld = new LinkedHashSet<MultiKey<EventBean>>();
+            }
+
+            joinEventsSet.add(new UniformPair<Set<MultiKey<EventBean>>>(copyNew, copyOld));
+            boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
+
+            // Process the events and get the result
+            UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processOutputLimitedJoin(joinEventsSet, isGenerateSynthetic, OutputLimitLimitType.FIRST);
+            joinEventsSet.clear();
+
+            if (newOldEvents == null || (newOldEvents.getFirst() == null && newOldEvents.getSecond() == null)) {
+                return; // nothing to indicate
+            }
+
+            witnessedFirst = true;
+
+            if (isDistinct)
+            {
+                newOldEvents.setFirst(EventBeanUtility.getDistinctByProp(newOldEvents.getFirst(), eventBeanReader));
+                newOldEvents.setSecond(EventBeanUtility.getDistinctByProp(newOldEvents.getSecond(), eventBeanReader));
+            }
+
+            boolean isGenerateNatural = statementResultService.isMakeNatural();
+            if ((!isGenerateSynthetic) && (!isGenerateNatural))
+            {
+                if (AuditPath.isAuditEnabled) {
+                    super.indicateEarlyReturn(newOldEvents);
+                }
+                return;
+            }
+
+            output(true, newOldEvents);
+        }
+        else {
+            Set<MultiKey<EventBean>> copyNew;
+            if (newEvents != null)
+            {
+                copyNew = new LinkedHashSet<MultiKey<EventBean>>(newEvents);
+            }
+            else
+            {
+                copyNew = new LinkedHashSet<MultiKey<EventBean>>();
+            }
+
+            Set<MultiKey<EventBean>> copyOld;
+            if (oldEvents != null)
+            {
+                copyOld = new LinkedHashSet<MultiKey<EventBean>>(oldEvents);
+            }
+            else
+            {
+                copyOld = new LinkedHashSet<MultiKey<EventBean>>();
+            }
+            joinEventsSet.add(new UniformPair<Set<MultiKey<EventBean>>>(copyNew, copyOld));
+
+            // Process the events and get the result
+            resultSetProcessor.processOutputLimitedJoin(joinEventsSet, false, OutputLimitLimitType.FIRST);
+            joinEventsSet.clear();
+        }
+
         int newEventsSize = 0;
         if (newEvents != null)
         {
@@ -147,29 +259,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
         {
             oldEventsSize = oldEvents.size();
         }
-
-        // add the incoming events to the event batches
-        Set<MultiKey<EventBean>> copyNew;
-        if (newEvents != null)
-        {
-            copyNew = new LinkedHashSet<MultiKey<EventBean>>(newEvents);
-        }
-        else
-        {
-            copyNew = new LinkedHashSet<MultiKey<EventBean>>();
-        }
-
-        Set<MultiKey<EventBean>> copyOld;
-        if (oldEvents != null)
-        {
-            copyOld = new LinkedHashSet<MultiKey<EventBean>>(oldEvents);
-        }
-        else
-        {
-            copyOld = new LinkedHashSet<MultiKey<EventBean>>();
-        }
-        
-        joinEventsSet.add(new UniformPair<Set<MultiKey<EventBean>>>(copyNew, copyOld));
 
         outputCondition.updateOutputCondition(newEventsSize, oldEventsSize);
     }
@@ -187,33 +276,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
         {
             log.debug(".continueOutputProcessingView");
         }
-
-        boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
-        boolean isGenerateNatural = statementResultService.isMakeNatural();
-
-        // Process the events and get the result
-        UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processOutputLimitedView(viewEventsList, isGenerateSynthetic, outputLimitLimitType);
-
-        if (isDistinct)
-        {
-            newOldEvents.setFirst(EventBeanUtility.getDistinctByProp(newOldEvents.getFirst(), eventBeanReader));
-            newOldEvents.setSecond(EventBeanUtility.getDistinctByProp(newOldEvents.getSecond(), eventBeanReader));
-        }
-
-        if ((!isGenerateSynthetic) && (!isGenerateNatural))
-        {
-            if (AuditPath.isAuditEnabled) {
-                super.indicateEarlyReturn(newOldEvents);
-            }
-            resetEventBatches();
-            return;
-        }
-
-        if(doOutput)
-		{
-			output(forceUpdate, newOldEvents);
-		}
-		resetEventBatches();
+        witnessedFirst = false;
 	}
 
 	private void output(boolean forceUpdate, UniformPair<EventBean[]> results)
@@ -224,12 +287,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
             outputStrategy.output(forceUpdate, results, childView);
         }
 	}
-
-	private void resetEventBatches()
-	{
-		viewEventsList.clear();
-		joinEventsSet.clear();
-    }
 
 	/**
 	 * Called once the output condition has been met.
@@ -244,33 +301,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
         {
             log.debug(".continueOutputProcessingJoin");
         }
-
-        boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
-        boolean isGenerateNatural = statementResultService.isMakeNatural();
-
-        // Process the events and get the result
-        UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processOutputLimitedJoin(joinEventsSet, isGenerateSynthetic, outputLimitLimitType);
-
-        if (isDistinct)
-        {
-            newOldEvents.setFirst(EventBeanUtility.getDistinctByProp(newOldEvents.getFirst(), eventBeanReader));
-            newOldEvents.setSecond(EventBeanUtility.getDistinctByProp(newOldEvents.getSecond(), eventBeanReader));
-        }
-
-        if ((!isGenerateSynthetic) && (!isGenerateNatural))
-        {
-            if (AuditPath.isAuditEnabled) {
-                super.indicateEarlyReturn(newOldEvents);
-            }
-            resetEventBatches();
-            return;
-        }
-
-		if(doOutput)
-		{
-			output(forceUpdate, newOldEvents);
-		}
-		resetEventBatches();
+        witnessedFirst = false;
 	}
 
     private OutputCallback getCallbackToLocal(int streamCount)
@@ -283,7 +314,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
             {
                 public void continueOutputProcessing(boolean doOutput, boolean forceUpdate)
                 {
-                    OutputProcessViewPolicy.this.continueOutputProcessingView(doOutput, forceUpdate);
+                    OutputProcessViewPolicyFirst.this.continueOutputProcessingView(doOutput, forceUpdate);
                 }
             };
         }
@@ -293,7 +324,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
             {
                 public void continueOutputProcessing(boolean doOutput, boolean forceUpdate)
                 {
-                    OutputProcessViewPolicy.this.continueOutputProcessingJoin(doOutput, forceUpdate);
+                    OutputProcessViewPolicyFirst.this.continueOutputProcessingJoin(doOutput, forceUpdate);
                 }
             };
         }

@@ -51,7 +51,8 @@ public class OutputProcessViewSnapshot extends OutputProcessView
     					  OutputLimitSpec outputLimitSpec,
     					  StatementContext statementContext,
                           boolean isDistinct,
-                          boolean isGrouped)
+                          boolean isGrouped,
+                          boolean isWithHavingClause)
             throws ExprValidationException
     {
         // isDistinct handling through the iterator method
@@ -64,7 +65,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
     	}
 
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);
-    	this.outputCondition = statementContext.getOutputConditionFactory().createCondition(outputLimitSpec, statementContext, outputCallback, isGrouped);
+    	this.outputCondition = statementContext.getOutputConditionFactory().createCondition(outputLimitSpec, statementContext, outputCallback, isGrouped, isWithHavingClause);
     }
 
     /**

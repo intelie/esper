@@ -8,9 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
-import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.spec.OutputLimitSpec;
 
 /**
  * Factory for output condition instances.
@@ -28,6 +28,7 @@ public interface OutputConditionFactory
 	public OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
 										   StatementContext statementContext,
 										   OutputCallback outputCallback,
-                                           boolean isGrouped)
+                                           boolean isGrouped,
+                                           boolean isWithHavingClause)
             throws ExprValidationException;
 }

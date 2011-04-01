@@ -319,12 +319,12 @@ public class TestOutputLimitAggregateAll extends TestCase
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsert(200, 1, new Object[][] {{"IBM", 25d}});
-        expected.addResultInsert(1500, 1, new Object[][] {{"IBM", 58d}});
+        expected.addResultInsert(1500, 1, new Object[][]{{"IBM", 58d}});
         expected.addResultInsRem(3200, 0, null, null);
         expected.addResultInsert(3500, 1, new Object[][] {{"YAH", 87d}});
-        expected.addResultInsert(4300, 1, new Object[][] {{"IBM", 109d}});
-        expected.addResultRemove(5700, 0, new Object[][] {{"IBM", 87d}});
-        expected.addResultRemove(6300, 0, new Object[][] {{"MSFT", 79d}});
+        expected.addResultInsert(4300, 1, new Object[][]{{"IBM", 109d}});
+        expected.addResultRemove(5700, 0, new Object[][]{{"IBM", 87d}});
+        expected.addResultRemove(6300, 0, new Object[][]{{"MSFT", 79d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -615,7 +615,7 @@ public class TestOutputLimitAggregateAll extends TestCase
     {
         // Set the clock to 0
         currentTime = 0;
-        sendTimeEvent(0);
+        sendTimeEventRelative(0);
 
         // Create the EPL statement and add a listener
         String statementText = "select symbol, sum(volume) from " + EVENT_NAME + ".win:length(5) output first every 3 seconds";
@@ -634,7 +634,7 @@ public class TestOutputLimitAggregateAll extends TestCase
         assertFalse(updateListener.getAndClearIsInvoked());
 
         // Update time
-        sendTimeEvent(3000);
+        sendTimeEventRelative(3000);
         assertFalse(updateListener.getAndClearIsInvoked());
 
         // Send first event of the next batch, should be output.
@@ -648,7 +648,7 @@ public class TestOutputLimitAggregateAll extends TestCase
         assertFalse(updateListener.getAndClearIsInvoked());
 
         // Update time
-        sendTimeEvent(3000);
+        sendTimeEventRelative(3000);
         assertFalse(updateListener.getAndClearIsInvoked());
 
         // Send first event of third batch
@@ -656,12 +656,12 @@ public class TestOutputLimitAggregateAll extends TestCase
         assertEvent(updateListener, 101L);
 
         // Update time
-        sendTimeEvent(3000);
+        sendTimeEventRelative(3000);
         assertFalse(updateListener.getAndClearIsInvoked());
 
         // Update time: no first event this batch, so a callback
         // is made at the end of the interval
-        sendTimeEvent(3000);
+        sendTimeEventRelative(3000);
         assertTrue(updateListener.getAndClearIsInvoked());
         assertNull(updateListener.getLastNewData());
         assertNull(updateListener.getLastOldData());
@@ -774,7 +774,7 @@ public class TestOutputLimitAggregateAll extends TestCase
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("SYM1", 0, volume, null));
     }
 
-    private void sendTimeEvent(int timeIncrement){
+    private void sendTimeEventRelative(int timeIncrement){
         currentTime += timeIncrement;
         CurrentTimeEvent event = new CurrentTimeEvent(currentTime);
         epService.getEPRuntime().sendEvent(event);

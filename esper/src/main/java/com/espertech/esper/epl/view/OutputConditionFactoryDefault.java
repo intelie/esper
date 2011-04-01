@@ -35,7 +35,8 @@ public class OutputConditionFactoryDefault implements OutputConditionFactory
 	public OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
 										 	  	  StatementContext statementContext,
 										 	      OutputCallback outputCallback,
-                                                   boolean isGrouped)
+                                                   boolean isGrouped,
+                                                   boolean isWithHavingClause)
             throws ExprValidationException
     {
 		if(outputCallback ==  null)
@@ -64,7 +65,9 @@ public class OutputConditionFactoryDefault implements OutputConditionFactory
             if (isGrouped) {
                 return new OutputConditionNull(outputCallback);
             }
-			return new OutputConditionFirst(outputLimitSpec, statementContext, outputCallback, isGrouped);
+            if (!isWithHavingClause) {
+                return new OutputConditionFirst(outputLimitSpec, statementContext, outputCallback, isGrouped, isWithHavingClause);
+            }
 		}
 
         if(outputLimitSpec.getRateType() == OutputLimitRateType.CRONTAB)

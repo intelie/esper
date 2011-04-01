@@ -93,13 +93,20 @@ public class OutputProcessViewFactory
             }
             else
             {
+                boolean isWithHavingClause = statementSpec.getHavingExprRootNode() != null;
                 if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
                 {
-                    outputProcessView = new OutputProcessViewSnapshot(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct, isGrouped);
+                    outputProcessView = new OutputProcessViewSnapshot(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct, isGrouped, isWithHavingClause);
+                }
+                // For FIRST without groups we are using a special logic that integrates the first-flag, in order to still conveniently use all sorts of output conditions.
+                // FIRST with group-by is handled by setting the output condition to null (OutputConditionNull) and letting the ResultSetProcessor handle first-per-group.
+                // Without having-clause there is no required order of processing, thus also use regular policy.
+                else if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.FIRST && statementSpec.getGroupByExpressions().isEmpty() && isWithHavingClause) {
+                    outputProcessView = new OutputProcessViewPolicyFirst(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct, false, isWithHavingClause);
                 }
                 else
                 {
-                    outputProcessView = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct, isGrouped);
+                    outputProcessView = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext, isDistinct, isGrouped, isWithHavingClause);
                 }
             }
         }
