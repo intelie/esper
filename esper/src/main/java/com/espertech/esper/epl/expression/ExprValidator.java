@@ -24,6 +24,4 @@ import com.espertech.esper.schedule.TimeProvider;
 public interface ExprValidator
 {
     public void validate(ExprValidationContext validationContext) throws ExprValidationException;
-
-    public ExprEvaluator getExprEvaluator();
 }

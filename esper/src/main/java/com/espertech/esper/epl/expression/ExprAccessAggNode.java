@@ -21,7 +21,7 @@ import java.util.*;
 public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluatorEnumeration
 {
     private static final long serialVersionUID = -6088874732989061687L;
-    
+
     private final AggregationAccessType accessType;
     private final boolean isWildcard;
     private final String streamWildcard;
@@ -46,7 +46,7 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
         ExprEvaluator evaluator;
         ExprNode evaluatorIndex = null;
         boolean istreamOnly;
-        
+
         if (isWildcard) {
             if (streamTypeService.getStreamNames().length > 1) {
                 throw new ExprValidationException(getErrorPrefix() + " requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
@@ -108,7 +108,7 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
                 }
                 public Map<String, Object> getEventType() {
                     return null;
-                }                                                    
+                }
             };
             this.getChildNodes().add(0, new ExprStreamUnderlyingNode(streamWildcard, false, streamNum, resultType));
         }
@@ -121,7 +121,7 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
             if ((streams.isEmpty() || (streams.size() > 1))) {
                 throw new ExprValidationException(getErrorPrefix() + " requires that any child expressions evaluate properties of the same stream; Use 'firstever' or 'lastever' or 'nth' instead");
             }
-            streamNum = streams.iterator().next();            
+            streamNum = streams.iterator().next();
             istreamOnly = getIstreamOnly(streamTypeService, streamNum);
             if ((accessType == AggregationAccessType.WINDOW) && istreamOnly && !streamTypeService.isOnDemandStreams()) {
                 throw new ExprValidationException(getErrorPrefix() + " requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead");
@@ -154,7 +154,7 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
 
     @Override
     protected String getAggregationFunctionName() {
-        return accessType.toString().toLowerCase();  
+        return accessType.toString().toLowerCase();
     }
 
     public String toExpressionString()

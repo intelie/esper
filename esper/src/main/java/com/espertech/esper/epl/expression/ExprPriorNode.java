@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Represents the 'prior' prior event function in an expression node tree.
  */
-public class ExprPriorNode extends ExprNode implements ViewResourceCallback, ExprEvaluator
+public class ExprPriorNode extends ExprNodeBase implements ViewResourceCallback, ExprEvaluator
 {
     private Class resultType;
     private int streamNumber;

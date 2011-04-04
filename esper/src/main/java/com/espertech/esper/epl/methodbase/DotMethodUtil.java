@@ -2,6 +2,7 @@ package com.espertech.esper.epl.methodbase;
 
 import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.util.JavaClassHelper;
 

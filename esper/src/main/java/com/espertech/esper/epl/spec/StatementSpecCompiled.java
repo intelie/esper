@@ -10,6 +10,7 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.declexpr.ExprDeclaredNode;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprSubselectNode;
 
 import java.lang.annotation.Annotation;

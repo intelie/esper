@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.view;
 
+import com.espertech.esper.client.annotation.Audit;
+import com.espertech.esper.client.annotation.AuditEnum;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.spec.ViewSpec;
@@ -269,6 +271,11 @@ public class ViewServiceHelper
         {
             // Create the new view factory
             ViewFactory viewFactory = statementContext.getViewResolutionService().create(spec.getObjectNamespace(), spec.getObjectName());
+
+            Audit audit = AuditEnum.VIEW.getAudit(statementContext.getAnnotations());
+            if (audit != null) {
+                viewFactory = (ViewFactory) ViewFactoryProxy.newInstance(statementContext.getStatementName(), viewFactory, spec.getObjectName());
+            }
             factoryChain.add(viewFactory);
 
             // Set view factory parameters

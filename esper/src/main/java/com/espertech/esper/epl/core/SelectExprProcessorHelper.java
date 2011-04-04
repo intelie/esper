@@ -113,7 +113,7 @@ public class SelectExprProcessorHelper
         if (unnamedStreams.size() > 1)
         {
             throw new ExprValidationException("A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation");
-        }        
+        }
 
         if (selectedStreams.isEmpty() && selectionList.isEmpty() && !isUsingWildcard)
         {
@@ -268,7 +268,7 @@ public class SelectExprProcessorHelper
             {
                 continue;   // we do not transpose the native type for performance reasons
             }
-            
+
             FragmentEventType fragmentType = eventTypeStream.getFragmentType(propertyName);
             if ((fragmentType == null) || (fragmentType.isNative()))
             {
@@ -413,7 +413,7 @@ public class SelectExprProcessorHelper
                     selPropertyTypes.put(columnNames[count], eventTypeStream);
                     count++;
                 }
-            }            
+            }
         }
 
         // Handle stream selection

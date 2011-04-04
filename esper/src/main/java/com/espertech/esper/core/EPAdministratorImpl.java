@@ -232,7 +232,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
     public EvalNode compilePatternToNode(String pattern) throws EPException
     {
         StatementSpecRaw raw = EPAdministratorHelper.compilePattern(pattern, pattern, false, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
-        return ((PatternStreamSpecRaw) raw.getStreamSpecs().get(0)).getEvalNode();    
+        return ((PatternStreamSpecRaw) raw.getStreamSpecs().get(0)).getEvalNode();
     }
 
     public ExprNode compileExpression(String expression) throws EPException

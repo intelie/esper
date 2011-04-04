@@ -43,7 +43,7 @@ public class FilterExprAnalyzer
         }
         else if (topNode instanceof ExprBetweenNode) {
             ExprBetweenNode betweenNode = (ExprBetweenNode) topNode;
-            analyzeBetweenNode(betweenNode, queryGraph);            
+            analyzeBetweenNode(betweenNode, queryGraph);
         }
         else if (topNode instanceof ExprRelationalOpNode) {
             ExprRelationalOpNode relNode = (ExprRelationalOpNode) topNode;

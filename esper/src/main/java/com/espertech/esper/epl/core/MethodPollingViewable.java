@@ -115,7 +115,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
         ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, annotations);
         for (ExprNode exprNode : inputParameters)
         {
-            ExprNode validated = exprNode.getValidatedSubtree(validationContext);
+            ExprNode validated = ExprNodeUtil.getValidatedSubtree(exprNode, validationContext);
             ExprEvaluator evaluator = validated.getExprEvaluator();
             validatedExprNodes[count] = evaluator;
             paramTypes[count] = evaluator.getType();
@@ -195,7 +195,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
                         pollExecStrategy.start();
                         strategyStarted = true;
                     }
-                    
+
                     // Poll using the polling execution strategy and lookup values
                     List<EventBean> pollResult = pollExecStrategy.poll(lookupValues);
 

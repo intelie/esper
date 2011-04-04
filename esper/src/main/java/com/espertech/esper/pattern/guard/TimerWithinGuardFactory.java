@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.guard;
 
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;

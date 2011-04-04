@@ -104,7 +104,7 @@ public abstract class ViewFactorySupport implements ViewFactory
         {
             ExprNode validated = validateExpr(statementContext, expr, streamTypeService, expressionNumber);
             results.add(validated);
-            
+
             if ((!allowConstantResult) && (validated.isConstantResult()))
             {
                 String message = "Invalid view parameter expression " + expressionNumber + ", the expression returns a constant result value, are you sure?";
@@ -186,7 +186,7 @@ public abstract class ViewFactorySupport implements ViewFactory
         {
             ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, statementContext.getMethodResolutionService(),
                     null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
-            validated = expression.getValidatedSubtree(validationContext);
+            validated = ExprNodeUtil.getValidatedSubtree(expression, validationContext);
         }
         catch (ExprValidationException ex)
         {

@@ -105,7 +105,7 @@ public class PropertyEvaluatorFactory
                 Arrays.fill(isIStreamOnly, true);
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(whereTypes, whereStreamNames, isIStreamOnly, engineURI, false);
                 ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, methodResolutionService, null, timeProvider, variableService, validateContext, eventAdapterService, statementName, annotations);
-                whereClauses[i] = atom.getOptionalWhereClause().getValidatedSubtree(validationContext).getExprEvaluator();
+                whereClauses[i] = ExprNodeUtil.getValidatedSubtree(atom.getOptionalWhereClause(), validationContext).getExprEvaluator();
             }
 
             // validate select clause
@@ -135,7 +135,7 @@ public class PropertyEvaluatorFactory
                     else if (raw instanceof SelectClauseExprRawSpec)
                     {
                         SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                        ExprNode exprCompiled = exprSpec.getSelectExpression().getValidatedSubtree(validationContext);
+                        ExprNode exprCompiled = ExprNodeUtil.getValidatedSubtree(exprSpec.getSelectExpression(), validationContext);
                         String resultName = exprSpec.getOptionalAsName();
                         if (resultName == null)
                         {
@@ -168,7 +168,7 @@ public class PropertyEvaluatorFactory
                         throw new IllegalStateException("Unknown select clause item:" + raw);
                     }
                 }
-            }            
+            }
 
             currentEventType = fragmentEventType.getFragmentType();
             types[i] = fragmentEventType;

@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Represents the 'prev' previous event function in an expression node tree.
  */
-public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, ExprEvaluator, ExprEvaluatorEnumeration
+public class ExprPreviousNode extends ExprNodeBase implements ViewResourceCallback, ExprEvaluator, ExprEvaluatorEnumeration
 {
     private static final long serialVersionUID = 0L;
 
@@ -77,7 +77,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
             this.getChildNodes().add(second);
             this.getChildNodes().add(first);
         }
-        
+
         // Determine if the index is a constant value or an expression to evaluate
         if (this.getChildNodes().get(0).isConstantResult())
         {

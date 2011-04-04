@@ -10,7 +10,6 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
 
-import java.util.List;
 import java.io.Serializable;
 
 /**

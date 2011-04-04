@@ -9,7 +9,7 @@ import com.espertech.esper.util.TypeWidener;
 /**
  * Pre-Processing entry for routing an event internally.
  */
-public class InternalEventRouterEntry 
+public class InternalEventRouterEntry
 {
     private final int priority;
     private final boolean isDrop;

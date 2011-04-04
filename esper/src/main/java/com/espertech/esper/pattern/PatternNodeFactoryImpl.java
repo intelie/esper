@@ -1,6 +1,7 @@
 package com.espertech.esper.pattern;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.spec.FilterSpecRaw;
 import com.espertech.esper.epl.spec.PatternGuardSpec;
 import com.espertech.esper.epl.spec.PatternObserverSpec;

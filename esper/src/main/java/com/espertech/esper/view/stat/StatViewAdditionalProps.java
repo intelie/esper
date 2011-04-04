@@ -64,5 +64,5 @@ public class StatViewAdditionalProps
             }
             target.put(name, addProps.getAdditionalExpr()[i].getType());
         }
-    }    
+    }
 }

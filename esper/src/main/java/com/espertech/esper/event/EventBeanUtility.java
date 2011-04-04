@@ -653,4 +653,29 @@ public class EventBeanUtility
         }
         return true;
     }
+
+    public static String summarize(EventBean[] events) {
+        if (events == null) {
+            return "(null)";
+        }
+        if (events.length == 0) {
+            return "(empty)";
+        }
+        StringWriter writer = new StringWriter();
+        String delimiter = "";
+        for (int i = 0; i < events.length; i++) {
+            writer.write(delimiter);
+            writer.write("event ");
+            writer.write(Integer.toString(i));
+            writer.write(":");
+            if (events[i] == null) {
+                writer.write("null");
+            }
+            else {
+                writer.write(events[i].getUnderlying().toString());
+            }
+            delimiter = ", ";
+        }
+        return writer.toString();
+    }
 }

@@ -267,7 +267,7 @@ public class NamedWindowRootView extends ViewSupport
             indexRepository.removeTableReference(table);
         }
     }
-    
+
     private Pair<IndexKeyInfo, EventTable> findCreateIndex(SubordPropPlan joinDesc) {
 
         // hash property names and types
@@ -363,10 +363,10 @@ public class NamedWindowRootView extends ViewSupport
         if (accessDesc == null) {
             return null;
         }
-        
+
         IndexKeyInfo indexKeyInfo = accessDesc.getFirst();
         EventTable eventTable = accessDesc.getSecond();
-        
+
         List<SubordPropHashKey> hashKeys = indexKeyInfo.getOrderedHashProperties();
         CoercionDesc hashKeyCoercionTypes = indexKeyInfo.getOrderedKeyCoercionTypes();
         List<SubordPropRangeKey> rangeKeys = indexKeyInfo.getOrderedRangeDesc();
@@ -390,7 +390,7 @@ public class NamedWindowRootView extends ViewSupport
 
         return new Pair<SubordTableLookupStrategy,EventTable>(lookupStrategy, eventTable);
     }
-    
+
     private Pair<NamedWindowLookupStrategy,EventTable> getStrategyPair(ExprNode joinExpr, EventType filterEventType)
     {
         EventType[] allStreamsZeroIndexed = new EventType[] {namedWindowEventType, filterEventType};
@@ -405,7 +405,7 @@ public class NamedWindowRootView extends ViewSupport
 
         // Here the stream offset is 1 as the named window lookup provides the arriving event in stream 1
         Pair<SubordTableLookupStrategy,EventTable> lookupPair = getSubqueryStrategyPair(outerStreams, joinedPropPlan, true, false);
-        
+
         if (lookupPair == null) {
             return new Pair<NamedWindowLookupStrategy,EventTable>(new NamedWindowLookupStrategyTableScan(joinExpr.getExprEvaluator(), dataWindowContents), null);
         }
@@ -648,7 +648,7 @@ public class NamedWindowRootView extends ViewSupport
             }
             return new SubordFullTableScanLookupStrategyLocking(dataWindowContents, statementResourceLock);
         }
-        
+
         SubordIndexedTableLookupStrategyLocking locking = new SubordIndexedTableLookupStrategyLocking(strategyTablePair.getFirst(), statementResourceLock);
         tablePerSingleLookup.put(locking, strategyTablePair.getSecond());
 

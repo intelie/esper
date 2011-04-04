@@ -9,12 +9,6 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleNumberCoercer;
@@ -26,7 +20,7 @@ import java.util.*;
 /**
  * Represents the in-clause (set check) function in an expression tree.
  */
-public class ExprInNode extends ExprNode implements ExprEvaluator
+public class ExprInNode extends ExprNodeBase implements ExprEvaluator
 {
     private final boolean isNotIn;
 
@@ -51,7 +45,7 @@ public class ExprInNode extends ExprNode implements ExprEvaluator
     {
         return this;
     }
-    
+
     /**
      * Returns true for not-in, false for regular in
      * @return false for "val in (a,b,c)" or true for "val not in (a,b,c)"
@@ -306,7 +300,7 @@ public class ExprInNode extends ExprNode implements ExprEvaluator
     public boolean isConstantResult()
     {
         return false;
-    }        
+    }
 
     public boolean equalsNode(ExprNode node_)
     {

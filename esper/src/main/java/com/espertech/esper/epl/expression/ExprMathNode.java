@@ -8,13 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -24,7 +18,7 @@ import java.util.Map;
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
  */
-public class ExprMathNode extends ExprNode implements ExprEvaluator
+public class ExprMathNode extends ExprNodeBase implements ExprEvaluator
 {
     private final MathArithTypeEnum mathArithTypeEnum;
     private final boolean isIntegerDivision;
@@ -93,7 +87,7 @@ public class ExprMathNode extends ExprNode implements ExprEvaluator
             if (resultType != BigDecimal.class)
             {
                 resultType = Double.class;
-            }            
+            }
         }
 
         arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType, childTypeOne, childTypeTwo, isIntegerDivision, isDivisionByZeroReturnsNull);
@@ -108,7 +102,7 @@ public class ExprMathNode extends ExprNode implements ExprEvaluator
     {
         return false;
     }
-    
+
     public Map<String, Object> getEventType() {
         return null;
     }

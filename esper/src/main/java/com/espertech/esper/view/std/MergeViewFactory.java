@@ -11,6 +11,7 @@ package com.espertech.esper.view.std;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.*;
@@ -23,7 +24,7 @@ import java.util.HashMap;
  * Factory for {@link MergeView} instances.
  */
 public class MergeViewFactory implements ViewFactory
-{  
+{
     private List<ExprNode> viewParameters;
 
     private ExprNode[] criteriaExpressions;
@@ -56,7 +57,7 @@ public class MergeViewFactory implements ViewFactory
         {
             throw new ViewParameterException("Group by view for this merge view could not be found among parent views");
         }
-        criteriaExpressions = groupByViewFactory.getCriteriaExpressions(); 
+        criteriaExpressions = groupByViewFactory.getCriteriaExpressions();
 
         // determine types of fields
         Class[] fieldTypes = new Class[criteriaExpressions.length];

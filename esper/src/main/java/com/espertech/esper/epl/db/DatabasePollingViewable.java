@@ -115,7 +115,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
             if (raw == null) {
                 throw new ExprValidationException("Internal error find expression for historical stream parameter " + count + " stream " + myStreamNumber);
             }
-            ExprNode evaluator = raw.getValidatedSubtree(validationContext);
+            ExprNode evaluator = ExprNodeUtil.getValidatedSubtree(raw, validationContext);
             evaluators[count++] = evaluator.getExprEvaluator();
 
             ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();

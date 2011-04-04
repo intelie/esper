@@ -7,7 +7,6 @@ import com.espertech.esper.client.soda.PatternExpr;
 import com.espertech.esper.client.soda.AnnotationPart;
 import com.espertech.esper.client.soda.MatchRecognizeRegEx;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.spec.PatternStreamSpecRaw;
 import com.espertech.esper.pattern.EvalNode;
 
 /**

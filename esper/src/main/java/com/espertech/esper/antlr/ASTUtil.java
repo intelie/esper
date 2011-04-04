@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.antlr;
 
+import com.espertech.esper.epl.expression.ExprNode;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.Tree;
@@ -109,7 +110,7 @@ public class ASTUtil
                 String text = t.getText();
                 if (text.trim().length() == 0)
                 {
-                    printer.print("'" + text + "'");                    
+                    printer.print("'" + text + "'");
                 }
                 else
                 {

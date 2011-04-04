@@ -8,20 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
 /**
  * Represents a constant in an expressiun tree.
  */
-public class ExprConstantNode extends ExprNode implements ExprEvaluator
+public class ExprConstantNode extends ExprNodeBase implements ExprEvaluator
 {
     private Object value;
     private final Class clazz;
@@ -41,7 +35,7 @@ public class ExprConstantNode extends ExprNode implements ExprEvaluator
         else
         {
             clazz = value.getClass();
-        }        
+        }
     }
 
     /**

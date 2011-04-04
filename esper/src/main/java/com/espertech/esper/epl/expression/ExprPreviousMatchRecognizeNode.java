@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Represents the 'prev' previous event function in match-recognize "define" item.
  */
-public class ExprPreviousMatchRecognizeNode extends ExprNode implements ExprEvaluator
+public class ExprPreviousMatchRecognizeNode extends ExprNodeBase implements ExprEvaluator
 {
     private static final long serialVersionUID = 0L;
 
@@ -73,7 +73,7 @@ public class ExprPreviousMatchRecognizeNode extends ExprNode implements ExprEval
         {
             ExprNode constantNode = this.getChildNodes().get(1);
             Object value = constantNode.getExprEvaluator().evaluate(null, false, null);
-            constantIndexNumber = ((Number) value).intValue();            
+            constantIndexNumber = ((Number) value).intValue();
         }
         return constantIndexNumber;
     }

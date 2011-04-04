@@ -10,6 +10,7 @@ package com.espertech.esper.view.window;
 
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;

@@ -8,6 +8,7 @@ import com.espertech.esper.client.hook.VirtualDataWindowFactory;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.event.EventAdapterServiceHelper;
 import com.espertech.esper.util.JavaClassHelper;
@@ -26,7 +27,7 @@ public class VirtualDWViewFactory implements ViewFactory, DataWindowViewFactory 
             throw new ViewProcessingException("Virtual data window factory class " + first.getName() + " does not implement the interface " + VirtualDataWindowFactory.class.getName());
         }
         this.namedWindowName = namedWindowName;
-        virtualDataWindowFactory = (VirtualDataWindowFactory) JavaClassHelper.instantiate(VirtualDataWindowFactory.class, first.getName());        
+        virtualDataWindowFactory = (VirtualDataWindowFactory) JavaClassHelper.instantiate(VirtualDataWindowFactory.class, first.getName());
     }
 
     public void setViewParameters(ViewFactoryContext context, List<ExprNode> viewParameters) throws ViewParameterException {

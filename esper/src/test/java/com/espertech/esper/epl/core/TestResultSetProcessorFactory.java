@@ -3,6 +3,7 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprIdentNode;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
@@ -173,7 +174,7 @@ public class TestResultSetProcessorFactory extends TestCase
     {
         return new StatementSpecCompiled(null, // on trigger
                 null,  // create win
-                null,  // create index 
+                null,  // create index
                 null,  // create var
                 null,  // create schema
                 insertIntoDesc,

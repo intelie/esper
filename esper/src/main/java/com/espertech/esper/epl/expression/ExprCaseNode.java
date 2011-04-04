@@ -9,14 +9,8 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.map.MapEventType;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleNumberCoercerFactory;
@@ -30,7 +24,7 @@ import java.util.Map;
 /**
  * Represents the case-when-then-else control flow function is an expression tree.
  */
-public class ExprCaseNode extends ExprNode implements ExprEvaluator
+public class ExprCaseNode extends ExprNodeBase implements ExprEvaluator
 {
     private static final long serialVersionUID = 792538321520346459L;
 

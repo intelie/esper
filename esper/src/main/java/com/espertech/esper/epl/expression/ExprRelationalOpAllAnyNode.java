@@ -1,12 +1,6 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.RelationalOpEnum;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
@@ -20,7 +14,7 @@ import java.util.Map;
 /**
  * Represents a lesser or greater then (</<=/>/>=) expression in a filter expression tree.
  */
-public class ExprRelationalOpAllAnyNode extends ExprNode implements ExprEvaluator
+public class ExprRelationalOpAllAnyNode extends ExprNodeBase implements ExprEvaluator
 {
     private final RelationalOpEnum relationalOpEnum;
     private final boolean isAll;
@@ -412,7 +406,7 @@ public class ExprRelationalOpAllAnyNode extends ExprNode implements ExprEvaluato
 
         buffer.append("(");
         String delimiter = "";
-        
+
         for (int i = 0; i < this.getChildNodes().size()-1; i++)
         {
             buffer.append(delimiter);

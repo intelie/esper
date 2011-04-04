@@ -2,6 +2,7 @@ package com.espertech.esper.rowregex;
 
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -288,7 +289,7 @@ public class EventRowRegexHelper
             }
 
             return new RegexNFAStrand(Collections.singletonList(nextState), Collections.singletonList(nextState),
-                    Collections.singletonList(nextState), atom.getType().isOptional());            
+                    Collections.singletonList(nextState), atom.getType().isOptional());
         }
     }
 

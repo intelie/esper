@@ -8,20 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
 /**
  * Represents the CURRENT_TIMESTAMP() function or reserved keyword in an expression tree.
  */
-public class ExprTimestampNode extends ExprNode implements ExprEvaluator
+public class ExprTimestampNode extends ExprNodeBase implements ExprEvaluator
 {
     private static final long serialVersionUID = -6332243334897136751L;
 

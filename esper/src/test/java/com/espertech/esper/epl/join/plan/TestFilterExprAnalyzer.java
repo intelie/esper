@@ -12,7 +12,6 @@ public class TestFilterExprAnalyzer extends TestCase
     {
         // s0.intPrimitive = s1.intBoxed
         ExprEqualsNode equalsNode = SupportExprNodeFactory.makeEqualsNode();
-        equalsNode.dumpDebug("node...");
 
         QueryGraph graph = new QueryGraph(2);
         FilterExprAnalyzer.analyzeEqualsNode(equalsNode, graph, false);
@@ -27,7 +26,6 @@ public class TestFilterExprAnalyzer extends TestCase
     public void testAnalyzeAnd() throws Exception
     {
         ExprAndNode andNode = SupportExprNodeFactory.make2SubNodeAnd();
-        andNode.dumpDebug("node...");
 
         QueryGraph graph = new QueryGraph(2);
         FilterExprAnalyzer.analyzeAndNode(andNode, graph, false);

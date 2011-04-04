@@ -373,7 +373,7 @@ public class AggregationServiceFactory
             }
             public Map<String, Object> getEventType() {
                 return null;
-            }                                                
+            }
         };
     }
 

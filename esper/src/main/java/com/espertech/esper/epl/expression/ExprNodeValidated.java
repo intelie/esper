@@ -1,19 +1,13 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
 /**
  * A placeholder for another expression node that has been validated already.
  */
-public class ExprNodeValidated extends ExprNode implements ExprEvaluator
+public class ExprNodeValidated extends ExprNodeBase implements ExprEvaluator
 {
     private final ExprNode inner;
     private static final long serialVersionUID = 301058622892268624L;

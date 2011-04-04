@@ -8,22 +8,16 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
 /**
  * Represents the COALESCE(a,b,...) function is an expression tree.
  */
-public class ExprCoalesceNode extends ExprNode implements ExprEvaluator
+public class ExprCoalesceNode extends ExprNodeBase implements ExprEvaluator
 {
     private Class resultType;
     private boolean[] isNumericCoercion;
@@ -82,7 +76,7 @@ public class ExprCoalesceNode extends ExprNode implements ExprEvaluator
     public boolean isConstantResult()
     {
         return false;
-    }    
+    }
 
     public Class getType()
     {

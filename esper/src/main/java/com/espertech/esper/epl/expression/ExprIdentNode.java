@@ -14,11 +14,10 @@ import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.client.annotation.Audit;
 import com.espertech.esper.client.annotation.AuditEnum;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.core.*;
+import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.core.StreamTypesException;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.LevenshteinDistance;
 
 import java.util.Map;
@@ -26,7 +25,7 @@ import java.util.Map;
 /**
  * Represents an stream property identifier in a filter expressiun tree.
  */
-public class ExprIdentNode extends ExprNode
+public class ExprIdentNode extends ExprNodeBase
 {
     private static final long serialVersionUID = 5882493771230745244L;
 

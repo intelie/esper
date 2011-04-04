@@ -32,7 +32,7 @@ import java.util.TreeMap;
  * Concrete subclasses must supply an aggregation state prototype node {@link AggregationMethod} that reflects
  * each group's (there may be group-by critera) current aggregation state.
  */
-public abstract class ExprAggregateNode extends ExprNode implements ExprEvaluator
+public abstract class ExprAggregateNode extends ExprNodeBase implements ExprEvaluator
 {
 	protected transient AggregationResultFuture aggregationResultFuture;
 	protected int column;
@@ -91,7 +91,7 @@ public abstract class ExprAggregateNode extends ExprNode implements ExprEvaluato
     public Map<String, Object> getEventType() {
         return null;
     }
-    
+
     public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         aggregationMethodFactory = validateAggregationChild(validationContext.getStreamTypeService(), validationContext.getMethodResolutionService(), validationContext.getExprEvaluatorContext());

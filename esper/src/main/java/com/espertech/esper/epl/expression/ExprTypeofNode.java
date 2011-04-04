@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Represents the TYPEOF(a) function is an expression tree.
  */
-public class ExprTypeofNode extends ExprNode
+public class ExprTypeofNode extends ExprNodeBase
 {
     private static final long serialVersionUID = -612634538694877204L;
     private transient ExprEvaluator evaluator;
@@ -49,7 +49,7 @@ public class ExprTypeofNode extends ExprNode
         if (this.getChildNodes().get(0) instanceof ExprStreamUnderlyingNode) {
             ExprStreamUnderlyingNode stream = (ExprStreamUnderlyingNode) getChildNodes().get(0);
             evaluator = new StreamEventTypeEval(stream.getStreamId());
-            return;            
+            return;
         }
 
         if (this.getChildNodes().get(0) instanceof ExprIdentNode) {
@@ -90,7 +90,7 @@ public class ExprTypeofNode extends ExprNode
             getter.getFragment()
 
         }
-        
+
 
     }
         */

@@ -10,6 +10,7 @@ package com.espertech.esper.pattern.observer;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.pattern.EvalStateNodeNumber;
 import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.pattern.MatchedEventMap;
@@ -55,7 +56,7 @@ public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefIte
         {
             throw new ObserverParameterException(errorMessage);
         }
-        
+
         parameter = params.get(0);
         this.convertor = convertor;
     }

@@ -13,7 +13,7 @@ public class ReformatOpFactory implements OpFactory {
     private static ReformatOp ToCal = new ReformatOpToCalendar();
     private static ReformatOp ToMsec = new ReformatOpToMillisec();
     private static ReformatOp ToDate = new ReformatOpToDate();
-    
+
     public ReformatOp getOp(DatetimeMethodEnum method, String methodNameUsed, ExprNode first) throws ExprValidationException {
         if (method == DatetimeMethodEnum.GET) {
             CalendarFieldEnum fieldNum = CalendarOpUtil.getEnum(methodNameUsed, first);

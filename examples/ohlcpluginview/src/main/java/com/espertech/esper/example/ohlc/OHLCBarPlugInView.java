@@ -191,7 +191,7 @@ public class OHLCBarPlugInView extends ViewSupport implements CloneableView
         }
         else
         {
-            this.updateChildren(new EventBean[] {outgoing}, new EventBean[] {lastEvent});            
+            this.updateChildren(new EventBean[] {outgoing}, new EventBean[] {lastEvent});
         }
         lastEvent = outgoing;
 

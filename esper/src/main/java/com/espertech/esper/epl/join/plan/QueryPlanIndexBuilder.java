@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.lookup.SubordPropHashKey;
 import com.espertech.esper.epl.lookup.SubordPropPlan;
 import com.espertech.esper.epl.lookup.SubordPropRangeKey;

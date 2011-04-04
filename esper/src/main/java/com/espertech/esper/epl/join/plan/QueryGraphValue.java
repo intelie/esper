@@ -52,7 +52,7 @@ public class QueryGraphValue
         if (value instanceof QueryGraphValueEntryHashKeyedProp) {
             return false;   // second comparison, ignore
         }
-        
+
         entries.put(indexProperty, new QueryGraphValueEntryHashKeyedProp(keyPropNode, keyProperty));
         return true;
     }

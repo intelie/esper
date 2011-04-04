@@ -8,20 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 
 /**
  * Represents a substitution value to be substituted in an expression tree, not valid for any purpose of use
  * as an expression, however can take a place in an expression tree.
  */
-public class ExprSubstitutionNode extends ExprNode
+public class ExprSubstitutionNode extends ExprNodeBase
 {
     private static final String ERROR_MSG = "Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters";
     private int index;

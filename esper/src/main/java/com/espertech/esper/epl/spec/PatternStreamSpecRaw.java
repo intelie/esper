@@ -290,7 +290,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
             String message = "Match-until bounds value expressions must return a numeric value";
             if (matchUntilNode.getLowerBounds() != null) {
-                ExprNode validated = matchUntilNode.getLowerBounds().getValidatedSubtree(validationContext);
+                ExprNode validated = ExprNodeUtil.getValidatedSubtree(matchUntilNode.getLowerBounds(), validationContext);
                 matchUntilNode.setLowerBounds(validated);
                 if ((validated.getExprEvaluator().getType() == null) || (!JavaClassHelper.isNumeric(validated.getExprEvaluator().getType()))) {
                     throw new ExprValidationException(message);
@@ -298,7 +298,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             }
 
             if (matchUntilNode.getUpperBounds() != null) {
-                ExprNode validated = matchUntilNode.getUpperBounds().getValidatedSubtree(validationContext);
+                ExprNode validated = ExprNodeUtil.getValidatedSubtree(matchUntilNode.getUpperBounds(), validationContext);
                 matchUntilNode.setUpperBounds(validated);
                 if ((validated.getExprEvaluator().getType() == null) || (!JavaClassHelper.isNumeric(validated.getExprEvaluator().getType()))) {
                     throw new ExprValidationException(message);
@@ -359,7 +359,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                             throw new ExprValidationException(errorMessage);
                         }
 
-                        ExprNode validatedExpr = maxExpr.getValidatedSubtree(validationContext);
+                        ExprNode validatedExpr = ExprNodeUtil.getValidatedSubtree(maxExpr, validationContext);
                         validated.add(validatedExpr);
                         if ((validatedExpr.getExprEvaluator().getType() == null) || (!JavaClassHelper.isNumeric(validatedExpr.getExprEvaluator().getType()))) {
                             String message = "Invalid maximum expression in followed-by, the expression must return an integer value";
@@ -391,7 +391,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         List<ExprNode> validated = new ArrayList<ExprNode>();
         for (ExprNode node : objectParameters)
         {
-            validated.add(node.getValidatedSubtree(validationContext));
+            validated.add(ExprNodeUtil.getValidatedSubtree(node, validationContext));
         }
         return validated;
     }

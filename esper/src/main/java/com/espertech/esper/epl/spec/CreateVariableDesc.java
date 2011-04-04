@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.util.MetaDefItem;
 
 import java.io.Serializable;
 

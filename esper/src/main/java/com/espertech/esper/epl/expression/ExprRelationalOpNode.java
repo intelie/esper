@@ -9,21 +9,15 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.type.RelationalOpEnum;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
 /**
  * Represents a lesser or greater then (</<=/>/>=) expression in a filter expression tree.
  */
-public class ExprRelationalOpNode extends ExprNode implements ExprEvaluator
+public class ExprRelationalOpNode extends ExprNodeBase implements ExprEvaluator
 {
     private final RelationalOpEnum relationalOpEnum;
     private transient RelationalOpEnum.Computer computer;
@@ -108,7 +102,7 @@ public class ExprRelationalOpNode extends ExprNode implements ExprEvaluator
         {
             return null;
         }
-        
+
         Object valueRight = evaluators[1].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (valueRight == null)
         {

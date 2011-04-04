@@ -16,7 +16,12 @@ public enum AuditEnum
     /**
      * For use with expression audit.
      */
-    EXPR("EXPR", false, false)
+    EXPR("EXPR", false, false),
+
+    /**
+     * For use with view audit.
+     */
+    VIEW("VIEW", false, false)
     ;
 
     private final String value;

@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view.std;
 
+import com.espertech.esper.epl.expression.ExprNode;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -19,7 +20,6 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.IterablesListIterator;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.epl.expression.ExprNode;
 
 /**
  * The merge view works together with a group view that splits the data in a stream to multiple subviews, based on

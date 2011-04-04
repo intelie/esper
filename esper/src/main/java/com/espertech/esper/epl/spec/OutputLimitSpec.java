@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.util.MetaDefItem;
 
@@ -25,7 +26,7 @@ public class OutputLimitSpec implements MetaDefItem, Serializable
     private final Double rate;
     private final String variableName;
     private ExprNode whenExpressionNode;
-    private final List<OnTriggerSetAssignment> thenExpressions;    
+    private final List<OnTriggerSetAssignment> thenExpressions;
     private final List<ExprNode> crontabAtSchedule;
     private final ExprTimePeriod timePeriodExpr;
     private final ExprTimePeriod afterTimePeriodExpr;

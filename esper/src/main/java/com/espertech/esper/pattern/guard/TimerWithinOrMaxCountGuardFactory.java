@@ -2,6 +2,7 @@ package com.espertech.esper.pattern.guard;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;
@@ -12,7 +13,7 @@ import java.util.List;
 public class TimerWithinOrMaxCountGuardFactory implements GuardFactory, MetaDefItem, Serializable
 {
     private static final long serialVersionUID = 6650243610865501435L;
-    
+
     /**
      * Number of milliseconds.
      */

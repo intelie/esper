@@ -10,6 +10,7 @@ package com.espertech.esper.pattern.observer;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.schedule.ScheduleParameterException;
 import com.espertech.esper.schedule.ScheduleSpec;

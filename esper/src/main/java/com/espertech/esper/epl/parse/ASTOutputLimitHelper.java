@@ -114,7 +114,7 @@ public class ASTOutputLimitHelper
 
                 try {
                     ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
-                    timePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(validationContext);
+                    timePeriodExpr = (ExprTimePeriod) ExprNodeUtil.getValidatedSubtree(expression, validationContext);
                 }
                 catch (ExprValidationException ex)
                 {
@@ -139,7 +139,7 @@ public class ASTOutputLimitHelper
                 {
                     try {
                         ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
-                        afterTimePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(validationContext);
+                        afterTimePeriodExpr = (ExprTimePeriod) ExprNodeUtil.getValidatedSubtree(expression, validationContext);
                     }
                     catch (ExprValidationException ex)
                     {
@@ -222,7 +222,7 @@ public class ASTOutputLimitHelper
             offsetInt = (Integer) offset;
         }
 
-        return new RowLimitSpec(numRowsInt, offsetInt, numRowsVariable, offsetVariable);        
+        return new RowLimitSpec(numRowsInt, offsetInt, numRowsVariable, offsetVariable);
     }
 
     private static Object parseNumOrVariableIdent(Tree child)

@@ -23,7 +23,7 @@ import java.util.List;
 public class TestSelectExprProcessorFactory extends TestCase
 {
     private List<SelectClauseStreamCompiledSpec> listOfStreamsSelected = new ArrayList<SelectClauseStreamCompiledSpec>();
-    private StatementResultService statementResultService = new StatementResultServiceImpl(null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading())); 
+    private StatementResultService statementResultService = new StatementResultServiceImpl(null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading()));
     private SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
 
     public void testGetProcessorInvalid() throws Exception

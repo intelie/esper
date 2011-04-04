@@ -1,13 +1,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.datetime.TimePeriod;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +16,7 @@ import java.util.Map;
  * <p>
  * Child nodes to this expression carry the actual parts and must return a numeric value.
  */
-public class ExprTimePeriod extends ExprNode implements ExprEvaluator
+public class ExprTimePeriod extends ExprNodeBase implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprTimePeriod.class);
 
@@ -282,7 +276,7 @@ public class ExprTimePeriod extends ExprNode implements ExprEvaluator
         }
         return buf.toString();
     }
-    
+
     public boolean equalsNode(ExprNode node)
     {
         if (!(node instanceof ExprTimePeriod))

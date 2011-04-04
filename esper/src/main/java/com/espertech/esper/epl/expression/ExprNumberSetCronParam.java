@@ -2,11 +2,6 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.CronOperatorEnum;
 import com.espertech.esper.type.CronParameter;
@@ -21,7 +16,7 @@ import java.util.Map;
  * <p>
  * May have one subnode depending on the cron parameter type.
  */
-public class ExprNumberSetCronParam extends ExprNode implements ExprEvaluator
+public class ExprNumberSetCronParam extends ExprNodeBase implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetCronParam.class);
 
@@ -59,7 +54,7 @@ public class ExprNumberSetCronParam extends ExprNode implements ExprEvaluator
         {
             return cronOperator.getSyntax();
         }
-        return this.getChildNodes().get(0).toExpressionString() + " " + cronOperator.getSyntax(); 
+        return this.getChildNodes().get(0).toExpressionString() + " " + cronOperator.getSyntax();
     }
 
     public boolean isConstantResult()
@@ -82,7 +77,7 @@ public class ExprNumberSetCronParam extends ExprNode implements ExprEvaluator
             return false;
         }
         ExprNumberSetCronParam other = (ExprNumberSetCronParam) node;
-        return other.cronOperator.equals(this.cronOperator); 
+        return other.cronOperator.equals(this.cronOperator);
     }
 
     public void validate(ExprValidationContext validationContext) throws ExprValidationException

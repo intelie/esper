@@ -1208,7 +1208,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
     private void leaveLastNumberSetOperator(Tree node)
     {
-        log.debug(".leaveLastNumberSetOperator");        
+        log.debug(".leaveLastNumberSetOperator");
         ExprNumberSetCronParam exprNode = new ExprNumberSetCronParam(CronOperatorEnum.LASTDAY);
         astExprNodeMap.put(node, exprNode);
     }
@@ -1527,7 +1527,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         log.debug(".leaveView");
         String objectNamespace = node.getChild(0).getText();
         String objectName = node.getChild(1).getText();
-        List<ExprNode> viewParameters = getExprNodes(node, 2); 
+        List<ExprNode> viewParameters = getExprNodes(node, 2);
         viewSpecs.add(new ViewSpec(objectNamespace, objectName, viewParameters));
     }
 
@@ -1559,7 +1559,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveMatchRecognizePatternAtom(Tree node) throws ASTWalkException
     {
         log.debug(".leaveMatchRecognizePatternAtom");
-        
+
         String first = node.getChild(0).getText();
         RegexNFATypeEnum type = RegexNFATypeEnum.SINGLE;
         if (node.getChildCount() > 2)
@@ -1667,7 +1667,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 ExprTimePeriod timePeriodExpr;
                 try {
                     ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
-                    timePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(validationContext);
+                    timePeriodExpr = (ExprTimePeriod) ExprNodeUtil.getValidatedSubtree(expression, validationContext);
                 }
                 catch (ExprValidationException ex)
                 {
@@ -1792,7 +1792,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     if (expression.toUpperCase().equals(DatabasePollingViewableFactory.SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
                         continue;
                     }
-                    
+
                     if (expression.trim().length() == 0) {
                         throw new ASTWalkException("Missing expression within ${...} in SQL statement");
                     }
@@ -1807,7 +1807,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     if (raw.isHasVariables()) {
                         statementSpec.setHasVariables(true);
                     }
-                    
+
                     // add expression
                     if (statementSpec.getSqlParameters() == null) {
                         statementSpec.setSqlParameters(new HashMap<Integer, List<ExprNode>>());
@@ -2109,7 +2109,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         {
             StatementSpecRaw currentSpec = popStacks();
             ExprSubselectAllSomeAnyNode subselectNode = new ExprSubselectAllSomeAnyNode(currentSpec, isNot, isAll, null);
-            astExprNodeMap.put(node, subselectNode);               
+            astExprNodeMap.put(node, subselectNode);
         }
         else
         {
@@ -2353,7 +2353,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         {
             result = new ExprRelationalOpNode(relationalOpEnum);
         }
-        
+
         astExprNodeMap.put(node, result);
     }
 
@@ -2932,7 +2932,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         boolean tightlyBound = ASTMatchUntilHelper.validate(low, high, allowZeroLowerBounds);
         if ((node.getChildCount() == 2) && (hasRange) && (!tightlyBound))
         {
-            throw new ASTWalkException("Variable bounds repeat operator requires an until-expression");            
+            throw new ASTWalkException("Variable bounds repeat operator requires an until-expression");
         }
 
         EvalMatchUntilNode fbNode = this.patternNodeFactory.makeMatchUntilNode(low, high);

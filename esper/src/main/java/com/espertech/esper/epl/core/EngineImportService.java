@@ -10,8 +10,8 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.agg.AggregationSupport;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.ConfigurationMethodRef;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

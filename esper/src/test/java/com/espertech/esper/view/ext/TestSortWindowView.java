@@ -25,7 +25,7 @@ public class TestSortWindowView extends TestCase
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
-    
+
     public void testViewOneProperty()
     {
         // Set up a feed for the view under test - the depth is 10 events so bean[10] will cause bean[0] to go old
@@ -76,7 +76,7 @@ public class TestSortWindowView extends TestCase
         SupportViewDataChecker.checkNewData(childView, new EventBean[] { bean[11] });
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(), new EventBean[] { bean[8], bean[7], bean[4], bean[10], bean[11] });
     }
-    
+
     public void testViewTwoProperties() throws Exception
     {
     	// Set up a sort windows that sorts on two properties
@@ -84,26 +84,26 @@ public class TestSortWindowView extends TestCase
     	myView = new SortWindowView(null, expressions, ExprNodeUtility.getEvaluators(expressions), new boolean[] {false, true}, 5, null, false, null);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
-        
+
         // Set up a feed for the view under test - the depth is 10 events so bean[10] will cause bean[0] to go old
         SupportStreamImpl stream = new SupportStreamImpl(SupportMarketDataBean.class, 10);
         stream.addView(myView);
-        
+
         EventBean bean[] = new EventBean[12];
-        
+
         bean[0] = makeBean(20d, 1000);
         stream.insert(bean[0]);
         SupportViewDataChecker.checkOldData(childView, null);
         SupportViewDataChecker.checkNewData(childView, new EventBean[] { bean[0] });
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(), new EventBean[] { bean[0] });
- 
+
         bean[1] = makeBean(19d, 800);
         bean[2] = makeBean(18d, 1200);
         stream.insert(new EventBean[] { bean[1], bean[2] });
         SupportViewDataChecker.checkOldData(childView, null);
         SupportViewDataChecker.checkNewData(childView, new EventBean[] { bean[1], bean[2] });
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(), new EventBean[] { bean[1], bean[0], bean[2] });
-        
+
         bean[3] = makeBean(17d, 1200);
         bean[4] = makeBean(16d, 1000);
         bean[5] = makeBean(15d, 1400);
@@ -139,7 +139,7 @@ public class TestSortWindowView extends TestCase
         SupportMarketDataBean bean = new SupportMarketDataBean("CSCO.O", 0, volume, "");
         return SupportEventBeanFactory.createObject(bean);
     }
-    
+
     private EventBean makeBean(double price, long volume)
     {
         SupportMarketDataBean bean = new SupportMarketDataBean("CSCO.O", price, volume, "");

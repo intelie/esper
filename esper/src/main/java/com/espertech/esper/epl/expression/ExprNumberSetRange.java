@@ -1,12 +1,6 @@
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.RangeParameter;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
@@ -19,7 +13,7 @@ import java.util.Map;
  * <p>
  * Differs from the between-expression since the value returned by evaluating is a cron-value object.
  */
-public class ExprNumberSetRange extends ExprNode implements ExprEvaluator
+public class ExprNumberSetRange extends ExprNodeBase implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetRange.class);
     private transient ExprEvaluator evaluators[];

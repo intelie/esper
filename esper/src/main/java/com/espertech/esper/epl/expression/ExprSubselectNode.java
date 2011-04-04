@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Represents a subselect in an expression tree.
  */
-public abstract class ExprSubselectNode extends ExprNode implements ExprEvaluator, ExprEvaluatorEnumeration
+public abstract class ExprSubselectNode extends ExprNodeBase implements ExprEvaluator, ExprEvaluatorEnumeration
 {
     private static final Log log = LogFactory.getLog(ExprSubselectNode.class);
 

@@ -233,7 +233,7 @@ public class StatementSpecMapper
                     whereClause = unmapExpressionDeep(stream.getWhereClause(), unmapContext);
                 }
                 InsertIntoClause insertIntoClause = unmapInsertInto(stream.getInsertInto());
-                SelectClause selectClause = unmapSelect(stream.getSelectClause(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, unmapContext);                
+                SelectClause selectClause = unmapSelect(stream.getSelectClause(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, unmapContext);
                 clause.addItem(OnInsertSplitStreamItem.create(insertIntoClause, selectClause, whereClause));
             }
             model.setOnExpr(clause);
@@ -306,7 +306,7 @@ public class StatementSpecMapper
         {
             Expression expr = unmapExpressionDeep(updateDesc.getOptionalWhereClause(), unmapContext);
             model.getUpdateClause().setOptionalWhereClause(expr);
-        }        
+        }
     }
 
     private static void unmapCreateWindow(CreateWindowDesc createWindowDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -948,7 +948,7 @@ public class StatementSpecMapper
     }
 
     private static SelectClause unmapSelect(SelectClauseSpecRaw selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, StatementSpecUnMapContext unmapContext)
-    {    	
+    {
         SelectClause clause = SelectClause.create();
         clause.setStreamSelector(SelectClauseStreamSelectorEnum.mapFromSODA(selectStreamSelectorEnum));
         clause.addElements(unmapSelectClauseElements(selectClauseSpec.getSelectExprList(), unmapContext));
@@ -2580,7 +2580,7 @@ public class StatementSpecMapper
             }
         }
     }
-    
+
     private static List<ExprChainedSpec> mapChains(List<DotExpressionItem> pairs, StatementSpecMapContext mapContext) {
         List<ExprChainedSpec> chains = new ArrayList<ExprChainedSpec>();
         for (DotExpressionItem item : pairs) {

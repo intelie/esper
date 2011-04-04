@@ -8,24 +8,23 @@
  **************************************************************************************/
 package com.espertech.esper.util;
 
-import com.espertech.esper.event.EventAdapterException;
-import com.espertech.esper.type.*;
-import com.espertech.esper.epl.expression.ExprConstantNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.client.annotation.Hook;
+import com.espertech.esper.client.annotation.HookType;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
-import com.espertech.esper.client.annotation.HookType;
-import com.espertech.esper.client.annotation.Hook;
-
-import java.util.*;
-import java.math.BigInteger;
-import java.math.BigDecimal;
-import java.lang.reflect.*;
-import java.lang.annotation.Annotation;
-
+import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.event.EventAdapterException;
+import com.espertech.esper.type.*;
+import com.espertech.esper.view.ViewFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
 
 /**
  * Helper for questions about Java classes such as
@@ -1221,7 +1220,7 @@ public class JavaClassHelper
         return true;
     }
 
-    private static void getSuperInterfaces(Class clazz, Set<Class> result)
+    public static void getSuperInterfaces(Class clazz, Set<Class> result)
     {
         Class interfaces[] = clazz.getInterfaces();
 
@@ -1509,5 +1508,14 @@ public class JavaClassHelper
             return clazz.getComponentType().getName() + "(Array)";
         }
         return clazz.getName();
+    }
+
+    public static Method getMethodByName(Class clazz, String methodName) {
+        for (Method m : clazz.getMethods()) {
+            if (m.getName().equals(methodName)) {
+                return m;
+            }
+        }
+        throw new IllegalStateException("Expected '" + methodName + "' method not found on interface '" + clazz.getName());
     }
 }

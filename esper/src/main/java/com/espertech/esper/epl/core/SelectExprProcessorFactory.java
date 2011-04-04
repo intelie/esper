@@ -50,7 +50,7 @@ public class SelectExprProcessorFactory
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    ForClauseSpec forClauseSpec,
-                                                   StreamTypeService typeService, 
+                                                   StreamTypeService typeService,
                                                    EventAdapterService eventAdapterService,
                                                    StatementResultService statementResultService,
                                                    ValueAddEventService valueAddEventService,
@@ -98,7 +98,7 @@ public class SelectExprProcessorFactory
                     groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
                     ExprValidationContext validationContext = new ExprValidationContext(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, annotations);
                     for (int i = 0; i < item.getExpressions().size(); i++) {
-                        groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(validationContext);
+                        groupedDeliveryExpr[i] = ExprNodeUtil.getValidatedSubtree(item.getExpressions().get(i), validationContext);
                     }
                     forDelivery = true;
                 }
@@ -109,7 +109,7 @@ public class SelectExprProcessorFactory
             return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor, exprEvaluatorContext);
         }
 
-        return synthetic;        
+        return synthetic;
     }
 
     private static SelectExprProcessor getProcessorInternal(

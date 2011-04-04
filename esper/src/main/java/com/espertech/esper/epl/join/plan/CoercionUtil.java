@@ -85,7 +85,7 @@ public class CoercionUtil {
                 QueryGraphValueEntryHashKeyedProp hashKeyProp = (QueryGraphValueEntryHashKeyedProp) keyProps.get(i);
                 keyPropType = JavaClassHelper.getBoxedType(typesPerStream[lookupStream].getPropertyType(hashKeyProp.getKeyProperty()));
             }
-            
+
             Class indexedPropType = JavaClassHelper.getBoxedType(typesPerStream[indexedStream].getPropertyType(indexProps[i]));
             Class coercionType = indexedPropType;
             if (keyPropType != indexedPropType)

@@ -9,12 +9,6 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.*;
 
 import java.math.BigDecimal;
@@ -24,7 +18,7 @@ import java.util.Map;
 /**
  * Represents the CAST(expression, type) function is an expression tree.
  */
-public class ExprCastNode extends ExprNode implements ExprEvaluator
+public class ExprCastNode extends ExprNodeBase implements ExprEvaluator
 {
     private final String classIdentifier;
     private Class targetType;

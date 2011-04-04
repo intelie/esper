@@ -2,8 +2,8 @@ package com.espertech.esper.rowregex;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNode;
 
 /**
  * The '?' state in the regex NFA states.

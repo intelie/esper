@@ -7,14 +7,19 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.util.AuditPath;
 import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class TestAudit extends TestCase {
+
+    private static final Log auditLog = LogFactory.getLog(AuditPath.AUDIT_LOG);
 
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    // TODO: @Audit("property, expression, view, pattern, dot, subquery, output, input, namedwindow, lookup, aggregate, sql, methodjoin, matchrecognize, expressiondef, lambda")
+    // TODO: @Audit("pattern, dot, subquery, output, input, namedwindow, lookup, aggregate, sql, methodjoin, matchrecognize, expressiondef, lambda")
     public void setUp()
     {
         listener = new SupportUpdateListener();
@@ -27,17 +32,36 @@ public class TestAudit extends TestCase {
 
     public void testAudit() {
 
-        /**
-         * TODO
-        // property
-        EPStatement stmtOne = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit select intPrimitive from SupportBean");
-        stmtOne.addListener(listener);
+        // pattern
+        auditLog.info("*** Pattern: ");
+        EPStatement stmtPattern = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('pattern') select a.intPrimitive as val0 from pattern [every a=SupportBean]");
+        stmtPattern.addListener(listener);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 50));
-        stmtOne.destroy();
-         */
+        assertEquals(50, listener.assertOneGetNewAndReset().get("val0"));
+        stmtPattern.destroy();
+
+        // view
+        auditLog.info("*** View: ");
+        EPStatement stmtView = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('view') select intPrimitive from SupportBean.std:lastevent()");
+        stmtView.addListener(listener);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 50));
+        assertEquals(50, listener.assertOneGetNewAndReset().get("intPrimitive"));
+        stmtView.destroy();
 
         // expression
-        epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('expr') select intPrimitive*100 as val0 from SupportBean").addListener(listener);
+        auditLog.info("*** Expression: ");
+        EPStatement stmtExpr = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('expr') select intPrimitive*100 as val0 from SupportBean");
+        stmtExpr.addListener(listener);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 50));
+        assertEquals(5000, listener.assertOneGetNewAndReset().get("val0"));
+        stmtExpr.destroy();
+
+        // property
+        auditLog.info("*** Property: ");
+        EPStatement stmtProp = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('property') select intPrimitive from SupportBean");
+        stmtProp.addListener(listener);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 50));
+        assertEquals(50, listener.assertOneGetNewAndReset().get("intPrimitive"));
+        stmtProp.destroy();
     }
 }

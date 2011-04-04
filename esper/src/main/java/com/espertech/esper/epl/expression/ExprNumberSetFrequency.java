@@ -1,11 +1,5 @@
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.type.FrequencyParameter;
@@ -17,7 +11,7 @@ import java.util.Map;
 /**
  * Expression for use within crontab to specify a frequency.
  */
-public class ExprNumberSetFrequency extends ExprNode implements ExprEvaluator
+public class ExprNumberSetFrequency extends ExprNodeBase implements ExprEvaluator
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetFrequency.class);
     private transient ExprEvaluator evaluator;
@@ -30,7 +24,7 @@ public class ExprNumberSetFrequency extends ExprNode implements ExprEvaluator
 
     public String toExpressionString()
     {
-        return "*/" + this.getChildNodes().get(0); 
+        return "*/" + this.getChildNodes().get(0);
     }
 
     public boolean isConstantResult()

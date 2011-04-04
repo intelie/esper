@@ -377,7 +377,7 @@ public class NStreamOuterQueryPlanBuilder
         // next we look at all the required streams and add their dependent streams
         for (int stream : requiredStreams)
         {
-            completedStreams.add(stream);    
+            completedStreams.add(stream);
         }
 
         for (int stream : requiredStreams)

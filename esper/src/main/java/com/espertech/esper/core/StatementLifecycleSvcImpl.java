@@ -387,7 +387,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             return false;
         }
-        
+
         // pattern-only streams are not self-joins
         if (!hasFilterStream)
         {
@@ -452,7 +452,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -485,7 +485,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                         set.add(filterNode.getFilterSpec().getFilterForEventType());
                     }
                 }
-            }            
+            }
         }
         if (set == null)
         {
@@ -1041,7 +1041,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                         }
                         StreamTypeService streamTypeService = new StreamTypeServiceImpl(selectFromType, selectFromTypeName, true, statementContext.getEngineURI());
                         ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
-                        ExprNode insertFilter = spec.getCreateWindowDesc().getInsertFilter().getValidatedSubtree(validationContext);
+                        ExprNode insertFilter = ExprNodeUtil.getValidatedSubtree(spec.getCreateWindowDesc().getInsertFilter(), validationContext);
                         spec.getCreateWindowDesc().setInsertFilter(insertFilter);
                     }
 
@@ -1339,7 +1339,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             ExprNode validatedExpression;
             try
             {
-                validatedExpression = exprSpec.getSelectExpression().getValidatedSubtree(validationContext);
+                validatedExpression = ExprNodeUtil.getValidatedSubtree(exprSpec.getSelectExpression(), validationContext);
             }
             catch (ExprValidationException e)
             {

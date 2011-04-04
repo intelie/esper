@@ -5,6 +5,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
 
@@ -93,7 +94,7 @@ public class MyTrendSpotterView extends ViewSupport
         if (this.hasViews())
         {
             EventBean newDataPost = populateMap(trendcount);
-            lastInsertStreamEvent = newDataPost; 
+            lastInsertStreamEvent = newDataPost;
             updateChildren(new EventBean[] {newDataPost}, removeStreamToPost);
         }
     }

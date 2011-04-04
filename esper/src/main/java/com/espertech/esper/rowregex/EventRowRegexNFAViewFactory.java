@@ -88,7 +88,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         String[] allStreamNames = new String[variableStreams.size()];
         EventType[] singleVarTypes = new EventType[variableStreams.size()];
         EventType[] allTypes = new EventType[variableStreams.size()];
-        
+
         streamNum = 0;
         for (String variableSingle : variablesSingle)
         {
@@ -136,7 +136,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             StreamTypeService typeServiceDefines = new StreamTypeServiceImpl(typesDefine, streamNamesDefine, isIStreamOnly, statementContext.getEngineURI(), false);
             ExprNode exprNodeResult = handlePreviousFunctions(defineItem.getExpression());
             ExprValidationContext validationContext = new ExprValidationContext(typeServiceDefines, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
-            ExprNode validated = exprNodeResult.getValidatedSubtree(validationContext);
+            ExprNode validated = ExprNodeUtil.getValidatedSubtree(exprNodeResult, validationContext);
             defineItem.setExpression(validated);
 
             ExprAggregateNode.getAggregatesBottomUp(validated, aggregateNodes);
@@ -181,7 +181,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
                 ExprValidationContext validationContext = new ExprValidationContext(typeServiceAggregateMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
                 for (ExprNode child : aggregateNode.getChildNodes())
                 {
-                    ExprNode validated = child.getValidatedSubtree(validationContext);
+                    ExprNode validated = ExprNodeUtil.getValidatedSubtree(child, validationContext);
                     validated.accept(visitor);
                     aggregateNode.getChildNodes().set(count++, new ExprNodeValidated(validated));
                 }
@@ -268,7 +268,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             ExprValidationContext validationContext = new ExprValidationContext(typeServicePartition, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
             for (ExprNode partitionExpr : matchRecognizeSpec.getPartitionByExpressions())
             {
-                validated.add(partitionExpr.getValidatedSubtree(validationContext));
+                validated.add(ExprNodeUtil.getValidatedSubtree(partitionExpr, validationContext));
             }
             matchRecognizeSpec.setPartitionByExpressions(validated);
         }
@@ -280,7 +280,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         try
         {
             ExprValidationContext validationContext = new ExprValidationContext(typeServiceMeasure, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
-            return measureNode.getValidatedSubtree(validationContext);
+            return ExprNodeUtil.getValidatedSubtree(measureNode, validationContext);
         }
         catch (ExprValidationPropertyException e)
         {
@@ -345,7 +345,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             }
             else
             {
-                previousNodePair.getFirst().replaceChildNode(previousNodePair.getSecond(), matchRecogPrevNode);
+                ExprNodeUtil.replaceChildNode(previousNodePair.getFirst(), previousNodePair.getSecond(), matchRecogPrevNode);
             }
 
             // store in a list per index such that we can consolidate this into a single buffer

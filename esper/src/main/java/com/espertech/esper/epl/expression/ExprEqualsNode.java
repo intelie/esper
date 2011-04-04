@@ -8,13 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleNumberCoercer;
 import com.espertech.esper.util.SimpleNumberCoercerFactory;
@@ -25,7 +19,7 @@ import java.util.Map;
 /**
  * Represents an equals (=) comparator in a filter expressiun tree.
  */
-public class ExprEqualsNode extends ExprNode implements ExprEvaluator
+public class ExprEqualsNode extends ExprNodeBase implements ExprEvaluator
 {
     private final boolean isNotEquals;
 

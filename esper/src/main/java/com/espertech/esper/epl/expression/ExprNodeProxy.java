@@ -1,41 +1,45 @@
 package com.espertech.esper.epl.expression;
 
-import java.lang.reflect.InvocationTargetException;
+import com.espertech.esper.util.JavaClassHelper;
+
 import java.lang.reflect.Method;
 
 public class ExprNodeProxy implements java.lang.reflect.InvocationHandler {
 
-    private Object obj;
+    private static Method target = JavaClassHelper.getMethodByName(ExprNode.class, "getExprEvaluator");
 
-    public static Object newInstance(Object obj) {
+    private String statementName;
+    private ExprNode exprNode;
+
+    public static Object newInstance(String statementName, ExprNode exprNode) {
         return java.lang.reflect.Proxy.newProxyInstance(
-                obj.getClass().getClassLoader(),
-                obj.getClass().getInterfaces(),
-                new ExprNodeProxy(obj));
+                exprNode.getClass().getClassLoader(),
+                new Class[]{ExprNode.class},
+                new ExprNodeProxy(statementName, exprNode));
     }
 
-    private ExprNodeProxy(Object obj) {
-        this.obj = obj;
+    public ExprNodeProxy(String statementName, ExprNode exprNode) {
+        this.statementName = statementName;
+        this.exprNode = exprNode;
     }
 
     public Object invoke(Object proxy, Method m, Object[] args)
             throws Throwable {
-        Object result;
+
+        if (!m.equals(target)) {
+            return m.invoke(exprNode, args);
+        }
+
+        String expressionToString = "undefined";
         try {
-            System.out.println("before method " + m.getName());
-            result = m.invoke(obj, args);
+            expressionToString = exprNode.toExpressionString();
         }
-        catch (InvocationTargetException e) {
-            throw e.getTargetException();
+        catch (RuntimeException ex) {
+            // no action
         }
-        catch (Exception e) {
-            throw new RuntimeException("unexpected invocation exception: " +
-                    e.getMessage());
-        }
-        finally {
-            System.out.println("after method " + m.getName());
-        }
-        return result;
+
+        ExprEvaluator evaluator = (ExprEvaluator) m.invoke(exprNode, args);
+        return ExprEvaluatorProxy.newInstance(statementName, expressionToString, evaluator);
     }
 }
 

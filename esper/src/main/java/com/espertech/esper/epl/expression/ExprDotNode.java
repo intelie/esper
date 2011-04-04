@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Represents an Dot-operator expression, for use when "(expression).method(...).method(...)"
  */
-public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
+public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvider
 {
     private static final long serialVersionUID = 8105121208330622813L;
 
@@ -172,21 +172,21 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
 
     public void accept(ExprNodeVisitor visitor) {
         super.accept(visitor);
-        ExprNode.acceptChain(visitor, chainSpec);
+        ExprNodeUtil.acceptChain(visitor, chainSpec);
     }
 
     public void accept(ExprNodeVisitorWithParent visitor) {
         super.accept(visitor);
-        ExprNode.acceptChain(visitor, chainSpec);
+        ExprNodeUtil.acceptChain(visitor, chainSpec);
     }
 
     public void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
         super.acceptChildnodes(visitor, parent);
-        ExprNode.acceptChain(visitor, chainSpec, this);
+        ExprNodeUtil.acceptChain(visitor, chainSpec, this);
     }
 
-    protected void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
-        ExprNode.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
+    public void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
+        ExprNodeUtil.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
     }
 
     public List<ExprChainedSpec> getChainSpec()

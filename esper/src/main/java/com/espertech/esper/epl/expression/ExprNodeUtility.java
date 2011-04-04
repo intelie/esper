@@ -307,7 +307,7 @@ public class ExprNodeUtility
                 buffer.append(")");
             }
 
-            delimiterOuter = ".";            
+            delimiterOuter = ".";
             isFirst = false;
         }
     }
@@ -319,7 +319,7 @@ public class ExprNodeUtility
         for (ExprChainedSpec chainElement : chainSpec) {
             List<ExprNode> validated = new ArrayList<ExprNode>();
             for (ExprNode expr : chainElement.getParameters()) {
-                validated.add(expr.getValidatedSubtree(validationContext));
+                validated.add(ExprNodeUtil.getValidatedSubtree(expr, validationContext));
             }
             chainElement.setParameters(validated);
         }

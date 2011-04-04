@@ -9,10 +9,11 @@ public class DebugProxy implements java.lang.reflect.InvocationHandler {
     private Object obj;
 
     public static Object newInstance(Object obj) {
-	return java.lang.reflect.Proxy.newProxyInstance(
-	    obj.getClass().getClassLoader(),
-	    obj.getClass().getInterfaces(),
-	    new DebugProxy(obj));
+        Class[] interfaces = obj.getClass().getInterfaces();
+        return java.lang.reflect.Proxy.newProxyInstance(
+            obj.getClass().getClassLoader(),
+            interfaces,
+            new DebugProxy(obj));
     }
 
     private DebugProxy(Object obj) {

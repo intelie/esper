@@ -1,17 +1,11 @@
 package com.espertech.esper.support.epl;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.*;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
-public class SupportBoolExprNode extends ExprNode implements ExprEvaluator
+public class SupportBoolExprNode extends ExprNodeBase implements ExprEvaluator
 {
     private boolean evaluateResult;
 
@@ -36,7 +30,7 @@ public class SupportBoolExprNode extends ExprNode implements ExprEvaluator
     public Map<String, Object> getEventType() {
         return null;
     }
-    
+
     public boolean isConstantResult()
     {
         return false;
@@ -55,5 +49,5 @@ public class SupportBoolExprNode extends ExprNode implements ExprEvaluator
     public boolean equalsNode(ExprNode node)
     {
         throw new UnsupportedOperationException("not implemented");
-    }    
+    }
 }

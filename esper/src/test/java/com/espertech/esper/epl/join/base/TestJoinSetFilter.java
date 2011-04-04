@@ -1,7 +1,6 @@
 package com.espertech.esper.epl.join.base;
 
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.join.base.JoinSetFilter;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;

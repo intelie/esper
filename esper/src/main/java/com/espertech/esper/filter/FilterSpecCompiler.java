@@ -212,7 +212,7 @@ public final class FilterSpecCompiler
                 }
             }
 
-            ExprNode validated = node.getValidatedSubtree(validationContext);
+            ExprNode validated = ExprNodeUtil.getValidatedSubtree(node, validationContext);
             validatedNodes.add(validated);
 
             if ((validated.getExprEvaluator().getType() != Boolean.class) && ((validated.getExprEvaluator().getType() != boolean.class)))
@@ -313,7 +313,7 @@ public final class FilterSpecCompiler
                 SelectClauseExprCompiledSpec compiled = (SelectClauseExprCompiledSpec) element;
                 ExprNode selectExpression = compiled.getSelectExpression();
                 ExprValidationContext validationContext = new ExprValidationContext(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
-                selectExpression = selectExpression.getValidatedSubtree(validationContext);
+                selectExpression = ExprNodeUtil.getValidatedSubtree(selectExpression, validationContext);
                 subselect.setSelectClause(new ExprNode[] {selectExpression});
                 subselect.setSelectAsNames(new String[] {compiled.getAssignedName()});
 
@@ -627,7 +627,7 @@ public final class FilterSpecCompiler
                             isMustCoerce = true;
                         }
                         else {
-                            break;  // assumed not compatible 
+                            break;  // assumed not compatible
                         }
                     }
 

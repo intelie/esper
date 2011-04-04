@@ -285,7 +285,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 {
                     streamViewNum = 1;
                     polledViewNum = 0;
-                }                
+                }
             }
         }
 

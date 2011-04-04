@@ -10,12 +10,6 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.Map;
@@ -25,7 +19,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * Represents the regexp-clause in an expression tree.
  */
-public class ExprRegexpNode extends ExprNode implements ExprEvaluator
+public class ExprRegexpNode extends ExprNodeBase implements ExprEvaluator
 {
     private final boolean isNot;
 

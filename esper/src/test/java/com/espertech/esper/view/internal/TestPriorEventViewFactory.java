@@ -1,15 +1,13 @@
 package com.espertech.esper.view.internal;
 
+import com.espertech.esper.epl.expression.ExprNode;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.SupportViewResourceCallback;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.ViewCapPriorEventAccess;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.TestViewSupport;
-import com.espertech.esper.epl.expression.ExprNode;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.ArrayList;
 
 public class TestPriorEventViewFactory extends TestCase

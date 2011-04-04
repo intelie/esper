@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprSubstitutionNode;
 import com.espertech.esper.util.MetaDefItem;
 
@@ -283,7 +284,7 @@ public class StatementSpecRaw implements MetaDefItem, Serializable
     }
 
     /**
-     * Sets the descriptor for create-variable statements, if this is one. 
+     * Sets the descriptor for create-variable statements, if this is one.
      * @param createVariableDesc create-variable info
      */
     public void setCreateVariableDesc(CreateVariableDesc createVariableDesc)

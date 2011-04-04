@@ -53,7 +53,7 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
             }
             parameterTypes[count] = child.getExprEvaluator().getType();
             expressions[count] = child;
-            
+
             count++;
 
             if (!ExprNodeUtility.hasRemoveStream(child, streamTypeService)) {

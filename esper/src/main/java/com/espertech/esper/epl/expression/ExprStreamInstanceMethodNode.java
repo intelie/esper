@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Represents an invocation of a instance method on an event of a given stream in the expression tree.
  */
-public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvaluator, ExprNodeInnerNodeProvider
+public class ExprStreamInstanceMethodNode extends ExprNodeBase implements ExprEvaluator, ExprNodeInnerNodeProvider
 {
     private static final Log log = LogFactory.getLog(ExprNode.class);
     private static final long serialVersionUID = 3422689488586035557L;
@@ -175,24 +175,24 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
     @Override
     public void accept(ExprNodeVisitor visitor) {
         super.accept(visitor);
-        ExprNode.acceptChain(visitor, chainSpec);
+        ExprNodeUtil.acceptChain(visitor, chainSpec);
     }
 
     @Override
     public void accept(ExprNodeVisitorWithParent visitor) {
         super.accept(visitor);
-        ExprNode.acceptChain(visitor, chainSpec);
+        ExprNodeUtil.acceptChain(visitor, chainSpec);
     }
 
     @Override
     public void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
         super.acceptChildnodes(visitor, parent);
-        ExprNode.acceptChain(visitor, chainSpec, this);
+        ExprNodeUtil.acceptChain(visitor, chainSpec, this);
     }
 
     @Override
-    protected void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
-        ExprNode.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
+    public void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
+        ExprNodeUtil.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
     }
 
     @Override

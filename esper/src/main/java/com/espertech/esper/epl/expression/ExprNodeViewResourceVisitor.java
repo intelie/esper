@@ -8,11 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 
 import java.util.List;
-import java.util.LinkedList;
 import java.util.ArrayList;
 
 /**

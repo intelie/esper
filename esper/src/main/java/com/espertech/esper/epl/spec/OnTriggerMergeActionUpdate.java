@@ -18,7 +18,7 @@ import java.util.List;
 public class OnTriggerMergeActionUpdate extends OnTriggerMergeAction
 {
     private static final long serialVersionUID = 726673263717907039L;
-    
+
     private List<OnTriggerSetAssignment> assignments;
 
     public OnTriggerMergeActionUpdate(ExprNode optionalMatchCond, List<OnTriggerSetAssignment> assignments) {

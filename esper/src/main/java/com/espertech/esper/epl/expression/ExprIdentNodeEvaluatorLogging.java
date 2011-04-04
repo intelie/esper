@@ -33,7 +33,7 @@ public class ExprIdentNodeEvaluatorLogging extends ExprIdentNodeEvaluator
     {
         Object result = super.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
         if (auditLog.isInfoEnabled()) {
-            auditLog.info("Stmt " + statementName + " property " + propertyName + " value " + result);
+            auditLog.info("Statement " + statementName + " property " + propertyName + " value " + result);
         }
         return result;
     }

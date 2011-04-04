@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * Represents a variable in an expression tree.
  */
-public class ExprVariableNode extends ExprNode implements ExprEvaluator
+public class ExprVariableNode extends ExprNodeBase implements ExprEvaluator
 {
     private static final long serialVersionUID = 0L;
 
@@ -115,7 +115,7 @@ public class ExprVariableNode extends ExprNode implements ExprEvaluator
         if (optSubPropName != null) {
             if (reader.getEventType() == null) {
                 throw new ExprValidationException("Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");
-            }            
+            }
             eventTypeGetter = reader.getEventType().getGetter(optSubPropName);
             if (eventTypeGetter == null) {
                 throw new ExprValidationException("Property '" + optSubPropName + "' is not valid for variable '" + variableName + "'");

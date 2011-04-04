@@ -136,7 +136,7 @@ public class SelectExprInsertEventBean
                     resultTypes[i] = evaluators[i].getType();
                 }
 
-                initializeCtorInjection(evaluators, null, evaluators, methodResolutionService, eventAdapterService);
+                initializeCtorInjection(evaluators, null, resultTypes, methodResolutionService, eventAdapterService);
             }
             catch (ExprValidationException ctorEx) {
                 if (writables.isEmpty()) {
@@ -235,7 +235,7 @@ public class SelectExprInsertEventBean
         for (int i = 0; i < expressionReturnTypes.length; i++) {
             Object columnType = expressionReturnTypes[i];
 
-            if (columnType instanceof Class) {
+            if (columnType instanceof Class || columnType == null) {
                 ctorTypes[i] = (Class) expressionReturnTypes[i];
                 evaluators[i] = exprEvaluators[i];
                 continue;

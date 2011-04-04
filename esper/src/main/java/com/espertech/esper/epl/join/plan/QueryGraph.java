@@ -416,7 +416,7 @@ public class QueryGraph
         }
         if (keyStream == indexedStream) {
             throw new IllegalArgumentException("Invalid key stream equals indexed stream " + keyStream);
-        }        
+        }
     }
 
     public void addRangeExpr(int indexedStream, String indexedProp, ExprNode startNode, Integer optionalStartStreamNum, ExprNode endNode, Integer optionalEndStreamNum) {

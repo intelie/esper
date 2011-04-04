@@ -1,7 +1,9 @@
 package com.espertech.esper;
 
+import java.io.Serializable;
+
 // TODO - remove me
-public class MyClass implements MyInterface {
+public class MyClass implements MyInterface, Serializable {
 
     private String value;
 

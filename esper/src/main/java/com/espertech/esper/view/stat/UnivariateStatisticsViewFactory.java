@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.*;

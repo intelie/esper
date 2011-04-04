@@ -28,7 +28,7 @@ import java.util.List;
  *     b) subselects filter expressions get validated and subselect started
  * (4) Remaining expressions get validated
  */
-public class ExprDeclaredNode extends ExprNode
+public class ExprDeclaredNode extends ExprNodeBase
 {
     private final ExpressionDeclItem prototype;
     private List<ExprNode> chainParameters;
@@ -112,7 +112,7 @@ public class ExprDeclaredNode extends ExprNode
         // validate chain
         List<ExprNode> validated = new ArrayList<ExprNode>();
         for (ExprNode expr : chainParameters) {
-            validated.add(expr.getValidatedSubtree(validationContext));
+            validated.add(ExprNodeUtil.getValidatedSubtree(expr, validationContext));
         }
         chainParameters = validated;
 
@@ -149,7 +149,7 @@ public class ExprDeclaredNode extends ExprNode
         // validate expression body in this context
         try {
             ExprValidationContext expressionBodyContext = new ExprValidationContext(copyTypes, validationContext);
-            expressionBodyCopy = expressionBodyCopy.getValidatedSubtree(expressionBodyContext);
+            expressionBodyCopy = ExprNodeUtil.getValidatedSubtree(expressionBodyCopy, expressionBodyContext);
         }
         catch (ExprValidationException ex) {
             String message = "Error validating expression declaration '" + prototype.getName() + "': " + ex.getMessage();
@@ -219,10 +219,6 @@ public class ExprDeclaredNode extends ExprNode
         if (this.getChildNodes().isEmpty()) {
             expressionBodyCopy.accept(visitor);
         }
-    }
-
-    protected void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
-        super.replaceUnlistedChildNode(nodeToReplace, newNode);
     }
 
     public ExprNode getExpressionBodyCopy() {

@@ -10,19 +10,13 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
 /**
  * Represents an stream selector that returns the streams underlying event, or null if undefined.
  */
-public class ExprStreamUnderlyingNode extends ExprNode implements ExprEvaluator
+public class ExprStreamUnderlyingNode extends ExprNodeBase implements ExprEvaluator
 {
     private final String streamName;
     private final boolean isWildcard;

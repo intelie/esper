@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Represents the case-when-then-else control flow function is an expression tree.
  */
-public class ExprLambdaGoesNode extends ExprNode implements ExprEvaluator
+public class ExprLambdaGoesNode extends ExprNodeBase implements ExprEvaluator
 {
     private List<String> goesToNames;
 

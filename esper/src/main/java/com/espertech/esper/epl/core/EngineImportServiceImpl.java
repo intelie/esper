@@ -31,7 +31,7 @@ import java.util.Map;
 public class EngineImportServiceImpl implements EngineImportService
 {
     private static final Log log = LogFactory.getLog(EngineImportServiceImpl.class);
-    
+
 	private final List<String> imports;
     private final Map<String, String> aggregationFunctions;
     private final Map<String, Pair<String, String>> singleRowFunctions;

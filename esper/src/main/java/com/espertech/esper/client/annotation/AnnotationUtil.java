@@ -35,7 +35,7 @@ public class AnnotationUtil {
 
             if (listItem.indexOf('=') != -1)
             {
-                String listItemName = list.substring(0, listItem.indexOf('='));
+                String listItemName = listItem.substring(0, listItem.indexOf('='));
                 if (listItemName.trim().toUpperCase().equals(lookedForValue))
                 {
                     return true;

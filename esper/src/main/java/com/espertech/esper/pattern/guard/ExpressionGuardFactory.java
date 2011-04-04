@@ -9,6 +9,7 @@
 package com.espertech.esper.pattern.guard;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.pattern.EvalStateNodeNumber;
 import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.pattern.MatchedEventMap;
@@ -25,7 +26,7 @@ import java.util.List;
 public class ExpressionGuardFactory implements GuardFactory, MetaDefItem, Serializable
 {
     private static final long serialVersionUID = -5107582730824731419L;
-    
+
     protected ExprNode expression;
 
     /**

@@ -72,7 +72,7 @@ public class TestExprStreamInstanceMethodNode extends TestCase
         SupportExprNodeFactory.validate3Stream(node);
         ExprNode other = new ExprStreamInstanceMethodNode("s0", makeSpec("getIntPrimitive"));
         SupportExprNodeFactory.validate3Stream(other);
-        
+
         assertTrue(node.equalsNode(other));
         assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s1", makeSpec("getIntPrimitive"))));
         assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s0", makeSpec("xxx"))));

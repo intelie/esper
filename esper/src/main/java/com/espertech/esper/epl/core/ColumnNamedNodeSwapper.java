@@ -10,6 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -21,12 +22,12 @@ import java.util.ListIterator;
 public class ColumnNamedNodeSwapper
 {
 	/**
-	 * Replace all instances of the node representing the colum name with 
-	 * the full expression. 
-	 * @param exprTree - the expression node tree to make the changes in 
+	 * Replace all instances of the node representing the colum name with
+	 * the full expression.
+	 * @param exprTree - the expression node tree to make the changes in
 	 * @param columnName - the select-clause name that is to be expanded
 	 * @param fullExpr - the full expression that the column name represents
-	 * @return exprTree with the appropriate swaps performed, or fullExpr, 
+	 * @return exprTree with the appropriate swaps performed, or fullExpr,
 	 *         if all of exprTree needed to be swapped
 	 */
 	public static ExprNode swap(ExprNode exprTree, String columnName, ExprNode fullExpr)
@@ -35,7 +36,7 @@ public class ColumnNamedNodeSwapper
 		{
 			throw new NullPointerException();
 		}
-		
+
 		if(isColumnNameNode(exprTree, columnName))
 		{
 			return fullExpr;
@@ -44,10 +45,10 @@ public class ColumnNamedNodeSwapper
 		{
 			visitChildren(exprTree, columnName, fullExpr);
 		}
-		
+
 		return exprTree;
 	}
-	
+
 	/**
 	 * A recursive function that works on the child nodes of a given
 	 * node, replacing any instances of the node representing the name,

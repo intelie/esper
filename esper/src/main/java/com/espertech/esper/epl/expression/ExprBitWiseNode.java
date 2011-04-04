@@ -9,12 +9,6 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.BitWiseOpEnum;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
@@ -25,7 +19,7 @@ import java.util.Map;
 /**
  * Represents the bit-wise operators in an expression tree.
  */
-public class ExprBitWiseNode extends ExprNode implements ExprEvaluator {
+public class ExprBitWiseNode extends ExprNodeBase implements ExprEvaluator {
 
     private final BitWiseOpEnum _bitWiseOpEnum;
     private transient BitWiseOpEnum.Computer bitWiseOpEnumComputer;

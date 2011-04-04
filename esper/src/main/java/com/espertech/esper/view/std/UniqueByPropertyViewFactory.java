@@ -11,6 +11,7 @@ package com.espertech.esper.view.std;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.client.EventType;
@@ -48,7 +49,7 @@ public class UniqueByPropertyViewFactory implements DataWindowViewFactory
             String errorMessage = "Unique-by view requires a one or more expressions provinding unique values as parameters";
             throw new ViewParameterException(errorMessage);
         }
-        
+
         this.eventType = parentEventType;
     }
 
