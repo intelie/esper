@@ -236,7 +236,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
         SelectExprProcessor insertHelper = SelectExprProcessorFactory.getProcessor(selectNoWildcard, false, insertIntoDesc, null, streamTypeService,
                 statementContext.getEventAdapterService(), statementResultService, statementContext.getValueAddEventService(), selectExprEventTypeRegistry,
-                statementContext.getMethodResolutionService(), statementContext, statementContext.getVariableService(), statementContext.getTimeProvider(), statementContext.getEngineURI(), statementContext.getStatementId());
+                statementContext.getMethodResolutionService(), statementContext, statementContext.getVariableService(), statementContext.getTimeProvider(), statementContext.getEngineURI(), statementContext.getStatementId(), statementContext.getStatementName(), statementContext.getAnnotations());
         ExprEvaluator filterEval = desc.getOptionalWhereClause() == null ? null : desc.getOptionalWhereClause().getExprEvaluator();
 
         InternalEventRouter routerToUser = streamName.equals(namedWindowName) ? null : internalEventRouter;

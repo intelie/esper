@@ -27,6 +27,7 @@ import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.View;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -99,20 +100,22 @@ public class DatabasePollingViewable implements HistoricalEventViewable
                          SchedulingService schedulingService,
                          String engineURI,
                          Map<Integer, List<ExprNode>> sqlParameters,
-                         EventAdapterService eventAdapterService) throws ExprValidationException
+                         EventAdapterService eventAdapterService,
+                         String statementName, Annotation[] annotations) throws ExprValidationException
     {
         evaluators = new ExprEvaluator[inputParameters.size()];
         subordinateStreams = new TreeSet<Integer>();
         this.exprEvaluatorContext = exprEvaluatorContext;
 
         int count = 0;
+        ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, annotations);
         for (String inputParam : inputParameters)
         {
             ExprNode raw = findSQLExpressionNode(myStreamNumber, count, sqlParameters);
             if (raw == null) {
                 throw new ExprValidationException("Internal error find expression for historical stream parameter " + count + " stream " + myStreamNumber);
             }
-            ExprNode evaluator = raw.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+            ExprNode evaluator = raw.getValidatedSubtree(validationContext);
             evaluators[count++] = evaluator.getExprEvaluator();
 
             ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();

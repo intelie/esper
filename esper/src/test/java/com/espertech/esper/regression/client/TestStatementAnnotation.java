@@ -1,10 +1,8 @@
 package com.espertech.esper.regression.client;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.annotation.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
-import com.espertech.esper.client.annotation.Description;
-import com.espertech.esper.client.annotation.Name;
-import com.espertech.esper.client.annotation.Tag;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportEnum;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -137,6 +135,24 @@ public class TestStatementAnnotation extends TestCase
         stmtText = "@Name('MyAnnotatedName') select * from Bean";
         stmt = epService.getEPAdministrator().createEPL(stmtText, "MyABCStmt");
         assertEquals("MyABCStmt", stmt.getName());
+
+        // hint tests
+        assertNull(HintEnum.DISABLE_RECLAIM_GROUP.getHint(null));
+        assertNull(HintEnum.DISABLE_RECLAIM_GROUP.getHint(new Annotation[0]));
+
+        Annotation[] annos = epService.getEPAdministrator().createEPL("@Hint('DISABLE_RECLAIM_GROUP') select * from Bean").getAnnotations();
+        assertEquals("DISABLE_RECLAIM_GROUP", HintEnum.DISABLE_RECLAIM_GROUP.getHint(annos).value());
+
+        annos = epService.getEPAdministrator().createEPL("@Hint('ITERATE_ONLY,ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') select * from Bean").getAnnotations();
+        assertEquals("ITERATE_ONLY,ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY", HintEnum.DISABLE_RECLAIM_GROUP.getHint(annos).value());
+
+        annos = epService.getEPAdministrator().createEPL("@Hint('ITERATE_ONLY,reclaim_group_aged=10') select * from Bean").getAnnotations();
+        Hint hint = HintEnum.RECLAIM_GROUP_AGED.getHint(annos);
+        assertEquals("10", HintEnum.RECLAIM_GROUP_AGED.getHintAssignedValue(hint));
+
+        annos = epService.getEPAdministrator().createEPL("@Hint('reclaim_group_aged=11') select * from Bean").getAnnotations();
+        hint = HintEnum.RECLAIM_GROUP_AGED.getHint(annos);
+        assertEquals("11", HintEnum.RECLAIM_GROUP_AGED.getHintAssignedValue(hint));
     }
 
     private void runAssertion(EPStatement stmt)

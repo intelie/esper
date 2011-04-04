@@ -21,6 +21,11 @@ public class AuditPath {
     public static final String JDBC_LOG = "com.espertech.esper.jdbc"; 
 
     /**
+     * Log destination for the audit logging.
+     */
+    public static final String AUDIT_LOG = "com.espertech.esper.audit"; 
+
+    /**
      * Public access.
      */
     public static boolean isAuditEnabled = false;

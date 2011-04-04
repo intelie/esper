@@ -17,6 +17,7 @@ import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -78,6 +79,10 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
     {
         return engineImportService.resolveMethod(className, methodName);
 	}
+
+    public Constructor resolveCtor(Class clazz, Class[] paramTypes) throws EngineImportException {
+        return engineImportService.resolveCtor(clazz, paramTypes);
+    }
 
     public Class resolveClass(String className)
 			throws EngineImportException

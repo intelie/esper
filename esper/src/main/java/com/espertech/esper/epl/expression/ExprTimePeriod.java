@@ -142,7 +142,7 @@ public class ExprTimePeriod extends ExprNode implements ExprEvaluator
         return hasVariable;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
         for (ExprNode childNode : this.getChildNodes())

@@ -132,47 +132,12 @@ public enum HintEnum
             }
 
             Hint hintAnnotation = (Hint) annotation;
-            String hintVal = hintAnnotation.value();
-            if (hintVal == null)
-            {
-                continue;
-            }
-            hintVal = hintVal.trim().toUpperCase();
+            boolean isListed = AnnotationUtil.isListed(hintAnnotation.value(), value);
 
-            if (hintVal.equals(value))
-            {
+            if (isListed) {
                 return hintAnnotation;
             }
-
-            if (hintVal.indexOf('=') != -1)
-            {
-                String hintName = hintVal.substring(0, hintVal.indexOf('='));
-                if (hintName.trim().toUpperCase().equals(value))
-                {
-                    return hintAnnotation;
-                }
-            }
-
-            String[] hints = hintVal.split(",");
-            for (String hint : hints)
-            {
-                hintVal = hint.trim().toUpperCase();
-                if (hintVal.equals(value))
-                {
-                    return hintAnnotation;
-                }
-
-                if (hintVal.indexOf('=') != -1)
-                {
-                    String hintName = hintVal.substring(0, hintVal.indexOf('='));
-                    if (hintName.trim().toUpperCase().equals(value))
-                    {
-                        return hintAnnotation;
-                    }
-                }
-            }
         }
-
         return null;
     }
 
@@ -187,48 +152,8 @@ public enum HintEnum
         {
             return null;
         }
-        
-        String hintValMixed = hintAnnotation.value().trim();
-        String hintVal = hintValMixed.toUpperCase();
 
-        if (hintVal.indexOf(",") == -1)
-        {
-            if (hintVal.indexOf('=') == -1)
-            {
-                return null;
-            }
-
-            String hintName = hintVal.substring(0, hintVal.indexOf('='));
-            if (!hintName.equals(value))
-            {
-                return null;
-            }
-            return hintValMixed.substring(hintVal.indexOf('=') + 1, hintVal.length());
-        }
-
-        String[] hints = hintValMixed.split(",");
-        for (String hint : hints)
-        {
-            int indexOfEquals = hint.indexOf('=');
-            if (indexOfEquals == -1)
-            {
-                continue;
-            }
-
-            hintVal = hint.substring(0, indexOfEquals).trim().toUpperCase();
-            if (!hintVal.equals(value))
-            {
-                continue;
-            }
-
-            String value = hint.substring(indexOfEquals + 1).trim();
-            if (value.length() == 0)
-            {
-                return null;
-            }
-            return value;
-        }
-        return null;
+        return AnnotationUtil.getAssignedValue(hintAnnotation.value(), value);
     }
 
     /**
@@ -312,4 +237,5 @@ public enum HintEnum
             }
         }
     }
+
 }

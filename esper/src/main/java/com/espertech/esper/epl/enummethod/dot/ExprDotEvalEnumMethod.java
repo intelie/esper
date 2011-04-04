@@ -4,6 +4,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.ExprDotEval;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprValidationContext;
 import com.espertech.esper.epl.expression.ExprValidationException;
 
 import java.util.List;
@@ -14,6 +15,5 @@ public interface ExprDotEvalEnumMethod extends ExprDotEval {
                      String lambdaUsedName,
                      ExprDotEvalTypeInfo currentInputType,
                      List<ExprNode> parameters,
-                     ValidationContext validationContext,
-                     StreamTypeService streamTypeService) throws ExprValidationException;
+                     ExprValidationContext validationContext) throws ExprValidationException;
 }

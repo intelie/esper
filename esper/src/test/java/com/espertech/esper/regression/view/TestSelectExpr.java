@@ -3,7 +3,6 @@ package com.espertech.esper.regression.view;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.annotation.HintEnum;
 import com.espertech.esper.client.annotation.Description;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;

@@ -148,20 +148,6 @@ public class TestFilterServiceImpl extends TestCase
         }
     }
 
-    public void testCallbackNoFound()
-    {
-        try
-        {
-            filterService.remove(filterCallbacks.get(0));
-            filterService.remove(filterCallbacks.get(0));
-            assertTrue(false);
-        }
-        catch (IllegalArgumentException ex)
-        {
-            // Expected exception
-        }
-    }
-
     /**
      * Test for removing a callback that is waiting to occur,
      * ie. a callback is removed which was a result of an evaluation and it

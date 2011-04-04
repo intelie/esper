@@ -11,6 +11,7 @@ package com.espertech.esper.epl.view;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
+import com.espertech.esper.epl.expression.ExprValidationContext;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.*;
 
@@ -65,11 +66,12 @@ public class OutputProcessViewFactory
         boolean isGrouped = statementSpec.getGroupByExpressions() != null && !statementSpec.getGroupByExpressions().isEmpty();
 
         if (outputLimitSpec != null) {
+            ExprValidationContext validationContext = new ExprValidationContext(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
             if (outputLimitSpec.getAfterTimePeriodExpr() != null) {
-                outputLimitSpec.getAfterTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
+                outputLimitSpec.getAfterTimePeriodExpr().validate(validationContext);
             }
             if (outputLimitSpec.getTimePeriodExpr() != null) {
-                outputLimitSpec.getTimePeriodExpr().validate(null, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
+                outputLimitSpec.getTimePeriodExpr().validate(validationContext);
             }
         }
 

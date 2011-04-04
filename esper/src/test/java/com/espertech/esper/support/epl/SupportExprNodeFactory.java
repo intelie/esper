@@ -361,21 +361,21 @@ public class SupportExprNodeFactory
         variableService.createNewVariable("intPrimitive", Integer.class.getName(), 10, null);
         variableService.createNewVariable("var1", String.class.getName(), "my_variable_value", null);
 
-        topNode.getValidatedSubtree(streamTypeService, getMethodResService(), viewResources, null, variableService, null, null);
+        topNode.getValidatedSubtree(new ExprValidationContext(streamTypeService, getMethodResService(), viewResources, null, variableService, null, null, null, null));
     }
 
     public static void validate1StreamBean(ExprNode topNode) throws Exception
     {
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", false, "uri");
-        topNode.getValidatedSubtree(streamTypeService, null, null, null, null, null, null);
+        topNode.getValidatedSubtree(ExprValidationContextFactory.make(streamTypeService));
     }
 
     public static void validate1StreamMD(ExprNode topNode) throws Exception
     {
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", false, "uri");
-        topNode.getValidatedSubtree(streamTypeService, null, null, null, null, null, null);
+        topNode.getValidatedSubtree(ExprValidationContextFactory.make(streamTypeService));
     }
 
     public static MethodResolutionService getMethodResService()

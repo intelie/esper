@@ -8,13 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.enummethod.dot.*;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
+import com.espertech.esper.epl.enummethod.dot.ExprDotStaticMethodWrap;
+import com.espertech.esper.epl.enummethod.dot.ExprDotStaticMethodWrapFactory;
+import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
@@ -105,9 +102,9 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
         return other.clazz == this.clazz && other.functionName.endsWith(this.functionName);
 	}
 
-	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+	public void validate(ExprValidationContext validationContext) throws ExprValidationException
 	{
-        ExprNodeUtility.validate(chainSpec, streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+        ExprNodeUtility.validate(chainSpec, validationContext);
 
         // get first chain item
         List<ExprChainedSpec> chainList = new ArrayList<ExprChainedSpec>(chainSpec);
@@ -141,7 +138,7 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
         Method method;
 		try
 		{
-			method = methodResolutionService.resolveMethod(clazz.getName(), firstItem.getName(), paramTypes);
+			method = validationContext.getMethodResolutionService().resolveMethod(clazz.getName(), firstItem.getName(), paramTypes);
 			FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
 			staticMethod = declaringClass.getMethod(method);
 		}
@@ -151,11 +148,10 @@ public class ExprPlugInSingleRowNode extends ExprNode implements ExprNodeInnerNo
 		}
 
         // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
-        ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.make(method, eventAdapterService, chainList);
+        ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.make(method, validationContext.getEventAdapterService(), chainList);
         ExprDotEvalTypeInfo typeInfo = optionalLambdaWrap != null ? optionalLambdaWrap.getTypeInfo() : ExprDotEvalTypeInfo.scalarOrUnderlying(method.getReturnType());
 
-        ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
-        ExprDotEval[] eval = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainList, validationContext, false, streamTypeService).getSecond();
+        ExprDotEval[] eval = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainList, validationContext, false).getSecond();
         evaluator = new ExprDotEvalStaticMethod(clazz.getName(), staticMethod, childEvals, isConstantParameters, optionalLambdaWrap, eval);
 	}
 

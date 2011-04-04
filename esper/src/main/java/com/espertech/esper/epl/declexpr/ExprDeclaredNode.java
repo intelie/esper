@@ -9,15 +9,10 @@
 package com.espertech.esper.epl.declexpr;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.ExpressionDeclItem;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.SerializableObjectCopier;
 
 import java.util.ArrayList;
@@ -104,7 +99,7 @@ public class ExprDeclaredNode extends ExprNode
         subselect.setFilterSubqueryStreamTypes(availableTypes);
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         if (exprEvaluator != null) {
             return; // already evaluated
@@ -117,7 +112,7 @@ public class ExprDeclaredNode extends ExprNode
         // validate chain
         List<ExprNode> validated = new ArrayList<ExprNode>();
         for (ExprNode expr : chainParameters) {
-            validated.add(expr.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService));
+            validated.add(expr.getValidatedSubtree(validationContext));
         }
         chainParameters = validated;
 
@@ -137,8 +132,8 @@ public class ExprDeclaredNode extends ExprNode
                 throw new ExprValidationException("Expression '" + prototype.getName() + "' requires a stream name as a parameter");
             }
             ExprStreamUnderlyingNode und = (ExprStreamUnderlyingNode) parameter;
-            eventTypes[i] = streamTypeService.getEventTypes()[und.getStreamId()];
-            isIStreamOnly[i] = streamTypeService.getIStreamOnly()[und.getStreamId()];
+            eventTypes[i] = validationContext.getStreamTypeService().getEventTypes()[und.getStreamId()];
+            isIStreamOnly[i] = validationContext.getStreamTypeService().getIStreamOnly()[und.getStreamId()];
             streamNames[i] = prototype.getParametersNames().get(i);
             streamsIdsPerStream[i] = und.getStreamId();
 
@@ -147,12 +142,14 @@ public class ExprDeclaredNode extends ExprNode
             }
         }
 
+        StreamTypeService streamTypeService = validationContext.getStreamTypeService();
         StreamTypeServiceImpl copyTypes = new StreamTypeServiceImpl(eventTypes, streamNames, isIStreamOnly, streamTypeService.getEngineURIQualifier(), streamTypeService.isOnDemandStreams());
         copyTypes.setRequireStreamNames(true);
 
         // validate expression body in this context
         try {
-            expressionBodyCopy = expressionBodyCopy.getValidatedSubtree(copyTypes, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+            ExprValidationContext expressionBodyContext = new ExprValidationContext(copyTypes, validationContext);
+            expressionBodyCopy = expressionBodyCopy.getValidatedSubtree(expressionBodyContext);
         }
         catch (ExprValidationException ex) {
             String message = "Error validating expression declaration '" + prototype.getName() + "': " + ex.getMessage();

@@ -25,7 +25,7 @@ public class TestExprNotNode extends TestCase
         // fails with zero expressions
         try
         {
-            notNode.validate(null, null, null, null, null, null, null);
+            notNode.validate(ExprValidationContextFactory.makeEmpty());
             fail();
         }
         catch (ExprValidationException ex)
@@ -38,7 +38,7 @@ public class TestExprNotNode extends TestCase
         notNode.addChildNode(new SupportExprNode(Boolean.class));
         try
         {
-            notNode.validate(null, null, null, null, null, null, null);
+            notNode.validate(ExprValidationContextFactory.makeEmpty());
             fail();
         }
         catch (ExprValidationException ex)
@@ -51,7 +51,7 @@ public class TestExprNotNode extends TestCase
         notNode.addChildNode(new SupportExprNode(String.class));
         try
         {
-            notNode.validate(null, null, null, null, null, null, null);
+            notNode.validate(ExprValidationContextFactory.makeEmpty());
             fail();
         }
         catch (ExprValidationException ex)
@@ -62,7 +62,7 @@ public class TestExprNotNode extends TestCase
         // validates
         notNode = new ExprNotNode();
         notNode.addChildNode(new SupportExprNode(Boolean.class));
-        notNode.validate(null, null, null, null, null, null, null);
+        notNode.validate(ExprValidationContextFactory.makeEmpty());
     }
 
     public void testEvaluate() throws Exception

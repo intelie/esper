@@ -10,10 +10,7 @@ package com.espertech.esper.epl.parse;
 
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprTimePeriod;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
@@ -116,7 +113,8 @@ public class ASTOutputLimitHelper
                 ExprNode expression = astExprNodeMap.remove(child);
 
                 try {
-                    timePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null);
+                    ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
+                    timePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(validationContext);
                 }
                 catch (ExprValidationException ex)
                 {
@@ -140,7 +138,8 @@ public class ASTOutputLimitHelper
                 if (expression != null)
                 {
                     try {
-                        afterTimePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null);
+                        ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
+                        afterTimePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(validationContext);
                     }
                     catch (ExprValidationException ex)
                     {

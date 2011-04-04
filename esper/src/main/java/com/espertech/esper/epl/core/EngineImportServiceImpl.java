@@ -17,6 +17,7 @@ import com.espertech.esper.util.MethodResolver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -225,6 +226,17 @@ public class EngineImportServiceImpl implements EngineImportService
         }
     }
 
+    public Constructor resolveCtor(Class clazz, Class[] paramTypes) throws EngineImportException {
+        try
+        {
+            return MethodResolver.resolveCtor(clazz, paramTypes);
+        }
+        catch (EngineNoSuchCtorException e)
+        {
+            throw convert(clazz, paramTypes, e);
+        }
+    }
+
     public Method resolveMethod(String className, String methodName)
 			throws EngineImportException
     {
@@ -394,7 +406,41 @@ public class EngineImportServiceImpl implements EngineImportService
 
         if (e.getNearestMissMethod() != null)
         {
-            message += (" (nearest match found was '" + e.getNearestMissMethod().getName() + "' taking type(s) '" + JavaClassHelper.getParameterAsString(e.getNearestMissMethod().getParameterTypes()) + "')");
+            message += " (nearest match found was '" + e.getNearestMissMethod().getName();
+            if (e.getNearestMissMethod().getParameterTypes().length == 0) {
+                message += "' taking no parameters";
+            }
+            else {
+                message += "' taking type(s) '" + JavaClassHelper.getParameterAsString(e.getNearestMissMethod().getParameterTypes()) + "'";
+            }
+            message += ")";
+        }
+        return new EngineImportException(message, e);
+    }
+
+    private EngineImportException convert(Class clazz, Class[] paramTypes, EngineNoSuchCtorException e)
+    {
+        String expected = JavaClassHelper.getParameterAsString(paramTypes);
+        String message = "Could not find constructor ";
+        if (paramTypes.length > 0)
+        {
+            message += "in class '" + JavaClassHelper.getClassNameFullyQualPretty(clazz) + "' with matching parameter number and expected parameter type(s) '" + expected + "'";
+        }
+        else
+        {
+            message += "in class '" + JavaClassHelper.getClassNameFullyQualPretty(clazz) + "' taking no parameters";
+        }
+
+        if (e.getNearestMissCtor() != null)
+        {
+            message += " (nearest matching constructor ";
+            if (e.getNearestMissCtor().getParameterTypes().length == 0) {
+                message += "taking no parameters";
+            }
+            else {
+                message += "taking type(s) '" + JavaClassHelper.getParameterAsString(e.getNearestMissCtor().getParameterTypes()) + "'";
+            }
+            message += ")";
         }
         return new EngineImportException(message, e);
     }

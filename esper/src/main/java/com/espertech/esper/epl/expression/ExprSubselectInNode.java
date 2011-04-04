@@ -19,7 +19,6 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -63,7 +62,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
         return isNotIn;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         subselectEvalStrategy = SubselectEvalStrategyFactory.createStrategy(this, isNotIn, false, false, null);
     }

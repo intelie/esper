@@ -47,7 +47,7 @@ public class ExprNumberSetRange extends ExprNode implements ExprEvaluator
         return node instanceof ExprNumberSetRange;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
         Class typeOne = evaluators[0].getType();

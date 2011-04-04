@@ -13,10 +13,7 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.core.ViewResourceCallback;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNodeSummaryVisitor;
-import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -187,8 +184,9 @@ public abstract class ViewFactorySupport implements ViewFactory
         ExprNode validated;
         try
         {
-            validated = expression.getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(),
-                    null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
+            ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, statementContext.getMethodResolutionService(),
+                    null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+            validated = expression.getValidatedSubtree(validationContext);
         }
         catch (ExprValidationException ex)
         {

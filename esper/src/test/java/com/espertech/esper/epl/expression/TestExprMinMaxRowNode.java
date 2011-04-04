@@ -17,11 +17,11 @@ public class TestExprMinMaxRowNode extends TestCase
     {
         minMaxNode.addChildNode(new SupportExprNode(Double.class));
         minMaxNode.addChildNode(new SupportExprNode(Integer.class));
-        minMaxNode.validate(null, null, null, null, null, null, null);
+        minMaxNode.validate(ExprValidationContextFactory.makeEmpty());
         assertEquals(Double.class, minMaxNode.getType());
 
         minMaxNode.addChildNode(new SupportExprNode(Double.class));
-        minMaxNode.validate(null, null, null, null, null, null, null);
+        minMaxNode.validate(ExprValidationContextFactory.makeEmpty());
         assertEquals(Double.class, minMaxNode.getType());
     }
 
@@ -39,7 +39,7 @@ public class TestExprMinMaxRowNode extends TestCase
         // Must have 2 or more subnodes
         try
         {
-            minMaxNode.validate(null, null, null, null, null, null, null);
+            minMaxNode.validate(ExprValidationContextFactory.makeEmpty());
             fail();
         }
         catch (ExprValidationException ex)
@@ -52,7 +52,7 @@ public class TestExprMinMaxRowNode extends TestCase
         minMaxNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            minMaxNode.validate(null, null, null, null, null, null, null);
+            minMaxNode.validate(ExprValidationContextFactory.makeEmpty());
             fail();
         }
         catch (ExprValidationException ex)
@@ -108,7 +108,7 @@ public class TestExprMinMaxRowNode extends TestCase
         {
             nodeMin.addChildNode(new SupportExprNode(new Float(floatValue)));
         }
-        nodeMin.validate(null, null, null, null, null, null, null);
+        nodeMin.validate(ExprValidationContextFactory.makeEmpty());
     }
 
     private ExprMinMaxRowNode makeNode(Object valueOne, Class typeOne,
@@ -119,7 +119,7 @@ public class TestExprMinMaxRowNode extends TestCase
         maxNode.addChildNode(new SupportExprNode(valueOne, typeOne));
         maxNode.addChildNode(new SupportExprNode(valueTwo, typeTwo));
         maxNode.addChildNode(new SupportExprNode(valueThree, typeThree));
-        maxNode.validate(null, null, null, null, null, null, null);
+        maxNode.validate(ExprValidationContextFactory.makeEmpty());
         return maxNode;
     }
 

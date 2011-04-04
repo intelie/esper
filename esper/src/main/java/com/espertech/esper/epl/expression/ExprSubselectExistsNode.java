@@ -21,7 +21,6 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -50,7 +49,7 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
         return null;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
     }
 

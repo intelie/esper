@@ -85,9 +85,9 @@ public class ExprNumberSetCronParam extends ExprNode implements ExprEvaluator
         return other.cronOperator.equals(this.cronOperator); 
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
-        this.timeProvider = timeProvider;
+        this.timeProvider = validationContext.getTimeProvider();
         if (this.getChildNodes().isEmpty())
         {
             return;

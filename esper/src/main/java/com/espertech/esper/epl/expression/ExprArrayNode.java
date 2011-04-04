@@ -9,12 +9,6 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleNumberCoercer;
@@ -52,7 +46,7 @@ public class ExprArrayNode extends ExprNode implements ExprEvaluator
         return this;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         length = this.getChildNodes().size();
         evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
@@ -112,7 +106,7 @@ public class ExprArrayNode extends ExprNode implements ExprEvaluator
                 results = null;  // not using a constant result
                 break;
             }
-            results[index] = evaluators[index].evaluate(null, false, exprEvaluatorContext);
+            results[index] = evaluators[index].evaluate(null, false, validationContext.getExprEvaluatorContext());
             index++;
         }
 

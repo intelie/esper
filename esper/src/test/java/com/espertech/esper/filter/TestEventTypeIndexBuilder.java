@@ -62,16 +62,5 @@ public class TestEventTypeIndexBuilder extends TestCase
         indexBuilder.remove(callbackOne);
         indexBuilder.add(valueSetOne, callbackOne);
         indexBuilder.remove(callbackOne);
-
-        // Try invalid remove
-        try
-        {
-            indexBuilder.remove(callbackOne);
-            assertTrue(false);
-        }
-        catch (IllegalArgumentException ex)
-        {
-            // Expected Exception
-        }
     }
 }

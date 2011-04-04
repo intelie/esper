@@ -97,6 +97,7 @@ public class ResultSetProcessorFactory
 
         // Validate selection expressions, if any (could be wildcard i.e. empty list)
         List<SelectClauseExprCompiledSpec> namedSelectionList = new LinkedList<SelectClauseExprCompiledSpec>();
+        ExprValidationContext validationContext = new ExprValidationContext(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(),stmtContext, stmtContext.getEventAdapterService(), stmtContext.getStatementName(), stmtContext.getAnnotations());
         for (int i = 0; i < selectClauseSpec.getSelectExprList().size(); i++)
         {
             // validate element
@@ -104,7 +105,7 @@ public class ResultSetProcessorFactory
             if (element instanceof SelectClauseExprCompiledSpec)
             {
                 SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
-                ExprNode validatedExpression = expr.getSelectExpression().getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(),stmtContext, stmtContext.getEventAdapterService());
+                ExprNode validatedExpression = expr.getSelectExpression().getValidatedSubtree(validationContext);
 
                 // determine an element name if none assigned
                 String asName = expr.getAssignedName();
@@ -194,7 +195,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within group-by");
             }
 
-            ExprNode validatedGroupBy = groupByNodes.get(i).getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(),stmtContext, stmtContext.getEventAdapterService());
+            ExprNode validatedGroupBy = groupByNodes.get(i).getValidatedSubtree(validationContext);
             groupByNodes.set(i, validatedGroupBy);
             groupByTypes[i] = validatedGroupBy.getExprEvaluator().getType();
         }
@@ -211,7 +212,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within having-clause");
             }
 
-            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(), stmtContext, stmtContext.getEventAdapterService());
+            optionalHavingNode = optionalHavingNode.getValidatedSubtree(validationContext);
         }
 
         // Validate order-by expressions, if any (could be empty list for no order-by)
@@ -228,7 +229,7 @@ public class ResultSetProcessorFactory
             }
 
             Boolean isDescending = orderByList.get(i).isDescending();
-        	OrderByItem validatedOrderBy = new OrderByItem(orderByNode.getValidatedSubtree(typeService, stmtContext.getMethodResolutionService(), viewResourceDelegate, stmtContext.getSchedulingService(), stmtContext.getVariableService(), stmtContext, stmtContext.getEventAdapterService()), isDescending);
+        	OrderByItem validatedOrderBy = new OrderByItem(orderByNode.getValidatedSubtree(validationContext), isDescending);
         	orderByList.set(i, validatedOrderBy);
         }
 
@@ -302,7 +303,7 @@ public class ResultSetProcessorFactory
         // Construct the processor for evaluating the select clause
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(stmtContext.getDynamicReferenceEventTypes());
         SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, statementSpecCompiled.getForClauseSpec(), typeService, stmtContext.getEventAdapterService(), stmtContext.getStatementResultService(), stmtContext.getValueAddEventService(), selectExprEventTypeRegistry, stmtContext.getMethodResolutionService(), stmtContext,
-                stmtContext.getVariableService(), stmtContext.getTimeProvider(), stmtContext.getEngineURI(), stmtContext.getStatementId());
+                stmtContext.getVariableService(), stmtContext.getTimeProvider(), stmtContext.getEngineURI(), stmtContext.getStatementId(), stmtContext.getStatementName(), stmtContext.getAnnotations());
 
         // Get a list of event properties being aggregated in the select clause, if any
         Set<Pair<Integer, String>> propertiesGroupBy = getGroupByProperties(groupByNodes);

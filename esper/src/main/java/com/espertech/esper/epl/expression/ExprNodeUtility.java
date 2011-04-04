@@ -10,13 +10,8 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.event.EventBeanUtility;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -318,13 +313,13 @@ public class ExprNodeUtility
     }
 
 
-    public static void validate(List<ExprChainedSpec> chainSpec, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException {
+    public static void validate(List<ExprChainedSpec> chainSpec, ExprValidationContext validationContext) throws ExprValidationException {
 
         // validate all parameters
         for (ExprChainedSpec chainElement : chainSpec) {
             List<ExprNode> validated = new ArrayList<ExprNode>();
             for (ExprNode expr : chainElement.getParameters()) {
-                validated.add(expr.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService));
+                validated.add(expr.getValidatedSubtree(validationContext));
             }
             chainElement.setParameters(validated);
         }

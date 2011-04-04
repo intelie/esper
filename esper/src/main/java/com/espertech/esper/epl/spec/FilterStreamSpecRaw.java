@@ -86,7 +86,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
             PropertyEvaluator optionalPropertyEvaluator = null;
             if (rawFilterSpec.getOptionalPropertyEvalSpec() != null) {
-                optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(rawFilterSpec.getOptionalPropertyEvalSpec(), namedWindowType, this.getOptionalStreamName(), context.getEventAdapterService(), context.getMethodResolutionService(), context.getTimeProvider(), context.getVariableService(), context.getEngineURI(), context.getStatementId());
+                optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(rawFilterSpec.getOptionalPropertyEvalSpec(), namedWindowType, this.getOptionalStreamName(), context.getEventAdapterService(), context.getMethodResolutionService(), context.getTimeProvider(), context.getVariableService(), context.getEngineURI(), context.getStatementId(), context.getStatementName(), context.getAnnotations());
             }
             eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryName());
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.getOptions(), optionalPropertyEvaluator);

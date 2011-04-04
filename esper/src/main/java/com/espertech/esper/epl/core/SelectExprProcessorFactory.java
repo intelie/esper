@@ -10,10 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.soda.ForClauseKeyword;
 import com.espertech.esper.core.StatementResultService;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNodeUtility;
-import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
@@ -24,6 +21,7 @@ import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -62,7 +60,9 @@ public class SelectExprProcessorFactory
                                                    VariableService variableService,
                                                    TimeProvider timeProvider,
                                                    String engineURI,
-                                                   String statementId)
+                                                   String statementId,
+                                                   String statementName,
+                                                   Annotation[] annotations)
         throws ExprValidationException
     {
         SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext, statementId);
@@ -96,8 +96,9 @@ public class SelectExprProcessorFactory
 
                     StreamTypeService type = new StreamTypeServiceImpl(synthetic.getResultEventType(), null, false, engineURI);
                     groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
+                    ExprValidationContext validationContext = new ExprValidationContext(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, annotations);
                     for (int i = 0; i < item.getExpressions().size(); i++) {
-                        groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+                        groupedDeliveryExpr[i] = item.getExpressions().get(i).getValidatedSubtree(validationContext);
                     }
                     forDelivery = true;
                 }

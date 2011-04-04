@@ -8,14 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.annotation.Audit;
+import com.espertech.esper.client.annotation.AuditEnum;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.*;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.LevenshteinDistance;
@@ -25,8 +26,10 @@ import java.util.Map;
 /**
  * Represents an stream property identifier in a filter expressiun tree.
  */
-public class ExprIdentNode extends ExprNode implements ExprEvaluator
+public class ExprIdentNode extends ExprNode
 {
+    private static final long serialVersionUID = 5882493771230745244L;
+
     // select myprop from...        is a simple property, no stream supplied
     // select s0.myprop from...     is a simple property with a stream supplied, or a nested property (cannot tell until resolved)
     // select indexed[1] from ...   is a indexed property
@@ -36,10 +39,7 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
 
     private String resolvedStreamName;
     private String resolvedPropertyName;
-    private transient EventPropertyGetter propertyGetter;
-    private int streamNum = -1;
-    private Class propertyType;
-    private static final long serialVersionUID = 5882493771230745244L;
+    private transient ExprIdentNodeEvaluator evaluator;
 
     /**
      * Ctor.
@@ -78,17 +78,17 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
     public ExprIdentNode(EventType eventType, String propertyName, int streamNumber) {
         unresolvedPropertyName = propertyName;
         resolvedPropertyName = propertyName;
-        streamNum = streamNumber;
-        propertyGetter = eventType.getGetter(propertyName);
+        EventPropertyGetter propertyGetter = eventType.getGetter(propertyName);
         if (propertyGetter == null) {
             throw new IllegalArgumentException("Ident-node constructor could not locate property " + propertyName);
         }
-        propertyType = eventType.getPropertyType(propertyName);
+        Class propertyType = eventType.getPropertyType(propertyName);
+        evaluator = new ExprIdentNodeEvaluator(streamNumber, propertyGetter, propertyType);
     }
 
     public ExprEvaluator getExprEvaluator()
     {
-        return this;
+        return evaluator;
     }
 
     public Map<String, Object> getEventType() {
@@ -138,28 +138,27 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
         }
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
-        Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
+        Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(validationContext.getStreamTypeService(), unresolvedPropertyName, streamOrPropertyName);
         resolvedStreamName = propertyInfoPair.getSecond();
-        streamNum = propertyInfoPair.getFirst().getStreamNum();
-        propertyType = propertyInfoPair.getFirst().getPropertyType();
+        int streamNum = propertyInfoPair.getFirst().getStreamNum();
+        Class propertyType = propertyInfoPair.getFirst().getPropertyType();
         resolvedPropertyName = propertyInfoPair.getFirst().getPropertyName();
-        propertyGetter = propertyInfoPair.getFirst().getStreamEventType().getGetter(resolvedPropertyName);
+        EventPropertyGetter propertyGetter = propertyInfoPair.getFirst().getStreamEventType().getGetter(resolvedPropertyName);
 
         if (propertyGetter == null)
         {
             throw new ExprValidationException("Property getter returned was invalid for property '" + unresolvedPropertyName + "'");
         }
-    }
 
-    public Class getType()
-    {
-        if (resolvedPropertyName == null)
-        {
-            throw new IllegalStateException("Identifier node has not been validated");
+        Audit audit = AuditEnum.PROPERTY.getAudit(validationContext.getAnnotations());
+        if (audit != null) {
+            evaluator = new ExprIdentNodeEvaluatorLogging(streamNum, propertyGetter, propertyType, resolvedPropertyName, validationContext.getStatementName());
         }
-        return propertyType;
+        else {
+            evaluator = new ExprIdentNodeEvaluator(streamNum, propertyGetter, propertyType);
+        }
     }
 
     public boolean isConstantResult()
@@ -173,11 +172,17 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
      */
     public int getStreamId()
     {
-        if (streamNum == -1)
-        {
-            throw new IllegalStateException("Identifier node has not been validated");
+        if (evaluator == null) {
+            throw new IllegalStateException("Identifier expression has not been validated");
         }
-        return streamNum;
+        return evaluator.getStreamNum();
+    }
+
+    public Class getType() {
+        if (evaluator == null) {
+            throw new IllegalStateException("Identifier expression has not been validated");
+        }
+        return evaluator.getType();
     }
 
     /**
@@ -334,35 +339,7 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
     {
         return "unresolvedPropertyName=" + unresolvedPropertyName +
                 " streamOrPropertyName=" + streamOrPropertyName +
-                " resolvedPropertyName=" + resolvedPropertyName +
-                " propertyInfo.pos=" + streamNum +
-                " propertyInfo.type=" + propertyType;
-    }
-
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
-    {
-        EventBean event = eventsPerStream[streamNum];
-        if (event == null)
-        {
-            return null;
-        }
-        return propertyGetter.get(event);
-    }
-
-    /**
-     * Returns true if the property exists, or false if not.
-     * @param eventsPerStream each stream's events
-     * @param isNewData if the stream represents insert or remove stream
-     * @return true if the property exists, false if not
-     */
-    public boolean evaluatePropertyExists(EventBean[] eventsPerStream, boolean isNewData)
-    {
-        EventBean event = eventsPerStream[streamNum];
-        if (event == null)
-        {
-            return false;
-        }
-        return propertyGetter.isExistsProperty(event);
+                " resolvedPropertyName=" + resolvedPropertyName;
     }
 
     public String toExpressionString()
@@ -402,5 +379,9 @@ public class ExprIdentNode extends ExprNode implements ExprEvaluator
             streamOrProp = propertyNameNestable.substring(0, propertyNameNestable.indexOf('.'));
         }
         return getTypeFromStream(streamTypeService, prop, streamOrProp);
+    }
+
+    public ExprIdentNodeEvaluator getExprEvaluatorIdent() {
+        return evaluator;
     }
 }

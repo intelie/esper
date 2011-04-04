@@ -1,17 +1,17 @@
 package com.espertech.esper.epl.db;
 
-import com.espertech.esper.epl.join.pollindex.PollResultIndexingStrategy;
-import junit.framework.TestCase;
-import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.table.UnindexedEventTableList;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprIdentNode;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.join.pollindex.PollResultIndexingStrategy;
+import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.SupportStreamTypeSvc3Stream;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import junit.framework.TestCase;
 
 import java.util.*;
 
@@ -39,7 +39,7 @@ public class TestDatabasePollingViewable extends TestCase
 
         Map<Integer, List<ExprNode>> sqlParameters = new HashMap<Integer, List<ExprNode>>();
         sqlParameters.put(1, Collections.singletonList((ExprNode) new ExprIdentNode("intPrimitive", "s0")));
-        pollingViewable.validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, sqlParameters, null);
+        pollingViewable.validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, sqlParameters, null, null, null);
 
         indexingStrategy = new PollResultIndexingStrategy()
         {

@@ -29,6 +29,7 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.View;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
@@ -104,16 +105,17 @@ public class MethodPollingViewable implements HistoricalEventViewable
 
     public void validate(EngineImportService engineImportService, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider,
                          VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot,
-                         SchedulingService schedulingService, String engineURI, Map<Integer, List<ExprNode>> sqlParameters, EventAdapterService eventAdapterService) throws ExprValidationException {
+                         SchedulingService schedulingService, String engineURI, Map<Integer, List<ExprNode>> sqlParameters, EventAdapterService eventAdapterService, String statementName, Annotation[] annotations) throws ExprValidationException {
         Class[] paramTypes = new Class[inputParameters.size()];
         int count = 0;
         validatedExprNodes = new ExprEvaluator[inputParameters.size()];
         requiredStreams = new TreeSet<Integer>();
         ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);
 
+        ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, annotations);
         for (ExprNode exprNode : inputParameters)
         {
-            ExprNode validated = exprNode.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+            ExprNode validated = exprNode.getValidatedSubtree(validationContext);
             ExprEvaluator evaluator = validated.getExprEvaluator();
             validatedExprNodes[count] = evaluator;
             paramTypes[count] = evaluator.getType();

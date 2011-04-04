@@ -11,13 +11,7 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.VariantEvent;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
@@ -45,7 +39,7 @@ public class ExprTypeofNode extends ExprNode
         return null;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
         {
@@ -60,13 +54,13 @@ public class ExprTypeofNode extends ExprNode
 
         if (this.getChildNodes().get(0) instanceof ExprIdentNode) {
             ExprIdentNode ident = (ExprIdentNode) getChildNodes().get(0);
-            int streamNum = streamTypeService.getStreamNumForStreamName(ident.getFullUnresolvedName());
+            int streamNum = validationContext.getStreamTypeService().getStreamNumForStreamName(ident.getFullUnresolvedName());
             if (streamNum != -1) {
                 evaluator = new StreamEventTypeEval(streamNum);
                 return;
             }
 
-            EventType eventType = streamTypeService.getEventTypes()[ident.getStreamId()];
+            EventType eventType = validationContext.getStreamTypeService().getEventTypes()[ident.getStreamId()];
             if (eventType.getFragmentType(ident.getResolvedPropertyName()) != null) {
                 evaluator = new FragmentTypeEval(ident.getStreamId(), eventType, ident.getResolvedPropertyName());
                 return;

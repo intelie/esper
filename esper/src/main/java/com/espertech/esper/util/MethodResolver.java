@@ -8,17 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.util;
 
+import com.espertech.esper.epl.core.EngineNoSuchCtorException;
+import com.espertech.esper.epl.core.EngineNoSuchMethodException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import com.espertech.esper.epl.core.EngineNoSuchMethodException;
 
 /**
  * Used for retrieving static and instance method objects. It
@@ -165,7 +166,7 @@ public class MethodResolver
 			}
 
 			// Check the parameter list
-			int conversionCount = compareParameterTypes(method, paramTypes);
+			int conversionCount = compareParameterTypes(method.getParameterTypes(), paramTypes);
 
 			// Parameters don't match
 			if(conversionCount == -1)
@@ -253,10 +254,8 @@ public class MethodResolver
 	// Returns -1 if the invocation parameters aren't applicable
 	// to the method. Otherwise returns the number of parameters
 	// that have to be converted
-	private static int compareParameterTypes(Method method, Class[] invocationParameters)
+	private static int compareParameterTypes(Class[] declarationParameters, Class[] invocationParameters)
 	{
-		Class[] declarationParameters = method.getParameterTypes();
-
 		if(invocationParameters == null)
 		{
 			return declarationParameters.length == 0 ? 0 : -1;
@@ -271,6 +270,10 @@ public class MethodResolver
 		int count = 0;
 		for(Class parameter : declarationParameters)
 		{
+            if ((invocationParameters[count] == null) && !(parameter.isPrimitive())) {
+                count++;
+                continue;
+            }
 			if(!isIdentityConversion(parameter, invocationParameters[count]))
 			{
 				conversionCount++;
@@ -304,4 +307,88 @@ public class MethodResolver
 		}
 
 	}
+
+    public static Constructor resolveCtor(Class declaringClass, Class[] paramTypes) throws EngineNoSuchCtorException
+    {
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".resolve ctor className=" + declaringClass.getSimpleName());
+        }
+
+        // Get all the methods for this class
+        Constructor[] ctors = declaringClass.getConstructors();
+
+        Constructor bestMatch = null;
+        int bestConversionCount = -1;
+
+        // Examine each method, checking if the signature is compatible
+        Constructor conversionFailedCtor = null;
+        for(Constructor ctor : ctors)
+        {
+            // Check the modifiers: we only want public
+            if(!Modifier.isPublic(ctor.getModifiers()))
+            {
+                continue;
+            }
+
+            // Check the parameter list
+            int conversionCount = compareParameterTypes(ctor.getParameterTypes(), paramTypes);
+
+            // Parameters don't match
+            if(conversionCount == -1)
+            {
+                conversionFailedCtor = ctor;
+                continue;
+            }
+
+            // Parameters match exactly
+            if(conversionCount == 0)
+            {
+                bestMatch = ctor;
+                break;
+            }
+
+            // No previous match
+            if(bestMatch == null)
+            {
+                bestMatch = ctor;
+                bestConversionCount = conversionCount;
+            }
+            else
+            {
+                // Current match is better
+                if(conversionCount < bestConversionCount)
+                {
+                    bestMatch = ctor;
+                    bestConversionCount = conversionCount;
+                }
+            }
+
+        }
+
+        if(bestMatch != null)
+        {
+            return bestMatch;
+        }
+        else
+        {
+            StringBuffer params = new StringBuffer();
+            if(paramTypes != null && paramTypes.length != 0)
+            {
+                String appendString = "";
+                for(Object param : paramTypes)
+                {
+                    params.append(appendString);
+                    if (param == null) {
+                        params.append("(null)");
+                    }
+                    else {
+                        params.append(param.toString());
+                    }
+                    appendString = ", ";
+                }
+            }
+            throw new EngineNoSuchCtorException("Constructor not found for " + declaringClass.getSimpleName() + " taking (' + params + ')'", conversionFailedCtor);
+        }
+    }
 }

@@ -37,10 +37,7 @@ public class ExprTimestampNode extends ExprNode implements ExprEvaluator
         return this;
     }
 
-    public void validate(StreamTypeService streamTypeService,
-                         MethodResolutionService methodResolutionService,
-                         ViewResourceDelegate viewResourceDelegate,
-                         TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 0)
         {

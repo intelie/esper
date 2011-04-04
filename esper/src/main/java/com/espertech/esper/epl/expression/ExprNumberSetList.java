@@ -73,7 +73,7 @@ public class ExprNumberSetList extends ExprNode implements ExprEvaluator
         return null;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         // all nodes must either be int, frequency or range
         evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());

@@ -30,7 +30,7 @@ public class TestExprNode extends TestCase
         parent_2.addChildNode(supportNode2_1);
         parent_2.addChildNode(supportNode2_2);
 
-        topNode.getValidatedSubtree(null, null, null, null, null, null, null);
+        topNode.getValidatedSubtree(ExprValidationContextFactory.makeEmpty());
 
         assertEquals(1, supportNode1_1.getValidateCountSnapshot());
         assertEquals(2, supportNode1_2.getValidateCountSnapshot());

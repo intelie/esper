@@ -13,6 +13,7 @@ import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.ConfigurationMethodRef;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 /**
@@ -79,6 +80,15 @@ public interface EngineImportService
      * @throws EngineImportException if the method cannot be resolved to a visible static method
      */
     public Method resolveMethod(String className, String methodName, Class[] paramTypes) throws EngineImportException;
+
+    /**
+     * Resolves a constructor matching list of parameter types.
+     * @param clazz is the class to use
+     * @param paramTypes is parameter types match expression sub-nodes
+     * @return method this resolves to
+     * @throws EngineImportException if the ctor cannot be resolved
+     */
+    public Constructor resolveCtor(Class clazz, Class[] paramTypes) throws EngineImportException;
 
     /**
      * Resolves a given class name, either fully qualified and simple and imported to a class.

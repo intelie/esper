@@ -11,12 +11,10 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.*;
+import com.espertech.esper.epl.core.DuplicatePropertyException;
+import com.espertech.esper.epl.core.PropertyNotFoundException;
 import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.Map;
 
@@ -74,9 +72,9 @@ public class ExprVariableNode extends ExprNode implements ExprEvaluator
         return null;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
-        reader = variableService.getReader(variableName);
+        reader = validationContext.getVariableService().getReader(variableName);
         if (reader == null)
         {
             throw new ExprValidationException("A variable by name '" + variableName + " has not been declared");
@@ -84,8 +82,8 @@ public class ExprVariableNode extends ExprNode implements ExprEvaluator
 
         // determine if any types are property agnostic; If yes, resolve to variable
         boolean hasPropertyAgnosticType = false;
-        EventType[] types = streamTypeService.getEventTypes();
-        for (int i = 0; i < streamTypeService.getEventTypes().length; i++)
+        EventType[] types = validationContext.getStreamTypeService().getEventTypes();
+        for (int i = 0; i < validationContext.getStreamTypeService().getEventTypes().length; i++)
         {
             if (types[i] instanceof EventTypeSPI)
             {
@@ -98,7 +96,7 @@ public class ExprVariableNode extends ExprNode implements ExprEvaluator
             // the variable name should not overlap with a property name
             try
             {
-                streamTypeService.resolveByPropertyName(variableName);
+                validationContext.getStreamTypeService().resolveByPropertyName(variableName);
                 throw new ExprValidationException("The variable by name '" + variableName + "' is ambigous to a property of the same name");
             }
             catch (DuplicatePropertyException e)

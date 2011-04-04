@@ -45,7 +45,7 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanErrorTestingOne", SupportBeanErrorTestingOne.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanErrorTestingTwo", SupportBeanErrorTestingTwo.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanReadOnly", SupportBeanReadOnly.class);
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanArrayCollMap", SupportBeanArrayCollMap.class);                
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanArrayCollMap", SupportBeanArrayCollMap.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_N", SupportBean_N.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_S0", SupportBean_S0.class);
         epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanObject", SupportBeanObject.class);       
@@ -67,6 +67,76 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         ConfigurationEventTypeXMLDOM xml = new ConfigurationEventTypeXMLDOM();
         xml.setRootElementName("abc");
         epService.getEPAdministrator().getConfiguration().addEventType("xmltype", xml);
+    }
+
+    public void testCtor() {
+
+        // simple type and null values
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanCtorOne", SupportBeanCtorOne.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanCtorTwo", SupportBeanCtorTwo.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_ST0", SupportBean_ST0.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_ST1", SupportBean_ST1.class);
+
+        String eplOne = "insert into SupportBeanCtorOne select string, intBoxed, intPrimitive, boolPrimitive from SupportBean";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(eplOne);
+        stmtOne.addListener(listener);
+
+        sendReceive("E1", 2, true, 100);
+        sendReceive("E2", 3, false, 101);
+        sendReceive(null, 4, true, null);
+        stmtOne.destroy();
+
+        // boxable type and null values
+        String eplTwo = "insert into SupportBeanCtorOne select string, null, intBoxed from SupportBean";
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL(eplTwo);
+        stmtTwo.addListener(listener);
+        sendReceiveTwo("E1", 100);
+        stmtTwo.destroy();
+
+        // test join wildcard
+        String eplThree = "insert into SupportBeanCtorTwo select * from SupportBean_ST0.std:lastevent(), SupportBean_ST1.std:lastevent()";
+        EPStatement stmtThree = epService.getEPAdministrator().createEPL(eplThree);
+        stmtThree.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("ST0", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST1("ST1", 2));
+        SupportBeanCtorTwo event = (SupportBeanCtorTwo) listener.assertOneGetNewAndReset().getUnderlying();
+        assertNotNull(event.getSt0());
+        assertNotNull(event.getSt1());
+        stmtThree.destroy();
+
+        // test (should not use column names)
+        String eplFour = "insert into SupportBeanCtorOne(string, intPrimitive) select 'E1', 5 from SupportBean";
+        EPStatement stmtFour = epService.getEPAdministrator().createEPL(eplFour);
+        stmtFour.addListener(listener);
+        epService.getEPRuntime().sendEvent(new SupportBean("x", -1));
+        SupportBeanCtorOne eventOne = (SupportBeanCtorOne) listener.assertOneGetNewAndReset().getUnderlying();
+        assertEquals("E1", eventOne.getString());
+        assertEquals(99, eventOne.getIntPrimitive());
+        assertEquals((Integer) 5, eventOne.getIntBoxed());
+    }
+
+    public void testCtorWithPattern() {
+
+        // simple type and null values
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanCtorThree", SupportBeanCtorThree.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_ST0", SupportBean_ST0.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_ST1", SupportBean_ST1.class);
+
+        // Test valid case of array insert
+        String epl = "insert into SupportBeanCtorThree select s, e FROM PATTERN [" +
+                "every s=SupportBean_ST0 -> [2] e=SupportBean_ST1]";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_ST0("E0", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST1("E1", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean_ST1("E2", 3));
+        SupportBeanCtorThree three = (SupportBeanCtorThree) listener.assertOneGetNewAndReset().getUnderlying();
+        assertEquals("E0", three.getSt0().getId());
+        assertEquals(2, three.getSt1().length);
+        assertEquals("E1", three.getSt1()[0].getId());
+        assertEquals("E2", three.getSt1()[1].getId());
     }
 
     public void testBeanJoin()
@@ -120,20 +190,25 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
 
     public void testInvalid()
     {
-        String text = "insert into SupportBean(intPrimitive) select 1L from SupportBean";
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanCtorOne", SupportBeanCtorOne.class);
+
+        String text = "insert into SupportBeanCtorOne select 1 from SupportBean";
+        tryInvalid("Error starting statement: Failed to find a suitable constructor for bean-event type 'SupportBeanCtorOne': Could not find constructor in class 'com.espertech.esper.support.bean.SupportBeanCtorOne' with matching parameter number and expected parameter type(s) 'Integer' (nearest matching constructor taking type(s) 'String, Integer, int, boolean') [insert into SupportBeanCtorOne select 1 from SupportBean]", text);
+
+        text = "insert into SupportBean(intPrimitive) select 1L from SupportBean";
         tryInvalid("Error starting statement: Invalid assignment of column 'intPrimitive' of type 'java.lang.Long' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [insert into SupportBean(intPrimitive) select 1L from SupportBean]", text);
 
         text = "insert into SupportBean(intPrimitive) select null from SupportBean";
         tryInvalid("Error starting statement: Invalid assignment of column 'intPrimitive' of null type to event property 'intPrimitive' typed as 'int', nullable type mismatch [insert into SupportBean(intPrimitive) select null from SupportBean]", text);
         
-        text = "insert into SupportTemperatureBean select 'a' as geom from SupportBean";
-        tryInvalid("Error starting statement: Failed to instantiate class 'com.espertech.esper.support.bean.SupportTemperatureBean', define a factory method if the class has no default constructor [insert into SupportTemperatureBean select 'a' as geom from SupportBean]", text);
+        text = "insert into SupportBeanReadOnly select 'a' as geom from SupportBean";
+        tryInvalid("Error starting statement: Failed to find a suitable constructor for bean-event type 'SupportBeanReadOnly': Could not find constructor in class 'com.espertech.esper.support.bean.SupportBeanReadOnly' with matching parameter number and expected parameter type(s) 'String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly select 'a' as geom from SupportBean]", text);
 
         text = "insert into SupportBean select 3 as dummyField from SupportBean";
-        tryInvalid("Error starting statement: Column 'dummyField' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into SupportBean select 3 as dummyField from SupportBean]", text);
+        tryInvalid("Error starting statement: Column 'dummyField' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [insert into SupportBean select 3 as dummyField from SupportBean]", text);
 
         text = "insert into SupportBean select 3 from SupportBean";
-        tryInvalid("Error starting statement: Column '3' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into SupportBean select 3 from SupportBean]", text);
+        tryInvalid("Error starting statement: Column '3' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [insert into SupportBean select 3 from SupportBean]", text);
 
         text = "insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap";
         tryInvalid("Error starting statement: Invalid assignment of column 'isa' of type 'com.espertech.esper.support.bean.ISupportBImpl' to event property 'isa' typed as 'com.espertech.esper.support.bean.ISupportA', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap]", text);
@@ -142,13 +217,13 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         tryInvalid("Error starting statement: Invalid assignment of column 'isg' of type 'com.espertech.esper.support.bean.ISupportBaseABImpl' to event property 'isg' typed as 'com.espertech.esper.support.bean.ISupportAImplSuperG', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap]", text);
 
         text = "insert into SupportBean(dummy) select 3 from SupportBean";
-        tryInvalid("Error starting statement: Column 'dummy' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into SupportBean(dummy) select 3 from SupportBean]", text);
+        tryInvalid("Error starting statement: Column 'dummy' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [insert into SupportBean(dummy) select 3 from SupportBean]", text);
 
         text = "insert into SupportBeanErrorTestingOne(value) select 'E1' from MyMap";
-        tryInvalid("Error starting statement: Failed to instantiate class 'com.espertech.esper.support.bean.SupportBeanErrorTestingOne', define a factory method if the class has no default constructor: Default ctor manufactured test exception [insert into SupportBeanErrorTestingOne(value) select 'E1' from MyMap]", text);
+        tryInvalid("Error starting statement: Failed to instantiate class 'com.espertech.esper.support.bean.SupportBeanErrorTestingOne', define a factory method if the class has no suitable constructors: Default ctor manufactured test exception [insert into SupportBeanErrorTestingOne(value) select 'E1' from MyMap]", text);
 
         text = "insert into SupportBeanReadOnly(side) select 'E1' from MyMap";
-        tryInvalid("Error starting statement: Column 'side' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]", text);
+        tryInvalid("Error starting statement: Failed to find a suitable constructor for bean-event type 'SupportBeanReadOnly': Could not find constructor in class 'com.espertech.esper.support.bean.SupportBeanReadOnly' with matching parameter number and expected parameter type(s) 'String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]", text);
 
         epService.getEPAdministrator().createEPL("insert into ABCStream select *, 1+1 from SupportBean");
         text = "insert into ABCStream(string) select 'E1' from MyMap";
@@ -178,6 +253,19 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         map.put("anint", "notAnInt");
         epService.getEPRuntime().sendEvent(map, "MyMap");
         assertEquals(0, listener.assertOneGetNewAndReset().get("intPrimitive"));
+
+        // ctor throws exception
+        epService.getEPAdministrator().destroyAllStatements();
+        String stmtTextThree = "insert into SupportBeanCtorOne select 'E1' from SupportBean";
+        EPStatement stmtThree = epService.getEPAdministrator().createEPL(stmtTextThree);
+        stmtThree.addListener(listener);
+        try {
+            epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+            fail(); // rethrowing handler registered
+        }
+        catch (EPException ex) {
+            // expected
+        }
     }
 
     public void testPopulateBeanSimple()
@@ -612,5 +700,29 @@ public class TestInsertIntoPopulateUnderlying extends TestCase
         public void setValue(int value) {
             this.value = value;
         }
+    }
+
+    private void sendReceiveTwo(String string, Integer intBoxed)
+    {
+        SupportBean bean = new SupportBean(string, -1);
+        bean.setIntBoxed(intBoxed);
+        epService.getEPRuntime().sendEvent(bean);
+        SupportBeanCtorOne event = (SupportBeanCtorOne) listener.assertOneGetNewAndReset().getUnderlying();
+        assertEquals(string, event.getString());
+        assertEquals(null, event.getIntBoxed());
+        assertEquals(intBoxed, (Integer) event.getIntPrimitive());
+    }
+
+    private void sendReceive(String string, int intPrimitive, boolean boolPrimitive, Integer intBoxed)
+    {
+        SupportBean bean = new SupportBean(string, intPrimitive);
+        bean.setBoolPrimitive(boolPrimitive);
+        bean.setIntBoxed(intBoxed);
+        epService.getEPRuntime().sendEvent(bean);
+        SupportBeanCtorOne event = (SupportBeanCtorOne) listener.assertOneGetNewAndReset().getUnderlying();
+        assertEquals(string, event.getString());
+        assertEquals(intBoxed, event.getIntBoxed());
+        assertEquals(boolPrimitive,  event.isBoolPrimitive());
+        assertEquals(intPrimitive, event.getIntPrimitive());
     }
 }

@@ -10,14 +10,7 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.enummethod.dot.ExprDotEvalTypeInfo;
-import com.espertech.esper.epl.enummethod.dot.ValidationContext;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -123,9 +116,9 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
         return true;
 	}
 
-	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+	public void validate(ExprValidationContext validationContext) throws ExprValidationException
 	{
-        String[] streams = streamTypeService.getStreamNames();
+        String[] streams = validationContext.getStreamTypeService().getStreamNames();
         for (int i = 0; i < streams.length; i++)
         {
             if ((streams[i] != null) && (streams[i].equals(streamName)))
@@ -140,12 +133,11 @@ public class ExprStreamInstanceMethodNode extends ExprNode implements ExprEvalua
             throw new ExprValidationException("Stream by name '" + streamName + "' could not be found among all streams");
         }
 
-        EventType eventType = streamTypeService.getEventTypes()[streamNum];
+        EventType eventType = validationContext.getStreamTypeService().getEventTypes()[streamNum];
         Class type = eventType.getUnderlyingType();
 
         ExprDotEvalTypeInfo typeInfo = ExprDotEvalTypeInfo.scalarOrUnderlying(type);
-        ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
-        evaluators = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainSpec, validationContext, false, streamTypeService).getSecond();
+        evaluators = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainSpec, validationContext, false).getSecond();
 	}
 
 	public Class getType()

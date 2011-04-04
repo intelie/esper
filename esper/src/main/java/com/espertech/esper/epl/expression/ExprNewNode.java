@@ -9,8 +9,6 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.soda.Expression;
-import com.espertech.esper.client.soda.PropertyValueExpression;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
@@ -49,7 +47,7 @@ public class ExprNewNode extends ExprNode implements ExprEvaluator {
         return this;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         eventType = new HashMap<String, Object>();
         evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());

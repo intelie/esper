@@ -69,16 +69,16 @@ public class ExprStreamUnderlyingNode extends ExprNode implements ExprEvaluator
         return null;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         if (isWildcard) {
-            if (streamTypeService.getStreamNames().length > 1) {
+            if (validationContext.getStreamTypeService().getStreamNames().length > 1) {
                 throw new ExprValidationException("Wildcard must be stream wildcard if specifying multiple streams, use the 'streamname.*' syntax instead");
             }
             streamNum = 0;
         }
         else {
-            streamNum = streamTypeService.getStreamNumForStreamName(streamName);
+            streamNum = validationContext.getStreamTypeService().getStreamNumForStreamName(streamName);
         }
 
         if (streamNum == -1)
@@ -86,7 +86,7 @@ public class ExprStreamUnderlyingNode extends ExprNode implements ExprEvaluator
             throw new ExprValidationException("Stream by name '" + streamName + "' could not be found among all streams");
         }
 
-        EventType eventType = streamTypeService.getEventTypes()[streamNum];
+        EventType eventType = validationContext.getStreamTypeService().getEventTypes()[streamNum];
         type = eventType.getUnderlyingType();
     }
 

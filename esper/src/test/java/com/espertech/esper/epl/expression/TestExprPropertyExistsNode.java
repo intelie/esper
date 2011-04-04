@@ -24,7 +24,7 @@ public class TestExprPropertyExistsNode extends TestCase
     {
         for (int i = 0; i < existsNodes.length; i++)
         {
-            existsNodes[i].validate(null, null, null, null, null, null, null);
+            existsNodes[i].validate(ExprValidationContextFactory.makeEmpty());
             assertEquals(Boolean.class, existsNodes[i].getType());
         }
     }
@@ -36,7 +36,7 @@ public class TestExprPropertyExistsNode extends TestCase
         // Test too few nodes under this node
         try
         {
-            castNode.validate(null, null, null, null, null, null, null);
+            castNode.validate(ExprValidationContextFactory.makeEmpty());
             fail();
         }
         catch (ExprValidationException ex)
@@ -47,7 +47,7 @@ public class TestExprPropertyExistsNode extends TestCase
         castNode.addChildNode(new SupportExprNode(1));
         try
         {
-            castNode.validate(null, null, null, null, null, null, null);
+            castNode.validate(ExprValidationContextFactory.makeEmpty());
             fail();
         }
         catch (ExprValidationException ex)
@@ -60,7 +60,7 @@ public class TestExprPropertyExistsNode extends TestCase
     {
         for (int i = 0; i < existsNodes.length; i++)
         {
-            existsNodes[i].validate(null, null, null, null, null, null, null);
+            existsNodes[i].validate(ExprValidationContextFactory.makeEmpty());
         }
 
         assertEquals(false, existsNodes[0].evaluate(new EventBean[3], false, null));
@@ -79,7 +79,7 @@ public class TestExprPropertyExistsNode extends TestCase
 
     public void testToExpressionString() throws Exception
     {
-        existsNodes[0].validate(null, null, null, null, null, null, null);
+        existsNodes[0].validate(ExprValidationContextFactory.makeEmpty());
         assertEquals("exists(s0.dummy?)", existsNodes[0].toExpressionString());
     }
 }

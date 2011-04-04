@@ -1,14 +1,8 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.rowregex.RegexPartitionStateRandomAccess;
 import com.espertech.esper.rowregex.RegexPartitionStateRandomAccessGetter;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.Map;
@@ -28,7 +22,7 @@ public class ExprPreviousMatchRecognizeNode extends ExprNode implements ExprEval
     private transient ExprEvaluator evaluator;
     private int assignedIndex;
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {
@@ -46,7 +40,7 @@ public class ExprPreviousMatchRecognizeNode extends ExprNode implements ExprEval
         }
 
         ExprNode constantNode = this.getChildNodes().get(1);
-        Object value = constantNode.getExprEvaluator().evaluate(null, false, exprEvaluatorContext);
+        Object value = constantNode.getExprEvaluator().evaluate(null, false, validationContext.getExprEvaluatorContext());
         if (!(value instanceof Number))
         {
             throw new ExprValidationException("Match-Recognize Previous expression requires an integer index parameter or expression as the second parameter");

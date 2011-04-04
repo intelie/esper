@@ -161,15 +161,17 @@ public class SelectExprProcessorHelper
         }
 
         // Get expression nodes
-        ExprEvaluator[] expressionNodes = new ExprEvaluator[selectionList.size()];
+        ExprEvaluator[] exprEvaluators = new ExprEvaluator[selectionList.size()];
+        ExprNode[] exprNodes = new ExprNode[selectionList.size()];
         Object[] expressionReturnTypes = new Object[selectionList.size()];
         for (int i = 0; i < selectionList.size(); i++)
         {
             ExprNode expr = selectionList.get(i).getSelectExpression();
-            expressionNodes[i] = expr.getExprEvaluator();
-            Map<String, Object> eventTypeExpr = expressionNodes[i].getEventType();
+            exprNodes[i] = expr;
+            exprEvaluators[i] = expr.getExprEvaluator();
+            Map<String, Object> eventTypeExpr = exprEvaluators[i].getEventType();
             if (eventTypeExpr == null) {
-                expressionReturnTypes[i] = expressionNodes[i].getType();
+                expressionReturnTypes[i] = exprEvaluators[i].getType();
             }
             else {
                 final ExprEvaluator innerExprEvaluator = expr.getExprEvaluator();
@@ -193,7 +195,7 @@ public class SelectExprProcessorHelper
                 };
 
                 expressionReturnTypes[i] = mapType;
-                expressionNodes[i] = evaluatorFragment;
+                exprEvaluators[i] = evaluatorFragment;
             }
         }
 
@@ -252,12 +254,12 @@ public class SelectExprProcessorHelper
         // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
         for (int i = 0; i < selectionList.size(); i++)
         {
-            if (!(expressionNodes[i] instanceof ExprIdentNode))
+            if (!(exprNodes[i] instanceof ExprIdentNode))
             {
                 continue;
             }
 
-            ExprIdentNode identNode = (ExprIdentNode) expressionNodes[i];
+            ExprIdentNode identNode = (ExprIdentNode) exprNodes[i];
             String propertyName = identNode.getResolvedPropertyName();
             final int streamNum = identNode.getStreamId();
 
@@ -307,7 +309,7 @@ public class SelectExprProcessorHelper
                         return null;
                     }
                 };
-                expressionNodes[i] = evaluatorFragment;
+                exprEvaluators[i] = evaluatorFragment;
             }
             else
             {
@@ -338,7 +340,7 @@ public class SelectExprProcessorHelper
                     }
                 };
 
-                expressionNodes[i] = evaluatorFragment;
+                exprEvaluators[i] = evaluatorFragment;
                 if (!fragmentType.isIndexed())
                 {
                     expressionReturnTypes[i] = fragmentType.getFragmentType();
@@ -355,12 +357,12 @@ public class SelectExprProcessorHelper
         // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
         for (int i = 0; i < selectionList.size(); i++)
         {
-            if (!(expressionNodes[i] instanceof ExprStreamUnderlyingNode))
+            if (!(exprEvaluators[i] instanceof ExprStreamUnderlyingNode))
             {
                 continue;
             }
 
-            ExprStreamUnderlyingNode undNode = (ExprStreamUnderlyingNode) expressionNodes[i];
+            ExprStreamUnderlyingNode undNode = (ExprStreamUnderlyingNode) exprEvaluators[i];
             final int streamNum = undNode.getStreamId();
             final Class returnType = undNode.getType();
             EventType eventTypeStream = typeService.getEventTypes()[streamNum];
@@ -383,14 +385,14 @@ public class SelectExprProcessorHelper
                 }
             };
 
-            expressionNodes[i] = evaluator;
+            exprEvaluators[i] = evaluator;
             expressionReturnTypes[i] = eventTypeStream;
         }
 
         // Build event type that reflects all selected properties
         Map<String, Object> selPropertyTypes = new LinkedHashMap<String, Object>();
         int count = 0;
-        for (ExprEvaluator expressionNode : expressionNodes)
+        for (ExprEvaluator expressionNode : exprEvaluators)
         {
             Object expressionReturnType = expressionReturnTypes[count];
             selPropertyTypes.put(columnNames[count], expressionReturnType);
@@ -484,7 +486,7 @@ public class SelectExprProcessorHelper
             }
         }
 
-        SelectExprContext selectExprContext = new SelectExprContext(expressionNodes, columnNames, exprEvaluatorContext, eventAdapterService);
+        SelectExprContext selectExprContext = new SelectExprContext(exprEvaluators, columnNames, exprEvaluatorContext, eventAdapterService);
 
         if (insertIntoDesc == null)
         {
@@ -566,7 +568,7 @@ public class SelectExprProcessorHelper
                     }
                     if ((existingType != null) && (selectExprInsertEventBean != null))
                     {
-                        selectExprInsertEventBean.initialize(isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService, eventAdapterService);
+                        selectExprInsertEventBean.initialize(isUsingWildcard, typeService, exprEvaluators, columnNames, expressionReturnTypes, methodResolutionService, eventAdapterService);
                         resultEventType = existingType;
                         return new EvalInsertNative(resultEventType, selectExprInsertEventBean, exprEvaluatorContext);
                     }
@@ -665,7 +667,7 @@ public class SelectExprProcessorHelper
                     }
                     if ((existingType != null) && (selectExprInsertEventBean != null))
                     {
-                        selectExprInsertEventBean.initialize(isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, methodResolutionService, eventAdapterService);
+                        selectExprInsertEventBean.initialize(isUsingWildcard, typeService, exprEvaluators, columnNames, expressionReturnTypes, methodResolutionService, eventAdapterService);
                         resultEventType = existingType;
                         return new EvalInsertNative(resultEventType, selectExprInsertEventBean, exprEvaluatorContext);
                     }

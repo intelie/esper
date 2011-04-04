@@ -63,7 +63,7 @@ public class ExprOrderedExpr extends ExprNode implements ExprEvaluator
         return other.isDescending == this.isDescending;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         evaluator = getChildNodes().get(0).getExprEvaluator();
         // always valid

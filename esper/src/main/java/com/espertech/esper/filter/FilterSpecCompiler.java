@@ -128,7 +128,8 @@ public final class FilterSpecCompiler
                 {
                     andNode.addChildNode(unoptimized);
                 }
-                andNode.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService, statementContext, eventAdapterService);
+                ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, methodResolutionService, null, timeProvider, variableService, statementContext, eventAdapterService, statementContext.getStatementName(), statementContext.getAnnotations());
+                andNode.validate(validationContext);
                 exprNode = andNode;
             }
         }
@@ -143,7 +144,7 @@ public final class FilterSpecCompiler
         PropertyEvaluator optionalPropertyEvaluator = null;
         if (optionalPropertyEvalSpec != null)
         {
-            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType, optionalStreamName, eventAdapterService, methodResolutionService, timeProvider, variableService, engineURI, statementContext.getStatementId());
+            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType, optionalStreamName, eventAdapterService, methodResolutionService, timeProvider, variableService, engineURI, statementContext.getStatementId(), statementContext.getStatementName(), statementContext.getAnnotations());
         }
 
         FilterSpecCompiled spec = new FilterSpecCompiled(eventType, eventTypeName, filterParams, optionalPropertyEvaluator);
@@ -191,6 +192,7 @@ public final class FilterSpecCompiler
     {
         List<ExprNode> validatedNodes = new ArrayList<ExprNode>();
 
+        ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
         for (ExprNode node : exprNodes)
         {
             // Determine subselects
@@ -210,7 +212,7 @@ public final class FilterSpecCompiler
                 }
             }
 
-            ExprNode validated = node.getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getTimeProvider(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
+            ExprNode validated = node.getValidatedSubtree(validationContext);
             validatedNodes.add(validated);
 
             if ((validated.getExprEvaluator().getType() != Boolean.class) && ((validated.getExprEvaluator().getType() != boolean.class)))
@@ -310,7 +312,8 @@ public final class FilterSpecCompiler
                 // validate
                 SelectClauseExprCompiledSpec compiled = (SelectClauseExprCompiledSpec) element;
                 ExprNode selectExpression = compiled.getSelectExpression();
-                selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
+                ExprValidationContext validationContext = new ExprValidationContext(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                selectExpression = selectExpression.getValidatedSubtree(validationContext);
                 subselect.setSelectClause(new ExprNode[] {selectExpression});
                 subselect.setSelectAsNames(new String[] {compiled.getAssignedName()});
 

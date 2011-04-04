@@ -1489,13 +1489,17 @@ such event metadata and event data into one of the built-in event representation
 		</para>
 
         <para>
+			If populating a POJO-based event type and the class provides a matching constructor, the expression result types of expressions in the <literal>select</literal> clause must be compatible with the constructor parameters in the order listed by the constructor. The <literal>insert into</literal> clause column names are not relevant in this case.
+		</para>
+
+        <para>
 			Consider the following example statement:
 		</para>
 		<programlisting>insert into com.mycompany.NewEmployeeEvent 
 select fname as firstName, lname as lastName from HRSystemEvent</programlisting> 
 
         <para>
-			The above example specifies the fully-qualified class name of <literal>NewEmployeeEvent</literal>. The engine instantianes <literal>NewEmployeeEvent</literal> for each result row and populates the <literal>firstName</literal> and <literal>lastName</literal> properties of each instance from the result of <literal>select</literal> clause expressions. The <literal>HRSystemEvent</literal> in the example is assumed to have <literal>lname</literal> and <literal>fname</literal> properties.
+			The above example specifies the fully-qualified class name of <literal>NewEmployeeEvent</literal>. The engine instantianes <literal>NewEmployeeEvent</literal> for each result row and populates the <literal>firstName</literal> and <literal>lastName</literal> properties of each instance from the result of <literal>select</literal> clause expressions. The <literal>HRSystemEvent</literal> in the example is assumed to have <literal>lname</literal> and <literal>fname</literal> properties, and either setter-methods and a default constructor, or a matching constructor.
 		</para>
 		
         <para>
@@ -1519,13 +1523,11 @@ select fname, lname, 'HIRED' as type from HRSystemEvent(type='NEW')</programlist
 		</para>
 
         <para>
-			For Java object events, your event class must provide setter-methods according to JavaBean conventions. The event class should also provide a default constructor taking no parameters. If your event class does not have 
-			a default constructor, your application may configure a factory method via <literal>ConfigurationEventTypeLegacy</literal>. 
+			For Java object events, your event class must provide setter-methods according to JavaBean conventions or, alternatively, a matching constructor. If the event class provides setter methods the class should also provide a default constructor taking no parameters. If the event class provides a matching constructor there is no need for setter-methods. If your event class does not have a default constructor and setter methods, or a matching constructor, your application may configure a factory method via <literal>ConfigurationEventTypeLegacy</literal>. 
 		</para>
 
         <para>
-			The engine follows Java standards in terms of widening, performing widening automatically in cases where widening type conversion is allowed without loss of precision, for both boxed and primitive types and including
-BigInteger and BigDecimal.
+			The engine follows Java standards in terms of widening, performing widening automatically in cases where widening type conversion is allowed without loss of precision, for both boxed and primitive types and including BigInteger and BigDecimal.
 		</para>
 
         <para>

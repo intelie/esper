@@ -14,14 +14,9 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.enummethod.dot.*;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -53,11 +48,10 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
         this.isUDFCache = isUDFCache;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         // validate all parameters
-        ExprNodeUtility.validate(chainSpec, streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
-        ValidationContext validationContext = new ValidationContext(methodResolutionService, viewResourceDelegate, timeProvider, variableService, exprEvaluatorContext, eventAdapterService);
+        ExprNodeUtility.validate(chainSpec, validationContext);
 
         // determine if there are enumeration method expressions in the chain
         boolean hasEnumerationMethod = false;
@@ -71,6 +65,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
         // The root node expression may provide the input value:
         //   Such as "window(*).doIt(...)" or "(select * from Window).doIt()" or "prevwindow(sb).doIt(...)", in which case the expression to act on is a child expression
         //
+        StreamTypeService streamTypeService = validationContext.getStreamTypeService();
         if (!this.getChildNodes().isEmpty()) {
             // the root expression is the first child node
             ExprNode rootNode = this.getChildNodes().get(0);
@@ -78,7 +73,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
 
             // the root expression may also provide a lambda-function input (Iterator<EventBean>)
             // Determine collection-type and evaluator if any for root node
-            Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> enumSrc = getEnumerationSource(rootNode, streamTypeService, hasEnumerationMethod);
+            Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> enumSrc = getEnumerationSource(rootNode, validationContext.getStreamTypeService(), hasEnumerationMethod);
 
             ExprDotEvalTypeInfo typeInfo;
             if (enumSrc.getSecond() == null) {
@@ -88,7 +83,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
                 typeInfo = enumSrc.getSecond();
             }
 
-            UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainSpec, validationContext, isDuckTyping, streamTypeService);
+            UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(typeInfo, chainSpec, validationContext, isDuckTyping);
             exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, enumSrc.getFirst(), enumSrc.getSecond(), evals.getFirst(), evals.getSecond());
         }
         else {
@@ -118,7 +113,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
                 Pair<ExprEvaluatorEnumeration, ExprDotEvalTypeInfo> propertyEval = getPropertyEnumerationSource(propertyInfoPair.getFirst().getPropertyName(), streamId, streamType, hasEnumerationMethod);
 
                 ExprEvaluator rootNodeEvaluator = new PropertyExprEvaluatorNonLambda(streamId, getter, propertyInfoPair.getFirst().getPropertyType());
-                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(propertyEval.getSecond(), modifiedChain, validationContext, isDuckTyping, streamTypeService);
+                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(propertyEval.getSecond(), modifiedChain, validationContext, isDuckTyping);
                 exprEvaluator = new ExprDotEvalRootChild(rootNodeEvaluator, propertyEval.getFirst(), propertyEval.getSecond(), evals.getFirst(), evals.getSecond());
             }
             else {
@@ -155,7 +150,7 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
                 FastMethod staticMethod;
                 try
                 {
-                    method = methodResolutionService.resolveMethod(firstItem.getName(), secondItem.getName(), paramTypes);
+                    method = validationContext.getMethodResolutionService().resolveMethod(firstItem.getName(), secondItem.getName(), paramTypes);
                     FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
                     staticMethod = declaringClass.getMethod(method);
                 }
@@ -166,10 +161,10 @@ public class ExprDotNode extends ExprNode implements ExprNodeInnerNodeProvider
                 }
 
                 // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
-                ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.make(method, eventAdapterService, modifiedChain);
+                ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.make(method, validationContext.getEventAdapterService(), modifiedChain);
                 ExprDotEvalTypeInfo typeInfo = optionalLambdaWrap != null ? optionalLambdaWrap.getTypeInfo() : ExprDotEvalTypeInfo.scalarOrUnderlying(method.getReturnType());
 
-                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(typeInfo, modifiedChain, validationContext, false, streamTypeService);
+                UniformPair<ExprDotEval[]> evals = ExprDotNodeUtility.getChainEvaluators(typeInfo, modifiedChain, validationContext, false);
                 exprEvaluator = new ExprDotEvalStaticMethod(className, staticMethod, childEvals, isConstantParameters, optionalLambdaWrap, evals.getSecond());
             }
         }

@@ -11,7 +11,6 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.datetime.DatetimeMethodEnum;
 import com.espertech.esper.epl.datetime.ExprDotEvalDTFactory;
 import com.espertech.esper.epl.enummethod.dot.*;
@@ -28,9 +27,8 @@ public class ExprDotNodeUtility
 {
     public static UniformPair<ExprDotEval[]> getChainEvaluators(ExprDotEvalTypeInfo inputType,
                                                    List<ExprChainedSpec> chainSpec,
-                                                   ValidationContext validationContext,
-                                                   boolean isDuckTyping,
-                                                   StreamTypeService streamTypeService)
+                                                   ExprValidationContext validationContext,
+                                                   boolean isDuckTyping)
             throws ExprValidationException
     {
         List<ExprDotEval> methodEvals = new ArrayList<ExprDotEval>();
@@ -73,7 +71,7 @@ public class ExprDotNodeUtility
             if (EnumMethodEnum.isEnumerationMethod(chainElement.getName())) {
                 EnumMethodEnum enumerationMethod = EnumMethodEnum.fromName(chainElement.getName());
                 ExprDotEvalEnumMethod eval = (ExprDotEvalEnumMethod) JavaClassHelper.instantiate(ExprDotEvalEnumMethod.class, enumerationMethod.getImplementation().getName());
-                eval.init(enumerationMethod, chainElement.getName(), currentInputType, chainElement.getParameters(), validationContext, streamTypeService);
+                eval.init(enumerationMethod, chainElement.getName(), currentInputType, chainElement.getParameters(), validationContext);
                 currentInputType = eval.getTypeInfo();
                 if (currentInputType == null) {
                     throw new IllegalStateException("Enumeration method '" + chainElement.getName() + "' has not returned type information");

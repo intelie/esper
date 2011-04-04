@@ -35,14 +35,14 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         return enumMethodEnum;
     }
 
-    public void init(EnumMethodEnum enumMethodEnum, String enumMethodUsedName, ExprDotEvalTypeInfo typeInfo, List<ExprNode> parameters, ValidationContext validationContext, StreamTypeService streamTypeService) throws ExprValidationException {
+    public void init(EnumMethodEnum enumMethodEnum, String enumMethodUsedName, ExprDotEvalTypeInfo typeInfo, List<ExprNode> parameters, ExprValidationContext validationContext) throws ExprValidationException {
 
         EventType eventType = typeInfo.getEventTypeColl();
         Class collectionComponentType = typeInfo.getComponent();
 
         this.enumMethodEnum = enumMethodEnum;
         this.enumMethodUsedName = enumMethodUsedName;
-        this.streamCountIncoming = streamTypeService.getEventTypes().length;
+        this.streamCountIncoming = validationContext.getStreamTypeService().getEventTypes().length;
 
         if (eventType == null && collectionComponentType == null) {
             throw new ExprValidationException("Invalid input for built-in enumeration method '" + enumMethodUsedName + "', expecting collection of event-type or scalar values as input, received " + typeInfo.toTypeName());
@@ -75,11 +75,11 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         List<ExprDotEvalParam> bodiesAndParameters = new ArrayList<ExprDotEvalParam>();
         int count = 0;
         for (ExprNode node : parameters) {
-            ExprDotEvalParam bodyAndParameter = getBodyAndParameter(enumMethodUsedName, count++, node, eventType, collectionComponentType, validationContext, streamTypeService, bodiesAndParameters, footprint);
+            ExprDotEvalParam bodyAndParameter = getBodyAndParameter(enumMethodUsedName, count++, node, eventType, collectionComponentType, validationContext, bodiesAndParameters, footprint);
             bodiesAndParameters.add(bodyAndParameter);
         }
 
-        this.enumEval = getEnumEval(streamTypeService, enumMethodUsedName, bodiesAndParameters, eventType, collectionComponentType, streamCountIncoming);
+        this.enumEval = getEnumEval(validationContext.getStreamTypeService(), enumMethodUsedName, bodiesAndParameters, eventType, collectionComponentType, streamCountIncoming);
 
         // determine the stream ids of event properties asked for in the evaluator(s)
         HashSet<Integer> streamsRequired = new HashSet<Integer>();
@@ -155,8 +155,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
                                                  ExprNode parameterNode,
                                                  EventType inputEventType,
                                                  Class collectionComponentType,
-                                                 ValidationContext validationContext,
-                                                 StreamTypeService streamTypeService,
+                                                 ExprValidationContext validationContext,
                                                  List<ExprDotEvalParam> priorParameters,
                                                  DotMethodFP footprint) throws ExprValidationException {
 
@@ -174,18 +173,19 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         EventType[] additionalTypes = getAddStreamTypes(enumMethodUsedName, goesNode.getGoesToNames(), inputEventType, collectionComponentType, priorParameters);
         String[] additionalStreamNames = goesNode.getGoesToNames().toArray(new String[goesNode.getGoesToNames().size()]);
 
-        validateDuplicateStreamNames(streamTypeService.getStreamNames(), additionalStreamNames);
+        validateDuplicateStreamNames(validationContext.getStreamTypeService().getStreamNames(), additionalStreamNames);
 
         // add name and type to list of known types
-        EventType[] addTypes = (EventType[]) CollectionUtil.expandAddElement(streamTypeService.getEventTypes(), additionalTypes);
-        String[] addNames = (String[]) CollectionUtil.expandAddElement(streamTypeService.getStreamNames(), additionalStreamNames);
+        EventType[] addTypes = (EventType[]) CollectionUtil.expandAddElement(validationContext.getStreamTypeService().getEventTypes(), additionalTypes);
+        String[] addNames = (String[]) CollectionUtil.expandAddElement(validationContext.getStreamTypeService().getStreamNames(), additionalStreamNames);
 
         StreamTypeServiceImpl types = new StreamTypeServiceImpl(addTypes, addNames, new boolean[addTypes.length], null, false);
 
         // validate expression body
         ExprNode filter = goesNode.getChildNodes().get(0);
         try {
-            filter = filter.getValidatedSubtree(types, validationContext.getMethodResolutionService(), validationContext.getViewResourceDelegate(), validationContext.getTimeProvider(), validationContext.getVariableService(), validationContext.getExprEvaluatorContext(), validationContext.getEventAdapterService());
+            ExprValidationContext filterValidationContext = new ExprValidationContext(types, validationContext);
+            filter = filter.getValidatedSubtree(filterValidationContext);
         }
         catch (ExprValidationException ex) {
             throw new ExprValidationException("Error validating enumeration method '" + enumMethodUsedName + "' parameter " + parameterNum + ": " + ex.getMessage(), ex);
@@ -196,7 +196,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         // Lambda-methods don't use a specific expected return-type, so passing null for type is fine.
         DotMethodUtil.validateSpecificType(enumMethodUsedName, DotMethodTypeEnum.ENUM, expectedType, null, filterEvaluator.getType(), parameterNum);
 
-        int numStreamsIncoming = streamTypeService.getEventTypes().length;
+        int numStreamsIncoming = validationContext.getStreamTypeService().getEventTypes().length;
         return new ExprDotEvalParamLambda(parameterNum, filter, filterEvaluator,
                 numStreamsIncoming, goesNode.getGoesToNames(), additionalTypes);
     }

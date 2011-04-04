@@ -1040,7 +1040,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                             throw new ExprValidationException("Create window where-clause may not have " + checkMinimal);
                         }
                         StreamTypeService streamTypeService = new StreamTypeServiceImpl(selectFromType, selectFromTypeName, true, statementContext.getEngineURI());
-                        ExprNode insertFilter = spec.getCreateWindowDesc().getInsertFilter().getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService());
+                        ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService(), statementContext, statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
+                        ExprNode insertFilter = spec.getCreateWindowDesc().getInsertFilter().getValidatedSubtree(validationContext);
                         spec.getCreateWindowDesc().setInsertFilter(insertFilter);
                     }
 
@@ -1252,7 +1253,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EventType targetType;
 
         // Validate the select expressions which consists of properties only
-        List<NamedWindowSelectedProps> select = compileLimitedSelect(spec.getSelectClauseSpec(), eplStatement, selectFromType, selectFromTypeName, statementContext.getEngineURI(), statementContext, statementContext.getMethodResolutionService(), statementContext.getEventAdapterService());
+        List<NamedWindowSelectedProps> select = compileLimitedSelect(spec.getSelectClauseSpec(), eplStatement, selectFromType, selectFromTypeName, statementContext.getEngineURI(), statementContext, statementContext.getMethodResolutionService(), statementContext.getEventAdapterService(), statementContext.getStatementName(), statementContext.getAnnotations());
 
         // Create Map or Wrapper event type from the select clause of the window.
         // If no columns selected, simply create a wrapper type
@@ -1322,11 +1323,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return new Pair<FilterSpecCompiled, SelectClauseSpecRaw>(filter, newSelectClauseSpecRaw);
     }
 
-    private static List<NamedWindowSelectedProps> compileLimitedSelect(SelectClauseSpecRaw spec, String eplStatement, EventType singleType, String selectFromTypeName, String engineURI, ExprEvaluatorContext exprEvaluatorContext, MethodResolutionService methodResolutionService, EventAdapterService eventAdapterService)
+    private static List<NamedWindowSelectedProps> compileLimitedSelect(SelectClauseSpecRaw spec, String eplStatement, EventType singleType, String selectFromTypeName, String engineURI, ExprEvaluatorContext exprEvaluatorContext, MethodResolutionService methodResolutionService, EventAdapterService eventAdapterService, String statementName, Annotation[] annotations)
     {
         List<NamedWindowSelectedProps> selectProps = new LinkedList<NamedWindowSelectedProps>();
         StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"}, new boolean[] {false}, engineURI, false);
 
+        ExprValidationContext validationContext = new ExprValidationContext(streams, methodResolutionService, null, null, null, exprEvaluatorContext, eventAdapterService, statementName, annotations);
         for (SelectClauseElementRaw raw : spec.getSelectExprList())
         {
             if (!(raw instanceof SelectClauseExprRawSpec))
@@ -1337,7 +1339,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             ExprNode validatedExpression;
             try
             {
-                validatedExpression = exprSpec.getSelectExpression().getValidatedSubtree(streams, methodResolutionService, null, null, null, exprEvaluatorContext, eventAdapterService);
+                validatedExpression = exprSpec.getSelectExpression().getValidatedSubtree(validationContext);
             }
             catch (ExprValidationException e)
             {

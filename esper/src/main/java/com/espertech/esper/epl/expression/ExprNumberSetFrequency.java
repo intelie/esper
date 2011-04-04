@@ -47,7 +47,7 @@ public class ExprNumberSetFrequency extends ExprNode implements ExprEvaluator
         return true;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         evaluator = this.getChildNodes().get(0).getExprEvaluator();
         Class type = evaluator.getType();

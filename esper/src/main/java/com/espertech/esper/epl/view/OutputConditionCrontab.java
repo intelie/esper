@@ -12,10 +12,7 @@ import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
-import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.schedule.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
@@ -70,7 +67,8 @@ public final class OutputConditionCrontab implements OutputCondition
         int count = 0;
         for (ExprNode parameters : scheduleSpecExpressionList)
         {
-            ExprNode node = parameters.getValidatedSubtree(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context, context.getEventAdapterService());
+            ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context, context.getEventAdapterService(), context.getStatementName(), context.getAnnotations());
+            ExprNode node = parameters.getValidatedSubtree(validationContext);
             expressions[count++] = node.getExprEvaluator();
         }
 

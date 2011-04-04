@@ -63,13 +63,13 @@ public class EventBeanManufacturerBean implements EventBeanManufacturer
             }
             catch (InvocationTargetException e)
             {
-                String message = "Failed to instantiate class '" + fastClass.getJavaClass().getName() + "', define a factory method if the class has no default constructor: " + e.getTargetException().getMessage();
+                String message = "Failed to instantiate class '" + fastClass.getJavaClass().getName() + "', define a factory method if the class has no suitable constructors: " + e.getTargetException().getMessage();
                 log.info(message, e);
                 throw new EventBeanManufactureException(message, e.getTargetException());
             }
             catch (IllegalArgumentException e)
             {
-                String message = "Failed to instantiate class '" + fastClass.getJavaClass().getName() + "', define a factory method if the class has no default constructor";
+                String message = "Failed to instantiate class '" + fastClass.getJavaClass().getName() + "', define a factory method if the class has no suitable constructors";
                 log.info(message, e);
                 throw new EventBeanManufactureException(message, e);
             }

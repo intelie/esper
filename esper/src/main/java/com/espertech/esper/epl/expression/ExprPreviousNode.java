@@ -10,13 +10,7 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceCallback;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.ViewCapDataWindowAccess;
 import com.espertech.esper.view.window.RandomAccessByIndexGetter;
@@ -56,7 +50,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
         return null;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
         if ((this.getChildNodes().size() > 2) || (this.getChildNodes().isEmpty()))
         {
@@ -88,7 +82,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
         if (this.getChildNodes().get(0).isConstantResult())
         {
             ExprNode constantNode = this.getChildNodes().get(0);
-            Object value = constantNode.getExprEvaluator().evaluate(null, false, exprEvaluatorContext);
+            Object value = constantNode.getExprEvaluator().evaluate(null, false, validationContext.getExprEvaluatorContext());
             if (!(value instanceof Number))
             {
                 throw new ExprValidationException("Previous function requires an integer index parameter or expression");
@@ -114,7 +108,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
             ExprStreamUnderlyingNode streamNode = (ExprStreamUnderlyingNode) this.getChildNodes().get(1);
             streamNumber = streamNode.getStreamId();
             resultType = JavaClassHelper.getBoxedType(this.getChildNodes().get(1).getExprEvaluator().getType());
-            enumerationMethodType = streamTypeService.getEventTypes()[streamNode.getStreamId()];
+            enumerationMethodType = validationContext.getStreamTypeService().getEventTypes()[streamNode.getStreamId()];
         }
         else
         {
@@ -128,13 +122,13 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback, 
             resultType = JavaClassHelper.getArrayType(resultType);
         }
 
-        if (viewResourceDelegate == null)
+        if (validationContext.getViewResourceDelegate() == null)
         {
             throw new ExprValidationException("Previous function cannot be used in this context");
         }
 
         // Request a callback that provides the required access
-        if (!viewResourceDelegate.requestCapability(streamNumber, new ViewCapDataWindowAccess(), this))
+        if (!validationContext.getViewResourceDelegate().requestCapability(streamNumber, new ViewCapDataWindowAccess(), this))
         {
             throw new ExprValidationException("Previous function requires a single data window view onto the stream");
         }

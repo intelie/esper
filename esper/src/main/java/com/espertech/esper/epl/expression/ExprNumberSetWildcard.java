@@ -43,7 +43,7 @@ public class ExprNumberSetWildcard extends ExprNode implements ExprEvaluator
         return node instanceof ExprNumberSetWildcard;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
     }
 

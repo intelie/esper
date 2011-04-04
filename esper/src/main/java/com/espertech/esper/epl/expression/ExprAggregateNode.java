@@ -14,13 +14,12 @@ import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.agg.AggregationResultFuture;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.JavaClassHelper;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Base expression node that represents an aggregation function such as 'sum' or 'count'.
@@ -93,9 +92,9 @@ public abstract class ExprAggregateNode extends ExprNode implements ExprEvaluato
         return null;
     }
     
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService) throws ExprValidationException
+    public void validate(ExprValidationContext validationContext) throws ExprValidationException
     {
-        aggregationMethodFactory = validateAggregationChild(streamTypeService, methodResolutionService, exprEvaluatorContext);
+        aggregationMethodFactory = validateAggregationChild(validationContext.getStreamTypeService(), validationContext.getMethodResolutionService(), validationContext.getExprEvaluatorContext());
     }
 
     public Class getType()
