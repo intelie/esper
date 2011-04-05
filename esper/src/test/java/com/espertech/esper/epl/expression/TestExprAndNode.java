@@ -11,7 +11,7 @@ public class TestExprAndNode extends TestCase
 
     public void setUp()
     {
-        andNode = new ExprAndNode();
+        andNode = new ExprAndNodeImpl();
     }
 
     public void testGetType()
@@ -39,7 +39,7 @@ public class TestExprAndNode extends TestCase
         }
 
         // test failed - with just one child
-        andNode = new ExprAndNode();
+        andNode = new ExprAndNodeImpl();
         andNode.addChildNode(new SupportExprNode(Boolean.class));
         try
         {
@@ -59,7 +59,7 @@ public class TestExprAndNode extends TestCase
         SupportExprNodeUtil.validate(andNode);
         assertTrue( (Boolean) andNode.evaluate(null, false, null));
 
-        andNode = new ExprAndNode();
+        andNode = new ExprAndNodeImpl();
         andNode.addChildNode(new SupportBoolExprNode(true));
         andNode.addChildNode(new SupportBoolExprNode(false));
         SupportExprNodeUtil.validate(andNode);
@@ -76,7 +76,7 @@ public class TestExprAndNode extends TestCase
 
     public void testEqualsNode()
     {
-        assertTrue(andNode.equalsNode(new ExprAndNode()));
+        assertTrue(andNode.equalsNode(new ExprAndNodeImpl()));
         assertFalse(andNode.equalsNode(new ExprOrNode()));
     }
 }

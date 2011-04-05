@@ -251,7 +251,7 @@ public class ResultSetProcessorFactory
         List<ExprAggregateNode> selectAggregateExprNodes = new LinkedList<ExprAggregateNode>();
         for (SelectClauseExprCompiledSpec element : namedSelectionList)
         {
-            ExprAggregateNode.getAggregatesBottomUp(element.getSelectExpression(), selectAggregateExprNodes);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(element.getSelectExpression(), selectAggregateExprNodes);
         }
         if (!allowAggregation && !selectAggregateExprNodes.isEmpty())
         {
@@ -263,7 +263,7 @@ public class ResultSetProcessorFactory
         Set<Pair<Integer, String>> propertiesAggregatedHaving = new HashSet<Pair<Integer, String>>();
         if (optionalHavingNode != null)
         {
-            ExprAggregateNode.getAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(optionalHavingNode, havingAggregateExprNodes);
             propertiesAggregatedHaving = ExprNodeUtility.getAggregatedProperties(havingAggregateExprNodes);
         }
         if (!allowAggregation && !havingAggregateExprNodes.isEmpty())
@@ -277,7 +277,7 @@ public class ResultSetProcessorFactory
         {
             for (ExprNode orderByNode : orderByNodes)
             {
-                ExprAggregateNode.getAggregatesBottomUp(orderByNode, orderByAggregateExprNodes);
+                ExprAggregateNodeUtil.getAggregatesBottomUp(orderByNode, orderByAggregateExprNodes);
             }
             if (!allowAggregation && !orderByAggregateExprNodes.isEmpty())
             {
@@ -454,7 +454,7 @@ public class ResultSetProcessorFactory
         List<ExprAggregateNode> aggregateNodesHaving = new LinkedList<ExprAggregateNode>();
         if (aggregateNodesHaving != null)
         {
-            ExprAggregateNode.getAggregatesBottomUp(havingNode, aggregateNodesHaving);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(havingNode, aggregateNodesHaving);
         }
 
         // Any non-aggregated properties must occur in the group-by clause (if there is one)
@@ -482,7 +482,7 @@ public class ResultSetProcessorFactory
         List<ExprAggregateNode> aggNodes = new LinkedList<ExprAggregateNode>();
         for (ExprNode groupByNode : groupByNodes)
         {
-            ExprAggregateNode.getAggregatesBottomUp(groupByNode, aggNodes);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(groupByNode, aggNodes);
             if (!aggNodes.isEmpty())
             {
                 throw new ExprValidationException("Group-by expressions cannot contain aggregate functions");

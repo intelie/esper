@@ -15,10 +15,10 @@ import com.espertech.esper.epl.core.StreamTypeService;
 /**
  * Represents the leaving() aggregate function is an expression tree.
  */
-public class ExprLeavingAggNode extends ExprAggregateNode
+public class ExprLeavingAggNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = -261718190573572758L;
-    
+
     /**
      * Ctor.
      * @param distinct - flag indicating unique or non-unique value aggregation

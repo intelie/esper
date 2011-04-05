@@ -44,7 +44,7 @@ public class TestExprAggregateNode extends TestCase
         c2_1.addChildNode(c2_1_2);
 
         List<ExprAggregateNode> aggregates = new LinkedList<ExprAggregateNode>();
-        ExprAggregateNode.getAggregatesBottomUp(top, aggregates);
+        ExprAggregateNodeUtil.getAggregatesBottomUp(top, aggregates);
 
         assertEquals(5, aggregates.size());
         assertSame(c2_1_1, aggregates.get(0));
@@ -55,7 +55,7 @@ public class TestExprAggregateNode extends TestCase
 
         // Test no aggregates
         aggregates.clear();
-        ExprAggregateNode.getAggregatesBottomUp(new SupportExprNode(null), aggregates);
+        ExprAggregateNodeUtil.getAggregatesBottomUp(new SupportExprNode(null), aggregates);
         assertTrue(aggregates.isEmpty());
     }
 }

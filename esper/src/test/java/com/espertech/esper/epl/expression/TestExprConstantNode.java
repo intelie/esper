@@ -8,14 +8,14 @@ public class TestExprConstantNode extends TestCase
 
     public void setUp()
     {
-        constantNode = new ExprConstantNode("5");
+        constantNode = new ExprConstantNodeImpl("5");
     }
 
     public void testGetType() throws Exception
     {
         assertEquals(String.class, constantNode.getType());
 
-        constantNode = new ExprConstantNode(null);
+        constantNode = new ExprConstantNodeImpl(null);
         assertNull(constantNode.getType());
     }
 
@@ -31,21 +31,21 @@ public class TestExprConstantNode extends TestCase
 
     public void testToExpressionString() throws Exception
     {
-        constantNode = new ExprConstantNode("5");
+        constantNode = new ExprConstantNodeImpl("5");
         assertEquals("\"5\"", constantNode.toExpressionString());
 
-        constantNode = new ExprConstantNode(10);
+        constantNode = new ExprConstantNodeImpl(10);
         assertEquals("10", constantNode.toExpressionString());        
     }
 
     public void testEqualsNode()
     {
-        assertTrue(constantNode.equalsNode(new ExprConstantNode("5")));
+        assertTrue(constantNode.equalsNode(new ExprConstantNodeImpl("5")));
         assertFalse(constantNode.equalsNode(new ExprOrNode()));
-        assertFalse(constantNode.equalsNode(new ExprConstantNode(null)));
-        assertFalse(constantNode.equalsNode(new ExprConstantNode(3)));
+        assertFalse(constantNode.equalsNode(new ExprConstantNodeImpl(null)));
+        assertFalse(constantNode.equalsNode(new ExprConstantNodeImpl(3)));
 
-        constantNode = new ExprConstantNode(null);
-        assertTrue(constantNode.equalsNode(new ExprConstantNode(null)));
+        constantNode = new ExprConstantNodeImpl(null);
+        assertTrue(constantNode.equalsNode(new ExprConstantNodeImpl(null)));
     }
 }

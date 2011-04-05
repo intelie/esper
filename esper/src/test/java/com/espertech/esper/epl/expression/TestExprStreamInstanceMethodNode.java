@@ -76,7 +76,7 @@ public class TestExprStreamInstanceMethodNode extends TestCase
         assertTrue(node.equalsNode(other));
         assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s1", makeSpec("getIntPrimitive"))));
         assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s0", makeSpec("xxx"))));
-        assertFalse(node.equalsNode(new ExprStreamUnderlyingNode("xxx", false)));
+        assertFalse(node.equalsNode(new ExprStreamUnderlyingNodeImpl("xxx", false)));
     }
 
     protected static EventBean makeEvent(int intPrimitive)

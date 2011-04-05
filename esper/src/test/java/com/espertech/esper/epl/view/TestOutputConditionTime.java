@@ -2,8 +2,9 @@ package com.espertech.esper.epl.view;
 
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.epl.expression.ExprConstantNode;
+import com.espertech.esper.epl.expression.ExprConstantNodeImpl;
 import com.espertech.esper.epl.expression.ExprTimePeriod;
+import com.espertech.esper.epl.expression.ExprTimePeriodImpl;
 import com.espertech.esper.support.epl.SupportExprNodeUtil;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
@@ -28,8 +29,8 @@ public class TestOutputConditionTime extends TestCase
     		}
     	};
 
-        ExprTimePeriod timePeriod = new ExprTimePeriod(false, false, false, false, false, false, true, false);
-        timePeriod.addChildNode(new ExprConstantNode(TEST_INTERVAL_MSEC / 1000d));
+        ExprTimePeriod timePeriod = new ExprTimePeriodImpl(false, false, false, false, false, false, true, false);
+        timePeriod.addChildNode(new ExprConstantNodeImpl(TEST_INTERVAL_MSEC / 1000d));
         SupportExprNodeUtil.validate(timePeriod);
 
         schedulingServiceStub = new SupportSchedulingServiceImpl();
@@ -77,11 +78,11 @@ public class TestOutputConditionTime extends TestCase
     
     public void testIncorrectUse() throws Exception
     {
-        ExprTimePeriod timePeriodValid = new ExprTimePeriod(false, false, false, false, false, false, false, true);
-        timePeriodValid.addChildNode(new ExprConstantNode(1000));
+        ExprTimePeriod timePeriodValid = new ExprTimePeriodImpl(false, false, false, false, false, false, false, true);
+        timePeriodValid.addChildNode(new ExprConstantNodeImpl(1000));
 
-        ExprTimePeriod timePeriodInvalid = new ExprTimePeriod(false, false, false, false, false, false, false, true);
-        timePeriodInvalid.addChildNode(new ExprConstantNode(0));
+        ExprTimePeriod timePeriodInvalid = new ExprTimePeriodImpl(false, false, false, false, false, false, false, true);
+        timePeriodInvalid.addChildNode(new ExprConstantNodeImpl(0));
         SupportExprNodeUtil.validate(timePeriodInvalid);
 
 	    try

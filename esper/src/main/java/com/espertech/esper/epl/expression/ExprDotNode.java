@@ -96,7 +96,7 @@ public class ExprDotNode extends ExprNodeBase implements ExprNodeInnerNodeProvid
             Pair<PropertyResolutionDescriptor, String> propertyInfoPair = null;
             try {
                 if (!streamTypeService.hasPropertyAgnosticType() && (firstItem.isProperty() || firstItem.getParameters().isEmpty())) {
-                    propertyInfoPair = ExprIdentNode.getTypeFromStream(streamTypeService, firstItem.getName());
+                    propertyInfoPair = ExprIdentNodeImpl.getTypeFromStream(streamTypeService, firstItem.getName());
                 }
             }
             catch (ExprValidationPropertyException ex) {

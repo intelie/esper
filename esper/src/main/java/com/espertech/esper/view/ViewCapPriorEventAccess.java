@@ -10,6 +10,7 @@ package com.espertech.esper.view;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprConstantNodeImpl;
 import com.espertech.esper.view.internal.PriorEventViewFactory;
 import com.espertech.esper.epl.expression.ExprConstantNode;
 import com.espertech.esper.epl.expression.ExprNode;
@@ -64,7 +65,7 @@ public class ViewCapPriorEventAccess implements ViewCapability
             viewFactories.add(factory);
 
             ViewFactoryContext context = new ViewFactoryContext(statementContext, streamNumber, viewFactories.size() + 1, namespace, name);
-            factory.setViewParameters(context, Arrays.asList((ExprNode) new ExprConstantNode(unboundStream)));
+            factory.setViewParameters(context, Arrays.asList((ExprNode) new ExprConstantNodeImpl(unboundStream)));
         }
         catch (ViewProcessingException ex)
         {

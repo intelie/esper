@@ -15,7 +15,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 /**
  * Represents the "firstever" aggregate function is an expression tree.
  */
-public class ExprFirstEverNode extends ExprAggregateNode
+public class ExprFirstEverNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = 1436994080693454617L;
 

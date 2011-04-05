@@ -123,7 +123,7 @@ public final class FilterSpecCompiler
             }
             else
             {
-                ExprAndNode andNode = new ExprAndNode();
+                ExprAndNode andNode = new ExprAndNodeImpl();
                 for (ExprNode unoptimized : remainingExprNodes)
                 {
                     andNode.addChildNode(unoptimized);
@@ -319,7 +319,7 @@ public final class FilterSpecCompiler
 
                 // handle aggregation
                 List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
-                ExprAggregateNode.getAggregatesBottomUp(selectExpression, aggExprNodes);
+                ExprAggregateNodeUtil.getAggregatesBottomUp(selectExpression, aggExprNodes);
                 if (aggExprNodes.size() > 0)
                 {
                     // Other stream properties, if there is aggregation, cannot be under aggregation.
@@ -370,7 +370,7 @@ public final class FilterSpecCompiler
 
             // Ensure there is no aggregation nodes
             List<ExprAggregateNode> aggregateExprNodes = new LinkedList<ExprAggregateNode>();
-            ExprAggregateNode.getAggregatesBottomUp(validated, aggregateExprNodes);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(validated, aggregateExprNodes);
             if (!aggregateExprNodes.isEmpty())
             {
                 throw new ExprValidationException("Aggregation functions not allowed within filters");
@@ -525,7 +525,7 @@ public final class FilterSpecCompiler
 
             if ((low != null) && (high != null))
             {
-                return new FilterSpecParamRange(propertyName, op, low, high, identNode.getType());
+                return new FilterSpecParamRange(propertyName, op, low, high, identNode.getExprEvaluator().getType());
             }
         }
         return null;
@@ -615,14 +615,14 @@ public final class FilterSpecCompiler
                     }
 
                     boolean isMustCoerce = false;
-                    Class numericCoercionType = JavaClassHelper.getBoxedType(identNodeInSet.getType());
-                    if (identNodeInner.getType() != identNodeInSet.getType())
+                    Class numericCoercionType = JavaClassHelper.getBoxedType(identNodeInSet.getExprEvaluator().getType());
+                    if (identNodeInner.getExprEvaluator().getType() != identNodeInSet.getExprEvaluator().getType())
                     {
-                        if (JavaClassHelper.isNumeric(identNodeInSet.getType()))
+                        if (JavaClassHelper.isNumeric(identNodeInSet.getExprEvaluator().getType()))
                         {
-                            if (!JavaClassHelper.canCoerce(identNodeInner.getType(), identNodeInSet.getType()))
+                            if (!JavaClassHelper.canCoerce(identNodeInner.getExprEvaluator().getType(), identNodeInSet.getExprEvaluator().getType()))
                             {
-                                throwConversionError(identNodeInner.getType(), identNodeInSet.getType(), identNodeInSet.getResolvedPropertyName());
+                                throwConversionError(identNodeInner.getExprEvaluator().getType(), identNodeInSet.getExprEvaluator().getType(), identNodeInSet.getResolvedPropertyName());
                             }
                             isMustCoerce = true;
                         }
@@ -762,17 +762,17 @@ public final class FilterSpecCompiler
 
         boolean isMustCoerce = false;
         SimpleNumberCoercer numberCoercer = null;
-        Class numericCoercionType = JavaClassHelper.getBoxedType(identNodeLeft.getType());
-        if (identNodeRight.getType() != identNodeLeft.getType())
+        Class numericCoercionType = JavaClassHelper.getBoxedType(identNodeLeft.getExprEvaluator().getType());
+        if (identNodeRight.getExprEvaluator().getType() != identNodeLeft.getExprEvaluator().getType())
         {
-            if (JavaClassHelper.isNumeric(identNodeRight.getType()))
+            if (JavaClassHelper.isNumeric(identNodeRight.getExprEvaluator().getType()))
             {
-                if (!JavaClassHelper.canCoerce(identNodeRight.getType(), identNodeLeft.getType()))
+                if (!JavaClassHelper.canCoerce(identNodeRight.getExprEvaluator().getType(), identNodeLeft.getExprEvaluator().getType()))
                 {
-                    throwConversionError(identNodeRight.getType(), identNodeLeft.getType(), identNodeLeft.getResolvedPropertyName());
+                    throwConversionError(identNodeRight.getExprEvaluator().getType(), identNodeLeft.getExprEvaluator().getType(), identNodeLeft.getResolvedPropertyName());
                 }
                 isMustCoerce = true;
-                numberCoercer = SimpleNumberCoercerFactory.getCoercer(identNodeRight.getType(), numericCoercionType);
+                numberCoercer = SimpleNumberCoercerFactory.getCoercer(identNodeRight.getExprEvaluator().getType(), numericCoercionType);
             }
         }
 
@@ -828,7 +828,7 @@ public final class FilterSpecCompiler
     private static Object handleConstantsCoercion(ExprIdentNode identNode, Object constant)
             throws ExprValidationException
     {
-        Class identNodeType = identNode.getType();
+        Class identNodeType = identNode.getExprEvaluator().getType();
         if (!JavaClassHelper.isNumeric(identNodeType))
         {
             return constant;    // no coercion required, other type checking performed by expression this comes from

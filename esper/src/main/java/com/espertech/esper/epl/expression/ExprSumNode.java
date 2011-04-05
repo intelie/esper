@@ -15,7 +15,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 /**
  * Represents the sum(...) aggregate function is an expression tree.
  */
-public class ExprSumNode extends ExprAggregateNode
+public class ExprSumNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = 208249604168283643L;
 

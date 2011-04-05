@@ -28,7 +28,7 @@ public class SupportExprNodeFactory
         ExprNode[] nodes = new ExprNode[names.length];
         for (int i = 0; i < names.length; i++)
         {
-            nodes[i] = new ExprIdentNode(names[i]);
+            nodes[i] = new ExprIdentNodeImpl(names[i]);
             validate1StreamBean(nodes[i]);
         }
         return nodes;
@@ -39,7 +39,7 @@ public class SupportExprNodeFactory
         ExprNode[] nodes = new ExprNode[names.length];
         for (int i = 0; i < names.length; i++)
         {
-            nodes[i] = new ExprIdentNode(names[i]);
+            nodes[i] = new ExprIdentNodeImpl(names[i]);
             validate1StreamMD(nodes[i]);
         }
         return nodes;
@@ -47,28 +47,28 @@ public class SupportExprNodeFactory
 
     public static ExprNode makeIdentNodeBean(String names) throws Exception
     {
-        ExprNode node = new ExprIdentNode(names);
+        ExprNode node = new ExprIdentNodeImpl(names);
         validate1StreamBean(node);
         return node;
     }
 
     public static ExprNode makeIdentNodeMD(String names) throws Exception
     {
-        ExprNode node = new ExprIdentNode(names);
+        ExprNode node = new ExprIdentNodeImpl(names);
         validate1StreamMD(node);
         return node;
     }
 
     public static ExprNode makeIdentNodeNoValid(String names) throws Exception
     {
-        return new ExprIdentNode(names);
+        return new ExprIdentNodeImpl(names);
     }
 
     public static ExprEqualsNode makeEqualsNode() throws Exception
     {
-        ExprEqualsNode topNode = new ExprEqualsNode(false);
-        ExprIdentNode i1_1 = new ExprIdentNode("intPrimitive", "s0");
-        ExprIdentNode i1_2 = new ExprIdentNode("intBoxed", "s1");
+        ExprEqualsNode topNode = new ExprEqualsNodeImpl(false);
+        ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive", "s0");
+        ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed", "s1");
         topNode.addChildNode(i1_1);
         topNode.addChildNode(i1_2);
 
@@ -80,9 +80,9 @@ public class SupportExprNodeFactory
     public static ExprPreviousNode makePreviousNode() throws Exception
     {
         ExprPreviousNode prevNode = new ExprPreviousNode(PreviousType.PREV);
-        ExprNode indexNode = new ExprIdentNode("intPrimitive", "s1");
+        ExprNode indexNode = new ExprIdentNodeImpl("intPrimitive", "s1");
         prevNode.addChildNode(indexNode);
-        ExprNode propNode = new ExprIdentNode("doublePrimitive", "s1");
+        ExprNode propNode = new ExprIdentNodeImpl("doublePrimitive", "s1");
         prevNode.addChildNode(propNode);
 
         validate3Stream(prevNode);
@@ -93,9 +93,9 @@ public class SupportExprNodeFactory
     public static ExprPriorNode makePriorNode() throws Exception
     {
         ExprPriorNode priorNode = new ExprPriorNode();
-        ExprNode indexNode = new ExprConstantNode(1);
+        ExprNode indexNode = new ExprConstantNodeImpl(1);
         priorNode.addChildNode(indexNode);
-        ExprNode propNode = new ExprIdentNode("doublePrimitive", "s0");
+        ExprNode propNode = new ExprIdentNodeImpl("doublePrimitive", "s0");
         priorNode.addChildNode(propNode);
 
         validate3Stream(priorNode);
@@ -105,21 +105,21 @@ public class SupportExprNodeFactory
 
     public static ExprAndNode make2SubNodeAnd() throws Exception
     {
-        ExprAndNode topNode = new ExprAndNode();
+        ExprAndNode topNode = new ExprAndNodeImpl();
 
-        ExprEqualsNode e1 = new ExprEqualsNode(false);
-        ExprEqualsNode e2 = new ExprEqualsNode(false);
+        ExprEqualsNode e1 = new ExprEqualsNodeImpl(false);
+        ExprEqualsNode e2 = new ExprEqualsNodeImpl(false);
 
         topNode.addChildNode(e1);
         topNode.addChildNode(e2);
 
-        ExprIdentNode i1_1 = new ExprIdentNode("intPrimitive", "s0");
-        ExprIdentNode i1_2 = new ExprIdentNode("intBoxed", "s1");
+        ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive", "s0");
+        ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed", "s1");
         e1.addChildNode(i1_1);
         e1.addChildNode(i1_2);
 
-        ExprIdentNode i2_1 = new ExprIdentNode("string", "s1");
-        ExprIdentNode i2_2 = new ExprIdentNode("string", "s0");
+        ExprIdentNode i2_1 = new ExprIdentNodeImpl("string", "s1");
+        ExprIdentNode i2_2 = new ExprIdentNodeImpl("string", "s0");
         e2.addChildNode(i2_1);
         e2.addChildNode(i2_2);
 
@@ -130,27 +130,27 @@ public class SupportExprNodeFactory
 
     public static ExprNode make3SubNodeAnd() throws Exception
     {
-        ExprNode topNode = new ExprAndNode();
+        ExprNode topNode = new ExprAndNodeImpl();
 
         ExprEqualsNode[] equalNodes = new ExprEqualsNode[3];
         for (int i = 0; i < equalNodes.length; i++)
         {
-            equalNodes[i] = new ExprEqualsNode(false);
+            equalNodes[i] = new ExprEqualsNodeImpl(false);
             topNode.addChildNode(equalNodes[i]);
         }
 
-        ExprIdentNode i1_1 = new ExprIdentNode("intPrimitive", "s0");
-        ExprIdentNode i1_2 = new ExprIdentNode("intBoxed", "s1");
+        ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive", "s0");
+        ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed", "s1");
         equalNodes[0].addChildNode(i1_1);
         equalNodes[0].addChildNode(i1_2);
 
-        ExprIdentNode i2_1 = new ExprIdentNode("string", "s1");
-        ExprIdentNode i2_2 = new ExprIdentNode("string", "s0");
+        ExprIdentNode i2_1 = new ExprIdentNodeImpl("string", "s1");
+        ExprIdentNode i2_2 = new ExprIdentNodeImpl("string", "s0");
         equalNodes[1].addChildNode(i2_1);
         equalNodes[1].addChildNode(i2_2);
 
-        ExprIdentNode i3_1 = new ExprIdentNode("boolBoxed", "s0");
-        ExprIdentNode i3_2 = new ExprIdentNode("boolPrimitive", "s1");
+        ExprIdentNode i3_1 = new ExprIdentNodeImpl("boolBoxed", "s0");
+        ExprIdentNode i3_2 = new ExprIdentNodeImpl("boolPrimitive", "s1");
         equalNodes[2].addChildNode(i3_1);
         equalNodes[2].addChildNode(i3_2);
 
@@ -161,15 +161,15 @@ public class SupportExprNodeFactory
 
     public static ExprNode makeIdentNode(String fieldName, String streamName) throws Exception
     {
-        ExprIdentNode node = new ExprIdentNode(fieldName, streamName);
+        ExprIdentNode node = new ExprIdentNodeImpl(fieldName, streamName);
         validate3Stream(node);
         return node;
     }
 
     public static ExprNode makeMathNode() throws Exception
     {
-        ExprIdentNode node1 = new ExprIdentNode("intBoxed", "s0");
-        ExprIdentNode node2 = new ExprIdentNode("intPrimitive", "s0");
+        ExprIdentNode node1 = new ExprIdentNodeImpl("intBoxed", "s0");
+        ExprIdentNode node2 = new ExprIdentNodeImpl("intPrimitive", "s0");
         ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
         mathNode.addChildNode(node1);
         mathNode.addChildNode(node2);
@@ -192,10 +192,10 @@ public class SupportExprNodeFactory
     {
         // sum node
         ExprSumNode sum = new ExprSumNode(false);
-        ExprIdentNode ident = new ExprIdentNode("intPrimitive", "s0");
+        ExprIdentNode ident = new ExprIdentNodeImpl("intPrimitive", "s0");
         sum.addChildNode(ident);
 
-        ExprIdentNode node = new ExprIdentNode("intBoxed", "s0");
+        ExprIdentNode node = new ExprIdentNodeImpl("intBoxed", "s0");
         ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
         mathNode.addChildNode(node);
         mathNode.addChildNode(sum);
@@ -208,7 +208,7 @@ public class SupportExprNodeFactory
     public static ExprAggregateNode makeSumAggregateNode() throws Exception
     {
         ExprSumNode top = new ExprSumNode(false);
-        ExprIdentNode ident = new ExprIdentNode("intPrimitive", "s0");
+        ExprIdentNode ident = new ExprIdentNodeImpl("intPrimitive", "s0");
         top.addChildNode(ident);
 
         validate3Stream(top);
@@ -228,7 +228,7 @@ public class SupportExprNodeFactory
 
     public static ExprNode makeRelationalOpNode(RelationalOpEnum operator_, Object valueLeft_, Class typeLeft_, Object valueRight_, Class typeRight_) throws Exception
     {
-        ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
+        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(operator_);
         opNode.addChildNode(new SupportExprNode(valueLeft_, typeLeft_));
         opNode.addChildNode(new SupportExprNode(valueRight_, typeRight_));
         validate3Stream(opNode);
@@ -237,7 +237,7 @@ public class SupportExprNodeFactory
 
     public static ExprNode makeRelationalOpNode(RelationalOpEnum operator_, Class typeLeft_, Class typeRight_) throws Exception
     {
-        ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
+        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(operator_);
         opNode.addChildNode(new SupportExprNode(typeLeft_));
         opNode.addChildNode(new SupportExprNode(typeRight_));
         validate3Stream(opNode);
@@ -246,7 +246,7 @@ public class SupportExprNodeFactory
 
     public static ExprNode makeRelationalOpNode(RelationalOpEnum operator_, ExprNode nodeLeft_, ExprNode nodeRight_) throws Exception
     {
-        ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
+        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(operator_);
         opNode.addChildNode(nodeLeft_);
         opNode.addChildNode(nodeRight_);
         validate3Stream(opNode);
@@ -256,7 +256,7 @@ public class SupportExprNodeFactory
     public static ExprInNode makeInSetNode(boolean isNotIn) throws Exception
     {
         // Build :      s0.intPrimitive in (1, 2)
-        ExprInNode inNode = new ExprInNode(isNotIn);
+        ExprInNode inNode = new ExprInNodeImpl(isNotIn);
         inNode.addChildNode(makeIdentNode("intPrimitive","s0"));
         inNode.addChildNode(new SupportExprNode(1));
         inNode.addChildNode(new SupportExprNode(2));
@@ -336,8 +336,8 @@ public class SupportExprNodeFactory
 
     private static ExprEqualsNode makeEqualsNode(String ident1, String stream1, Object value) throws Exception
     {
-        ExprEqualsNode topNode = new ExprEqualsNode(false);
-        ExprIdentNode i1_1 = new ExprIdentNode(ident1, stream1);
+        ExprEqualsNode topNode = new ExprEqualsNodeImpl(false);
+        ExprIdentNode i1_1 = new ExprIdentNodeImpl(ident1, stream1);
         SupportExprNode constantNode = new SupportExprNode(value);
         topNode.addChildNode(i1_1);
         topNode.addChildNode(constantNode);

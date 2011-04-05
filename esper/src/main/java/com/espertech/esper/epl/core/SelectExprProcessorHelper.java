@@ -364,7 +364,7 @@ public class SelectExprProcessorHelper
 
             ExprStreamUnderlyingNode undNode = (ExprStreamUnderlyingNode) exprEvaluators[i];
             final int streamNum = undNode.getStreamId();
-            final Class returnType = undNode.getType();
+            final Class returnType = undNode.getExprEvaluator().getType();
             EventType eventTypeStream = typeService.getEventTypes()[streamNum];
 
             // A match was found, we replace the expression

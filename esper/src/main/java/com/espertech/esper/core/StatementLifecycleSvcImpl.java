@@ -1116,7 +1116,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                     raw.setFilterExprRootNode(firstChain.getParameters().get(0));
                 }
                 else {
-                    ExprAndNode andNode = new ExprAndNode();
+                    ExprAndNode andNode = new ExprAndNodeImpl();
                     for (ExprNode node : firstChain.getParameters()) {
                         andNode.addChildNode(node);
                     }
@@ -1279,7 +1279,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 }
 
                 // Add any properties to the new select clause for use by consumers to the statement itself
-                newSelectClauseSpecRaw.add(new SelectClauseExprRawSpec(new ExprIdentNode(selectElement.getAssignedName()), null));
+                newSelectClauseSpecRaw.add(new SelectClauseExprRawSpec(new ExprIdentNodeImpl(selectElement.getAssignedName()), null));
                 hasProperties = true;
             }
         }

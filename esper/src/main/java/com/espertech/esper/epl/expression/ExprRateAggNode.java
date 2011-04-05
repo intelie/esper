@@ -16,7 +16,7 @@ import com.espertech.esper.util.JavaClassHelper;
 /**
  * Represents the rate(...) and aggregate function is an expression tree.
  */
-public class ExprRateAggNode extends ExprAggregateNode
+public class ExprRateAggNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = -1616393720555472129L;
 

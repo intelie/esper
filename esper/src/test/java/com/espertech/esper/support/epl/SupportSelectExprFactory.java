@@ -14,7 +14,7 @@ public class SupportSelectExprFactory
     public static List<SelectClauseElementCompiled> makeInvalidSelectList() throws Exception
     {
         List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
-        ExprIdentNode node = new ExprIdentNode("xxxx", "s0");
+        ExprIdentNode node = new ExprIdentNodeImpl("xxxx", "s0");
         selectionList.add(new SelectClauseExprCompiledSpec(node, null));
         return selectionList;
     }

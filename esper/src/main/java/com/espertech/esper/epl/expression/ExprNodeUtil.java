@@ -142,7 +142,7 @@ public class ExprNodeUtil {
     private static ExprNode resolveAsStreamName(ExprIdentNode identNode, ExprValidationException existingException, ExprValidationContext validationContext)
             throws ExprValidationException
     {
-        ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNode(identNode.getUnresolvedPropertyName(), false);
+        ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNodeImpl(identNode.getUnresolvedPropertyName(), false);
 
         try
         {
@@ -188,7 +188,7 @@ public class ExprNodeUtil {
         // If there is a class name, assume a static method is possible.
         if (parse.getClassName() != null)
         {
-            List<ExprNode> parameters = Collections.singletonList((ExprNode) new ExprConstantNode(parse.getArgString()));
+            List<ExprNode> parameters = Collections.singletonList((ExprNode) new ExprConstantNodeImpl(parse.getArgString()));
             List<ExprChainedSpec> chain = new ArrayList<ExprChainedSpec>();
             chain.add(new ExprChainedSpec(parse.getClassName(), Collections.<ExprNode>emptyList(), false));
             chain.add(new ExprChainedSpec(parse.getMethodName(), parameters, false));
@@ -212,7 +212,7 @@ public class ExprNodeUtil {
         try
         {
             Pair<Class, String> classMethodPair = validationContext.getMethodResolutionService().resolveSingleRow(functionName);
-            List<ExprNode> params = Collections.singletonList((ExprNode) new ExprConstantNode(parse.getArgString()));
+            List<ExprNode> params = Collections.singletonList((ExprNode) new ExprConstantNodeImpl(parse.getArgString()));
             List<ExprChainedSpec> chain = Collections.singletonList(new ExprChainedSpec(classMethodPair.getSecond(), params, false));
             ExprNode result = new ExprPlugInSingleRowNode(functionName, classMethodPair.getFirst(), chain, false);
 
@@ -242,7 +242,7 @@ public class ExprNodeUtil {
         {
             AggregationSupport aggregation = validationContext.getMethodResolutionService().resolveAggregation(parse.getMethodName());
             ExprNode result = new ExprPlugInAggFunctionNode(false, aggregation, parse.getMethodName());
-            result.addChildNode(new ExprConstantNode(parse.getArgString()));
+            result.addChildNode(new ExprConstantNodeImpl(parse.getArgString()));
 
             // Validate
             try
@@ -275,7 +275,7 @@ public class ExprNodeUtil {
         Object enumValue = JavaClassHelper.resolveIdentAsEnumConst(constant, methodResolutionService, null);
         if (enumValue != null)
         {
-            return new ExprConstantNode(enumValue);
+            return new ExprConstantNodeImpl(enumValue);
         }
         return null;
     }

@@ -96,7 +96,7 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
      */
     public ExprNode makeExprNode(ExprEvaluatorContext exprEvaluatorContext)
     {
-        ExprNode representativeNode = new ExprEqualsNode(false);
+        ExprNode representativeNode = new ExprEqualsNodeImpl(false);
         representativeNode.addChildNode(leftNode);
         representativeNode.addChildNode(rightNode);
 
@@ -105,14 +105,14 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
             return representativeNode;
         }
 
-        ExprAndNode andNode = new ExprAndNode();
+        ExprAndNode andNode = new ExprAndNodeImpl();
         topValidate(representativeNode, exprEvaluatorContext);
         andNode.addChildNode(representativeNode);
         representativeNode = andNode;
 
         for (int i = 0; i < addLeftNode.length; i++)
         {
-            ExprEqualsNode eqNode = new ExprEqualsNode(false);
+            ExprEqualsNode eqNode = new ExprEqualsNodeImpl(false);
             eqNode.addChildNode(addLeftNode[i]);
             eqNode.addChildNode(addRightNode[i]);
             topValidate(eqNode, exprEvaluatorContext);

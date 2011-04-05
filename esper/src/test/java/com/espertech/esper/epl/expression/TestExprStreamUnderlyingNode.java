@@ -1,22 +1,22 @@
 package com.espertech.esper.epl.expression;
 
-import junit.framework.TestCase;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.support.epl.SupportStreamTypeSvc3Stream;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.epl.SupportStreamTypeSvc3Stream;
+import com.espertech.esper.support.event.SupportEventBeanFactory;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class TestExprStreamUnderlyingNode extends TestCase
 {
-    private ExprStreamUnderlyingNode node;
+    private ExprStreamUnderlyingNodeImpl node;
     private StreamTypeService streamTypeService;
 
     public void setUp()
     {
-        node = new ExprStreamUnderlyingNode("s0", false);
+        node = new ExprStreamUnderlyingNodeImpl("s0", false);
         streamTypeService = new SupportStreamTypeSvc3Stream();
     }
 
@@ -34,7 +34,7 @@ public class TestExprStreamUnderlyingNode extends TestCase
 
         try
         {
-            node.getType();
+            node.getExprEvaluator().getType();
             fail();
         }
         catch (IllegalStateException ex)
@@ -49,8 +49,8 @@ public class TestExprStreamUnderlyingNode extends TestCase
         assertEquals(0, node.getStreamId());
         assertEquals(SupportBean.class, node.getType());
 
-        tryInvalidValidate(new ExprStreamUnderlyingNode("", false));
-        tryInvalidValidate(new ExprStreamUnderlyingNode("dummy", false));
+        tryInvalidValidate(new ExprStreamUnderlyingNodeImpl("", false));
+        tryInvalidValidate(new ExprStreamUnderlyingNodeImpl("dummy", false));
     }
 
     public void testEvaluate() throws Exception
@@ -65,8 +65,8 @@ public class TestExprStreamUnderlyingNode extends TestCase
     public void testEqualsNode() throws Exception
     {
         node.validate(ExprValidationContextFactory.make(streamTypeService));
-        assertTrue(node.equalsNode(new ExprStreamUnderlyingNode("s0", false)));
-        assertFalse(node.equalsNode(new ExprStreamUnderlyingNode("xxx", false)));
+        assertTrue(node.equalsNode(new ExprStreamUnderlyingNodeImpl("s0", false)));
+        assertFalse(node.equalsNode(new ExprStreamUnderlyingNodeImpl("xxx", false)));
     }
 
     protected static EventBean makeEvent(int intPrimitive)

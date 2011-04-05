@@ -1,11 +1,11 @@
 package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprIdentNodeImpl;
 import com.espertech.esper.epl.expression.ExprNode;
 import junit.framework.TestCase;
 
 import java.util.Map;
-import java.util.StringTokenizer;
 
 public class TestQueryGraphValue extends TestCase {
 
@@ -38,26 +38,26 @@ public class TestQueryGraphValue extends TestCase {
                         Object[][] expected) {
 
         QueryGraphValue value = new QueryGraphValue();
-        value.addRelOp(new ExprIdentNode(propertyKeyOne), opOne, valueOne, true);
-        value.addRelOp(new ExprIdentNode(propertyKeyTwo), opTwo, valueTwo, true);
+        value.addRelOp(new ExprIdentNodeImpl(propertyKeyOne), opOne, valueOne, true);
+        value.addRelOp(new ExprIdentNodeImpl(propertyKeyTwo), opTwo, valueTwo, true);
         assertRanges(expected, value);
 
         value = new QueryGraphValue();
-        value.addRelOp(new ExprIdentNode(propertyKeyTwo), opTwo, valueTwo, true);
-        value.addRelOp(new ExprIdentNode(propertyKeyOne), opOne, valueOne, true);
+        value.addRelOp(new ExprIdentNodeImpl(propertyKeyTwo), opTwo, valueTwo, true);
+        value.addRelOp(new ExprIdentNodeImpl(propertyKeyOne), opOne, valueOne, true);
         assertRanges(expected, value);
     }
 
     public void testNoDup() {
 
         QueryGraphValue value = new QueryGraphValue();
-        value.addRelOp(new ExprIdentNode("b"), QueryGraphRangeEnum.LESS_OR_EQUAL, "a", false);
-        value.addRelOp(new ExprIdentNode("b"), QueryGraphRangeEnum.LESS_OR_EQUAL, "a", false);
+        value.addRelOp(new ExprIdentNodeImpl("b"), QueryGraphRangeEnum.LESS_OR_EQUAL, "a", false);
+        value.addRelOp(new ExprIdentNodeImpl("b"), QueryGraphRangeEnum.LESS_OR_EQUAL, "a", false);
         assertRanges(new Object[][] {{"b", null, null, QueryGraphRangeEnum.LESS_OR_EQUAL, "a"}}, value);
 
         value = new QueryGraphValue();
-        value.addRange(QueryGraphRangeEnum.RANGE_CLOSED, new ExprIdentNode("b"), new ExprIdentNode("c"), "a");
-        value.addRange(QueryGraphRangeEnum.RANGE_CLOSED, new ExprIdentNode("b"), new ExprIdentNode("c"), "a");
+        value.addRange(QueryGraphRangeEnum.RANGE_CLOSED, new ExprIdentNodeImpl("b"), new ExprIdentNodeImpl("c"), "a");
+        value.addRange(QueryGraphRangeEnum.RANGE_CLOSED, new ExprIdentNodeImpl("b"), new ExprIdentNodeImpl("c"), "a");
         assertRanges(new Object[][] {{null, "b", "c", QueryGraphRangeEnum.RANGE_CLOSED, "a"}}, value);
     }
 

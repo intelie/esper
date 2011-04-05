@@ -16,7 +16,6 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.type.*;
-import com.espertech.esper.view.ViewFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -1218,6 +1217,32 @@ public class JavaClassHelper
             return false;
         }
         return true;
+    }
+
+    public static Class[] getSuperInterfaces(Class clazz)
+    {
+        Set<Class> interfaces = new HashSet<Class>();
+        Class[] declaredInterfaces = clazz.getInterfaces();
+
+        for (int i = 0; i < declaredInterfaces.length; i++)
+        {
+            interfaces.add(declaredInterfaces[i]);
+            getSuperInterfaces(declaredInterfaces[i], interfaces);
+        }
+
+        Set<Class> superClasses = new HashSet<Class>();
+        getSuperClasses(clazz, superClasses);
+        for (Class superClass : superClasses) {
+            declaredInterfaces = superClass.getInterfaces();
+
+            for (int i = 0; i < declaredInterfaces.length; i++)
+            {
+                interfaces.add(declaredInterfaces[i]);
+                getSuperInterfaces(declaredInterfaces[i], interfaces);
+            }
+        }
+
+        return interfaces.toArray(new Class[declaredInterfaces.length]);
     }
 
     public static void getSuperInterfaces(Class clazz, Set<Class> result)

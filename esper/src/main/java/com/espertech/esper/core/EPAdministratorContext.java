@@ -8,19 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.soda.*;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.epl.parse.*;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.pattern.EvalNode;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.CommonTreeNodeStream;
-import org.antlr.runtime.tree.Tree;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class EPAdministratorContext
 {

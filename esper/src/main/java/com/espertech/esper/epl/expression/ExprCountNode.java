@@ -15,7 +15,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 /**
  * Represents the count(...) and count(*) and count(distinct ...) aggregate function is an expression tree.
  */
-public class ExprCountNode extends ExprAggregateNode
+public class ExprCountNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = 1859320277242087598L;
 

@@ -18,7 +18,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import java.io.StringWriter;
 import java.util.*;
 
-public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluatorEnumeration
+public class ExprAccessAggNode extends ExprAggregateNodeBase implements ExprEvaluatorEnumeration
 {
     private static final long serialVersionUID = -6088874732989061687L;
 
@@ -78,7 +78,7 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
             if ((accessType == AggregationAccessType.WINDOW) && istreamOnly && !streamTypeService.isOnDemandStreams()) {
                 throw new ExprValidationException(getErrorPrefix() + " requires that the aggregated events provide a remove stream; Defined a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead");
             }
-            this.getChildNodes().add(0, new ExprStreamUnderlyingNode(null, true, streamNum, resultType));
+            this.getChildNodes().add(0, new ExprStreamUnderlyingNodeImpl(null, true, streamNum, resultType));
         }
         else if (streamWildcard != null) {
             streamNum = streamTypeService.getStreamNumForStreamName(streamWildcard);
@@ -110,7 +110,7 @@ public class ExprAccessAggNode extends ExprAggregateNode implements ExprEvaluato
                     return null;
                 }
             };
-            this.getChildNodes().add(0, new ExprStreamUnderlyingNode(streamWildcard, false, streamNum, resultType));
+            this.getChildNodes().add(0, new ExprStreamUnderlyingNodeImpl(streamWildcard, false, streamNum, resultType));
         }
         else {
             if (this.getChildNodes().isEmpty()) {

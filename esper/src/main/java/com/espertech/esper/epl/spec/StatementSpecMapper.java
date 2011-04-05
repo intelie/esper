@@ -18,6 +18,7 @@ import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.epl.declexpr.ExprDeclaredNode;
+import com.espertech.esper.epl.declexpr.ExprDeclaredNodeImpl;
 import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.named.NamedWindowService;
@@ -1230,7 +1231,7 @@ public class StatementSpecMapper
             {
                 String stream = prop.getPropertyName().substring(0, indexDot);
                 String property = prop.getPropertyName().substring(indexDot + 1, prop.getPropertyName().length());
-                return new ExprIdentNode(property, stream);
+                return new ExprIdentNodeImpl(property, stream);
             }
 
             if (mapContext.getVariableService().getReader(prop.getPropertyName()) != null)
@@ -1238,11 +1239,11 @@ public class StatementSpecMapper
                 mapContext.setHasVariables(true);
                 return new ExprVariableNode(prop.getPropertyName());
             }
-            return new ExprIdentNode(prop.getPropertyName());
+            return new ExprIdentNodeImpl(prop.getPropertyName());
         }
         else if (expr instanceof Conjunction)
         {
-            return new ExprAndNode();
+            return new ExprAndNodeImpl();
         }
         else if (expr instanceof Disjunction)
         {
@@ -1253,15 +1254,15 @@ public class StatementSpecMapper
             RelationalOpExpression op = (RelationalOpExpression) expr;
             if (op.getOperator().equals("="))
             {
-                return new ExprEqualsNode(false);
+                return new ExprEqualsNodeImpl(false);
             }
             if (op.getOperator().equals("!="))
             {
-                return new ExprEqualsNode(true);
+                return new ExprEqualsNodeImpl(true);
             }
             else
             {
-                return new ExprRelationalOpNode(RelationalOpEnum.parse(op.getOperator()));
+                return new ExprRelationalOpNodeImpl(RelationalOpEnum.parse(op.getOperator()));
             }
         }
         else if (expr instanceof ConstantExpression)
@@ -1278,7 +1279,7 @@ public class StatementSpecMapper
                     throw new EPException("Error looking up class name '" + op.getConstantType() + "' to resolve as constant type");
                 }
             }
-            return new ExprConstantNode(op.getConstant(), constantType);
+            return new ExprConstantNodeImpl(op.getConstant(), constantType);
         }
         else if (expr instanceof ConcatExpression)
         {
@@ -1345,7 +1346,7 @@ public class StatementSpecMapper
         else if (expr instanceof BetweenExpression)
         {
             BetweenExpression between = (BetweenExpression) expr;
-            return new ExprBetweenNode(between.isLowEndpointIncluded(), between.isHighEndpointIncluded(), between.isNotBetween());
+            return new ExprBetweenNodeImpl(between.isLowEndpointIncluded(), between.isHighEndpointIncluded(), between.isNotBetween());
         }
         else if (expr instanceof PriorExpression)
         {
@@ -1382,7 +1383,7 @@ public class StatementSpecMapper
         else if (expr instanceof InExpression)
         {
             InExpression in = (InExpression) expr;
-            return new ExprInNode(in.isNotIn());
+            return new ExprInNodeImpl(in.isNotIn());
         }
         else if (expr instanceof CoalesceExpression)
         {
@@ -1473,7 +1474,7 @@ public class StatementSpecMapper
         else if (expr instanceof TimePeriodExpression)
         {
             TimePeriodExpression tpe = (TimePeriodExpression) expr;
-            return new ExprTimePeriod(tpe.isHasYears(), tpe.isHasMonths(), tpe.isHasWeeks(), tpe.isHasDays(), tpe.isHasHours(), tpe.isHasMinutes(), tpe.isHasSeconds(), tpe.isHasMilliseconds());
+            return new ExprTimePeriodImpl(tpe.isHasYears(), tpe.isHasMonths(), tpe.isHasWeeks(), tpe.isHasDays(), tpe.isHasHours(), tpe.isHasMinutes(), tpe.isHasSeconds(), tpe.isHasMilliseconds());
         }
         else if (expr instanceof NewOperatorExpression) {
             NewOperatorExpression noe = (NewOperatorExpression) expr;
@@ -1498,7 +1499,7 @@ public class StatementSpecMapper
             {
                 throw new EPException("Substitution parameter value for index " + node.getIndex() + " not set, please provide a value for this parameter");
             }
-            return new ExprConstantNode(node.getConstant());
+            return new ExprConstantNodeImpl(node.getConstant());
         }
         else if (expr instanceof SingleRowMethodExpression) {
             SingleRowMethodExpression single = (SingleRowMethodExpression) expr;
@@ -1603,7 +1604,7 @@ public class StatementSpecMapper
             if (chain.size() == 1) {
                 String name = chain.get(0).getName();
                 if (mapContext.getExpressionDeclarations() != null && mapContext.getExpressionDeclarations().containsKey(name)) {
-                    return new ExprDeclaredNode(mapContext.getExpressionDeclarations().get(name), chain.get(0).getParameters());
+                    return new ExprDeclaredNodeImpl(mapContext.getExpressionDeclarations().get(name), chain.get(0).getParameters());
                 }
             }
             return new ExprDotNode(chain,

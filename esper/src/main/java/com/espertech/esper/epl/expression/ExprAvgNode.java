@@ -16,7 +16,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 /**
  * Represents the avg(...) aggregate function is an expression tree.
  */
-public class ExprAvgNode extends ExprAggregateNode
+public class ExprAvgNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = 984275656068129627L;
 

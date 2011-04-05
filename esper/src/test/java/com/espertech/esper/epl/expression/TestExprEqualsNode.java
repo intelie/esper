@@ -11,17 +11,17 @@ public class TestExprEqualsNode extends TestCase
     public void setUp()
     {
         equalsNodes = new ExprEqualsNode[4];
-        equalsNodes[0] = new ExprEqualsNode(false);
+        equalsNodes[0] = new ExprEqualsNodeImpl(false);
 
-        equalsNodes[1] = new ExprEqualsNode(false);
+        equalsNodes[1] = new ExprEqualsNodeImpl(false);
         equalsNodes[1].addChildNode(new SupportExprNode(1L));
         equalsNodes[1].addChildNode(new SupportExprNode(new Integer(1)));
 
-        equalsNodes[2] = new ExprEqualsNode(true);
+        equalsNodes[2] = new ExprEqualsNodeImpl(true);
         equalsNodes[2].addChildNode(new SupportExprNode(1.5D));
         equalsNodes[2].addChildNode(new SupportExprNode(new Integer(1)));
 
-        equalsNodes[3] = new ExprEqualsNode(false);
+        equalsNodes[3] = new ExprEqualsNodeImpl(false);
         equalsNodes[3].addChildNode(new SupportExprNode(1D));
         equalsNodes[3].addChildNode(new SupportExprNode(new Integer(1)));
     }
@@ -131,7 +131,7 @@ public class TestExprEqualsNode extends TestCase
 
     private ExprEqualsNode makeNode(Object valueLeft, Object valueRight, boolean isNot) throws Exception
     {
-        ExprEqualsNode equalsNode = new ExprEqualsNode(isNot);
+        ExprEqualsNode equalsNode = new ExprEqualsNodeImpl(isNot);
         equalsNode.addChildNode(new SupportExprNode(valueLeft));
         equalsNode.addChildNode(new SupportExprNode(valueRight));
         SupportExprNodeUtil.validate(equalsNode);
@@ -140,7 +140,7 @@ public class TestExprEqualsNode extends TestCase
 
     private ExprEqualsNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight, boolean isNot) throws Exception
     {
-        ExprEqualsNode equalsNode = new ExprEqualsNode(isNot);
+        ExprEqualsNode equalsNode = new ExprEqualsNodeImpl(isNot);
         equalsNode.addChildNode(new SupportExprNode(valueLeft, typeLeft));
         equalsNode.addChildNode(new SupportExprNode(valueRight, typeRight));
         SupportExprNodeUtil.validate(equalsNode);

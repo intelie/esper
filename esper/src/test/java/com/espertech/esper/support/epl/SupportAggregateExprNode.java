@@ -5,11 +5,12 @@ import com.espertech.esper.epl.agg.AggregationMethodFactory;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.ExprAggregateNode;
+import com.espertech.esper.epl.expression.ExprAggregateNodeBase;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.client.EventBean;
 
-public class SupportAggregateExprNode extends ExprAggregateNode
+public class SupportAggregateExprNode extends ExprAggregateNodeBase
 {
     private static int validateCount;
 

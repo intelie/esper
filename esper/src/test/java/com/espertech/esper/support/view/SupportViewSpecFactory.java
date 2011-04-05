@@ -1,10 +1,10 @@
 package com.espertech.esper.support.view;
 
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprConstantNode;
-import com.espertech.esper.epl.spec.ViewSpec;
-import com.espertech.esper.epl.spec.StreamSpecOptions;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.epl.expression.ExprConstantNodeImpl;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.spec.StreamSpecOptions;
+import com.espertech.esper.epl.spec.ViewSpec;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.ViewFactoryChain;
@@ -140,7 +140,7 @@ public class SupportViewSpecFactory
                 if (value.startsWith("\""))
                 {
                     value = value.replace("\"", "");
-                    node = new ExprConstantNode(value);
+                    node = new ExprConstantNodeImpl(value);
                 }
                 else
                 {
@@ -149,11 +149,11 @@ public class SupportViewSpecFactory
             }
             else if (clazz[i] == Boolean.class)
             {
-                node = new ExprConstantNode(Boolean.valueOf(value));
+                node = new ExprConstantNodeImpl(Boolean.valueOf(value));
             }
             else
             {
-                node = new ExprConstantNode(Integer.valueOf(value));
+                node = new ExprConstantNodeImpl(Integer.valueOf(value));
             }
             params.add(node);
         }

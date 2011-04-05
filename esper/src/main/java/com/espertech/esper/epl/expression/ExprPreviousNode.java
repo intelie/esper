@@ -61,10 +61,10 @@ public class ExprPreviousNode extends ExprNodeBase implements ViewResourceCallba
         if (this.getChildNodes().size() == 1)
         {
             if (previousType == PreviousType.PREV) {
-                this.getChildNodes().add(0, new ExprConstantNode(1));
+                this.getChildNodes().add(0, new ExprConstantNodeImpl(1));
             }
             else {
-                this.getChildNodes().add(0, new ExprConstantNode(0));
+                this.getChildNodes().add(0, new ExprConstantNodeImpl(0));
             }
         }
 

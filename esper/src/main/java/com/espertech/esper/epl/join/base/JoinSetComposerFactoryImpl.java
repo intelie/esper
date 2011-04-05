@@ -317,7 +317,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         ExprNode filterForIndexing = null;
         if ((outerJoinEqualsNode != null) && (optionalFilterNode != null))  // both filter and outer join, add
         {
-            filterForIndexing = new ExprAndNode();
+            filterForIndexing = new ExprAndNodeImpl();
             filterForIndexing.addChildNode(optionalFilterNode);
             filterForIndexing.addChildNode(outerJoinEqualsNode);
         }

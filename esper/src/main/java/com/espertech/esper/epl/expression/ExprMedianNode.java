@@ -16,7 +16,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 /**
  * Represents the median(...) aggregate function is an expression tree.
  */
-public class ExprMedianNode extends ExprAggregateNode
+public class ExprMedianNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = 1762260589769465944L;
 
@@ -40,7 +40,7 @@ public class ExprMedianNode extends ExprAggregateNode
         return "median";
     }
 
-    public final boolean equalsNodeAggregate(ExprAggregateNode node)
+    protected boolean equalsNodeAggregate(ExprAggregateNode node)
     {
         if (!(node instanceof ExprMedianNode))
         {

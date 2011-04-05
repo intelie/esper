@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprIdentNodeImpl;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.type.RelationalOpEnum;
 
@@ -310,8 +311,8 @@ public class QueryGraph
             if (otherPropertyNum != -1)
             {
                 if (otherStrictKeyProps[otherPropertyNum] != null) {
-                    ExprIdentNode identNodeLookup = new ExprIdentNode(typesPerStream[lookupStream], keyProp, lookupStream);
-                    ExprIdentNode identNodeOther = new ExprIdentNode(typesPerStream[otherStream], otherStrictKeyProps[otherPropertyNum], otherStream);
+                    ExprIdentNode identNodeLookup = new ExprIdentNodeImpl(typesPerStream[lookupStream], keyProp, lookupStream);
+                    ExprIdentNode identNodeOther = new ExprIdentNodeImpl(typesPerStream[otherStream], otherStrictKeyProps[otherPropertyNum], otherStream);
                     boolean added = queryGraph.addStrictEquals(lookupStream, keyProp, identNodeLookup, otherStream, otherStrictKeyProps[otherPropertyNum], identNodeOther);
                     if (added)
                     {

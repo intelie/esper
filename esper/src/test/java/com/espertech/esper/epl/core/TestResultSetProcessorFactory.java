@@ -1,10 +1,8 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.epl.SupportSelectExprFactory;
@@ -134,7 +132,7 @@ public class TestResultSetProcessorFactory extends TestCase
         }
 
         // invalid group-by
-        groupByList.add(new ExprIdentNode("xxxx", "s0"));
+        groupByList.add(new ExprIdentNodeImpl("xxxx", "s0"));
         try
         {
             spec = makeSpec(new SelectClauseSpecCompiled(SupportSelectExprFactory.makeNoAggregateSelectListUnnamed(), false), null, groupByList, null, null, orderByList);

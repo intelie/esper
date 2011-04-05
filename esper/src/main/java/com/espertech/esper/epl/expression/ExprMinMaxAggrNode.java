@@ -16,7 +16,7 @@ import com.espertech.esper.type.MinMaxTypeEnum;
 /**
  * Represents the min/max(distinct? ...) aggregate function is an expression tree.
  */
-public class ExprMinMaxAggrNode extends ExprAggregateNode
+public class ExprMinMaxAggrNode extends ExprAggregateNodeBase
 {
     private final MinMaxTypeEnum minMaxTypeEnum;
     private static final long serialVersionUID = -7828413362615586145L;

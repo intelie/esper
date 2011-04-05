@@ -15,7 +15,7 @@ import com.espertech.esper.epl.core.StreamTypeService;
 /**
  * Represents the "lastever" aggregate function is an expression tree.
  */
-public class ExprLastEverNode extends ExprAggregateNode
+public class ExprLastEverNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = -435756490067654566L;
 

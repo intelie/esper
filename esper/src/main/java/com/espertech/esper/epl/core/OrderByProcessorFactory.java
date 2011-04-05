@@ -68,14 +68,14 @@ public class OrderByProcessorFactory {
         List<ExprAggregateNode> selectAggNodes = new LinkedList<ExprAggregateNode>();
         for (SelectClauseExprCompiledSpec element : selectionList)
         {
-            ExprAggregateNode.getAggregatesBottomUp(element.getSelectExpression(), selectAggNodes);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(element.getSelectExpression(), selectAggNodes);
         }
 
 		// Get all the aggregate functions occuring in the order-by clause
         List<ExprAggregateNode> orderAggNodes = new LinkedList<ExprAggregateNode>();
         for (ExprNode orderByNode : orderByNodes)
         {
-            ExprAggregateNode.getAggregatesBottomUp(orderByNode, orderAggNodes);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(orderByNode, orderAggNodes);
         }
 
 		validateOrderByAggregates(selectAggNodes, orderAggNodes);

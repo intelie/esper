@@ -139,7 +139,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             ExprNode validated = ExprNodeUtil.getValidatedSubtree(exprNodeResult, validationContext);
             defineItem.setExpression(validated);
 
-            ExprAggregateNode.getAggregatesBottomUp(validated, aggregateNodes);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(validated, aggregateNodes);
             if (!aggregateNodes.isEmpty())
             {
                 throw new ExprValidationException("An aggregate function may not appear in a DEFINE clause");
@@ -164,7 +164,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         List<ExprAggregateNode> measureAggregateExprNodes = new ArrayList<ExprAggregateNode>();
         for (MatchRecognizeMeasureItem measureItem : matchRecognizeSpec.getMeasures())
         {
-            ExprAggregateNode.getAggregatesBottomUp(measureItem.getExpr(), measureAggregateExprNodes);
+            ExprAggregateNodeUtil.getAggregatesBottomUp(measureItem.getExpr(), measureAggregateExprNodes);
         }
         if (!measureAggregateExprNodes.isEmpty())
         {
@@ -317,7 +317,7 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
             if (previousNodePair.getSecond().getChildNodes().size() == 1)
             {
                 matchRecogPrevNode.addChildNode(previousNode.getChildNodes().get(0));
-                matchRecogPrevNode.addChildNode(new ExprConstantNode(1));
+                matchRecogPrevNode.addChildNode(new ExprConstantNodeImpl(1));
             }
             else if (previousNodePair.getSecond().getChildNodes().size() == 2)
             {

@@ -275,7 +275,7 @@ public class ExprNodeUtility
         }
 
         List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
-        ExprAggregateNode.getAggregatesBottomUp(expression, aggregateNodes);
+        ExprAggregateNodeUtil.getAggregatesBottomUp(expression, aggregateNodes);
         if (!aggregateNodes.isEmpty())
         {
             return "an aggregation function";

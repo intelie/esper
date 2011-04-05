@@ -1,8 +1,5 @@
 package com.espertech.esper.view;
 
-import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprEvaluatorProxy;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.lang.reflect.Method;
@@ -18,7 +15,7 @@ public class ViewFactoryProxy implements java.lang.reflect.InvocationHandler {
     public static Object newInstance(String statementName, ViewFactory viewFactory, String viewName) {
         return java.lang.reflect.Proxy.newProxyInstance(
                 viewFactory.getClass().getClassLoader(),
-                new Class[]{ViewFactory.class},
+                JavaClassHelper.getSuperInterfaces(viewFactory.getClass()),
                 new ViewFactoryProxy(statementName, viewFactory, viewName));
     }
 

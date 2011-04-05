@@ -1,13 +1,13 @@
 package com.espertech.esper.view;
 
-import junit.framework.TestCase;
-import com.espertech.esper.support.view.SupportSchemaNeutralView;
-import com.espertech.esper.support.epl.SupportExprNodeFactory;
+import com.espertech.esper.epl.expression.ExprConstantNodeImpl;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprConstantNode;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
+import com.espertech.esper.support.view.SupportSchemaNeutralView;
+import junit.framework.TestCase;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TestViewSupport extends TestCase
 {
@@ -82,7 +82,7 @@ public class TestViewSupport extends TestCase
             }
             else
             {
-                expr.add(new ExprConstantNode(constants[i]));
+                expr.add(new ExprConstantNodeImpl(constants[i]));
             }
         }
         return expr;
@@ -99,7 +99,7 @@ public class TestViewSupport extends TestCase
             }
             else
             {
-                expr.add(new ExprConstantNode(constants[i]));
+                expr.add(new ExprConstantNodeImpl(constants[i]));
             }
         }
         return expr;

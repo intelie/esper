@@ -14,7 +14,7 @@ public class ExprNodeProxy implements java.lang.reflect.InvocationHandler {
     public static Object newInstance(String statementName, ExprNode exprNode) {
         return java.lang.reflect.Proxy.newProxyInstance(
                 exprNode.getClass().getClassLoader(),
-                new Class[]{ExprNode.class},
+                JavaClassHelper.getSuperInterfaces(exprNode.getClass()),
                 new ExprNodeProxy(statementName, exprNode));
     }
 

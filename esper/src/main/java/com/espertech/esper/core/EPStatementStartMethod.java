@@ -1498,7 +1498,7 @@ public class EPStatementStartMethod
 
                 // Make sure there is no aggregation in the where clause
                 List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
-                ExprAggregateNode.getAggregatesBottomUp(optionalFilterNode, aggregateNodes);
+                ExprAggregateNodeUtil.getAggregatesBottomUp(optionalFilterNode, aggregateNodes);
                 if (!aggregateNodes.isEmpty())
                 {
                     throw new ExprValidationException("An aggregate function may not appear in a WHERE clause (use the HAVING clause)");
@@ -1581,7 +1581,7 @@ public class EPStatementStartMethod
     {
         // Make sure there is no aggregation in the where clause
         List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
-        ExprAggregateNode.getAggregatesBottomUp(exprNode, aggregateNodes);
+        ExprAggregateNodeUtil.getAggregatesBottomUp(exprNode, aggregateNodes);
         if (!aggregateNodes.isEmpty())
         {
             throw new ExprValidationException(errorMsg);
@@ -1599,7 +1599,7 @@ public class EPStatementStartMethod
         // Validate the outer join clause using an artificial equals-node on top.
         // Thus types are checked via equals.
         // Sets stream ids used for validated nodes.
-        ExprNode equalsNode = new ExprEqualsNode(false);
+        ExprNode equalsNode = new ExprEqualsNodeImpl(false);
         equalsNode.addChildNode(leftNode);
         equalsNode.addChildNode(rightNode);
         try
@@ -1847,7 +1847,7 @@ public class EPStatementStartMethod
                         assignedNames.add(compiled.getAssignedName());
 
                         // handle aggregation
-                        ExprAggregateNode.getAggregatesBottomUp(selectExpression, aggExprNodes);
+                        ExprAggregateNodeUtil.getAggregatesBottomUp(selectExpression, aggExprNodes);
 
                         if (aggExprNodes.size() > 0)
                         {
@@ -1912,7 +1912,7 @@ public class EPStatementStartMethod
             if (statementSpec.getFilterRootNode() != null)
             {
                 List<ExprAggregateNode> aggExprNodesFilter = new LinkedList<ExprAggregateNode>();
-                ExprAggregateNode.getAggregatesBottomUp(statementSpec.getFilterRootNode(), aggExprNodesFilter);
+                ExprAggregateNodeUtil.getAggregatesBottomUp(statementSpec.getFilterRootNode(), aggExprNodesFilter);
                 if (aggExprNodesFilter.size() > 0)
                 {
                     throw new ExprValidationException("Aggregation functions are not supported within subquery filters, consider using insert-into instead");

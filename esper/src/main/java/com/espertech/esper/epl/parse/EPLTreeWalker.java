@@ -22,7 +22,7 @@ import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportUndefinedException;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
-import com.espertech.esper.epl.declexpr.ExprDeclaredNode;
+import com.espertech.esper.epl.declexpr.ExprDeclaredNodeImpl;
 import com.espertech.esper.epl.enummethod.dot.ExprLambdaGoesNode;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
@@ -1166,7 +1166,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 nodes[0] = astExprNodeMap.remove(child.getChild(0));
             }
         }
-        ExprTimePeriod timeNode = new ExprTimePeriod(nodes[0] != null, nodes[1]!= null, nodes[2]!= null, nodes[3]!= null, nodes[4]!= null, nodes[5]!= null, nodes[6]!= null, nodes[7]!= null);
+        ExprTimePeriod timeNode = new ExprTimePeriodImpl(nodes[0] != null, nodes[1]!= null, nodes[2]!= null, nodes[3]!= null, nodes[4]!= null, nodes[5]!= null, nodes[6]!= null, nodes[7]!= null);
         if (nodes[0] != null) timeNode.addChildNode(nodes[0]);
         if (nodes[1] != null) timeNode.addChildNode(nodes[1]);
         if (nodes[2] != null) timeNode.addChildNode(nodes[2]);
@@ -1886,7 +1886,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         if ((node.getChildCount() == 1) || (node.getChild(0).getType() != EVENT_PROP_SIMPLE))
         {
             propertyName = ASTFilterSpecHelper.getPropertyName(node, 0);
-            exprNode = new ExprIdentNode(propertyName);
+            exprNode = new ExprIdentNodeImpl(propertyName);
         }
         // --> this is more then one child node, and the first child node is a simple property
         // we may have a stream name in the first simple property, or a nested property
@@ -1904,7 +1904,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 addVariable(statementSpec, propertyName);
             }
             else {
-                exprNode = new ExprIdentNode(propertyName, streamOrNestedPropertyName);
+                exprNode = new ExprIdentNodeImpl(propertyName, streamOrNestedPropertyName);
             }
         }
 
@@ -2001,7 +2001,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             List<ExprChainedSpec> chained = getLibFuncChain(parent);
             for (ExpressionDeclItem declNode : statementSpec.getExpressionDeclDesc().getExpressions()) {
                 if (declNode.getName().equals(name)) {
-                    astExprNodeMap.put(node, new ExprDeclaredNode(declNode, chained.get(0).getParameters()));
+                    astExprNodeMap.put(node, new ExprDeclaredNodeImpl(declNode, chained.get(0).getParameters()));
                     return;
                 }
             }
@@ -2066,7 +2066,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             String name = chained.get(0).getName();
             for (ExpressionDeclItem declNode : statementSpec.getExpressionDeclDesc().getExpressions()) {
                 if (declNode.getName().equals(name)) {
-                    dotNode.addChildNode(new ExprDeclaredNode(declNode, chained.get(0).getParameters()));
+                    dotNode.addChildNode(new ExprDeclaredNodeImpl(declNode, chained.get(0).getParameters()));
                     chained.remove(0);
                     break;
                 }
@@ -2085,7 +2085,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             isNot = true;
         }
 
-        ExprEqualsNode identNode = new ExprEqualsNode(isNot);
+        ExprEqualsNode identNode = new ExprEqualsNodeImpl(isNot);
         astExprNodeMap.put(node, identNode);
     }
 
@@ -2121,7 +2121,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveJoinAndExpr(Tree node)
     {
         log.debug(".leaveJoinAndExpr");
-        ExprAndNode identNode = new ExprAndNode();
+        ExprAndNode identNode = new ExprAndNodeImpl();
         astExprNodeMap.put(node, identNode);
     }
 
@@ -2135,7 +2135,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveConstant(Tree node)
     {
         log.debug(".leaveConstant value '" + node.getText() + "'");
-        ExprConstantNode constantNode = new ExprConstantNode(ASTConstantHelper.parse(node));
+        ExprConstantNode constantNode = new ExprConstantNodeImpl(ASTConstantHelper.parse(node));
         astExprNodeMap.put(node, constantNode);
     }
 
@@ -2351,7 +2351,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         else
         {
-            result = new ExprRelationalOpNode(relationalOpEnum);
+            result = new ExprRelationalOpNodeImpl(relationalOpEnum);
         }
 
         astExprNodeMap.put(node, result);
@@ -2710,7 +2710,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveInSet");
 
-        ExprInNode inNode = new ExprInNode(node.getType() == NOT_IN_SET);
+        ExprInNode inNode = new ExprInNodeImpl(node.getType() == NOT_IN_SET);
         astExprNodeMap.put(node, inNode);
     }
 
@@ -2734,7 +2734,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         boolean isHighInclude = bracesNode.getType() == RBRACK;
 
-        ExprBetweenNode betweenNode = new ExprBetweenNode(isLowInclude, isHighInclude, node.getType() == NOT_IN_RANGE);
+        ExprBetweenNode betweenNode = new ExprBetweenNodeImpl(isLowInclude, isHighInclude, node.getType() == NOT_IN_RANGE);
         astExprNodeMap.put(node, betweenNode);
     }
 
@@ -2742,7 +2742,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveBetween");
 
-        ExprBetweenNode betweenNode = new ExprBetweenNode(true, true, node.getType() == NOT_BETWEEN);
+        ExprBetweenNode betweenNode = new ExprBetweenNodeImpl(true, true, node.getType() == NOT_BETWEEN);
         astExprNodeMap.put(node, betweenNode);
     }
 
@@ -2872,7 +2872,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 expr = astExprNodeMap.remove(child.getChild(1));
             }
             else {
-                expr = new ExprIdentNode(property);
+                expr = new ExprIdentNodeImpl(property);
             }
             expressions.add(expr);
         }

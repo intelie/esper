@@ -2,6 +2,7 @@ package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprIdentNodeImpl;
 import com.espertech.esper.epl.join.exec.base.IndexedTableLookupStrategy;
 import com.espertech.esper.epl.join.exec.base.JoinExecTableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
@@ -28,7 +29,7 @@ public class TestIndexedTableLookupPlan extends TestCase
     public void testLookup()
     {
         List<QueryGraphValueEntryHashKeyed> keys = new ArrayList<QueryGraphValueEntryHashKeyed>();
-        keys.add(new QueryGraphValueEntryHashKeyedProp(new ExprIdentNode(types[0], "intBoxed", 0), "intBoxed"));
+        keys.add(new QueryGraphValueEntryHashKeyedProp(new ExprIdentNodeImpl(types[0], "intBoxed", 0), "intBoxed"));
         IndexedTableLookupPlanMulti spec = new IndexedTableLookupPlanMulti(0, 1, "idx1", keys);
 
         Map<String,EventTable>[] indexes = new Map[2];

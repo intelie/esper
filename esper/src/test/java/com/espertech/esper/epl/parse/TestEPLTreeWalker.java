@@ -836,7 +836,7 @@ public class TestEPLTreeWalker extends TestCase
 
         SelectClauseElementRaw rawElement = walker.getStatementSpec().getSelectClauseSpec().getSelectExprList().get(0);
         SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) rawElement;
-        ExprAggregateNode aggrNode = (ExprAggregateNode) exprSpec.getSelectExpression();
+        ExprAggregateNodeBase aggrNode = (ExprAggregateNodeBase) exprSpec.getSelectExpression();
         assertTrue(aggrNode.isDistinct());
     }
 
@@ -1060,7 +1060,6 @@ public class TestEPLTreeWalker extends TestCase
         PatternStreamSpecRaw patternStreamSpec = (PatternStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);
 
         EvalNode rootNode = patternStreamSpec.getEvalNode();
-        rootNode.dumpDebug(".testWalk ");
 
         EvalEveryNode everyNode = (EvalEveryNode) rootNode;
 

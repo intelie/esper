@@ -73,7 +73,7 @@ public class TestExprPropertyExistsNode extends TestCase
 
     public void testEquals() throws Exception
     {
-        assertFalse(existsNodes[0].equalsNode(new ExprEqualsNode(true)));
+        assertFalse(existsNodes[0].equalsNode(new ExprEqualsNodeImpl(true)));
         assertTrue(existsNodes[0].equalsNode(existsNodes[1]));
     }
 

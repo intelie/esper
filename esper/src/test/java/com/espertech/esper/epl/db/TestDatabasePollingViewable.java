@@ -4,6 +4,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.ExprIdentNodeImpl;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.join.pollindex.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
@@ -38,7 +39,7 @@ public class TestDatabasePollingViewable extends TestCase
         pollingViewable = new DatabasePollingViewable(1, inputProperties, supportPollingStrategy, dataCache, resultEventType);
 
         Map<Integer, List<ExprNode>> sqlParameters = new HashMap<Integer, List<ExprNode>>();
-        sqlParameters.put(1, Collections.singletonList((ExprNode) new ExprIdentNode("intPrimitive", "s0")));
+        sqlParameters.put(1, Collections.singletonList((ExprNode) new ExprIdentNodeImpl("intPrimitive", "s0")));
         pollingViewable.validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, sqlParameters, null, null, null);
 
         indexingStrategy = new PollResultIndexingStrategy()

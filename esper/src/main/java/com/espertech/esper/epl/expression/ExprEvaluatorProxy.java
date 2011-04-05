@@ -19,7 +19,7 @@ public class ExprEvaluatorProxy implements java.lang.reflect.InvocationHandler {
     public static Object newInstance(String statementName, String expressionToString, ExprEvaluator evaluator) {
         return java.lang.reflect.Proxy.newProxyInstance(
                 evaluator.getClass().getClassLoader(),
-                new Class[]{ExprEvaluator.class},
+                JavaClassHelper.getSuperInterfaces(evaluator.getClass()),
                 new ExprEvaluatorProxy(statementName, expressionToString, evaluator));
     }
 

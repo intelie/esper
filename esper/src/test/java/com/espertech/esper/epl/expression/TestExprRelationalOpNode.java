@@ -11,7 +11,7 @@ public class TestExprRelationalOpNode extends TestCase
 
     public void setUp()
     {
-        opNode = new ExprRelationalOpNode(RelationalOpEnum.GE);
+        opNode = new ExprRelationalOpNodeImpl(RelationalOpEnum.GE);
     }
 
     public void testGetType() throws Exception
@@ -103,7 +103,7 @@ public class TestExprRelationalOpNode extends TestCase
 
     private ExprRelationalOpNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight) throws Exception
     {
-        ExprRelationalOpNode relOpNode = new ExprRelationalOpNode(RelationalOpEnum.GE);
+        ExprRelationalOpNode relOpNode = new ExprRelationalOpNodeImpl(RelationalOpEnum.GE);
         relOpNode.addChildNode(new SupportExprNode(valueLeft, typeLeft));
         relOpNode.addChildNode(new SupportExprNode(valueRight, typeRight));
         SupportExprNodeUtil.validate(relOpNode);
@@ -113,7 +113,7 @@ public class TestExprRelationalOpNode extends TestCase
     public void testEqualsNode() throws Exception
     {
         assertTrue(opNode.equalsNode(opNode));
-        assertFalse(opNode.equalsNode(new ExprRelationalOpNode(RelationalOpEnum.LE)));
+        assertFalse(opNode.equalsNode(new ExprRelationalOpNodeImpl(RelationalOpEnum.LE)));
         assertFalse(opNode.equalsNode(new ExprOrNode()));
     }
 }
