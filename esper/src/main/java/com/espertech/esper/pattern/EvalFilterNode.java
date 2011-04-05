@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class represents a filter of events in the evaluation tree representing any event expressions.
  */
-public class EvalFilterNode extends EvalNode
+public class EvalFilterNode extends EvalNodeBase
 {
     private static final long serialVersionUID = 0L;
     private final FilterSpecRaw rawFilterSpec;

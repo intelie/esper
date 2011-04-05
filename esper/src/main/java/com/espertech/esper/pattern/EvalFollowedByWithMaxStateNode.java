@@ -144,6 +144,10 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
         }
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     public final void quit()
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))

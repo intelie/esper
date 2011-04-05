@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * This class represents an 'every-distinct' operator in the evaluation tree representing an event expression.
  */
-public class EvalEveryDistinctNode extends EvalNode
+public class EvalEveryDistinctNode extends EvalNodeBase
 {
     private List<ExprNode> expressions;
     protected transient ExprEvaluator[] expressionsArray;

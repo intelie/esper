@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.pattern.EvalNodeUtil;
 import junit.framework.TestCase;
 import com.espertech.esper.epl.parse.EPLTreeWalker;
 import com.espertech.esper.epl.expression.ExprValidationException;
@@ -74,7 +75,7 @@ public class TestPatternStreamSpecRaw extends TestCase
         assertEquals(1, spec.getTaggedEventTypes().size());
         assertEquals(SupportBean.class, spec.getTaggedEventTypes().get("s").getFirst().getUnderlyingType());
 
-        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(spec.getEvalNode());
+        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(spec.getEvalNode());
         List<EvalFilterNode> filters = evalNodeAnalysisResult.getFilterNodes();
         assertEquals(1, filters.size());
 
@@ -97,7 +98,7 @@ public class TestPatternStreamSpecRaw extends TestCase
         assertEquals(1, spec.getTaggedEventTypes().size());
         assertEquals(SupportBean.class, spec.getTaggedEventTypes().get("s").getFirst().getUnderlyingType());
 
-        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(spec.getEvalNode());
+        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(spec.getEvalNode());
         List<EvalFilterNode> filters = evalNodeAnalysisResult.getFilterNodes();
         assertEquals(2, filters.size());
 
@@ -137,7 +138,7 @@ public class TestPatternStreamSpecRaw extends TestCase
         assertEquals(1, spec.getTaggedEventTypes().size());
         assertEquals(SupportBean.class, spec.getTaggedEventTypes().get("s").getFirst().getUnderlyingType());
 
-        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(spec.getEvalNode());
+        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(spec.getEvalNode());
         List<EvalFilterNode> filters = evalNodeAnalysisResult.getFilterNodes();
         assertEquals(2, filters.size());
 
@@ -172,7 +173,7 @@ public class TestPatternStreamSpecRaw extends TestCase
         assertEquals(SupportBean.class, spec.getTaggedEventTypes().get("s").getFirst().getUnderlyingType());
         assertEquals(SupportBean.class, spec.getTaggedEventTypes().get("t").getFirst().getUnderlyingType());
 
-        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(spec.getEvalNode());
+        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(spec.getEvalNode());
         List<EvalFilterNode> filters = evalNodeAnalysisResult.getFilterNodes();
         assertEquals(2, filters.size());
 

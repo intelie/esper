@@ -130,6 +130,10 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
         return data;
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     public final String toString()
     {
         return "EvalRootStateNode topStateNode=" + topStateNode;

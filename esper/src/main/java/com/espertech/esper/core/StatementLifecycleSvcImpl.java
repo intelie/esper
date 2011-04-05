@@ -28,6 +28,7 @@ import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.pattern.EvalFilterNode;
 import com.espertech.esper.pattern.EvalNode;
 import com.espertech.esper.pattern.EvalNodeAnalysisResult;
+import com.espertech.esper.pattern.EvalNodeUtil;
 import com.espertech.esper.util.ManagedReadWriteLock;
 import com.espertech.esper.util.UuidGenerator;
 import com.espertech.esper.view.ViewProcessingException;
@@ -474,7 +475,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 }
                 else if (streamSpec instanceof PatternStreamSpecCompiled)
                 {
-                    EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(((PatternStreamSpecCompiled)streamSpec).getEvalNode());
+                    EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(((PatternStreamSpecCompiled) streamSpec).getEvalNode());
                     List<EvalFilterNode> filterNodes = evalNodeAnalysisResult.getFilterNodes();
                     for (EvalFilterNode filterNode : filterNodes)
                     {
@@ -944,7 +945,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         for (StreamSpecRaw streamSpecRaw : spec.getStreamSpecs()) {
             if (streamSpecRaw instanceof PatternStreamSpecRaw) {
                 PatternStreamSpecRaw patternStreamSpecRaw = (PatternStreamSpecRaw) streamSpecRaw;
-                EvalNodeAnalysisResult analysisResult = EvalNode.recursiveAnalyzeChildNodes(patternStreamSpecRaw.getEvalNode());
+                EvalNodeAnalysisResult analysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(patternStreamSpecRaw.getEvalNode());
                 for (EvalFilterNode filterNode : analysisResult.getFilterNodes()) {
                     for (ExprNode filterExpr : filterNode.getRawFilterSpec().getFilterExpressions()) {
                         filterExpr.accept(visitor);

@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
  * This class is always the root node in the evaluation tree representing an event expression.
  * It hold the handle to the EPStatement implementation for notifying when matches are found.
  */
-public class EvalRootNode extends EvalNode implements PatternStarter
+public class EvalRootNode extends EvalNodeBase implements PatternStarter
 {
     private static final long serialVersionUID = 6894059650449481615L;
 

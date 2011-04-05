@@ -118,7 +118,6 @@ public class OutputProcessViewFactory
             throw new ExprValidationException("Error in the output rate limiting clause: " + ex.getMessage(), ex);
         }
 
-        // TODO
         return outputProcessView;
     }
 }

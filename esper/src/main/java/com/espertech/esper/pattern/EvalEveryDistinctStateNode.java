@@ -217,6 +217,10 @@ public final class EvalEveryDistinctStateNode extends EvalStateNode implements E
         return data;
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     public final String toString()
     {
         return "EvalEveryStateNode spawnedChildren=" + spawnedNodes.size();

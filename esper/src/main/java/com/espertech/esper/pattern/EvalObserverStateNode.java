@@ -78,6 +78,10 @@ public final class EvalObserverStateNode extends EvalStateNode implements Observ
         return data;
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     public final String toString()
     {
         return "EvalObserverStateNode eventObserver=" + eventObserver;

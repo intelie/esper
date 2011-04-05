@@ -151,6 +151,10 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
                  " guard=" + guard;
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     public void guardQuit()
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))

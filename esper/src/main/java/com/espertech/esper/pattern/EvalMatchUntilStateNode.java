@@ -292,6 +292,10 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
         return "EvalMatchUntilStateNode nodes=" + nodes.size();
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     private boolean isTightlyBound() {
         return lowerbounds != null && upperbounds != null && upperbounds.equals(lowerbounds);
     }

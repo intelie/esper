@@ -9,6 +9,8 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.annotation.Audit;
+import com.espertech.esper.client.annotation.AuditEnum;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.StreamTypeService;
@@ -70,7 +72,14 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
     {
         MatchEventSpec tags = new MatchEventSpec();
         recursiveCompile(evalNode, context, eventTypeReferences, isInsertInto, tags);
-        return new PatternStreamSpecCompiled(evalNode, tags.getTaggedEventTypes(), tags.getArrayEventTypes(), this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
+
+        Audit audit = AuditEnum.PATTERN.getAudit(context.getAnnotations());
+        EvalNode compiledEvalNode = evalNode;
+        if (audit != null) {
+            compiledEvalNode = recursiveAddAuditNode(evalNode);
+        }
+
+        return new PatternStreamSpecCompiled(compiledEvalNode, tags.getTaggedEventTypes(), tags.getArrayEventTypes(), this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
     }
 
     private static void recursiveCompile(EvalNode evalNode, StatementContext context, Set<String> eventTypeReferences, boolean isInsertInto, MatchEventSpec tags) throws ExprValidationException
@@ -310,7 +319,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
             // compile new tag lists
             Set<String> arrayTags = null;
-            EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
+            EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
             for (EvalFilterNode filterNode : matchUntilAnalysisResult.getFilterNodes())
             {
                 String optionalTag = filterNode.getEventAsName();
@@ -419,13 +428,28 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return new StreamTypeServiceImpl(filterTypes, engineURI, true, false);
     }
 
+    private static EvalNode recursiveAddAuditNode(EvalNode evalNode) {
+        EvalAuditNode audit = new EvalAuditNode();
+        audit.addChildNode(evalNode);
+
+        List<EvalNode> newChildNodes = new ArrayList<EvalNode>();
+        for (EvalNode child : evalNode.getChildNodes()) {
+            newChildNodes.add(recursiveAddAuditNode(child));
+        }
+
+        evalNode.getChildNodes().clear();
+        evalNode.addChildNodes(newChildNodes);
+
+        return audit;
+    }
+
     private static MatchEventSpec analyzeMatchEvent(EvalNode relativeNode)
     {
         LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
 
         // Determine all the filter nodes used in the pattern
-        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(relativeNode);
+        EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(relativeNode);
 
         // collect all filters underneath
         for (EvalFilterNode filterNode : evalNodeAnalysisResult.getFilterNodes())
@@ -441,7 +465,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         Set<String> arrayTags = new HashSet<String>();
         for (EvalMatchUntilNode matchUntilNode : evalNodeAnalysisResult.getRepeatNodes())
         {
-            EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
+            EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNodeUtil.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
             for (EvalFilterNode filterNode : matchUntilAnalysisResult.getFilterNodes())
             {
                 String optionalTag = filterNode.getEventAsName();

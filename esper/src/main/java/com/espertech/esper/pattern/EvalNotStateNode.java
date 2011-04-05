@@ -120,6 +120,10 @@ public final class EvalNotStateNode extends EvalStateNode implements Evaluator
         return data;
     }
 
+    public boolean isNotOperator() {
+        return true;
+    }
+
     public final String toString()
     {
         return "EvalNotStateNode child=" + childNode;

@@ -17,11 +17,11 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class represents an observer expression in the evaluation tree representing an pattern expression.
  */
-public class EvalObserverNode extends EvalNode
+public class EvalObserverNode extends EvalNodeBase
 {
     private final PatternObserverSpec patternObserverSpec;
     private transient ObserverFactory observerFactory;
-    private transient PatternContext context;    
+    private transient PatternContext context;
     private static final long serialVersionUID = 9045310817018028026L;
 
     /**

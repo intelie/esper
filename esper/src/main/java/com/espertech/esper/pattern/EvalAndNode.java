@@ -15,7 +15,7 @@ import org.apache.commons.logging.Log;
 /**
  * This class represents an 'and' operator in the evaluation tree representing an event expressions.
  */
-public class EvalAndNode extends EvalNode
+public class EvalAndNode extends EvalNodeBase
 {
     private static final long serialVersionUID = 6830000101092907359L;
     private transient PatternContext context;
@@ -31,7 +31,7 @@ public class EvalAndNode extends EvalNode
         if (this.context == null) {
             this.context = context;
         }
-        return new EvalAndStateNode(parentNode, this, beginState);        
+        return new EvalAndStateNode(parentNode, this, beginState);
     }
 
     public final String toString()

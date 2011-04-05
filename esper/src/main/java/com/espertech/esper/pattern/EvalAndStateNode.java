@@ -73,6 +73,10 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
         }
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
@@ -114,7 +118,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
         {
             for (EvalStateNode stateNode : activeChildNodes)
             {
-                if (!(stateNode instanceof EvalNotStateNode))
+                if (!(stateNode.isNotOperator()))
                 {
                     quitted = false;
                 }

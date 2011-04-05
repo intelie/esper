@@ -2316,6 +2316,10 @@ public class StatementSpecMapper
             List<Expression> expressions = unmapExpressionDeep(everyDistinctNode.getExpressions(), unmapContext);
             return new PatternEveryDistinctExpr(expressions);
         }
+        else if (eval instanceof EvalAuditNode)
+        {
+            return null;
+        }
         throw new IllegalArgumentException("Could not map pattern expression node of type " + eval.getClass().getSimpleName());
     }
 

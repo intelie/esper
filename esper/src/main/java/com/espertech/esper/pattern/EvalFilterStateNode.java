@@ -172,6 +172,10 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         return buffer.toString();
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     private void startFiltering()
     {
         PatternContext context = evalFilterNode.getContext();

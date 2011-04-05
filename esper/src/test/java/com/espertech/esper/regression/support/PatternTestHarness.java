@@ -99,7 +99,7 @@ public class PatternTestHarness implements SupportBeanConstants
                     }
                     else if (testStyle == PatternTestStyle.USE_EPL)
                     {
-                        String text = "select * from pattern [" + expressionText + "]";
+                        String text = "@Audit('pattern') select * from pattern [" + expressionText + "]";
                         statement = serviceProvider.getEPAdministrator().createEPL(text);
                         expressionText = text;
                     }

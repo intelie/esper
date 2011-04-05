@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * This class represents a match-until observer in the evaluation tree representing any event expressions.
  */
-public class EvalMatchUntilNode extends EvalNode
+public class EvalMatchUntilNode extends EvalNodeBase
 {
     private static final long serialVersionUID = -959026931248456356L;
 

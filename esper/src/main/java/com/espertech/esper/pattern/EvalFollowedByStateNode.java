@@ -153,6 +153,10 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
         return data;
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     public final String toString()
     {
         return "EvalFollowedByStateNode nodes=" + nodes.size();

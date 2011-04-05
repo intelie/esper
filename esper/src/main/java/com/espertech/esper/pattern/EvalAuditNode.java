@@ -11,21 +11,15 @@ package com.espertech.esper.pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * This class represents an 'every' operator in the evaluation tree representing an event expression.
+ * This class represents an 'or' operator in the evaluation tree representing any event expressions.
  */
-public class EvalEveryNode extends EvalNodeBase
+public class EvalAuditNode extends EvalNodeBase
 {
-    private static final long serialVersionUID = 3672732014060588205L;
-
     private transient PatternContext context;
-
-    /**
-     * Ctor.
-     */
-    protected EvalEveryNode()
-    {
-    }
 
     public EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
@@ -34,7 +28,7 @@ public class EvalEveryNode extends EvalNodeBase
         if (this.context == null) {
             this.context = context;
         }
-        return new EvalEveryStateNode(parentNode, this, beginState);
+        return new EvalAuditStateNode(parentNode, this, beginState);
     }
 
     public PatternContext getContext() {
@@ -43,8 +37,8 @@ public class EvalEveryNode extends EvalNodeBase
 
     public final String toString()
     {
-        return "EvalEveryNode children=" + this.getChildNodes().size();
+        return ("EvalAuditStateNode children=" + this.getChildNodes().size());
     }
 
-    private static final Log log = LogFactory.getLog(EvalEveryNode.class);
+    private static final Log log = LogFactory.getLog(EvalAuditNode.class);
 }

@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class represents an 'not' operator in the evaluation tree representing any event expressions.
  */
-public class EvalNotNode extends EvalNode
+public class EvalNotNode extends EvalNodeBase
 {
     private static final long serialVersionUID = -8072564032270892802L;
 

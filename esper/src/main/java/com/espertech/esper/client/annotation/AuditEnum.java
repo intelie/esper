@@ -21,8 +21,12 @@ public enum AuditEnum
     /**
      * For use with view audit.
      */
-    VIEW("VIEW", false, false)
-    ;
+    VIEW("VIEW", false, false),
+
+    /**
+     * For use with pattern audit.
+     */
+    PATTERN("PATTERN", false, false);
 
     private final String value;
     private final boolean acceptsParameters;

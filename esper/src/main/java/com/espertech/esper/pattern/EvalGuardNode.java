@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class represents a guard in the evaluation tree representing an event expressions.
  */
-public class EvalGuardNode extends EvalNode
+public class EvalGuardNode extends EvalNodeBase
 {
     private PatternGuardSpec patternGuardSpec;
     private transient GuardFactory guardFactory;

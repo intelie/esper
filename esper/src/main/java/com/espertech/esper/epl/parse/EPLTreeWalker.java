@@ -28,7 +28,8 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.pattern.*;
+import com.espertech.esper.pattern.EvalNode;
+import com.espertech.esper.pattern.PatternNodeFactory;
 import com.espertech.esper.pattern.guard.GuardEnum;
 import com.espertech.esper.rowregex.*;
 import com.espertech.esper.schedule.SchedulingService;
@@ -2588,7 +2589,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveEvery(Tree node)
     {
         log.debug(".leaveEvery");
-        EvalEveryNode everyNode = this.patternNodeFactory.makeEveryNode();
+        EvalNode everyNode = this.patternNodeFactory.makeEveryNode();
         astPatternNodeMap.put(node, everyNode);
     }
 
@@ -2596,7 +2597,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveEveryDistinct");
         List<ExprNode> exprNodes = getExprNodes(node.getChild(0), 0);
-        EvalEveryDistinctNode everyNode = this.patternNodeFactory.makeEveryDistinctNode(exprNodes);
+        EvalNode everyNode = this.patternNodeFactory.makeEveryDistinctNode(exprNodes);
         astPatternNodeMap.put(node, everyNode);
     }
 
@@ -2660,7 +2661,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
         propertyEvalSpec = null;
-        EvalFilterNode filterNode = patternNodeFactory.makeFilterNode(rawFilterSpec, optionalPatternTagName);
+        EvalNode filterNode = patternNodeFactory.makeFilterNode(rawFilterSpec, optionalPatternTagName);
         astPatternNodeMap.put(node, filterNode);
     }
 
@@ -2687,22 +2688,22 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
         List<ExprNode> expressions = Arrays.asList(maxExpressions); // can contain null elements as max/no-max can be mixed
-        EvalFollowedByNode fbNode = patternNodeFactory.makeFollowedByNode(expressions);
-        fbNode.getChildNodes().addAll(childNodes);
+        EvalNode fbNode = patternNodeFactory.makeFollowedByNode(expressions);
+        fbNode.addChildNodes(childNodes);
         astPatternNodeMap.put(node, fbNode);
     }
 
     private void leaveAnd(Tree node)
     {
         log.debug(".leaveAnd");
-        EvalAndNode andNode = patternNodeFactory.makeAndNode();
+        EvalNode andNode = patternNodeFactory.makeAndNode();
         astPatternNodeMap.put(node, andNode);
     }
 
     private void leaveOr(Tree node)
     {
         log.debug(".leaveOr");
-        EvalOrNode orNode = patternNodeFactory.makeOrNode();
+        EvalNode orNode = patternNodeFactory.makeOrNode();
         astPatternNodeMap.put(node, orNode);
     }
 
@@ -2774,7 +2775,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leavePatternNot(Tree node)
     {
         log.debug(".leavePatternNot");
-        EvalNotNode notNode = this.patternNodeFactory.makeNotNode();
+        EvalNode notNode = this.patternNodeFactory.makeNotNode();
         astPatternNodeMap.put(node, notNode);
     }
 
@@ -2796,7 +2797,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         PatternGuardSpec guardSpec = new PatternGuardSpec(objectNamespace, objectName, obsParameters);
-        EvalGuardNode guardNode = patternNodeFactory.makeGuardNode(guardSpec);
+        EvalNode guardNode = patternNodeFactory.makeGuardNode(guardSpec);
         astPatternNodeMap.put(node, guardNode);
     }
 
@@ -2892,7 +2893,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         List<ExprNode> obsParameters = getExprNodes(node, 2);
 
         PatternObserverSpec observerSpec = new PatternObserverSpec(objectNamespace, objectName, obsParameters);
-        EvalObserverNode observerNode = this.patternNodeFactory.makeObserverNode(observerSpec);
+        EvalNode observerNode = this.patternNodeFactory.makeObserverNode(observerSpec);
         astPatternNodeMap.put(node, observerNode);
     }
 
@@ -2935,7 +2936,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             throw new ASTWalkException("Variable bounds repeat operator requires an until-expression");
         }
 
-        EvalMatchUntilNode fbNode = this.patternNodeFactory.makeMatchUntilNode(low, high);
+        EvalNode fbNode = this.patternNodeFactory.makeMatchUntilNode(low, high);
         astPatternNodeMap.put(node, fbNode);
     }
 

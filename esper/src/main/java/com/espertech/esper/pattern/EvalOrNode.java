@@ -14,7 +14,7 @@ import org.apache.commons.logging.Log;
 /**
  * This class represents an 'or' operator in the evaluation tree representing any event expressions.
  */
-public class EvalOrNode extends EvalNode
+public class EvalOrNode extends EvalNodeBase
 {
     private static final long serialVersionUID = -7512529701280258859L;
 

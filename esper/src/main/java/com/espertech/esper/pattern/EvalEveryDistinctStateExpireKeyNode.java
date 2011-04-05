@@ -222,6 +222,10 @@ public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode imp
         return data;
     }
 
+    public boolean isNotOperator() {
+        return false;
+    }
+
     public final String toString()
     {
         return "EvalEveryStateNode spawnedChildren=" + spawnedNodes.size();
