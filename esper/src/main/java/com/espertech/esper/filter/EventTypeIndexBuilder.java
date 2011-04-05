@@ -126,7 +126,7 @@ public class EventTypeIndexBuilder
 
         if (pair == null)
         {
-            throw new IllegalArgumentException("Filter callback to be removed not found");
+            return;
         }
 
         FilterHandleSetNode rootNode = eventTypeIndex.get(pair.getFirst().getEventType());
