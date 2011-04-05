@@ -2,6 +2,7 @@ package com.espertech.esper.support.epl.parse;
 
 import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.antlr.ASTUtil;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.parse.ParseRuleSelector;
@@ -27,7 +28,7 @@ public class SupportParserHelper
         }
     }
 
-    public static Tree parsePattern(String text) throws Exception
+    public static Pair<Tree, CommonTokenStream> parsePattern(String text) throws Exception
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
@@ -40,7 +41,7 @@ public class SupportParserHelper
         return parse(startRuleSelector, text);
     }
 
-    public static Tree parseEPL(String text) throws Exception
+    public static Pair<Tree, CommonTokenStream> parseEPL(String text) throws Exception
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
@@ -53,7 +54,7 @@ public class SupportParserHelper
         return parse(startRuleSelector, text);
     }
 
-    public static Tree parseEventProperty(String text) throws Exception
+    public static Pair<Tree, CommonTokenStream> parseEventProperty(String text) throws Exception
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
@@ -65,7 +66,7 @@ public class SupportParserHelper
         return parse(startRuleSelector, text);
     }
 
-    public static Tree parse(ParseRuleSelector parseRuleSelector, String text) throws Exception
+    public static Pair<Tree, CommonTokenStream> parse(ParseRuleSelector parseRuleSelector, String text) throws Exception
     {
         CharStream input;
         try
@@ -93,7 +94,7 @@ public class SupportParserHelper
             log.error(ex.getMessage());
             throw ex;
         }
-        return tree;
+        return new Pair<Tree, CommonTokenStream>(tree, tokens);
     }
 
     private static Log log = LogFactory.getLog(SupportParserHelper.class);

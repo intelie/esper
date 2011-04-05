@@ -1,9 +1,11 @@
 package com.espertech.esper.epl.parse;
 
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
 import junit.framework.TestCase;
+import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,11 +18,11 @@ public class TestEPLParser extends TestCase
         String expression = "select * from A where exp > ANY (select a from B)";
 
         log.debug(".testDisplayAST parsing: " + expression);
-        Tree ast = parse(expression);
-        SupportParserHelper.displayAST(ast);
+        Pair<Tree, CommonTokenStream> ast = parse(expression);
+        SupportParserHelper.displayAST(ast.getFirst());
 
         log.debug(".testDisplayAST walking...");
-        EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast);
+        EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast.getFirst(), ast.getSecond());
         walker.startEPLExpressionRule();
     }
 
@@ -777,10 +779,10 @@ public class TestEPLParser extends TestCase
     private void assertIsValid(String text) throws Exception
     {
         log.debug(".assertIsValid Trying text=" + text);
-        Tree ast = parse(text);
+        Pair<Tree, CommonTokenStream> ast = parse(text);
         log.debug(".assertIsValid success, tree walking...");
 
-        SupportParserHelper.displayAST(ast);
+        SupportParserHelper.displayAST(ast.getFirst());
         log.debug(".assertIsValid done");
     }
 
@@ -799,7 +801,7 @@ public class TestEPLParser extends TestCase
         }
     }
 
-    private Tree parse(String expression) throws Exception
+    private Pair<Tree, CommonTokenStream> parse(String expression) throws Exception
     {
         return SupportParserHelper.parseEPL(expression);
     }

@@ -66,7 +66,7 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
         if (auditLog.isInfoEnabled()) {
-            auditLog.info(toStringEvaluateTrue(this, evalAuditNode.getContext().getStatementName(), matchEvent, fromNode, isQuitted));
+            auditLog.info(toStringEvaluateTrue(this, evalAuditNode.getPatternExpr(), evalAuditNode.getContext().getStatementName(), matchEvent, fromNode, isQuitted));
         }
 
         if (isQuitted)
@@ -80,7 +80,7 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
     public final void evaluateFalse(EvalStateNode fromNode)
     {
         if (auditLog.isInfoEnabled()) {
-            auditLog.info(toStringEvaluateFalse(this, evalAuditNode.getContext().getStatementName(), fromNode));
+            auditLog.info(toStringEvaluateFalse(this, evalAuditNode.getPatternExpr(), evalAuditNode.getContext().getStatementName(), fromNode));
         }
 
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
@@ -122,14 +122,14 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
         return evalNode instanceof EvalNotNode;
     }
 
-    private static String toStringEvaluateTrue(EvalAuditStateNode auditStateNode, String statementName, MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted) {
+    private static String toStringEvaluateTrue(EvalAuditStateNode current, String patternExpression, String statementName, MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted) {
 
         StringWriter writer = new StringWriter();
 
         writer.write("Statement ");
         writer.write(statementName);
         writer.write(" pattern ");
-        JavaClassHelper.writeInstance(writer, "subexr", auditStateNode);
+        writePatternExpr(current, patternExpression, writer);
         writer.write(" evaluate-true {");
 
         writer.write(" from: ");
@@ -158,13 +158,13 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
         return writer.toString();
     }
 
-    private String toStringEvaluateFalse(EvalAuditStateNode current, String statementName, EvalStateNode fromNode) {
+    private String toStringEvaluateFalse(EvalAuditStateNode current, String patternExpression, String statementName, EvalStateNode fromNode) {
 
         StringWriter writer = new StringWriter();
         writer.write("Statement ");
         writer.write(statementName);
         writer.write(" pattern ");
-        JavaClassHelper.writeInstance(writer, "subexr", current);
+        writePatternExpr(current, patternExpression, writer);
         writer.write(" evaluate-false {");
 
         writer.write(" from ");
@@ -172,6 +172,17 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
 
         writer.write("}");
         return writer.toString();
+    }
+
+    private static void writePatternExpr(EvalAuditStateNode current, String patternExpression, StringWriter writer) {
+        if (patternExpression != null) {
+            writer.write('(');
+            writer.write(patternExpression);
+            writer.write(')');
+        }
+        else {
+            JavaClassHelper.writeInstance(writer, "subexr", current);
+        }
     }
 
     private static final Log log = LogFactory.getLog(EvalAuditStateNode.class);

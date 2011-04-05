@@ -1,6 +1,8 @@
 package com.espertech.esper.epl.parse;
 
+import com.espertech.esper.collection.Pair;
 import junit.framework.TestCase;
+import org.antlr.runtime.CommonTokenStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
@@ -15,8 +17,8 @@ public class TestEventPatternParser extends TestCase
         String expression = "A -> [10] B until C -> D";
 
         log.debug(".testDisplayAST parsing: " + expression);
-        Tree ast = parse(expression);
-        SupportParserHelper.displayAST(ast);
+        Pair<Tree, CommonTokenStream> ast = parse(expression);
+        SupportParserHelper.displayAST(ast.getFirst());
     }
 
     public void testInvalidCases() throws Exception
@@ -392,7 +394,8 @@ public class TestEventPatternParser extends TestCase
         String expression = "a(m=1) -> not b() or every c() and d() where a:b (5) and timer:interval(10)";
 
         log.debug(".testParserNodeGeneration parsing: " + expression);
-        Tree ast = parse(expression);
+        Pair<Tree, CommonTokenStream> parsed = parse(expression);
+        Tree ast = parsed.getFirst();
         SupportParserHelper.displayAST(ast);
 
         assertTrue(ast.getType() == EsperEPL2GrammarParser.FOLLOWED_BY_EXPR);
@@ -460,10 +463,10 @@ followedByExpression [18]
     private void assertIsValid(String text) throws Exception
     {
         log.debug(".assertIsValid Trying text=" + text);
-        Tree ast = parse(text);
+        Pair<Tree, CommonTokenStream> ast = parse(text);
         log.debug(".assertIsValid success, tree walking...");
 
-        SupportParserHelper.displayAST(ast);
+        SupportParserHelper.displayAST(ast.getFirst());
         log.debug(".assertIsValid done");
     }
 
@@ -482,7 +485,7 @@ followedByExpression [18]
         }
     }
 
-    private Tree parse(String expression) throws Exception
+    private Pair<Tree, CommonTokenStream> parse(String expression) throws Exception
     {
         return SupportParserHelper.parsePattern(expression);
     }

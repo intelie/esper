@@ -142,7 +142,7 @@ public class ParseHelper
             ASTUtil.dumpAST(tree);
         }
 
-        return new ParseResult(tree, getNoAnnotation(expression, tree, tokens));
+        return new ParseResult(tree, getNoAnnotation(expression, tree, tokens), tokens);
     }
 
     private static String getNoAnnotation(String expression, Tree tree, CommonTokenStream tokens)

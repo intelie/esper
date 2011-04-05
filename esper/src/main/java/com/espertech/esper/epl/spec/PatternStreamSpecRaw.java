@@ -40,6 +40,8 @@ import java.util.*;
 public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 {
     private final EvalNode evalNode;
+    private final Map<EvalNode, String> evalNodeExpressions;
+
     private static final Log log = LogFactory.getLog(PatternStreamSpecRaw.class);
     private static final long serialVersionUID = 6393401926404401433L;
 
@@ -50,10 +52,11 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
      * @param optionalStreamName - stream name, or null if none supplied
      * @param streamSpecOptions - additional options, such as unidirectional stream in a join
      */
-    public PatternStreamSpecRaw(EvalNode evalNode, List<ViewSpec> viewSpecs, String optionalStreamName, StreamSpecOptions streamSpecOptions)
+    public PatternStreamSpecRaw(EvalNode evalNode, Map<EvalNode, String> evalNodeExpressions, List<ViewSpec> viewSpecs, String optionalStreamName, StreamSpecOptions streamSpecOptions)
     {
         super(optionalStreamName, viewSpecs, streamSpecOptions);
         this.evalNode = evalNode;
+        this.evalNodeExpressions = evalNodeExpressions;
     }
 
     /**
@@ -76,7 +79,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         Audit audit = AuditEnum.PATTERN.getAudit(context.getAnnotations());
         EvalNode compiledEvalNode = evalNode;
         if (audit != null) {
-            compiledEvalNode = recursiveAddAuditNode(evalNode);
+            compiledEvalNode = recursiveAddAuditNode(evalNode, evalNodeExpressions);
         }
 
         return new PatternStreamSpecCompiled(compiledEvalNode, tags.getTaggedEventTypes(), tags.getArrayEventTypes(), this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
@@ -428,13 +431,14 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return new StreamTypeServiceImpl(filterTypes, engineURI, true, false);
     }
 
-    private static EvalNode recursiveAddAuditNode(EvalNode evalNode) {
-        EvalAuditNode audit = new EvalAuditNode();
+    private static EvalNode recursiveAddAuditNode(EvalNode evalNode, Map<EvalNode, String> evalNodeExpressions) {
+        String expressionText = evalNodeExpressions.get(evalNode);
+        EvalAuditNode audit = new EvalAuditNode(expressionText);
         audit.addChildNode(evalNode);
 
         List<EvalNode> newChildNodes = new ArrayList<EvalNode>();
         for (EvalNode child : evalNode.getChildNodes()) {
-            newChildNodes.add(recursiveAddAuditNode(child));
+            newChildNodes.add(recursiveAddAuditNode(child, evalNodeExpressions));
         }
 
         evalNode.getChildNodes().clear();

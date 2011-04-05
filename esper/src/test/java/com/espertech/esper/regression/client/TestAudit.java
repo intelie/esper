@@ -20,6 +20,7 @@ public class TestAudit extends TestCase {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
+    // TODO: @Audit("dot, subquery, output, input, namedwindow, lookup, aggregate, sql, methodjoin, matchrecognize, expressiondef, lambda")
     public void setUp()
     {
         listener = new SupportUpdateListener();

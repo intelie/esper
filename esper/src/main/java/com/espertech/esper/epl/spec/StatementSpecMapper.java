@@ -2123,7 +2123,7 @@ public class StatementSpecMapper
                 PatternStream patternStream = (PatternStream) stream;
                 EvalNode child = mapPatternEvalDeep(patternStream.getExpression(), mapContext);
                 StreamSpecOptions options = mapStreamOpts(patternStream);
-                spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getStreamName(), options);
+                spec = new PatternStreamSpecRaw(child, Collections.<EvalNode, String>emptyMap(), new ArrayList<ViewSpec>(), patternStream.getStreamName(), options);
             }
             else if (stream instanceof MethodInvocationStream)
             {

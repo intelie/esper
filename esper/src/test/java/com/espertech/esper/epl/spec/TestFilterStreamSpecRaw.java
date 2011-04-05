@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.collection.Pair;
 import junit.framework.TestCase;
 import com.espertech.esper.epl.expression.ExprAndNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 
+import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
 
 public class TestFilterStreamSpecRaw extends TestCase
@@ -254,10 +256,10 @@ public class TestFilterStreamSpecRaw extends TestCase
 
     private static FilterStreamSpecRaw makeSpec(String expression) throws Exception
     {
-        Tree ast = SupportParserHelper.parseEPL(expression);
-        SupportParserHelper.displayAST(ast);
+        Pair<Tree, CommonTokenStream> ast = SupportParserHelper.parseEPL(expression);
+        SupportParserHelper.displayAST(ast.getFirst());
 
-        EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast);
+        EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast.getFirst(), ast.getSecond());
         walker.startEPLExpressionRule();
 
         return (FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);

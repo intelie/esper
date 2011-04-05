@@ -1,5 +1,6 @@
 package com.espertech.esper.epl.parse;
 
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportServiceImpl;
 import com.espertech.esper.epl.expression.*;
@@ -18,6 +19,7 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.timer.TimeSourceServiceImpl;
 import com.espertech.esper.type.OuterJoinType;
 import junit.framework.TestCase;
+import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1312,11 +1314,11 @@ public class TestEPLTreeWalker extends TestCase
     private static EPLTreeWalker parseAndWalkPattern(String expression) throws Exception
     {
         log.debug(".parseAndWalk Trying text=" + expression);
-        Tree ast = SupportParserHelper.parsePattern(expression);
+        Pair<Tree, CommonTokenStream> ast = SupportParserHelper.parsePattern(expression);
         log.debug(".parseAndWalk success, tree walking...");
-        SupportParserHelper.displayAST(ast);
+        SupportParserHelper.displayAST(ast.getFirst());
 
-        EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast);
+        EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast.getFirst(), ast.getSecond());
         walker.startPatternExpressionRule();
         return walker;
     }
@@ -1329,14 +1331,14 @@ public class TestEPLTreeWalker extends TestCase
     private static EPLTreeWalker parseAndWalkEPL(String expression, EngineImportService engineImportService, VariableService variableService) throws Exception
     {
         log.debug(".parseAndWalk Trying text=" + expression);
-        Tree ast = SupportParserHelper.parseEPL(expression);
+        Pair<Tree, CommonTokenStream> ast = SupportParserHelper.parseEPL(expression);
         log.debug(".parseAndWalk success, tree walking...");
-        SupportParserHelper.displayAST(ast);
+        SupportParserHelper.displayAST(ast.getFirst());
 
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
         eventAdapterService.addBeanType("SupportBean_N", SupportBean_N.class, true, true, true);
 
-        EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast, engineImportService, variableService);
+        EPLTreeWalker walker = SupportEPLTreeWalkerFactory.makeWalker(ast.getFirst(), ast.getSecond(), engineImportService, variableService);
         walker.startEPLExpressionRule();
         return walker;
     }

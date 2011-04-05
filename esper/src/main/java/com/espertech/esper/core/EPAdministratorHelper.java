@@ -101,7 +101,7 @@ public class EPAdministratorHelper
         Tree ast = parseResult.getTree();
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
 
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, engineImportService, variableService, schedulingService, defaultStreamSelector, engineURI, configSnapshot, patternNodeFactory);
+        EPLTreeWalker walker = new EPLTreeWalker(nodes, parseResult.getTokenStream(), engineImportService, variableService, schedulingService, defaultStreamSelector, engineURI, configSnapshot, patternNodeFactory);
 
         try
         {
@@ -139,7 +139,7 @@ public class EPAdministratorHelper
         ParseResult parseResult = ParseHelper.parse(expression, expressionForErrorMessage, addPleaseCheck, patternParseRule);
         Tree ast = parseResult.getTree();
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI(), services.getConfigSnapshot(), services.getPatternNodeFactory());
+        EPLTreeWalker walker = new EPLTreeWalker(nodes, parseResult.getTokenStream(), services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI(), services.getConfigSnapshot(), services.getPatternNodeFactory());
 
         try
         {

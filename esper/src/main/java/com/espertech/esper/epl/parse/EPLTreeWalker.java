@@ -38,6 +38,7 @@ import com.espertech.esper.type.*;
 import com.espertech.esper.type.StringValue;
 import com.espertech.esper.util.PlaceholderParseException;
 import com.espertech.esper.util.PlaceholderParser;
+import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.TreeNodeStream;
 import org.apache.commons.logging.Log;
@@ -71,6 +72,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private PropertyEvalSpec propertyEvalSpec;
     private List<OnTriggerMergeMatched> mergeMatcheds;
     private List<OnTriggerMergeAction> mergeActions;
+    private Map<EvalNode, String> evalNodeExpressions;
 
     private final EngineImportService engineImportService;
     private final VariableService variableService;
@@ -81,6 +83,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private final ConfigurationInformation configurationInformation;
     private final SchedulingService schedulingService;
     private final PatternNodeFactory patternNodeFactory;
+    private final CommonTokenStream tokenStream;
 
     /**
      * Ctor.
@@ -92,6 +95,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
      * @param configurationInformation configuration info
      */
     public EPLTreeWalker(TreeNodeStream input,
+                         CommonTokenStream tokenStream,
                          EngineImportService engineImportService,
                          VariableService variableService,
                          SchedulingService schedulingService,
@@ -101,6 +105,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                          PatternNodeFactory patternNodeFactory)
     {
         super(input);
+        this.tokenStream = tokenStream;
         this.engineImportService = engineImportService;
         this.variableService = variableService;
         this.defaultStreamSelector = defaultStreamSelector;
@@ -879,7 +884,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.values().iterator().next();
-            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamAsName, new StreamSpecOptions());
+            streamSpec = new PatternStreamSpecRaw(evalNode, evalNodeExpressions, viewSpecs, streamAsName, new StreamSpecOptions());
+            if (evalNodeExpressions != null) {
+                evalNodeExpressions = new HashMap<EvalNode, String>();
+            }
             astPatternNodeMap.clear();
         }
         else
@@ -1338,7 +1346,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
         // Get expression node sub-tree from the AST nodes placed so far
         EvalNode evalNode = astPatternNodeMap.values().iterator().next();
 
-        PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new LinkedList<ViewSpec>(), null, new StreamSpecOptions());
+        PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, evalNodeExpressions, new LinkedList<ViewSpec>(), null, new StreamSpecOptions());
+        if (evalNodeExpressions != null) {
+            evalNodeExpressions = new HashMap<EvalNode, String>();
+        }
         statementSpec.getStreamSpecs().add(streamSpec);
         statementSpec.setSubstitutionParameters(substitutionParamNodes);
 
@@ -1768,7 +1779,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.values().iterator().next();
 
-            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamName, options);
+            streamSpec = new PatternStreamSpecRaw(evalNode, evalNodeExpressions, viewSpecs, streamName, options);
+            if (evalNodeExpressions != null) {
+                evalNodeExpressions = new HashMap<EvalNode, String>();
+            }
             astPatternNodeMap.clear();
         }
         else if (node.getChild(0).getType() == DATABASE_JOIN_EXPR)
@@ -2590,7 +2604,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveEvery");
         EvalNode everyNode = this.patternNodeFactory.makeEveryNode();
-        astPatternNodeMap.put(node, everyNode);
+        addEvalNodeExpression(everyNode, node);
     }
 
     private void leaveEveryDistinct(Tree node)
@@ -2598,7 +2612,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         log.debug(".leaveEveryDistinct");
         List<ExprNode> exprNodes = getExprNodes(node.getChild(0), 0);
         EvalNode everyNode = this.patternNodeFactory.makeEveryDistinctNode(exprNodes);
-        astPatternNodeMap.put(node, everyNode);
+        addEvalNodeExpression(everyNode, node);
     }
 
     private void leaveStreamFilter(Tree node)
@@ -2662,7 +2676,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
         propertyEvalSpec = null;
         EvalNode filterNode = patternNodeFactory.makeFilterNode(rawFilterSpec, optionalPatternTagName);
-        astPatternNodeMap.put(node, filterNode);
+        addEvalNodeExpression(filterNode, node);
     }
 
     private void leaveFollowedBy(Tree node)
@@ -2690,21 +2704,29 @@ public class EPLTreeWalker extends EsperEPL2Ast
         List<ExprNode> expressions = Arrays.asList(maxExpressions); // can contain null elements as max/no-max can be mixed
         EvalNode fbNode = patternNodeFactory.makeFollowedByNode(expressions);
         fbNode.addChildNodes(childNodes);
-        astPatternNodeMap.put(node, fbNode);
+        addEvalNodeExpression(fbNode, node);
+    }
+
+    private void addEvalNodeExpression(EvalNode evalNode, Tree node) {
+        astPatternNodeMap.put(node, evalNode);
+        if (evalNodeExpressions == null) {
+            evalNodeExpressions = new HashMap<EvalNode, String>();
+        }
+        evalNodeExpressions.put(evalNode, ASTUtil.getExpressionText(this.tokenStream, node));
     }
 
     private void leaveAnd(Tree node)
     {
         log.debug(".leaveAnd");
         EvalNode andNode = patternNodeFactory.makeAndNode();
-        astPatternNodeMap.put(node, andNode);
+        addEvalNodeExpression(andNode, node);
     }
 
     private void leaveOr(Tree node)
     {
         log.debug(".leaveOr");
         EvalNode orNode = patternNodeFactory.makeOrNode();
-        astPatternNodeMap.put(node, orNode);
+        addEvalNodeExpression(orNode, node);
     }
 
     private void leaveInSet(Tree node)
@@ -2776,7 +2798,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leavePatternNot");
         EvalNode notNode = this.patternNodeFactory.makeNotNode();
-        astPatternNodeMap.put(node, notNode);
+        addEvalNodeExpression(notNode, node);
     }
 
     private void leaveGuard(Tree node) throws ASTWalkException
@@ -2798,7 +2820,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         PatternGuardSpec guardSpec = new PatternGuardSpec(objectNamespace, objectName, obsParameters);
         EvalNode guardNode = patternNodeFactory.makeGuardNode(guardSpec);
-        astPatternNodeMap.put(node, guardNode);
+        addEvalNodeExpression(guardNode, node);
     }
 
     private void leaveCaseNode(Tree node, boolean inCase2)
@@ -2894,7 +2916,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         PatternObserverSpec observerSpec = new PatternObserverSpec(objectNamespace, objectName, obsParameters);
         EvalNode observerNode = this.patternNodeFactory.makeObserverNode(observerSpec);
-        astPatternNodeMap.put(node, observerNode);
+        addEvalNodeExpression(observerNode, node);
     }
 
     private void leaveMatch(Tree node) throws ASTWalkException
@@ -2937,7 +2959,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         EvalNode fbNode = this.patternNodeFactory.makeMatchUntilNode(low, high);
-        astPatternNodeMap.put(node, fbNode);
+        addEvalNodeExpression(fbNode, node);
     }
 
     private void leaveSelectClause(Tree node)

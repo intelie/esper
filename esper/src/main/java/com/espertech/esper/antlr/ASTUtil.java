@@ -172,4 +172,10 @@ public class ASTUtil
         astExprNodeMap.remove(child);
         return thisEvalNode;
     }
+
+    public static String getExpressionText(CommonTokenStream tokenStream, Tree node) {
+        int startIndex = node.getTokenStartIndex();
+        int stopIndex = node.getTokenStopIndex();
+        return tokenStream.toString(startIndex, stopIndex);
+    }
 }

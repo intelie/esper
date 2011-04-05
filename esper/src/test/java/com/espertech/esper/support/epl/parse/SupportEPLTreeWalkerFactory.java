@@ -10,18 +10,19 @@ import com.espertech.esper.epl.variable.VariableServiceImpl;
 import com.espertech.esper.pattern.PatternNodeFactoryImpl;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
+import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.antlr.runtime.tree.Tree;
 
 public class SupportEPLTreeWalkerFactory
 {
-    public static EPLTreeWalker makeWalker(Tree tree, EngineImportService engineImportService, VariableService variableService)
+    public static EPLTreeWalker makeWalker(Tree tree, CommonTokenStream tokenStream, EngineImportService engineImportService, VariableService variableService)
     {
-        return new EPLTreeWalker(new CommonTreeNodeStream(tree), engineImportService, variableService, new SupportSchedulingServiceImpl(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "uri", new Configuration(), new PatternNodeFactoryImpl());
+        return new EPLTreeWalker(new CommonTreeNodeStream(tree), tokenStream, engineImportService, variableService, new SupportSchedulingServiceImpl(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "uri", new Configuration(), new PatternNodeFactoryImpl());
     }
 
-    public static EPLTreeWalker makeWalker(Tree tree)
+    public static EPLTreeWalker makeWalker(Tree tree, CommonTokenStream tokenStream)
     {
-        return makeWalker(tree, new EngineImportServiceImpl(true, true, true), new VariableServiceImpl(0, null, SupportEventAdapterService.getService(), null));
+        return makeWalker(tree, tokenStream, new EngineImportServiceImpl(true, true, true), new VariableServiceImpl(0, null, SupportEventAdapterService.getService(), null));
     }
 }

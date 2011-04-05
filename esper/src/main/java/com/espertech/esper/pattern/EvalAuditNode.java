@@ -19,7 +19,12 @@ import java.util.List;
  */
 public class EvalAuditNode extends EvalNodeBase
 {
+    private final String patternExpr;
     private transient PatternContext context;
+
+    public EvalAuditNode(String patternExpr) {
+        this.patternExpr = patternExpr;
+    }
 
     public EvalStateNode newState(Evaluator parentNode,
                                         MatchedEventMap beginState,
@@ -29,6 +34,10 @@ public class EvalAuditNode extends EvalNodeBase
             this.context = context;
         }
         return new EvalAuditStateNode(parentNode, this, beginState);
+    }
+
+    public String getPatternExpr() {
+        return patternExpr;
     }
 
     public PatternContext getContext() {

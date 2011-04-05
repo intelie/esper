@@ -1,11 +1,12 @@
 package com.espertech.esper.epl.parse;
 
-import junit.framework.TestCase;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
-
+import junit.framework.TestCase;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.antlr.runtime.tree.Tree;
 
 /**
  * Test operator precedence and on-expression equivalence.
@@ -111,26 +112,26 @@ public class TestParserOpPrecedence extends TestCase
     private void assertEquivalent(String expressionOne, String expressionTwo) throws Exception
     {
         log.debug(".assertEquivalent parsing: " + expressionOne);
-        Tree astOne = parse(expressionOne);
+        Pair<Tree, CommonTokenStream> astOne = parse(expressionOne);
 
         log.debug(".assertEquivalent parsing: " + expressionTwo);
-        Tree astTwo = parse(expressionTwo);
+        Pair<Tree, CommonTokenStream> astTwo = parse(expressionTwo);
 
-        assertTrue(astOne.toStringTree().equals(astTwo.toStringTree()));
+        assertTrue(astOne.getFirst().toStringTree().equals(astTwo.getFirst().toStringTree()));
     }
 
     private void assertNotEquivalent(String expressionOne, String expressionTwo) throws Exception
     {
         log.debug(".assertEquivalent parsing: " + expressionOne);
-        Tree astOne = parse(expressionOne);
+        Pair<Tree, CommonTokenStream> astOne = parse(expressionOne);
 
         log.debug(".assertEquivalent parsing: " + expressionTwo);
-        Tree astTwo = parse(expressionTwo);
+        Pair<Tree, CommonTokenStream> astTwo = parse(expressionTwo);
 
-        assertFalse(astOne.toStringTree().equals(astTwo.toStringTree()));
+        assertFalse(astOne.getFirst().toStringTree().equals(astTwo.getFirst().toStringTree()));
     }
 
-    private Tree parse(String expression) throws Exception
+    private Pair<Tree, CommonTokenStream> parse(String expression) throws Exception
     {
         return SupportParserHelper.parsePattern(expression);
     }

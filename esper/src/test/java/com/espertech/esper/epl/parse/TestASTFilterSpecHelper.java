@@ -1,8 +1,10 @@
 package com.espertech.esper.epl.parse;
 
+import com.espertech.esper.collection.Pair;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
 import com.espertech.esper.antlr.ASTUtil;
+import org.antlr.runtime.CommonTokenStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
@@ -14,13 +16,15 @@ public class TestASTFilterSpecHelper extends TestCase
         final String PROPERTY = "a('aa').b[1].c";
 
         // Should parse and result in the exact same property name
-        Tree propertyNameExprNode = SupportParserHelper.parseEventProperty(PROPERTY);
+        Pair<Tree, CommonTokenStream> parsed = SupportParserHelper.parseEventProperty(PROPERTY);
+        Tree propertyNameExprNode = parsed.getFirst();
         ASTUtil.dumpAST(propertyNameExprNode);
         String propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode, 0);
         assertEquals(PROPERTY, propertyName);
 
         // Try AST with tokens separated, same property name
-        propertyNameExprNode = SupportParserHelper.parseEventProperty("a(    'aa'   ). b [ 1 ] . c");
+        parsed = SupportParserHelper.parseEventProperty("a(    'aa'   ). b [ 1 ] . c");
+        propertyNameExprNode = parsed.getFirst();
         propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode, 0);
         assertEquals(PROPERTY, propertyName);
     }
@@ -28,7 +32,8 @@ public class TestASTFilterSpecHelper extends TestCase
     public void testGetPropertyNameEscaped() throws Exception
     {
         final String PROPERTY = "a\\.b\\.c";
-        Tree propertyNameExprNode = SupportParserHelper.parseEventProperty(PROPERTY);
+        Pair<Tree, CommonTokenStream> parsed = SupportParserHelper.parseEventProperty(PROPERTY);
+        Tree propertyNameExprNode = parsed.getFirst();
         ASTUtil.dumpAST(propertyNameExprNode);
         String propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode, 0);
         assertEquals(PROPERTY, propertyName);
