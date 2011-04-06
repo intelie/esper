@@ -8,20 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.util.JavaClassHelper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.TreeMap;
-import java.util.Map;
-import java.util.Collection;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
  * Index for filter parameter constants for the comparison operators (less, greater, etc).
@@ -126,12 +124,6 @@ public final class FilterParamIndexCompare extends FilterParamIndexPropBase
 
         FilterOperator filterOperator = this.getFilterOperator();
         Double propertyValueDouble = ((Number) propertyValue).doubleValue();
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".match (" + Thread.currentThread().getId() + ") propertyValue=" + propertyValue +
-                      "  filterOperator=" + filterOperator);
-        }
 
         // Based on current lower and upper bounds check if the property value falls outside - shortcut submap generation
         if ((filterOperator == FilterOperator.GREATER) && (propertyValueDouble <= lowerBounds))

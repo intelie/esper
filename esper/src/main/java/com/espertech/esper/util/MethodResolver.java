@@ -138,11 +138,6 @@ public class MethodResolver
 	public static Method resolveMethod(Class declaringClass, String methodName, Class[] paramTypes, boolean allowInstance)
 	throws EngineNoSuchMethodException
 	{
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".resolve method className=" + declaringClass.getSimpleName() + ", methodName=" + methodName);
-        }
-
 		// Get all the methods for this class
 		Method[] methods = declaringClass.getMethods();
 
@@ -310,11 +305,6 @@ public class MethodResolver
 
     public static Constructor resolveCtor(Class declaringClass, Class[] paramTypes) throws EngineNoSuchCtorException
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".resolve ctor className=" + declaringClass.getSimpleName());
-        }
-
         // Get all the methods for this class
         Constructor[] ctors = declaringClass.getConstructors();
 

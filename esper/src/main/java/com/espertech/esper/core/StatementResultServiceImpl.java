@@ -208,10 +208,6 @@ public class StatementResultServiceImpl implements StatementResultService
     public void execute()
     {
         ArrayDeque<UniformPair<EventBean[]>> dispatches = lastResults.get();
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".execute dispatches: " + dispatches.size());
-        }
 
         UniformPair<EventBean[]> events = EventBeanUtility.flattenList(dispatches);
 

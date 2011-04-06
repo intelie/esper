@@ -11,7 +11,6 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -92,11 +91,6 @@ public class EventTypeIndex implements EventEvaluator
 
     public void matchEvent(EventBean event, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".matchEvent Event received for matching, event=" + event);
-        }
-
         EventType eventType = event.getEventType();
 
         // Attempt to match exact type
@@ -141,11 +135,6 @@ public class EventTypeIndex implements EventEvaluator
         // In this case, log a message and done.
         if (rootNode == null)
         {
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                String message = "Event type is not known to the filter service, eventType=" + eventType;
-                log.debug(".matchEvent " + message);
-            }
             return;
         }
 

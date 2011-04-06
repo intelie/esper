@@ -22,7 +22,6 @@ import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
 import com.espertech.esper.epl.view.OutputConditionPolled;
 import com.espertech.esper.epl.view.OutputConditionPolledFactory;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -111,11 +110,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         MultiKeyUntyped[] oldDataGroupByKeys = generateGroupKeys(oldEvents, false);
 
         // generate old events
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".processJoinResults creating old output events");
-        }
-
         if (isUnidirectional)
         {
             this.clear();
@@ -162,12 +156,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         // Generate group-by keys for all events
         MultiKeyUntyped[] newDataGroupByKeys = generateGroupKeys(newData, true);
         MultiKeyUntyped[] oldDataGroupByKeys = generateGroupKeys(oldData, false);
-
-        // generate old events
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".processViewResults creating old output events");
-        }
 
         // update aggregates
         EventBean[] eventsPerStream = new EventBean[1];

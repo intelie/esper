@@ -8,16 +8,17 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
-import java.util.*;
-import java.util.concurrent.locks.*;
-
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Index for filter parameter constants to match using the equals (=) operator.
@@ -75,11 +76,6 @@ public final class FilterParamIndexEquals extends FilterParamIndexPropBase
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object attributeValue = this.getGetter().get(eventBean);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".match (" + Thread.currentThread().getId() + ") attributeValue=" + attributeValue);
-        }
 
         // Look up in hashtable
         EventEvaluator evaluator = null;

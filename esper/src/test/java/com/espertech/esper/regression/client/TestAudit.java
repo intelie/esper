@@ -16,6 +16,10 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class TestAudit extends TestCase {
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);
@@ -24,7 +28,6 @@ public class TestAudit extends TestCase {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    // TODO: @Audit("dot, subquery, output, input, namedwindow, lookup, aggregate, sql, methodjoin, matchrecognize, , lambda")
     public void setUp()
     {
         listener = new SupportUpdateListener();
@@ -37,21 +40,31 @@ public class TestAudit extends TestCase {
         epService.initialize();
     }
 
-    public void testAudit() {
-        auditLog.info("*** Time: ");
-        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
-        EPStatement stmtInput = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('time') select * from SupportBean.win:time(1 sec)");
-        stmtInput.addListener(listener);
-        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
-        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(2000));
-        stmtInput.destroy();
+    public void testDocSample() {
+        epService.getEPAdministrator().createEPL("create schema OrderEvent(price double)");
 
-        /**
-         * TODO
+        String epl = "@Name('All-Order-Events') @Audit('stream,property') select price from OrderEvent";
+        epService.getEPAdministrator().createEPL(epl).addListener(listener);
+        epService.getEPRuntime().sendEvent(Collections.singletonMap("price", 100d), "OrderEvent");
+    }
+
+    public void testAudit() {
+
+        auditLog.info("*** Schedule: ");
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        EPStatement stmtSchedule = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('schedule') select irstream * from SupportBean.win:time(1 sec)");
+        stmtSchedule.addListener(listener);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        listener.reset();
+        log.info("Sending time");
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(2000));
+        assertTrue(listener.isInvoked());
+        listener.reset();
+        stmtSchedule.destroy();
+
         // stream
         auditLog.info("*** Stream: ");
         EPStatement stmtInput = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('stream') select * from SupportBean(string = 'E1')");
-        stmtInput.addListener(listener);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         stmtInput.destroy();
 
@@ -94,7 +107,7 @@ public class TestAudit extends TestCase {
 
         // expression
         auditLog.info("*** Expression: ");
-        EPStatement stmtExpr = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('expr') select intPrimitive*100 as val0, sum(intPrimitive) as val1 from SupportBean");
+        EPStatement stmtExpr = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('expression') select intPrimitive*100 as val0, sum(intPrimitive) as val1 from SupportBean");
         stmtExpr.addListener(listener);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 50));
         assertEquals(5000, listener.assertOneGetNew().get("val0"));
@@ -108,6 +121,5 @@ public class TestAudit extends TestCase {
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 50));
         assertEquals(50, listener.assertOneGetNewAndReset().get("intPrimitive"));
         stmtProp.destroy();
-         */
     }
 }

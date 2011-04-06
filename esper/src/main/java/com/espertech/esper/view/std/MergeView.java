@@ -8,18 +8,21 @@
  **************************************************************************************/
 package com.espertech.esper.view.std;
 
-import com.espertech.esper.epl.expression.ExprNode;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
-
-import java.util.*;
-import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.*;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.IterablesListIterator;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.View;
+import com.espertech.esper.view.ViewSupport;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * The merge view works together with a group view that splits the data in a stream to multiple subviews, based on
@@ -80,12 +83,6 @@ public final class MergeView extends ViewSupport implements CloneableView
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Updating view");
-            dumpUpdateParams("MergeView", newData, oldData);
-        }
-
         updateChildren(newData, oldData);
     }
 

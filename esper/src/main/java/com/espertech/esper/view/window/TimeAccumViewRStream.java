@@ -10,17 +10,16 @@ package com.espertech.esper.view.window;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.DataWindowView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.DataWindowView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -94,20 +93,6 @@ public final class TimeAccumViewRStream extends ViewSupport implements Cloneable
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
-        if (statementContext == null)
-        {
-            String message = "View context has not been supplied, cannot addSchedule callback";
-            log.fatal(".update " + message);
-            throw new EPException(message);
-        }
-
         if ((newData != null) && (newData.length > 0))
         {
             // If we have an empty window about to be filled for the first time, add a callback
@@ -206,12 +191,6 @@ public final class TimeAccumViewRStream extends ViewSupport implements Cloneable
     protected final void sendRemoveStream()
     {
         callbackScheduledTime = -1;
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendRemoveStream Update child views, " +
-                    "  time=" + statementContext.getSchedulingService().getTime());
-        }
 
         // If there are child views and the batch was filled, fireStatementStopped update method
         if (this.hasViews())

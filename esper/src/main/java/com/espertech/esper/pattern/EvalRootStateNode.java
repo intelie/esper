@@ -8,9 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class is always the root node in the evaluation state tree representing any activated event expression.
@@ -35,19 +34,7 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
         super(null, null);
         this.rootSingleChildNode = rootSingleChildNode;
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor");
-        }
-
         topStateNode = rootSingleChildNode.newState(this, beginState, context, null);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor Done, dumping full tree");
-            EvalStateNodePrinterVisitor visitor = new EvalStateNodePrinterVisitor();
-            this.accept(visitor, null);
-        }
     }
 
     @Override
@@ -66,11 +53,6 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".start Starting single child");
-        }
-
         if (topStateNode == null)
         {
             throw new IllegalStateException("root state node is inactive");
@@ -95,11 +77,6 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateTrue isQuitted=" + isQuitted);
-        }
-
         if (isQuitted)
         {
             topStateNode = null;
@@ -110,10 +87,6 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateFalse");            
-        }
     }
 
     public final Object accept(EvalStateNodeVisitor visitor, Object data)

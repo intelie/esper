@@ -18,7 +18,6 @@ import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
@@ -94,12 +93,6 @@ public final class GroupByViewImpl extends ViewSupport implements CloneableView,
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Updating view");
-            dumpUpdateParams("GroupByView", newData, oldData);
-        }
-
         // Algorithm for single new event
         if ((newData != null) && (oldData == null) && (newData.length == 1))
         {

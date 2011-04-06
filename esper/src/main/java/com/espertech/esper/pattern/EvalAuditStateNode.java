@@ -12,7 +12,6 @@ package com.espertech.esper.pattern;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.util.AuditPath;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,11 +54,6 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".start Starting followed-by expression for the first child");
-        }
-
         childState.start();
         evalAuditNode.increaseRefCount(this);
     }
@@ -83,11 +77,6 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
     {
         if (evalAuditNode.isAuditPattern() && auditLog.isInfoEnabled()) {
             auditLog.info(toStringEvaluateFalse(this, evalAuditNode.getPatternExpr(), evalAuditNode.getContext().getStatementName(), fromNode));
-        }
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateFalse Child node has indicated permanently false");
         }
 
         this.getParentEvaluator().evaluateFalse(this);
@@ -144,7 +133,7 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
         writer.write(" evaluate-true {");
 
         writer.write(" from: ");
-        JavaClassHelper.writeInstance(writer, fromNode);
+        JavaClassHelper.writeInstance(writer, fromNode, false);
 
         writer.write(" map: {");
         String delimiter = "";
@@ -179,7 +168,7 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
         writer.write(" evaluate-false {");
 
         writer.write(" from ");
-        JavaClassHelper.writeInstance(writer, fromNode);
+        JavaClassHelper.writeInstance(writer, fromNode, false);
 
         writer.write("}");
         return writer.toString();

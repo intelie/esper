@@ -92,7 +92,7 @@ public class ExprNodeUtil {
 
         // For top-level expressions check if we perform audit
         if (isTopLevel) {
-            Audit audit = AuditEnum.EXPR.getAudit(validationContext.getAnnotations());
+            Audit audit = AuditEnum.EXPRESSION.getAudit(validationContext.getAnnotations());
             if (audit != null) {
                 return (ExprNode) ExprNodeProxy.newInstance(validationContext.getStatementName(), result);
             }

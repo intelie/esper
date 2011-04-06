@@ -188,12 +188,13 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
     public void timerCallback()
     {
+        long msec = services.getTimeSource().getTimeMillis();
+
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled() && (ExecutionPathDebugLog.isTimerDebugEnabled)))
         {
-            log.debug(".timerCallback Evaluating scheduled callbacks");
+            log.debug(".timerCallback Evaluating scheduled callbacks, time is " + msec);
         }
 
-        long msec = services.getTimeSource().getTimeMillis();
         CurrentTimeEvent currentTimeEvent = new CurrentTimeEvent(msec);
         sendEvent(currentTimeEvent);
     }

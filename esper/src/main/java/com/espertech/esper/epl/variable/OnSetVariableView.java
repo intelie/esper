@@ -68,13 +68,6 @@ public class OnSetVariableView extends ViewSupport
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
         if ((newData == null) || (newData.length == 0))
         {
             return;

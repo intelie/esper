@@ -15,7 +15,6 @@ import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.property.PropertyEvaluator;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
@@ -71,13 +70,6 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
         // if we have a filter for the named window,
         if (filterList.length != 0)
         {

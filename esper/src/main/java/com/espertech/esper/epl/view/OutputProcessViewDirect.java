@@ -16,7 +16,6 @@ import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.util.AuditPath;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,13 +57,6 @@ public class OutputProcessViewDirect extends OutputProcessView
      */
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
         boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
@@ -99,13 +91,6 @@ public class OutputProcessViewDirect extends OutputProcessView
      */
     public void process(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, ExprEvaluatorContext exprEvaluatorContext)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".process Received update, " +
-                    "  newData.length==" + ((newEvents == null) ? 0 : newEvents.size()) +
-                    "  oldData.length==" + ((oldEvents == null) ? 0 : oldEvents.size()));
-        }
-
         boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 

@@ -79,4 +79,8 @@ public class EPStatementHandleCallback implements FilterHandle, ScheduleHandle
     {
         return scheduleCallback;
     }
+
+    public void setScheduleCallback(ScheduleHandleCallback scheduleCallback) {
+        this.scheduleCallback = scheduleCallback;
+    }
 }

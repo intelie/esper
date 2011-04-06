@@ -13,7 +13,6 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.OrderByItem;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.MultiKeyCollatingComparator;
 import com.espertech.esper.util.MultiKeyComparator;
 import org.apache.commons.logging.Log;
@@ -126,11 +125,6 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 
 	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
 	{
-		if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sort");
-        }
-
         if (outgoingEvents == null || outgoingEvents.length < 2)
 		{
 			return outgoingEvents;

@@ -15,7 +15,6 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.MultiKeyCollatingComparator;
 import com.espertech.esper.util.MultiKeyComparator;
 import com.espertech.esper.view.CloneableView;
@@ -159,12 +158,6 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Updating view");
-            dumpUpdateParams("SortWindowView", newData, oldData);
-        }
-
         List<EventBean> removedEvents = new LinkedList<EventBean>();
 
         // Remove old data
@@ -212,11 +205,6 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
                 }
 
                 removedEvents.add(event);
-
-                if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-                {
-                    log.debug(".update Pushing out event event=" + event);
-                }
             }
         }
 

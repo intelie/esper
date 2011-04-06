@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
@@ -16,7 +15,6 @@ import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.parse.ExceptionConvertor;
 import com.espertech.esper.type.IntValue;
 import com.espertech.esper.type.StringValue;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
@@ -28,10 +26,10 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 
 /**
  * Parser for property names that can be simple, nested, mapped or a combination of these.
@@ -53,11 +51,6 @@ public class PropertyParser
     public static Property parse(String propertyName, boolean isRootedDynamic)
     {
         Tree tree = parse(propertyName);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            ASTUtil.dumpAST(tree);
-        }
 
         if (tree.getChildCount() == 1)
         {

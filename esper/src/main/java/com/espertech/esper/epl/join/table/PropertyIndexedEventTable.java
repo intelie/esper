@@ -8,17 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.table;
 
-import java.util.*;
-
-import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.event.EventBeanUtility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * Index that organizes events by the event property values into hash buckets. Based on a HashMap
@@ -145,11 +143,6 @@ public class PropertyIndexedEventTable implements EventTable
         Set<EventBean> events = propertyIndex.get(key);
         if (events == null)
         {
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".remove Event could not be located in index, event " + event);
-            }
-
             return;
         }
 
@@ -157,10 +150,6 @@ public class PropertyIndexedEventTable implements EventTable
         {
             // Not an error, its possible that an old-data event is artificial (such as for statistics) and
             // thus did not correspond to a new-data event raised earlier.
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".remove Event could not be located in index, event " + event);
-            }
             return;
         }
 

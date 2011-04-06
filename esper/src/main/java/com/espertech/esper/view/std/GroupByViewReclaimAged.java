@@ -88,12 +88,6 @@ public final class GroupByViewReclaimAged extends ViewSupport implements Cloneab
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Updating view");
-            dumpUpdateParams("GroupByView", newData, oldData);
-        }
-
         long currentTime = statementContext.getTimeProvider().getTime();
         if ((nextSweepTime == null) || (nextSweepTime <= currentTime))
         {

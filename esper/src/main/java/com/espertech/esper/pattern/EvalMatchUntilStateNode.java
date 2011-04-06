@@ -9,7 +9,6 @@
 package com.espertech.esper.pattern;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -45,11 +44,6 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
     {
         super(parentNode, null);
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor");
-        }
-
         this.nodes = new HashMap<EvalStateNode, Integer>();
         this.beginState = beginState;
         this.matchedEventArrays = (ArrayList<EventBean>[]) new ArrayList[evalMatchUntilNode.getTagsArrayed().length];
@@ -72,19 +66,10 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".start Starting match-until expression - matcher");
-        }
-
         // start until first, it controls the expression
         // if the same event fires both match and until, the match should not count
         if (stateUntil != null)
         {
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".start Starting match-until expression - until");
-            }
             stateUntil.start();
         }
 
@@ -136,11 +121,6 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
 
                 }
             }
-        }
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateTrue isMatcher=" + isMatcher + "  fromNode=" + fromNode.hashCode() + "  isQuitted=" + isQuitted);
         }
 
         if (isQuitted)
@@ -236,11 +216,6 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
             isMatcher = true;
         }
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateFalse Child node has indicated permanently false, isMatcher=" + isMatcher);
-        }
-
         if (isMatcher)
         {
             stateMatcher.quit();
@@ -256,11 +231,6 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".quit Stopping match-until children");
-        }
-
         if (stateMatcher != null)
         {
             stateMatcher.quit();

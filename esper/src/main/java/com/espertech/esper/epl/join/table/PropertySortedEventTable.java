@@ -18,7 +18,6 @@ import com.espertech.esper.epl.join.exec.base.RangeIndexLookupValueRange;
 import com.espertech.esper.epl.join.plan.QueryGraphRangeEnum;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.filter.Range;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -347,11 +346,6 @@ public class PropertySortedEventTable implements EventTable
         Set<EventBean> events = propertyIndex.get(key);
         if (events == null)
         {
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".remove Event could not be located in index, event " + event);
-            }
-
             return;
         }
 
@@ -359,10 +353,6 @@ public class PropertySortedEventTable implements EventTable
         {
             // Not an error, its possible that an old-data event is artificial (such as for statistics) and
             // thus did not correspond to a new-data event raised earlier.
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".remove Event could not be located in index, event " + event);
-            }
             return;
         }
 

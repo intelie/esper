@@ -10,7 +10,6 @@ package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.*;
@@ -70,11 +69,6 @@ public final class FilterParamIndexBooleanExpr extends FilterParamIndexBase
 
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".match (" + Thread.currentThread().getId() + ")");
-        }
-
         List<EventEvaluator> evaluators = new ArrayList<EventEvaluator>();
         constantsMapRWLock.readLock().lock();
         for (ExprNodeAdapter exprNodeAdapter : evaluatorsMap.keySet())

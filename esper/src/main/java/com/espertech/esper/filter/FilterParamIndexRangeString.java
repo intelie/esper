@@ -19,7 +19,6 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -108,12 +107,6 @@ public final class FilterParamIndexRangeString extends FilterParamIndexPropBase
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object objAttributeValue = this.getGetter().get(eventBean);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".match Finding range matches, attribute=" + this.getPropertyName() +
-                      "  attrValue=" + objAttributeValue);
-        }
 
         if (objAttributeValue == null)
         {

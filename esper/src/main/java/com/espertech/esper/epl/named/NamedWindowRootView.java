@@ -30,7 +30,6 @@ import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.filter.*;
 import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.CollectionUtil;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
@@ -171,13 +170,6 @@ public class NamedWindowRootView extends ViewSupport
     // Called by deletion strategy and also the insert-into for new events only
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
         if (revisionProcessor != null)
         {
             revisionProcessor.onUpdate(newData, oldData, this, indexRepository);

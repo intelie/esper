@@ -15,7 +15,6 @@ import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.event.EventAdapterException;
-import com.espertech.esper.pattern.EvalStateNode;
 import com.espertech.esper.type.*;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -1546,17 +1545,30 @@ public class JavaClassHelper
         throw new IllegalStateException("Expected '" + methodName + "' method not found on interface '" + clazz.getName());
     }
 
-    public static void writeInstance(StringWriter writer, Object instance) {
+    public static void writeInstance(StringWriter writer, Object instance, boolean fullyQualified) {
         if (instance == null) {
             writer.write("(null)");
             return;
         }
-        writeInstance(writer, instance.getClass().getSimpleName(), instance);
+
+        String className;
+        if (fullyQualified) {
+            className = instance.getClass().getName();
+        }
+        else {
+            className = instance.getClass().getSimpleName();
+        }
+        writeInstance(writer, className, instance);
     }
 
     public static void writeInstance(StringWriter writer, String title, Object instance) {
         writer.write(title);
         writer.write("@");
-        writer.write(Integer.toHexString(System.identityHashCode(instance)));
+        if (instance == null) {
+            writer.write("(null)");
+        }
+        else {
+            writer.write(Integer.toHexString(System.identityHashCode(instance)));
+        }
     }
 }

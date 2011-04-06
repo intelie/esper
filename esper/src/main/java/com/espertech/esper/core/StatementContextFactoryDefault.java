@@ -9,6 +9,8 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.annotation.Audit;
+import com.espertech.esper.client.annotation.AuditEnum;
 import com.espertech.esper.client.annotation.Drop;
 import com.espertech.esper.client.annotation.Priority;
 import com.espertech.esper.epl.core.MethodResolutionService;
@@ -124,6 +126,11 @@ public class StatementContextFactoryDefault implements StatementContextFactory
         {
             filterService = isolationUnitServices.getFilterService();
             schedulingService = isolationUnitServices.getSchedulingService();
+        }
+
+        Audit scheduleAudit = AuditEnum.SCHEDULE.getAudit(annotations);
+        if (scheduleAudit != null) {
+            schedulingService = new SchedulingServiceAudit(statementName, schedulingService);
         }
 
         // Create statement context

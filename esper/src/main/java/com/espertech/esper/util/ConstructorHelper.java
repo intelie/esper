@@ -11,9 +11,8 @@ package com.espertech.esper.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Helper class to find and invoke a class constructors that matches the types of arguments supplied.
@@ -35,11 +34,6 @@ public class ConstructorHelper
      */
     public static Object invokeConstructor(Class clazz, Object[] arguments) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException
     {
-        if (log.isDebugEnabled())
-        {
-            logConstructors(clazz);
-        }
-
         Class parameterTypes[] = new Class[arguments.length];
         for (int i = 0; i < arguments.length; i++)
         {
@@ -130,24 +124,6 @@ public class ConstructorHelper
     private static Constructor getObjectArrayConstructor(Class clazz) throws NoSuchMethodException
     {
         return clazz.getConstructor(EMPTY_OBJECT_ARRAY_TYPE);
-    }
-
-    private static void logConstructors(Class clazz)
-    {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".invokeConstructor Constructors for class " + clazz);
-        }
-
-        Constructor[] ctors = clazz.getConstructors();
-        for (int i = 0, size = ctors.length; i < size; i++)
-        {
-            Class[] ctorParams = ctors[i].getParameterTypes();
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".invokeConstructor Constructor " + i + ' ' + Arrays.toString(ctorParams));
-            }
-        }
     }
 
     private static final Log log = LogFactory.getLog(ConstructorHelper.class);

@@ -13,8 +13,10 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.epl.expression.*;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
@@ -86,12 +88,6 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Updating view");
-            dumpUpdateParams("UniqueByPropertyView", newData, oldData);
-        }
-
         OneEventCollection postOldData = null;
 
         if (this.hasViews())

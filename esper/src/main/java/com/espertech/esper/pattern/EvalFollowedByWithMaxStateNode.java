@@ -10,7 +10,6 @@ package com.espertech.esper.pattern;
 
 
 import com.espertech.esper.client.hook.ConditionPatternSubexpressionMax;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,11 +52,6 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".start Starting followed-by expression for the first child");
-        }
-
         if (nodes.isEmpty())
         {
             throw new IllegalStateException("Followed by state node is inactive");
@@ -72,11 +66,6 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
         Integer index = nodes.get(fromNode);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateTrue index=" + index + "  fromNode=" + fromNode.hashCode() + "  isQuitted=" + isQuitted);
-        }
 
         if (isQuitted)
         {
@@ -126,11 +115,6 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateFalse Child node has indicated permanently false");
-        }
-
         fromNode.quit();
         Integer index = nodes.remove(fromNode);
         if (index != null && index > 0) {
@@ -158,11 +142,6 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".quit Stopping followed-by all children");
-        }
-
         for (EvalStateNode child : nodes.keySet())
         {
             child.quit();

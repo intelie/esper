@@ -8,15 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Arrays;
-
-import com.espertech.esper.view.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.ViewUpdatedCollection;
@@ -25,7 +16,13 @@ import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.view.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * A data view that aggregates events in a stream and releases them in one batch at every specified time interval.
@@ -150,20 +147,6 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, B
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
-        if (statementContext == null)
-        {
-            String message = "View context has not been supplied, cannot schedule callback";
-            log.fatal(".update " + message);
-            throw new EPException(message);
-        }
-
         // we don't care about removed data from a prior view
         if ((newData == null) || (newData.length == 0))
         {
@@ -204,12 +187,6 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, B
     {
         isCallbackScheduled = false;
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendBatch Update child views, " +
-                    "  time=" + statementContext.getSchedulingService().getTime());
-        }
-
         // If there are child views and the batch was filled, fireStatementStopped update method
         if (this.hasViews())
         {
@@ -233,15 +210,6 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, B
             if ((newData != null) || (oldData != null) || (isForceOutput))
             {
                 updateChildren(newData, oldData);
-            }
-        }
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendBatch Published updated data, ....newData size=" + currentBatch.size());
-            for (Object object : currentBatch)
-            {
-                log.debug(".sendBatch object=" + object);
             }
         }
 
@@ -292,16 +260,6 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, B
     {
         long current = statementContext.getSchedulingService().getTime();
         long afterMSec = computeWaitMSec(current, this.currentReferencePoint, this.msecIntervalSize);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".scheduleCallback Scheduled new callback for " +
-                    " afterMsec=" + afterMSec +
-                    " now=" + current +
-                    " currentReferencePoint=" + currentReferencePoint +
-                    " initialReferencePoint=" + initialReferencePoint +
-                    " msecIntervalSize=" + msecIntervalSize);
-        }
 
         ScheduleHandleCallback callback = new ScheduleHandleCallback() {
             public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)

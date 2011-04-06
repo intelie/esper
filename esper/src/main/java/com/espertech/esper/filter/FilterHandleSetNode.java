@@ -13,7 +13,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -102,13 +101,6 @@ public final class FilterHandleSetNode implements EventEvaluator
         // Add each filter callback stored in this node to the matching list
         for (FilterHandle filterCallback : callbackSet)
         {
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".match (" + Thread.currentThread().getId() + ") Found a match, filterCallbackHash=" + filterCallback.hashCode() +
-                        "  me=" + this +
-                        "  filterCallback=" + filterCallback);
-            }
-
             matches.add(filterCallback);
         }
 

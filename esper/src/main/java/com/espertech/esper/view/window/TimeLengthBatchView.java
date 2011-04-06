@@ -16,7 +16,6 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -140,13 +139,6 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
         if (oldData != null)
         {
             for (int i = 0; i < oldData.length; i++)
@@ -188,12 +180,6 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
      */
     protected final void sendBatch(boolean isFromSchedule)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendBatch Update child views, " +
-                    "  time=" + statementContext.getSchedulingService().getTime());
-        }
-
         // No more callbacks scheduled if called from a schedule
         if (isFromSchedule)
         {
@@ -232,15 +218,6 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
             if ((newData != null) || (oldData != null) || (isForceOutput))
             {
                 updateChildren(newData, oldData);
-            }
-        }
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendBatch Published updated data, ....newData size=" + currentBatch.size());
-            for (Object object : currentBatch)
-            {
-                log.debug(".sendBatch object=" + object);
             }
         }
 
@@ -289,15 +266,6 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
 
     private void scheduleCallback()
     {
-        long current = statementContext.getSchedulingService().getTime();
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".scheduleCallback Scheduled new callback for " +
-                    " msecIntervalSize=" + msecIntervalSize +
-                    " now=" + current);
-        }
-
         ScheduleHandleCallback callback = new ScheduleHandleCallback() {
             public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
             {

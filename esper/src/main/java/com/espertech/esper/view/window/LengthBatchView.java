@@ -8,18 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.view.*;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.view.BatchingDataWindowView;
+import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.View;
+import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Arrays;
 
 /**
  * A data view that aggregates events in a stream and releases them in one batch when a maximum number of events has
@@ -87,13 +89,6 @@ public final class LengthBatchView extends ViewSupport implements CloneableView,
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
         // we don't care about removed data from a prior view
         if ((newData == null) || (newData.length == 0))
         {
@@ -118,11 +113,6 @@ public final class LengthBatchView extends ViewSupport implements CloneableView,
      */
     protected final void sendBatch()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendBatch Update child views");
-        }
-
         // If there are child views and the batch was filled, fireStatementStopped update method
         if (this.hasViews())
         {
@@ -148,15 +138,6 @@ public final class LengthBatchView extends ViewSupport implements CloneableView,
             if ((newData != null) || (oldData != null))
             {
                 updateChildren(newData, oldData);
-            }
-        }
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendBatch Published updated data, ....newData size=" + currentBatch.size());
-            for (Object object : currentBatch)
-            {
-                log.debug(".sendBatch object=" + object);
             }
         }
 

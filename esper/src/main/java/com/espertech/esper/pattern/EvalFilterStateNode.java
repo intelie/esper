@@ -12,7 +12,6 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.filter.FilterValueSet;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,11 +38,6 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
     {
         super(parentNode, null);
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor");
-        }
-
         this.evalFilterNode = evalFilterNode;
         this.beginState = beginState;
     }
@@ -60,11 +54,6 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".start Starting filter expression");
-        }
-
         if (isStarted)
         {
             throw new IllegalStateException("Filter state node already active");
@@ -77,11 +66,6 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".quit Stop filter expression");
-        }
-
         isStarted = false;
         stopFiltering();
     }
@@ -93,17 +77,8 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     public final void matchFound(EventBean event)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".matchFound Filter node received match");
-        }
-
         if (!isStarted)
         {
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".matchFound Match ignored, filter was stopped");
-            }
             return;
         }
 

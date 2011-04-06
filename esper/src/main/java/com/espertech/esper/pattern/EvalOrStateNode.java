@@ -9,7 +9,6 @@
 package com.espertech.esper.pattern;
 
 
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -55,11 +54,6 @@ public final class EvalOrStateNode extends EvalStateNode implements Evaluator
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".start Starting or-expression all children, size=" + getFactoryNode().getChildNodes().size());
-        }
-
         if (childNodes.size() != getFactoryNode().getChildNodes().size())
         {
             throw new IllegalStateException("OR state node does not have the required child state nodes");
@@ -74,11 +68,6 @@ public final class EvalOrStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateTrue fromNode=" + fromNode.hashCode());
-        }
-
         // If one of the children quits, the whole or expression turns true and all subexpressions must quit
         if (isQuitted)
         {
@@ -91,11 +80,6 @@ public final class EvalOrStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateFalse fromNode=" + fromNode.hashCode());
-        }
-
         childNodes.remove(fromNode);
         if (childNodes.isEmpty()) {
             this.getParentEvaluator().evaluateFalse(this);
@@ -104,11 +88,6 @@ public final class EvalOrStateNode extends EvalStateNode implements Evaluator
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".quit Stopping all children");
-        }
-
         for (EvalStateNode child : childNodes)
         {
             child.quit();

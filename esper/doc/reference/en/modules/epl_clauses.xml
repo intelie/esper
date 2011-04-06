@@ -561,7 +561,7 @@ is placed here.")]]></programlisting></entry>
 								<entry>Hint</entry>
 								<entry>
 									<para>For providing one or more hints towards how the engine should execute a statement. Attributes are:</para>
-									<para>value : A comma-separated list of one or more keywords.</para>
+									<para>value : A comma-separated list of one or more case-insensitive keywords.</para>
 								</entry>
 								<entry><programlisting><![CDATA[@Hint('ITERATE_ONLY')]]></programlisting></entry>
 							</row>
@@ -572,6 +572,14 @@ is placed here.")]]></programlisting></entry>
 									<para>Attributes are the hook <literal>type</literal> and the <literal>hook</literal> itself (usually a import or class name):</para>
 								</entry>
 								<entry><programlisting><![CDATA[@Hook(type=HookType.SQLCOL, hook='MyDBTypeConvertor')]]></programlisting></entry>
+							</row>
+							<row>
+								<entry>Audit</entry>
+								<entry>
+									<para>Causes the engine to output detailed processing information for a statement.</para>
+									<para>optional value : A comma-separated list of one or more case-insensitive keywords.</para>
+								</entry>
+								<entry><programlisting><![CDATA[@Audit]]></programlisting></entry>
 							</row>
 						</tbody>
 					</tgroup>				
@@ -685,6 +693,13 @@ select ipaddress, count(*) from SecurityFilter.win:time(60 sec) group by ipaddre
 
 				<para>
 					The type value of a <literal>Hook</literal> annotation defines the type of hook and the <literal>hook</literal> value is an imported or fully-qualified class name providing the callback implementation.
+				</para>
+			</sect3>
+
+			<sect3 id="epl-syntax-annotation-audit">
+				<title>@Audit</title>
+				<para>
+					Causes the engine to output detailed information about the statements processing. Described in more detail at <xref linkend="devlifecycle-debugging-audit"/>.
 				</para>
 			</sect3>
 		</sect2>

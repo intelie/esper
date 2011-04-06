@@ -327,7 +327,7 @@ MyGetterUpdateListener listener = new MyGetterUpdateListener(stmt.getEventType()
 		</sect2>
 		
 		<sect2 id="perf-tips-9">
-			<title>Turn off logging</title>
+			<title>Turn off logging and audit</title>
 
 			<para>
 	Since Esper 1.10, even if you don't have a log4j configuration file in place, Esper will make sure to minimize execution path logging overhead.
@@ -336,6 +336,10 @@ MyGetterUpdateListener listener = new MyGetterUpdateListener(stmt.getEventType()
 
 			<para>
 	Please see the log4j configuration file in "etc/infoonly_log4j.xml" for example log4j settings.
+			</para>
+			
+			<para>
+				Esper provides the <literal>@Audit</literal> annotation for statements. For performance testing and production deployment, we recommend removing <literal>@Audit</literal>.
 			</para>
 		</sect2>
 

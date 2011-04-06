@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.TimeWindow;
@@ -19,7 +18,6 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.schedule.ScheduleAdjustmentCallback;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -113,13 +111,6 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if (statementContext == null)
-        {
-            String message = "View context has not been supplied, cannot schedule callback";
-            log.fatal(".update " + message);
-            throw new EPException(message);
-        }
-
         long timestamp = statementContext.getSchedulingService().getTime();
 
         if (oldData != null)
@@ -167,13 +158,6 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
     {
         long expireBeforeTimestamp = statementContext.getSchedulingService().getTime() - millisecondsBeforeExpiry + 1;
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".expire Expiring messages before " +
-                    "msec=" + expireBeforeTimestamp +
-                    "  date=" + statementContext.getSchedulingService().getTime());
-        }
-
         // Remove from the timeWindow any events that have an older or timestamp then the given timestamp
         // The window extends from X to (X - millisecondsBeforeExpiry + 1)
         ArrayDeque<EventBean> expired = timeWindow.expireEvents(expireBeforeTimestamp);
@@ -192,15 +176,6 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
             }
         }
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".expire Expired messages....size=" + expired.size());
-            for (Object object : expired)
-            {
-                log.debug(".expire object=" + object);
-            }
-        }
-
         // If we still have events in the window, schedule new callback
         if (timeWindow.isEmpty())
         {
@@ -210,11 +185,6 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
         long currentTimestamp = statementContext.getSchedulingService().getTime();
         long scheduleMillisec = millisecondsBeforeExpiry - (currentTimestamp - oldestTimestamp);
         scheduleCallback(scheduleMillisec);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".expire Scheduled new callback for now plus msec=" + scheduleMillisec);
-        }
     }
 
     private void scheduleCallback(long msecAfterCurrentTime)

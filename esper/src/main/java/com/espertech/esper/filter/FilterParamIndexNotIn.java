@@ -8,18 +8,16 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Index for filter parameter constants to match using the 'not in' operator to match against a
@@ -116,11 +114,6 @@ public final class FilterParamIndexNotIn extends FilterParamIndexPropBase
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object attributeValue = this.getGetter().get(eventBean);
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".match (" + Thread.currentThread().getId() + ") attributeValue=" + attributeValue);
-        }
 
         if (attributeValue == null)
         {

@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.dispatch;
 
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -45,11 +44,6 @@ public class DispatchServiceImpl implements DispatchService
 
     private static void dispatchFromQueue(ArrayDeque<Dispatchable> dispatchQueue)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()) && (ExecutionPathDebugLog.isTimerDebugEnabled))
-        {
-            log.debug(".dispatchFromQueue Dispatch queue is " + dispatchQueue.size() + " elements");
-        }
-
         while(true)
         {
             Dispatchable next = dispatchQueue.poll();

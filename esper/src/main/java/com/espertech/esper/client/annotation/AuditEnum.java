@@ -11,54 +11,48 @@ public enum AuditEnum
     /**
      * For use with property audit.
      */
-    PROPERTY("PROPERTY", false, false),
+    PROPERTY("PROPERTY"),
 
     /**
      * For use with expression audit.
      */
-    EXPR("EXPR", false, false),
+    EXPRESSION("EXPRESSION"),
 
     /**
      * For use with expression-definition audit.
      */
-    EXPRDEF("EXPRDEF", false, false),
+    EXPRDEF("EXPRDEF"),
 
     /**
      * For use with view audit.
      */
-    VIEW("VIEW", false, false),
+    VIEW("VIEW"),
 
     /**
      * For use with pattern audit.
      */
-    PATTERN("PATTERN", false, false),
+    PATTERN("PATTERN"),
 
     /**
      * For use with pattern audit.
      */
-    PATTERNINSTANCES("PATTERN-INSTANCES", false, false),
+    PATTERNINSTANCES("PATTERN-INSTANCES"),
 
     /**
      * For use with stream-audit.
      */
-    STREAM("stream", false, false);
+    STREAM("STREAM"),
+
+    /**
+     * For use with stream-audit.
+     */
+    SCHEDULE("SCHEDULE");
 
     private final String value;
-    private final boolean acceptsParameters;
-    private final boolean requiresParameters;
 
-    private AuditEnum(String value, boolean acceptsParameters, boolean requiresParameters)
+    private AuditEnum(String value)
     {
         this.value = value.toUpperCase();
-        this.acceptsParameters = acceptsParameters;
-        if (acceptsParameters)
-        {
-            this.requiresParameters = true;
-        }
-        else
-        {
-            this.requiresParameters = requiresParameters;
-        }
     }
 
     /**
@@ -68,24 +62,6 @@ public enum AuditEnum
     public String getValue()
     {
         return value;
-    }
-
-    /**
-     * True if the hint accepts params.
-     * @return indicator
-     */
-    public boolean isAcceptsParameters()
-    {
-        return acceptsParameters;
-    }
-
-    /**
-     * True if the hint requires params.
-     * @return indicator
-     */
-    public boolean isRequiresParameters()
-    {
-        return requiresParameters;
     }
 
     /**
@@ -119,19 +95,5 @@ public enum AuditEnum
             }
         }
         return null;
-    }
-
-    /**
-     * Returns null or value assigned.
-     * @param auditAnnotation annotation
-     * @return value
-     */
-    public String getAuditAssignedValue(Audit auditAnnotation)
-    {
-        if (!acceptsParameters)
-        {
-            return null;
-        }
-        return AnnotationUtil.getAssignedValue(auditAnnotation.value(), value);
     }
 }

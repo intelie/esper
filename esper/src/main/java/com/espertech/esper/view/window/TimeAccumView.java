@@ -8,24 +8,22 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import com.espertech.esper.view.*;
-import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.core.ExtensionServicesContext;
-import com.espertech.esper.core.EPStatementHandleCallback;
-import com.espertech.esper.collection.ViewUpdatedCollection;
-import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.schedule.ScheduleHandleCallback;
+import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.collection.ViewUpdatedCollection;
+import com.espertech.esper.core.EPStatementHandleCallback;
+import com.espertech.esper.core.ExtensionServicesContext;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.schedule.ScheduleHandleCallback;
+import com.espertech.esper.schedule.ScheduleSlot;
+import com.espertech.esper.view.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Arrays;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import java.util.Iterator;
 
 /**
  * A data window view that holds events in a stream and only removes events from a stream (rstream) if
@@ -100,20 +98,6 @@ public final class TimeAccumView extends ViewSupport implements CloneableView, D
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
-        if (statementContext == null)
-        {
-            String message = "View context has not been supplied, cannot addSchedule callback";
-            log.fatal(".update " + message);
-            throw new EPException(message);
-        }
-
         // we don't care about removed data from a prior view
         if ((newData == null) || (newData.length == 0))
         {
@@ -172,12 +156,6 @@ public final class TimeAccumView extends ViewSupport implements CloneableView, D
     protected final void sendRemoveStream()
     {
         callbackScheduledTime = -1;
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendRemoveStream Update child views, " +
-                    "  time=" + statementContext.getSchedulingService().getTime());
-        }
 
         // If there are child views and the batch was filled, fireStatementStopped update method
         if (this.hasViews())

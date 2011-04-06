@@ -178,11 +178,6 @@ public abstract class ViewSupport implements View
             writer.println(prefix + " oldData.size=" + oldData.length + "...");
             printObjectArray(prefix, writer, oldData);
         }
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".dumpUpdateParams Dumping update parameters..." + buffer.toString());
-        }
     }
 
     private static void printObjectArray(String prefix, PrintWriter writer, Object[] objects)

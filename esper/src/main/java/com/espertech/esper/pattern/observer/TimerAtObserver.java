@@ -14,7 +14,6 @@ import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.schedule.ScheduleSpec;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,22 +46,12 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
 
     public final void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".scheduledTrigger");
-        }
-
         observerEventEvaluator.observerEvaluateTrue(beginState);
         isTimerActive = false;
     }
 
     public void startObserve()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".startObserve Starting at, spec=" + scheduleSpec);
-        }
-
         if (isTimerActive)
         {
             throw new IllegalStateException("Timer already active");
@@ -75,11 +64,6 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
 
     public void stopObserve()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".stopObserve");
-        }
-
         if (isTimerActive)
         {
             observerEventEvaluator.getContext().getSchedulingService().remove(scheduleHandle, scheduleSlot);

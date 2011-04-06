@@ -17,7 +17,6 @@ import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -136,12 +135,6 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Updating view");
-            dumpUpdateParams("TimeOrderView", newData, oldData);
-        }
-
         EventBean[] postOldEventsArray = null;
 
         if ((newData != null) && (newData.length > 0))
@@ -300,13 +293,6 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         long expireBeforeTimestamp = statementContext.getSchedulingService().getTime() - intervalSize + 1;
         isCallbackScheduled = false;
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".expire Expiring messages before " +
-                    "msec=" + expireBeforeTimestamp +
-                    "  date=" + statementContext.getSchedulingService().getTime());
-        }
-
         ArrayList<EventBean> releaseEvents = null;
         Long oldestKey;
         while(true)
@@ -359,15 +345,6 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
             }
         }
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".expire Expired messages....size=" + releaseEvents.size());
-            for (Object object : releaseEvents)
-            {
-                log.debug(".expire object=" + object);
-            }
-        }
-
         // If we still have events in the window, schedule new callback
         if (oldestKey == null)
         {
@@ -378,11 +355,6 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         long callbackWait = oldestKey - expireBeforeTimestamp + 1;
         statementContext.getSchedulingService().add(callbackWait, handle, scheduleSlot);
         isCallbackScheduled = true;
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".expire Scheduled new callback for now plus msec=" + callbackWait);
-        }
     }
 
     public void stop() {

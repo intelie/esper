@@ -10,7 +10,6 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.pattern.guard.Guard;
 import com.espertech.esper.pattern.guard.Quitable;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,11 +39,6 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
         super(parentNode, null);
         this.evalGuardNode = evalGuardNode;
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".constructor");
-        }
-
         guard = evalGuardNode.getGuardFactory().makeGuard(evalGuardNode.getContext(), beginState, this, stateObjectId, null);
 
         this.activeChildNode = evalGuardNode.getChildNodes().get(0).newState(this, beginState, evalGuardNode.getContext(), null);
@@ -62,11 +56,6 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".start Starting within timer and single child node");
-        }
-
         if (activeChildNode == null)
         {
             throw new IllegalStateException("Invalid state, child state node is inactive");
@@ -81,11 +70,6 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateTrue fromNode=" + fromNode.hashCode());
-        }
-
         boolean haveQuitted = activeChildNode == null;
 
         // If one of the children quits, remove the child
@@ -109,19 +93,10 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".evaluateFalse Removing fromNode=" + fromNode.hashCode());
-        }
     }
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".quit Stopping all children");
-        }
-
         if (activeChildNode != null)
         {
             activeChildNode.quit();
@@ -165,11 +140,6 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
 
     public void guardQuit()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".quit Guard has quit, stopping child node, activeChildNode=" + activeChildNode);
-        }
-
         // It is possible that the child node has already been quit such as when the parent wait time was shorter.
         // 1. parent node's guard indicates quit to all children
         // 2. this node's guards also indicates quit, however that already occured

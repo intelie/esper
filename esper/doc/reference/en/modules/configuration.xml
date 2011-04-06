@@ -1477,6 +1477,10 @@ config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(tru
 				</para>
 
 				<para>
+					Statement-level processing information can be output via the <literal>@Audit</literal> annotation, please see <xref linkend="devlifecycle-debugging-audit"/>.
+				</para>
+
+				<para>
 				   When debug-level logging is enabled by setting the flag as below and by setting DEBUG in the Log4j configuration file, then the timer processing may produce extensive debug output that
 				   you may not want to have in the log file. The <literal>timer-debug</literal> setting in the XML or via API as below disables timer debug output which is enabled by default.
 				</para>
@@ -2268,15 +2272,27 @@ config.addVariantStream("OutgoingEvent", variant);]]></programlisting>
 
 		<indexterm><primary>configuration</primary><secondary>logging</secondary></indexterm>
 		<para>
-		   Esper logs all messages to Apache commons logging under an appropriate log level. To output log messages you can add Log4j to classpath and configure Log4j as below. Or you may use SLF4J or no logging component or implement your own logging component.
+		   Esper logs all messages to Apache commons logging under an appropriate log level. To output log messages you can add Log4j to classpath and configure Log4j as below.
 		</para>
 		
+		<para>
+			Esper's only direct dependency for logging is the Apache Commons Logging interfaces. You may use Log4j as described here, or you may use SLF4J instead (for example) as described in http://www.slf4j.org/legacy.html. You can also redirect SLF4J to any backend you want - nop, logback, jul as needed.
+		</para>
+		
+		<para>
+			Statement-level processing information can be output, please see <xref linkend="devlifecycle-debugging-audit"/>.
+		</para>
+
 		<para>
 		   For performance reasons, Esper does not log any debug-level or informational-level messages for event execution unless explicitly configured via <xref linkend="config-engine-logging-execpath"/>.
 		</para>
 
 		<para>
 			A callback API for receiving certain critical engine reports is available as described in <xref linkend="api-exception"/>.
+		</para>
+		
+		<para>
+		  More information on configuring engine-level settings for logging are at <xref linkend="config-engine-logging"/>.
 		</para>
 
 		<para>

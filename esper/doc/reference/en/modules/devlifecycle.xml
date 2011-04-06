@@ -1,8 +1,152 @@
-<chapter id="packaging_deployment">
-    <title>Packaging and Deploying</title>
+<chapter id="devlifecycle">
+    <title>Development Lifecycle</title>
+    
+    <para>
+		This chapter presents information related to the development lifecycle for developing an event processing application with EPL. It includes information on authoring, testing, debugging, packaging and deploying.
+    </para>
 
-    <sect1 id="deploy-intro">
-        <title>Overview</title>
+    <sect1 id="devlifecycle-authoring">
+        <title>Authoring</title>
+        
+        <para>
+          Enterprise Edition includes authoring tools for EPL statements and modules by providing form-based dialogs, templates, an expression builder, simulation tool and other tools. Enterprise Edition also supports hot deployment and packaging options for EPL and related code.
+        </para>
+        
+        <para>
+           EPL statements can be organized into modules as described below. Any text editor can edit EPL statement and module text. A text editor or IDE that highlights SQL syntax or keywords works.
+        </para>
+        
+        <para>
+			For authoring configuration files please consult the XSD schema files as provided with the distribution.
+        </para>
+        
+        <para>
+            For information on authoring event classes or event definitions in general please see <xref linkend="event_representation"/> or <xref linkend="epl_createschema"/>.
+        </para>
+    </sect1>
+
+    <sect1 id="devlifecycle-testing">
+        <title>Testing</title>
+        
+        <para>
+			We recommend testing EPL statements using a test framework such as JUnit or TestNG. Please consult the Esper test suite for extensive examples, which can be downloaded from the distribution site.
+        </para>
+        
+        <para>
+			We recommend performing latency and throughput tests early in the development lifecycle. Please consider the performance tips in <xref linkend="performance"/> for optimal performance.
+        </para>
+        
+        <para>
+			Consider engine and statement metrics reporting for identifying slow-performing statements, for example. See <xref linkend="api-instrumentation"/>.
+        </para>
+    </sect1>
+
+    <sect1 id="devlifecycle-debugging">
+        <title>Debugging</title>
+        
+        <para>
+            One important tool for debugging is the parameterized <literal>@Audit </literal> annotation. This annotation allows to output, on statement-level, detailed information about many aspects of statement processing.
+        </para>
+        
+        <para>
+			Another tool for logging engine-level detail is <xref linkend="config-engine-logging-execpath"/>.
+        </para>
+        
+        <para>
+			Please see <xref linkend="configuration-logging"/> for information on configuring logging in general.
+        </para>
+		
+		<sect2 id="devlifecycle-debugging-audit">
+			<title>@Audit Annotation</title>
+			
+			<para>
+				Use the <literal>@Audit</literal> annotation to have the engine output detailed information about statement processing. The engine reports, at INFO level, the information under log name <literal>com.espertech.esper.audit</literal>.
+			</para>
+			
+			<para>
+				You may provide a comma-separated list of category names to <literal>@Audit</literal> to output information related to specific categories only. The table below lists all available categories. If no parameter is provided, the engine outputs information for all categories. Category names are not case-sensitive.
+			</para>
+			
+			<para>
+				For the next statement  the engine produces detailed processing information (all categories) for the statement: 
+			</para>
+			<programlisting><![CDATA[@Name('All Order Events') @Audit select * from OrderEvent]]></programlisting>
+			
+			<para>
+				For the next statement the engine provides information about new events and also about event property values (2 categories are listed):
+			</para>
+			<programlisting><![CDATA[@Name('All Order Events') @Audit('stream,property') select price from OrderEvent]]></programlisting>
+			
+			<para>
+				Here is a more complete example that uses the API to create the schema, create above statement and send an event:
+			</para>
+			<programlisting><![CDATA[epService.getEPAdministrator().createEPL("create schema OrderEvent(price double)");
+String epl = "@Name('All-Order-Events') @Audit('stream,property') select price from OrderEvent";
+epService.getEPAdministrator().createEPL(epl).addListener(listener);
+epService.getEPRuntime().sendEvent(Collections.singletonMap("price", 100d), "OrderEvent");]]></programlisting>
+
+			<para>
+				The output is similar to the following:
+			</para>
+			<programlisting><![CDATA[INFO  [audit] Statement All-Order-Events stream OrderEvent inserted {price=100.0}
+INFO  [audit] Statement All-Order-Events property price value 100.0]]></programlisting>
+
+			<table frame="topbot">
+				<title>@Audit Categories</title>
+				<tgroup cols="2">
+					<colspec colwidth="0.25*"/>
+					<colspec colwidth="1*"/>
+					<thead>
+						<row>
+							<entry>Category</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>Exprdef</entry>
+							<entry>Each expression declaration name and return value.</entry>
+						</row>
+						<row>
+							<entry>Expression</entry>
+							<entry>Each expression string and its return value.</entry>
+						</row>
+						<row>
+							<entry>Pattern</entry>
+							<entry>Each pattern sub-expression and its change in truth-value.</entry>
+						</row>
+						<row>
+							<entry>Pattern-instances</entry>
+							<entry>Each pattern sub-expression and its count of active instances.</entry>
+						</row>
+						<row>
+							<entry>Property</entry>
+							<entry>Each property name and the event's property value.</entry>
+						</row>
+						<row>
+							<entry>View</entry>
+							<entry>Each view name and its insert and remove stream.</entry>
+						</row>
+						<row>
+							<entry>Schedule</entry>
+							<entry>Each schedule modification and trigger received by a statement.</entry>
+						</row>
+						<row>
+							<entry>Stream</entry>
+							<entry>Each new event received by a statement.</entry>
+						</row>
+					</tbody>
+				</tgroup>				
+			</table>
+			
+			<para>
+				Note that the engine only evaluates select-clause expressions if either a listener or subscriber is attached to the statement or if used with insert-into.
+			</para>
+		</sect2>
+    </sect1>
+
+    <sect1 id="devlifecycle-packagedeploy">
+        <title>Packaging and Deploying Overview</title>
 
 		<para>
 			Please consider Esper Enterprise Edition as a target deployment platform. Esper alone does not ship with a server as it is designed as a core CEP engine.
@@ -15,24 +159,24 @@
 		<itemizedlist>
 			<listitem>
 				<para>
-                    EPL modules to build a cohesive, easily-externalizable deployment unit out of related statements as described in <xref linkend="deploy-eplmodule"/>.
+                    EPL modules to build a cohesive, easily-externalizable deployment unit out of related statements as described in <xref linkend="devlifecycle-eplmodule"/>.
                 </para>
 			</listitem>
 			<listitem>
 				<para>
-                    The deployment administrative interface is described in <xref linkend="deploy-admin"/>.
+                    The deployment administrative interface is described in <xref linkend="devlifecycle-admin"/>.
                 </para>
 			</listitem>
 			<listitem>
 				<para>
-			        Instructions and code for use when the deployment target is a J2EE web application server or servlet runtime, please see <xref linkend="deploy-j2ee"/>.
+			        Instructions and code for use when the deployment target is a J2EE web application server or servlet runtime, please see <xref linkend="devlifecycle-j2ee"/>.
                 </para>
 			</listitem>
 		</itemizedlist>
 
     </sect1>
     
-    <sect1 id="deploy-eplmodule">
+    <sect1 id="devlifecycle-eplmodule">
         <title>EPL Modules</title>
 
 		<indexterm><primary>packaging</primary><secondary>EPL module</secondary></indexterm>
@@ -109,7 +253,7 @@ select id, count(*) from MyOffOnStream.win:time(1 hour) group by id;]]></program
 			<programlisting><![CDATA[epService.getEPAdministrator().getStatement("Count-Switched-On").addListener(...);]]></programlisting>
     </sect1>
 
-    <sect1 id="deploy-admin">
+    <sect1 id="devlifecycle-admin">
         <title>The Deployment Administrative Interface</title>
 
 		<indexterm><primary>packaging</primary><secondary>EPDeploymentAdmin interface</secondary></indexterm>
@@ -144,7 +288,7 @@ select id, count(*) from MyOffOnStream.win:time(1 hour) group by id;]]></program
 		  We also provide additional sample code to read and deploy modules as part of the J2EE considerations below.
 		</para>
 
-		<sect2 id="deploy-admin-readparse">
+		<sect2 id="devlifecycle-admin-readparse">
         <title>Reading Module Content</title>
 			<para>
 				Read and parse module files via the <literal>EPDeploymentAdmin</literal> interface <literal>read</literal> and <literal>parse</literal> methods, which returns a <literal>Module</literal> instance to represent the module information. 
@@ -162,7 +306,7 @@ Module module = deployAdmin.read(new File("switchmonitor.epl"));]]></programlist
 			</para>
 	  </sect2>
 
-		<sect2 id="deploy-admin-order">
+		<sect2 id="devlifecycle-admin-order">
         <title>Ordering Multiple Modules</title>
 			<para>
 				Since modules may have inter-dependencies as discussed under the <literal>uses</literal> declaration,  the deployment interface provides the <literal>getDeploymentOrder</literal> method to order a collection of modules before deployment.
@@ -175,7 +319,7 @@ Module module = deployAdmin.read(new File("switchmonitor.epl"));]]></programlist
 DeploymentOrder order = deployAdmin.getDeploymentOrder(mymodules, new DeploymentOrderOptions());]]></programlisting>
 	  </sect2>
 
-		<sect2 id="deploy-admin-deploy-undeploy">
+		<sect2 id="devlifecycle-admin-devlifecycle-undeploy">
         <title>Deploying and Undeploying</title>
 			<para>
 				The deployment interface returns a deployment id for each module made known by adding a module or by deploying a module. To undeploy the module your application must provide the deployment id.
@@ -202,7 +346,7 @@ DeploymentOrder order = deployAdmin.getDeploymentOrder(mymodules, new Deployment
 			<programlisting><![CDATA[deployAdmin.undeployRemove(deployResult.getDeploymentId());]]></programlisting>
 	  </sect2>
 	  
-	   <sect2 id="deploy-admin-list">
+	   <sect2 id="devlifecycle-admin-list">
         <title>Listing Deployments</title>
 			<para>
 				The deployment interface returns all module information that allows your application to determine which modules are known and their current state. 
@@ -217,7 +361,7 @@ DeploymentOrder order = deployAdmin.getDeploymentOrder(mymodules, new Deployment
 DeploymentInformation infoModule = deployAdmin.getDeploymen(deploymentId);]]></programlisting>			
 	  </sect2>
 
-	   <sect2 id="deploy-admin-transition">
+	   <sect2 id="devlifecycle-admin-transition">
         <title>State Transitioning a Module</title>
 			
 			<para>
@@ -239,7 +383,7 @@ deployAdmin.undeploy(moduleDeploymentId);
 deployAdmin.remove(moduleDeploymentId);]]></programlisting>				  
 		</sect2>
 
-	   <sect2 id="deploy-admin-bestpractices">
+	   <sect2 id="devlifecycle-admin-bestpractices">
         <title>Best Practices</title>			
 			<para>
 				Use the <literal>@Name</literal> annotation to assign a name to each statement that your application would like to attach a listener or subscriber, or look up the statement for iteration or management by the administrative API.
@@ -261,7 +405,7 @@ epService.getEPAdministrator().getDeploymentAdmin()
 
 	</sect1>
 
-    <sect1 id="deploy-j2ee">
+    <sect1 id="devlifecycle-j2ee">
         <title>J2EE Packaging and Deployment</title>
 
 		<indexterm><primary>packaging</primary><secondary>J2EE</secondary></indexterm>
@@ -284,7 +428,7 @@ epService.getEPAdministrator().getDeploymentAdmin()
 			Esper does not have a dependency on any J2EE or Servlet APIs to allow the engine to run in any environment or container.
 		</para>
 
-		<sect2 id="deploy-j2ee-considerations">
+		<sect2 id="devlifecycle-j2ee-considerations">
 			<title>J2EE Deployment Considerations</title>
 			
 			<para>
@@ -306,7 +450,7 @@ epService.getEPAdministrator().getDeploymentAdmin()
 			</para>
 		</sect2>
 
-		<sect2 id="deploy-j2ee-servletcontextlistener">
+		<sect2 id="devlifecycle-j2ee-servletcontextlistener">
 			<title>Servlet Context Listener</title>
 			<para>
 				When deploying a J2EE archive that contains EPL modules files we provide sample code to read and deploy EPL modules files packaged with the enterprise or web application archive when the servlet initializes. The sample undeploys EPL modules when the servlet context gets destroyed.

@@ -20,14 +20,8 @@
     <!ENTITY performance SYSTEM "modules/performance.xml">
     <!ENTITY appendix_outputspec SYSTEM "modules/appendix_outputspec.xml">
     <!ENTITY appendix_keywords SYSTEM "modules/appendix_keywords.xml">
-	<!ENTITY packaging_deployment SYSTEM "modules/packaging_deployment.xml">
+	<!ENTITY devlifecycle SYSTEM "modules/devlifecycle.xml">
 ]>
-<!-- Terminology notes
-
-- We write "an A event" to mean an event of type A.
-  
-
--->
 <book lang="en">
 	<bookinfo>
 		<title>Esper - Event Stream and Complex Event Processing for Java</title>
@@ -141,7 +135,7 @@
 
     &configuration;
 
-    &packaging_deployment;
+    &devlifecycle;
 
     &extension;
 

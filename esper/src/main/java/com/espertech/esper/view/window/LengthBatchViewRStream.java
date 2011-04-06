@@ -8,17 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.view.*;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.view.BatchingDataWindowView;
+import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.View;
+import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Arrays;
 
 /**
 * Same as the {@link LengthBatchView}, this view also supports fast-remove from the batch for remove stream events.
@@ -71,13 +73,6 @@ public final class LengthBatchViewRStream extends ViewSupport implements Cloneab
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
         if (oldData != null)
         {
             for (int i = 0; i < oldData.length; i++)
@@ -110,11 +105,6 @@ public final class LengthBatchViewRStream extends ViewSupport implements Cloneab
      */
     protected final void sendBatch()
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendBatch Update child views");
-        }
-
         // If there are child views and the batch was filled, fireStatementStopped update method
         if (this.hasViews())
         {
@@ -134,15 +124,6 @@ public final class LengthBatchViewRStream extends ViewSupport implements Cloneab
             if ((newData != null) || (oldData != null))
             {
                 updateChildren(newData, oldData);
-            }
-        }
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".sendBatch Published updated data, ....newData size=" + currentBatch.size());
-            for (Object object : currentBatch)
-            {
-                log.debug(".sendBatch object=" + object);
             }
         }
 

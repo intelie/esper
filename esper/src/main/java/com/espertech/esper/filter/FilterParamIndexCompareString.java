@@ -11,7 +11,6 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -101,12 +100,6 @@ public final class FilterParamIndexCompareString extends FilterParamIndexPropBas
         }
 
         FilterOperator filterOperator = this.getFilterOperator();
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".match (" + Thread.currentThread().getId() + ") propertyValue=" + propertyValue +
-                      "  filterOperator=" + filterOperator);
-        }
 
         // Look up in table
         constantsMapRWLock.readLock().lock();

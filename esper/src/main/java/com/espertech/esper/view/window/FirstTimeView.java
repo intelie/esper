@@ -11,14 +11,13 @@ package com.espertech.esper.view.window;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.*;
-import com.espertech.esper.collection.OneEventCollection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -80,20 +79,6 @@ public final class FirstTimeView extends ViewSupport implements CloneableView, B
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
-        }
-
-        if (statementContext == null)
-        {
-            String message = "View context has not been supplied, cannot schedule callback";
-            log.fatal(".update " + message);
-            throw new EPException(message);
-        }
-
         OneEventCollection oldDataToPost = null;
         if (oldData != null)
         {
@@ -157,13 +142,6 @@ public final class FirstTimeView extends ViewSupport implements CloneableView, B
     private void scheduleCallback()
     {
         long afterMSec = this.msecIntervalSize;
-
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".scheduleCallback Scheduled new callback for " +
-                    " afterMsec=" + afterMSec +
-                    " msecIntervalSize=" + msecIntervalSize);
-        }
 
         ScheduleHandleCallback callback = new ScheduleHandleCallback() {
             public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)

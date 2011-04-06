@@ -8,15 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.metric;
 
+import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.ConfigurationMetricsReporting;
 import com.espertech.esper.client.EPRuntime;
-import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.metric.MetricEvent;
 import com.espertech.esper.core.EPServicesContext;
-import com.espertech.esper.core.StatementLifecycleObserver;
 import com.espertech.esper.core.StatementLifecycleEvent;
+import com.espertech.esper.core.StatementLifecycleObserver;
 import com.espertech.esper.core.StatementResultListener;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.MetricUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -119,11 +118,6 @@ public class MetricReportingServiceImpl implements MetricReportingServiceSPI, Me
         if (!MetricReportingPath.isMetricsEnabled)
         {
             return;
-        }
-        
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".processTimeEvent Setting time and evaluating schedules");
         }
 
         schedule.setTime(timeEventTime);
