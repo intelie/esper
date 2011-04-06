@@ -61,17 +61,19 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
         }
 
         childState.start();
+        evalAuditNode.increaseRefCount(this);
     }
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
-        if (auditLog.isInfoEnabled()) {
+        if (evalAuditNode.isAuditPattern() && auditLog.isInfoEnabled()) {
             auditLog.info(toStringEvaluateTrue(this, evalAuditNode.getPatternExpr(), evalAuditNode.getContext().getStatementName(), matchEvent, fromNode, isQuitted));
         }
 
         if (isQuitted)
         {
             childState = null;
+            evalAuditNode.decreaseRefCount(this);
         }
 
         this.getParentEvaluator().evaluateTrue(matchEvent, this, isQuitted);
@@ -79,7 +81,7 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if (auditLog.isInfoEnabled()) {
+        if (evalAuditNode.isAuditPattern() && auditLog.isInfoEnabled()) {
             auditLog.info(toStringEvaluateFalse(this, evalAuditNode.getPatternExpr(), evalAuditNode.getContext().getStatementName(), fromNode));
         }
 
@@ -97,6 +99,7 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
             childState.quit();
         }
         childState = null;
+        evalAuditNode.decreaseRefCount(this);
     }
 
     public final Object accept(EvalStateNodeVisitor visitor, Object data)
@@ -120,6 +123,14 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
     public boolean isNotOperator() {
         EvalNode evalNode = evalAuditNode.getChildNodes().get(0);
         return evalNode instanceof EvalNotNode;
+    }
+
+    public boolean isFilterChildNonQuitting() {
+        return evalAuditNode.isFilterChildNonQuitting();
+    }
+
+    public boolean isFilterStateNode() {
+        return evalAuditNode.getChildNodes().get(0) instanceof EvalFilterNode;
     }
 
     private static String toStringEvaluateTrue(EvalAuditStateNode current, String patternExpression, String statementName, MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted) {
@@ -174,7 +185,7 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
         return writer.toString();
     }
 
-    private static void writePatternExpr(EvalAuditStateNode current, String patternExpression, StringWriter writer) {
+    protected static void writePatternExpr(EvalAuditStateNode current, String patternExpression, StringWriter writer) {
         if (patternExpression != null) {
             writer.write('(');
             writer.write(patternExpression);

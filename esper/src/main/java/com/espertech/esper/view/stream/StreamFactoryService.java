@@ -16,6 +16,8 @@ import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.view.EventStream;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Service on top of the filter service for reuseing filter callbacks and their associated EventStream instances.
  * Same filter specifications (equal) do not need to be added to the filter service twice and the
@@ -40,7 +42,7 @@ public interface StreamFactoryService
      * @return event stream representing active filter
      */
     public Pair<EventStream, StatementLock> createStream(final String statementId, FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle,
-                                    boolean isJoin, boolean isSubSelect, ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger, boolean filterWithSameTypeSubselect);
+                                    boolean isJoin, boolean isSubSelect, ExprEvaluatorContext exprEvaluatorContext, boolean isNamedWindowTrigger, boolean filterWithSameTypeSubselect, Annotation[] annotations);
 
     /**
      * Drop the event stream associated with the filter passed in.

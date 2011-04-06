@@ -38,6 +38,10 @@ public final class EvalEveryStateSpawnEvaluator implements Evaluator
         isEvaluatedTrue = true;
     }
 
+    public boolean isFilterChildNonQuitting() {
+        return false;
+    }
+
     private static final Log log = LogFactory.getLog(EvalEveryStateSpawnEvaluator.class);
 }
 

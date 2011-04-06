@@ -155,6 +155,14 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
         return false;
     }
 
+    public boolean isFilterStateNode() {
+        return false;
+    }
+
+    public boolean isFilterChildNonQuitting() {
+        return false;
+    }
+
     public void guardQuit()
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))

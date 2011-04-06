@@ -73,7 +73,15 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
         }
     }
 
+    public boolean isFilterStateNode() {
+        return false;
+    }
+
     public boolean isNotOperator() {
+        return false;
+    }
+
+    public boolean isFilterChildNonQuitting() {
         return false;
     }
 

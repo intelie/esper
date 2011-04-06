@@ -124,6 +124,14 @@ public final class EvalNotStateNode extends EvalStateNode implements Evaluator
         return true;
     }
 
+    public boolean isFilterStateNode() {
+        return false;
+    }
+
+    public boolean isFilterChildNonQuitting() {
+        return false;
+    }
+
     public final String toString()
     {
         return "EvalNotStateNode child=" + childNode;

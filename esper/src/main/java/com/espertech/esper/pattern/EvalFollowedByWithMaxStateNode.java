@@ -148,6 +148,14 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
         return false;
     }
 
+    public boolean isFilterStateNode() {
+        return false;
+    }
+
+    public boolean isFilterChildNonQuitting() {
+        return false;
+    }
+
     public final void quit()
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))

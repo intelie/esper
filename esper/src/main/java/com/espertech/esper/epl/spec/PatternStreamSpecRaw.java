@@ -76,10 +76,12 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         MatchEventSpec tags = new MatchEventSpec();
         recursiveCompile(evalNode, context, eventTypeReferences, isInsertInto, tags);
 
-        Audit audit = AuditEnum.PATTERN.getAudit(context.getAnnotations());
+        Audit auditPattern = AuditEnum.PATTERN.getAudit(context.getAnnotations());
+        Audit auditPatternInstance = AuditEnum.PATTERNINSTANCES.getAudit(context.getAnnotations());
         EvalNode compiledEvalNode = evalNode;
-        if (audit != null) {
-            compiledEvalNode = recursiveAddAuditNode(evalNode, evalNodeExpressions);
+        if (auditPattern != null || auditPatternInstance != null) {
+            EvalAuditInstanceCount instanceCount = new EvalAuditInstanceCount();
+            compiledEvalNode = recursiveAddAuditNode(null, auditPattern != null, auditPatternInstance != null, evalNode, evalNodeExpressions, instanceCount);
         }
 
         return new PatternStreamSpecCompiled(compiledEvalNode, tags.getTaggedEventTypes(), tags.getArrayEventTypes(), this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
@@ -431,14 +433,15 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return new StreamTypeServiceImpl(filterTypes, engineURI, true, false);
     }
 
-    private static EvalNode recursiveAddAuditNode(EvalNode evalNode, Map<EvalNode, String> evalNodeExpressions) {
+    private static EvalNode recursiveAddAuditNode(EvalNode parentNode, boolean auditPattern, boolean auditPatternInstance, EvalNode evalNode, Map<EvalNode, String> evalNodeExpressions, EvalAuditInstanceCount instanceCount) {
         String expressionText = evalNodeExpressions.get(evalNode);
-        EvalAuditNode audit = new EvalAuditNode(expressionText);
+        boolean filterChildNonQuitting = parentNode != null && parentNode instanceof EvalNodeFilterChildNonQuitting;
+        EvalAuditNode audit = new EvalAuditNode(auditPattern, auditPatternInstance, expressionText, instanceCount, filterChildNonQuitting);
         audit.addChildNode(evalNode);
 
         List<EvalNode> newChildNodes = new ArrayList<EvalNode>();
         for (EvalNode child : evalNode.getChildNodes()) {
-            newChildNodes.add(recursiveAddAuditNode(child, evalNodeExpressions));
+            newChildNodes.add(recursiveAddAuditNode(evalNode, auditPattern, auditPatternInstance, child, evalNodeExpressions, instanceCount));
         }
 
         evalNode.getChildNodes().clear();

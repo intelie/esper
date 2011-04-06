@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class represents an 'every' operator in the evaluation tree representing an event expression.
  */
-public class EvalEveryNode extends EvalNodeBase
+public class EvalEveryNode extends EvalNodeBase implements EvalNodeFilterChildNonQuitting
 {
     private static final long serialVersionUID = 3672732014060588205L;
 

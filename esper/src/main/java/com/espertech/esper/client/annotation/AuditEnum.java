@@ -19,6 +19,11 @@ public enum AuditEnum
     EXPR("EXPR", false, false),
 
     /**
+     * For use with expression-definition audit.
+     */
+    EXPRDEF("EXPRDEF", false, false),
+
+    /**
      * For use with view audit.
      */
     VIEW("VIEW", false, false),
@@ -26,7 +31,17 @@ public enum AuditEnum
     /**
      * For use with pattern audit.
      */
-    PATTERN("PATTERN", false, false);
+    PATTERN("PATTERN", false, false),
+
+    /**
+     * For use with pattern audit.
+     */
+    PATTERNINSTANCES("PATTERN-INSTANCES", false, false),
+
+    /**
+     * For use with stream-audit.
+     */
+    STREAM("stream", false, false);
 
     private final String value;
     private final boolean acceptsParameters;

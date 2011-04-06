@@ -255,7 +255,7 @@ public class EPStatementStartMethod
             // Since only for non-joins we get the existing stream's lock and try to reuse it's views
             boolean filterSubselectSameStream = determineSubquerySameStream(filterStreamSpec);
             Pair<EventStream, StatementLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                    statementContext.getFilterService(), statementContext.getEpStatementHandle(), false, false, statementContext, true, filterSubselectSameStream);
+                    statementContext.getFilterService(), statementContext.getEpStatementHandle(), false, false, statementContext, true, filterSubselectSameStream, statementContext.getAnnotations());
             eventStreamParentViewable = streamLockPair.getFirst();
 
             // Use the re-used stream's lock for all this statement's locking needs
@@ -691,7 +691,7 @@ public class EPStatementStartMethod
         // Since only for non-joins we get the existing stream's lock and try to reuse it's views
         boolean filterSubselectSameStream = determineSubquerySameStream(filterStreamSpec);
         Pair<EventStream, StatementLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                statementContext.getFilterService(), statementContext.getEpStatementHandle(), false, false, statementContext, true, filterSubselectSameStream);
+                statementContext.getFilterService(), statementContext.getEpStatementHandle(), false, false, statementContext, true, filterSubselectSameStream, statementContext.getAnnotations());
         eventStreamParentViewable = streamLockPair.getFirst();
 
         // Use the re-used stream's lock for all this statement's locking needs
@@ -940,7 +940,7 @@ public class EPStatementStartMethod
                 // Since only for non-joins we get the existing stream's lock and try to reuse it's views
                 boolean filterSubselectSameStream = determineSubquerySameStream(filterStreamSpec);
                 Pair<EventStream, StatementLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, false, statementContext, false | !statementSpec.getOrderByList().isEmpty(), filterSubselectSameStream);
+                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, false, statementContext, false | !statementSpec.getOrderByList().isEmpty(), filterSubselectSameStream, statementContext.getAnnotations());
                 eventStreamParentViewable[i] = streamLockPair.getFirst();
 
                 // Use the re-used stream's lock for all this statement's locking needs
@@ -1709,7 +1709,7 @@ public class EPStatementStartMethod
 
                 // Register filter, create view factories
                 Pair<EventStream, StatementLock> streamLockPair = services.getStreamService().createStream(statementContext.getStatementId(), filterStreamSpec.getFilterSpec(),
-                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, true, statementContext, false, false);
+                        statementContext.getFilterService(), statementContext.getEpStatementHandle(), isJoin, true, statementContext, false, false, statementContext.getAnnotations());
                 Viewable viewable = streamLockPair.getFirst();
                 ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), filterStreamSpec.getOptions(), statementContext);
                 subselect.setRawEventType(viewFactoryChain.getEventType());

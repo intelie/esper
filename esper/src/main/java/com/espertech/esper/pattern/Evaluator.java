@@ -29,4 +29,6 @@ public interface Evaluator
      * @param fromNode is the node that indicates the change
      */
     public void evaluateFalse(EvalStateNode fromNode);
+
+    public boolean isFilterChildNonQuitting();
 }

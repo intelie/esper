@@ -20,7 +20,7 @@ import java.util.HashMap;
 /**
  * This class represents the state of a match-until node in the evaluation state tree.
  */
-public final class EvalMatchUntilStateNode extends EvalStateNode implements Evaluator, EvalStateNodeNonQuitting
+public final class EvalMatchUntilStateNode extends EvalStateNode implements Evaluator
 {
     private final HashMap<EvalStateNode, Integer> nodes;
     private final EvalMatchUntilNode evalMatchUntilNode;
@@ -294,6 +294,14 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
 
     public boolean isNotOperator() {
         return false;
+    }
+
+    public boolean isFilterStateNode() {
+        return false;
+    }
+
+    public boolean isFilterChildNonQuitting() {
+        return true;
     }
 
     private boolean isTightlyBound() {

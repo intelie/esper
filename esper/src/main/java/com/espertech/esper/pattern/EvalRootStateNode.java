@@ -130,7 +130,15 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
         return data;
     }
 
+    public boolean isFilterStateNode() {
+        return false;
+    }
+
     public boolean isNotOperator() {
+        return false;
+    }
+
+    public boolean isFilterChildNonQuitting() {
         return false;
     }
 

@@ -654,6 +654,13 @@ public class EventBeanUtility
         return true;
     }
 
+    public static String summarize(EventBean event) {
+        if (event == null) {
+            return "(null)";
+        }
+        return event.getUnderlying().toString();
+    }
+
     public static String summarize(EventBean[] events) {
         if (events == null) {
             return "(null)";

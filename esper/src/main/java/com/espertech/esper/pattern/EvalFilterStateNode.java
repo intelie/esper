@@ -138,7 +138,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         // and the all node would newState a new listener. The remove operation and the add operation
         // therefore don't take place if the EvalEveryStateNode node sits on top of a EvalFilterStateNode node.
         boolean isQuitted = false;
-        if (!(this.getParentEvaluator() instanceof EvalStateNodeNonQuitting))
+        if (!(this.getParentEvaluator().isFilterChildNonQuitting()))
         {
             stopFiltering();
             isQuitted = true;
@@ -170,6 +170,10 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         buffer.append(" spec=");
         buffer.append(evalFilterNode.getFilterSpec());
         return buffer.toString();
+    }
+
+    public boolean isFilterStateNode() {
+        return true;
     }
 
     public boolean isNotOperator() {

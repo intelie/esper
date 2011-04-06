@@ -82,6 +82,10 @@ public final class EvalObserverStateNode extends EvalStateNode implements Observ
         return false;
     }
 
+    public boolean isFilterStateNode() {
+        return false;
+    }
+
     public final String toString()
     {
         return "EvalObserverStateNode eventObserver=" + eventObserver;

@@ -22,7 +22,7 @@ import java.util.Map;
  * Contains the state collected by an "every" operator. The state includes handles to any sub-listeners
  * started by the operator.
  */
-public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode implements Evaluator, EvalStateNodeNonQuitting
+public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode implements Evaluator
 {
     private final EvalEveryDistinctNode everyNode;
     private final Map<EvalStateNode, LinkedHashMap<MultiKeyUntyped, Long>> spawnedNodes;
@@ -156,7 +156,7 @@ public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode imp
         }
 
         // See explanation in EvalFilterStateNode for the type check
-        if (fromNode instanceof EvalFilterStateNode)
+        if (fromNode.isFilterStateNode())
         {
             // We do not need to newState new listeners here, since the filter state node below this node did not quit
         }
@@ -224,6 +224,14 @@ public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode imp
 
     public boolean isNotOperator() {
         return false;
+    }
+
+    public boolean isFilterStateNode() {
+        return false;
+    }
+
+    public boolean isFilterChildNonQuitting() {
+        return true;
     }
 
     public final String toString()

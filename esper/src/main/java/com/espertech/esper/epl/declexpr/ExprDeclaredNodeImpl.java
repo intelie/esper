@@ -9,6 +9,8 @@
 package com.espertech.esper.epl.declexpr;
 
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.annotation.Audit;
+import com.espertech.esper.client.annotation.AuditEnum;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.*;
@@ -174,6 +176,11 @@ public class ExprDeclaredNodeImpl extends ExprNodeBase implements ExprDeclaredNo
         }
         else {
             exprEvaluator = new ExprDeclaredEvalRewrite(expressionBodyCopy.getExprEvaluator(), prototype, isCache, streamsIdsPerStream);
+        }
+
+        Audit audit = AuditEnum.EXPRDEF.getAudit(validationContext.getAnnotations());
+        if (audit != null) {
+            exprEvaluator = (ExprEvaluator) ExprEvaluatorProxy.newInstance(validationContext.getStatementName(), prototype.getName(), exprEvaluator);
         }
     }
 

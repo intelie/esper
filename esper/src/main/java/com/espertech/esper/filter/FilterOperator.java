@@ -23,87 +23,93 @@ public enum FilterOperator
     /**
      * Exact matches (=).
      */
-    EQUAL,
+    EQUAL("="),
 
     /**
      * Exact not matche (!=).
      */
-    NOT_EQUAL,
+    NOT_EQUAL("!="),
 
     /**
      * Less (<).
      */
-    LESS,
+    LESS("<"),
 
     /**
      * Less or equal (<=).
      */
-    LESS_OR_EQUAL,
+    LESS_OR_EQUAL("<="),
 
     /**
      * Greater or equal (>=).
      */
-    GREATER_OR_EQUAL,
+    GREATER_OR_EQUAL(">="),
 
     /**
      * Greater (>).
      */
-    GREATER,
+    GREATER(">"),
 
     /**
      * Range contains neither endpoint, i.e. (a,b)
      */
-    RANGE_OPEN,
+    RANGE_OPEN("(,)"),
 
     /**
      * Range contains low and high endpoint, i.e. [a,b]
      */
-    RANGE_CLOSED,
+    RANGE_CLOSED("[,]"),
 
     /**
      * Range includes low endpoint but not high endpoint, i.e. [a,b)
      */
-    RANGE_HALF_OPEN,
+    RANGE_HALF_OPEN("[,)"),
 
     /**
      * Range includes high endpoint but not low endpoint, i.e. (a,b]
      */
-    RANGE_HALF_CLOSED,
+    RANGE_HALF_CLOSED("(,]"),
 
     /**
      * Inverted-Range contains neither endpoint, i.e. (a,b)
      */
-    NOT_RANGE_OPEN,
+    NOT_RANGE_OPEN("-(,)"),
 
     /**
      * Inverted-Range contains low and high endpoint, i.e. [a,b]
      */
-    NOT_RANGE_CLOSED,
+    NOT_RANGE_CLOSED("-[,]"),
 
     /**
      * Inverted-Range includes low endpoint but not high endpoint, i.e. [a,b)
      */
-    NOT_RANGE_HALF_OPEN,
+    NOT_RANGE_HALF_OPEN("-[,)"),
 
     /**
      * Inverted-Range includes high endpoint but not low endpoint, i.e. (a,b]
      */
-    NOT_RANGE_HALF_CLOSED,
+    NOT_RANGE_HALF_CLOSED("-(,]"),
 
     /**
      * List of values using the 'in' operator
      */
-    IN_LIST_OF_VALUES,
+    IN_LIST_OF_VALUES("in"),
 
     /**
      * Not-in list of values using the 'not in' operator
      */
-    NOT_IN_LIST_OF_VALUES,
+    NOT_IN_LIST_OF_VALUES("!in"),
 
     /**
      * Boolean expression filter operator
      */
-    BOOLEAN_EXPRESSION;
+    BOOLEAN_EXPRESSION("boolean_expr");
+
+    private String textualOp;
+
+    private FilterOperator(String textualOp) {
+        this.textualOp = textualOp;
+    }
 
     private final static String EQUAL_OP = "=";
     private final static String NOT_EQUAL_OP = "!=";
@@ -250,5 +256,9 @@ public enum FilterOperator
         {
             return FilterOperator.RANGE_OPEN;
         }
+    }
+
+    public String getTextualOp() {
+        return textualOp;
     }
 }

@@ -8,22 +8,25 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.Collections;
-import java.util.List;
-
 /**
  * This class represents an 'or' operator in the evaluation tree representing any event expressions.
  */
 public class EvalAuditNode extends EvalNodeBase
 {
+    private final boolean auditPattern;
+    private final boolean auditPatternInstance;
     private final String patternExpr;
+    private final EvalAuditInstanceCount instanceCount;
+    private final boolean filterChildNonQuitting;
+
     private transient PatternContext context;
 
-    public EvalAuditNode(String patternExpr) {
+    public EvalAuditNode(boolean auditPattern, boolean auditPatternInstance, String patternExpr, EvalAuditInstanceCount instanceCount, boolean filterChildNonQuitting) {
+        this.auditPattern = auditPattern;
+        this.auditPatternInstance = auditPatternInstance;
         this.patternExpr = patternExpr;
+        this.instanceCount = instanceCount;
+        this.filterChildNonQuitting = filterChildNonQuitting;
     }
 
     public EvalStateNode newState(Evaluator parentNode,
@@ -36,8 +39,16 @@ public class EvalAuditNode extends EvalNodeBase
         return new EvalAuditStateNode(parentNode, this, beginState);
     }
 
+    public boolean isAuditPattern() {
+        return auditPattern;
+    }
+
     public String getPatternExpr() {
         return patternExpr;
+    }
+
+    public EvalAuditInstanceCount getInstanceCount() {
+        return instanceCount;
     }
 
     public PatternContext getContext() {
@@ -49,5 +60,21 @@ public class EvalAuditNode extends EvalNodeBase
         return ("EvalAuditStateNode children=" + this.getChildNodes().size());
     }
 
-    private static final Log log = LogFactory.getLog(EvalAuditNode.class);
+    public void decreaseRefCount(EvalAuditStateNode current) {
+        if (!auditPatternInstance) {
+            return;
+        }
+        instanceCount.decreaseRefCount(this.getChildNodes().get(0), current, patternExpr, context.getStatementName());
+    }
+
+    public void increaseRefCount(EvalAuditStateNode current) {
+        if (!auditPatternInstance) {
+            return;
+        }
+        instanceCount.increaseRefCount(this.getChildNodes().get(0), current, patternExpr, context.getStatementName());
+    }
+
+    public boolean isFilterChildNonQuitting() {
+        return filterChildNonQuitting;
+    }
 }
