@@ -871,7 +871,7 @@ public class Expressions implements Serializable
      */
     public static RelationalOpExpression isNotNull(String property)
     {
-        return new RelationalOpExpression(getPropExpr(property), "!=", null);
+        return new RelationalOpExpression(getPropExpr(property), "is not", null);
     }
 
     /**
@@ -881,7 +881,7 @@ public class Expressions implements Serializable
      */
     public static RelationalOpExpression isNotNull(Expression expression)
     {
-        return new RelationalOpExpression(expression, "!=", null);
+        return new RelationalOpExpression(expression, "is not", null);
     }
 
     /**

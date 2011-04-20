@@ -4,18 +4,6 @@ import junit.framework.TestCase;
 
 public class TestFilterOperator extends TestCase
 {
-    public void testOperatorsFromString()
-    {
-        assertTrue(FilterOperator.parseComparisonOperator("!=") == FilterOperator.NOT_EQUAL);
-        assertTrue(FilterOperator.parseComparisonOperator(">") == FilterOperator.GREATER);
-        assertTrue(FilterOperator.parseComparisonOperator("=") == FilterOperator.EQUAL);
-        assertTrue(FilterOperator.parseComparisonOperator("<=") == FilterOperator.LESS_OR_EQUAL);
-        assertTrue(FilterOperator.parseComparisonOperator("<") == FilterOperator.LESS);
-        assertTrue(FilterOperator.parseComparisonOperator(">=") == FilterOperator.GREATER_OR_EQUAL);
-        assertTrue(FilterOperator.parseComparisonOperator("d") == null);
-        assertTrue(FilterOperator.parseComparisonOperator(null) == null);
-    }
-
     public void testRanges()
     {
         assertTrue(FilterOperator.parseRangeOperator(false, false, false) == FilterOperator.RANGE_OPEN);

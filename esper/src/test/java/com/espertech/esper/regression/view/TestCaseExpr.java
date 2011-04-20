@@ -357,7 +357,7 @@ public class TestCaseExpr extends TestCase
     public void testCaseSyntax1WithNull()
     {
        String caseExpr = "select case " +
-                 " when string = null then true " +
+                 " when string is null then true " +
                  " when string = '' then false end as p1" +
                  " from " + SupportBean.class.getName() + ".win:length(100)";
 

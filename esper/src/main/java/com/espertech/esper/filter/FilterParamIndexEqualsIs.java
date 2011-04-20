@@ -24,37 +24,33 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Index for filter parameter constants to match using the equals (=) operator.
  * The implementation is based on a regular HashMap.
  */
-public final class FilterParamIndexNotEquals extends FilterParamIndexNotEqualsBase
+public final class FilterParamIndexEqualsIs extends FilterParamIndexEqualsBase
 {
-    public FilterParamIndexNotEquals(String propertyName, EventType eventType) {
-        super(propertyName, FilterOperator.NOT_EQUAL, eventType);
+    public FilterParamIndexEqualsIs(String propertyName, EventType eventType) {
+        super(propertyName, FilterOperator.IS, eventType);
     }
 
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object attributeValue = this.getGetter().get(eventBean);
-        if (attributeValue == null) {   // null cannot match any other value, not even null (use "is" or "is not", i.e. null != null returns null)
+
+        EventEvaluator evaluator = null;
+        constantsMapRWLock.readLock().lock();
+        try
+        {
+            evaluator = constantsMap.get(attributeValue);
+        }
+        finally
+        {
+            constantsMapRWLock.readLock().unlock();
+        }
+
+        // No listener found for the value, return
+        if (evaluator == null)
+        {
             return;
         }
 
-        // Look up in hashtable
-        constantsMapRWLock.readLock().lock();
-
-        for(Map.Entry<Object, EventEvaluator> entry : constantsMap.entrySet())
-        {
-            if (entry.getKey() == null)
-            {
-                continue;   // null-value cannot match, not even null (use "is" or "is not", i.e. null != null returns null)
-            }
-
-            if (!entry.getKey().equals(attributeValue))
-            {
-                entry.getValue().matchEvent(eventBean, matches, exprEvaluatorContext);
-            }
-        }
-
-        constantsMapRWLock.readLock().unlock();
+        evaluator.matchEvent(eventBean, matches, exprEvaluatorContext);
     }
-
-    private static final Log log = LogFactory.getLog(FilterParamIndexNotEquals.class);
 }

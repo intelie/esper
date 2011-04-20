@@ -34,7 +34,7 @@ public class TestFilterParamIndexNotRange extends TestCase
 
     public void testClosedRange()
     {
-        FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_CLOSED, testEventType);
+        FilterParamIndexDoubleRangeInverted index = new FilterParamIndexDoubleRangeInverted("longBoxed", FilterOperator.NOT_RANGE_CLOSED, testEventType);
         assertEquals(FilterOperator.NOT_RANGE_CLOSED, index.getFilterOperator());
 
         index.put(new DoubleRange(2d, 4d), testEvaluators[0]);
@@ -53,7 +53,7 @@ public class TestFilterParamIndexNotRange extends TestCase
 
     public void testOpenRange()
     {
-        FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_OPEN, testEventType);
+        FilterParamIndexDoubleRangeInverted index = new FilterParamIndexDoubleRangeInverted("longBoxed", FilterOperator.NOT_RANGE_OPEN, testEventType);
 
         index.put(new DoubleRange(2d, 4d), testEvaluators[0]);
         index.put(new DoubleRange(2d, 5d), testEvaluators[1]);
@@ -71,7 +71,7 @@ public class TestFilterParamIndexNotRange extends TestCase
 
     public void testHalfOpenRange()
     {
-        FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_HALF_OPEN, testEventType);
+        FilterParamIndexDoubleRangeInverted index = new FilterParamIndexDoubleRangeInverted("longBoxed", FilterOperator.NOT_RANGE_HALF_OPEN, testEventType);
 
         index.put(new DoubleRange(2d, 4d), testEvaluators[0]);
         index.put(new DoubleRange(2d, 5d), testEvaluators[1]);
@@ -89,7 +89,7 @@ public class TestFilterParamIndexNotRange extends TestCase
 
     public void testHalfClosedRange()
     {
-        FilterParamIndexNotRange index = new FilterParamIndexNotRange("longBoxed", FilterOperator.NOT_RANGE_HALF_CLOSED, testEventType);
+        FilterParamIndexDoubleRangeInverted index = new FilterParamIndexDoubleRangeInverted("longBoxed", FilterOperator.NOT_RANGE_HALF_CLOSED, testEventType);
 
         index.put(new DoubleRange(2d, 4d), testEvaluators[0]);
         index.put(new DoubleRange(2d, 5d), testEvaluators[1]);
@@ -119,7 +119,7 @@ public class TestFilterParamIndexNotRange extends TestCase
     {
         try
         {
-            new FilterParamIndexNotRange("doublePrimitive", FilterOperator.EQUAL, testEventType);
+            new FilterParamIndexDoubleRangeInverted("doublePrimitive", FilterOperator.EQUAL, testEventType);
             assertTrue(false);
         }
         catch (IllegalArgumentException ex)

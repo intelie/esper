@@ -144,7 +144,7 @@ public class TestSplitStream extends TestCase
     {
         String stmtOrigText = "on SupportBean " +
                               "insert into AStream select (select p00 from S0.std:lastevent()) as string where intPrimitive=(select id from S0.std:lastevent()) " +
-                              "insert into BStream select (select p01 from S0.std:lastevent()) as string where intPrimitive<>(select id from S0.std:lastevent())";
+                              "insert into BStream select (select p01 from S0.std:lastevent()) as string where intPrimitive<>(select id from S0.std:lastevent()) or (select id from S0.std:lastevent()) is null";
         EPStatement stmtOrig = epService.getEPAdministrator().createEPL(stmtOrigText);
         stmtOrig.addListener(listener);
 

@@ -333,7 +333,7 @@ public class TestNamedWindowMerge extends TestCase {
                       "insert select col1 as c1, col2 as c2 " +
                       "when not matched and myvar = false then " +
                       "insert select 'A' as c1, null as c2 " +
-                      "when not matched and myvar = null then " +
+                      "when not matched and myvar is null then " +
                       "insert select 'B' as c1, me.col2 as c2 " +
                       "when matched then " +
                       "delete";

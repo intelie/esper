@@ -464,7 +464,7 @@ public class NamedWindowRootView extends ViewSupport
             if (!(param instanceof FilterSpecParamConstant || param instanceof FilterSpecParamRange)) {
                 continue;
             }
-            if (param.getFilterOperator() == FilterOperator.EQUAL) {
+            if (param.getFilterOperator() == FilterOperator.EQUAL || param.getFilterOperator() == FilterOperator.IS) {
                 keysAvailable.add(param.getPropertyName());
             }
             else if (param.getFilterOperator().isRangeOperator() ||
@@ -557,7 +557,7 @@ public class NamedWindowRootView extends ViewSupport
                     continue;
                 }
 
-                if (param.getFilterOperator() == FilterOperator.EQUAL) {
+                if (param.getFilterOperator() == FilterOperator.EQUAL || param.getFilterOperator() == FilterOperator.IS) {
                     result[rangeIndex] = new RangeIndexLookupValueEquals(param.getFilterValue(null));
                 }
                 else if (param.getFilterOperator().isRangeOperator() || param.getFilterOperator().isInvertedRangeOperator()) {

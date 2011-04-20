@@ -208,7 +208,7 @@ public class TestVariables extends TestCase
         stmtSelect.addListener(listener);
 
         sendSupportBean(null, 1);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {null, 1});
+        assertFalse(listener.isInvoked());
 
         sendSupportBeanS0NewThread(100, "a", "b");
         ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {"a", "b"});
@@ -253,7 +253,7 @@ public class TestVariables extends TestCase
         stmtSelect.addListener(listener);
 
         sendSupportBean(null, 1);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {null, 1});
+        assertFalse(listener.isInvoked());
 
         sendSupportBeanS0NewThread(100, "a", "b");
         ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {"a"});

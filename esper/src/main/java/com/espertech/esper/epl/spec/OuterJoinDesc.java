@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.epl.expression.*;
+import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.io.Serializable;
@@ -96,7 +96,7 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
      */
     public ExprNode makeExprNode(ExprEvaluatorContext exprEvaluatorContext)
     {
-        ExprNode representativeNode = new ExprEqualsNodeImpl(false);
+        ExprNode representativeNode = new ExprEqualsNodeImpl(false, false);
         representativeNode.addChildNode(leftNode);
         representativeNode.addChildNode(rightNode);
 
@@ -112,7 +112,7 @@ public class OuterJoinDesc implements MetaDefItem, Serializable
 
         for (int i = 0; i < addLeftNode.length; i++)
         {
-            ExprEqualsNode eqNode = new ExprEqualsNodeImpl(false);
+            ExprEqualsNode eqNode = new ExprEqualsNodeImpl(false, false);
             eqNode.addChildNode(addLeftNode[i]);
             eqNode.addChildNode(addRightNode[i]);
             topValidate(eqNode, exprEvaluatorContext);

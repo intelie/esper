@@ -71,7 +71,7 @@ public class TestExprCastNode extends TestCase
 
     public void testEquals() throws Exception
     {
-        assertFalse(castNodes[0].equalsNode(new ExprEqualsNodeImpl(true)));
+        assertFalse(castNodes[0].equalsNode(new ExprEqualsNodeImpl(true, false)));
         assertFalse(castNodes[0].equalsNode(castNodes[1]));
         assertFalse(castNodes[0].equalsNode(new ExprCastNode("java.lang.Integer")));
     }

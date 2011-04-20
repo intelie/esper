@@ -53,6 +53,6 @@ public class TestRowPatternRecognitionPerf extends TestCase {
 
         long end = System.currentTimeMillis();
         long delta = end - start;
-        assertTrue("delta=" + delta, delta < 500);
+        assertTrue("delta=" + delta, delta < 2000);
     }
 }

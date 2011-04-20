@@ -94,7 +94,7 @@ public class TestExprCoalesceNode extends TestCase
 
     public void testEquals() throws Exception
     {
-        assertFalse(coalesceNodes[0].equalsNode(new ExprEqualsNodeImpl(true)));
+        assertFalse(coalesceNodes[0].equalsNode(new ExprEqualsNodeImpl(true, false)));
         assertTrue(coalesceNodes[0].equalsNode(coalesceNodes[1]));
     }
 

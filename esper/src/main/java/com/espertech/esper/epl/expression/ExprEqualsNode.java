@@ -17,9 +17,19 @@ import com.espertech.esper.util.CoercionException;
 import java.util.Map;
 
 /**
- * Represents an equals (=) comparator in a filter expressiun tree.
+ * Represents an equals (=, !=, <>, is, is not) comparator in a filter expressiun tree.
  */
-public interface ExprEqualsNode extends ExprNode, ExprEvaluator
+public interface ExprEqualsNode extends ExprNode
 {
+    /**
+     * Returns true if this is a NOT EQUALS node, false if this is a EQUALS node.
+     * @return true for !=, false for =
+     */
     public boolean isNotEquals();
+
+    /**
+     * Returns true if this is a "IS" or "IS NOT" node, false if this is a EQUALS or NOT EQUALS node.
+     * @return true for !=, false for =
+     */
+    public boolean isIs();
 }

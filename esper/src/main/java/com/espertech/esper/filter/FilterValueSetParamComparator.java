@@ -27,6 +27,7 @@ public class FilterValueSetParamComparator implements Comparator<FilterValueSetP
     private static final FilterOperator[] FilterOperator_SortOrder =
             {
             FilterOperator.EQUAL,
+            FilterOperator.IS,
             FilterOperator.IN_LIST_OF_VALUES,
             FilterOperator.RANGE_OPEN,
             FilterOperator.RANGE_HALF_OPEN,
@@ -42,6 +43,7 @@ public class FilterValueSetParamComparator implements Comparator<FilterValueSetP
             FilterOperator.NOT_RANGE_OPEN,
             FilterOperator.NOT_IN_LIST_OF_VALUES,
             FilterOperator.NOT_EQUAL,
+            FilterOperator.IS_NOT,
             FilterOperator.BOOLEAN_EXPRESSION
      };
 

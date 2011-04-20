@@ -709,8 +709,8 @@ public class TestSubselectFiltered extends TestCase
 
         String stmtTextTwo = "insert into PairDuplicatesRemoved " +
                 "select * from Pair " +
-                "where a.id != (select a.id from PairDuplicatesRemoved.std:lastevent())" +
-                "  and b.id != (select b.id from PairDuplicatesRemoved.std:lastevent())";
+                "where a.id != coalesce((select a.id from PairDuplicatesRemoved.std:lastevent()), -1)" +
+                "  and b.id != coalesce((select b.id from PairDuplicatesRemoved.std:lastevent()), -1)";
         EPStatement stmtTwo = epService.getEPAdministrator().createEPL(stmtTextTwo);
         stmtTwo.addListener(listener);
 

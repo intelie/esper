@@ -15,27 +15,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Index for filter parameter constants to match using the equals (=) operator.
  * The implementation is based on a regular HashMap.
  */
-public final class FilterParamIndexNotEquals extends FilterParamIndexNotEqualsBase
+public final class FilterParamIndexNotEqualsIs extends FilterParamIndexNotEqualsBase
 {
-    public FilterParamIndexNotEquals(String propertyName, EventType eventType) {
-        super(propertyName, FilterOperator.NOT_EQUAL, eventType);
+    public FilterParamIndexNotEqualsIs(String propertyName, EventType eventType) {
+        super(propertyName, FilterOperator.IS_NOT, eventType);
     }
 
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         Object attributeValue = this.getGetter().get(eventBean);
-        if (attributeValue == null) {   // null cannot match any other value, not even null (use "is" or "is not", i.e. null != null returns null)
-            return;
-        }
 
         // Look up in hashtable
         constantsMapRWLock.readLock().lock();
@@ -44,7 +38,10 @@ public final class FilterParamIndexNotEquals extends FilterParamIndexNotEqualsBa
         {
             if (entry.getKey() == null)
             {
-                continue;   // null-value cannot match, not even null (use "is" or "is not", i.e. null != null returns null)
+                if (attributeValue != null) {
+                    entry.getValue().matchEvent(eventBean, matches, exprEvaluatorContext);
+                }
+                continue;
             }
 
             if (!entry.getKey().equals(attributeValue))
@@ -56,5 +53,5 @@ public final class FilterParamIndexNotEquals extends FilterParamIndexNotEqualsBa
         constantsMapRWLock.readLock().unlock();
     }
 
-    private static final Log log = LogFactory.getLog(FilterParamIndexNotEquals.class);
+    private static final Log log = LogFactory.getLog(FilterParamIndexNotEqualsIs.class);
 }

@@ -446,11 +446,19 @@ evalExprChoice
 	:	^(jo=EVAL_OR_EXPR valueExpr valueExpr (valueExpr)* { leaveNode($jo); } )
 	|	^(ja=EVAL_AND_EXPR valueExpr valueExpr (valueExpr)* { leaveNode($ja); } )
 	|	^(je=EVAL_EQUALS_EXPR valueExpr valueExpr { leaveNode($je); } )
+	|	^(ji=EVAL_IS_EXPR valueExpr valueExpr { leaveNode($ji); } )
 	|	^(jne=EVAL_NOTEQUALS_EXPR valueExpr valueExpr { leaveNode($jne); } )
-	|	^(jge=EVAL_EQUALS_GROUP_EXPR valueExpr (ANY|SOME|ALL) (valueExpr* | subSelectGroupExpr) { leaveNode($jge); } )
-	|	^(jgne=EVAL_NOTEQUALS_GROUP_EXPR valueExpr (ANY|SOME|ALL) (valueExpr* | subSelectGroupExpr) { leaveNode($jgne); } )
+	|	^(jis=EVAL_ISNOT_EXPR valueExpr valueExpr { leaveNode($jis); } )
+	|	^(jge=EVAL_EQUALS_GROUP_EXPR equalsSubquery { leaveNode($jge); } )
+	|	^(jgi=EVAL_IS_GROUP_EXPR equalsSubquery { leaveNode($jgi); } )
+	|	^(jgne=EVAL_NOTEQUALS_GROUP_EXPR equalsSubquery { leaveNode($jgne); } )
+	|	^(jgni=EVAL_ISNOT_GROUP_EXPR equalsSubquery { leaveNode($jgni); } )
 	|	^(n=NOT_EXPR valueExpr { leaveNode($n); } )
 	|	r=relationalExpr
+	;
+
+equalsSubquery
+	:	valueExpr (ANY|SOME|ALL) (valueExpr* | subSelectGroupExpr)
 	;
 	
 valueExpr

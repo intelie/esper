@@ -60,7 +60,7 @@ public class TestAliasNodeSwapper extends TestCase
 
     public static ExprEqualsNode makeEqualsNode() throws Exception
     {
-        ExprEqualsNode topNode = new ExprEqualsNodeImpl(false);
+        ExprEqualsNode topNode = new ExprEqualsNodeImpl(false, false);
         ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive");
         ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed");
         topNode.addChildNode(i1_1);

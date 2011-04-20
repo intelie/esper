@@ -31,6 +31,16 @@ public enum FilterOperator
     NOT_EQUAL("!="),
 
     /**
+     * Exact matches allowing null (is).
+     */
+    IS("is"),
+
+    /**
+     * Exact not matches allowing null (is not).
+     */
+    IS_NOT("is not"),
+
+    /**
      * Less (<).
      */
     LESS("<"),
@@ -164,46 +174,6 @@ public enum FilterOperator
             return true;
         }
         return false;
-    }
-
-    /**
-     * Parse the comparison operator returning null if not a valid operator.
-     * @param operator is the lesser then or other compare op
-     * @return FilterOperator or null if not valid
-     */
-    public static FilterOperator parseComparisonOperator(String operator)
-    {
-        if (operator == null)
-        {
-            return null;
-        }
-
-        if (operator.equals(EQUAL_OP))
-        {
-            return FilterOperator.EQUAL;
-        }
-        if (operator.equals(NOT_EQUAL_OP))
-        {
-            return FilterOperator.NOT_EQUAL;
-        }
-        if (operator.equals(LESS_OP))
-        {
-            return FilterOperator.LESS;
-        }
-        if (operator.equals(LESS_EQUAL_OP))
-        {
-            return FilterOperator.LESS_OR_EQUAL;
-        }
-        if (operator.equals(GREATER_OP))
-        {
-            return FilterOperator.GREATER;
-        }
-        if (operator.equals(GREATER_EQUAL_OP))
-        {
-            return FilterOperator.GREATER_OR_EQUAL;
-        }
-
-        return null;
     }
 
     /**

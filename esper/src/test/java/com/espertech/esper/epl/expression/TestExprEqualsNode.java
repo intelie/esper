@@ -8,27 +8,30 @@ public class TestExprEqualsNode extends TestCase
 {
     private ExprEqualsNode[] equalsNodes;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         equalsNodes = new ExprEqualsNode[4];
-        equalsNodes[0] = new ExprEqualsNodeImpl(false);
+        equalsNodes[0] = new ExprEqualsNodeImpl(false, false);
 
-        equalsNodes[1] = new ExprEqualsNodeImpl(false);
+        equalsNodes[1] = new ExprEqualsNodeImpl(false, false);
         equalsNodes[1].addChildNode(new SupportExprNode(1L));
         equalsNodes[1].addChildNode(new SupportExprNode(new Integer(1)));
+        equalsNodes[1].validate(ExprValidationContextFactory.makeEmpty());
 
-        equalsNodes[2] = new ExprEqualsNodeImpl(true);
+        equalsNodes[2] = new ExprEqualsNodeImpl(true, false);
         equalsNodes[2].addChildNode(new SupportExprNode(1.5D));
         equalsNodes[2].addChildNode(new SupportExprNode(new Integer(1)));
+        equalsNodes[2].validate(ExprValidationContextFactory.makeEmpty());
 
-        equalsNodes[3] = new ExprEqualsNodeImpl(false);
+        equalsNodes[3] = new ExprEqualsNodeImpl(false, false);
         equalsNodes[3].addChildNode(new SupportExprNode(1D));
         equalsNodes[3].addChildNode(new SupportExprNode(new Integer(1)));
+        equalsNodes[3].validate(ExprValidationContextFactory.makeEmpty());
     }
 
     public void testGetType()
     {
-        assertEquals(Boolean.class, equalsNodes[0].getType());
+        assertEquals(Boolean.class, equalsNodes[1].getExprEvaluator().getType());
     }
 
     public void testValidate() throws Exception
@@ -72,54 +75,54 @@ public class TestExprEqualsNode extends TestCase
     public void testEvaluateEquals() throws Exception
     {
         equalsNodes[0] = makeNode(true, false, false);
-        assertFalse((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertFalse((Boolean)equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(false, false, false);
-        assertTrue((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertTrue((Boolean)equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(true, true, false);
-        assertTrue((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertTrue((Boolean)equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(true, Boolean.class, null, Boolean.class, false);
-        assertFalse((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertNull(equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(null, String.class, "ss", String.class, false);
-        assertFalse((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertNull(equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(null, String.class, null, String.class, false);
-        assertTrue((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertNull(equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         // try a long and int
         equalsNodes[1].validate(ExprValidationContextFactory.makeEmpty());
-        assertTrue((Boolean)equalsNodes[1].evaluate(null, false, null));
+        assertTrue((Boolean)equalsNodes[1].getExprEvaluator().evaluate(null, false, null));
 
         // try a double and int
         equalsNodes[2].validate(ExprValidationContextFactory.makeEmpty());
-        assertTrue((Boolean)equalsNodes[2].evaluate(null, false, null));
+        assertTrue((Boolean)equalsNodes[2].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[3].validate(ExprValidationContextFactory.makeEmpty());
-        assertTrue((Boolean)equalsNodes[3].evaluate(null, false, null));
+        assertTrue((Boolean)equalsNodes[3].getExprEvaluator().evaluate(null, false, null));
     }
 
     public void testEvaluateNotEquals() throws Exception
     {
         equalsNodes[0] = makeNode(true, false, true);
-        assertTrue((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertTrue((Boolean)equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(false, false, true);
-        assertFalse((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertFalse((Boolean)equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(true, true, true);
-        assertFalse((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertFalse((Boolean)equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(true, Boolean.class, null, Boolean.class, true);
-        assertTrue((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertNull(equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(null, String.class, "ss", String.class, true);
-        assertTrue((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertNull(equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
 
         equalsNodes[0] = makeNode(null, String.class, null, String.class, true);
-        assertFalse((Boolean)equalsNodes[0].evaluate(null, false, null));
+        assertNull(equalsNodes[0].getExprEvaluator().evaluate(null, false, null));
     }
 
     public void testToExpressionString() throws Exception
@@ -131,7 +134,7 @@ public class TestExprEqualsNode extends TestCase
 
     private ExprEqualsNode makeNode(Object valueLeft, Object valueRight, boolean isNot) throws Exception
     {
-        ExprEqualsNode equalsNode = new ExprEqualsNodeImpl(isNot);
+        ExprEqualsNode equalsNode = new ExprEqualsNodeImpl(isNot, false);
         equalsNode.addChildNode(new SupportExprNode(valueLeft));
         equalsNode.addChildNode(new SupportExprNode(valueRight));
         SupportExprNodeUtil.validate(equalsNode);
@@ -140,7 +143,7 @@ public class TestExprEqualsNode extends TestCase
 
     private ExprEqualsNode makeNode(Object valueLeft, Class typeLeft, Object valueRight, Class typeRight, boolean isNot) throws Exception
     {
-        ExprEqualsNode equalsNode = new ExprEqualsNodeImpl(isNot);
+        ExprEqualsNode equalsNode = new ExprEqualsNodeImpl(isNot, false);
         equalsNode.addChildNode(new SupportExprNode(valueLeft, typeLeft));
         equalsNode.addChildNode(new SupportExprNode(valueRight, typeRight));
         SupportExprNodeUtil.validate(equalsNode);

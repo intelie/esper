@@ -50,7 +50,7 @@ public class TestPatternQueries extends TestCase
         String stmtText = "select s0.id as idS0, s1.id as idS1 " +
                 "from pattern [every s0=" + SupportBean_S0.class.getName() +
                 " or every s1=" + SupportBean_S1.class.getName() + "] " +
-                "where s0.id != null and s0.id < 100 or s1.id != null and s1.id >= 100";
+                "where s0.id is not null and s0.id < 100 or s1.id is not null and s1.id >= 100";
         assertEquals(stmtText, reverse);
 
         EPStatement statement = epService.getEPAdministrator().create(model);
@@ -74,7 +74,7 @@ public class TestPatternQueries extends TestCase
         String stmtText = "select s0.id as idS0, s1.id as idS1 " +
                 "from pattern [every s0=" + SupportBean_S0.class.getName() +
                 " or every s1=" + SupportBean_S1.class.getName() + "] " +
-                "where s0.id != null and s0.id < 100 or s1.id != null and s1.id >= 100";
+                "where s0.id is not null and s0.id < 100 or s1.id is not null and s1.id >= 100";
         EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 

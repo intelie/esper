@@ -48,11 +48,11 @@ public class TestNamedWindowOM extends TestCase
         EPStatementObjectModel modelInsert = epService.getEPAdministrator().compileEPL(stmtTextInsert);
         EPStatement stmtInsert = epService.getEPAdministrator().create(modelInsert);
 
-        String stmtTextSelectOne = "select irstream key, value*2 as value from MyWindow(key != null)";
+        String stmtTextSelectOne = "select irstream key, value * 2 as value from MyWindow(key is not null)";
         EPStatementObjectModel modelSelect = epService.getEPAdministrator().compileEPL(stmtTextSelectOne);
         EPStatement stmtSelectOne = epService.getEPAdministrator().create(modelSelect);
         stmtSelectOne.addListener(listenerStmtOne);
-        assertEquals("select irstream key, value * 2 as value from MyWindow(key != null)", modelSelect.toEPL());
+        assertEquals(stmtTextSelectOne, modelSelect.toEPL());
 
         // send events
         sendSupportBean("E1", 10L);
@@ -134,7 +134,7 @@ public class TestNamedWindowOM extends TestCase
 
         EPStatement stmtSelectOne = epService.getEPAdministrator().create(model);
         stmtSelectOne.addListener(listenerStmtOne);
-        String stmtTextSelectOne = "select irstream key, value * 2 as value from MyWindow(value != null)";
+        String stmtTextSelectOne = "select irstream key, value * 2 as value from MyWindow(value is not null)";
         assertEquals(stmtTextSelectOne, model.toEPL());
 
         // send events

@@ -82,7 +82,7 @@ public class TestExprInstanceOfNode extends TestCase
 
     public void testEquals() throws Exception
     {
-        assertFalse(instanceofNodes[0].equalsNode(new ExprEqualsNodeImpl(true)));
+        assertFalse(instanceofNodes[0].equalsNode(new ExprEqualsNodeImpl(true, false)));
         assertFalse(instanceofNodes[0].equalsNode(instanceofNodes[1]));
         assertTrue(instanceofNodes[0].equalsNode(instanceofNodes[0]));
     }

@@ -67,19 +67,22 @@ public class ExprAndNodeImpl extends ExprNodeBase implements ExprEvaluator, Expr
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
     {
+        Boolean result = true;
         for (ExprEvaluator child : evaluators)
         {
             Boolean evaluated = (Boolean) child.evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (evaluated == null)
             {
-                return null;
+                result = null;
             }
-            if (!evaluated)
-            {
-                return false;
+            else {
+                if (!evaluated)
+                {
+                    return false;
+                }
             }
         }
-        return true;
+        return result;
     }
 
     public String toExpressionString()

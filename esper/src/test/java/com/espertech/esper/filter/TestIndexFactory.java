@@ -42,9 +42,9 @@ public class TestIndexFactory extends TestCase
 
         // Create a range index
         index = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.RANGE_CLOSED);
-        assertTrue(index instanceof FilterParamIndexRange);
+        assertTrue(index instanceof FilterParamIndexDoubleRange);
         index = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.NOT_RANGE_CLOSED);
-        assertTrue(index instanceof FilterParamIndexNotRange);
+        assertTrue(index instanceof FilterParamIndexDoubleRangeInverted);
 
         // Create a in-index
         index = IndexFactory.createIndex(eventType, "doubleBoxed", FilterOperator.IN_LIST_OF_VALUES);

@@ -19,39 +19,37 @@ import java.util.Map;
 /**
  * Represents an equals (=) comparator in a filter expressiun tree.
  */
-public class ExprEqualsNodeImpl extends ExprNodeBase implements ExprEvaluator, ExprEqualsNode
+public class ExprEqualsNodeImpl extends ExprNodeBase implements ExprEqualsNode
 {
     private final boolean isNotEquals;
-
-    private boolean mustCoerce;
-
-    private transient SimpleNumberCoercer numberCoercerLHS;
-    private transient SimpleNumberCoercer numberCoercerRHS;
-    private transient ExprEvaluator[] evaluators;
+    private final boolean isIs;
+    private transient ExprEvaluator evaluator;
 
     private static final long serialVersionUID = 5504809379222369952L;
 
     /**
      * Ctor.
      * @param isNotEquals - true if this is a (!=) not equals rather then equals, false if its a '=' equals
+     * @param isIs - true when "is" or "is not" (instead of = or <>)
      */
-    public ExprEqualsNodeImpl(boolean isNotEquals)
+    public ExprEqualsNodeImpl(boolean isNotEquals, boolean isIs)
     {
         this.isNotEquals = isNotEquals;
+        this.isIs = isIs;
     }
 
     public ExprEvaluator getExprEvaluator()
     {
-        return this;
+        return evaluator;
     }
 
-    /**
-     * Returns true if this is a NOT EQUALS node, false if this is a EQUALS node.
-     * @return true for !=, false for =
-     */
     public boolean isNotEquals()
     {
         return isNotEquals;
+    }
+
+    public boolean isIs() {
+        return isIs;
     }
 
     public void validate(ExprValidationContext validationContext) throws ExprValidationException
@@ -61,7 +59,7 @@ public class ExprEqualsNodeImpl extends ExprNodeBase implements ExprEvaluator, E
         {
             throw new IllegalStateException("Equals node does not have exactly 2 child nodes");
         }
-        evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
+        ExprEvaluator[] evaluators = ExprNodeUtility.getEvaluators(this.getChildNodes());
 
         // Must be the same boxed type returned by expressions under this
         Class typeOne = JavaClassHelper.getBoxedType(evaluators[0].getType());
@@ -70,12 +68,13 @@ public class ExprEqualsNodeImpl extends ExprNodeBase implements ExprEvaluator, E
         // Null constants can be compared for any type
         if ((typeOne == null) || (typeTwo == null))
         {
+            evaluator = getEvaluator(evaluators[0], evaluators[1]);
             return;
         }
 
         if (typeOne.equals(typeTwo) || typeOne.isAssignableFrom(typeTwo))
         {
-            mustCoerce = false;
+            evaluator = getEvaluator(evaluators[0], evaluators[1]);
             return;
         }
 
@@ -98,7 +97,7 @@ public class ExprEqualsNodeImpl extends ExprNodeBase implements ExprEvaluator, E
         if ((coercionType == JavaClassHelper.getBoxedType(typeOne)) &&
             (coercionType == JavaClassHelper.getBoxedType(typeTwo)))
         {
-            mustCoerce = false;
+            evaluator = getEvaluator(evaluators[0], evaluators[1]);
         }
         else
         {
@@ -106,9 +105,9 @@ public class ExprEqualsNodeImpl extends ExprNodeBase implements ExprEvaluator, E
             {
                 throw new ExprValidationException("Cannot convert datatype '" + coercionType.getName() + "' to a numeric value");
             }
-            mustCoerce = true;
-            numberCoercerLHS = SimpleNumberCoercerFactory.getCoercer(typeOne, coercionType);
-            numberCoercerRHS = SimpleNumberCoercerFactory.getCoercer(typeTwo, coercionType);
+            SimpleNumberCoercer numberCoercerLHS = SimpleNumberCoercerFactory.getCoercer(typeOne, coercionType);
+            SimpleNumberCoercer numberCoercerRHS = SimpleNumberCoercerFactory.getCoercer(typeTwo, coercionType);
+            evaluator = new ExprEqualsEvaluatorCoercing(isIs, isNotEquals, evaluators[0], evaluators[1], numberCoercerLHS, numberCoercerRHS);
         }
     }
 
@@ -117,39 +116,8 @@ public class ExprEqualsNodeImpl extends ExprNodeBase implements ExprEvaluator, E
         return false;
     }
 
-    public Class getType()
-    {
-        return Boolean.class;
-    }
-
     public Map<String, Object> getEventType() {
         return null;
-    }
-
-    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
-    {
-        Object leftResult = evaluators[0].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-        Object rightResult = evaluators[1].evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-
-        if (leftResult == null)
-        {
-            return (rightResult == null) ^ isNotEquals;
-        }
-        if (rightResult == null)
-        {
-            return isNotEquals;
-        }
-
-        if (!mustCoerce)
-        {
-            return leftResult.equals(rightResult) ^ isNotEquals;
-        }
-        else
-        {
-            Number left = numberCoercerLHS.coerceBoxed((Number) leftResult);
-            Number right = numberCoercerRHS.coerceBoxed((Number) rightResult);
-            return left.equals(right) ^ isNotEquals;
-        }
     }
 
     public String toExpressionString()
@@ -172,5 +140,127 @@ public class ExprEqualsNodeImpl extends ExprNodeBase implements ExprEvaluator, E
 
         ExprEqualsNodeImpl other = (ExprEqualsNodeImpl) node;
         return other.isNotEquals == this.isNotEquals;
+    }
+
+    private ExprEvaluator getEvaluator(ExprEvaluator lhs, ExprEvaluator rhs) {
+        if (isIs) {
+            return new ExprEqualsEvaluatorIs(isNotEquals, lhs, rhs);
+        }
+        else {
+            return new ExprEqualsEvaluatorEquals(isNotEquals, lhs, rhs);
+        }
+    }
+
+    public static class ExprEqualsEvaluatorCoercing implements ExprEvaluator {
+        private transient boolean isIs;
+        private transient boolean isNotEquals;
+        private transient ExprEvaluator lhs;
+        private transient ExprEvaluator rhs;
+        private transient SimpleNumberCoercer numberCoercerLHS;
+        private transient SimpleNumberCoercer numberCoercerRHS;
+
+        public ExprEqualsEvaluatorCoercing(boolean isIs, boolean isNotEquals, ExprEvaluator lhs, ExprEvaluator rhs, SimpleNumberCoercer numberCoercerLHS, SimpleNumberCoercer numberCoercerRHS) {
+            this.isIs = isIs;
+            this.isNotEquals = isNotEquals;
+            this.lhs = lhs;
+            this.rhs = rhs;
+            this.numberCoercerLHS = numberCoercerLHS;
+            this.numberCoercerRHS = numberCoercerRHS;
+        }
+
+        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            Object leftResult = lhs.evaluate(eventsPerStream, isNewData, context);
+            Object rightResult = rhs.evaluate(eventsPerStream, isNewData, context);
+
+            if (!isIs) {
+                if (leftResult == null || rightResult == null)  // null comparison
+                {
+                    return null;
+                }
+            }
+            else {
+                if (leftResult == null) {
+                    return rightResult == null;
+                }
+                if (rightResult == null) {
+                    return false;
+                }
+            }
+
+            Number left = numberCoercerLHS.coerceBoxed((Number) leftResult);
+            Number right = numberCoercerRHS.coerceBoxed((Number) rightResult);
+            return left.equals(right) ^ isNotEquals;
+        }
+
+        public Class getType() {
+            return Boolean.class;
+        }
+
+        public Map<String, Object> getEventType() throws ExprValidationException {
+            return null;
+        }
+    }
+
+    public static class ExprEqualsEvaluatorEquals implements ExprEvaluator {
+        private transient boolean isNotEquals;
+        private transient ExprEvaluator lhs;
+        private transient ExprEvaluator rhs;
+
+        public ExprEqualsEvaluatorEquals(boolean notEquals, ExprEvaluator lhs, ExprEvaluator rhs) {
+            isNotEquals = notEquals;
+            this.lhs = lhs;
+            this.rhs = rhs;
+        }
+
+        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            Object leftResult = lhs.evaluate(eventsPerStream, isNewData, context);
+            Object rightResult = rhs.evaluate(eventsPerStream, isNewData, context);
+
+            if (leftResult == null || rightResult == null)  // null comparison
+            {
+                return null;
+            }
+
+            return leftResult.equals(rightResult) ^ isNotEquals;
+        }
+
+        public Class getType() {
+            return Boolean.class;
+        }
+
+        public Map<String, Object> getEventType() throws ExprValidationException {
+            return null;
+        }
+    }
+
+    public static class ExprEqualsEvaluatorIs implements ExprEvaluator {
+        private transient boolean isNotEquals;
+        private transient ExprEvaluator lhs;
+        private transient ExprEvaluator rhs;
+
+        public ExprEqualsEvaluatorIs(boolean notEquals, ExprEvaluator lhs, ExprEvaluator rhs) {
+            isNotEquals = notEquals;
+            this.lhs = lhs;
+            this.rhs = rhs;
+        }
+
+        public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext context) {
+            Object leftResult = lhs.evaluate(eventsPerStream, isNewData, context);
+            Object rightResult = rhs.evaluate(eventsPerStream, isNewData, context);
+
+            if (leftResult == null) {
+                return rightResult == null ^ isNotEquals;
+            }
+            return (rightResult != null && leftResult.equals(rightResult)) ^ isNotEquals;
+
+        }
+
+        public Class getType() {
+            return Boolean.class;
+        }
+
+        public Map<String, Object> getEventType() throws ExprValidationException {
+            return null;
+        }
     }
 }
