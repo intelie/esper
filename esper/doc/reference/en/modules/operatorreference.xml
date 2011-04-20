@@ -89,7 +89,7 @@
 							</entry>
 						</row>
 						<row>
-							<entry>=, !=, &lt;, &gt; &lt;=, &gt;=,</entry>
+							<entry>=, !=, &lt;, &gt; &lt;=, &gt;=, is, is not</entry>
 							<entry>
 								<para>Comparison.</para>
 							</entry>
@@ -97,6 +97,37 @@
 					</tbody>
 				</tgroup>
 			</table>
+			<sect2 id="epl-operator-ref-logical-null">
+				<title>Null-Value Comparison Operators</title>
+				
+				<para>
+					The <literal>null</literal> value is a special value, see <ulink url="http://en.wikipedia.org/wiki/Null_%28SQL%29">http://en.wikipedia.org/wiki/Null_(SQL)</ulink> (source:Wikipedia) for more information.
+				</para>
+				
+				<para>
+				  Thereby the following expressions all return <literal>null</literal>:
+				</para>
+				<programlisting><![CDATA[2 != null]]></programlisting>
+				<programlisting><![CDATA[null = null]]></programlisting>
+				<programlisting><![CDATA[2 != null or 1 = 2]]></programlisting>
+				<programlisting><![CDATA[2 != null and 2 = 2]]></programlisting>
+				
+				<para>
+				  Use the <literal>is</literal> and <literal>is not</literal> operators for comparing values that can be null.
+				</para>
+
+				<para>
+				  The following expressions all return <literal>true</literal>:
+				</para>
+				<programlisting><![CDATA[2 is not null]]></programlisting>
+				<programlisting><![CDATA[null is not 2]]></programlisting>
+				<programlisting><![CDATA[null is null]]></programlisting>
+				<programlisting><![CDATA[2 is 2]]></programlisting>
+				
+				<para>
+					The engine allows <literal>is</literal> and <literal>is not</literal> with any expression, not only in connection with the <literal>null</literal> constant.
+				</para>
+			</sect2>
 		</sect1>		
 		
 		<sect1 id="epl-operator-ref-string">
