@@ -146,6 +146,11 @@ where sensor.sensorId = loc.sensorId</pre></div>
       <question>My query presents incorrect or incomplete results? What can I do?</question>
       <answer>
         <p>
+          Use @Audit to turn on statement-level processing debug output which is logged under informational level to your output, please
+          see the documentation for more details. For example: "@Audit select * from MyEvent". @Audit also accepts a number of keywords to control 
+          which aspects of processing are output and which are not.
+        </p>
+        <p>
           Make sure each event object is its own object. As Esper cannot detect when properties of an event object are changed by your application,
           it is best not to change event properties of an existing event object, and it is best not to reuse an existing event object 
           when sending an event into the engine.
@@ -189,18 +194,6 @@ where sensor.sensorId = loc.sensorId</pre></div>
       </answer>
     </faq>    
     <faq id="troubleshooting-3">
-      <question>My query produces unexpected results?</question>
-      <answer>
-        <p>
-          Use @Audit to turn on statement-level processing debug output which is logged under informational level to your output, please
-          see the documentation for more details. For example: "@Audit select * from MyEvent".
-        </p>
-        <p>
-          @Audit also accepts a number of keywords to control which aspects of processing are output and which are not.
-        </p>
-      </answer>
-    </faq>    
-    <faq id="troubleshooting-4">
       <question>I'm getting a stack overflow error?</question>
       <answer>
         <p>
