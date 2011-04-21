@@ -51,7 +51,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
      * @throws ExprValidationException is thrown to indicate that
      * validation of view use in joins failed.
      */
-    public JoinSetComposer makeComposer(List<OuterJoinDesc> outerJoinDescList,
+    public JoinSetComposerDesc makeComposer(List<OuterJoinDesc> outerJoinDescList,
                                                    ExprNode optionalFilterNode,
                                                    EventType[] streamTypes,
                                                    String[] streamNames,
@@ -208,14 +208,21 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         if ((!streamJoinAnalysisResult.isUnidirectional()) &&
             (!streamJoinAnalysisResult.isPureSelfJoin() || !outerJoinDescList.isEmpty()))
         {
+            JoinSetComposer composer;
             if (hasHistorical)
             {
-                return new JoinSetComposerHistoricalImpl(indexesPerStream, queryStrategies, streamViews, exprEvaluatorContext);
+                composer = new JoinSetComposerHistoricalImpl(indexesPerStream, queryStrategies, streamViews, exprEvaluatorContext);
             }
             else
             {
-                return new JoinSetComposerImpl(indexesPerStream, queryStrategies, streamJoinAnalysisResult.isPureSelfJoin(), exprEvaluatorContext);
+                composer = new JoinSetComposerImpl(indexesPerStream, queryStrategies, streamJoinAnalysisResult.isPureSelfJoin(), exprEvaluatorContext);
             }
+
+            // rewrite the filter expression for all-inner joins in case "on"-clause outer join syntax was used to include those expressions
+            ExprNode filterExpression = getFilterExpressionInclOnClause(optionalFilterNode, outerJoinDescList);
+            
+            ExprEvaluator postJoinEval = filterExpression == null ? null : filterExpression.getExprEvaluator();
+            return new JoinSetComposerDesc(composer, postJoinEval);
         }
         else
         {
@@ -231,12 +238,35 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 unidirectionalStream = 0;
                 driver = queryStrategies[0];
             }
-            return new JoinSetComposerStreamToWinImpl(indexesPerStream, streamJoinAnalysisResult.isPureSelfJoin(),
+            JoinSetComposer composer = new JoinSetComposerStreamToWinImpl(indexesPerStream, streamJoinAnalysisResult.isPureSelfJoin(),
                     unidirectionalStream, driver, streamJoinAnalysisResult.getUnidirectionalNonDriving());
+            ExprEvaluator postJoinEval = optionalFilterNode == null ? null : optionalFilterNode.getExprEvaluator();
+            return new JoinSetComposerDesc(composer, postJoinEval);
         }
     }
 
-    private JoinSetComposer makeComposerHistorical2Stream(List<OuterJoinDesc> outerJoinDescList,
+    private ExprNode getFilterExpressionInclOnClause(ExprNode optionalFilterNode, List<OuterJoinDesc> outerJoinDescList)
+        throws ExprValidationException
+    {
+        if (optionalFilterNode == null) {   // no need to add as query planning is fully based on on-clause
+            return null;
+        }
+        if (outerJoinDescList.isEmpty()) {  // not an outer-join syntax
+            return optionalFilterNode;
+        }
+        if (!OuterJoinDesc.consistsOfAllInnerJoins(outerJoinDescList)) {    // all-inner joins
+            return optionalFilterNode;
+        }
+        ExprAndNode andNode = new ExprAndNodeImpl();
+        andNode.addChildNode(optionalFilterNode);
+        for (OuterJoinDesc outerJoinDesc : outerJoinDescList) {
+            andNode.addChildNode(outerJoinDesc.makeExprNode(null));
+        }
+        andNode.validate(null);
+        return andNode;
+    }
+
+    private JoinSetComposerDesc makeComposerHistorical2Stream(List<OuterJoinDesc> outerJoinDescList,
                                                    ExprNode optionalFilterNode,
                                                    EventType[] streamTypes,
                                                    Viewable[] streamViews,
@@ -371,7 +401,9 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                     new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
         }
 
-        return new JoinSetComposerHistoricalImpl(null, queryStrategies, streamViews, exprEvaluatorContext);
+        JoinSetComposer composer = new JoinSetComposerHistoricalImpl(null, queryStrategies, streamViews, exprEvaluatorContext);
+        ExprEvaluator postJoinEval = optionalFilterNode == null ? null : optionalFilterNode.getExprEvaluator();
+        return new JoinSetComposerDesc(composer, postJoinEval);
     }
 
     private static Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,

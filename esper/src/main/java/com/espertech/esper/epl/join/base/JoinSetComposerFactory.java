@@ -40,7 +40,7 @@ public interface JoinSetComposerFactory
      * @throws ExprValidationException is thrown to indicate that
      * validation of view use in joins failed.
      */
-    public JoinSetComposer makeComposer(List<OuterJoinDesc> outerJoinDescList,
+    public JoinSetComposerDesc makeComposer(List<OuterJoinDesc> outerJoinDescList,
                                                    ExprNode optionalFilterNode,
                                                    EventType[] streamTypes,
                                                    String[] streamNames,

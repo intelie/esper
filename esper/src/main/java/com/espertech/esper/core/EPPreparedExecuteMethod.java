@@ -19,12 +19,14 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.join.base.JoinSetComposer;
+import com.espertech.esper.epl.join.base.JoinSetComposerDesc;
 import com.espertech.esper.epl.join.base.JoinSetFilter;
 import com.espertech.esper.epl.named.NamedWindowProcessor;
 import com.espertech.esper.epl.spec.NamedWindowConsumerStreamSpec;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.epl.spec.StreamSpecCompiled;
+import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.event.EventBeanReader;
 import com.espertech.esper.event.EventBeanReaderDefaultImpl;
 import com.espertech.esper.event.EventBeanUtility;
@@ -32,7 +34,6 @@ import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
 import com.espertech.esper.util.AuditPath;
-import com.espertech.esper.epl.virtualdw.VirtualDWView;
 import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -154,9 +155,10 @@ public class EPPreparedExecuteMethod
             {
                 viewablePerStream[i] = processors[i].getTailView();
             }
-            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult, statementContext, queryPlanLogging, null);
-            if (statementSpec.getFilterRootNode() != null) {
-                joinFilter = new JoinSetFilter(statementSpec.getFilterRootNode().getExprEvaluator());
+            JoinSetComposerDesc joinSetComposerDesc = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult, statementContext, queryPlanLogging, null);
+            joinComposer = joinSetComposerDesc.getJoinSetComposer();
+            if (joinSetComposerDesc.getPostJoinFilterEvaluator() != null) {
+                joinFilter = new JoinSetFilter(joinSetComposerDesc.getPostJoinFilterEvaluator());
             }
             else {
                 joinFilter = null;

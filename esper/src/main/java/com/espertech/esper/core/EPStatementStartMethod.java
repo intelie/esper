@@ -1435,22 +1435,21 @@ public class EPStatementStartMethod
             throws ExprValidationException
     {
         // Handle joins
-        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, joinAnalysisResult, statementContext, queryPlanLogging, statementContext.getAnnotations());
+        final JoinSetComposerDesc composerDesc = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, joinAnalysisResult, statementContext, queryPlanLogging, statementContext.getAnnotations());
 
         stopCallbacks.add(new StopCallback(){
             public void stop()
             {
-                composer.destroy();
+                composerDesc.getJoinSetComposer().destroy();
             }
         });
 
-        ExprEvaluator filterEval = statementSpec.getFilterRootNode() == null ? null : statementSpec.getFilterRootNode().getExprEvaluator();
-        JoinSetFilter filter = new JoinSetFilter(filterEval);
+        JoinSetFilter filter = new JoinSetFilter(composerDesc.getPostJoinFilterEvaluator());
         OutputProcessView indicatorView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec,
                 statementContext, services.getInternalEventRouter());
 
         // Create strategy for join execution
-        JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView, statementContext);
+        JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composerDesc.getJoinSetComposer(), filter, indicatorView, statementContext);
 
         // The view needs a reference to the join execution to pull iterator values
         indicatorView.setJoinExecutionStrategy(execution);
@@ -1466,7 +1465,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            preloadMethod = new JoinPreloadMethodImpl(streamNames.length, composer);
+            preloadMethod = new JoinPreloadMethodImpl(streamNames.length, composerDesc.getJoinSetComposer());
         }
 
         // Create buffer for each view. Point buffer to dispatchable for join.

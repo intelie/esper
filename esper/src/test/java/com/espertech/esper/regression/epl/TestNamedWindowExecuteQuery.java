@@ -2,6 +2,8 @@ package com.espertech.esper.regression.epl;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.EPStatementSyntaxException;
+import com.espertech.esper.client.deploy.DeploymentOptions;
+import com.espertech.esper.client.deploy.EPDeploymentAdmin;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -32,8 +34,74 @@ public class TestNamedWindowExecuteQuery extends TestCase
         epService.getEPAdministrator().createEPL(insert);
     }
 
-    public void testIt() {
-            
+    public void test3StreamInnerJoin() throws Exception {
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getLogging().setEnableQueryPlan(true);
+        EPServiceProvider epService = EPServiceProviderManager.getProvider("ESPER1", config);
+
+        String epl = "" +
+        "create schema Product (productId string, categoryId string);" +
+        "create schema Category (categoryId string, owner string);" +
+        "create schema ProductOwnerDetails (productId string, owner string);" +
+        "create window WinProduct.win:keepall() as select * from Product;" +
+        "create window WinCategory.win:keepall() as select * from Category;" +
+        "create window WinProductOwnerDetails.win:keepall() as select * from ProductOwnerDetails;" +
+        "insert into WinProduct select * from Product;" +
+        "insert into WinCategory select * from Category;" +
+        "insert into WinProductOwnerDetails select * from ProductOwnerDetails;";
+        EPDeploymentAdmin dAdmin = epService.getEPAdministrator().getDeploymentAdmin();
+        dAdmin.deploy(dAdmin.parse(epl), new DeploymentOptions());
+
+        sendEvent(epService, "Product", new String[] {"productId=Product1", "categoryId=Category1"});
+        sendEvent(epService, "Product", new String[] {"productId=Product2", "categoryId=Category1"});
+        sendEvent(epService, "Product", new String[] {"productId=Product3", "categoryId=Category1"});
+        sendEvent(epService, "Category", new String[] {"categoryId=Category1", "owner=Petar"});
+        sendEvent(epService, "ProductOwnerDetails", new String[] {"productId=Product1", "owner=Petar"});
+
+        String[] fields = "WinProduct.productId".split(",");
+        EventBean[] queryResults;
+        queryResults = epService.getEPRuntime().executeQuery("" +
+                "select WinProduct.productId " +
+                " from WinProduct" +
+                " inner join WinCategory on WinProduct.categoryId=WinCategory.categoryId" +
+                " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.productId"
+                ).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(queryResults, fields, new Object[][] {{"Product1"}});
+
+        queryResults = epService.getEPRuntime().executeQuery("" +
+                "select WinProduct.productId " +
+                " from WinProduct" +
+                " inner join WinCategory on WinProduct.categoryId=WinCategory.categoryId" +
+                " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.productId" +
+                " where WinCategory.owner=WinProductOwnerDetails.owner"
+                ).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(queryResults, fields, new Object[][] {{"Product1"}});
+
+        queryResults = epService.getEPRuntime().executeQuery("" +
+                "select WinProduct.productId " +
+                " from WinProduct, WinCategory, WinProductOwnerDetails" +
+                " where WinCategory.owner=WinProductOwnerDetails.owner" +
+                " and WinProduct.categoryId=WinCategory.categoryId" +
+                " and WinProduct.productId=WinProductOwnerDetails.productId"
+                ).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(queryResults, fields, new Object[][] {{"Product1"}});
+
+        queryResults = epService.getEPRuntime().executeQuery("" +
+                "select WinProduct.productId " +
+                " from WinProduct" +
+                " inner join WinCategory on WinProduct.categoryId=WinCategory.categoryId" +
+                " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.productId" +
+                " having WinCategory.owner=WinProductOwnerDetails.owner"
+                ).getArray();
+        ArrayAssertionUtil.assertPropsPerRow(queryResults, fields, new Object[][] {{"Product1"}});
+    }
+	
+    private void sendEvent(EPServiceProvider epService, String eventName, String[] attributes) {
+        Map<String, Object> event = new HashMap<String, Object>();
+        for (String attribute: attributes) {
+            event.put(attribute.split("=")[0], attribute.split("=")[1]);
+        }
+        epService.getEPRuntime().sendEvent(event, eventName);
     }
 
     public void testNamedWindowJoinWhere() throws Exception

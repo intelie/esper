@@ -1,28 +1,24 @@
 package com.espertech.esper.epl.join.base;
 
-import com.espertech.esper.epl.join.base.ExecNodeQueryStrategy;
-import com.espertech.esper.epl.join.base.JoinSetComposerFactoryImpl;
-import com.espertech.esper.epl.join.base.JoinSetComposerImpl;
-import com.espertech.esper.epl.join.plan.QueryPlanIndexItem;
-import com.espertech.esper.epl.join.table.EventTableFactory;
-import junit.framework.TestCase;
-
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.core.StreamJoinAnalysisResult;
+import com.espertech.esper.epl.join.exec.base.TableLookupExecNode;
+import com.espertech.esper.epl.join.plan.QueryPlanIndexItem;
+import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.join.table.EventTableFactory;
+import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
+import com.espertech.esper.epl.join.table.UnindexedEventTable;
+import com.espertech.esper.epl.spec.OuterJoinDesc;
+import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.epl.SupportExprNode;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
-import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
-import com.espertech.esper.epl.join.table.UnindexedEventTable;
-import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.exec.base.TableLookupExecNode;
-import com.espertech.esper.epl.spec.OuterJoinDesc;
-import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.view.Viewable;
-import com.espertech.esper.core.StreamJoinAnalysisResult;
+import junit.framework.TestCase;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 public class TestJoinSetComposerFactory extends TestCase
 {
@@ -62,7 +58,8 @@ public class TestJoinSetComposerFactory extends TestCase
     public void testBuildComposer() throws Exception
     {
         List<OuterJoinDesc> outerJoins = new LinkedList<OuterJoinDesc>();
-        JoinSetComposerImpl composer = (JoinSetComposerImpl) (new JoinSetComposerFactoryImpl()).makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, new StreamJoinAnalysisResult(4), null, true, null);
+        JoinSetComposerDesc desc = (new JoinSetComposerFactoryImpl()).makeComposer(outerJoins, new SupportExprNode(true), streamTypes, new String[]{"a", "b", "c", "d"}, streamViewables, SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, new StreamJoinAnalysisResult(4), null, true, null);
+        JoinSetComposerImpl composer = (JoinSetComposerImpl) desc.getJoinSetComposer();
 
         // verify default indexes build
         assertEquals(2, composer.getTables().length);
