@@ -66,7 +66,7 @@ public class SupportExprNodeFactory
 
     public static ExprEqualsNode makeEqualsNode() throws Exception
     {
-        ExprEqualsNode topNode = new ExprEqualsNodeImpl(false, false);
+        ExprEqualsNode topNode = new ExprEqualsNodeImpl(false);
         ExprIdentNode i1_1 = new ExprIdentNodeImpl("intPrimitive", "s0");
         ExprIdentNode i1_2 = new ExprIdentNodeImpl("intBoxed", "s1");
         topNode.addChildNode(i1_1);
@@ -107,8 +107,8 @@ public class SupportExprNodeFactory
     {
         ExprAndNode topNode = new ExprAndNodeImpl();
 
-        ExprEqualsNode e1 = new ExprEqualsNodeImpl(false, false);
-        ExprEqualsNode e2 = new ExprEqualsNodeImpl(false, false);
+        ExprEqualsNode e1 = new ExprEqualsNodeImpl(false);
+        ExprEqualsNode e2 = new ExprEqualsNodeImpl(false);
 
         topNode.addChildNode(e1);
         topNode.addChildNode(e2);
@@ -135,7 +135,7 @@ public class SupportExprNodeFactory
         ExprEqualsNode[] equalNodes = new ExprEqualsNode[3];
         for (int i = 0; i < equalNodes.length; i++)
         {
-            equalNodes[i] = new ExprEqualsNodeImpl(false, false);
+            equalNodes[i] = new ExprEqualsNodeImpl(false);
             topNode.addChildNode(equalNodes[i]);
         }
 
@@ -336,7 +336,7 @@ public class SupportExprNodeFactory
 
     private static ExprEqualsNode makeEqualsNode(String ident1, String stream1, Object value) throws Exception
     {
-        ExprEqualsNode topNode = new ExprEqualsNodeImpl(false, false);
+        ExprEqualsNode topNode = new ExprEqualsNodeImpl(false);
         ExprIdentNode i1_1 = new ExprIdentNodeImpl(ident1, stream1);
         SupportExprNode constantNode = new SupportExprNode(value);
         topNode.addChildNode(i1_1);

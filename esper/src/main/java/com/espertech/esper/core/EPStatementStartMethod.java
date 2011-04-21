@@ -1633,7 +1633,7 @@ public class EPStatementStartMethod
         // Validate the outer join clause using an artificial equals-node on top.
         // Thus types are checked via equals.
         // Sets stream ids used for validated nodes.
-        ExprNode equalsNode = new ExprEqualsNodeImpl(false, false);
+        ExprNode equalsNode = new ExprEqualsNodeImpl(false);
         equalsNode.addChildNode(leftNode);
         equalsNode.addChildNode(rightNode);
         try

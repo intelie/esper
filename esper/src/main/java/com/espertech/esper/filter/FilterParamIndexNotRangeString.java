@@ -16,20 +16,84 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Index for filter parameter constants for the not range operators (range open/closed/half).
  * The implementation is based on the SortedMap implementation of TreeMap and stores only expression
  * parameter values of type StringRange.
  */
-public final class FilterParamIndexStringRangeInverted extends FilterParamIndexStringRangeBase
+public final class FilterParamIndexNotRangeString extends FilterParamIndexPropBase
 {
-    public FilterParamIndexStringRangeInverted(String attributeName, FilterOperator filterOperator, EventType eventType) {
+    private final TreeMap<StringRange, EventEvaluator> ranges;
+    private final ReadWriteLock rangesRWLock;
+
+   /**
+     * Constructs the index for matching ranges.
+     * @param attributeName is the name of the event attribute field
+    * @param filterOperator is the type of range
+    * @param eventType is type of events handled
+    */
+    public FilterParamIndexNotRangeString(String attributeName, FilterOperator filterOperator, EventType eventType)
+    {
         super(attributeName, filterOperator, eventType);
+
+        ranges = new TreeMap<StringRange, EventEvaluator>(new StringRangeComparator());
+        rangesRWLock = new ReentrantReadWriteLock();
+
         if (!(filterOperator.isInvertedRangeOperator()))
         {
             throw new IllegalArgumentException("Invalid filter operator " + filterOperator);
         }
+    }
+
+    public final EventEvaluator get(Object expressionValue)
+    {
+        if (!(expressionValue instanceof StringRange))
+        {
+            throw new IllegalArgumentException("Supplied expressionValue must be of type StringRange");
+        }
+
+        return ranges.get(expressionValue);
+    }
+
+    public final void put(Object expressionValue, EventEvaluator matcher)
+    {
+        if (!(expressionValue instanceof StringRange))
+        {
+            throw new IllegalArgumentException("Supplied expressionValue must be of type StringRange");
+        }
+
+        StringRange range = (StringRange) expressionValue;
+
+        if ((range.getMax() == null) || (range.getMin() == null))
+        {
+            return; // null endpoints are ignored
+        }
+
+        ranges.put(range, matcher);
+    }
+
+    public final boolean remove(Object filterConstant)
+    {
+        EventEvaluator eval = ranges.remove(filterConstant);
+        if (eval == null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public final int size()
+    {
+        return ranges.size();
+    }
+
+    public final ReadWriteLock getReadWriteLock()
+    {
+        return rangesRWLock;
     }
 
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
@@ -80,5 +144,5 @@ public final class FilterParamIndexStringRangeInverted extends FilterParamIndexS
         }
     }
 
-    private static final Log log = LogFactory.getLog(FilterParamIndexStringRangeInverted.class);
+    private static final Log log = LogFactory.getLog(FilterParamIndexNotRangeString.class);
 }

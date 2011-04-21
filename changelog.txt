@@ -12,6 +12,7 @@ Major API or EPL changes
   - Support for constructor injection for event objects populated by insert into.
   - Support for the on-merge clause to allow multiple actions (multiple then-clauses), to allow insert-into a stream other then the currently-merged named window and adding support for an optional where-clause for each action.
   - Support for mapped and indexed properties to allow an expression as a map key or index.
+  - Support for expression declarations. Expressions that are common to multiple places in an EPL statement can be moved to a named expression declaration and reused within the statement without duplicating the expression itself.
   - Improvement for query planning and indexing for joins, subqueries, on-merge/select/update/delete, fire-and-forget queries and create-index to support btree indexes for use with ranges, inverted ranges and relational operator (>, <, >=, <=) queries. 
   - Improvements to statement metrics reporting in regards to event counts and reporting for named windows.
   - Improvements to query plan output.

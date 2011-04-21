@@ -1254,19 +1254,11 @@ public class StatementSpecMapper
             RelationalOpExpression op = (RelationalOpExpression) expr;
             if (op.getOperator().equals("="))
             {
-                return new ExprEqualsNodeImpl(false, false);
+                return new ExprEqualsNodeImpl(false);
             }
-            else if (op.getOperator().equals("!="))
+            if (op.getOperator().equals("!="))
             {
-                return new ExprEqualsNodeImpl(true, false);
-            }
-            else if (op.getOperator().toUpperCase().trim().equals("IS"))
-            {
-                return new ExprEqualsNodeImpl(false, true);
-            }
-            else if (op.getOperator().toUpperCase().trim().equals("IS NOT"))
-            {
-                return new ExprEqualsNodeImpl(true, true);
+                return new ExprEqualsNodeImpl(true);
             }
             else
             {
@@ -1705,20 +1697,10 @@ public class StatementSpecMapper
         else if (expr instanceof ExprEqualsNode)
         {
             ExprEqualsNode equals = (ExprEqualsNode) expr;
-            String operator;
-            if (!equals.isIs()) {
-                operator = "=";
-                if (equals.isNotEquals())
-                {
-                    operator = "!=";
-                }
-            }
-            else {
-                operator = "is";
-                if (equals.isNotEquals())
-                {
-                    operator = "is not";
-                }
+            String operator = "=";
+            if (equals.isNotEquals())
+            {
+                operator = "!=";
             }
             return new RelationalOpExpression(operator);
         }

@@ -42,18 +42,6 @@ public class IndexFactory
             return index;
         }
 
-        if (filterOperator == FilterOperator.IS)
-        {
-            index = new FilterParamIndexEqualsIs(propertyName, eventType);
-            return index;
-        }
-
-        if (filterOperator == FilterOperator.IS_NOT)
-        {
-            index = new FilterParamIndexNotEqualsIs(propertyName, eventType);
-            return index;
-        }
-
         // Handle all GREATER, LESS etc. comparisons
         if ((filterOperator == FilterOperator.GREATER) ||
             (filterOperator == FilterOperator.GREATER_OR_EQUAL) ||
@@ -75,10 +63,10 @@ public class IndexFactory
         {
             Class type = eventType.getPropertyType(propertyName);
             if (type != String.class) {
-                index = new FilterParamIndexDoubleRange(propertyName, filterOperator, eventType);
+                index = new FilterParamIndexRange(propertyName, filterOperator, eventType);
             }
             else {
-                index = new FilterParamIndexStringRange(propertyName, filterOperator, eventType);
+                index = new FilterParamIndexRangeString(propertyName, filterOperator, eventType);
             }
             return index;
         }
@@ -86,10 +74,10 @@ public class IndexFactory
         {
             Class type = eventType.getPropertyType(propertyName);
             if (type != String.class) {
-                index = new FilterParamIndexDoubleRangeInverted(propertyName, filterOperator, eventType);
+                index = new FilterParamIndexNotRange(propertyName, filterOperator, eventType);
             }
             else {
-                index = new FilterParamIndexStringRangeInverted(propertyName, filterOperator, eventType);
+                index = new FilterParamIndexNotRangeString(propertyName, filterOperator, eventType);
             }
             return index;
         }

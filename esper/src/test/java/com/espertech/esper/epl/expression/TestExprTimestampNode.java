@@ -59,7 +59,7 @@ public class TestExprTimestampNode extends TestCase
 
     public void testEquals() throws Exception
     {
-        assertFalse(node.equalsNode(new ExprEqualsNodeImpl(true, false)));
+        assertFalse(node.equalsNode(new ExprEqualsNodeImpl(true)));
         assertTrue(node.equalsNode(new ExprTimestampNode()));
     }
 

@@ -15,7 +15,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Collection;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -26,14 +25,75 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * The implementation is based on the SortedMap implementation of TreeMap and stores only expression
  * parameter values of type DoubleRange.
  */
-public final class FilterParamIndexDoubleRangeInverted extends FilterParamIndexDoubleRangeBase
+public final class FilterParamIndexNotRange extends FilterParamIndexPropBase
 {
-    public FilterParamIndexDoubleRangeInverted(String attributeName, FilterOperator filterOperator, EventType eventType) {
+    private final TreeMap<DoubleRange, EventEvaluator> ranges;
+    private final ReadWriteLock rangesRWLock;
+
+   /**
+     * Constructs the index for matching ranges.
+     * @param attributeName is the name of the event attribute field
+    * @param filterOperator is the type of range
+    * @param eventType is type of events handled
+    */
+    public FilterParamIndexNotRange(String attributeName, FilterOperator filterOperator, EventType eventType)
+    {
         super(attributeName, filterOperator, eventType);
+
+        ranges = new TreeMap<DoubleRange, EventEvaluator>(new DoubleRangeComparator());
+        rangesRWLock = new ReentrantReadWriteLock();
+
         if (!(filterOperator.isInvertedRangeOperator()))
         {
             throw new IllegalArgumentException("Invalid filter operator " + filterOperator);
         }
+    }
+
+    public final EventEvaluator get(Object expressionValue)
+    {
+        if (!(expressionValue instanceof DoubleRange))
+        {
+            throw new IllegalArgumentException("Supplied expressionValue must be of type DoubleRange");
+        }
+
+        return ranges.get(expressionValue);
+    }
+
+    public final void put(Object expressionValue, EventEvaluator matcher)
+    {
+        if (!(expressionValue instanceof DoubleRange))
+        {
+            throw new IllegalArgumentException("Supplied expressionValue must be of type DoubleRange");
+        }
+
+        DoubleRange range = (DoubleRange) expressionValue;
+
+        if ((range.getMax() == null) || (range.getMin() == null))
+        {
+            return; // null endpoints are ignored
+        }
+
+        ranges.put(range, matcher);
+    }
+
+    public final boolean remove(Object filterConstant)
+    {
+        EventEvaluator eval = ranges.remove(filterConstant);
+        if (eval == null)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public final int size()
+    {
+        return ranges.size();
+    }
+
+    public final ReadWriteLock getReadWriteLock()
+    {
+        return rangesRWLock;
     }
 
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
@@ -89,5 +149,5 @@ public final class FilterParamIndexDoubleRangeInverted extends FilterParamIndexD
         }
     }
 
-    private static final Log log = LogFactory.getLog(FilterParamIndexDoubleRangeInverted.class);
+    private static final Log log = LogFactory.getLog(FilterParamIndexNotRange.class);
 }

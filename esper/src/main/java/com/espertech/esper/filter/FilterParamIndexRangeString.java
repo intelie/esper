@@ -22,7 +22,10 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -31,14 +34,74 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * The implementation is based on the SortedMap implementation of TreeMap and stores only expression
  * parameter values of type DoubleRange.
  */
-public final class FilterParamIndexStringRange extends FilterParamIndexStringRangeBase
+public final class FilterParamIndexRangeString extends FilterParamIndexPropBase
 {
-    public FilterParamIndexStringRange(String attributeName, FilterOperator filterOperator, EventType eventType) {
+    private final TreeMap<StringRange, EventEvaluator> ranges;
+    private final ReadWriteLock rangesRWLock;
+
+   /**
+     * Constructs the index for matching ranges.
+     * @param attributeName is the name of the event attribute field
+    * @param filterOperator is the type of range
+    * @param eventType is type of events handled
+    */
+    public FilterParamIndexRangeString(String attributeName, FilterOperator filterOperator, EventType eventType)
+    {
         super(attributeName, filterOperator, eventType);
+
+        ranges = new TreeMap<StringRange, EventEvaluator>(new StringRangeComparator());
+        rangesRWLock = new ReentrantReadWriteLock();
+
         if (!(filterOperator.isRangeOperator()))
         {
             throw new IllegalArgumentException("Invalid filter operator " + filterOperator);
         }
+    }
+
+    public final EventEvaluator get(Object expressionValue)
+    {
+        if (!(expressionValue instanceof StringRange))
+        {
+            throw new IllegalArgumentException("Supplied expressionValue must be of type StringRange");
+        }
+
+        return ranges.get(expressionValue);
+    }
+
+    public final void put(Object expressionValue, EventEvaluator matcher)
+    {
+        if (!(expressionValue instanceof StringRange))
+        {
+            throw new IllegalArgumentException("Supplied expressionValue must be of type DoubleRange");
+        }
+
+        StringRange range = (StringRange) expressionValue;
+        if ((range.getMax() == null) || (range.getMin() == null))
+        {
+            return;     // endpoints null - we don't enter
+        }
+
+        ranges.put(range, matcher);
+    }
+
+    public final boolean remove(Object filterConstant)
+    {
+        if (ranges.remove(filterConstant) == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public final int size()
+    {
+        return ranges.size();
+    }
+
+    public final ReadWriteLock getReadWriteLock()
+    {
+        return rangesRWLock;
     }
 
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
@@ -49,6 +112,7 @@ public final class FilterParamIndexStringRange extends FilterParamIndexStringRan
         {
             return;
         }
+
         
         String attributeValue = (String) objAttributeValue;
 
@@ -101,5 +165,5 @@ public final class FilterParamIndexStringRange extends FilterParamIndexStringRan
         }
     }
 
-    private static final Log log = LogFactory.getLog(FilterParamIndexStringRange.class);
+    private static final Log log = LogFactory.getLog(FilterParamIndexRangeString.class);
 }

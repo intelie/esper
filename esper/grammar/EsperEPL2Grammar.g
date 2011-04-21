@@ -170,8 +170,6 @@ tokens
    	EVAL_OR_EXPR;
    	EVAL_EQUALS_EXPR;
    	EVAL_NOTEQUALS_EXPR;
-   	EVAL_IS_EXPR;
-   	EVAL_ISNOT_EXPR;
    	EVAL_EQUALS_GROUP_EXPR;
    	EVAL_NOTEQUALS_GROUP_EXPR;
    	EVAL_IDENT;
@@ -1223,12 +1221,10 @@ evalEqualsExpression
 	       	|  (a=ANY | a=SOME | a=ALL) ( (LPAREN expressionList? RPAREN) | subSelectGroupExpression )
 	       )
 	     )*	     
-	    -> {$a == null && $eq != null}? ^(EVAL_EQUALS_EXPR evalRelationalExpression+)
-	    -> {$a == null && $is != null}? ^(EVAL_IS_EXPR evalRelationalExpression+)
-	    -> {$a == null && ($sqlne != null || $ne != null)}? ^(EVAL_NOTEQUALS_EXPR evalRelationalExpression+)
-	    -> {$a == null && $isnot != null}? ^(EVAL_ISNOT_EXPR evalRelationalExpression+)
+	    -> {$a == null && ($eq != null || $is != null)}? ^(EVAL_EQUALS_EXPR evalRelationalExpression+)
 	    -> {$a != null && ($eq != null || $is != null)}? ^(EVAL_EQUALS_GROUP_EXPR evalRelationalExpression $a expressionList? subSelectGroupExpression?)
-	    -> {$a != null && ($sqlne != null || $ne != null || $isnot != null)}? ^(EVAL_NOTEQUALS_GROUP_EXPR evalRelationalExpression $a expressionList? subSelectGroupExpression?)
+	    -> {$a == null && ($isnot != null || $sqlne != null || $ne != null)}? ^(EVAL_NOTEQUALS_EXPR evalRelationalExpression+)
+	    -> {$a != null && ($isnot != null || $sqlne != null || $ne != null)}? ^(EVAL_NOTEQUALS_GROUP_EXPR evalRelationalExpression $a expressionList? subSelectGroupExpression?)
 	    -> evalRelationalExpression+
 	;
 

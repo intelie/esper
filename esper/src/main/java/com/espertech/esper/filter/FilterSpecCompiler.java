@@ -663,20 +663,10 @@ public final class FilterSpecCompiler
         FilterOperator op;
         if (constituent instanceof ExprEqualsNode)
         {
-            ExprEqualsNode equalsNode = (ExprEqualsNode) constituent;
-            if (!equalsNode.isIs()) {
-                op = FilterOperator.EQUAL;
-                if (equalsNode.isNotEquals())
-                {
-                    op = FilterOperator.NOT_EQUAL;
-                }
-            }
-            else {
-                op = FilterOperator.IS;
-                if (equalsNode.isNotEquals())
-                {
-                    op = FilterOperator.IS_NOT;
-                }
+            op = FilterOperator.EQUAL;
+            if (((ExprEqualsNode) constituent).isNotEquals())
+            {
+                op = FilterOperator.NOT_EQUAL;
             }
         }
         else

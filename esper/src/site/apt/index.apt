@@ -214,6 +214,8 @@ Core Esper Features
     	
     	[]
     	
+    * <<Expression declarations>> - expressions that are common to multiple places in an EPL statement can be moved to a named expression declaration.
+    	
     * <<Joins to method invocation results>> allows easy integration with distributed caches, web services and object-oriented databases 
 
     * <<On-demand queries>> are fire-and-forget EPL queries against named windows for non-continuous query execution.

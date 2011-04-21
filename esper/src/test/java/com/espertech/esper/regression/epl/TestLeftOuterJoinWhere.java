@@ -43,7 +43,13 @@ public class TestLeftOuterJoinWhere extends TestCase
 
     public void testWhereNotNullNE()
     {
-        setupStatement("where s1.p11 is not null");
+        setupStatement("where s1.p11 != null");
+        tryWhereNotNull();
+    }
+
+    public void testWhereNotNullSQLNE()
+    {
+        setupStatement("where s1.p11 <> null");
         tryWhereNotNull();
     }
 
@@ -55,7 +61,7 @@ public class TestLeftOuterJoinWhere extends TestCase
 
     public void testWhereNullEq()
     {
-        setupStatement("where s1.p11 is null");
+        setupStatement("where s1.p11 = null");
         tryWhereNull();
     }
 

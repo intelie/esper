@@ -4,7 +4,6 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportStaticMethodLib;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
@@ -237,148 +236,6 @@ public class TestFilterExpressions extends TestCase
         assertTrue(listener.isInvoked());
     }
 
-    // TODO - output warning if comparing to null
-    public void testNotEqualsNull() {
-        SupportUpdateListener[] listeners = new SupportUpdateListener[6];
-        for (int i = 0; i < listeners.length; i++) {
-            listeners[i] = new SupportUpdateListener();
-        }
-
-        // test equals&where-clause (can be optimized into filter)
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string != 'A'").addListener(listeners[0]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string != 'A' or intPrimitive != 0").addListener(listeners[1]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string = 'A'").addListener(listeners[2]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string = 'A' or intPrimitive != 0").addListener(listeners[3]);
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 0));
-        assertListeners(listeners, new boolean[] {false, false, false, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 1));
-        assertListeners(listeners, new boolean[] {false, true, false, true});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 0));
-        assertListeners(listeners, new boolean[] {false, false, true, true});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 1));
-        assertListeners(listeners, new boolean[] {false, true, true, true});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("B", 0));
-        assertListeners(listeners, new boolean[] {true, true, false, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("B", 1));
-        assertListeners(listeners, new boolean[] {true, true, false, true});
-
-        epService.getEPAdministrator().destroyAllStatements();
-
-        // test equals&selection
-        String[] fields = "val0,val1,val2,val3,val4,val5".split(",");
-        epService.getEPAdministrator().createEPL("select " +
-                "string != 'A' as val0, " +
-                "string != 'A' or intPrimitive != 0 as val1, " +
-                "string != 'A' and intPrimitive != 0 as val2, " +
-                "string = 'A' as val3," +
-                "string = 'A' or intPrimitive != 0 as val4, " +
-                "string = 'A' and intPrimitive != 0 as val5 from SupportBean").addListener(listener);
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 0));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null, null, false, null, null, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 1));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, true, null, null, true, null});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 0));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, false, true, true, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 1));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, true, false, true, true, true});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("B", 0));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true, false, false, false, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("B", 1));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true, true, false, true, false});
-
-        epService.getEPAdministrator().destroyAllStatements();
-
-        // test is-and-isnot&where-clause
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string is null").addListener(listeners[0]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string is null or intPrimitive != 0").addListener(listeners[1]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string is not null").addListener(listeners[2]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string is not null or intPrimitive != 0").addListener(listeners[3]);
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 0));
-        assertListeners(listeners, new boolean[] {true, true, false, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 1));
-        assertListeners(listeners, new boolean[] {true, true, false, true});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 0));
-        assertListeners(listeners, new boolean[] {false, false, true, true});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 1));
-        assertListeners(listeners, new boolean[] {false, true, true, true});
-
-        epService.getEPAdministrator().destroyAllStatements();
-
-        // test is-and-isnot&selection
-        epService.getEPAdministrator().createEPL("select " +
-                "string is null as val0, " +
-                "string is null or intPrimitive != 0 as val1, " +
-                "string is null and intPrimitive != 0 as val2, " +
-                "string is not null as val3," +
-                "string is not null or intPrimitive != 0 as val4, " +
-                "string is not null and intPrimitive != 0 as val5 " +
-                "from SupportBean").addListener(listener);
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 0));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true, false, false, false, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 1));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true, true, false, true, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 0));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, false, true, true, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 1));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, true, false, true, true, true});
-
-        epService.getEPAdministrator().destroyAllStatements();
-
-        // filter expression
-        epService.getEPAdministrator().createEPL("select * from SupportBean(string is null)").addListener(listeners[0]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string = null").addListener(listeners[1]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean(string = null)").addListener(listeners[2]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean(string is not null)").addListener(listeners[3]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean where string != null").addListener(listeners[4]);
-        epService.getEPAdministrator().createEPL("select * from SupportBean(string != null)").addListener(listeners[5]);
-
-        epService.getEPRuntime().sendEvent(new SupportBean(null, 0));
-        assertListeners(listeners, new boolean[] {true, false, false, false, false, false});
-
-        epService.getEPRuntime().sendEvent(new SupportBean("A", 0));
-        assertListeners(listeners, new boolean[] {false, false, false, true, false, false});
-
-        epService.getEPAdministrator().destroyAllStatements();
-
-        // select constants
-        fields = "val0,val1,val2,val3".split(",");
-        epService.getEPAdministrator().createEPL("select " +
-                "2 != null as val0," +
-                "null = null as val1," +
-                "2 != null or 1 = 2 as val2," +
-                "2 != null and 2 = 2 as val3 " +
-                "from SupportBean").addListener(listener);
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[]{null, null, null, null});
-    }
-
-    private void assertListeners(SupportUpdateListener[] listeners, boolean[] invoked) {
-        for (int i = 0; i < invoked.length; i++) {
-            assertEquals("Failed for listener " + i, invoked[i], listeners[i].getAndClearIsInvoked());
-        }
-    }
-
     public void testPatternFunc3Stream()
     {
         String text;
@@ -387,15 +244,6 @@ public class TestFilterExpressions extends TestCase
                 "a=" + SupportBean.class.getName() + " -> " +
                 "b=" + SupportBean.class.getName() + " -> " +
                 "c=" + SupportBean.class.getName() + "(intBoxed=a.intBoxed, intBoxed=b.intBoxed and intBoxed != null)]";
-        tryPattern3Stream(text, new Integer[] {null, 2, 1, null,   8,  1,  2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                                new Integer[] {null, 3, 1,    8, null, 4, -2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                                new Integer[] {null, 3, 1,    8, null, 5, null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new boolean[] {false, false, false, false, false, false, false});
-
-        text = "select * from pattern [" +
-                "a=" + SupportBean.class.getName() + " -> " +
-                "b=" + SupportBean.class.getName() + " -> " +
-                "c=" + SupportBean.class.getName() + "(intBoxed is a.intBoxed, intBoxed is b.intBoxed and intBoxed is not null)]";
         tryPattern3Stream(text, new Integer[] {null, 2, 1, null,   8,  1,  2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                                 new Integer[] {null, 3, 1,    8, null, 4, -2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                                 new Integer[] {null, 3, 1,    8, null, 5, null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
@@ -408,7 +256,7 @@ public class TestFilterExpressions extends TestCase
         tryPattern3Stream(text, new Integer[] {null, 2, 1, null,   8, 1, 2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                                 new Integer[] {null, 3, 1,    8, null, 4, -2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                                 new Integer[] {null, 3, 1,    8, null, 5, null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new boolean[] {false, true, true, true, false, false, false});
+                    new boolean[] {true, true, true, true, true, false, false});
 
         text = "select * from pattern [" +
                 "a=" + SupportBean.class.getName() + " -> " +
@@ -417,7 +265,7 @@ public class TestFilterExpressions extends TestCase
         tryPattern3Stream(text, new Integer[] {null, 2, 1, null,   8,  1,  2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                                 new Integer[] {null, 3, 1,    8, null, 4, -2}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                                 new Integer[] {null, 3, 1,    8, null, 5, null}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new boolean[] {false, false, true, false, false, false, false});
+                    new boolean[] {true, false, true, false, false, false, false});
 
         text = "select * from pattern [" +
                 "a=" + SupportBean.class.getName() + " -> " +
@@ -435,16 +283,7 @@ public class TestFilterExpressions extends TestCase
         tryPattern3Stream(text, new Integer[] {2,    8,    null, 2, 1, null, 1}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                                 new Integer[] {-2,   null, null, 3, 1,    8, 4}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                                 new Integer[] {null, null, null, 3, 1,    8, 5}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                               new boolean[] {false, false, false, true, false, false, true});
-
-        text = "select * from pattern [" +
-                "a=" + SupportBean.class.getName() + " -> " +
-                "b=" + SupportBean.class.getName() + " -> " +
-                "c=" + SupportBean.class.getName() + "(intBoxed is not a.intBoxed)]";
-        tryPattern3Stream(text, new Integer[] {2,    8,    null, 2, 1, null, 1}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                                new Integer[] {-2,   null, null, 3, 1,    8, 4}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                                new Integer[] {null, null, null, 3, 1,    8, 5}, new Double[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                               new boolean[] {true, true, false, true, false, true, true});
+                               new boolean[] {false, false, false, true, false, true, true});
 
         text = "select * from pattern [" +
                 "a=" + SupportBean.class.getName() + " -> " +
@@ -489,12 +328,6 @@ public class TestFilterExpressions extends TestCase
 
         text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
                 SupportBean.class.getName() + "(intBoxed = a.intBoxed and doubleBoxed = a.doubleBoxed)]";
-        tryPattern(text, new Integer[] {null, 2, 1, null, 8, 1, 2}, new Double[] {2d, 2d, 2d, 1d, 5d, 6d, 7d},
-                         new Integer[] {null, 3, 1, 8, null, 1, 2}, new Double[] {2d, 3d, 2d, 1d, 5d, 6d, 8d},
-                    new boolean[] {false, false, true, false, false, true, false});
-
-        text = "select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
-                SupportBean.class.getName() + "(intBoxed is a.intBoxed and doubleBoxed = a.doubleBoxed)]";
         tryPattern(text, new Integer[] {null, 2, 1, null, 8, 1, 2}, new Double[] {2d, 2d, 2d, 1d, 5d, 6d, 7d},
                          new Integer[] {null, 3, 1, 8, null, 1, 2}, new Double[] {2d, 3d, 2d, 1d, 5d, 6d, 8d},
                     new boolean[] {true, false, true, false, false, true, false});
@@ -677,7 +510,7 @@ public class TestFilterExpressions extends TestCase
         try3Fields(text, new int[]{1, 1, 1}, new Integer[]{0, 1, 0}, new Double[]{2d, 2d, 1d}, new boolean[]{true, false, false});
 
         text = "select * from " + SupportBean.class.getName() + "(intBoxed = doubleBoxed)";
-        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{false, false, false});
+        try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{true, false, false});
 
         text = "select * from " + SupportBean.class.getName() + "(intBoxed in (doubleBoxed))";
         try3Fields(text, new int[]{1, 1, 1}, new Integer[]{null, 1, null}, new Double[]{null, null, 1d}, new boolean[]{false, false, false});

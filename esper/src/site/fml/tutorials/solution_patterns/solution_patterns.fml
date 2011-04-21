@@ -1035,12 +1035,9 @@ create schema PairDuplicatesRemoved(a Sensor, b Sensor)</pre></div>
 <div class="source"><pre>// Remove duplicate pairs where either sensor event is from the prior pair
 insert into PairDuplicatesRemoved
 select * from Pair
-where a.id != coalesce((select a.id from PairDuplicatesRemoved.std:lastevent()), -1)
-	and b.id != coalesce((select b.id from PairDuplicatesRemoved.std:lastevent()), -1)</pre></div>
+where a.id != (select a.id from PairDuplicatesRemoved.std:lastevent())
+	and b.id != (select b.id from PairDuplicatesRemoved.std:lastevent())</pre></div>
 
-		<p>
-			The example uses the "coalesce" function to return -1 when there is no last event for PairDuplicatesRemoved, so that the first pair matches as well.
-		</p>
 		<p>
 			Last, select the maximum measurement value between the pair of sensor events and the corresponding confidence and device:
 		</p>

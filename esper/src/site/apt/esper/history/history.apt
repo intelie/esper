@@ -40,6 +40,8 @@ Version 4.2.0
   
   * Support for mapped and indexed properties to allow an expression as a map key or index.
   
+  * Support for expression declarations. Expressions that are common to multiple places in an EPL statement can be moved to a named expression declaration and reused within the statement without duplicating the expression itself.
+  
   * Improvement for query planning and indexing for joins, subqueries, on-merge, on-select, on-update, on-delete, fire-and-forget queries and create-index to support btree indexes for use with ranges, inverted ranges and relational operator (\>, \<, \>=, \<=) queries. 
   
   * Improvements to statement metrics reporting in regards to event counts and reporting for named windows.
