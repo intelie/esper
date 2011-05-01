@@ -1,0 +1,8 @@
+<chapter id="adapter_xmljson">
+    <title>XML and JSON Output</title>
+    
+    <para>
+        Esper supports output event rendering to JSON and XML directly in its output API, please see the Esper documentation set for more information.
+    </para>
+    
+</chapter>

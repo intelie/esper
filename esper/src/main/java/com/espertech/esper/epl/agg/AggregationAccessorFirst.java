@@ -1,0 +1,50 @@
+package com.espertech.esper.epl.agg;
+
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+
+import java.util.Collection;
+import java.util.Collections;
+
+/**
+ * Represents the aggregation accessor that provides the result for the "first" aggregation function without index.
+ */
+public class AggregationAccessorFirst implements AggregationAccessor
+{
+    private final int streamNum;
+    private final ExprEvaluator childNode;
+    private final EventBean[] eventsPerStream;
+
+    /**
+     * Ctor.
+     * @param streamNum stream id
+     * @param childNode expression
+     */
+    public AggregationAccessorFirst(int streamNum, ExprEvaluator childNode)
+    {
+        this.streamNum = streamNum;
+        this.childNode = childNode;
+        this.eventsPerStream = new EventBean[streamNum + 1];
+    }
+
+    public Object getValue(AggregationAccess access) {
+        EventBean bean = access.getFirstValue();
+        if (bean == null) {
+            return null;
+        }
+        eventsPerStream[streamNum] = bean;
+        return childNode.evaluate(eventsPerStream, true, null);
+    }
+
+    public Collection<EventBean> getCollectionReadOnly(AggregationAccess access) {
+        EventBean bean = access.getFirstValue();
+        if (bean == null) {
+            return null;
+        }
+        return Collections.singletonList(bean);
+    }
+
+    public EventBean getEventBean(AggregationAccess currentAcces) {
+        return currentAcces.getFirstValue();
+    }
+}
