@@ -61,6 +61,10 @@ public class SubordIndexedTableLookupStrategySingleExpr implements SubordTableLo
         return index.lookup(key);
     }
 
+    public Collection<EventBean> lookup(Object[] keys) {
+        return index.lookup(keys[0]);
+    }
+
     /**
      * Get the index lookup keys.
      * @param eventsPerStream is the events for each stream

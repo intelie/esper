@@ -1,6 +1,8 @@
 package com.espertech.esper.epl.join.plan;
 
-public abstract class QueryGraphValueEntryRange implements QueryGraphValueEntry {
+import java.io.Serializable;
+
+public abstract class QueryGraphValueEntryRange implements QueryGraphValueEntry, Serializable {
 
     private final QueryGraphRangeEnum type;
 

@@ -28,5 +28,7 @@ public interface SubordTableLookupStrategy
      */
     public Collection<EventBean> lookup(EventBean[] events, ExprEvaluatorContext context);
 
+    public Collection<EventBean> lookup(Object[] keys);
+
     public String toQueryPlan();
 }

@@ -4,6 +4,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.client.annotation.*;
 import com.espertech.esper.client.soda.EPStatementFormatter;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
+import com.espertech.esper.epl.annotation.AnnotationUtil;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportEnum;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -118,6 +119,8 @@ public class TestStatementAnnotation extends TestCase
         assertTrue((((EPStatementSPI)stmt).isNameProvided()));
         runAssertion(stmt);
         stmt.destroy();
+        Name name = (Name) AnnotationUtil.findAnnotation(stmt.getAnnotations(), Name.class);
+        assertEquals("MyTestStmt", name.value());
 
         stmtText = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(name='UserId', value='value') every Bean";
         stmt = epService.getEPAdministrator().createPattern(stmtText);

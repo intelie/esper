@@ -17,8 +17,9 @@ public class SupportVirtualDWIndex implements VirtualDataWindowLookup {
         this.context = context;
     }
 
-    public Set<EventBean> lookup(Object[] keys) {
+    public Set<EventBean> lookup(Object[] keys, EventBean[] eventsPerStream) {
         supportVirtualDW.setLastKeys(keys);
+        supportVirtualDW.setLastAccessEvents(eventsPerStream);
         Set<EventBean> events = new HashSet<EventBean>();
         for (Object item : supportVirtualDW.getData()) {
             events.add(context.getEventFactory().wrap(item));

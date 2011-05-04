@@ -10,7 +10,9 @@ package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.epl.expression.ExprNode;
 
-public abstract class QueryGraphValueEntryHashKeyed implements QueryGraphValueEntry
+import java.io.Serializable;
+
+public abstract class QueryGraphValueEntryHashKeyed implements QueryGraphValueEntry, Serializable
 {
     private final ExprNode keyExpr;
 

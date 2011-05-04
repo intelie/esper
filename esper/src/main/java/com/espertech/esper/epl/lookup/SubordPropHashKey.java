@@ -10,10 +10,12 @@ package com.espertech.esper.epl.lookup;
 
 import com.espertech.esper.epl.join.plan.QueryGraphValueEntryHashKeyed;
 
+import java.io.Serializable;
+
 /**
  * Holds property information for joined properties in a lookup.
  */
-public class SubordPropHashKey
+public class SubordPropHashKey implements Serializable
 {
     private final QueryGraphValueEntryHashKeyed hashKey;
     private final Integer optionalKeyStreamNum;

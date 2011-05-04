@@ -1,10 +1,11 @@
 package com.espertech.esper.epl.lookup;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SubordPropPlan {
+public class SubordPropPlan implements Serializable {
     private final Map<String, SubordPropHashKey> hashProps;
     private final Map<String, SubordPropRangeKey> rangeProps;
 

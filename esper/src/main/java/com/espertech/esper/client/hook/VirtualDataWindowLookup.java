@@ -19,5 +19,5 @@ public interface VirtualDataWindowLookup {
      * @param keys lookup values
      * @return set of events
      */
-    public Set<EventBean> lookup(Object[] keys);
+    public Set<EventBean> lookup(Object[] keys, EventBean[] eventsPerStream);
 }

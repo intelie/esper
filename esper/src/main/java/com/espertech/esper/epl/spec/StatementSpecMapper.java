@@ -103,7 +103,9 @@ public class StatementSpecMapper
     private static StatementSpecRaw map(EPStatementObjectModel sodaStatement, StatementSpecMapContext mapContext)
     {
         StatementSpecRaw raw = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
-        mapAnnotations(sodaStatement.getAnnotations(), raw);
+
+        List<AnnotationDesc> annotations = mapAnnotations(sodaStatement.getAnnotations());
+        raw.setAnnotations(annotations);
         mapExpressionDeclaration(sodaStatement.getExpressionDeclarations(), raw, mapContext);
         mapUpdateClause(sodaStatement.getUpdateClause(), raw, mapContext);
         mapCreateWindow(sodaStatement.getCreateWindow(), raw, mapContext);
@@ -2476,7 +2478,7 @@ public class StatementSpecMapper
         return new AnnotationPart(desc.getName(), attributes);
     }
 
-    private static void mapAnnotations(List<AnnotationPart> annotations, StatementSpecRaw raw) {
+    public static List<AnnotationDesc> mapAnnotations(List<AnnotationPart> annotations) {
         List<AnnotationDesc> result;
         if (annotations != null) {
             result = new ArrayList<AnnotationDesc>();
@@ -2487,7 +2489,7 @@ public class StatementSpecMapper
         else {
             result = Collections.emptyList();
         }
-        raw.setAnnotations(result);
+        return result;
     }
 
     private static void mapExpressionDeclaration(List<ExpressionDeclaration> expressionDeclarations, StatementSpecRaw raw, StatementSpecMapContext mapContext) {

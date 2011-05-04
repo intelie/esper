@@ -1,5 +1,7 @@
 package com.espertech.esper.client.hook;
 
+import com.espertech.esper.epl.lookup.SubordPropPlan;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
  * indicates a single hash-field "prop" and a single btree field "prop2" with a range operator.
  */
 public class VirtualDataWindowLookupContext {
+    private String namedWindowName;
     private List<VirtualDataWindowLookupFieldDesc> hashFields;
     private List<VirtualDataWindowLookupFieldDesc> btreeFields;
 
@@ -23,9 +26,16 @@ public class VirtualDataWindowLookupContext {
      * @param hashFields operator-equals semantics fields
      * @param btreeFields sorted-access fields, check the {@link VirtualDataWindowLookupOp} operator for what range or relational-operator applies
      */
-    public VirtualDataWindowLookupContext(List<VirtualDataWindowLookupFieldDesc> hashFields, List<VirtualDataWindowLookupFieldDesc> btreeFields) {
+    public VirtualDataWindowLookupContext(String namedWindowName,
+                                          List<VirtualDataWindowLookupFieldDesc> hashFields,
+                                          List<VirtualDataWindowLookupFieldDesc> btreeFields) {
+        this.namedWindowName = namedWindowName;
         this.hashFields = Collections.unmodifiableList(hashFields);
         this.btreeFields = Collections.unmodifiableList(btreeFields);
+    }
+
+    public String getNamedWindowName() {
+        return namedWindowName;
     }
 
     /**

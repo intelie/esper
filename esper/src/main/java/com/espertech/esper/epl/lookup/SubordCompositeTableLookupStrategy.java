@@ -38,6 +38,10 @@ public class SubordCompositeTableLookupStrategy implements SubordTableLookupStra
         return innerIndexQuery.get(eventsPerStream, index.getIndex(), context);
     }
 
+    public Collection<EventBean> lookup(Object[] keys) {
+        return null;
+    }
+
     public String toString()
     {
         return toQueryPlan();

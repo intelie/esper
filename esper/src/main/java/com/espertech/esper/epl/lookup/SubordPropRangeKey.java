@@ -2,10 +2,11 @@ package com.espertech.esper.epl.lookup;
 
 import com.espertech.esper.epl.join.plan.QueryGraphValueEntryRange;
 
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
 
-public class SubordPropRangeKey {
+public class SubordPropRangeKey implements Serializable {
     private QueryGraphValueEntryRange rangeInfo;
     private Class coercionType;
 

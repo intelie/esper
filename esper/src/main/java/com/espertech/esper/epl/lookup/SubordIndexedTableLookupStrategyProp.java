@@ -95,6 +95,10 @@ public class SubordIndexedTableLookupStrategyProp implements SubordTableLookupSt
         return index.lookup(keys);
     }
 
+    public Collection<EventBean> lookup(Object[] keys) {
+        return index.lookup(keys);
+    }
+
     /**
      * Get the index lookup keys.
      * @param eventsPerStream is the events for each stream

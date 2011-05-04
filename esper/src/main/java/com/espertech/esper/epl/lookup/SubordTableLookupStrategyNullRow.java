@@ -11,6 +11,7 @@ package com.espertech.esper.epl.lookup;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -28,6 +29,10 @@ public class SubordTableLookupStrategyNullRow implements SubordTableLookupStrate
     }
 
     public Set<EventBean> lookup(EventBean[] events, ExprEvaluatorContext context) {
+        return singleNullRowEventSet;
+    }
+
+    public Collection<EventBean> lookup(Object[] keys) {
         return singleNullRowEventSet;
     }
 

@@ -62,7 +62,7 @@ public class JoinExecTableLookupStrategyVirtualDW implements JoinExecTableLookup
 
         Set<EventBean> events = null;
         try {
-            events = externalIndex.lookup(keys);
+            events = externalIndex.lookup(keys, eventsPerStream);
         }
         catch (RuntimeException ex) {
             log.warn("Exception encountered invoking virtual data window external index for window '" + namedWindowName + "': " + ex.getMessage(), ex);

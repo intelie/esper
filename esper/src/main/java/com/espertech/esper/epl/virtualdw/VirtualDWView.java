@@ -11,6 +11,7 @@ import com.espertech.esper.epl.join.plan.QueryPlanIndexItem;
 import com.espertech.esper.epl.join.plan.TableLookupKeyDesc;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.lookup.SubordPropHashKey;
+import com.espertech.esper.epl.lookup.SubordPropPlan;
 import com.espertech.esper.epl.lookup.SubordPropRangeKey;
 import com.espertech.esper.epl.lookup.SubordTableLookupStrategy;
 import com.espertech.esper.epl.named.IndexMultiKey;
@@ -22,7 +23,7 @@ import java.util.Set;
 
 public interface VirtualDWView {
     public Pair<IndexMultiKey,EventTable> getSubordinateQueryDesc(List<IndexedPropDesc> hashedProps, List<IndexedPropDesc> btreeProps);
-    public SubordTableLookupStrategy getSubordinateLookupStrategy(EventType[] outerStreamTypes, List<SubordPropHashKey> hashKeys, CoercionDesc hashKeyCoercionTypes, List<SubordPropRangeKey> rangeKeys, CoercionDesc rangeKeyCoercionTypes, boolean nwOnTrigger, EventTable eventTable);
+    public SubordTableLookupStrategy getSubordinateLookupStrategy(String accessedByStatementName, EventType[] outerStreamTypes, List<SubordPropHashKey> hashKeys, CoercionDesc hashKeyCoercionTypes, List<SubordPropRangeKey> rangeKeys, CoercionDesc rangeKeyCoercionTypes, boolean nwOnTrigger, EventTable eventTable, SubordPropPlan joinDesc, boolean forceTableScan);
 
     public EventTable getJoinIndexTable(QueryPlanIndexItem queryPlanIndexItem);
     public JoinExecTableLookupStrategy getJoinLookupStrategy(EventTable eventTable, TableLookupKeyDesc keyDescriptor, int lookupStreamNum);

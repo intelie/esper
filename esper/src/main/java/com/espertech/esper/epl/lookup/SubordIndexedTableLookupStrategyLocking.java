@@ -44,6 +44,22 @@ public class SubordIndexedTableLookupStrategyLocking implements SubordTableLooku
         }
     }
 
+    public Collection<EventBean> lookup(Object[] keys) {
+        statementLock.acquireReadLock();
+        try {
+            Collection<EventBean> result = inner.lookup(keys);
+            if (result != null) {
+                return new ArrayDeque<EventBean>(result);
+            }
+            else {
+                return Collections.emptyList();
+            }
+        }
+        finally {
+            statementLock.releaseReadLock();
+        }
+    }
+
     public String toQueryPlan() {
         return this.getClass().getSimpleName() + " inner " + inner.toQueryPlan();
     }

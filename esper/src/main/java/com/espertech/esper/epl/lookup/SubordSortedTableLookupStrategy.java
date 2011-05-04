@@ -41,9 +41,12 @@ public class SubordSortedTableLookupStrategy implements SubordTableLookupStrateg
         this.strategy = SortedAccessStrategyFactory.make(isNWOnTrigger, -1, numStreams, rangeKey);
     }
 
-    public Collection<EventBean> lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
-    {
+    public Collection<EventBean> lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
         return strategy.lookup(eventsPerStream, index, context);
+    }
+
+    public Collection<EventBean> lookup(Object[] keys) {
+        return null;
     }
 
     public String toString()

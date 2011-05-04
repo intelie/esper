@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -32,6 +33,14 @@ public class SubordFullTableScanLookupStrategy implements SubordTableLookupStrat
 
     public Set<EventBean> lookup(EventBean[] eventPerStream, ExprEvaluatorContext context)
     {
+        return lookupInternal();
+    }
+
+    public Collection<EventBean> lookup(Object[] keys) {
+        return lookupInternal();
+    }
+
+    private Set<EventBean> lookupInternal() {
         Set<EventBean> result = eventIndex.getEventSet();
         if (result.isEmpty())
         {

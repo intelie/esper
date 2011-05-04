@@ -15,6 +15,7 @@ public class SupportVirtualDW implements VirtualDataWindow {
     private boolean destroyed;
     private VirtualDataWindowLookupContext lastRequestedIndex;
     private Object[] lastAccessKeys;
+    private EventBean[] lastAccessEvents;
     private EventBean[] lastUpdateNew;
     private EventBean[] lastUpdateOld;
 
@@ -57,6 +58,14 @@ public class SupportVirtualDW implements VirtualDataWindow {
 
     public Object[] getLastAccessKeys() {
         return lastAccessKeys;
+    }
+
+    public void setLastAccessEvents(EventBean[] lastAccessEvents) {
+        this.lastAccessEvents = lastAccessEvents;
+    }
+
+    public EventBean[] getLastAccessEvents() {
+        return lastAccessEvents;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData) {

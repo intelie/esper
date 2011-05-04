@@ -1,7 +1,7 @@
 package com.espertech.esper.client.annotation;
 
 import com.espertech.esper.epl.annotation.AnnotationException;
-import com.espertech.esper.util.AnnotationUtil;
+import com.espertech.esper.epl.annotation.AnnotationUtil;
 
 import java.lang.annotation.Annotation;
 

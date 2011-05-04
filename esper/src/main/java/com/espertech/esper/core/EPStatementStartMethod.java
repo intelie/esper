@@ -2034,7 +2034,7 @@ public class EPStatementStartMethod
                             queryPlanLog.info("prefering shared index");
                         }
                         SubordPropPlan joinedPropPlan = QueryPlanIndexBuilder.getJoinProps(filterExpr, outerEventTypes.length, subselectTypeService.getEventTypes());
-                        namedWindowSubqueryLookup = processor.getRootView().getAddSubqueryLookupStrategy(outerEventTypesSelect, joinedPropPlan, fullTableScan);
+                        namedWindowSubqueryLookup = processor.getRootView().getAddSubqueryLookupStrategy(statementContext.getStatementName(), outerEventTypesSelect, joinedPropPlan, fullTableScan);
                         subselect.setStrategy(namedWindowSubqueryLookup);
                         stopCallbacks.add(new NamedWindowSubqueryStopCallback(processor, namedWindowSubqueryLookup));
                     }

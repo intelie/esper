@@ -75,7 +75,18 @@ public class SubordTableLookupStrategyVirtualDW implements SubordTableLookupStra
 
         Set<EventBean> data = null;
         try {
-            data = externalIndex.lookup(keys);
+            data = externalIndex.lookup(keys, eventsPerStream);
+        }
+        catch (RuntimeException ex) {
+            log.warn("Exception encountered invoking virtual data window external index for window '" + namedWindowName + "': " + ex.getMessage(), ex);
+        }
+        return data;
+    }
+
+    public Collection<EventBean> lookup(Object[] keys) {
+        Set<EventBean> data = null;
+        try {
+            data = externalIndex.lookup(keys, null);
         }
         catch (RuntimeException ex) {
             log.warn("Exception encountered invoking virtual data window external index for window '" + namedWindowName + "': " + ex.getMessage(), ex);

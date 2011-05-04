@@ -14,6 +14,7 @@ import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Index lookup strategy for subqueries.
@@ -30,6 +31,14 @@ public class SubordFullTableScanLookupStrategyLocking implements SubordTableLook
 
     @Override
     public Collection<EventBean> lookup(EventBean[] events, ExprEvaluatorContext context) {
+        return lookupInternal();
+    }
+
+    public Collection<EventBean> lookup(Object[] keys) {
+        return lookupInternal();
+    }
+
+    private Collection<EventBean> lookupInternal() {
         statementLock.acquireReadLock();
         try {
             ArrayDeque<EventBean> result = new ArrayDeque<EventBean>();
