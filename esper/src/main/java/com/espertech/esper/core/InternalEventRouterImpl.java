@@ -5,9 +5,9 @@ import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.annotation.Drop;
 import com.espertech.esper.client.annotation.Priority;
+import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprEvaluatorContext;
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.spec.UpdateDesc;
 import com.espertech.esper.event.EventBeanCopyMethod;
@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Routing implementation that allows to pre-process events.
@@ -30,9 +31,10 @@ public class InternalEventRouterImpl implements InternalEventRouter
 {
     private static final Log log = LogFactory.getLog(InternalEventRouterImpl.class);
 
-    private boolean hasPreprocessing = false;
     private final ConcurrentHashMap<EventType, NullableObject<InternalEventRouterPreprocessor>> preprocessors;
     private final Map<UpdateDesc, IRDescEntry> descriptors;
+    private boolean hasPreprocessing = false;
+    private InsertIntoListener insertIntoListener;
 
     /**
      * Ctor.
@@ -63,10 +65,17 @@ public class InternalEventRouterImpl implements InternalEventRouter
         return getPreprocessedEvent(eventBean, exprEvaluatorContext);
     }
 
+    public void setInsertIntoListener(InsertIntoListener insertIntoListener) {
+        this.insertIntoListener = insertIntoListener;
+    }
+
     public void route(EventBean event, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext, boolean addToFront)
     {
         if (!hasPreprocessing)
         {
+            if (insertIntoListener != null) {
+                insertIntoListener.inserted(event, statementHandle);
+            }
             routeDest.route(event, statementHandle, addToFront);
             return;
         }
@@ -74,6 +83,9 @@ public class InternalEventRouterImpl implements InternalEventRouter
         EventBean preprocessed = getPreprocessedEvent(event, exprEvaluatorContext);
         if (preprocessed != null)
         {
+            if (insertIntoListener != null) {
+                insertIntoListener.inserted(event, statementHandle);
+            }
             routeDest.route(preprocessed, statementHandle, addToFront);
         }
     }

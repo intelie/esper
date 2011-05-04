@@ -51,4 +51,6 @@ public interface InternalEventRouter
     public boolean isHasPreprocessing();
 
     public EventBean preprocess(EventBean event, ExprEvaluatorContext engineFilterAndDispatchTimeContext);
+
+    public void setInsertIntoListener(InsertIntoListener insertIntoListener);    
 }
