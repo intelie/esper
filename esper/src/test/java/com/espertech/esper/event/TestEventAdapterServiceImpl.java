@@ -21,7 +21,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void setUp()
     {
-        adapterService = new EventAdapterServiceImpl();
+        adapterService = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl());
     }
 
     public void testSelfRefEvent()

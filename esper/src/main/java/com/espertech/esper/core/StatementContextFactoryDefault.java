@@ -164,7 +164,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 statementFilterVersion,
                 annotations,
                 engineServices.getExceptionHandlingService(),
-                new ExpressionResultCacheService());
+                new ExpressionResultCacheService(),
+                engineServices.getEventTypeIdGenerator());
     }
 
     /**

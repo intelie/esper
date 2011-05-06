@@ -26,6 +26,7 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     private static Log log = LogFactory.getLog(BaseConfigurableEventType.class);
 
     private EventAdapterService eventAdapterService;
+    private final int eventTypeId;
     private final EventTypeMetadata metadata;
     private Class underlyngType;
     private EventPropertyDescriptor[] propertyDescriptors;
@@ -48,11 +49,16 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
      * @param metadata event type metadata
      * @param eventAdapterService for dynamic event type creation
      */
-    protected BaseConfigurableEventType(EventAdapterService eventAdapterService, EventTypeMetadata metadata, Class underlyngType)
+    protected BaseConfigurableEventType(EventAdapterService eventAdapterService, EventTypeMetadata metadata, int eventTypeId, Class underlyngType)
     {
+        this.eventTypeId = eventTypeId;
         this.eventAdapterService = eventAdapterService;
         this.metadata = metadata;
         this.underlyngType = underlyngType;
+    }
+
+    public int getEventTypeId() {
+        return eventTypeId;
     }
 
     /**

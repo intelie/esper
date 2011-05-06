@@ -209,7 +209,7 @@ public class EPStatementStartMethod
                 else {
                     config.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
                 }
-                services.getValueAddEventService().addVariantStream(spec.getSchemaName(), config, services.getEventAdapterService());
+                services.getValueAddEventService().addVariantStream(spec.getSchemaName(), config, services.getEventAdapterService(), services.getEventTypeIdGenerator());
                 eventType = services.getValueAddEventService().getValueAddProcessor(spec.getSchemaName()).getValueAddEventType();
             }
         }
@@ -517,7 +517,7 @@ public class EPStatementStartMethod
         String exprNodeErrorMessage = "Aggregation functions may not be used within an merge-clause";
         for (OnTriggerMergeMatched matchedItem : mergeDesc.getItems()) {
 
-            EventType dummyTypeNoProperties = new MapEventType(EventTypeMetadata.createAnonymous("merge_named_window_insert"), "merge_named_window_insert", null, Collections.<String, Object>emptyMap(), null, null);
+            EventType dummyTypeNoProperties = new MapEventType(EventTypeMetadata.createAnonymous("merge_named_window_insert"), "merge_named_window_insert", 0, null, Collections.<String, Object>emptyMap(), null, null);
             StreamTypeService twoStreamTypeSvc = new StreamTypeServiceImpl(new EventType[] {namedWindowType, triggerStreamType},
                     new String[] {namedWindowName, triggerStreamName}, new boolean[] {true, true}, statementContext.getEngineURI(), false);
             StreamTypeService insertOnlyTypeSvc = new StreamTypeServiceImpl(new EventType[] {dummyTypeNoProperties, triggerStreamType},

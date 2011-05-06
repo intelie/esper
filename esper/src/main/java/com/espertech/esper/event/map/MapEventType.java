@@ -13,7 +13,6 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.event.*;
 import com.espertech.esper.event.bean.BeanEventType;
-import com.espertech.esper.event.bean.InternalEventPropDescriptor;
 import com.espertech.esper.event.property.*;
 import com.espertech.esper.util.GraphUtil;
 import com.espertech.esper.util.JavaClassHelper;
@@ -31,6 +30,7 @@ public class MapEventType implements EventTypeSPI
     private final EventAdapterService eventAdapterService;
     private final EventType[] optionalSuperTypes;
     private final Set<EventType> optionalDeepSupertypes;
+    private final int eventTypeId;
 
     // Simple (not-nested) properties are stored here
     private String[] propertyNames;       // Cache an array of property names so not to construct one frequently
@@ -63,12 +63,15 @@ public class MapEventType implements EventTypeSPI
      */
     public MapEventType(EventTypeMetadata metadata,
                         String typeName,
+                        int eventTypeId,
                         EventAdapterService eventAdapterService,
                         Map<String, Object> propertyTypes,
                         EventType[] optionalSuperTypes,
-                        Set<EventType> optionalDeepSupertypes)
+                        Set<EventType> optionalDeepSupertypes
+                        )
     {
         this.metadata = metadata;
+        this.eventTypeId = eventTypeId;
         this.typeName = typeName;
         this.eventAdapterService = eventAdapterService;
 
@@ -120,6 +123,10 @@ public class MapEventType implements EventTypeSPI
     public EventBeanReader getReader()
     {
         return new MapEventBeanReader(this);
+    }
+
+    public int getEventTypeId() {
+        return eventTypeId;
     }
 
     public final Class getPropertyType(String propertyName)

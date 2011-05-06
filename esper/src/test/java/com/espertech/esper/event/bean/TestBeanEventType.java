@@ -26,9 +26,9 @@ public class TestBeanEventType extends TestCase
 
     public void setUp()
     {
-        eventTypeSimple = new BeanEventType(null, SupportBeanSimple.class, SupportEventAdapterService.getService(), null);
-        eventTypeComplex = new BeanEventType(null, SupportBeanComplexProps.class, SupportEventAdapterService.getService(), null);
-        eventTypeNested = new BeanEventType(null, SupportBeanCombinedProps.class, SupportEventAdapterService.getService(), null);
+        eventTypeSimple = new BeanEventType(null, 0, SupportBeanSimple.class, SupportEventAdapterService.getService(), null);
+        eventTypeComplex = new BeanEventType(null, 0, SupportBeanComplexProps.class, SupportEventAdapterService.getService(), null);
+        eventTypeNested = new BeanEventType(null, 0, SupportBeanCombinedProps.class, SupportEventAdapterService.getService(), null);
 
         objSimple = new SupportBeanSimple("a", 20);
         objComplex = SupportBeanComplexProps.makeDefaultBean();
@@ -115,7 +115,7 @@ public class TestBeanEventType extends TestCase
         try
         {
             // test mismatch between bean and object
-            EventType type = SupportEventAdapterService.getService().getBeanEventTypeFactory().createBeanType(Object.class.getName(), Object.class, false, false, false);
+            EventType type = SupportEventAdapterService.getService().getBeanEventTypeFactory().createBeanType(Object.class.getName(), Object.class, false, false, false, null);
             EventBean eventBean = new BeanEventBean(new Object(), type);
             getter.get(eventBean);
             fail();
@@ -199,7 +199,7 @@ public class TestBeanEventType extends TestCase
 
     public void testGetDeepSuperTypes()
     {
-        BeanEventType type = new BeanEventType(null, ISupportAImplSuperGImplPlus.class, SupportEventAdapterService.getService(), null);
+        BeanEventType type = new BeanEventType(null, 1, ISupportAImplSuperGImplPlus.class, SupportEventAdapterService.getService(), null);
 
         List<EventType> deepSuperTypes = new LinkedList<EventType>();
         for (Iterator<EventType> it = type.getDeepSuperTypes(); it.hasNext();)
@@ -213,11 +213,11 @@ public class TestBeanEventType extends TestCase
         ArrayAssertionUtil.assertEqualsAnyOrder(
                 deepSuperTypes.toArray(),
                 new EventType[] {
-                    beanEventTypeFactory.createBeanType("e1", ISupportAImplSuperG.class, false, false, false),
-                    beanEventTypeFactory.createBeanType("e2", ISupportBaseAB.class, false, false, false),
-                    beanEventTypeFactory.createBeanType("e3", ISupportA.class, false, false, false),
-                    beanEventTypeFactory.createBeanType("e4", ISupportB.class, false, false, false),
-                    beanEventTypeFactory.createBeanType("e5", ISupportC.class, false, false, false)
+                    beanEventTypeFactory.createBeanType("e1", ISupportAImplSuperG.class, false, false, false, null),
+                    beanEventTypeFactory.createBeanType("e2", ISupportBaseAB.class, false, false, false, null),
+                    beanEventTypeFactory.createBeanType("e3", ISupportA.class, false, false, false, null),
+                    beanEventTypeFactory.createBeanType("e4", ISupportB.class, false, false, false, null),
+                    beanEventTypeFactory.createBeanType("e5", ISupportC.class, false, false, false, null)
                 });
     }
 
@@ -243,7 +243,7 @@ public class TestBeanEventType extends TestCase
 
     public void testGetSuperTypes()
     {
-        eventTypeSimple = new BeanEventType(null, ISupportAImplSuperGImplPlus.class, SupportEventAdapterService.getService(), null);
+        eventTypeSimple = new BeanEventType(null, 1, ISupportAImplSuperGImplPlus.class, SupportEventAdapterService.getService(), null);
 
         EventType[] superTypes = eventTypeSimple.getSuperTypes();
         assertEquals(3, superTypes.length);
@@ -251,11 +251,11 @@ public class TestBeanEventType extends TestCase
         assertEquals(ISupportB.class, superTypes[1].getUnderlyingType());
         assertEquals(ISupportC.class, superTypes[2].getUnderlyingType());
 
-        eventTypeSimple = new BeanEventType(null, Object.class, SupportEventAdapterService.getService(), null);
+        eventTypeSimple = new BeanEventType(null, 1, Object.class, SupportEventAdapterService.getService(), null);
         superTypes = eventTypeSimple.getSuperTypes();
         assertEquals(0, superTypes.length);
 
-        BeanEventType type = new BeanEventType(null, ISupportD.class, SupportEventAdapterService.getService(), null);
+        BeanEventType type = new BeanEventType(null, 1, ISupportD.class, SupportEventAdapterService.getService(), null);
         assertEquals(3, type.getPropertyNames().length);
         ArrayAssertionUtil.assertEqualsAnyOrder(
                 type.getPropertyNames(),

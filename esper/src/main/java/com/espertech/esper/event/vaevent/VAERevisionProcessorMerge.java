@@ -15,6 +15,7 @@ import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;
 import com.espertech.esper.epl.named.NamedWindowRootView;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.StatementStopService;
@@ -42,7 +43,7 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
      * @param statementStopService for stop handling
      * @param eventAdapterService for nested property handling
      */
-    public VAERevisionProcessorMerge(String revisioneventTypeName, RevisionSpec spec, StatementStopService statementStopService, EventAdapterService eventAdapterService)
+    public VAERevisionProcessorMerge(String revisioneventTypeName, RevisionSpec spec, StatementStopService statementStopService, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
     {
         super(spec, revisioneventTypeName, eventAdapterService);
 
@@ -171,7 +172,7 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
         }
 
         EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(revisioneventTypeName, EventTypeMetadata.TypeClass.REVISION);
-        revisionEventType = new RevisionEventType(metadata, propertyDesc, eventAdapterService);
+        revisionEventType = new RevisionEventType(metadata, eventTypeIdGenerator.nextId(revisioneventTypeName), propertyDesc, eventAdapterService);
     }
 
     public EventBean getValueAddEventBean(EventBean event)

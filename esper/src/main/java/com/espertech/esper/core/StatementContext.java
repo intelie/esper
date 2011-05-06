@@ -17,6 +17,7 @@ import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.pattern.PatternContextFactory;
@@ -71,6 +72,7 @@ public final class StatementContext implements ExprEvaluatorContext
     private final Annotation[] annotations;
     private final ExceptionHandlingService exceptionHandlingService;
     private final ExpressionResultCacheService expressionResultCacheService;
+    private final EventTypeIdGenerator eventTypeIdGenerator;
 
     /**
      * Constructor.
@@ -133,7 +135,8 @@ public final class StatementContext implements ExprEvaluatorContext
                               StatementFilterVersion statementFilterVersion,
                               Annotation[] annotations,
                               ExceptionHandlingService exceptionHandlingService,
-                              ExpressionResultCacheService expressionResultCacheService)
+                              ExpressionResultCacheService expressionResultCacheService,
+                              EventTypeIdGenerator eventTypeIdGenerator)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -168,6 +171,7 @@ public final class StatementContext implements ExprEvaluatorContext
         this.annotations = annotations;
         this.exceptionHandlingService = exceptionHandlingService;
         this.expressionResultCacheService = expressionResultCacheService;
+        this.eventTypeIdGenerator = eventTypeIdGenerator;
     }
 
     /**
@@ -499,5 +503,9 @@ public final class StatementContext implements ExprEvaluatorContext
     {
         return  " stmtId=" + statementId +
                 " stmtName=" + statementName;
+    }
+
+    public EventTypeIdGenerator getEventTypeIdGenerator() {
+        return eventTypeIdGenerator;
     }
 }

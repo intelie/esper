@@ -41,9 +41,9 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
      * @param metadata event type metadata
      * @param eventAdapterService for registration and lookup of types
      */
-    public BaseXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, EventAdapterService eventAdapterService)
+    public BaseXMLEventType(EventTypeMetadata metadata, int eventTypeId, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, EventAdapterService eventAdapterService)
     {
-        super(eventAdapterService, metadata, Node.class);
+        super(eventAdapterService, metadata, eventTypeId, Node.class);
         this.rootElementName = configurationEventTypeXMLDOM.getRootElementName();
         this.configurationEventTypeXMLDOM = configurationEventTypeXMLDOM;
         xPathFactory = XPathFactory.newInstance();

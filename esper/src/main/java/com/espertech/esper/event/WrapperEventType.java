@@ -46,6 +46,7 @@ public class WrapperEventType implements EventTypeSPI
     private final String[] propertyNames;
     private final EventPropertyDescriptor[] propertyDesc;
     private final Map<String, EventPropertyDescriptor> propertyDescriptorMap;
+    private final int eventTypeId;
 
     private final int hashCode;
     private final boolean isNoMapProperties;
@@ -62,17 +63,18 @@ public class WrapperEventType implements EventTypeSPI
      * @param metadata event type metadata
      * @param eventAdapterService is the service for resolving unknown wrapped types
      */
-    public WrapperEventType(EventTypeMetadata metadata, String typeName, EventType eventType, Map<String, Object> properties, EventAdapterService eventAdapterService)
+    public WrapperEventType(EventTypeMetadata metadata, String typeName, int eventTypeId, EventType eventType, Map<String, Object> properties, EventAdapterService eventAdapterService)
 	{
 		checkForRepeatedPropertyNames(eventType, properties);
 
         this.metadata = metadata;
 		this.underlyingEventType = eventType;
         EventTypeMetadata metadataMapType = EventTypeMetadata.createAnonymous(typeName);
-        this.underlyingMapType = new MapEventType(metadataMapType, typeName, eventAdapterService, properties, null, null);
+        this.underlyingMapType = new MapEventType(metadataMapType, typeName, 0, eventAdapterService, properties, null, null);
         this.hashCode = underlyingMapType.hashCode() ^ underlyingEventType.hashCode();
         this.isNoMapProperties = properties.isEmpty();
         this.eventAdapterService = eventAdapterService;
+        this.eventTypeId = eventTypeId;
         propertyGetterCache = new HashMap<String, EventPropertyGetter>();
 
         List<String> propertyNames = new ArrayList<String>();
@@ -103,6 +105,10 @@ public class WrapperEventType implements EventTypeSPI
     public String getName()
     {
         return metadata.getPublicName();
+    }
+
+    public int getEventTypeId() {
+        return eventTypeId;
     }
 
     public EventPropertyGetter getGetter(final String property)

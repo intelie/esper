@@ -24,7 +24,7 @@ public interface BeanEventTypeFactory
      * @param isPreconfiguredStatic if from static engine config
      * @return is the event type for the class
      */
-    public BeanEventType createBeanType(String name, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured);
+    public BeanEventType createBeanType(String name, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, Integer eventTypeId);
 
     /**
      * Returns the bean event type for a given class assigning the given name.

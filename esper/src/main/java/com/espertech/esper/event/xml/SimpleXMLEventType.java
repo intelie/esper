@@ -14,7 +14,6 @@ import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.event.EventBeanWriter;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
 import org.antlr.runtime.tree.Tree;
@@ -56,9 +55,9 @@ public class SimpleXMLEventType extends BaseXMLEventType {
      * @param eventTypeMetadata event type metadata
      * @param eventAdapterService for type looking and registration
      */
-    public SimpleXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, EventAdapterService eventAdapterService)
+    public SimpleXMLEventType(EventTypeMetadata eventTypeMetadata, int eventTypeId, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, EventAdapterService eventAdapterService)
     {
-        super(eventTypeMetadata, configurationEventTypeXMLDOM, eventAdapterService);
+        super(eventTypeMetadata, eventTypeId, configurationEventTypeXMLDOM, eventAdapterService);
         isResolvePropertiesAbsolute = configurationEventTypeXMLDOM.isXPathResolvePropertiesAbsolute();
 
         // Set of namespace context for XPath expressions

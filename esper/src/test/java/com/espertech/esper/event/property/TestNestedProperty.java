@@ -1,19 +1,19 @@
 package com.espertech.esper.event.property;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.event.EventTypeIdGeneratorImpl;
 import com.espertech.esper.event.bean.BeanEventAdapter;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.bean.BeanEventTypeFactory;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
-import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.event.SupportEventAdapterService;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.espertech.esper.support.event.SupportEventBeanFactory;
 import junit.framework.TestCase;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TestNestedProperty extends TestCase
 {
@@ -23,7 +23,7 @@ public class TestNestedProperty extends TestCase
 
     public void setUp()
     {
-        beanEventTypeFactory = new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>(), SupportEventAdapterService.getService());
+        beanEventTypeFactory = new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>(), SupportEventAdapterService.getService(), new EventTypeIdGeneratorImpl());
 
         nested = new NestedProperty[2];
         nested[0] = makeProperty(new String[] {"nested", "nestedValue"});

@@ -13,6 +13,7 @@ import com.espertech.esper.client.ConfigurationRevisionEventType;
 import com.espertech.esper.client.ConfigurationVariantStream;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.view.StatementStopService;
 
 import java.util.*;
@@ -64,7 +65,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         return types.toArray(new EventType[types.size()]);
     }
 
-    public void init(Map<String, ConfigurationRevisionEventType> configRevision, Map<String, ConfigurationVariantStream> configVariant, EventAdapterService eventAdapterService)
+    public void init(Map<String, ConfigurationRevisionEventType> configRevision, Map<String, ConfigurationVariantStream> configVariant, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
             throws ConfigurationException
     {
         for (Map.Entry<String, ConfigurationRevisionEventType> entry : configRevision.entrySet())
@@ -73,7 +74,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         }
         for (Map.Entry<String, ConfigurationVariantStream> entry : configVariant.entrySet())
         {
-            addVariantStream(entry.getKey(), entry.getValue(), eventAdapterService);
+            addVariantStream(entry.getKey(), entry.getValue(), eventAdapterService, eventTypeIdGenerator);
         }
     }
 
@@ -84,10 +85,10 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         specificationsByRevisionName.put(revisioneventTypeName, specification);
     }
 
-    public void addVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
+    public void addVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator) throws ConfigurationException
     {
         VariantSpec variantSpec = validateVariantStream(variantStreamname, variantStreamConfig, eventAdapterService);
-        VAEVariantProcessor processor = new VAEVariantProcessor(variantSpec);
+        VAEVariantProcessor processor = new VAEVariantProcessor(variantSpec, eventTypeIdGenerator);
         eventAdapterService.addTypeByName(variantStreamname, processor.getValueAddEventType());
         variantProcessors.put(variantStreamname, processor);
     }
@@ -124,17 +125,17 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         return new VariantSpec(variantStreamname, eventTypes, variantStreamConfig.getTypeVariance());
     }
 
-    public EventType createRevisionType(String namedWindowName, String name, StatementStopService statementStopService, EventAdapterService eventAdapterService)
+    public EventType createRevisionType(String namedWindowName, String name, StatementStopService statementStopService, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
     {
         RevisionSpec spec = specificationsByRevisionName.get(name);
         ValueAddEventProcessor processor;
         if (spec.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
         {
-            processor = new VAERevisionProcessorDeclared(name, spec, statementStopService, eventAdapterService);
+            processor = new VAERevisionProcessorDeclared(name, spec, statementStopService, eventAdapterService, eventTypeIdGenerator);
         }
         else
         {
-            processor = new VAERevisionProcessorMerge(name, spec, statementStopService, eventAdapterService);
+            processor = new VAERevisionProcessorMerge(name, spec, statementStopService, eventAdapterService, eventTypeIdGenerator);
         }
 
         processorsByNamedWindow.put(namedWindowName, processor);

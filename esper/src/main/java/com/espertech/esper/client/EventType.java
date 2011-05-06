@@ -210,4 +210,6 @@ public interface EventType
      * @return a getter that can be used to obtain property values for event instances of the same event type
      */
     public EventPropertyGetterIndexed getGetterIndexed(String indexedPropertyName);
+
+    public int getEventTypeId();
 }

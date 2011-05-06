@@ -12,10 +12,10 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.event.*;
 import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.event.xml.SimpleXMLPropertyParser;
+import org.antlr.runtime.tree.Tree;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.jaxen.JaxenException;
-import org.antlr.runtime.tree.Tree;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
@@ -35,6 +35,7 @@ import java.util.*;
 public class AxiomXMLEventType implements EventTypeSPI
 {
     private EventTypeMetadata metadata;
+    private int eventTypeId;
     private String defaultNamespacePrefix;
     private ConfigurationEventTypeAxiom config;
     private AxiomXPathNamespaceContext namespaceContext;
@@ -46,9 +47,10 @@ public class AxiomXMLEventType implements EventTypeSPI
      * Ctor.
      * @param configurationEventTypeAxiom is the configuration for XML access
      */
-    public AxiomXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeAxiom configurationEventTypeAxiom)
+    public AxiomXMLEventType(EventTypeMetadata metadata, int eventTypeId, ConfigurationEventTypeAxiom configurationEventTypeAxiom)
     {
         this.metadata = metadata;
+        this.eventTypeId = eventTypeId;
         this.config = configurationEventTypeAxiom;
         this.propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
 
@@ -97,6 +99,10 @@ public class AxiomXMLEventType implements EventTypeSPI
             throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + '\'', ex);
         }
         propertyDescriptors = descriptors.toArray(new EventPropertyDescriptor[descriptors.size()]); 
+    }
+
+    public int getEventTypeId() {
+        return eventTypeId;
     }
 
     public Class getPropertyType(String property) {

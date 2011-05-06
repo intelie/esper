@@ -22,6 +22,7 @@ import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterServiceSPI;
 import com.espertech.esper.pattern.PatternNodeFactory;
@@ -78,6 +79,7 @@ public final class EPServicesContext
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
     private InternalEventRouterImpl internalEventRouter;
+    private EventTypeIdGenerator eventTypeIdGenerator;
 
     /**
      * Constructor - sets up new set of services.
@@ -144,7 +146,8 @@ public final class EPServicesContext
                              SchedulingMgmtService schedulingMgmtService,
                              DeploymentStateService deploymentStateService,
                              ExceptionHandlingService exceptionHandlingService,
-                             PatternNodeFactory patternNodeFactory)
+                             PatternNodeFactory patternNodeFactory,
+                             EventTypeIdGenerator eventTypeIdGenerator)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -181,6 +184,7 @@ public final class EPServicesContext
         this.deploymentStateService = deploymentStateService;
         this.exceptionHandlingService = exceptionHandlingService;
         this.patternNodeFactory = patternNodeFactory;
+        this.eventTypeIdGenerator = eventTypeIdGenerator;
     }
 
     public PatternNodeFactory getPatternNodeFactory() {
@@ -607,5 +611,9 @@ public final class EPServicesContext
 
     public ExceptionHandlingService getExceptionHandlingService() {
         return exceptionHandlingService;
+    }
+
+    public EventTypeIdGenerator getEventTypeIdGenerator() {
+        return eventTypeIdGenerator;
     }
 }

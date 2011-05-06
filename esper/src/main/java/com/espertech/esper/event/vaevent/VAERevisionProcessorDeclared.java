@@ -18,6 +18,7 @@ import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;
 import com.espertech.esper.epl.named.NamedWindowRootView;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.StatementStopService;
@@ -46,7 +47,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
      * @param statementStopService for stop handling
      * @param eventAdapterService for nested property handling
      */
-    public VAERevisionProcessorDeclared(String revisionEventTypeName, RevisionSpec spec, StatementStopService statementStopService, EventAdapterService eventAdapterService)
+    public VAERevisionProcessorDeclared(String revisionEventTypeName, RevisionSpec spec, StatementStopService statementStopService, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
     {
         super(spec, revisionEventTypeName, eventAdapterService);
 
@@ -68,7 +69,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
         typeDescriptors = PropertyUtility.getPerType(groups, spec.getChangesetPropertyNames(), spec.getKeyPropertyNames());
         EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(revisionEventTypeName, EventTypeMetadata.TypeClass.REVISION);
-        revisionEventType = new RevisionEventType(metadata, propertyDesc, eventAdapterService);
+        revisionEventType = new RevisionEventType(metadata, eventTypeIdGenerator.nextId(revisionEventTypeName), propertyDesc, eventAdapterService);
     }
 
     public EventBean getValueAddEventBean(EventBean event)

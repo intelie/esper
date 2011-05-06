@@ -30,9 +30,7 @@ import com.espertech.esper.epl.variable.VariableServiceImpl;
 import com.espertech.esper.epl.variable.VariableTypeException;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.epl.view.OutputConditionFactoryDefault;
-import com.espertech.esper.event.EventAdapterException;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventAdapterServiceImpl;
+import com.espertech.esper.event.*;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.ValueAddEventServiceImpl;
 import com.espertech.esper.event.xml.SchemaModel;
@@ -70,7 +68,8 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
     public EPServicesContext createServicesContext(EPServiceProvider epServiceProvider, ConfigurationInformation configSnapshot)
     {
         // Make services that depend on snapshot config entries
-        EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl();
+        EventTypeIdGenerator eventTypeIdGenerator = new EventTypeIdGeneratorImpl();
+        EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl(eventTypeIdGenerator);
         init(eventAdapterService, configSnapshot);
 
         // New read-write lock for concurrent event processing
@@ -116,7 +115,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService, engineSettingsService.getEngineSettings().getExecution().isPrioritized(), eventProcessingRWLock, exceptionHandlingService, configSnapshot.getEngineDefaults().getLogging().isEnableQueryPlan(), metricsReporting);
 
         ValueAddEventService valueAddEventService = new ValueAddEventServiceImpl();
-        valueAddEventService.init(configSnapshot.getRevisionEventTypes(), configSnapshot.getVariantStreams(), eventAdapterService);
+        valueAddEventService.init(configSnapshot.getRevisionEventTypes(), configSnapshot.getVariantStreams(), eventAdapterService, eventTypeIdGenerator);
 
         StatementEventTypeRef statementEventTypeRef = new StatementEventTypeRefImpl();
         StatementVariableRef statementVariableRef = new StatementVariableRefImpl(variableService);
@@ -136,7 +135,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
                 namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
                 statementVariableRef, configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService,
-                deploymentStateService, exceptionHandlingService, new PatternNodeFactoryImpl());
+                deploymentStateService, exceptionHandlingService, new PatternNodeFactoryImpl(), eventTypeIdGenerator);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

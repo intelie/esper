@@ -1,5 +1,6 @@
 package com.espertech.esper.support.event;
 
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.EventAdapterService;
@@ -13,43 +14,35 @@ import java.util.Map;
 
 public class SupportValueAddEventService implements ValueAddEventService
 {
-    public void init(Map<String, ConfigurationRevisionEventType> config, Map<String, ConfigurationVariantStream> variantStreams, EventAdapterService eventAdapterService)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void init(Map<String, ConfigurationRevisionEventType> revisionTypes, Map<String, ConfigurationVariantStream> variantStreams, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator) {
+
     }
 
-    public void addRevisionEventType(String alias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void addRevisionEventType(String name, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService) {
+
     }
 
-    public void addVariantStream(String varianteventTypeName, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
-    {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void addVariantStream(String variantEventTypeName, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator) throws ConfigurationException {
+
     }
 
-    public EventType getValueAddUnderlyingType(String alias)
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public EventType getValueAddUnderlyingType(String name) {
+        return null;
     }
 
-    public EventType createRevisionType(String namedWindowName, String alias, StatementStopService statementStopService, EventAdapterService eventAdapterService)
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public EventType createRevisionType(String namedWindowName, String typeName, StatementStopService statementStopService, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator) {
+        return null;
     }
 
-    public boolean isRevisionTypeName(String alias)
-    {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean isRevisionTypeName(String name) {
+        return false;
     }
 
-    public ValueAddEventProcessor getValueAddProcessor(String alias)
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ValueAddEventProcessor getValueAddProcessor(String name) {
+        return null;
     }
 
-    public EventType[] getValueAddedTypes()
-    {
+    public EventType[] getValueAddedTypes() {
         return new EventType[0];
     }
 }

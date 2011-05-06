@@ -52,10 +52,10 @@ public class SchemaXMLEventType extends BaseXMLEventType
      * @param schemaModel - the schema representation
      * @param eventAdapterService - type lookup and registration
      */
-    public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel, EventAdapterService eventAdapterService)
+    public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, int eventTypeId, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel, EventAdapterService eventAdapterService)
     {
-        super(eventTypeMetadata, config, eventAdapterService);
-        
+        super(eventTypeMetadata, eventTypeId, config, eventAdapterService);
+
         this.propertyGetterCache = new HashMap<String, EventPropertyGetter>();
         this.schemaModel = schemaModel;
         this.rootElementNamespace = config.getRootElementNamespace();

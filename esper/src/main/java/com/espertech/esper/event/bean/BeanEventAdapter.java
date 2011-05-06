@@ -11,6 +11,7 @@ package com.espertech.esper.event.bean;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.ConfigurationEventTypeLegacy;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.event.EventTypeMetadata;
 
 import java.util.HashMap;
@@ -28,6 +29,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
     private final ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean;
     private final Lock typesPerJavaBeanLock;
     private final EventAdapterService eventAdapterService;
+    private final EventTypeIdGenerator eventTypeIdGenerator;
 
     private Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
     private Configuration.PropertyResolutionStyle defaultPropertyResolutionStyle;
@@ -39,13 +41,14 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      * for caching bean types per class
      * @param eventAdapterService factory for event beans and event types
      */
-    public BeanEventAdapter(ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean, EventAdapterService eventAdapterService)
+    public BeanEventAdapter(ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
     {
         this.typesPerJavaBean = typesPerJavaBean;
         typesPerJavaBeanLock = new ReentrantLock();
         classToLegacyConfigs = new HashMap<String, ConfigurationEventTypeLegacy>();
         this.defaultPropertyResolutionStyle = Configuration.PropertyResolutionStyle.getDefault();
         this.eventAdapterService = eventAdapterService;
+        this.eventTypeIdGenerator = eventTypeIdGenerator;
     }
 
     /**
@@ -92,7 +95,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      */
     public final BeanEventType createBeanTypeDefaultName(Class clazz)
     {
-        return createBeanType(clazz.getName(), clazz, false, false, false);
+        return createBeanType(clazz.getName(), clazz, false, false, false, null);
     }
 
     /**
@@ -101,7 +104,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      * @param clazz is the class of the Java bean.
      * @return EventType implementation for bean class
      */
-    public final BeanEventType createBeanType(String name, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured)
+    public final BeanEventType createBeanType(String name, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, Integer eventTypeId)
     {
         if (clazz == null)
         {
@@ -127,8 +130,9 @@ public class BeanEventAdapter implements BeanEventTypeFactory
                 legacyDef.setAccessorStyle(defaultAccessorStyle);
             }
 
+            int typeId = eventTypeId != null ? eventTypeId : eventTypeIdGenerator.nextId(name);
             EventTypeMetadata metadata = EventTypeMetadata.createBeanType(name, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured);
-            eventType = new BeanEventType(metadata, clazz, eventAdapterService, legacyDef);
+            eventType = new BeanEventType(metadata, typeId, clazz, eventAdapterService, legacyDef);
             typesPerJavaBean.put(clazz, eventType);
         }
         catch (RuntimeException ex)

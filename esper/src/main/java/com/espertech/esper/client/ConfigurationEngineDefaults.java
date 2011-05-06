@@ -1459,7 +1459,7 @@ public class ConfigurationEngineDefaults implements Serializable
         private String resource;
         private String url;
         private String file;
-        private transient Document document;
+        private String xmlDocument;
 
         public boolean isEnabled() {
             return enabled;
@@ -1509,12 +1509,12 @@ public class ConfigurationEngineDefaults implements Serializable
             this.file = file;
         }
 
-        public Document getDocument() {
-            return document;
+        public String getXmlDocument() {
+            return xmlDocument;
         }
 
-        public void setDocument(Document document) {
-            this.document = document;
+        public void setXmlDocument(String xmlDocument) {
+            this.xmlDocument = xmlDocument;
         }
     }
 

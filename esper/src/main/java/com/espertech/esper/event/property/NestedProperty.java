@@ -99,7 +99,7 @@ public class NestedProperty implements Property
                 {
                     return null;
                 }
-                eventType = eventAdapterService.getBeanEventTypeFactory().createBeanType(clazz.getName(), clazz, false, false, false);
+                eventType = eventAdapterService.getBeanEventTypeFactory().createBeanType(clazz.getName(), clazz, false, false, false, null);
             }
             getters.add(getter);
         }
@@ -136,7 +136,7 @@ public class NestedProperty implements Property
                     return null;
                 }
 
-                eventType = eventAdapterService.getBeanEventTypeFactory().createBeanType(result.getName(), result, false, false, false);
+                eventType = eventAdapterService.getBeanEventTypeFactory().createBeanType(result.getName(), result, false, false, false, null);
             }
         }
 
@@ -171,7 +171,7 @@ public class NestedProperty implements Property
                     return null;
                 }
 
-                eventType = eventAdapterService.getBeanEventTypeFactory().createBeanType(result.getType().getName(), result.getType(), false, false, false);
+                eventType = eventAdapterService.getBeanEventTypeFactory().createBeanType(result.getType().getName(), result.getType(), false, false, false, null);
             }
         }
 
@@ -230,14 +230,14 @@ public class NestedProperty implements Property
                 Class pojoClass = (Class) nestedType;
                 if (!pojoClass.isArray())
                 {
-                    BeanEventType beanType = eventAdapterService.getBeanEventTypeFactory().createBeanType(pojoClass.getName(), pojoClass, false, false, false);
+                    BeanEventType beanType = eventAdapterService.getBeanEventTypeFactory().createBeanType(pojoClass.getName(), pojoClass, false, false, false, null);
                     String remainingProps = toPropertyEPL(properties, count);
                     return beanType.getPropertyType(remainingProps);
                 }
                 else if (property instanceof IndexedProperty)
                 {
                     Class componentType = pojoClass.getComponentType();
-                    BeanEventType beanType = eventAdapterService.getBeanEventTypeFactory().createBeanType(componentType.getName(), componentType, false, false, false);
+                    BeanEventType beanType = eventAdapterService.getBeanEventTypeFactory().createBeanType(componentType.getName(), componentType, false, false, false, null);
                     String remainingProps = toPropertyEPL(properties, count);
                     return beanType.getPropertyType(remainingProps);
                 }
@@ -346,7 +346,7 @@ public class NestedProperty implements Property
                         Class pojoClass = (Class) propertyReturnType;
                         if (!pojoClass.isArray())
                         {
-                            BeanEventType beanType = eventAdapterService.getBeanEventTypeFactory().createBeanType(pojoClass.getName(), pojoClass, false, false, false);
+                            BeanEventType beanType = eventAdapterService.getBeanEventTypeFactory().createBeanType(pojoClass.getName(), pojoClass, false, false, false, null);
                             String remainingProps = toPropertyEPL(properties, count);
                             getters.add(beanType.getGetter(remainingProps));
                             break; // the single Pojo getter handles the rest
@@ -354,7 +354,7 @@ public class NestedProperty implements Property
                         else
                         {
                             Class componentType = pojoClass.getComponentType();
-                            BeanEventType beanType = eventAdapterService.getBeanEventTypeFactory().createBeanType(componentType.getName(), componentType, false, false, false);
+                            BeanEventType beanType = eventAdapterService.getBeanEventTypeFactory().createBeanType(componentType.getName(), componentType, false, false, false, null);
                             String remainingProps = toPropertyEPL(properties, count);
                             getters.add(beanType.getGetter(remainingProps));
                             break; // the single Pojo getter handles the rest

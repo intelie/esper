@@ -26,6 +26,7 @@ import java.util.Set;
 public class RevisionEventType implements EventTypeSPI
 {
     private final EventTypeMetadata metadata;
+    private final int eventTypeId;
     private String[] propertyNames;
     private EventPropertyDescriptor[] propertyDescriptors;
     private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
@@ -38,9 +39,10 @@ public class RevisionEventType implements EventTypeSPI
      * @param eventAdapterService for nested property handling
      * @param metadata - event type metadata
      */
-    public RevisionEventType(EventTypeMetadata metadata, Map<String, RevisionPropertyTypeDesc> propertyDesc, EventAdapterService eventAdapterService)
+    public RevisionEventType(EventTypeMetadata metadata, int eventTypeId, Map<String, RevisionPropertyTypeDesc> propertyDesc, EventAdapterService eventAdapterService)
     {
         this.metadata = metadata;
+        this.eventTypeId = eventTypeId;
         this.propertyDesc = propertyDesc;
         Set<String> keys = propertyDesc.keySet();
         propertyNames = keys.toArray(new String[keys.size()]);
@@ -57,6 +59,10 @@ public class RevisionEventType implements EventTypeSPI
             propertyDescriptorMap.put(desc.getKey(), descriptor);
             count++;
         }
+    }
+
+    public int getEventTypeId() {
+        return eventTypeId;
     }
 
     public EventPropertyGetter getGetter(String propertyName)

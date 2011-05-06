@@ -19,8 +19,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableTypeException;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.VariantEventType;
@@ -38,6 +37,7 @@ import java.util.*;
 public class ConfigurationOperationsImpl implements ConfigurationOperations
 {
     private final EventAdapterService eventAdapterService;
+    private final EventTypeIdGenerator eventTypeIdGenerator;
     private final EngineImportService engineImportService;
     private final VariableService variableService;
     private final EngineSettingsService engineSettingsService;
@@ -58,6 +58,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
      * @param statementVariableRef - statement to variable reference holding 
      */
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
+                                       EventTypeIdGenerator eventTypeIdGenerator,
                                        EngineImportService engineImportService,
                                        VariableService variableService,
                                        EngineSettingsService engineSettingsService,
@@ -67,6 +68,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
                                        StatementVariableRef statementVariableRef)
     {
         this.eventAdapterService = eventAdapterService;
+        this.eventTypeIdGenerator = eventTypeIdGenerator;
         this.engineImportService = engineImportService;
         this.variableService = variableService;
         this.engineSettingsService = engineSettingsService;
@@ -320,7 +322,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
     public void addVariantStream(String varianteventTypeName, ConfigurationVariantStream variantStreamConfig)
     {
-        valueAddEventService.addVariantStream(varianteventTypeName, variantStreamConfig, eventAdapterService);
+        valueAddEventService.addVariantStream(varianteventTypeName, variantStreamConfig, eventAdapterService, eventTypeIdGenerator);
     }
 
     public void updateMapEventType(String mapeventTypeName, Map<String, Object> typeMap) throws ConfigurationException

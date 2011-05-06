@@ -6,6 +6,7 @@ import com.espertech.esper.core.ExceptionHandlingService;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.StatementResultServiceImpl;
 import com.espertech.esper.core.StatementFilterVersion;
+import com.espertech.esper.event.EventTypeIdGeneratorImpl;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.support.event.SupportEventAdapterService;
@@ -77,6 +78,6 @@ public class SupportStatementContextFactory
                 new StatementFilterVersion(),
                 null,
                 null,
-                null);
+                null, new EventTypeIdGeneratorImpl());
     }
 }

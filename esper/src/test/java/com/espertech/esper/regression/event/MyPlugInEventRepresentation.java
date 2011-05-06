@@ -45,7 +45,7 @@ public class MyPlugInEventRepresentation implements PlugInEventRepresentation
         }
 
         // save type for testing dynamic event object reflection
-        MyPlugInPropertiesEventType eventType = new MyPlugInPropertiesEventType(null, typeProps, metadata);
+        MyPlugInPropertiesEventType eventType = new MyPlugInPropertiesEventType(null, eventTypeContext.getEventTypeId(), typeProps, metadata);
 
         types.add(eventType);
         

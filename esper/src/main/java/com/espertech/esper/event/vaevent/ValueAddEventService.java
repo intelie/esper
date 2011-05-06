@@ -8,11 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
+import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.ConfigurationRevisionEventType;
 import com.espertech.esper.client.ConfigurationVariantStream;
-import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.view.StatementStopService;
 
 import java.util.Map;
@@ -30,7 +31,7 @@ public interface ValueAddEventService
      * @param variantStreams is the variant streams to add
      * @param eventAdapterService for obtaining event type information for each name
      */
-    public void init(Map<String, ConfigurationRevisionEventType> revisionTypes, Map<String, ConfigurationVariantStream> variantStreams, EventAdapterService eventAdapterService);
+    public void init(Map<String, ConfigurationRevisionEventType> revisionTypes, Map<String, ConfigurationVariantStream> variantStreams, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator);
 
     /**
      * Adds a new revision event types.
@@ -47,7 +48,7 @@ public interface ValueAddEventService
      * @param eventAdapterService for handling nested events
      * @throws ConfigurationException if the configuration is invalid
      */
-    public void addVariantStream(String variantEventTypeName, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService)
+    public void addVariantStream(String variantEventTypeName, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
             throws ConfigurationException;
 
     /**
@@ -66,7 +67,7 @@ public interface ValueAddEventService
      * @param eventAdapterService for event type info
      * @return revision event type
      */
-    public EventType createRevisionType(String namedWindowName, String typeName, StatementStopService statementStopService, EventAdapterService eventAdapterService);
+    public EventType createRevisionType(String namedWindowName, String typeName, StatementStopService statementStopService, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator);
 
     /**
      * Upon named window creation, check if the name used is a revision event type name.
