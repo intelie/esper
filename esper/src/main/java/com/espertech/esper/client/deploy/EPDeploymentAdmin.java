@@ -181,6 +181,21 @@ public interface EPDeploymentAdmin
         throws IOException, ParseException, DeploymentException;
 
     /**
+     * Shortcut method to parse and deploy a single module from a string text buffer, without providing a module URI name or
+     * archive name or user object. The module URI, archive name and user object are defaulted to null.
+     * <p>
+     * Uses default options for performing deployment dependency checking and deployment.
+     * @param eplModuleText to parse
+     * @return deployment result object
+     * @throws IOException when the file could not be read
+     * @throws ParseException when parsing of the module failed
+     * @throws DeploymentOrderException when any module dependencies are not satisfied
+     * @throws DeploymentActionException when the deployment fails, contains a list of deployment failures
+     */
+    public DeploymentResult parseDeploy(String eplModuleText)
+        throws IOException, ParseException, DeploymentException;
+
+    /**
      * Adds a module in undeployed state, returning the deployment id of the module.
      * @param module to add
      * @return The deployment id assigned to the module

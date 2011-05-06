@@ -537,6 +537,10 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         return deployQuick(module, moduleURI, moduleArchive, userObject);
     }
 
+    public synchronized DeploymentResult parseDeploy(String eplModuleText) throws IOException, ParseException, DeploymentException {
+        return parseDeploy(eplModuleText, null, null, null);
+    }
+
     public synchronized DeploymentResult parseDeploy(String buffer, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentActionException
     {
         Module module = parseInternal(buffer, moduleURI);

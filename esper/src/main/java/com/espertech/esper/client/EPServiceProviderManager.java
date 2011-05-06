@@ -8,19 +8,22 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+import com.espertech.esper.core.Configurator;
+import com.espertech.esper.core.ConfiguratorContext;
+import com.espertech.esper.core.EPServiceProviderImpl;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.util.JavaClassHelper;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.espertech.esper.core.EPServiceProviderImpl;
-import com.espertech.esper.core.EPServiceProviderSPI;
 
 /**
  * Factory for instances of {@link EPServiceProvider}.
  */
 public final class EPServiceProviderManager
 {
-    private static Map<String, EPServiceProviderImpl> runtimes = new ConcurrentHashMap<String, EPServiceProviderImpl>();
+    private static Map<String, EPServiceProviderSPI> runtimes = new ConcurrentHashMap<String, EPServiceProviderSPI>();
 
     /**
      * Returns the default EPServiceProvider. The URI value for the service returned is "default".
@@ -68,10 +71,10 @@ public final class EPServiceProviderManager
     	
         if (runtimes.containsKey(providerURINonNull))
         {
-            EPServiceProviderImpl provider = runtimes.get(providerURINonNull);
+            EPServiceProviderSPI provider = runtimes.get(providerURINonNull);
             if (provider.isDestroyed())
             {
-                provider = new EPServiceProviderImpl(configuration, providerURINonNull, runtimes);
+                provider = getProviderInternal(configuration, providerURINonNull);
                 runtimes.put(providerURINonNull, provider);
             }
             else
@@ -82,7 +85,7 @@ public final class EPServiceProviderManager
         }
 
         // New runtime
-        EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, providerURINonNull, runtimes);
+        EPServiceProviderSPI runtime = getProviderInternal(configuration, providerURINonNull);
         runtimes.put(providerURINonNull, runtime);
         runtime.postInitialize();
 
@@ -101,5 +104,16 @@ public final class EPServiceProviderManager
     {
         Set<String> uriSet = runtimes.keySet();
         return uriSet.toArray(new String[uriSet.size()]);
+    }
+
+    private static EPServiceProviderSPI getProviderInternal(Configuration configuration, String providerURINonNull) {
+        // cluster-wide configuration
+        if (configuration.getEngineDefaults().getCluster() != null && configuration.getEngineDefaults().getCluster().isEnabled()) {
+            String className = "com.espertech.ehc.common.config.EPServiceClusterConfigurator";
+            Configurator configurator = (Configurator) JavaClassHelper.instantiate(Configurator.class, className);
+            return configurator.configure(new ConfiguratorContext(providerURINonNull), configuration);
+        }
+
+        return new EPServiceProviderImpl(configuration, providerURINonNull, runtimes);
     }
 }

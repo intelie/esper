@@ -583,7 +583,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      * @param eventRepresentationRootURI uniquely identifies the event representation and acts as a parent
      * for child URIs used in resolving
      * @param eventRepresentationClassName is the name of the class implementing {@link com.espertech.esper.plugin.PlugInEventRepresentation}.
-     * @param initializer is optional configuration or initialization information, or null if none required 
+     * @param initializer is optional configuration or initialization information, or null if none required
      */
     public void addPlugInEventRepresentation(URI eventRepresentationRootURI, String eventRepresentationClassName, Serializable initializer)
     {
@@ -982,4 +982,6 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
             return CASE_SENSITIVE;
         }
     }
+
+    
 }

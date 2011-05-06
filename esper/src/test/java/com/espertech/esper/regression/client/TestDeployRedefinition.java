@@ -48,8 +48,7 @@ public class TestDeployRedefinition extends TestCase
                 null, null, null);
         deploySvc.undeployRemove(result.getDeploymentId());
         
-        result = deploySvc.parseDeploy("create window MyWindow.win:time(30) as (col1 short, col2 long)",
-                null, null, null);
+        result = deploySvc.parseDeploy("create window MyWindow.win:time(30) as (col1 short, col2 long)");
         deploySvc.undeployRemove(result.getDeploymentId());
     }
 

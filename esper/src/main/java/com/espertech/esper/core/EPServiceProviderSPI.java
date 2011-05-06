@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.epl.metric.MetricReportingService;
@@ -161,4 +162,8 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      * @return time provider
      */
     public TimeProvider getTimeProvider();
+
+    public void setConfiguration(Configuration configuration);
+
+    public void postInitialize();
 }
