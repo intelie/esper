@@ -36,6 +36,12 @@ public class ExprNodeUtility
         return nonAggProps;
     }
 
+    public static void addNonAggregatedProps(ExprNode exprNode, Set<Pair<Integer, String>> set) {
+        ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(false);
+        exprNode.accept(visitor);
+        set.addAll(visitor.getExprProperties());
+    }
+
     public static Set<Pair<Integer, String>> getAggregatedProperties(List<ExprAggregateNode> aggregateNodes)
     {
         // Get a list of properties being aggregated in the clause.

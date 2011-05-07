@@ -309,6 +309,9 @@ public class ResultSetProcessorFactory
         Set<Pair<Integer, String>> propertiesGroupBy = getGroupByProperties(groupByNodes);
         // Figure out all non-aggregated event properties in the select clause (props not under a sum/avg/max aggregation node)
         Set<Pair<Integer, String>> nonAggregatedProps = ExprNodeUtility.getNonAggregatedProps(selectNodes);
+        if (optionalHavingNode != null) {
+            ExprNodeUtility.addNonAggregatedProps(optionalHavingNode, nonAggregatedProps);
+        }
 
         // Validate that group-by is filled with sensible nodes (identifiers, and not part of aggregates selected, no aggregates)
         validateGroupBy(groupByNodes);

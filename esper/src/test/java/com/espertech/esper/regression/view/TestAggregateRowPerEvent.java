@@ -32,6 +32,29 @@ public class TestAggregateRowPerEvent extends TestCase
         eventCount = 0;
     }
 
+    public void testAggregatedSelectUnaggregatedHaving() {
+        // ESPER-571
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        String epl = "select max(intPrimitive) as val from SupportBean.win:time(1) having max(intPrimitive) > intBoxed";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(testListener);
+
+        sendEvent("E1", 10, 1);
+        assertEquals(10, testListener.assertOneGetNewAndReset().get("val"));
+
+        sendEvent("E2", 10, 11);
+        assertFalse(testListener.isInvoked());
+
+        sendEvent("E3", 15, 11);
+        assertEquals(15, testListener.assertOneGetNewAndReset().get("val"));
+
+        sendEvent("E4", 20, 11);
+        assertEquals(20, testListener.assertOneGetNewAndReset().get("val"));
+
+        sendEvent("E5", 25, 25);
+        assertFalse(testListener.isInvoked());
+    }
+
     public void testSumOneView()
     {
         String viewExpr = "select irstream longPrimitive, sum(longBoxed) as mySum " +
@@ -150,6 +173,12 @@ public class TestAggregateRowPerEvent extends TestCase
     private void sendEvent(long longBoxed)
     {
         sendEvent(longBoxed, 0, (short)0);
+    }
+
+    private void sendEvent(String string, int intPrimitive, int intBoxed) {
+        SupportBean event = new SupportBean(string, intPrimitive);
+        event.setIntBoxed(intBoxed);
+        epService.getEPRuntime().sendEvent(event);
     }
 
     private static final Log log = LogFactory.getLog(TestAggregateRowPerEvent.class);
