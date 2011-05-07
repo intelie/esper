@@ -374,6 +374,7 @@ win:time(MYINTERVAL)  // MYINTERVAL defined as a variable</programlisting>
 				<para>
 					The FORCE_UPDATE flow control keyword instructs the view to post an empty result set to listeners if there is no
 					data to post for an interval. When using this keyword the <literal>irstream</literal> keyword should be used in the <literal>select</literal> clause to ensure the remove stream is also output. 
+					Note that FORCE_UPDATE is for use with listeners to the same statement and not for use with named windows. Consider output rate limiting instead.
 				</para>
 				
 				<para>
