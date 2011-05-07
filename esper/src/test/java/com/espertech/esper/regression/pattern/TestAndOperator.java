@@ -1,5 +1,6 @@
 package com.espertech.esper.regression.pattern;
 
+import com.espertech.esper.core.soda.SODAAnalyzer;
 import junit.framework.*;
 import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.*;
@@ -12,6 +13,8 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.util.SerializableObjectCopier;
+
+import java.util.List;
 
 public class TestAndOperator extends TestCase implements SupportBeanConstants
 {
@@ -52,6 +55,8 @@ public class TestAndOperator extends TestCase implements SupportBeanConstants
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("B3", "b", events.getEvent("B3"), "d", events.getEvent("D2"));
         testCaseList.addTest(testCase);
+        List<PatternExpr> patterns = SODAAnalyzer.analyzeModelPatterns(model);
+        assertEquals(1, patterns.size());
 
         testCase = new EventExpressionCase("every( b=" + EVENT_B_CLASS + " and every d=" + EVENT_D_CLASS + ")");
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));

@@ -1,5 +1,6 @@
 package com.espertech.esper.regression.client;
 
+import com.espertech.esper.core.soda.SODAAnalyzer;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
@@ -9,6 +10,8 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.util.SerializableObjectCopier;
+
+import java.util.List;
 
 public class TestEPStatementObjectModel extends TestCase
 {
@@ -38,6 +41,9 @@ public class TestEPStatementObjectModel extends TestCase
         Object event = new SupportBean();
         epService.getEPRuntime().sendEvent(event);
         assertEquals(event, listener.assertOneGetNewAndReset().getUnderlying());
+
+        List<Expression> expressions = SODAAnalyzer.analyzeModelExpressions(model);
+        assertEquals(0, expressions.size());
     }
 
     // This is a simple EPL only.

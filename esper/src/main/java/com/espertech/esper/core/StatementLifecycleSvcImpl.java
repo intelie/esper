@@ -274,6 +274,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SET) {
                 statementType = StatementType.ON_SET;
             }
+            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_MERGE) {
+                statementType = StatementType.ON_MERGE;
+            }
+            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SPLITSTREAM) {
+                statementType = StatementType.ON_SPLITSTREAM;
+            }
         }
         else if (statementSpec.getInsertIntoDesc() != null) {
             statementType = StatementType.INSERT_INTO;

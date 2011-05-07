@@ -41,6 +41,16 @@ public enum StatementType
     CREATE_INDEX,
 
     /**
+     * On-merge statement.
+     */
+    ON_MERGE,
+
+    /**
+     * On-merge statement.
+     */
+    ON_SPLITSTREAM,
+
+    /**
      * On-delete statement.
      */
     ON_DELETE,

@@ -2,6 +2,8 @@ package com.espertech.esper.regression.rowrecog;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
+import com.espertech.esper.client.soda.MatchRecognizeRegEx;
+import com.espertech.esper.core.soda.SODAAnalyzer;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -11,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class TestRowPatternRecognitionDataSet extends TestCase
 {
@@ -138,6 +141,8 @@ public class TestRowPatternRecognitionDataSet extends TestCase
         stmt = epService.getEPAdministrator().create(model);
         stmt.addListener(listener);
         assertEquals(text, stmt.getText());
+        List<MatchRecognizeRegEx> regexs = SODAAnalyzer.analyzeModelMatchRecogRegexs(model);
+        assertEquals(1, regexs.size());
         
         for (Object[] row : data)
         {
