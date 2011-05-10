@@ -32,6 +32,37 @@ public class TestExpressionDef extends TestCase {
         listener = new SupportUpdateListener();
     }
 
+    public void testSequenceAndNested() {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_S0", SupportBean_S0.class);
+        epService.getEPAdministrator().createEPL("create window WindowOne.win:keepall() as (col1 string, col2 string)");
+        epService.getEPAdministrator().createEPL("insert into WindowOne select p00 as col1, p01 as col2 from SupportBean_S0");
+
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_S1", SupportBean_S1.class);
+        epService.getEPAdministrator().createEPL("create window WindowTwo.win:keepall() as (col1 string, col2 string)");
+        epService.getEPAdministrator().createEPL("insert into WindowTwo select p10 as col1, p11 as col2 from SupportBean_S1");
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "A", "B1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2, "A", "B2"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(11, "A", "B1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(12, "A", "B2"));
+
+        String epl =
+                "@Audit('exprdef') " +
+                "expression last2X {\n" +
+                "  p => WindowOne(WindowOne.col1 = p.string).takeLast(2)\n" +
+                "} " +
+                "expression last2Y {\n" +
+                "  p => WindowTwo(WindowTwo.col1 = p.string).takeLast(2).selectFrom(q => q.col2)\n" +
+                "} " +
+                "select last2X(sb).selectFrom(a => a.col2).sequenceEqual(last2Y(sb)) as val from SupportBean as sb";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
+        stmt.addListener(listener);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("A", 1));
+        assertEquals(true, listener.assertOneGetNewAndReset().get("val"));
+    }
+
     public void testCaseNewMultiReturnNoElse() {
         
         String[] fieldsInner = "col1,col2".split(",");

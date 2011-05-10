@@ -9,6 +9,7 @@ import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.enummethod.eval.EnumEval;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.methodbase.*;
+import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.util.CollectionUtil;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -133,7 +134,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
                 return null;
             }
             EventBean[] eventsLambda = enumEval.getEventsPrototype();
-            System.arraycopy(eventsPerStream, 0, eventsLambda, 0, eventsPerStream.length);
+            EventBeanUtility.safeArrayCopy(eventsPerStream, eventsLambda);
             Object result = enumEval.evaluateEnumMethod(coll, isNewData, exprEvaluatorContext);
             exprEvaluatorContext.getExpressionResultCacheService().saveEnumerationMethodLastValue(this, result);
             return result;
@@ -147,7 +148,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
                 return null;
             }
             EventBean[] eventsLambda = enumEval.getEventsPrototype();
-            System.arraycopy(eventsPerStream, 0, eventsLambda, 0, eventsPerStream.length);
+            EventBeanUtility.safeArrayCopy(eventsPerStream, eventsLambda);
             return enumEval.evaluateEnumMethod(coll, isNewData, exprEvaluatorContext);
         }
         finally {

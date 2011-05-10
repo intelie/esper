@@ -70,7 +70,11 @@ public class TestAudit extends TestCase {
 
         // exprdef-instances
         auditLog.info("*** Expression-Def: ");
-        EPStatement stmtExprDef = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('exprdef') expression DEF { 1 } select DEF() from SupportBean");
+        EPStatement stmtExprDef = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('exprdef') " +
+                "expression DEF { 1 } " +
+                "expression INN {  x => x.string }" +
+                "expression OUT { x => INN(x) } " +
+                "select DEF(), OUT(sb) from SupportBean sb");
         stmtExprDef.addListener(listener);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         assertEquals(1, listener.assertOneGetNewAndReset().get("DEF()"));
