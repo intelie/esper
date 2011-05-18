@@ -2,11 +2,9 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPAdministrator;
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.soda.Expression;
-import com.espertech.esper.client.soda.PatternExpr;
-import com.espertech.esper.client.soda.AnnotationPart;
-import com.espertech.esper.client.soda.MatchRecognizeRegEx;
+import com.espertech.esper.client.soda.*;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.pattern.EvalNode;
 
 /**
@@ -64,4 +62,7 @@ public interface EPAdministratorSPI extends EPAdministrator
      * Destroy the administrative interface.
      */
     public void destroy();
+
+    public StatementSpecRaw compileEPLToRaw(String epl);
+    public EPStatementObjectModel mapRawToSODA(StatementSpecRaw raw);
 }

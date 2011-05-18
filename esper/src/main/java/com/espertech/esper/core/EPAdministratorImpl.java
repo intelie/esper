@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class EPAdministratorImpl implements EPAdministratorSPI
 {
+    private final static String SUBS_PARAM_INVALID_USE = "Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters";
+
     private EPServicesContext services;
     private ConfigurationOperations configurationOperations;
     private SelectClauseStreamSelectorEnum defaultStreamSelector;
@@ -185,7 +187,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
         if (unmapped.getIndexedParams().size() != 0)
         {
-            throw new EPException("Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters");
+            throw new EPException(SUBS_PARAM_INVALID_USE);
         }
         return unmapped.getObjectModel();
     }
@@ -229,6 +231,20 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         configurationOperations = null;
     }
 
+    public StatementSpecRaw compileEPLToRaw(String epl) {
+        return EPAdministratorHelper.compileEPL(epl, epl, true, null, services, defaultStreamSelector);
+
+    }
+
+    public EPStatementObjectModel mapRawToSODA(StatementSpecRaw raw) {
+        StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(raw);
+        if (unmapped.getIndexedParams().size() != 0)
+        {
+            throw new EPException(SUBS_PARAM_INVALID_USE);
+        }
+        return unmapped.getObjectModel();
+    }
+
     public EvalNode compilePatternToNode(String pattern) throws EPException
     {
         StatementSpecRaw raw = EPAdministratorHelper.compilePattern(pattern, pattern, false, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
@@ -240,18 +256,6 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         String toCompile = "select * from java.lang.Object.win:time(" + expression + ")";
         StatementSpecRaw raw = EPAdministratorHelper.compileEPL(toCompile, expression, false, null, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         return raw.getStreamSpecs().get(0).getViewSpecs().get(0).getObjectParameters().get(0);
-    }
-
-    private static String getNullableErrortext(String msg, String cause)
-    {
-        if (cause == null)
-        {
-            return msg;
-        }
-        else
-        {
-            return msg + ": " + cause;
-        }
     }
 
     public Expression compileExpressionToSODA(String expression) throws EPException

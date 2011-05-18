@@ -81,4 +81,6 @@ public interface EPRuntimeSPI extends EPRuntime
      */
     public EventBean wrapEvent(org.w3c.dom.Node node);
 
+    public void processThreadWorkQueue();
+    public void dispatch();
 }

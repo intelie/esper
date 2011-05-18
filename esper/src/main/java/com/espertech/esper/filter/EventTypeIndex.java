@@ -118,6 +118,20 @@ public class EventTypeIndex implements EventEvaluator
         return eventTypes.size();
     }
 
+    protected int getFilterCountApprox() {
+
+        eventTypesRWLock.readLock().lock();
+        int count = 0;
+        for (Map.Entry<EventType, FilterHandleSetNode> entry : eventTypes.entrySet()) {
+            count += entry.getValue().getFilterCallbackCount();
+            for (FilterParamIndexBase index : entry.getValue().getIndizes()) {
+                count += index.size();
+            }
+        }
+        eventTypesRWLock.readLock().unlock();
+        return count;
+    }
+
     private void matchType(EventType eventType, EventBean eventBean, Collection<FilterHandle> matches, ExprEvaluatorContext exprEvaluatorContext)
     {
         eventTypesRWLock.readLock().lock();

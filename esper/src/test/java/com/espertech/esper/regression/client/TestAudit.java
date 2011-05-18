@@ -17,8 +17,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TestAudit extends TestCase {
 
@@ -50,6 +48,21 @@ public class TestAudit extends TestCase {
 
     public void testAudit() {
 
+        // stream
+        auditLog.info("*** Stream: ");
+        EPStatement stmtInput = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('stream') select * from SupportBean(string = 'E1')");
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        stmtInput.destroy();
+        
+        // named window stream: this is not yet enabled
+        EPStatement stmtNW = epService.getEPAdministrator().createEPL("create window WinOne.win:keepall() as SupportBean");
+        EPStatement stmtInsert = epService.getEPAdministrator().createEPL("insert into WinOne select * from SupportBean");
+        EPStatement stmtConsume = epService.getEPAdministrator().createEPL("@Audit select * from WinOne");
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        stmtNW.destroy();
+        stmtInsert.destroy();
+        stmtConsume.destroy();
+
         auditLog.info("*** Schedule: ");
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
         EPStatement stmtSchedule = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('schedule') select irstream * from SupportBean.win:time(1 sec)");
@@ -61,12 +74,6 @@ public class TestAudit extends TestCase {
         assertTrue(listener.isInvoked());
         listener.reset();
         stmtSchedule.destroy();
-
-        // stream
-        auditLog.info("*** Stream: ");
-        EPStatement stmtInput = epService.getEPAdministrator().createEPL("@Name('ABC') @Audit('stream') select * from SupportBean(string = 'E1')");
-        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
-        stmtInput.destroy();
 
         // exprdef-instances
         auditLog.info("*** Expression-Def: ");

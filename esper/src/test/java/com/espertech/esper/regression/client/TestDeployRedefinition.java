@@ -6,9 +6,6 @@ import com.espertech.esper.client.deploy.DeploymentResult;
 import com.espertech.esper.client.deploy.EPDeploymentAdmin;
 import junit.framework.TestCase;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class TestDeployRedefinition extends TestCase
 {
     private EPServiceProvider epService;
@@ -41,6 +38,38 @@ public class TestDeployRedefinition extends TestCase
 
         DeploymentResult resultThree = deploySvc.parseDeploy(text, "uri1", "arch1", null);
         deploySvc.undeployRemove(resultThree.getDeploymentId());
+    }
+
+    public void testRedefDeployOrder() throws Exception {
+        String eplClientA = "" +
+                    "create schema InputEvent as (col1 string, col2 string);" +
+                    "\n" +
+                    "@Name('A') " +
+                    "insert into OutOne select col1||col2 as outOneCol from InputEvent;\n" +
+                    "\n" +
+                    "@Name('B') " +
+                    "insert into OutTwo select outOneCol||'x'||outOneCol as finalOut from OutOne;";
+        DeploymentResult deploymentResultOne = deploySvc.parseDeploy(eplClientA);
+
+        String eplClientB = "@Name('C') select * from OutTwo;";   // implicily bound to PN1
+        DeploymentResult deploymentResultTwo = deploySvc.parseDeploy(eplClientB);
+
+        deploySvc.undeploy(deploymentResultOne.getDeploymentId());
+        deploySvc.undeploy(deploymentResultTwo.getDeploymentId());
+
+        String eplClientC = "" +
+                    "create schema InputEvent as (col1 string, col2 string);" +
+                    "\n" +
+                    "@Name('A') " +
+                    "insert into OutOne select col1||col2 as outOneCol from InputEvent;" +
+                    "\n" +
+                    "@Name('B') " +
+                    "insert into OutTwo select col2||col1 as outOneCol from InputEvent;";
+        deploySvc.parseDeploy(eplClientC);
+
+        String eplClientD = "@Name('C') select * from OutOne;" +
+                              "@Name('D') select * from OutTwo;";
+        deploySvc.parseDeploy(eplClientD);
     }
 
     public void testNamedWindow() throws Exception {

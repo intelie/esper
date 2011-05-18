@@ -217,7 +217,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                         log.debug("Failed to destroy created statement during rollback: " + ex.getMessage(), ex);
                     }
                 }
-                undeployTypes(eventTypesReferenced);
+                EPLModuleUtil.undeployTypes(eventTypesReferenced, statementEventTypeRef, eventAdapterService);
             }
             String text = "Deployment failed";
             if (options.isValidateOnly()) {
@@ -236,7 +236,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                     log.debug("Failed to destroy created statement during rollback: " + ex.getMessage(), ex);
                 }
             }
-            undeployTypes(eventTypesReferenced);
+            EPLModuleUtil.undeployTypes(eventTypesReferenced, statementEventTypeRef, eventAdapterService);
             return null;
         }
 
@@ -344,7 +344,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             }
             revertedStatements.add(item);
         }
-        undeployTypes(referencedTypes);
+        EPLModuleUtil.undeployTypes(referencedTypes, statementEventTypeRef, eventAdapterService);
 
         Collections.reverse(revertedStatements);
         return new UndeploymentResult(info.getDeploymentId(), revertedStatements);
@@ -663,30 +663,5 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         }
 
         return new Module(moduleName, resourceName, uses, imports, items, buffer);
-    }
-
-    private void undeployTypes(Set<String> referencedTypes)
-    {
-        for (String typeName : referencedTypes) {
-
-            boolean typeInUse = statementEventTypeRef.isInUse(typeName);
-            if (typeInUse) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Event type '" + typeName + "' is in use, not removing type");
-                }
-                continue;
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("Event type '" + typeName + "' is no longer in use, removing type");
-            }
-            EventType type = eventAdapterService.getExistsTypeByName(typeName);
-            if (type != null) {
-                EventTypeSPI spi = (EventTypeSPI) type;
-                if (!spi.getMetadata().isApplicationPreConfigured()) {
-                    eventAdapterService.removeType(typeName);
-                }
-            }
-        }
     }
 }

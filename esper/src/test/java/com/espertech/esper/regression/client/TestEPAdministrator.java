@@ -5,6 +5,7 @@ import com.espertech.esper.client.soda.*;
 import com.espertech.esper.core.EPAdministratorSPI;
 import com.espertech.esper.epl.expression.ExprDotNode;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.pattern.EvalFollowedByNode;
 import com.espertech.esper.pattern.EvalNode;
 import com.espertech.esper.support.bean.SupportBean;
@@ -334,6 +335,11 @@ public class TestEPAdministrator extends TestCase
         catch (EPException ex) {
             assertEquals("Incorrect syntax near '?' expecting a closing parenthesis ')' but found a questionmark '?' at line 1 column 79 [a b???]", ex.getMessage());
         }
+
+        StatementSpecRaw raw = spi.compileEPLToRaw("select * from java.lang.Object");
+        assertNotNull(raw);
+        EPStatementObjectModel model = spi.mapRawToSODA(raw);
+        assertNotNull(model);
     }
 
     private void assertStopped(EPStatement[] stmts)

@@ -1,9 +1,13 @@
 package com.espertech.esper.core.deploy;
 
 import com.espertech.esper.antlr.NoCaseSensitiveStream;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.deploy.ParseException;
+import com.espertech.esper.core.StatementEventTypeRef;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeSPI;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.Token;
@@ -15,10 +19,39 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class EPLModuleUtil
 {
     private static Log log = LogFactory.getLog(EPLModuleUtil.class);
+
+    public static List<EventType> undeployTypes(Set<String> referencedTypes, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService)
+    {
+        List<EventType> undeployedTypes = new ArrayList<EventType>();
+        for (String typeName : referencedTypes) {
+
+            boolean typeInUse = statementEventTypeRef.isInUse(typeName);
+            if (typeInUse) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Event type '" + typeName + "' is in use, not removing type");
+                }
+                continue;
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("Event type '" + typeName + "' is no longer in use, removing type");
+            }
+            EventType type = eventAdapterService.getExistsTypeByName(typeName);
+            if (type != null) {
+                EventTypeSPI spi = (EventTypeSPI) type;
+                if (!spi.getMetadata().isApplicationPreConfigured()) {
+                    eventAdapterService.removeType(typeName);
+                    undeployedTypes.add(spi);
+                }
+            }
+        }
+        return undeployedTypes;
+    }
 
     public static ParseNode getModule(EPLModuleParseItem item, String resourceName) throws ParseException, IOException {
         CharStream input = new NoCaseSensitiveStream(new StringReader(item.getExpression()));

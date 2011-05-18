@@ -137,4 +137,8 @@ public final class FilterServiceImpl implements FilterServiceSPI
         filtersVersion++;
         indexBuilder.apply(filterSet);
     }
+
+    public int getFilterCountApprox() {
+        return eventTypeIndex.getFilterCountApprox();
+    }
 }
