@@ -105,7 +105,7 @@ public class ResultSetProcessorFactory
             if (element instanceof SelectClauseExprCompiledSpec)
             {
                 SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
-                ExprNode validatedExpression = ExprNodeUtil.getValidatedSubtree(expr.getSelectExpression(), validationContext);
+                ExprNode validatedExpression = ExprNodeUtility.getValidatedSubtree(expr.getSelectExpression(), validationContext);
 
                 // determine an element name if none assigned
                 String asName = expr.getAssignedName();
@@ -195,7 +195,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within group-by");
             }
 
-            ExprNode validatedGroupBy = ExprNodeUtil.getValidatedSubtree(groupByNodes.get(i), validationContext);
+            ExprNode validatedGroupBy = ExprNodeUtility.getValidatedSubtree(groupByNodes.get(i), validationContext);
             groupByNodes.set(i, validatedGroupBy);
             groupByTypes[i] = validatedGroupBy.getExprEvaluator().getType();
         }
@@ -212,7 +212,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within having-clause");
             }
 
-            optionalHavingNode = ExprNodeUtil.getValidatedSubtree(optionalHavingNode, validationContext);
+            optionalHavingNode = ExprNodeUtility.getValidatedSubtree(optionalHavingNode, validationContext);
         }
 
         // Validate order-by expressions, if any (could be empty list for no order-by)
@@ -229,7 +229,7 @@ public class ResultSetProcessorFactory
             }
 
             Boolean isDescending = orderByList.get(i).isDescending();
-        	OrderByItem validatedOrderBy = new OrderByItem(ExprNodeUtil.getValidatedSubtree(orderByNode, validationContext), isDescending);
+        	OrderByItem validatedOrderBy = new OrderByItem(ExprNodeUtility.getValidatedSubtree(orderByNode, validationContext), isDescending);
         	orderByList.set(i, validatedOrderBy);
         }
 

@@ -10,8 +10,10 @@ package com.espertech.esper.view;
 
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
+import com.espertech.esper.epl.spec.PluggableObjectEntry;
 import com.espertech.esper.epl.spec.PluggableObjectType;
 import com.espertech.esper.epl.virtualdw.VirtualDWViewFactory;
+import com.espertech.esper.epl.virtualdw.VirtualDWViewFactoryImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,22 +48,22 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
 
         Class viewFactoryClass = null;
 
-        Map<String, Pair<Class, PluggableObjectType>> namespaceMap = viewObjects.getPluggables().get(nameSpace);
+        Map<String, Pair<Class, PluggableObjectEntry>> namespaceMap = viewObjects.getPluggables().get(nameSpace);
         if (namespaceMap != null)
         {
-            Pair<Class, PluggableObjectType> pair = namespaceMap.get(name);
+            Pair<Class, PluggableObjectEntry> pair = namespaceMap.get(name);
             if (pair != null)
             {
-                if (pair.getSecond() == PluggableObjectType.VIEW )
+                if (pair.getSecond().getType() == PluggableObjectType.VIEW )
                 {
                     viewFactoryClass = pair.getFirst();
                 }
-                else if (pair.getSecond() == PluggableObjectType.VIRTUALDW)
+                else if (pair.getSecond().getType() == PluggableObjectType.VIRTUALDW)
                 {
                     if (optionalNamedWindowName == null) {
                         throw new ViewProcessingException("Virtual data window requires use with a named window in the create-window syntax");
                     }
-                    return new VirtualDWViewFactory(pair.getFirst(), optionalNamedWindowName);
+                    return new VirtualDWViewFactoryImpl(pair.getFirst(), optionalNamedWindowName, pair.getSecond().getCustomConfigs());
                 }
                 else
                 {

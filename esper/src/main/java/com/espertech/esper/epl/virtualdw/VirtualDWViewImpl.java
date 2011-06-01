@@ -208,6 +208,6 @@ public class VirtualDWViewImpl extends ViewSupport implements VirtualDWView {
     }
 
     public Iterator<EventBean> iterator() {
-        return Collections.<EventBean>emptyList().iterator();
+        return dataExternal.iterator();
     }
 }

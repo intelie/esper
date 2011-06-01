@@ -115,7 +115,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
         ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, annotations);
         for (ExprNode exprNode : inputParameters)
         {
-            ExprNode validated = ExprNodeUtil.getValidatedSubtree(exprNode, validationContext);
+            ExprNode validated = ExprNodeUtility.getValidatedSubtree(exprNode, validationContext);
             ExprEvaluator evaluator = validated.getExprEvaluator();
             validatedExprNodes[count] = evaluator;
             paramTypes[count] = evaluator.getType();

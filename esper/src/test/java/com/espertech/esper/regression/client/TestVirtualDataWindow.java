@@ -60,7 +60,7 @@ public class TestVirtualDataWindow extends TestCase {
         ArrayAssertionUtil.assertProps(listener.getAndResetLastNewData()[0], fields, new Object[] {"E1", 200});
         stmtConsume.destroy();
 
-        // test aggregated consume
+        // test aggregated consumer - wherein the virtual data window does not return an iterator that prefills the aggregation state
         fields = "val0".split(",");
         EPStatement stmtAggregate = epService.getEPAdministrator().createEPL("select sum(intPrimitive) as val0 from MyVDW");
         stmtAggregate.addListener(listener);

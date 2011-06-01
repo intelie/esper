@@ -3,6 +3,10 @@ package com.espertech.esper.client.hook;
 import com.espertech.esper.client.EventBeanFactory;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.view.ViewFactoryContext;
+
+import java.io.Serializable;
 
 /**
  * Context for use with virtual data window factory {@link VirtualDataWindowFactory} provides
@@ -14,9 +18,12 @@ public class VirtualDataWindowContext {
     private final StatementContext statementContext;
     private final EventType eventType;
     private final Object[] parameters;
+    private final ExprNode[] parameterExpressions;
     private final EventBeanFactory eventFactory;
     private final VirtualDataWindowOutStream outputStream;
     private final String namedWindowName;
+    private final ViewFactoryContext viewFactoryContext;
+    private final Serializable customConfiguration;
 
     /**
      * Ctor.
@@ -27,13 +34,16 @@ public class VirtualDataWindowContext {
      * @param outputStream forward the input and output stream received from the update method here
      * @param namedWindowName the name of the named window
      */
-    public VirtualDataWindowContext(StatementContext statementContext, EventType eventType, Object[] parameters, EventBeanFactory eventFactory, VirtualDataWindowOutStream outputStream, String namedWindowName) {
+    public VirtualDataWindowContext(StatementContext statementContext, EventType eventType, Object[] parameters, ExprNode[] parameterExpressions, EventBeanFactory eventFactory, VirtualDataWindowOutStream outputStream, String namedWindowName, ViewFactoryContext viewFactoryContext, Serializable customConfiguration) {
         this.statementContext = statementContext;
         this.eventType = eventType;
         this.parameters = parameters;
+        this.parameterExpressions = parameterExpressions;
         this.eventFactory = eventFactory;
         this.outputStream = outputStream;
         this.namedWindowName = namedWindowName;
+        this.viewFactoryContext = viewFactoryContext;
+        this.customConfiguration = customConfiguration;
     }
 
     /**
@@ -84,5 +94,17 @@ public class VirtualDataWindowContext {
      */
     public String getNamedWindowName() {
         return namedWindowName;
+    }
+
+    public ExprNode[] getParameterExpressions() {
+        return parameterExpressions;
+    }
+
+    public ViewFactoryContext getViewFactoryContext() {
+        return viewFactoryContext;
+    }
+
+    public Serializable getCustomConfiguration() {
+        return customConfiguration;
     }
 }

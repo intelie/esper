@@ -40,7 +40,7 @@ public class TestVirtualDataWindowToLookup extends TestCase {
         spi = (EPServiceProviderSPI) epService;
     }
 
-    public void testInsertConsume() throws Exception {
+    public void testLateConsumerNoIterate() throws Exception {
 
         // client-side
         epService.getEPAdministrator().createEPL("create window MyVDW.test:vdw() as SupportBean");
@@ -63,7 +63,7 @@ public class TestVirtualDataWindowToLookup extends TestCase {
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E2"));
         EventBean[] outerEvents = window.getLastAccessEvents();
         Collection<EventBean> result = strategy.lookup(outerEvents, null);
-
+        assertTrue(!result.isEmpty());
     }
 
     private VirtualDataWindow getFromContext(String name) {

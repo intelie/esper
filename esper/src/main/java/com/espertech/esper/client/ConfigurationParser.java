@@ -576,7 +576,8 @@ class ConfigurationParser {
         String namespace = getRequiredAttribute(element, "namespace");
         String name = getRequiredAttribute(element, "name");
         String factoryClassName = getRequiredAttribute(element, "factory-class");
-        configuration.addPlugInVirtualDataWindow(namespace, name, factoryClassName);
+        String config = getOptionalAttribute(element, "config");
+        configuration.addPlugInVirtualDataWindow(namespace, name, factoryClassName, config);
     }
 
     private static void handlePlugInAggregation(Configuration configuration, Element element)

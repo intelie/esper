@@ -98,7 +98,7 @@ public class SelectExprProcessorFactory
                     groupedDeliveryExpr = new ExprNode[item.getExpressions().size()];
                     ExprValidationContext validationContext = new ExprValidationContext(type, methodResolutionService, null, timeProvider, variableService, exprEvaluatorContext, eventAdapterService, statementName, annotations);
                     for (int i = 0; i < item.getExpressions().size(); i++) {
-                        groupedDeliveryExpr[i] = ExprNodeUtil.getValidatedSubtree(item.getExpressions().get(i), validationContext);
+                        groupedDeliveryExpr[i] = ExprNodeUtility.getValidatedSubtree(item.getExpressions().get(i), validationContext);
                     }
                     forDelivery = true;
                 }

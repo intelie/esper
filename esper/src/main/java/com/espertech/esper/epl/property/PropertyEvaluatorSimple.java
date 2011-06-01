@@ -5,9 +5,8 @@ import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.expression.ExprEvaluatorContext;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

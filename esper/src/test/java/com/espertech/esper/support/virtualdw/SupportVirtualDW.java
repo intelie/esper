@@ -6,9 +6,11 @@ import com.espertech.esper.client.hook.VirtualDataWindowContext;
 import com.espertech.esper.client.hook.VirtualDataWindowLookup;
 import com.espertech.esper.client.hook.VirtualDataWindowLookupContext;
 
-import java.util.Set;
+import java.util.*;
 
 public class SupportVirtualDW implements VirtualDataWindow {
+
+    public static final String ITERATE = "iterate";
 
     private final VirtualDataWindowContext context;
     private Set<Object> data;
@@ -80,5 +82,16 @@ public class SupportVirtualDW implements VirtualDataWindow {
 
     public EventBean[] getLastUpdateOld() {
         return lastUpdateOld;
+    }
+
+    public Iterator<EventBean> iterator() {
+        if (context.getCustomConfiguration() != null && context.getCustomConfiguration().equals(ITERATE)) {
+            List<EventBean> events = new ArrayList<EventBean>();
+            for (Object item : data) {
+                events.add(context.getEventFactory().wrap(item));
+            }
+            return events.iterator();
+        }
+        return Collections.<EventBean>emptyList().iterator();
     }
 }

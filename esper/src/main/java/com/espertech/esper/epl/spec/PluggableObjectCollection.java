@@ -14,6 +14,7 @@ import com.espertech.esper.client.ConfigurationPlugInView;
 import com.espertech.esper.client.ConfigurationPlugInVirtualDataWindow;
 import com.espertech.esper.collection.Pair;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,14 +25,14 @@ import java.util.Map;
 public class PluggableObjectCollection
 {
     // Map of namespace, name and class plus type
-    private Map<String, Map<String, Pair<Class, PluggableObjectType>>> pluggables;
+    private Map<String, Map<String, Pair<Class, PluggableObjectEntry>>> pluggables;
 
     /**
      * Ctor.
      */
     public PluggableObjectCollection()
     {
-        pluggables = new HashMap<String, Map<String, Pair<Class, PluggableObjectType>>>();
+        pluggables = new HashMap<String, Map<String, Pair<Class, PluggableObjectEntry>>>();
     }
 
     /**
@@ -61,12 +62,12 @@ public class PluggableObjectCollection
      */
     public void addObjects(PluggableObjectCollection other)
     {
-        for (Map.Entry<String, Map<String, Pair<Class, PluggableObjectType>>> entry : other.getPluggables().entrySet())
+        for (Map.Entry<String, Map<String, Pair<Class, PluggableObjectEntry>>> entry : other.getPluggables().entrySet())
         {
-            Map<String, Pair<Class, PluggableObjectType>> namespaceMap = pluggables.get(entry.getKey());
+            Map<String, Pair<Class, PluggableObjectEntry>> namespaceMap = pluggables.get(entry.getKey());
             if (namespaceMap == null)
             {
-                namespaceMap = new HashMap<String, Pair<Class, PluggableObjectType>>();
+                namespaceMap = new HashMap<String, Pair<Class, PluggableObjectEntry>>();
                 pluggables.put(entry.getKey(), namespaceMap);
             }
 
@@ -92,20 +93,20 @@ public class PluggableObjectCollection
      */
     public void addObject(String namespace, String name, Class clazz, PluggableObjectType type)
     {
-        Map<String, Pair<Class, PluggableObjectType>> namespaceMap = pluggables.get(namespace);
+        Map<String, Pair<Class, PluggableObjectEntry>> namespaceMap = pluggables.get(namespace);
         if (namespaceMap == null)
         {
-            namespaceMap = new HashMap<String, Pair<Class, PluggableObjectType>>();
+            namespaceMap = new HashMap<String, Pair<Class, PluggableObjectEntry>>();
             pluggables.put(namespace, namespaceMap);
         }
-        namespaceMap.put(name, new Pair<Class, PluggableObjectType>(clazz, type));
+        namespaceMap.put(name, new Pair<Class, PluggableObjectEntry>(clazz, new PluggableObjectEntry(type, null)));
     }
 
     /**
      * Returns the underlying nested map of namespace keys and name-to-object maps.
      * @return pluggable object collected
      */
-    public Map<String, Map<String, Pair<Class, PluggableObjectType>>> getPluggables()
+    public Map<String, Map<String, Pair<Class, PluggableObjectEntry>>> getPluggables()
     {
         return pluggables;
     }
@@ -117,7 +118,7 @@ public class PluggableObjectCollection
         }
 
         for (ConfigurationPlugInView entry : configurationPlugInViews) {
-            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), PluggableObjectType.VIEW);
+            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), PluggableObjectType.VIEW, null);
         }
     }
 
@@ -128,11 +129,11 @@ public class PluggableObjectCollection
         }
 
         for (ConfigurationPlugInVirtualDataWindow entry : configurationPlugInVirtualDataWindows) {
-            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), PluggableObjectType.VIRTUALDW);
+            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), PluggableObjectType.VIRTUALDW, entry.getConfig());
         }
     }
 
-    private void handleAddPluggableObject(String factoryClassName, String namespace, String name, PluggableObjectType type) {
+    private void handleAddPluggableObject(String factoryClassName, String namespace, String name, PluggableObjectType type, Serializable optionalCustomConfig) {
 
         if (factoryClassName == null)
         {
@@ -158,13 +159,13 @@ public class PluggableObjectCollection
             throw new ConfigurationException("View factory class " + factoryClassName + " could not be loaded");
         }
 
-        Map<String, Pair<Class, PluggableObjectType>> namespaceMap = pluggables.get(namespace);
+        Map<String, Pair<Class, PluggableObjectEntry>> namespaceMap = pluggables.get(namespace);
         if (namespaceMap == null)
         {
-            namespaceMap = new HashMap<String, Pair<Class, PluggableObjectType>>();
+            namespaceMap = new HashMap<String, Pair<Class, PluggableObjectEntry>>();
             pluggables.put(namespace, namespaceMap);
         }
-        namespaceMap.put(name, new Pair<Class, PluggableObjectType>(clazz, type));
+        namespaceMap.put(name, new Pair<Class, PluggableObjectEntry>(clazz, new PluggableObjectEntry(type, optionalCustomConfig)));
     }
 
     private void initPatterns(List<ConfigurationPlugInPatternObject> configEntries) throws ConfigurationException
@@ -191,7 +192,7 @@ public class PluggableObjectCollection
                 throw new IllegalArgumentException("Pattern object type '" + entry.getPatternObjectType() + "' not known");
             }
 
-            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), typeEnum);
+            handleAddPluggableObject(entry.getFactoryClassName(), entry.getNamespace(), entry.getName(), typeEnum, null);
         }
     }
 

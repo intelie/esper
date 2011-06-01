@@ -1350,7 +1350,7 @@ public class TestEPLTreeWalker extends TestCase
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         ExprNode exprNode = walker.getStatementSpec().getFilterRootNode().getChildNodes().get(0);
         ExprBitWiseNode bitWiseNode = (ExprBitWiseNode) (exprNode);
-        ExprNodeUtil.getValidatedSubtree(bitWiseNode, ExprValidationContextFactory.makeEmpty());
+        ExprNodeUtility.getValidatedSubtree(bitWiseNode, ExprValidationContextFactory.makeEmpty());
         return bitWiseNode.evaluate(null, false, null);
     }
 
@@ -1360,7 +1360,7 @@ public class TestEPLTreeWalker extends TestCase
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         ExprNode exprNode = (walker.getStatementSpec().getFilterRootNode().getChildNodes().get(0));
-        exprNode = ExprNodeUtil.getValidatedSubtree(exprNode, ExprValidationContextFactory.makeEmpty());
+        exprNode = ExprNodeUtility.getValidatedSubtree(exprNode, ExprValidationContextFactory.makeEmpty());
         return exprNode.getExprEvaluator().evaluate(null, false, null);
     }
 
@@ -1370,7 +1370,7 @@ public class TestEPLTreeWalker extends TestCase
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         ExprNode filterExprNode = walker.getStatementSpec().getFilterRootNode();
-        ExprNodeUtil.getValidatedSubtree(filterExprNode, ExprValidationContextFactory.makeEmpty());
+        ExprNodeUtility.getValidatedSubtree(filterExprNode, ExprValidationContextFactory.makeEmpty());
         return filterExprNode.getExprEvaluator().evaluate(null, false, null);
     }
 

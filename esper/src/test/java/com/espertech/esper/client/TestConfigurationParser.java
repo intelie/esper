@@ -241,6 +241,9 @@ public class TestConfigurationParser extends TestCase
             assertEquals("vdw" + i, entry.getNamespace());
             assertEquals("myvdw" + i, entry.getName());
             assertEquals("com.mycompany.MyVdwFactory" + i, entry.getFactoryClassName());
+            if (i == 1) {
+                assertEquals("abc", entry.getConfig());
+            }
         }
 
         // assert adapter loaders parsed

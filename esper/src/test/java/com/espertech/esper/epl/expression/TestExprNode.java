@@ -30,7 +30,7 @@ public class TestExprNode extends TestCase
         parent_2.addChildNode(supportNode2_1);
         parent_2.addChildNode(supportNode2_2);
 
-        ExprNodeUtil.getValidatedSubtree(topNode, ExprValidationContextFactory.makeEmpty());
+        ExprNodeUtility.getValidatedSubtree(topNode, ExprValidationContextFactory.makeEmpty());
 
         assertEquals(1, supportNode1_1.getValidateCountSnapshot());
         assertEquals(2, supportNode1_2.getValidateCountSnapshot());
@@ -52,42 +52,42 @@ public class TestExprNode extends TestCase
 
     public void testParseMappedProp()
     {
-        ExprNodeUtil.MappedPropertyParseResult result = ExprNodeUtil.parseMappedProperty("a.b('c')");
+        ExprNodeUtility.MappedPropertyParseResult result = ExprNodeUtility.parseMappedProperty("a.b('c')");
         assertEquals("a", result.getClassName());
         assertEquals("b", result.getMethodName());
         assertEquals("c", result.getArgString());
 
-        result = ExprNodeUtil.parseMappedProperty("SupportStaticMethodLib.delimitPipe('POLYGON ((100.0 100, \", 100 100, 400 400))')");
+        result = ExprNodeUtility.parseMappedProperty("SupportStaticMethodLib.delimitPipe('POLYGON ((100.0 100, \", 100 100, 400 400))')");
         assertEquals("SupportStaticMethodLib", result.getClassName());
         assertEquals("delimitPipe", result.getMethodName());
         assertEquals("POLYGON ((100.0 100, \", 100 100, 400 400))", result.getArgString());
 
-        result = ExprNodeUtil.parseMappedProperty("a.b.c.d.e('f.g.h,u.h')");
+        result = ExprNodeUtility.parseMappedProperty("a.b.c.d.e('f.g.h,u.h')");
         assertEquals("a.b.c.d", result.getClassName());
         assertEquals("e", result.getMethodName());
         assertEquals("f.g.h,u.h", result.getArgString());
 
-        result = ExprNodeUtil.parseMappedProperty("a.b.c.d.E(\"hfhf f f f \")");
+        result = ExprNodeUtility.parseMappedProperty("a.b.c.d.E(\"hfhf f f f \")");
         assertEquals("a.b.c.d", result.getClassName());
         assertEquals("E", result.getMethodName());
         assertEquals("hfhf f f f ", result.getArgString());
 
-        result = ExprNodeUtil.parseMappedProperty("c.d.getEnumerationSource(\"kf\"kf'kf\")");
+        result = ExprNodeUtility.parseMappedProperty("c.d.getEnumerationSource(\"kf\"kf'kf\")");
         assertEquals("c.d", result.getClassName());
         assertEquals("getEnumerationSource", result.getMethodName());
         assertEquals("kf\"kf'kf", result.getArgString());
 
-        result = ExprNodeUtil.parseMappedProperty("c.d.getEnumerationSource('kf\"kf'kf\"')");
+        result = ExprNodeUtility.parseMappedProperty("c.d.getEnumerationSource('kf\"kf'kf\"')");
         assertEquals("c.d", result.getClassName());
         assertEquals("getEnumerationSource", result.getMethodName());
         assertEquals("kf\"kf'kf\"", result.getArgString());
 
-        result = ExprNodeUtil.parseMappedProperty("f('a')");
+        result = ExprNodeUtility.parseMappedProperty("f('a')");
         assertEquals(null, result.getClassName());
         assertEquals("f", result.getMethodName());
         assertEquals("a", result.getArgString());
 
-        assertNull(ExprNodeUtil.parseMappedProperty("('a')"));
-        assertNull(ExprNodeUtil.parseMappedProperty(""));
+        assertNull(ExprNodeUtility.parseMappedProperty("('a')"));
+        assertNull(ExprNodeUtility.parseMappedProperty(""));
     }
 }

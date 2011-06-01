@@ -105,7 +105,7 @@ public class PropertyEvaluatorFactory
                 Arrays.fill(isIStreamOnly, true);
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(whereTypes, whereStreamNames, isIStreamOnly, engineURI, false);
                 ExprValidationContext validationContext = new ExprValidationContext(streamTypeService, methodResolutionService, null, timeProvider, variableService, validateContext, eventAdapterService, statementName, annotations);
-                whereClauses[i] = ExprNodeUtil.getValidatedSubtree(atom.getOptionalWhereClause(), validationContext).getExprEvaluator();
+                whereClauses[i] = ExprNodeUtility.getValidatedSubtree(atom.getOptionalWhereClause(), validationContext).getExprEvaluator();
             }
 
             // validate select clause
@@ -135,7 +135,7 @@ public class PropertyEvaluatorFactory
                     else if (raw instanceof SelectClauseExprRawSpec)
                     {
                         SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-                        ExprNode exprCompiled = ExprNodeUtil.getValidatedSubtree(exprSpec.getSelectExpression(), validationContext);
+                        ExprNode exprCompiled = ExprNodeUtility.getValidatedSubtree(exprSpec.getSelectExpression(), validationContext);
                         String resultName = exprSpec.getOptionalAsName();
                         if (resultName == null)
                         {

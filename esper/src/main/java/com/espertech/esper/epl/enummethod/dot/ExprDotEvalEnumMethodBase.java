@@ -191,7 +191,7 @@ public abstract class ExprDotEvalEnumMethodBase implements ExprDotEvalEnumMethod
         ExprNode filter = goesNode.getChildNodes().get(0);
         try {
             ExprValidationContext filterValidationContext = new ExprValidationContext(types, validationContext);
-            filter = ExprNodeUtil.getValidatedSubtree(filter, filterValidationContext);
+            filter = ExprNodeUtility.getValidatedSubtree(filter, filterValidationContext);
         }
         catch (ExprValidationException ex) {
             throw new ExprValidationException("Error validating enumeration method '" + enumMethodUsedName + "' parameter " + parameterNum + ": " + ex.getMessage(), ex);

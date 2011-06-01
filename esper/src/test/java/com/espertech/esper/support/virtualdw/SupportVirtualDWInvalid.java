@@ -5,6 +5,8 @@ import com.espertech.esper.client.hook.VirtualDataWindow;
 import com.espertech.esper.client.hook.VirtualDataWindowLookup;
 import com.espertech.esper.client.hook.VirtualDataWindowLookupContext;
 
+import java.util.Iterator;
+
 public class SupportVirtualDWInvalid implements VirtualDataWindow {
 
     public VirtualDataWindowLookup getLookup(VirtualDataWindowLookupContext desc) {
@@ -15,5 +17,9 @@ public class SupportVirtualDWInvalid implements VirtualDataWindow {
     }
 
     public void destroy() {
+    }
+
+    public Iterator<EventBean> iterator() {
+        return null;
     }
 }

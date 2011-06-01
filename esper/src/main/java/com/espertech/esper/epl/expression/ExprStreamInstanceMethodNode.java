@@ -175,24 +175,24 @@ public class ExprStreamInstanceMethodNode extends ExprNodeBase implements ExprEv
     @Override
     public void accept(ExprNodeVisitor visitor) {
         super.accept(visitor);
-        ExprNodeUtil.acceptChain(visitor, chainSpec);
+        ExprNodeUtility.acceptChain(visitor, chainSpec);
     }
 
     @Override
     public void accept(ExprNodeVisitorWithParent visitor) {
         super.accept(visitor);
-        ExprNodeUtil.acceptChain(visitor, chainSpec);
+        ExprNodeUtility.acceptChain(visitor, chainSpec);
     }
 
     @Override
     public void acceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent) {
         super.acceptChildnodes(visitor, parent);
-        ExprNodeUtil.acceptChain(visitor, chainSpec, this);
+        ExprNodeUtility.acceptChain(visitor, chainSpec, this);
     }
 
     @Override
     public void replaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode) {
-        ExprNodeUtil.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
+        ExprNodeUtility.replaceChainChildNode(nodeToReplace, newNode, chainSpec);
     }
 
     @Override

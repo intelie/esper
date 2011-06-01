@@ -87,13 +87,13 @@ public class PatternObjectResolutionServiceImpl implements PatternObjectResoluti
         // Find the factory class for this pattern object
         Class factoryClass = null;
 
-        Map<String, Pair<Class, PluggableObjectType>> namespaceMap = patternObjects.getPluggables().get(spec.getObjectNamespace());
+        Map<String, Pair<Class, PluggableObjectEntry>> namespaceMap = patternObjects.getPluggables().get(spec.getObjectNamespace());
         if (namespaceMap != null)
         {
-            Pair<Class, PluggableObjectType> pair = namespaceMap.get(spec.getObjectName());
+            Pair<Class, PluggableObjectEntry> pair = namespaceMap.get(spec.getObjectName());
             if (pair != null)
             {
-                if (pair.getSecond() == type)
+                if (pair.getSecond().getType() == type)
                 {
                     factoryClass = pair.getFirst();
                 }

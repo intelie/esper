@@ -109,7 +109,7 @@ public class ExprDeclaredNodeImpl extends ExprNodeBase implements ExprDeclaredNo
         // validate chain
         List<ExprNode> validated = new ArrayList<ExprNode>();
         for (ExprNode expr : chainParameters) {
-            validated.add(ExprNodeUtil.getValidatedSubtree(expr, validationContext));
+            validated.add(ExprNodeUtility.getValidatedSubtree(expr, validationContext));
         }
         chainParameters = validated;
 
@@ -146,7 +146,7 @@ public class ExprDeclaredNodeImpl extends ExprNodeBase implements ExprDeclaredNo
         // validate expression body in this context
         try {
             ExprValidationContext expressionBodyContext = new ExprValidationContext(copyTypes, validationContext);
-            expressionBodyCopy = ExprNodeUtil.getValidatedSubtree(expressionBodyCopy, expressionBodyContext);
+            expressionBodyCopy = ExprNodeUtility.getValidatedSubtree(expressionBodyCopy, expressionBodyContext);
         }
         catch (ExprValidationException ex) {
             String message = "Error validating expression declaration '" + prototype.getName() + "': " + ex.getMessage();

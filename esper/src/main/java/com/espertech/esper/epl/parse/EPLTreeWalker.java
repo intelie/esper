@@ -1679,7 +1679,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 ExprTimePeriod timePeriodExpr;
                 try {
                     ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
-                    timePeriodExpr = (ExprTimePeriod) ExprNodeUtil.getValidatedSubtree(expression, validationContext);
+                    timePeriodExpr = (ExprTimePeriod) ExprNodeUtility.getValidatedSubtree(expression, validationContext);
                 }
                 catch (ExprValidationException ex)
                 {

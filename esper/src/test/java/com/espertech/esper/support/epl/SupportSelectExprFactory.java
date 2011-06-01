@@ -105,7 +105,7 @@ public class SupportSelectExprFactory
         top.addChildNode(c2);
         c1.addChildNode(c1_1);
 
-        ExprNodeUtil.getValidatedSubtree(top, ExprValidationContextFactory.makeEmpty());
+        ExprNodeUtility.getValidatedSubtree(top, ExprValidationContextFactory.makeEmpty());
 
         List<SelectClauseExprRawSpec> selectionList = new LinkedList<SelectClauseExprRawSpec>();
         selectionList.add(new SelectClauseExprRawSpec(top, null));

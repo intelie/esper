@@ -20,6 +20,7 @@ public class ConfigurationPlugInVirtualDataWindow implements Serializable
     private String namespace;
     private String name;
     private String factoryClassName;
+    private Serializable config;
 
     /**
      * Ctor.
@@ -80,5 +81,13 @@ public class ConfigurationPlugInVirtualDataWindow implements Serializable
     public void setFactoryClassName(String factoryClassName)
     {
         this.factoryClassName = factoryClassName;
+    }
+
+    public Serializable getConfig() {
+        return config;
+    }
+
+    public void setConfig(Serializable config) {
+        this.config = config;
     }
 }

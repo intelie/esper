@@ -55,7 +55,7 @@ public final class OutputConditionPolledCrontab implements OutputConditionPolled
         ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context, context.getEventAdapterService(), context.getStatementName(), context.getAnnotations());
         for (ExprNode parameters : scheduleSpecExpressionList)
         {
-            ExprNode node = ExprNodeUtil.getValidatedSubtree(parameters, validationContext);
+            ExprNode node = ExprNodeUtility.getValidatedSubtree(parameters, validationContext);
             expressions[count++] = node.getExprEvaluator();
         }
 

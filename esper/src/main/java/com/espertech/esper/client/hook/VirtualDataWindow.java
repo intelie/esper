@@ -2,6 +2,8 @@ package com.espertech.esper.client.hook;
 
 import com.espertech.esper.client.EventBean;
 
+import java.util.Iterator;
+
 /**
  * A virtual data window exposes externally-managed data transparently as a named window without the need
  * to retain any data in memory.
@@ -63,4 +65,17 @@ public interface VirtualDataWindow {
      * Called when the named window is stopped or destroyed.
      */
     public void destroy();
+
+    /**
+     * This method is called when a consuming statement to the named window
+     * receives initial state from the named window, for example "select sum(field) from MyVirtualDataWindow"
+     * in order to initialize its state.
+     * <p>
+     * It is valid to return an empty iterator such as "return Collections.<EventBean>emptyList().iterator();".
+     * If returning an empty iterator then consuming statements do not receive initial data, therefor in the example provide earlier
+     * the "sum(field)" is initially zero and no the sum of the field values.
+     * </p>
+     * @return empty iterator or an iterator for all events currently held by the virtual data window.
+     */
+    public Iterator<EventBean> iterator();
 }

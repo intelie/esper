@@ -517,10 +517,22 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     public void addPlugInVirtualDataWindow(String namespace, String name, String factoryClass)
     {
+        addPlugInVirtualDataWindow(namespace, name, factoryClass, null);
+    }
+
+    /**
+     * Add a virtual data window for plug-in.
+     * @param namespace is the namespace the virtual data window should be available under
+     * @param name is the name of the data window
+     * @param factoryClass is the view factory class to use
+     */
+    public void addPlugInVirtualDataWindow(String namespace, String name, String factoryClass, Serializable customConfigurationObject)
+    {
         ConfigurationPlugInVirtualDataWindow configurationPlugInVirtualDataWindow = new ConfigurationPlugInVirtualDataWindow();
         configurationPlugInVirtualDataWindow.setNamespace(namespace);
         configurationPlugInVirtualDataWindow.setName(name);
         configurationPlugInVirtualDataWindow.setFactoryClassName(factoryClass);
+        configurationPlugInVirtualDataWindow.setConfig(customConfigurationObject);
         plugInVirtualDataWindows.add(configurationPlugInVirtualDataWindow);
     }
 

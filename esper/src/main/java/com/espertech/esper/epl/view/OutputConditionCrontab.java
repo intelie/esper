@@ -68,7 +68,7 @@ public final class OutputConditionCrontab implements OutputCondition
         for (ExprNode parameters : scheduleSpecExpressionList)
         {
             ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(context.getEngineURI(), false), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService(), context, context.getEventAdapterService(), context.getStatementName(), context.getAnnotations());
-            ExprNode node = ExprNodeUtil.getValidatedSubtree(parameters, validationContext);
+            ExprNode node = ExprNodeUtility.getValidatedSubtree(parameters, validationContext);
             expressions[count++] = node.getExprEvaluator();
         }
 

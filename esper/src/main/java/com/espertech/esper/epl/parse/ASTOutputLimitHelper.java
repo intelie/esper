@@ -114,7 +114,7 @@ public class ASTOutputLimitHelper
 
                 try {
                     ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
-                    timePeriodExpr = (ExprTimePeriod) ExprNodeUtil.getValidatedSubtree(expression, validationContext);
+                    timePeriodExpr = (ExprTimePeriod) ExprNodeUtility.getValidatedSubtree(expression, validationContext);
                 }
                 catch (ExprValidationException ex)
                 {
@@ -139,7 +139,7 @@ public class ASTOutputLimitHelper
                 {
                     try {
                         ExprValidationContext validationContext = new ExprValidationContext(new StreamTypeServiceImpl(engineURI, false), null, null, timeProvider, variableService, exprEvaluatorContext, null, null, null);
-                        afterTimePeriodExpr = (ExprTimePeriod) ExprNodeUtil.getValidatedSubtree(expression, validationContext);
+                        afterTimePeriodExpr = (ExprTimePeriod) ExprNodeUtility.getValidatedSubtree(expression, validationContext);
                     }
                     catch (ExprValidationException ex)
                     {
