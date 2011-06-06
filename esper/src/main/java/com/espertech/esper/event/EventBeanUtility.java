@@ -671,6 +671,23 @@ public class EventBeanUtility
         return result;
     }
 
+    public static EventBean[] denaturalize(EventBean[] naturals) {
+        if (naturals == null || naturals.length == 0) {
+            return null;
+        }
+        if (!(naturals[0] instanceof NaturalEventBean)) {
+            return naturals;
+        }
+        if (naturals.length == 1) {
+            return new EventBean[] {((NaturalEventBean) naturals[0]).getOptionalSynthetic()};
+        }
+        EventBean[] result = new EventBean[naturals.length];
+        for (int i = 0; i < naturals.length; i++) {
+            result[i] = ((NaturalEventBean) naturals[i]).getOptionalSynthetic();
+        }
+        return result;
+    }
+
     public static boolean compareReferences(EventBean[] reference, EventBean[] eventsPerStream) {
         if (reference.length != eventsPerStream.length) {
             return false;

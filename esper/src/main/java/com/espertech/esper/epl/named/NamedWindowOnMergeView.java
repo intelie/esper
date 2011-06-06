@@ -22,8 +22,10 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.spec.*;
+import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.NaturalEventBean;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.util.UuidGenerator;
 import com.espertech.esper.view.StatementStopService;
@@ -129,11 +131,20 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
             }
 
             // Events to delete are indicated via old data
-            this.rootView.update(newData.isEmpty() ? null : newData.toArray(), (oldData == null || oldData.isEmpty()) ? null : oldData.toArray());
-
-            // The on-delete listeners receive the events deleted, but only if there is interest
-            if (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic()) {
-                updateChildren(newData.isEmpty() ? null : newData.toArray(), (oldData == null || oldData.isEmpty()) ? null : oldData.toArray());
+            // The on-merge listeners receive the events deleted, but only if there is interest
+            if (statementResultService.isMakeNatural()) {
+                EventBean[] eventsPerStreamNaturalNew = newData.isEmpty() ? null : newData.toArray();
+                EventBean[] eventsPerStreamNaturalOld = (oldData == null || oldData.isEmpty()) ? null : oldData.toArray();
+                this.rootView.update(EventBeanUtility.denaturalize(eventsPerStreamNaturalNew), EventBeanUtility.denaturalize(eventsPerStreamNaturalOld));
+                updateChildren(eventsPerStreamNaturalNew, eventsPerStreamNaturalOld);
+            }
+            else {
+                EventBean[] eventsPerStreamNew = newData.isEmpty() ? null : newData.toArray();
+                EventBean[] eventsPerStreamOld = (oldData == null || oldData.isEmpty()) ? null : oldData.toArray();
+                this.rootView.update(eventsPerStreamNew, eventsPerStreamOld);
+                if (statementResultService.isMakeSynthetic()) {
+                    updateChildren(eventsPerStreamNew, eventsPerStreamOld);
+                }
             }
         }
 
