@@ -178,6 +178,14 @@ public class VariableServiceImpl implements VariableService
         changeCallbacks.set(number, null);
     }
 
+    public String getVariableName(int variableNum) {
+        VersionedValueList versionedValue = variableVersions.get(variableNum);
+        if (versionedValue == null) {
+            return null;
+        }
+        return versionedValue.getName();
+    }
+
     public void setLocalVersion()
     {
         versionThreadLocal.getCurrentThread().setVersion(currentVersionNumber);

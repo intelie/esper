@@ -201,6 +201,13 @@ public class EPPreparedExecuteMethod
 
         resultSetProcessor.clear();
 
+        return process(snapshots);
+    }
+
+    public EPPreparedQueryResult process(Collection<EventBean>[] snapshots) {
+
+        int numStreams = processors.length;
+
         UniformPair<EventBean[]> results;
         if (numStreams == 1)
         {
@@ -290,5 +297,13 @@ public class EPPreparedExecuteMethod
         }
 
         return filteredSnapshot;
+    }
+
+    public FilterSpecCompiled[] getFilters() {
+        return filters;
+    }
+
+    public NamedWindowProcessor[] getProcessors() {
+        return processors;
     }
 }

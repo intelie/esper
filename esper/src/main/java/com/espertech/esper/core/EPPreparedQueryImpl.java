@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Provides prepared query functionality.
  */
-public class EPPreparedQueryImpl implements EPOnDemandPreparedQuery
+public class EPPreparedQueryImpl implements EPOnDemandPreparedQuerySPI
 {
     private static final Log log = LogFactory.getLog(EPPreparedQueryImpl.class);
 
@@ -53,6 +53,10 @@ public class EPPreparedQueryImpl implements EPOnDemandPreparedQuery
             log.error("Error executing on-demand statement '" + epl + "': " + t.getMessage(), t);
             throw new EPStatementException(message, epl);
         }
+    }
+
+    public EPPreparedExecuteMethod getExecuteMethod() {
+        return executeMethod;
     }
 
     public EventType getEventType()

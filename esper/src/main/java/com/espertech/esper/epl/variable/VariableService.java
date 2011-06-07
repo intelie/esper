@@ -106,4 +106,6 @@ public interface VariableService
      * @param name to remove
      */
     public void removeVariable(String name);
+
+    public String getVariableName(int variableNum);
 }
