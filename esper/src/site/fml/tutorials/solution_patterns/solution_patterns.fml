@@ -1917,6 +1917,7 @@ match_recognize (
 
        	<p>
        	  Note the length-window: when a given event does not match, that event will eventually leave the window and the partition for that "id" value gets removed from memory by the engine.
+       	  Also, when a match occurs in a partition and no remaining matches are active for the same partition the engine removes that partition, reducing memory use.
        	</p>
       </answer>
     </faq>
