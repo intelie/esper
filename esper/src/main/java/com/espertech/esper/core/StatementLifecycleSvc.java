@@ -53,7 +53,7 @@ public interface StatementLifecycleSvc
      * @param isolationUnitServices isolated service services
      * @return started statement
      */
-    public EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices);
+    public EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices, String statementId);
 
     /**
      * Start statement by statement id.

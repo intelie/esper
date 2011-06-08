@@ -109,11 +109,16 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // called after services are activated, to begin statement loading from store
     }
 
-    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices)
+    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices, String statementId)
     {
-        // Generate statement id
-        String statementId = UuidGenerator.generate();
-        return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId, null, userObject, isolationUnitServices);
+        String assignedStatementId = statementId;
+        if (assignedStatementId == null) {
+            assignedStatementId = UuidGenerator.generate();
+        }
+
+        EPStatementDesc desc = createStoppedAssignName(statementSpec, expression, isPattern, optStatementName, assignedStatementId, null, userObject, isolationUnitServices);
+        start(statementId, desc, true, false, false);
+        return desc.getEpStatement();
     }
 
     /**
@@ -128,7 +133,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param isolationUnitServices isolated service services
      * @return started statement
      */
-    protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject, EPIsolationUnitServices isolationUnitServices)
+    protected synchronized EPStatementDesc createStoppedAssignName(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject, EPIsolationUnitServices isolationUnitServices)
     {
         boolean nameProvided = false;
         String statementName = statementId;
@@ -157,9 +162,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             nameProvided = true;
         }
 
-        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, nameProvided, statementId, optAdditionalContext, userObject, isolationUnitServices, false);
-        start(statementId, desc, true, false, false);
-        return desc.getEpStatement();
+        return createStopped(statementSpec, expression, isPattern, statementName, nameProvided, statementId, optAdditionalContext, userObject, isolationUnitServices, false);
     }
 
     /**

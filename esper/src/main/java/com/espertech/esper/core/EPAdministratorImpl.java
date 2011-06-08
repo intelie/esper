@@ -54,7 +54,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public EPStatement createEPL(String eplStatement) throws EPException
     {
-        return createEPLStmt(eplStatement, null, null);
+        return createEPLStmt(eplStatement, null, null, null);
     }
 
     public EPStatement createPattern(String expression, String statementName) throws EPException
@@ -69,12 +69,22 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public EPStatement createEPL(String eplStatement, String statementName) throws EPException
     {
-        return createEPLStmt(eplStatement, statementName, null);
+        return createEPLStmt(eplStatement, statementName, null, null);
+    }
+
+    public EPStatement createEPLStatementId(String eplStatement, String statementName, String statementId) throws EPException
+    {
+        return createEPLStmt(eplStatement, statementName, null, statementId);
+    }
+
+    public EPStatement createEPLStatementId(String eplStatement, String statementId) throws EPException
+    {
+        return createEPLStmt(eplStatement, null, null, statementId);
     }
 
     public EPStatement createEPL(String eplStatement, String statementName, Object userObject) throws EPException
     {
-        return createEPLStmt(eplStatement, statementName, userObject);
+        return createEPLStmt(eplStatement, statementName, userObject, null);
     }
 
     public EPStatement createPattern(String expression, Object userObject) throws EPException
@@ -84,19 +94,19 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public EPStatement createEPL(String eplStatement, Object userObject) throws EPException
     {
-        return createEPLStmt(eplStatement, null, userObject);
+        return createEPLStmt(eplStatement, null, userObject, null);
     }
 
     private EPStatement createPatternStmt(String expression, String statementName, Object userObject) throws EPException
     {
         StatementSpecRaw rawPattern = EPAdministratorHelper.compilePattern(expression, expression, true, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
-        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName, userObject, null);
+        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName, userObject, null, null);
     }
 
-    private EPStatement createEPLStmt(String eplStatement, String statementName, Object userObject) throws EPException
+    private EPStatement createEPLStmt(String eplStatement, String statementName, Object userObject, String statementId) throws EPException
     {
         StatementSpecRaw statementSpec = EPAdministratorHelper.compileEPL(eplStatement, eplStatement, true, statementName, services, defaultStreamSelector);
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null, statementId);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
@@ -113,7 +123,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory(), services.getNamedWindowService());
         String eplStatement = sodaStatement.toEPL();
 
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null, null);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
@@ -125,7 +135,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory(), services.getNamedWindowService());
         String eplStatement = sodaStatement.toEPL();
 
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null, null);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null, null, null);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
@@ -163,7 +173,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory(), services.getNamedWindowService());
         String eplStatement = impl.getModel().toEPL();
 
-        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null);
+        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null, null);
     }
 
     public EPStatement create(EPPreparedStatement prepared, String statementName) throws EPException
@@ -173,7 +183,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory(), services.getNamedWindowService());
         String eplStatement = impl.getModel().toEPL();
 
-        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null, null);
+        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null, null, null);
     }
 
     public EPStatement create(EPPreparedStatement prepared) throws EPException
