@@ -198,6 +198,10 @@ where sensor.sensorId = loc.sensorId</pre></div>
         <p>
           @Audit also accepts a number of keywords to control which aspects of processing are output and which are not.
         </p>
+        <p>
+          For aggregation queries, note that the presence or absence of an event property in the select clause and with or without group-by clause
+          can change what is output by the engine. See "3.7.2. Output for Aggregation and Group-By" in the doc.
+        </p>
       </answer>
     </faq>    
     <faq id="troubleshooting-4">
