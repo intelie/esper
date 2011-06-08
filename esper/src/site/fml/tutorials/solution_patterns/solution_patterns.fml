@@ -1891,6 +1891,36 @@ from pattern[every timer:interval(1 min)] unidirectional, UserWin uw group by us
       </answer>
     </faq>
 
+    <faq id="consuming-join">
+      <question>I have two streams A and B that I want to join based on an "id" value that occurs exactly once per event type, and they can come any order.</question>
+      <answer>
+        <p>
+          For example, if the input sequence is { A(id=1), B(id=1) } the join should match. Same for { B(id=1), A(id=1) }. 
+          The order could be chaotic, for example the sequence { A(id=1), B(id=2), B(id=4), B(id=2) } should not match and { A(id=1), B(id=2), B(id=4), A(id=2) } should match on "id=2".
+        </p>
+        <p>
+    	  This solution uses match-recognize for pattern detection for two reasons. One, the "id" value could be seen as a partition and the pattern matching should take place within each individual "id" partition.
+    	  Second, match-recognize allows us to specify a data window within which to match patterns. So when events leave the data window the engine can forget the partition.
+        </p>        
+       	<p>
+       	  Sample statement:
+       	</p>
+	<div class="source"><pre>select * from MyEvent.win:length(10) 
+match_recognize (
+  partition by value
+  measures E1.value as value
+  pattern (E1 E2 | E2 E1) 
+  define 
+    E1 as E1.string = 'A', 
+    E2 as E2.string = 'B' 
+)</pre></div>
+
+       	<p>
+       	  Note the length-window: when a given event does not match, that event will eventually leave the window and the partition for that "id" value gets removed from memory by the engine.
+       	</p>
+      </answer>
+    </faq>
+
   </part>
 
 </faqs>

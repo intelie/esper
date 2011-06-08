@@ -424,6 +424,14 @@ public class EventRowRegexNFAView extends ViewSupport
         for (RegexNFAStateEntry endState : endStates)
         {
             out[count++] = generateOutputRow(endState);
+
+            // check partition state - if empty delete (no states and no random access)
+            if (endState.getPartitionKey() != null) {
+                RegexPartitionState state = regexPartitionStateRepo.getState(endState.getPartitionKey());
+                if (state.getCurrentStates().isEmpty() && state.getRandomAccess() == null) {
+                    regexPartitionStateRepo.removeState(endState.getPartitionKey());
+                }
+            }
         }
 
         updateChildren(out, null);

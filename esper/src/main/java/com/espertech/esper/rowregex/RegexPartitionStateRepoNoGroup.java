@@ -35,6 +35,10 @@ public class RegexPartitionStateRepoNoGroup implements RegexPartitionStateRepo
         this.hasInterval = hasInterval;
     }
 
+    public void removeState(MultiKeyUntyped partitionKey) {
+        // not an operation
+    }
+
     /**
      * Copy state for iteration.
      * @return copy

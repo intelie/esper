@@ -36,4 +36,6 @@ public interface RegexPartitionStateRepo
      * @return copied state
      */
     public RegexPartitionStateRepo copyForIterate();
+
+    public void removeState(MultiKeyUntyped partitionKey);
 }

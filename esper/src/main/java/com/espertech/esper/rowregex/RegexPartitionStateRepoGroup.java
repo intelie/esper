@@ -48,6 +48,10 @@ public class RegexPartitionStateRepoGroup implements RegexPartitionStateRepo
         this.exprEvaluatorContext = exprEvaluatorContext;
     }
 
+    public void removeState(MultiKeyUntyped partitionKey) {
+        states.remove(partitionKey);
+    }
+
     public RegexPartitionStateRepo copyForIterate()
     {
         RegexPartitionStateRepoGroup copy = new RegexPartitionStateRepoGroup(getter, partitionExpressions, hasInterval, exprEvaluatorContext);
