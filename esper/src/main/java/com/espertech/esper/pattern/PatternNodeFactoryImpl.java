@@ -22,8 +22,8 @@ public class PatternNodeFactoryImpl implements PatternNodeFactory {
         return new EvalEveryNode();
     }
 
-    public EvalFilterNode makeFilterNode(FilterSpecRaw filterSpecification, String eventAsName) {
-        return new EvalFilterNode(filterSpecification, eventAsName);
+    public EvalFilterNode makeFilterNode(FilterSpecRaw filterSpecification, String eventAsName, Integer consumptionLevel) {
+        return new EvalFilterNode(filterSpecification, eventAsName, consumptionLevel);
     }
 
     public EvalFollowedByNode makeFollowedByNode(List<ExprNode> maxExpressions) {

@@ -1091,7 +1091,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 {
                     if (callback.isSubSelect())
                     {
-                        callback.matchFound(event);
+                        callback.matchFound(event, callbackList);
                     }
                 }
 
@@ -1099,7 +1099,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 {
                     if (!callback.isSubSelect())
                     {
-                        callback.matchFound(event);
+                        callback.matchFound(event, callbackList);
                     }
                 }
             }
@@ -1110,7 +1110,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 {
                     if (!callback.isSubSelect())
                     {
-                        callback.matchFound(event);
+                        callback.matchFound(event, callbackList);
                     }
                 }
 
@@ -1118,7 +1118,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 {
                     if (callback.isSubSelect())
                     {
-                        callback.matchFound(event);
+                        callback.matchFound(event, callbackList);
                     }
                 }
             }
@@ -1162,11 +1162,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 for (FilterHandle callback : callbackList)
                 {
                     EPStatementHandleCallback handleCallbackFilter = (EPStatementHandleCallback) callback;
-                    handleCallbackFilter.getFilterCallback().matchFound(event);
+                    handleCallbackFilter.getFilterCallback().matchFound(event, null);
                 }
             }
             else {
-                handleCallback.getFilterCallback().matchFound(event);
+                handleCallback.getFilterCallback().matchFound(event, null);
             }
 
             // internal join processing, if applicable

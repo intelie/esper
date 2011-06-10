@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import com.espertech.esper.pattern.guard.GuardFactory;
 import com.espertech.esper.epl.spec.PatternGuardSpec;
+import com.espertech.esper.pattern.guard.GuardFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -20,7 +20,6 @@ public class EvalGuardNode extends EvalNodeBase
 {
     private PatternGuardSpec patternGuardSpec;
     private transient GuardFactory guardFactory;
-    private transient PatternContext context;
     private static final long serialVersionUID = -1300326291593373936L;
 
     /**
@@ -51,17 +50,10 @@ public class EvalGuardNode extends EvalNodeBase
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context, EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
-        }
         return new EvalGuardStateNode(parentNode, this, beginState, stateNodeId);
-    }
-
-    public PatternContext getContext() {
-        return context;
     }
 
     /**

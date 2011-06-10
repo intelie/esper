@@ -26,9 +26,8 @@ import java.util.Set;
 public interface EvalNode extends MetaDefItem, Serializable
 {
     public EvalStateNode newState(Evaluator parentNode,
-                                           MatchedEventMap beginState,
-                                           PatternContext context,
-                                           EvalStateNodeNumber stateNodeId);
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId);
     /**
      * Returns the evaluation node's relative node number in the evaluation node tree.
      * @return node number
@@ -54,4 +53,6 @@ public interface EvalNode extends MetaDefItem, Serializable
     public List<EvalNode> getChildNodes();
 
     public void addChildNodes(List<EvalNode> childNodes);
+
+    public void setContext(PatternContext context);
 }

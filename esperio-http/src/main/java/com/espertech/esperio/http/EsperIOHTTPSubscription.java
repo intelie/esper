@@ -4,6 +4,7 @@ import com.espertech.esper.adapter.BaseSubscription;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.EventBeanReader;
+import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.util.PlaceholderParser;
 import com.espertech.esper.util.PlaceholderParseException;
 import com.espertech.esperio.http.core.URIUtil;
@@ -16,10 +17,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import javax.naming.ConfigurationException;
-import java.util.UUID;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.io.IOException;
@@ -56,7 +54,7 @@ public class EsperIOHTTPSubscription extends BaseSubscription
         }
     }
 
-    public void matchFound(EventBean event)
+    public void matchFound(EventBean event, Collection<FilterHandleCallback> allStmtMatches)
     {
         EventTypeSPI spi = (EventTypeSPI) event.getEventType();
         EventBeanReader reader = spi.getReader();

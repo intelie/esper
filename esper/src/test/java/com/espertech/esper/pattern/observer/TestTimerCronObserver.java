@@ -27,7 +27,7 @@ public class TestTimerCronObserver extends TestCase
 
         scheduleService = new SchedulingServiceImpl(new TimeSourceServiceImpl());
         StatementContext stmtContext = SupportStatementContextFactory.makeContext(scheduleService);
-        PatternContext context = new PatternContext(stmtContext, 1);
+        PatternContext context = new PatternContext(stmtContext, 1, null);
 
         ScheduleSpec scheduleSpec = new ScheduleSpec();
         scheduleSpec.addValue(ScheduleUnit.SECONDS, 1);

@@ -504,6 +504,62 @@ RfidEvent(zone=1 and category=10)]]></programlisting>
 		<para>
 			The pattern above is satisfied as soon as only one event with zone in the interval [2, 9] is received.
 		 </para>
+
+		<sect2 id="pattern-filter-consumption">
+			<title>Controlling Event Consumption</title>
+	
+			<indexterm><primary>pattern</primary><secondary>filter event consumption</secondary></indexterm>
+			<para>
+				An arriving event applies to all filter expressions for which the event matches. In other words, an arriving event is not consumed by any specify filter expression(s) but applies to all active filter expressions of all pattern sub-expressions.
+			 </para>
+			 
+			<para>
+				You may provide the <literal>@consume</literal> annotation as part of a filter expression to control consumption of an arriving event. If an arriving event matches the filter expression marked with <literal>@consume</literal> it
+				is no longer available to other filter expressions of the same pattern that also match the arriving event.
+			 </para>
+			 
+			 <para>
+				 The <literal>@consume</literal> can include a level number in parenthesis. A higher level number consumes the event first. The default level number is 1. Multiple filter expressions with the same level number for <literal>@consume</literal> all match the event.
+			 </para>
+
+			 <para>
+			   Consider the next sample pattern:
+			 </para>
+			 <programlisting><![CDATA[a=RfidEvent(zone='Z1') and b=RfidEvent(assetId='0001')]]></programlisting>
+			 
+			 <para>
+				 This pattern fires when a single RfidEvent event arrives that has zone 'Z1' and assetId '0001'. The pattern also matches
+				 when two RfidEvent events arrive, in any order, wherein one has zone 'Z1' and the other has assetId '0001'.
+			 </para>
+			 
+			 <para>
+			      Mark a filter expression with <literal>@consume</literal> to indicate that if an arriving event matches multiple filter expressions that the engine prefers the marked filter expression and does not match any other filter expression.
+			  </para>
+			  
+			  <para>
+			      This updated pattern statement uses <literal>@consume</literal> to indicate that a match against zone is preferred:
+			  </para>
+			 <programlisting><![CDATA[a=RfidEvent(zone='Z1')@consume and b=RfidEvent(assetId='0001')]]></programlisting>
+			 
+			 <para>
+				 This pattern no longer fires when a single RfidEvent arrives that has zone 'Z1' and assetId '0001', because when the first filter expression matches the pattern engine consumes the event.
+				 The pattern only matches when two RfidEvent events arrive in any order. One event must have zone 'Z1' and the other event must have a zone other then 'Z1' and an assetId '0001'.
+			 </para>
+			 			 
+			 <para>
+			   The next sample pattern provides a level number for each <literal>@consume</literal>:
+			 </para>
+			 <programlisting><![CDATA[a=RfidEvent(zone='Z1')@consume(2) 
+  or b=RfidEvent(assetId='0001')@consume(1) 
+  or c=RfidEvent(category='perishable'))]]></programlisting>
+  
+			  <para>
+				  The pattern fires when an RfidEvent arrives with zone 'Z1'. In this case the output event populates property 'a' but not properties 'b' and 'c'.
+				  The pattern also fires when an RfidEvent arrives with a zone other then 'Z1' and an asset id of '0001'. In this case the output event populates property 'b' but not properties 'a' and 'c'.
+				  The pattern also fires when an RfidEvent arrives with a zone other then 'Z1' and an asset id other then '0001' and a category of 'perishable'. In this case the output event populates property 'c' but not properties 'a' and 'b'.
+			  </para>
+
+		</sect2>
 	</sect1>
 
     <sect1 id="pattern-operators">

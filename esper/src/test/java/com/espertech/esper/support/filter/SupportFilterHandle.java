@@ -3,12 +3,14 @@ package com.espertech.esper.support.filter;
 import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.client.EventBean;
 
+import java.util.Collection;
+
 public class SupportFilterHandle implements FilterHandleCallback
 {
     private int countInvoked;
     private EventBean lastEvent;
 
-    public void matchFound(EventBean event)
+    public void matchFound(EventBean event, Collection<FilterHandleCallback> allStmtMatches)
     {
         countInvoked++;
         lastEvent = event;

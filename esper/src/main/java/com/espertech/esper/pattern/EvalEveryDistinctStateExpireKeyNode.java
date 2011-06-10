@@ -43,7 +43,7 @@ public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode imp
         this.spawnedNodes = new LinkedHashMap<EvalStateNode, LinkedHashMap<MultiKeyUntyped, Long>>();
         this.beginState = beginState.shallowCopy();
 
-        EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, everyNode.getContext(), null);
+        EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, null);
         spawnedNodes.put(child, new LinkedHashMap<MultiKeyUntyped, Long>());
     }
 
@@ -88,7 +88,7 @@ public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode imp
         // Such events can be raised when the "not" operator is used.
         EvalNode child = getFactoryNode().getChildNodes().get(0);
         EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(everyNode.getContext().getStatementName());
-        EvalStateNode spawned = child.newState(spawnEvaluator, beginState, everyNode.getContext(), null);
+        EvalStateNode spawned = child.newState(spawnEvaluator, beginState, null);
         spawned.start();
 
         // If the whole spawned expression already turned true, quit it again
@@ -151,7 +151,7 @@ public final class EvalEveryDistinctStateExpireKeyNode extends EvalStateNode imp
             // Such events can be raised when the "not" operator is used.
             EvalNode child = getFactoryNode().getChildNodes().get(0);
             EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(everyNode.getContext().getStatementName());
-            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, everyNode.getContext(), null);
+            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, null);
             spawned.start();
 
             // If the whole spawned expression already turned true, quit it again

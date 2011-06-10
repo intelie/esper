@@ -10,7 +10,6 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,9 +22,8 @@ public class EvalFollowedByNode extends EvalNodeBase
 {
     private static final long serialVersionUID = -3535280879288655577L;
 
-    private transient PatternContext context;
     private List<ExprNode> optionalMaxExpressions;
-    protected boolean hasMax;
+    protected Boolean hasMax;
     private Integer[] cachedMaxPerChild;
     private transient ExprEvaluator[] cachedMaxEvaluatorPerChild;
 
@@ -34,13 +32,11 @@ public class EvalFollowedByNode extends EvalNodeBase
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                                 MatchedEventMap beginState,
-                                                 PatternContext context,
-                                                 EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
+        if (hasMax == null) {
             initOptionalMaxCache();
-            this.context = context;
         }
         if (!hasMax) {
             return new EvalFollowedByStateNode(parentNode, this, beginState);
@@ -60,7 +56,8 @@ public class EvalFollowedByNode extends EvalNodeBase
             }
         }
 
-        if (!hasMax) {
+        if (hasMax == null) {
+            hasMax = false;
             return;
         }
 
@@ -103,10 +100,6 @@ public class EvalFollowedByNode extends EvalNodeBase
             return result.intValue();
         }
         return -1;  // no limit
-    }
-
-    public PatternContext getContext() {
-        return context;
     }
 
     public List<ExprNode> getOptionalMaxExpressions() {

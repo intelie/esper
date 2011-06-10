@@ -12,7 +12,7 @@ public interface PatternNodeFactory {
     public EvalNode makeAndNode();
     public EvalNode makeEveryDistinctNode(List<ExprNode> expressions);
     public EvalNode makeEveryNode();
-    public EvalNode makeFilterNode(FilterSpecRaw filterSpecification,String eventAsName);
+    public EvalNode makeFilterNode(FilterSpecRaw filterSpecification,String eventAsName, Integer consumptionLevel);
     public EvalNode makeFollowedByNode(List<ExprNode> maxExpressions);
     public EvalNode makeGuardNode(PatternGuardSpec patternGuardSpec);
     public EvalNode makeMatchUntilNode(ExprNode lowerBounds, ExprNode upperBounds);

@@ -38,7 +38,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
         this.nodes = new HashMap<EvalStateNode, Integer>();
 
         EvalNode child = evalFollowedByNode.getChildNodes().get(0);
-        EvalStateNode childState = child.newState(this, beginState, evalFollowedByNode.getContext(), null);
+        EvalStateNode childState = child.newState(this, beginState, null);
         nodes.put(childState, 0);
     }
 
@@ -92,7 +92,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
         else
         {
             EvalNode child = getFactoryNode().getChildNodes().get(index + 1);
-            EvalStateNode childState = child.newState(this, matchEvent, evalFollowedByNode.getContext(), null);
+            EvalStateNode childState = child.newState(this, matchEvent, null);
             nodes.put(childState, index + 1);
             childState.start();
         }

@@ -24,7 +24,6 @@ public class EvalMatchUntilNode extends EvalNodeBase implements EvalNodeFilterCh
     private ExprNode lowerBounds;
     private ExprNode upperBounds;
     private transient MatchedEventConvertor convertor;
-    private transient PatternContext context;
     private String[] tagsArrayed;
 
     /**
@@ -87,18 +86,10 @@ public class EvalMatchUntilNode extends EvalNodeBase implements EvalNodeFilterCh
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                                 MatchedEventMap beginState,
-                                                 PatternContext context,
-                                                 EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
-        }
         return new EvalMatchUntilStateNode(parentNode, this, beginState);
-    }
-
-    public PatternContext getContext() {
-        return context;
     }
 
     public MatchedEventConvertor getConvertor() {

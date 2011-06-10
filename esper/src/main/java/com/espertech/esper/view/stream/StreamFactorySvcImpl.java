@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 
 
@@ -145,7 +146,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
                     return statementId;
                 }
 
-                public void matchFound(EventBean event)
+                public void matchFound(EventBean event, Collection<FilterHandleCallback> allStmtMatches)
                 {
                     EventBean[] result = filterSpec.getOptionalPropertyEvaluator().getProperty(event, exprEvaluatorContext);
                     if (result == null)
@@ -170,7 +171,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
                     return statementId;
                 }
 
-                public void matchFound(EventBean event)
+                public void matchFound(EventBean event, Collection<FilterHandleCallback> allStmtMatches)
                 {
                     eventStream.insert(event);
                 }

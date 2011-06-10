@@ -18,23 +18,14 @@ public class EvalNotNode extends EvalNodeBase
 {
     private static final long serialVersionUID = -8072564032270892802L;
 
-    private transient PatternContext context;
-
     protected EvalNotNode() {
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context, EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
-        }
         return new EvalNotStateNode(parentNode, this, beginState);
-    }
-
-    public PatternContext getContext() {
-        return context;
     }
 
     public final String toString()

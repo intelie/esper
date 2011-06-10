@@ -41,7 +41,7 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
         this.countActivePerChild = new int[evalFollowedByNode.getChildNodes().size() - 1];
 
         EvalNode child = evalFollowedByNode.getChildNodes().get(0);
-        EvalStateNode childState = child.newState(this, beginState, evalFollowedByNode.getContext(), null);
+        EvalStateNode childState = child.newState(this, beginState, null);
         nodes.put(childState, 0);
     }
 
@@ -107,7 +107,7 @@ public final class EvalFollowedByWithMaxStateNode extends EvalStateNode implemen
             countActivePerChild[index]++;
 
             EvalNode child = getFactoryNode().getChildNodes().get(index + 1);
-            EvalStateNode childState = child.newState(this, matchEvent, evalFollowedByNode.getContext(), null);
+            EvalStateNode childState = child.newState(this, matchEvent, null);
             nodes.put(childState, index + 1);
             childState.start();
         }

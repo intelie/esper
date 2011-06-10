@@ -42,7 +42,7 @@ public final class EvalOrStateNode extends EvalStateNode implements Evaluator
         // since all are going to be started
         for (EvalNode node : getFactoryNode().getChildNodes())
         {
-            EvalStateNode childState = node.newState(this, beginState, evalOrNode.getContext(), null);
+            EvalStateNode childState = node.newState(this, beginState, null);
             childNodes.add(childState);
         }
     }

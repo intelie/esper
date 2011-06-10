@@ -44,7 +44,7 @@ public final class EvalAuditStateNode extends EvalStateNode implements Evaluator
         this.evalAuditNode = evalAuditNode;
 
         EvalNode child = evalAuditNode.getChildNodes().get(0);
-        EvalStateNode childState = child.newState(this, beginState, evalAuditNode.getContext(), null);
+        EvalStateNode childState = child.newState(this, beginState, null);
         this.childState = childState;
     }
 

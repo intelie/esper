@@ -17,6 +17,7 @@ public class PatternFilterExpr extends PatternExprBase
 {
     private String tagName;
     private Filter filter;
+    private Integer optionalConsumptionLevel;
     private static final long serialVersionUID = -916214860560949884L;
 
     /**
@@ -86,6 +87,14 @@ public class PatternFilterExpr extends PatternExprBase
         return PatternExprPrecedenceEnum.ATOM;
     }
 
+    public Integer getOptionalConsumptionLevel() {
+        return optionalConsumptionLevel;
+    }
+
+    public void setOptionalConsumptionLevel(Integer optionalConsumptionLevel) {
+        this.optionalConsumptionLevel = optionalConsumptionLevel;
+    }
+
     public void toPrecedenceFreeEPL(StringWriter writer, EPStatementFormatter formatter)
     {
         if (tagName != null)
@@ -94,5 +103,13 @@ public class PatternFilterExpr extends PatternExprBase
             writer.write('=');
         }
         filter.toEPL(writer, formatter);
+        if (optionalConsumptionLevel != null) {
+            writer.append("@consume");
+            if (optionalConsumptionLevel != 1) {
+                writer.append("(");
+                writer.append(Integer.toString(optionalConsumptionLevel));
+                writer.append(")");
+            }
+        }
     }
 }

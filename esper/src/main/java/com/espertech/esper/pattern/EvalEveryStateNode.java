@@ -40,7 +40,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         this.spawnedNodes = new LinkedList<EvalStateNode>();
         this.beginState = beginState.shallowCopy();
 
-        EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, evalEveryNode.getContext(), null);
+        EvalStateNode child = getFactoryNode().getChildNodes().get(0).newState(this, beginState, null);
         spawnedNodes.add(child);
     }
 
@@ -85,7 +85,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
         // Such events can be raised when the "not" operator is used.
         EvalNode child = getFactoryNode().getChildNodes().get(0);
         EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(evalEveryNode.getContext().getStatementName());
-        EvalStateNode spawned = child.newState(spawnEvaluator, beginState, evalEveryNode.getContext(), null);
+        EvalStateNode spawned = child.newState(spawnEvaluator, beginState, null);
         spawned.start();
 
         // If the whole spawned expression already turned true, quit it again
@@ -119,7 +119,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
             // Such events can be raised when the "not" operator is used.
             EvalNode child = getFactoryNode().getChildNodes().get(0);
             EvalEveryStateSpawnEvaluator spawnEvaluator = new EvalEveryStateSpawnEvaluator(evalEveryNode.getContext().getStatementName());
-            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, evalEveryNode.getContext(), null);
+            EvalStateNode spawned = child.newState(spawnEvaluator, beginState, null);
             spawned.start();
 
             // If the whole spawned expression already turned true, quit it again

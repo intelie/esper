@@ -24,6 +24,7 @@ public class PatternContext implements ExprEvaluatorContext
 {
     private final int streamNumber;
     private final StatementContext statementContext;
+    private final EvalFilterConsumptionHandler consumptionHandler;
 
     /**
      * Constructor.
@@ -31,10 +32,12 @@ public class PatternContext implements ExprEvaluatorContext
      * @param streamNumber is the stream number
      */
     public PatternContext(StatementContext statementContext,
-                          int streamNumber)
+                          int streamNumber,
+                          EvalFilterConsumptionHandler consumptionHandler)
     {
         this.streamNumber = streamNumber;
         this.statementContext = statementContext;
+        this.consumptionHandler = consumptionHandler;
     }
 
     /**
@@ -164,5 +167,9 @@ public class PatternContext implements ExprEvaluatorContext
 
     public ExpressionResultCacheService getExpressionResultCacheService() {
         return statementContext.getExpressionResultCacheService();
+    }
+
+    public EvalFilterConsumptionHandler getConsumptionHandler() {
+        return consumptionHandler;
     }
 }

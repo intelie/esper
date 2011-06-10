@@ -20,7 +20,7 @@ public class TestTimerWithinGuard extends TestCase
     public void setUp()
     {
         StatementContext stmtContext = SupportStatementContextFactory.makeContext(new SchedulingServiceImpl(new TimeSourceServiceImpl()));
-        PatternContext context = new PatternContext(stmtContext, 1);
+        PatternContext context = new PatternContext(stmtContext, 1, null);
         scheduleService = stmtContext.getSchedulingService();
 
         quitable = new SupportQuitable(context);

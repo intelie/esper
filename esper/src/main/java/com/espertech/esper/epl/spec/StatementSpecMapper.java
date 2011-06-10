@@ -2227,7 +2227,7 @@ public class StatementSpecMapper
         {
             PatternFilterExpr filterExpr = (PatternFilterExpr) eval;
             FilterSpecRaw filterSpec = mapFilter(filterExpr.getFilter(), mapContext);
-            return mapContext.getPatternNodeFactory().makeFilterNode(filterSpec, filterExpr.getTagName());
+            return mapContext.getPatternNodeFactory().makeFilterNode(filterSpec, filterExpr.getTagName(), filterExpr.getOptionalConsumptionLevel());
         }
         else if (eval instanceof PatternObserverExpr)
         {
@@ -2289,7 +2289,9 @@ public class StatementSpecMapper
         {
             EvalFilterNode filterNode = (EvalFilterNode) eval;
             Filter filter = unmapFilter(filterNode.getRawFilterSpec(), unmapContext);
-            return new PatternFilterExpr(filter, filterNode.getEventAsName());
+            PatternFilterExpr expr = new PatternFilterExpr(filter, filterNode.getEventAsName());
+            expr.setOptionalConsumptionLevel(filterNode.getConsumptionLevel());
+            return expr;
         }
         else if (eval instanceof EvalObserverNode)
         {

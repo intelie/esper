@@ -50,12 +50,12 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
         this.evalMatchUntilNode = evalMatchUntilNode;
 
         EvalNode childMatcher = evalMatchUntilNode.getChildNodes().get(0);
-        stateMatcher = childMatcher.newState(this, beginState, evalMatchUntilNode.getContext(), null);
+        stateMatcher = childMatcher.newState(this, beginState, null);
 
         if (evalMatchUntilNode.getChildNodes().size() > 1)
         {
             EvalNode childUntil = evalMatchUntilNode.getChildNodes().get(1);
-            stateUntil = childUntil.newState(this, beginState, evalMatchUntilNode.getContext(), null);
+            stateUntil = childUntil.newState(this, beginState, null);
         }
     }
 
@@ -155,7 +155,7 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
                     if (restart)
                     {
                         EvalNode childMatcher = evalMatchUntilNode.getChildNodes().get(0);
-                        stateMatcher = childMatcher.newState(this, beginState, evalMatchUntilNode.getContext(), null);
+                        stateMatcher = childMatcher.newState(this, beginState, null);
                         stateMatcher.start();
                     }
                 }

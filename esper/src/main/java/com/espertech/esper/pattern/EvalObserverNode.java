@@ -21,7 +21,6 @@ public class EvalObserverNode extends EvalNodeBase
 {
     private final PatternObserverSpec patternObserverSpec;
     private transient ObserverFactory observerFactory;
-    private transient PatternContext context;
     private static final long serialVersionUID = 9045310817018028026L;
 
     /**
@@ -61,18 +60,10 @@ public class EvalObserverNode extends EvalNodeBase
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context,
-                                        EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
-        }
         return new EvalObserverStateNode(parentNode, this, beginState);
-    }
-
-    public PatternContext getContext() {
-        return context;
     }
 
     public final String toString()

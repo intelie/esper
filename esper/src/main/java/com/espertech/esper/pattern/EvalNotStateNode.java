@@ -38,7 +38,7 @@ public final class EvalNotStateNode extends EvalStateNode implements Evaluator
 
         this.evalNotNode = evalNotNode;
         this.beginState = beginState.shallowCopy();
-        this.childNode = evalNotNode.getChildNodes().get(0).newState(this, beginState, evalNotNode.getContext(), null);
+        this.childNode = evalNotNode.getChildNodes().get(0).newState(this, beginState, null);
     }
 
     @Override

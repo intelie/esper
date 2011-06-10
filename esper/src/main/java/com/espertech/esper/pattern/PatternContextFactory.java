@@ -27,5 +27,6 @@ public interface PatternContextFactory
     public PatternContext createContext(StatementContext statementContext,
                                         int streamId,
                                         EvalRootNode rootNode,
-                                        boolean hasArrayProperties);
+                                        boolean hasArrayProperties,
+                                        boolean hasConsumingFilter);
 }

@@ -26,7 +26,7 @@ public class TestTimerIntervalObserver extends TestCase
 
         scheduleService = new SchedulingServiceImpl(new TimeSourceServiceImpl());
         StatementContext stmtContext = SupportStatementContextFactory.makeContext(scheduleService);
-        context = new PatternContext(stmtContext, 1);
+        context = new PatternContext(stmtContext, 1, null);
 
         evaluator = new SupportObserverEvaluator(context);
 

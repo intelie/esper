@@ -34,7 +34,7 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
         super(null, null);
         this.rootSingleChildNode = rootSingleChildNode;
 
-        topStateNode = rootSingleChildNode.newState(this, beginState, context, null);
+        topStateNode = rootSingleChildNode.newState(this, beginState, null);
     }
 
     @Override

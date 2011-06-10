@@ -15,10 +15,12 @@ import com.espertech.esper.filter.FilterValueSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collection;
+
 /**
  * This class contains the state of a single filter expression in the evaluation state tree.
  */
-public final class EvalFilterStateNode extends EvalStateNode implements FilterHandleCallback
+public class EvalFilterStateNode extends EvalStateNode implements FilterHandleCallback
 {
     private final EvalFilterNode evalFilterNode;
     private final MatchedEventMap beginState;
@@ -75,7 +77,11 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
         this.getParentEvaluator().evaluateTrue(event, this, isQuitted);
     }
 
-    public final void matchFound(EventBean event)
+    public EvalFilterNode getEvalFilterNode() {
+        return evalFilterNode;
+    }
+
+    public void matchFound(EventBean event, Collection<FilterHandleCallback> allStmtMatches)
     {
         if (!isStarted)
         {

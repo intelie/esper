@@ -9,6 +9,7 @@ import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventBean;
 
+import java.util.Collection;
 import java.util.Vector;
 import java.util.List;
 import java.util.LinkedList;
@@ -101,7 +102,7 @@ public class TestFilterServiceImpl extends TestCase
             for (FilterHandle match : matchList)
             {
                 SupportFilterHandle handle = (SupportFilterHandle) match;
-                handle.matchFound(events.get(i));
+                handle.matchFound(events.get(i), null);
             }
 
             int[] matches = matchesExpected.get(i);
@@ -166,7 +167,7 @@ public class TestFilterServiceImpl extends TestCase
                 return "";
             }
 
-            public void matchFound(EventBean event)
+            public void matchFound(EventBean event, Collection<FilterHandleCallback> allStmtMatches)
             {
                 log.debug(".matchFound Removing callbackTwo");
                 filterService.remove(callbackTwo);
@@ -188,7 +189,7 @@ public class TestFilterServiceImpl extends TestCase
         for (FilterHandle match : matches)
         {
             FilterHandleCallback handle = (FilterHandleCallback) match;
-            handle.matchFound(event);
+            handle.matchFound(event, null);
         }
 
         // Callback two MUST be invoked, was removed by callback one, but since the

@@ -21,8 +21,6 @@ public class EvalAuditNode extends EvalNodeBase
     private final transient EvalAuditInstanceCount instanceCount;
     private final boolean filterChildNonQuitting;
 
-    private transient PatternContext context;
-
     public EvalAuditNode(boolean auditPattern, boolean auditPatternInstance, String patternExpr, EvalAuditInstanceCount instanceCount, boolean filterChildNonQuitting) {
         this.auditPattern = auditPattern;
         this.auditPatternInstance = auditPatternInstance;
@@ -32,12 +30,9 @@ public class EvalAuditNode extends EvalNodeBase
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context, EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
-        }
         return new EvalAuditStateNode(parentNode, this, beginState);
     }
 
@@ -49,14 +44,6 @@ public class EvalAuditNode extends EvalNodeBase
         return patternExpr;
     }
 
-    public EvalAuditInstanceCount getInstanceCount() {
-        return instanceCount;
-    }
-
-    public PatternContext getContext() {
-        return context;
-    }
-
     public final String toString()
     {
         return ("EvalAuditStateNode children=" + this.getChildNodes().size());
@@ -66,14 +53,14 @@ public class EvalAuditNode extends EvalNodeBase
         if (!auditPatternInstance) {
             return;
         }
-        instanceCount.decreaseRefCount(this.getChildNodes().get(0), current, patternExpr, context.getStatementName());
+        instanceCount.decreaseRefCount(this.getChildNodes().get(0), current, patternExpr, getContext().getStatementName());
     }
 
     public void increaseRefCount(EvalAuditStateNode current) {
         if (!auditPatternInstance) {
             return;
         }
-        instanceCount.increaseRefCount(this.getChildNodes().get(0), current, patternExpr, context.getStatementName());
+        instanceCount.increaseRefCount(this.getChildNodes().get(0), current, patternExpr, getContext().getStatementName());
     }
 
     public boolean isFilterChildNonQuitting() {

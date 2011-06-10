@@ -711,7 +711,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
                 {
                     if (callback.isSubSelect())
                     {
-                        callback.matchFound(event);
+                        callback.matchFound(event, callbackList);
                     }
                 }
 
@@ -719,7 +719,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
                 {
                     if (!callback.isSubSelect())
                     {
-                        callback.matchFound(event);
+                        callback.matchFound(event, callbackList);
                     }
                 }
             }
@@ -730,7 +730,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
                 {
                     if (!callback.isSubSelect())
                     {
-                        callback.matchFound(event);
+                        callback.matchFound(event, callbackList);
                     }
                 }
 
@@ -738,7 +738,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
                 {
                     if (callback.isSubSelect())
                     {
-                        callback.matchFound(event);
+                        callback.matchFound(event, callbackList);
                     }
                 }
             }
@@ -772,7 +772,7 @@ public class EPRuntimeIsolatedImpl implements EPRuntimeIsolatedSPI, InternalEven
                 unisolatedServices.getVariableService().setLocalVersion();
             }
 
-            handleCallback.getFilterCallback().matchFound(event);
+            handleCallback.getFilterCallback().matchFound(event, null);
 
             // internal join processing, if applicable
             handle.internalDispatch(isolatedTimeEvalContext);

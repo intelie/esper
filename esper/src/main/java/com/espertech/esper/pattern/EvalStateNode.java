@@ -82,7 +82,7 @@ public abstract class EvalStateNode
      * Returns the state nodes object id.
      * @return object id
      */
-    public Object getStateObjectId()
+    public EvalStateNodeNumber getStateObjectId()
     {
         return stateObjectId;
     }

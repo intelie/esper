@@ -18,8 +18,6 @@ public class EvalEveryNode extends EvalNodeBase implements EvalNodeFilterChildNo
 {
     private static final long serialVersionUID = 3672732014060588205L;
 
-    private transient PatternContext context;
-
     /**
      * Ctor.
      */
@@ -28,17 +26,10 @@ public class EvalEveryNode extends EvalNodeBase implements EvalNodeFilterChildNo
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context, EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
-        }
         return new EvalEveryStateNode(parentNode, this, beginState);
-    }
-
-    public PatternContext getContext() {
-        return context;
     }
 
     public final String toString()

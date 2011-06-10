@@ -24,7 +24,6 @@ public class EvalEveryDistinctNode extends EvalNodeBase implements EvalNodeFilte
     private List<ExprNode> expressions;
     protected transient ExprEvaluator[] expressionsArray;
     private transient MatchedEventConvertor convertor;
-    private transient PatternContext context;
     private Long msecToExpire;
     private static final long serialVersionUID = 7455570958072753956L;
 
@@ -38,13 +37,11 @@ public class EvalEveryDistinctNode extends EvalNodeBase implements EvalNodeFilte
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context,
-                                        EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
         if (expressionsArray == null) {
             expressionsArray = ExprNodeUtility.getEvaluators(expressions);
-            this.context = context;
         }
         if (msecToExpire == null) {
             return new EvalEveryDistinctStateNode(parentNode, this, beginState);
@@ -64,10 +61,6 @@ public class EvalEveryDistinctNode extends EvalNodeBase implements EvalNodeFilte
 
     public Long getMsecToExpire() {
         return msecToExpire;
-    }
-
-    public PatternContext getContext() {
-        return context;
     }
 
     public final String toString()

@@ -11,6 +11,7 @@ package com.espertech.esper.epl.parse;
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPAdministratorHelper;
@@ -2692,11 +2693,29 @@ public class EPLTreeWalker extends EsperEPL2Ast
             ++count;
         }
 
+        Integer consumption = null;
+        if ((node.getChildCount() > count) && (node.getChild(count).getType() == ATCHAR))
+        {
+            Tree filterConsumeAnno = node.getChild(count);
+            String name = filterConsumeAnno.getChild(0).getText();
+            if (!name.toUpperCase().equals("CONSUME")) {
+                throw new EPException("Unexpected pattern filter @ annotation, expecting 'consume' but received '" + name + "'");
+            }
+            Object number = filterConsumeAnno.getChildCount() < 2 ? null : ASTConstantHelper.parse(filterConsumeAnno.getChild(1));
+            if (number != null) {
+                consumption = ((Number) number).intValue();
+            }
+            else {
+                consumption = 1;
+            }
+            count++;
+        }
+
         List<ExprNode> exprNodes = getExprNodes(node, count);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
         propertyEvalSpec = null;
-        EvalNode filterNode = patternNodeFactory.makeFilterNode(rawFilterSpec, optionalPatternTagName);
+        EvalNode filterNode = patternNodeFactory.makeFilterNode(rawFilterSpec, optionalPatternTagName, consumption);
         addEvalNodeExpression(filterNode, node);
     }
 

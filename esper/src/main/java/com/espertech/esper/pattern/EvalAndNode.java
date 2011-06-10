@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -18,19 +18,14 @@ import org.apache.commons.logging.Log;
 public class EvalAndNode extends EvalNodeBase
 {
     private static final long serialVersionUID = 6830000101092907359L;
-    private transient PatternContext context;
 
     protected EvalAndNode() {
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context,
-                                        EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
-        }
         return new EvalAndStateNode(parentNode, this, beginState);
     }
 
@@ -40,8 +35,4 @@ public class EvalAndNode extends EvalNodeBase
     }
 
     private static final Log log = LogFactory.getLog(EvalAndNode.class);
-
-    public PatternContext getContext() {
-        return context;
-    }
 }

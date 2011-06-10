@@ -18,8 +18,23 @@ public class PatternContextFactoryDefault implements PatternContextFactory
     public PatternContext createContext(StatementContext statementContext,
                                         int streamId,
                                         EvalRootNode rootNode,
-                                        boolean hasArrayProperties)
+                                        boolean hasArrayProperties,
+                                        boolean hasConsumingFilter)
     {
-        return new PatternContext(statementContext, streamId);
+        EvalFilterConsumptionHandler consumptionHandler = null;
+        if (hasConsumingFilter) {
+            consumptionHandler = new EvalFilterConsumptionHandler();
+        }
+
+        PatternContext context = new PatternContext(statementContext, streamId, consumptionHandler);
+        recursiveAssignContext(context, rootNode);
+        return context;
+    }
+
+    public static void recursiveAssignContext(PatternContext context, EvalNode parent) {
+        parent.setContext(context);
+        for (EvalNode child : parent.getChildNodes()) {
+            recursiveAssignContext(context, child);
+        }
     }
 }

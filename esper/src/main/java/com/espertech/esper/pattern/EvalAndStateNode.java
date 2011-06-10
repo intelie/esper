@@ -42,7 +42,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
         // In an "and" expression we need to create a state for all child listeners
         for (EvalNode node : evalAndNode.getChildNodes())
         {
-            EvalStateNode childState = node.newState(this, beginState, evalAndNode.getContext(), null);
+            EvalStateNode childState = node.newState(this, beginState, null);
             activeChildNodes.add(childState);
         }
     }

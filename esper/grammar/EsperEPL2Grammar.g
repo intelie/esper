@@ -1618,9 +1618,14 @@ patternFilterExpression
     	classIdentifier
        	(LPAREN expressionList? RPAREN)?
        	propertyExpression?
-       	-> ^(PATTERN_FILTER_EXPR $i? classIdentifier propertyExpression? expressionList?)
+       	patternFilterAnnotation?
+       	-> ^(PATTERN_FILTER_EXPR $i? classIdentifier propertyExpression? patternFilterAnnotation? expressionList?)
     ;
-    
+       	
+patternFilterAnnotation
+	:	ATCHAR i=IDENT (LPAREN number RPAREN)?
+		-> ^(ATCHAR $i number?)
+	;
 
 classIdentifier
   @init { String identifier = ""; }
@@ -1964,7 +1969,7 @@ NUM_LONG	: '\u18FF';  // assign bogus unicode characters so the token exists
 NUM_DOUBLE	: '\u18FE';
 NUM_FLOAT	: '\u18FD';
 ESCAPECHAR	: '\\';
-EMAILAT		: '@';
+ATCHAR		: '@';
 
 // Whitespace -- ignored
 WS	:	(	' '

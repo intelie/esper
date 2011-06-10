@@ -10,9 +10,11 @@ package com.espertech.esperio.db.core;
 
 import com.espertech.esper.adapter.BaseSubscription;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.filter.FilterHandleCallback;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 
@@ -31,7 +33,7 @@ public class EsperIODBBaseSubscription extends BaseSubscription
         this.executor = executor;
     }
 
-    public void matchFound(EventBean event)
+    public void matchFound(EventBean event, Collection<FilterHandleCallback> allStmtMatches)
     {
         try {
             Runnable runnable = runnableFactory.makeRunnable(event);

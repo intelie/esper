@@ -679,8 +679,12 @@ atomicExpr
 	;
 
 patternFilterExpr
-	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT propertyExpression? (valueExpr)* { leaveNode($f); } )
+	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT propertyExpression? patternFilterAnno? (valueExpr)* { leaveNode($f); } )
 	;
+	
+patternFilterAnno
+	:	^( ATCHAR IDENT number?)
+	;	
 
 matchUntilRange
 	:	^(MATCH_UNTIL_RANGE_CLOSED valueExpr valueExpr)

@@ -22,7 +22,7 @@ public class EvalFilterNode extends EvalNodeBase
     private final FilterSpecRaw rawFilterSpec;
     private final String eventAsName;
     private transient FilterSpecCompiled filterSpec;
-    private transient PatternContext context;
+    private final Integer consumptionLevel;
 
     /**
      * Constructor.
@@ -31,24 +31,22 @@ public class EvalFilterNode extends EvalNodeBase
      * table used when indicating truth value of true.
      */
     protected EvalFilterNode(FilterSpecRaw filterSpecification,
-                                String eventAsName)
+                             String eventAsName,
+                             Integer consumptionLevel)
     {
         this.rawFilterSpec = filterSpecification;
         this.eventAsName = eventAsName;
+        this.consumptionLevel = consumptionLevel;
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context, EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
+        if (getContext().getConsumptionHandler() != null) {
+            return new EvalFilterStateNodeConsumeImpl(parentNode, this, beginState);
         }
         return new EvalFilterStateNode(parentNode, this, beginState);
-    }
-
-    public PatternContext getContext() {
-        return context;
     }
 
     /**
@@ -85,6 +83,10 @@ public class EvalFilterNode extends EvalNodeBase
     public final String getEventAsName()
     {
         return eventAsName;
+    }
+
+    public Integer getConsumptionLevel() {
+        return consumptionLevel;
     }
 
     @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})

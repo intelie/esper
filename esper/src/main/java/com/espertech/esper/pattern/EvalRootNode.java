@@ -19,8 +19,6 @@ public class EvalRootNode extends EvalNodeBase implements PatternStarter
 {
     private static final long serialVersionUID = 6894059650449481615L;
 
-    private transient PatternContext context;
-
     public EvalRootNode() {
     }
 
@@ -28,7 +26,7 @@ public class EvalRootNode extends EvalNodeBase implements PatternStarter
                                            PatternContext context)
     {
         MatchedEventMap beginState = new MatchedEventMapImpl();
-        EvalStateNode rootStateNode = newState(null, beginState, context, null);
+        EvalStateNode rootStateNode = newState(null, beginState, null);
         EvalRootState rootState = (EvalRootState) rootStateNode;
         rootState.setCallback(callback);
         rootStateNode.start();
@@ -36,17 +34,10 @@ public class EvalRootNode extends EvalNodeBase implements PatternStarter
     }
 
     public EvalStateNode newState(Evaluator parentNode,
-                                        MatchedEventMap beginState,
-                                        PatternContext context, EvalStateNodeNumber stateNodeId)
+                                  MatchedEventMap beginState,
+                                  EvalStateNodeNumber stateNodeId)
     {
-        if (this.context == null) {
-            this.context = context;
-        }
-        return new EvalRootStateNode(this.getChildNodes().get(0), beginState, context);
-    }
-
-    public PatternContext getContext() {
-        return context;
+        return new EvalRootStateNode(this.getChildNodes().get(0), beginState, getContext());
     }
 
     public final String toString()

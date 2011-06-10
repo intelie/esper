@@ -18,6 +18,7 @@ import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.filter.FilterValueSet;
 
+import java.util.Collection;
 import java.util.LinkedList;
 
 /**
@@ -40,7 +41,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
      */
     protected String subscriptionName;
 
-    public abstract void matchFound(EventBean event);
+    public abstract void matchFound(EventBean event, Collection<FilterHandleCallback> allStmtMatches);
 
     /**
      * Ctor, assigns default name.

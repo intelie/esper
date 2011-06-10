@@ -1,6 +1,12 @@
 Esper Changelog
 ===================
 
+Changes in version 4.3.0
+------------------------
+Major API or EPL changes
+  - Support for specifing consumption on pattern filters
+  
+
 Changes in version 4.2.0
 ------------------------
 Major API or EPL changes

@@ -48,10 +48,7 @@ import com.espertech.esper.event.EventTypeUtility;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.filter.FilterSpecCompiled;
-import com.espertech.esper.pattern.EvalRootNode;
-import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.pattern.PatternMatchCallback;
-import com.espertech.esper.pattern.PatternStopCallback;
+import com.espertech.esper.pattern.*;
 import com.espertech.esper.rowregex.EventRowRegexNFAViewFactory;
 import com.espertech.esper.util.AuditPath;
 import com.espertech.esper.util.JavaClassHelper;
@@ -283,7 +280,7 @@ public class EPStatementStartMethod
                 }
             };
 
-            PatternContext patternContext = statementContext.getPatternContextFactory().createContext(statementContext, 0, rootNode, !patternStreamSpec.getArrayEventTypes().isEmpty());
+            PatternContext patternContext = statementContext.getPatternContextFactory().createContext(statementContext, 0, rootNode, !patternStreamSpec.getArrayEventTypes().isEmpty(), isConsumingFilters(patternStreamSpec.getEvalNode()));
             PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
             stopCallbacks.add(patternStopCallback);
         }
@@ -982,7 +979,7 @@ public class EPStatementStartMethod
                 };
 
                 PatternContext patternContext = statementContext.getPatternContextFactory().createContext(statementContext,
-                        i, rootNode, !patternStreamSpec.getArrayEventTypes().isEmpty());
+                        i, rootNode, !patternStreamSpec.getArrayEventTypes().isEmpty(), isConsumingFilters(patternStreamSpec.getEvalNode()));
                 PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
                 stopCallbacks.add(patternStopCallback);
             }
@@ -1233,6 +1230,17 @@ public class EPStatementStartMethod
         log.debug(".start Statement start completed");
 
         return new EPStatementStartResult(finalView, stopMethod);
+    }
+
+    private boolean isConsumingFilters(EvalNode evalNode) {
+        if (evalNode instanceof EvalFilterNode) {
+            return ((EvalFilterNode) evalNode).getConsumptionLevel() != null;
+        }
+        boolean consumption = false;
+        for (EvalNode child : evalNode.getChildNodes()) {
+            consumption = consumption || isConsumingFilters(child);
+        }
+        return consumption;
     }
 
     private void handleException(EPStatementStopMethod stopMethod) {
