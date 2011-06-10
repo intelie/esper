@@ -152,6 +152,7 @@ public class JSONRendererImpl implements JSONEventRenderer
             if (value == null)
             {
                 buf.append("null");
+                buf.append(NEWLINE);
             }
             else
             {
@@ -159,6 +160,7 @@ public class JSONRendererImpl implements JSONEventRenderer
                 if (map.isEmpty())
                 {
                     buf.append("{}");
+                    buf.append(NEWLINE);
                 }
                 else
                 {
@@ -192,12 +194,13 @@ public class JSONRendererImpl implements JSONEventRenderer
                         }
                         localDelimiter = COMMA_DELIMITER_NEWLINE;
                     }
+
+                    buf.append(NEWLINE);
+                    ident(buf, level);
+                    buf.append('}');
                 }
             }
             
-            buf.append(NEWLINE);
-            ident(buf, level);
-            buf.append('}');
 
             delimiter = COMMA_DELIMITER_NEWLINE;
         }
