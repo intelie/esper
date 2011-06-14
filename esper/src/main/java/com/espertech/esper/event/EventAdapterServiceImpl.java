@@ -699,7 +699,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     public final EventType createAnonymousMapType(Map<String, Object> propertyTypes) throws EventAdapterException
     {
-        String name = UuidGenerator.generate();
+        String name = "t" + UuidGenerator.generate();
         EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(name);
         return new MapEventType(metadata, name, eventTypeIdGenerator.nextId(name), this, propertyTypes, null, null);
     }
@@ -720,7 +720,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     public final EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException
     {
-        String name = UuidGenerator.generate();
+        String name = "t" + UuidGenerator.generate();
         EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(name);
 
         // If we are wrapping an underlying type that is itself a wrapper, then this is a special case: unwrap
