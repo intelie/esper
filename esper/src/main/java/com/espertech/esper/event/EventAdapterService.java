@@ -31,6 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public interface EventAdapterService
 {
+    public final static String ANONYMOUS_TYPE_NAME_PREFIX = "anonymous_";
+
     /**
      * Returns descriptors for all writable properties.
      * @param eventType to reflect on
@@ -100,27 +102,6 @@ public interface EventAdapterService
     public EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSupertype, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException;
 
     /**
-     * Add an event type with the given name and a given set of properties,
-     * wherein properties may itself be Maps, nested and strongly-typed.
-     * <p>
-     * If the name already exists with the same event property information, returns the
-     * existing EventType instance.
-     * <p>
-     * If the name already exists with different event property information, throws an exception.
-     * <p>
-     * If the name does not already exists, adds the name and constructs a new {@link com.espertech.esper.event.map.MapEventType}.
-     * @param eventTypeName is the name for the event type
-     * @param propertyTypes is the names and types of event properties
-     * @param optionalSupertype an optional set of Map event type names that are supertypes to the type
-     * @return event type is the type added
-     * @param isConfigured if the type is application-configured
-     * @param namedWindow if the type is from a named window
-     * @param insertInto if inserting into a stream
-     * @throws EventAdapterException if name already exists and doesn't match property type info
-     */
-    public EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSupertype, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto, int eventTypeId) throws EventAdapterException;
-
-    /**
      * Add an event type with the given name and the given underlying event type,
      * as well as the additional given properties.
      * @param eventTypeName is the name for the event type
@@ -134,19 +115,6 @@ public interface EventAdapterService
     public EventType addWrapperType(String eventTypeName, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto) throws EventAdapterException;
 
     /**
-     * Add an event type with the given name and the given underlying event type,
-     * as well as the additional given properties.
-     * @param eventTypeName is the name for the event type
-     * @param underlyingEventType is the event type for the event type that this wrapper wraps
-     * @param propertyTypes is the names and types of any additional properties
-     * @param isNamedWindow if the type is from a named window
-     * @param isInsertInto if inserting into a stream
-     * @return eventType is the type added
-     * @throws EventAdapterException if name already exists and doesn't match this type's info
-     */
-    public EventType addWrapperType(String eventTypeName, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto, int eventTypeId) throws EventAdapterException;
-
-    /**
      * Creates a new anonymous EventType instance for an event type that contains a map of name value pairs.
      * The method accepts a Map that contains the property names as keys and Class objects as the values.
      * The Class instances represent the property types.
@@ -157,7 +125,7 @@ public interface EventAdapterService
      * @param propertyTypes is a map of String to Class objects
      * @return EventType implementation for map field names and value types
      */
-    public EventType createAnonymousMapType(Map<String, Object> propertyTypes);
+    public EventType createAnonymousMapType(String typeName, Map<String, Object> propertyTypes);
 
     /**
      * Creata a wrapper around an event and some additional properties
@@ -202,22 +170,6 @@ public interface EventAdapterService
      * @throws EventAdapterException if name already exists and doesn't match class names
      */
     public EventType addBeanType(String eventTypeName, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured) throws EventAdapterException;
-
-    /**
-     * Add an event type with the given name and Java class.
-     * <p>
-     * If the name already exists with the same Class, returns the existing EventType instance.
-     * <p>
-     * If the name already exists with different Class name, throws an exception.
-     * <p>
-     * If the name does not already exists, adds the name and constructs a new {@link com.espertech.esper.event.bean.BeanEventType}.
-     * @param eventTypeName is the name for the event type
-     * @param clazz is the fully Java class
-     * @param isConfigured if the class is application-configured
-     * @return event type is the type added
-     * @throws EventAdapterException if name already exists and doesn't match class names
-     */
-    public EventType addBeanType(String eventTypeName, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, int eventTypeId) throws EventAdapterException;
 
     /**
      * Wrap the native event returning an {@link EventBean}.
@@ -276,7 +228,7 @@ public interface EventAdapterService
      * @return eventType is the type createdStatement
      * @throws EventAdapterException if name already exists and doesn't match this type's info
      */
-    public EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException;
+    public EventType createAnonymousWrapperType(String typeName, EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException;
 
     /**
      * Adds an XML DOM event type.
@@ -382,9 +334,11 @@ public interface EventAdapterService
      * @param isUsedByChildViews if the type is going to be in used by child views
      * @return event type
      */
-    public EventType createSemiAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews);
+    public EventType createSemiAnonymousMapType(String typeName, Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews);
 
     public void setDefaultAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle defaultAccessorStyle);
 
     public EventType replaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel);
+
+    public Map<String, EventType> getEventTypes(boolean includeClassCache);
 }

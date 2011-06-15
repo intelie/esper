@@ -156,7 +156,8 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         {
             measureTypeDef.put(variableMultiple, new EventType[] {parentViewType});
         }
-        compositeEventType = statementContext.getEventAdapterService().createAnonymousMapType(measureTypeDef);
+        String outputEventTypeName = statementContext.getStatementId() + "_rowrecog";
+        compositeEventType = statementContext.getEventAdapterService().createAnonymousMapType(outputEventTypeName, measureTypeDef);
         StreamTypeService typeServiceMeasure = new StreamTypeServiceImpl(compositeEventType, "MATCH_RECOGNIZE", true, statementContext.getEngineURI());
 
         // find MEASURE clause aggregations
@@ -258,7 +259,8 @@ public class EventRowRegexNFAViewFactory extends ViewFactorySupport
         isSelectAsksMultimatches = measureReferencesMultivar;
 
         // create rowevent type
-        rowEventType = statementContext.getEventAdapterService().createAnonymousMapType(rowTypeDef);
+        String rowEventTypeName = statementContext.getStatementId() + "_rowrecogrow";
+        rowEventType = statementContext.getEventAdapterService().createAnonymousMapType(rowEventTypeName, rowTypeDef);
 
         // validate partition-by expressions, if any
         if (!matchRecognizeSpec.getPartitionByExpressions().isEmpty())

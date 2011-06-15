@@ -26,6 +26,7 @@ import java.util.List;
 public class RegressionLinestViewFactory implements ViewFactory
 {
     private List<ExprNode> viewParameters;
+    private int streamNumber;
 
     /**
      * Expression X field.
@@ -44,6 +45,7 @@ public class RegressionLinestViewFactory implements ViewFactory
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
         this.viewParameters = expressionParameters;
+        this.streamNumber = viewFactoryContext.getStreamNum();
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
@@ -63,7 +65,7 @@ public class RegressionLinestViewFactory implements ViewFactory
         expressionY = validated[1];
 
         additionalProps = StatViewAdditionalProps.make(validated, 2);
-        eventType = RegressionLinestView.createEventType(statementContext, additionalProps);
+        eventType = RegressionLinestView.createEventType(statementContext, additionalProps, streamNumber);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)

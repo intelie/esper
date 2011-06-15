@@ -26,6 +26,7 @@ import java.util.List;
 public class UnivariateStatisticsViewFactory implements ViewFactory
 {
     private List<ExprNode> viewParameters;
+    private int streamNumber;
 
     /**
      * Property name of data field.
@@ -38,6 +39,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
         this.viewParameters = expressionParameters;
+        this.streamNumber = viewFactoryContext.getStreamNum();
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
@@ -54,7 +56,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
         fieldExpression = validated[0];
 
         additionalProps = StatViewAdditionalProps.make(validated, 1);
-        eventType = UnivariateStatisticsView.createEventType(statementContext, additionalProps);
+        eventType = UnivariateStatisticsView.createEventType(statementContext, additionalProps, streamNumber);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)

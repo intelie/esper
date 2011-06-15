@@ -9,7 +9,6 @@
 package com.espertech.esper.client;
 
 import com.espertech.esper.client.soda.StreamSelector;
-import sun.plugin.dom.core.Document;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -1303,6 +1302,7 @@ public class ConfigurationEngineDefaults implements Serializable
         
         private String runtime;
         private String admin;
+        private String eventTypeIdGeneratorFactory;
 
         /**
          * Class name of runtime provider.
@@ -1338,6 +1338,14 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setAdmin(String admin)
         {
             this.admin = admin;
+        }
+
+        public String getEventTypeIdGeneratorFactory() {
+            return eventTypeIdGeneratorFactory;
+        }
+
+        public void setEventTypeIdGeneratorFactory(String eventTypeIdGeneratorFactory) {
+            this.eventTypeIdGeneratorFactory = eventTypeIdGeneratorFactory;
         }
     }
 

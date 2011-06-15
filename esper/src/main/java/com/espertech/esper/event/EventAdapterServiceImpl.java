@@ -22,7 +22,6 @@ import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.xml.*;
 import com.espertech.esper.plugin.*;
 import com.espertech.esper.util.URIUtil;
-import com.espertech.esper.util.UuidGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -76,6 +75,18 @@ public class EventAdapterServiceImpl implements EventAdapterService
         typesPerJavaBean = new ConcurrentHashMap<Class, BeanEventType>();
         beanEventAdapter = new BeanEventAdapter(typesPerJavaBean, this, eventTypeIdGenerator);
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
+    }
+
+    public Map<String, EventType> getEventTypes(boolean includeClassCache) {
+        if (!includeClassCache) {
+            return Collections.unmodifiableMap(nameToTypeMap);
+        }
+        Map<String, EventType> result = new HashMap<String, EventType>();
+        result.putAll(nameToTypeMap);
+        for (BeanEventType entry : beanEventAdapter.getTypesPerJavaBean().values()) {
+            result.put(entry.getName(), entry);
+        }
+        return result;
     }
 
     public Set<WriteablePropertyDescriptor> getWriteableProperties(EventType eventType)
@@ -145,7 +156,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             for (Map.Entry<URI, Object> entry : factories)
             {
                 PlugInEventRepresentation factory = (PlugInEventRepresentation) entry.getValue();
-                PlugInEventTypeHandlerContext context = new PlugInEventTypeHandlerContext(eventTypeURI, initializer, eventTypeName, eventTypeIdGenerator.nextId(eventTypeName));
+                PlugInEventTypeHandlerContext context = new PlugInEventTypeHandlerContext(eventTypeURI, initializer, eventTypeName, eventTypeIdGenerator.getTypeId(eventTypeName));
                 if (factory.acceptsType(context))
                 {
                     handlingFactory = factory;
@@ -167,7 +178,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     + "' and initializer");
         }
 
-        PlugInEventTypeHandlerContext context = new PlugInEventTypeHandlerContext(handledEventTypeURI, initializer, eventTypeName, eventTypeIdGenerator.nextId(eventTypeName));
+        PlugInEventTypeHandlerContext context = new PlugInEventTypeHandlerContext(handledEventTypeURI, initializer, eventTypeName, eventTypeIdGenerator.getTypeId(eventTypeName));
         PlugInEventTypeHandler handler = handlingFactory.getTypeHandler(context);
         if (handler == null)
         {
@@ -305,16 +316,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return nameToTypeMap.get(eventTypeName);
     }
 
-
-    public EventType addBeanType(String eventTypeName, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, int eventTypeId) throws EventAdapterException {
-        return addBeanTypeInternal(eventTypeName, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured, eventTypeId);
-    }
-
-    public synchronized EventType addBeanType(String eventTypeName, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured) throws EventAdapterException {
-        return addBeanTypeInternal(eventTypeName, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured, null);
-    }
-
-    private synchronized EventType addBeanTypeInternal(String eventTypeName, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, Integer eventTypeId) throws EventAdapterException
+    public synchronized EventType addBeanType(String eventTypeName, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured) throws EventAdapterException
     {
         if (log.isDebugEnabled())
         {
@@ -334,7 +336,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     " versus " + clazz.getName());
         }
 
-        EventType eventType = beanEventAdapter.createBeanType(eventTypeName, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured, eventTypeId);
+        EventType eventType = beanEventAdapter.createBeanType(eventTypeName, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured);
         nameToTypeMap.put(eventTypeName, eventType);
 
         return eventType;
@@ -351,7 +353,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         if (eventType == null)
         {
             // This will update the typesPerJavaBean mapping
-            eventType = beanEventAdapter.createBeanType(event.getClass().getName(), event.getClass(), false, false, false, null);
+            eventType = beanEventAdapter.createBeanType(event.getClass().getName(), event.getClass(), false, false, false);
         }
         return new BeanEventBean(event, eventType);
     }
@@ -429,27 +431,18 @@ public class EventAdapterServiceImpl implements EventAdapterService
             }
         }
 
-        EventType eventType = beanEventAdapter.createBeanType(eventTypeName, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured, null);
+        EventType eventType = beanEventAdapter.createBeanType(eventTypeName, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured);
         nameToTypeMap.put(eventTypeName, eventType);
 
         return eventType;
     }
 
-    public EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSuperType, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto, int eventTypeId) throws EventAdapterException {
-        return addNestableMapTypeInternal(eventTypeName, propertyTypes, optionalSuperType, isPreconfiguredStatic, isPreconfigured, isConfigured, namedWindow, insertInto, eventTypeId);
-    }
-
     public synchronized EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSuperType, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException
-    {
-        return addNestableMapTypeInternal(eventTypeName, propertyTypes, optionalSuperType, isPreconfiguredStatic, isPreconfigured, isConfigured, namedWindow, insertInto, null);
-    }
-
-    private synchronized EventType addNestableMapTypeInternal(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSuperType, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, boolean namedWindow, boolean insertInto, Integer eventTypeId) throws EventAdapterException
     {
         Pair<EventType[], Set<EventType>> mapSuperTypes = getMapSuperTypes(optionalSuperType);
         EventTypeMetadata metadata = EventTypeMetadata.createMapType(eventTypeName, isPreconfiguredStatic, isPreconfigured, isConfigured, namedWindow, insertInto);
 
-        int typeId = eventTypeId != null ? eventTypeId : eventTypeIdGenerator.nextId(eventTypeName);
+        int typeId = eventTypeIdGenerator.getTypeId(eventTypeName);
         MapEventType newEventType = new MapEventType(metadata, eventTypeName, typeId, this, propertyTypes, mapSuperTypes.getFirst(), mapSuperTypes.getSecond());
 
         EventType existingType = nameToTypeMap.get(eventTypeName);
@@ -572,7 +565,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         EventType type;
         if ((configurationEventTypeXMLDOM.getSchemaResource() == null) && (configurationEventTypeXMLDOM.getSchemaText() == null))
         {
-            type = new SimpleXMLEventType(metadata, eventTypeIdGenerator.nextId(eventTypeName), configurationEventTypeXMLDOM, this);
+            type = new SimpleXMLEventType(metadata, eventTypeIdGenerator.getTypeId(eventTypeName), configurationEventTypeXMLDOM, this);
         }
         else
         {
@@ -580,7 +573,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             {
                 throw new EPException("Schema model has not been provided");
             }
-            type = new SchemaXMLEventType(metadata, eventTypeIdGenerator.nextId(eventTypeName), configurationEventTypeXMLDOM, optionalSchemaModel, this);
+            type = new SchemaXMLEventType(metadata, eventTypeIdGenerator.getTypeId(eventTypeName), configurationEventTypeXMLDOM, optionalSchemaModel, this);
         }
 
         nameToTypeMap.put(eventTypeName, type);
@@ -598,15 +591,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return new MapEventBean(properties, eventType);
     }
 
-    public EventType addWrapperType(String eventTypeName, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto, int eventTypeId) throws EventAdapterException {
-        return addWrapperTypeInternal(eventTypeName, underlyingEventType, propertyTypes, isNamedWindow, isInsertInto, eventTypeId);
-    }
-
-    public EventType addWrapperType(String eventTypeName, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto) throws EventAdapterException {
-        return addWrapperTypeInternal(eventTypeName, underlyingEventType, propertyTypes, isNamedWindow, isInsertInto, null);
-    }
-
-    private synchronized EventType addWrapperTypeInternal(String eventTypeName, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto, Integer eventTypeId) throws EventAdapterException
+    public synchronized EventType addWrapperType(String eventTypeName, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto) throws EventAdapterException
 	{
         // If we are wrapping an underlying type that is itself a wrapper, then this is a special case
         if (underlyingEventType instanceof WrapperEventType)
@@ -629,7 +614,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         }
 
         EventTypeMetadata metadata = EventTypeMetadata.createWrapper(eventTypeName, isNamedWindow, isInsertInto, isPropertyAgnostic);
-        int typeId = eventTypeId != null ? eventTypeId : eventTypeIdGenerator.nextId(eventTypeName);
+        int typeId = eventTypeIdGenerator.getTypeId(eventTypeName);
         WrapperEventType newEventType = new WrapperEventType(metadata, eventTypeName, typeId, underlyingEventType, propertyTypes, this);
 
 	    EventType existingType = nameToTypeMap.get(eventTypeName);
@@ -697,14 +682,14 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return "Type '" + existingType.getName() + "' is not compatible";
     }
 
-    public final EventType createAnonymousMapType(Map<String, Object> propertyTypes) throws EventAdapterException
+    public final EventType createAnonymousMapType(String typeName, Map<String, Object> propertyTypes) throws EventAdapterException
     {
-        String name = "t" + UuidGenerator.generate();
-        EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(name);
-        return new MapEventType(metadata, name, eventTypeIdGenerator.nextId(name), this, propertyTypes, null, null);
+        String assignedTypeName = EventAdapterService.ANONYMOUS_TYPE_NAME_PREFIX + typeName;
+        EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(assignedTypeName);
+        return new MapEventType(metadata, assignedTypeName, eventTypeIdGenerator.getTypeId(assignedTypeName), this, propertyTypes, null, null);
     }
 
-    public EventType createSemiAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews)
+    public EventType createSemiAnonymousMapType(String typeName, Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews)
     {
         Map<String, Object> mapProperties = new LinkedHashMap<String, Object>();
         for (Map.Entry<String, Pair<EventType, String>> entry : taggedEventTypes.entrySet())
@@ -715,13 +700,13 @@ public class EventAdapterServiceImpl implements EventAdapterService
         {
             mapProperties.put(entry.getKey(), new EventType[] {entry.getValue().getFirst()});
         }
-        return createAnonymousMapType(mapProperties);
+        return createAnonymousMapType(typeName, mapProperties);
     }
 
-    public final EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException
+    public final EventType createAnonymousWrapperType(String typeName, EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException
     {
-        String name = "t" + UuidGenerator.generate();
-        EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(name);
+        String assignedTypeName = EventAdapterService.ANONYMOUS_TYPE_NAME_PREFIX + typeName;
+        EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(assignedTypeName);
 
         // If we are wrapping an underlying type that is itself a wrapper, then this is a special case: unwrap
         if (underlyingEventType instanceof WrapperEventType)
@@ -737,7 +722,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             propertyTypes = propertiesSuperset;
         }
 
-    	return new WrapperEventType(metadata, name, eventTypeIdGenerator.nextId(name), underlyingEventType, propertyTypes, this);
+    	return new WrapperEventType(metadata, assignedTypeName, eventTypeIdGenerator.getTypeId(assignedTypeName), underlyingEventType, propertyTypes, this);
     }
 
 	public final EventBean adaptorForTypedWrapper(EventBean event, Map<String, Object> properties, EventType eventType)

@@ -57,7 +57,8 @@ public class DatabasePollingViewableFactory
      * @return viewable providing poll functionality
      * @throws ExprValidationException if the validation failed
      */
-    public static HistoricalEventViewable createDBStatementView(int streamNumber,
+    public static HistoricalEventViewable createDBStatementView(String statementId,
+                                                                int streamNumber,
                                                  DBStatementStreamSpec databaseStreamSpec,
                                                  DatabaseConfigService databaseConfigService,
                                                  EventAdapterService eventAdapterService,
@@ -233,7 +234,8 @@ public class DatabasePollingViewableFactory
 
         EventType eventType;
         if (outputRowConversionHook == null) {
-            eventType = eventAdapterService.createAnonymousMapType(eventTypeFields);
+            String outputEventType = statementId + "_dbpoll_" + streamNumber;
+            eventType = eventAdapterService.createAnonymousMapType(outputEventType, eventTypeFields);
         }
         else {
             Class carrierClass = outputRowConversionHook.getOutputRowType(new SQLOutputRowTypeContext(databaseStreamSpec.getDatabaseName(), databaseStreamSpec.getSqlWithSubsParams(), eventTypeFields));

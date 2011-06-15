@@ -73,7 +73,7 @@ public class TestMapEventBean extends TestCase
         testTypesMap.clear();
         testTypesMap.put("a", SupportBean.class);
         testTypesMap.put("b", SupportBean_A.class);
-        EventType eventType = SupportEventAdapterService.getService().createAnonymousMapType(testTypesMap);
+        EventType eventType = SupportEventAdapterService.getService().createAnonymousMapType("test", testTypesMap);
 
         Map<String, Object> events = new HashMap<String, Object>();
         events.put("a", beanOne);

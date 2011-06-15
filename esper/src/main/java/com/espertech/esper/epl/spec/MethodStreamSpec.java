@@ -13,6 +13,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.util.MetaDefItem;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.io.Serializable;
@@ -82,7 +83,7 @@ public class MethodStreamSpec extends StreamSpecBase implements StreamSpecRaw, S
         return expressions;
     }
 
-    public StreamSpecCompiled compile(StatementContext context, Set<String> eventTypeReferences, boolean isInsertInto) throws ExprValidationException
+    public StreamSpecCompiled compile(StatementContext context, Set<String> eventTypeReferences, boolean isInsertInto, Collection<Integer> assignedTypeNumberStack) throws ExprValidationException
     {
         if (!ident.equals("method"))
         {

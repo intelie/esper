@@ -46,7 +46,8 @@ public class SelectExprProcessorFactory
      * @return select-clause expression processor
      * @throws ExprValidationException to indicate the select expression cannot be validated
      */
-    public static SelectExprProcessor getProcessor(List<SelectClauseElementCompiled> selectionList,
+    public static SelectExprProcessor getProcessor(Collection<Integer> assignedTypeNumberStack,
+                                                   List<SelectClauseElementCompiled> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    ForClauseSpec forClauseSpec,
@@ -65,7 +66,7 @@ public class SelectExprProcessorFactory
                                                    Annotation[] annotations)
         throws ExprValidationException
     {
-        SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext, statementId);
+        SelectExprProcessor synthetic = getProcessorInternal(assignedTypeNumberStack, selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext, statementId);
 
         // Handle binding as an optional service
         if (statementResultService != null)
@@ -113,6 +114,7 @@ public class SelectExprProcessorFactory
     }
 
     private static SelectExprProcessor getProcessorInternal(
+                                                   Collection<Integer> assignedTypeNumberStack,
                                                    List<SelectClauseElementCompiled> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
@@ -138,7 +140,7 @@ public class SelectExprProcessorFactory
             if (typeService.getStreamNames().length > 1)
             {
                 log.debug(".getProcessor Using SelectExprJoinWildcardProcessor");
-                return new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
+                return new SelectExprJoinWildcardProcessor(assignedTypeNumberStack, statementId, typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
             }
             // Single-table selects with no insert-into
             // don't need extra processing
@@ -156,7 +158,7 @@ public class SelectExprProcessorFactory
         List<SelectClauseExprCompiledSpec> expressionList = getExpressions(selectionList);
         List<SelectClauseStreamCompiledSpec> streamWildcards = getStreamWildcards(selectionList);
 
-        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext, statementId);
+        SelectExprProcessorHelper factory = new SelectExprProcessorHelper(assignedTypeNumberStack, expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext, statementId);
         SelectExprProcessor processor = factory.getEvaluator();
 
         // add reference to the type obtained

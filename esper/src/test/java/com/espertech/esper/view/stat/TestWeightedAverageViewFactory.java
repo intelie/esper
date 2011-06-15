@@ -57,7 +57,7 @@ public class TestWeightedAverageViewFactory extends TestCase
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
-        EventType type = WeightedAverageView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = WeightedAverageView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         assertFalse(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("price"), type, null)));
         assertFalse(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("symbol"), type, null)));
         assertTrue(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"), type, null)));

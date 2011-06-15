@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -201,7 +202,7 @@ public class TestPatternStreamSpecRaw extends TestCase
 
     private PatternStreamSpecCompiled compile(PatternStreamSpecRaw raw) throws Exception
     {
-        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportStatementContextFactory.makeContext(), new HashSet<String>(), false);
+        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportStatementContextFactory.makeContext(), new HashSet<String>(), false, Collections.<Integer>emptyList());
         return compiled;
     }
 

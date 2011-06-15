@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * A view that handles the setting of variables upon receipt of a triggering event.
@@ -53,7 +54,7 @@ public class OnSetVariableView extends ViewSupport
      * @param exprEvaluatorContext context for expression evalauation
      * @throws ExprValidationException if the assignment expressions are invalid
      */
-    public OnSetVariableView(OnTriggerSetDesc desc, EventAdapterService eventAdapterService, VariableService variableService, StatementResultService statementResultService, ExprEvaluatorContext exprEvaluatorContext)
+    public OnSetVariableView(String statementId, OnTriggerSetDesc desc, EventAdapterService eventAdapterService, VariableService variableService, StatementResultService statementResultService, ExprEvaluatorContext exprEvaluatorContext)
             throws ExprValidationException
     {
         this.desc = desc;
@@ -63,7 +64,8 @@ public class OnSetVariableView extends ViewSupport
         this.exprEvaluatorContext = exprEvaluatorContext;
 
         variableReadWritePackage = new VariableReadWritePackage(desc.getAssignments(), variableService, eventAdapterService);
-        eventType = eventAdapterService.createAnonymousMapType(variableReadWritePackage.getVariableTypes());
+        String outputEventTypeName = statementId + "_outsetvar";
+        eventType = eventAdapterService.createAnonymousMapType(outputEventTypeName, variableReadWritePackage.getVariableTypes());
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)

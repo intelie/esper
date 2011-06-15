@@ -120,7 +120,7 @@ public class EPPreparedExecuteMethod
                             statementContext.getTimeProvider(),
                             statementContext.getVariableService(),
                             statementContext.getEventAdapterService(),
-                            services.getEngineURI(), null, statementContext);
+                            services.getEngineURI(), null, statementContext, Collections.singleton(i));
                 }
                 catch (Exception ex) {
                     log.warn("Unexpected exception analyzing filter paths: " + ex.getMessage(), ex);

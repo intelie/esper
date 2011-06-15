@@ -24,6 +24,7 @@ import java.util.List;
 public class SizeViewFactory implements ViewFactory
 {
     private List<ExprNode> viewParameters;
+    private int streamNumber;
 
     protected StatViewAdditionalProps additionalProps;
 
@@ -32,13 +33,14 @@ public class SizeViewFactory implements ViewFactory
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
         this.viewParameters = expressionParameters;
+        this.streamNumber = viewFactoryContext.getStreamNum();
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         ExprNode[] validated = ViewFactorySupport.validate("Size view", parentEventType, statementContext, viewParameters, false);
         additionalProps = StatViewAdditionalProps.make(validated, 0);
-        eventType = SizeView.createEventType(statementContext, additionalProps);
+        eventType = SizeView.createEventType(statementContext, additionalProps, streamNumber);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)

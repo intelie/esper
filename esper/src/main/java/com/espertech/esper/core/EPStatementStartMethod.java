@@ -265,7 +265,8 @@ public class EPStatementStartMethod
         {
             PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
             boolean usedByChildViews = !streamSpec.getViewSpecs().isEmpty() || (statementSpec.getInsertIntoDesc() != null);
-            final EventType eventType = services.getEventAdapterService().createSemiAnonymousMapType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes(), usedByChildViews);
+            String patternTypeName = statementContext.getStatementId() + "_patternon";
+            final EventType eventType = services.getEventAdapterService().createSemiAnonymousMapType(patternTypeName, patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes(), usedByChildViews);
             final EventStream sourceEventStream = new ZeroDepthStream(eventType);
             eventStreamParentViewable = sourceEventStream;
 
@@ -409,7 +410,7 @@ public class EPStatementStartMethod
                 }
 
                 try {
-                    onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService(), statementContext);
+                    onExprView = new OnSetVariableView(statementContext.getStatementId(), desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService(), statementContext);
                 }
                 catch (VariableValueException ex) {
                     throw new ExprValidationException("Error in variable assignment: " + ex.getMessage(), ex);
@@ -868,7 +869,7 @@ public class EPStatementStartMethod
             throw new ExprValidationException("Cannot create variable: " + ex.getMessage());
         }
 
-        final CreateVariableView createView = new CreateVariableView(services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName(), statementContext.getStatementResultService());
+        final CreateVariableView createView = new CreateVariableView(statementContext.getStatementId(), services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName(), statementContext.getStatementResultService());
         final int variableNum = services.getVariableService().getReader(createDesc.getVariableName()).getVariableNumber();
         services.getVariableService().registerCallback(variableNum, createView);
         statementContext.getStatementStopService().addSubscriber(new StatementStopCallback() {
@@ -962,7 +963,8 @@ public class EPStatementStartMethod
             {
                 PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
                 boolean usedByChildViews = !streamSpec.getViewSpecs().isEmpty() || (statementSpec.getInsertIntoDesc() != null);
-                final EventType eventType = services.getEventAdapterService().createSemiAnonymousMapType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes(), usedByChildViews);
+                String patternTypeName = statementContext.getStatementId() + "_pattern_" + i;
+                final EventType eventType = services.getEventAdapterService().createSemiAnonymousMapType(patternTypeName, patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes(), usedByChildViews);
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
                 eventStreamParentViewable[i] = sourceEventStream;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), streamSpec.getOptions(), statementContext);
@@ -995,7 +997,7 @@ public class EPStatementStartMethod
                 DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
                 SQLColumnTypeConversion typeConversionHook = (SQLColumnTypeConversion) JavaClassHelper.getAnnotationHook(statementSpec.getAnnotations(), HookType.SQLCOL, SQLColumnTypeConversion.class, statementContext.getMethodResolutionService());
                 SQLOutputRowConversion outputRowConversionHook = (SQLOutputRowConversion) JavaClassHelper.getAnnotationHook(statementSpec.getAnnotations(), HookType.SQLROW, SQLOutputRowConversion.class, statementContext.getMethodResolutionService());
-                HistoricalEventViewable historicalEventViewable = DatabasePollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle(), typeConversionHook, outputRowConversionHook,
+                HistoricalEventViewable historicalEventViewable = DatabasePollingViewableFactory.createDBStatementView(statementContext.getStatementId(), i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle(), typeConversionHook, outputRowConversionHook,
                         statementContext.getConfigSnapshot().getEngineDefaults().getLogging().isEnableJDBC());
                 unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.getEventType(), new LinkedList<ViewFactory>());
                 eventStreamParentViewable[i] = historicalEventViewable;

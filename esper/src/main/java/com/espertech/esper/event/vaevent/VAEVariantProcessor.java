@@ -56,7 +56,7 @@ public class VAEVariantProcessor implements ValueAddEventProcessor
         }
 
         EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(variantSpec.getVariantStreamName(), EventTypeMetadata.TypeClass.VARIANT);
-        variantEventType = new VariantEventType(metadata, eventTypeIdGenerator.nextId(variantSpec.getVariantStreamName()), variantSpec, strategy);
+        variantEventType = new VariantEventType(metadata, eventTypeIdGenerator.getTypeId(variantSpec.getVariantStreamName()), variantSpec, strategy);
     }
 
     public EventType getValueAddEventType()

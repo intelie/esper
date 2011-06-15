@@ -24,10 +24,12 @@ import com.espertech.esper.event.WrapperEventType;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
+import com.espertech.esper.util.CollectionUtil;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -38,6 +40,7 @@ public class SelectExprProcessorHelper
 {
 	private static final Log log = LogFactory.getLog(SelectExprProcessorHelper.class);
 
+    private final Collection<Integer> assignedTypeNumberStack;
     private final List<SelectClauseExprCompiledSpec> selectionList;
     private final List<SelectClauseStreamCompiledSpec> selectedStreams;
     private final InsertIntoDesc insertIntoDesc;
@@ -63,7 +66,8 @@ public class SelectExprProcessorHelper
      * @param exprEvaluatorContext context for expression evalauation
      * @throws com.espertech.esper.epl.expression.ExprValidationException thrown if any of the expressions don't validate
      */
-    public SelectExprProcessorHelper(List<SelectClauseExprCompiledSpec> selectionList,
+    public SelectExprProcessorHelper(Collection<Integer> assignedTypeNumberStack,
+                                   List<SelectClauseExprCompiledSpec> selectionList,
                                    List<SelectClauseStreamCompiledSpec> selectedStreams,
                                    InsertIntoDesc insertIntoDesc,
                                    boolean isUsingWildcard,
@@ -75,6 +79,7 @@ public class SelectExprProcessorHelper
                                    ExprEvaluatorContext exprEvaluatorContext,
                                    String statementId) throws ExprValidationException
     {
+        this.assignedTypeNumberStack = assignedTypeNumberStack;
         this.selectionList = selectionList;
         this.selectedStreams = selectedStreams;
         this.insertIntoDesc = insertIntoDesc;
@@ -138,7 +143,7 @@ public class SelectExprProcessorHelper
         SelectExprJoinWildcardProcessor joinWildcardProcessor = null;
         if(typeService.getStreamNames().length > 1 && isUsingWildcard)
         {
-        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, null, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
+        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(assignedTypeNumberStack, statementId, typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, null, selectExprEventTypeRegistry, methodResolutionService, exprEvaluatorContext);
         }
 
         // Resolve underlying event type in the case of wildcard select
@@ -175,7 +180,7 @@ public class SelectExprProcessorHelper
             }
             else {
                 final ExprEvaluator innerExprEvaluator = expr.getExprEvaluator();
-                final EventType mapType = eventAdapterService.createAnonymousMapType(eventTypeExpr);
+                final EventType mapType = eventAdapterService.createAnonymousMapType(statementId + "_innereval_" + CollectionUtil.toString(assignedTypeNumberStack, "_") + "_" + i, eventTypeExpr);
                 ExprEvaluator evaluatorFragment = new ExprEvaluator() {
                     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, ExprEvaluatorContext exprEvaluatorContext)
                     {
@@ -494,20 +499,20 @@ public class SelectExprProcessorHelper
                 EventType resultEventType;
                 if (underlyingEventType != null)
                 {
-                    resultEventType = eventAdapterService.createAnonymousWrapperType(underlyingEventType, selPropertyTypes);
+                    resultEventType = eventAdapterService.createAnonymousWrapperType(statementId + "_wrapout_" + CollectionUtil.toString(assignedTypeNumberStack, "_"), underlyingEventType, selPropertyTypes);
                     return new EvalSelectStreamWUnderlying(selectExprContext, resultEventType, namedStreams, isUsingWildcard,
                             unnamedStreams, underlyingEventType, singleStreamWrapper, underlyingIsFragmentEvent, underlyingStreamNumber, underlyingPropertyEventGetter);
                 }
                 else
                 {
-                    resultEventType = eventAdapterService.createAnonymousMapType(selPropertyTypes);
+                    resultEventType = eventAdapterService.createAnonymousMapType(statementId + "_mapout_" + CollectionUtil.toString(assignedTypeNumberStack, "_"), selPropertyTypes);
                     return new EvalSelectStreamNoUnderlying(selectExprContext, resultEventType, namedStreams, isUsingWildcard);
                 }
             }
 
             if (isUsingWildcard)
             {
-        	    EventType resultEventType = eventAdapterService.createAnonymousWrapperType(eventType, selPropertyTypes);
+        	    EventType resultEventType = eventAdapterService.createAnonymousWrapperType(statementId + "_wrapoutwild_" + CollectionUtil.toString(assignedTypeNumberStack, "_"), eventType, selPropertyTypes);
                 if (singleStreamWrapper) {
                     return new EvalSelectWildcardSSWrapper(selectExprContext, resultEventType);
                 }
@@ -517,7 +522,7 @@ public class SelectExprProcessorHelper
                 return new EvalSelectWildcardJoin(selectExprContext, resultEventType, joinWildcardProcessor);
             }
 
-            EventType resultEventType = eventAdapterService.createAnonymousMapType(selPropertyTypes);
+            EventType resultEventType = eventAdapterService.createAnonymousMapType(statementId + "_result_" + CollectionUtil.toString(assignedTypeNumberStack, "_"), selPropertyTypes);
             return new EvalSelectNoWildcard(selectExprContext, resultEventType);
         }
 
@@ -635,7 +640,7 @@ public class SelectExprProcessorHelper
                 {
                     // Use an anonymous type if the target is not a variant stream
                     if (valueAddEventService.getValueAddProcessor(insertIntoDesc.getEventTypeName()) == null) {
-                        resultEventType = eventAdapterService.createAnonymousMapType(selPropertyTypes);
+                        resultEventType = eventAdapterService.createAnonymousMapType(statementId + "_vae_" + CollectionUtil.toString(assignedTypeNumberStack, "_"), selPropertyTypes);
                     }
                     else {
                         String statementName = "stmt_" + statementId + "_insert";

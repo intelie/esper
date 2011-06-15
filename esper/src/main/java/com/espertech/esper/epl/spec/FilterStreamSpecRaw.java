@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.StreamTypeService;
@@ -18,7 +19,6 @@ import com.espertech.esper.epl.property.PropertyEvaluator;
 import com.espertech.esper.epl.property.PropertyEvaluatorFactory;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
@@ -26,10 +26,11 @@ import com.espertech.esper.util.MetaDefItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.Serializable;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.io.Serializable;
 
 /**
  * Unvalided filter-based stream specification.
@@ -70,7 +71,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         return rawFilterSpec;
     }
 
-    public StreamSpecCompiled compile(StatementContext context, Set<String> eventTypeReferences, boolean isInsertInto)
+    public StreamSpecCompiled compile(StatementContext context, Set<String> eventTypeReferences, boolean isInsertInto, Collection<Integer> assignedTypeNumberStack)
             throws ExprValidationException
     {
         // Determine the event type
@@ -86,7 +87,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
             PropertyEvaluator optionalPropertyEvaluator = null;
             if (rawFilterSpec.getOptionalPropertyEvalSpec() != null) {
-                optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(rawFilterSpec.getOptionalPropertyEvalSpec(), namedWindowType, this.getOptionalStreamName(), context.getEventAdapterService(), context.getMethodResolutionService(), context.getTimeProvider(), context.getVariableService(), context.getEngineURI(), context.getStatementId(), context.getStatementName(), context.getAnnotations());
+                optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(rawFilterSpec.getOptionalPropertyEvalSpec(), namedWindowType, this.getOptionalStreamName(), context.getEventAdapterService(), context.getMethodResolutionService(), context.getTimeProvider(), context.getVariableService(), context.getEngineURI(), context.getStatementId(), context.getStatementName(), context.getAnnotations(), assignedTypeNumberStack);
             }
             eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryName());
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.getOptions(), optionalPropertyEvaluator);
@@ -114,7 +115,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(), rawFilterSpec.getOptionalPropertyEvalSpec(),
                 null, null,  // no tags
-                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), this.getOptionalStreamName(), context);
+                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), this.getOptionalStreamName(), context, assignedTypeNumberStack);
 
         return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
     }

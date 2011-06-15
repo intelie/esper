@@ -18,6 +18,7 @@ import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.core.StatementContext;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.net.URI;
@@ -79,7 +80,8 @@ public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecR
 
     public StreamSpecCompiled compile(StatementContext statementContext,
                                       Set<String> eventTypeReferences,
-                                      boolean isInsertInto)
+                                      boolean isInsertInto,
+                                      Collection<Integer> assignedTypeNumberStack)
     {
         return this;
     }

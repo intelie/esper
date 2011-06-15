@@ -51,6 +51,10 @@ public class BeanEventAdapter implements BeanEventTypeFactory
         this.eventTypeIdGenerator = eventTypeIdGenerator;
     }
 
+    public Map<Class, BeanEventType> getTypesPerJavaBean() {
+        return typesPerJavaBean;
+    }
+
     /**
      * Sets the default accessor style.
      * @param defaultAccessorStyle style to set
@@ -95,7 +99,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      */
     public final BeanEventType createBeanTypeDefaultName(Class clazz)
     {
-        return createBeanType(clazz.getName(), clazz, false, false, false, null);
+        return createBeanType(clazz.getName(), clazz, false, false, false);
     }
 
     /**
@@ -104,7 +108,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      * @param clazz is the class of the Java bean.
      * @return EventType implementation for bean class
      */
-    public final BeanEventType createBeanType(String name, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured, Integer eventTypeId)
+    public final BeanEventType createBeanType(String name, Class clazz, boolean isPreconfiguredStatic, boolean isPreconfigured, boolean isConfigured)
     {
         if (clazz == null)
         {
@@ -130,7 +134,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
                 legacyDef.setAccessorStyle(defaultAccessorStyle);
             }
 
-            int typeId = eventTypeId != null ? eventTypeId : eventTypeIdGenerator.nextId(name);
+            int typeId = eventTypeIdGenerator.getTypeId(name);
             EventTypeMetadata metadata = EventTypeMetadata.createBeanType(name, clazz, isPreconfiguredStatic, isPreconfigured, isConfigured);
             eventType = new BeanEventType(metadata, typeId, clazz, eventAdapterService, legacyDef);
             typesPerJavaBean.put(clazz, eventType);

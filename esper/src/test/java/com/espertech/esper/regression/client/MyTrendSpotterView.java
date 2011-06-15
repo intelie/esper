@@ -131,6 +131,6 @@ public class MyTrendSpotterView extends ViewSupport
     {
         Map<String, Object> eventTypeMap = new HashMap<String, Object>();
         eventTypeMap.put(PROPERTY_NAME, Long.class);
-        return statementContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
+        return statementContext.getEventAdapterService().createAnonymousMapType("test", eventTypeMap);
     }
 }

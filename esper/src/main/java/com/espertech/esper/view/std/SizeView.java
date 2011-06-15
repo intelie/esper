@@ -125,12 +125,13 @@ public final class SizeView extends ViewSupport implements CloneableView
      * @param statementContext is the event adapter service
      * @return event type for view
      */
-    public static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps)
+    public static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps, int streamNum)
     {
         Map<String, Object> schemaMap = new HashMap<String, Object>();
         schemaMap.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), long.class);
         StatViewAdditionalProps.addCheckDupProperties(schemaMap, additionalProps, ViewFieldEnum.SIZE_VIEW__SIZE);
-        return statementContext.getEventAdapterService().createAnonymousMapType(schemaMap);
+        String outputEventTypeName = statementContext.getStatementId() + "_sizeview_" + streamNum;
+        return statementContext.getEventAdapterService().createAnonymousMapType(outputEventTypeName, schemaMap);
     }
 
     private void addProperties(Map<String, Object> newDataMap)

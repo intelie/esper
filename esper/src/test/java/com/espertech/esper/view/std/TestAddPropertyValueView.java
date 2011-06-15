@@ -28,7 +28,7 @@ public class TestAddPropertyValueView extends TestCase
 
         Map<String, Object> addProps = new HashMap<String, Object>();
         addProps.put("symbol", String.class);
-        EventType mergeEventType = SupportEventAdapterService.getService().createAnonymousWrapperType(parentEventType, addProps);
+        EventType mergeEventType = SupportEventAdapterService.getService().createAnonymousWrapperType("test", parentEventType, addProps);
 
         // Set up length window view and a test child view
         myView = new AddPropertyValueView(SupportStatementContextFactory.makeContext(), new String[] {"symbol"}, new Object[] {"IBM"}, mergeEventType);
@@ -85,7 +85,7 @@ public class TestAddPropertyValueView extends TestCase
 
         Map<String, Object> addProps = new HashMap<String, Object>();
         addProps.put("test", Integer.class);
-        EventType newEventType = SupportEventAdapterService.getService().createAnonymousWrapperType(parentEventType, addProps);
+        EventType newEventType = SupportEventAdapterService.getService().createAnonymousWrapperType("test", parentEventType, addProps);
         EventBean newBean = AddPropertyValueView.addProperty(eventBean, new String[] {"test"}, new Object[] {2}, newEventType, SupportEventAdapterService.getService());
 
         assertEquals(2, newBean.get("test"));

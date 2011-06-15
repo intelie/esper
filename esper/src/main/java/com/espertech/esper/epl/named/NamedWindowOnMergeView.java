@@ -164,7 +164,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
                 try {
                     if (item instanceof OnTriggerMergeActionInsert) {
                         OnTriggerMergeActionInsert insertDesc = (OnTriggerMergeActionInsert) item;
-                        actions.add(setupInsert(insertDesc, triggeringEventType, triggeringStreamName, statementContext));
+                        actions.add(setupInsert(count, insertDesc, triggeringEventType, triggeringStreamName, statementContext));
                     }
                     else if (item instanceof OnTriggerMergeActionUpdate) {
                         OnTriggerMergeActionUpdate updateDesc = (OnTriggerMergeActionUpdate) item;
@@ -198,7 +198,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
         }
     }
 
-    private NamedWindowOnMergeActionIns setupInsert(OnTriggerMergeActionInsert desc, EventType triggeringEventType, String triggeringStreamName, StatementContext statementContext)
+    private NamedWindowOnMergeActionIns setupInsert(int selectClauseNumber, OnTriggerMergeActionInsert desc, EventType triggeringEventType, String triggeringStreamName, StatementContext statementContext)
         throws ExprValidationException {
 
         // Compile insert-into info
@@ -234,7 +234,7 @@ public class NamedWindowOnMergeView extends NamedWindowOnExprBaseView
 
         // Get select expr processor
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
-        SelectExprProcessor insertHelper = SelectExprProcessorFactory.getProcessor(selectNoWildcard, false, insertIntoDesc, null, streamTypeService,
+        SelectExprProcessor insertHelper = SelectExprProcessorFactory.getProcessor(Collections.singleton(selectClauseNumber), selectNoWildcard, false, insertIntoDesc, null, streamTypeService,
                 statementContext.getEventAdapterService(), statementResultService, statementContext.getValueAddEventService(), selectExprEventTypeRegistry,
                 statementContext.getMethodResolutionService(), statementContext, statementContext.getVariableService(), statementContext.getTimeProvider(), statementContext.getEngineURI(), statementContext.getStatementId(), statementContext.getStatementName(), statementContext.getAnnotations());
         ExprEvaluator filterEval = desc.getOptionalWhereClause() == null ? null : desc.getOptionalWhereClause().getExprEvaluator();

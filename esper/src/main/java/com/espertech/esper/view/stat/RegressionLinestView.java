@@ -102,7 +102,7 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
      * @param statementContext is the event adapter service
      * @return event type of view
      */
-    protected static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps)
+    protected static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps, int streamNum)
     {
         Map<String, Object> eventTypeMap = new HashMap<String, Object>();
         eventTypeMap.put(ViewFieldEnum.REGRESSION__SLOPE.getName(), Double.class);
@@ -126,6 +126,7 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
         eventTypeMap.put(ViewFieldEnum.REGRESSION__SUMYSQ.getName(), Double.class);
         StatViewAdditionalProps.addCheckDupProperties(eventTypeMap, additionalProps,
                 ViewFieldEnum.REGRESSION__SLOPE, ViewFieldEnum.REGRESSION__YINTERCEPT);
-        return statementContext.getEventAdapterService().createAnonymousMapType(eventTypeMap);
+        String outputEventTypeName = statementContext.getStatementId() + "_regview_" + streamNum;
+        return statementContext.getEventAdapterService().createAnonymousMapType(outputEventTypeName, eventTypeMap);
     }
 }

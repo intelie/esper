@@ -20,7 +20,7 @@ public class TestPollingViewableFactory extends TestCase
         DBStatementStreamSpec spec = new DBStatementStreamSpec("s0", new LinkedList<ViewSpec>(),
                 "mydb_part", "select * from mytesttable where mybigint=${idnum}", null);
 
-        EventCollection eventCollection = DatabasePollingViewableFactory.createDBStatementView(1, spec,
+        EventCollection eventCollection = DatabasePollingViewableFactory.createDBStatementView("id", 1, spec,
                 SupportDatabaseService.makeService(),
                 SupportEventAdapterService.getService(), null, null, null, true);
         

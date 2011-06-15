@@ -22,7 +22,7 @@ public class TestCorrelationView extends TestCase
     public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        EventType type = CorrelationView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = CorrelationView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         myView = new CorrelationView(SupportStatementContextFactory.makeContext(),
                 SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"), type, null);
 

@@ -949,9 +949,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         try
         {
             compiledStreams = new ArrayList<StreamSpecCompiled>();
+            int streamNum = 0;
             for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
             {
-                StreamSpecCompiled compiled = rawSpec.compile(statementContext, eventTypeReferences, spec.getInsertIntoDesc() != null);
+                streamNum++;
+                StreamSpecCompiled compiled = rawSpec.compile(statementContext, eventTypeReferences, spec.getInsertIntoDesc() != null, Collections.singleton(streamNum));
                 compiledStreams.add(compiled);
             }
         }

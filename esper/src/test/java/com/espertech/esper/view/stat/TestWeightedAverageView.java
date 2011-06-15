@@ -22,7 +22,7 @@ public class TestWeightedAverageView extends TestCase
     public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        EventType type = WeightedAverageView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = WeightedAverageView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         myView = new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"), type, null);
         
         childView = new SupportBeanClassView(SupportMarketDataBean.class);

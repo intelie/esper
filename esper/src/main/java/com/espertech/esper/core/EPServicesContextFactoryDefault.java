@@ -67,8 +67,19 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
     public EPServicesContext createServicesContext(EPServiceProvider epServiceProvider, ConfigurationInformation configSnapshot)
     {
+        // JNDI context for binding resources
+        EngineEnvContext jndiContext = new EngineEnvContext();
+
+        EventTypeIdGenerator eventTypeIdGenerator;
+        if (configSnapshot.getEngineDefaults().getAlternativeContext() == null || configSnapshot.getEngineDefaults().getAlternativeContext().getEventTypeIdGeneratorFactory() == null) {
+            eventTypeIdGenerator = new EventTypeIdGeneratorImpl();
+        }
+        else {
+            EventTypeIdGeneratorFactory eventTypeIdGeneratorFactory = (EventTypeIdGeneratorFactory) JavaClassHelper.instantiate(EventTypeIdGeneratorFactory.class, configSnapshot.getEngineDefaults().getAlternativeContext().getEventTypeIdGeneratorFactory());
+            eventTypeIdGenerator = eventTypeIdGeneratorFactory.create(new EventTypeIdGeneratorContext(epServiceProvider.getURI()));
+        }
+
         // Make services that depend on snapshot config entries
-        EventTypeIdGenerator eventTypeIdGenerator = new EventTypeIdGeneratorImpl();
         EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl(eventTypeIdGenerator);
         init(eventAdapterService, configSnapshot);
 
@@ -86,9 +97,6 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         plugInViews.addViews(configSnapshot.getPlugInViews(), configSnapshot.getPlugInVirtualDataWindows());
         PluggableObjectCollection plugInPatternObj = new PluggableObjectCollection();
         plugInPatternObj.addPatternObjects(configSnapshot.getPlugInPatternObjects());
-
-        // JNDI context for binding resources
-        EngineEnvContext jndiContext = new EngineEnvContext();
 
         // exception handling
         ExceptionHandlingService exceptionHandlingService = initExceptionHandling(epServiceProvider.getURI(), configSnapshot.getEngineDefaults().getExceptionHandling(), configSnapshot.getEngineDefaults().getConditionHandling());

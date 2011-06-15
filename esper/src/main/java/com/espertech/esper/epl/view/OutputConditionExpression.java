@@ -235,7 +235,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
         outputLimitProperties.put("count_insert", Integer.class);
         outputLimitProperties.put("count_remove", Integer.class);
         outputLimitProperties.put("last_output_timestamp", Long.class);
-        return eventAdapterService.createAnonymousMapType(outputLimitProperties);
+        return eventAdapterService.createAnonymousMapType(OutputConditionExpression.class.getName(), outputLimitProperties);
     }
 
     private void resetBuiltinProperties()

@@ -213,11 +213,12 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
      * @param statementContext is the event adapter service
      * @return event type of view
      */
-    public static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps)
+    public static EventType createEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps, int streamNum)
     {
         Map<String, Object> schemaMap = new HashMap<String, Object>();
         schemaMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), Double.class);
         StatViewAdditionalProps.addCheckDupProperties(schemaMap, additionalProps, ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE);
-        return statementContext.getEventAdapterService().createAnonymousMapType(schemaMap);
+        String outputEventTypeName = statementContext.getStatementId() + "_wavgview_" + streamNum;
+        return statementContext.getEventAdapterService().createAnonymousMapType(outputEventTypeName, schemaMap);
     }
 }

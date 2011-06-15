@@ -581,7 +581,7 @@ public class EventBeanUtility
             return null;
         }
 
-        EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false, false, false, null);
+        EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false, false, false);
         return new FragmentEventType(type, isIndexed, true);
     }
 

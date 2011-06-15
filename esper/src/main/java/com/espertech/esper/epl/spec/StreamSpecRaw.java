@@ -19,6 +19,7 @@ import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.core.StatementContext;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -37,7 +38,8 @@ public interface StreamSpecRaw extends StreamSpec
      */
     public StreamSpecCompiled compile(StatementContext statementContext,
                                       Set<String> eventTypeReferences,
-                                      boolean isInsertInto)
+                                      boolean isInsertInto,
+                                      Collection<Integer> assignedTypeNumberStack)
         throws ExprValidationException;
 
 }

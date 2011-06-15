@@ -24,7 +24,7 @@ public class TestSizeViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         assertFalse(factory.canReuse(new LastElementView()));
-        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         assertTrue(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext(), type, null)));
     }
 

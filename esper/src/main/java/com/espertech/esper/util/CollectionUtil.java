@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.util;
 
+import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -16,6 +17,23 @@ import java.util.*;
  */
 public class CollectionUtil<T>
 {
+    public static String toString(Collection<Integer> stack, String delimiterChars) {
+        if (stack.isEmpty()) {
+            return "";
+        }
+        if (stack.size() == 1) {
+            return Integer.toString(stack.iterator().next());
+        }
+        StringWriter writer = new StringWriter();
+        String delimiter = "";
+        for (Integer item : stack) {
+            writer.append(delimiter);
+            writer.append(Integer.toString(item));
+            delimiter = delimiterChars;
+        }
+        return writer.toString();
+    }
+
     public static Object expandAddElement(Object array, Object[] elementsToAdd) {
         Class cl = array.getClass();
         if (!cl.isArray()) return null;

@@ -88,14 +88,15 @@ public final class FilterSpecCompiler
                                                     EventAdapterService eventAdapterService,
                                                     String engineURI,
                                                     String optionalStreamName,
-                                                    StatementContext statementContext)
+                                                    StatementContext statementContext,
+                                                    Collection<Integer> assignedTypeNumberStack)
             throws ExprValidationException
     {
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions
         List<ExprNode> validatedNodes = validateAllowSubquery(filterExpessions, streamTypeService, statementContext, taggedEventTypes, arrayEventTypes);
         return build(validatedNodes, eventType, eventTypeName, optionalPropertyEvalSpec, taggedEventTypes, arrayEventTypes, streamTypeService, methodResolutionService,
-                timeProvider, variableService, eventAdapterService, engineURI, optionalStreamName, statementContext, statementContext.getStatementId(), statementContext.getStatementName(), statementContext.getAnnotations());
+                timeProvider, variableService, eventAdapterService, engineURI, optionalStreamName, statementContext, statementContext.getStatementId(), statementContext.getStatementName(), statementContext.getAnnotations(), assignedTypeNumberStack);
     }
 
     public static FilterSpecCompiled build(List<ExprNode> validatedNodes,
@@ -114,7 +115,8 @@ public final class FilterSpecCompiler
                                             ExprEvaluatorContext exprEvaluatorContext,
                                             String statementId,
                                             String statementName,
-                                            Annotation[] annotations) throws ExprValidationException {
+                                            Annotation[] annotations,
+                                            Collection<Integer> assignedTypeNumberStack) throws ExprValidationException {
 
         List<ExprNode> constituents = decomposeCheckAggregation(validatedNodes);
 
@@ -168,7 +170,7 @@ public final class FilterSpecCompiler
         PropertyEvaluator optionalPropertyEvaluator = null;
         if (optionalPropertyEvalSpec != null)
         {
-            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType, optionalStreamName, eventAdapterService, methodResolutionService, timeProvider, variableService, engineURI, statementId, statementName, annotations);
+            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType, optionalStreamName, eventAdapterService, methodResolutionService, timeProvider, variableService, engineURI, statementId, statementName, annotations, assignedTypeNumberStack);
         }
 
         FilterSpecCompiled spec = new FilterSpecCompiled(eventType, eventTypeName, filterParams, optionalPropertyEvaluator);

@@ -11,7 +11,10 @@ package com.espertech.esper.epl.view;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.epl.expression.*;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeIdentifierVisitor;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.variable.VariableReadWritePackage;
 import com.espertech.esper.event.EventAdapterService;
@@ -155,7 +158,7 @@ public class OutputConditionPolledExpression implements OutputConditionPolled
         outputLimitProperties.put("count_insert", Integer.class);
         outputLimitProperties.put("count_remove", Integer.class);
         outputLimitProperties.put("last_output_timestamp", Long.class);
-        return eventAdapterService.createAnonymousMapType(outputLimitProperties);
+        return eventAdapterService.createAnonymousMapType(OutputConditionPolledExpression.class.getName(), outputLimitProperties);
     }
 
     private void resetBuiltinProperties()

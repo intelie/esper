@@ -29,7 +29,7 @@ public class TestDatabasePollingViewable extends TestCase
 
         Map<String, Object> resultProperties = new HashMap<String, Object>();
         resultProperties.put("myvarchar", String.class);
-        EventType resultEventType = SupportEventAdapterService.getService().createAnonymousMapType(resultProperties);
+        EventType resultEventType = SupportEventAdapterService.getService().createAnonymousMapType("test", resultProperties);
 
         Map<MultiKey<Object>, List<EventBean>> pollResults = new HashMap<MultiKey<Object>, List<EventBean>>();
         pollResults.put(new MultiKey<Object>(new Object[] {-1}), new LinkedList<EventBean>());

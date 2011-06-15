@@ -7,6 +7,7 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.SupportStreamTypeSvc3Stream;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 
+import java.util.Collections;
 import java.util.HashSet;
 
 public class TestSelectExprJoinWildcardProcessor extends TestCase
@@ -18,7 +19,7 @@ public class TestSelectExprJoinWildcardProcessor extends TestCase
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
         SupportStreamTypeSvc3Stream supportTypes = new SupportStreamTypeSvc3Stream();
 
-        processor = new SelectExprJoinWildcardProcessor(supportTypes.getStreamNames(), supportTypes.getEventTypes(),
+        processor = new SelectExprJoinWildcardProcessor(Collections.<Integer>emptyList(), "id", supportTypes.getStreamNames(), supportTypes.getEventTypes(),
                 SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry, null, null);
     }
 

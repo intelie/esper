@@ -8,15 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeUtility;
-import com.espertech.esper.view.ViewFactory;
-import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.*;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.epl.core.ViewResourceCallback;
-import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.view.*;
 
 import java.util.List;
 
@@ -26,6 +24,7 @@ import java.util.List;
 public class CorrelationViewFactory implements ViewFactory
 {
     private List<ExprNode> viewParameters;
+    private int streamNumber;
 
     /**
      * Property name of X field.
@@ -50,6 +49,7 @@ public class CorrelationViewFactory implements ViewFactory
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
         this.viewParameters = expressionParameters;
+        this.streamNumber = viewFactoryContext.getStreamNum();
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
@@ -68,7 +68,7 @@ public class CorrelationViewFactory implements ViewFactory
         expressionY = validated[1];
 
         additionalProps = StatViewAdditionalProps.make(validated, 2);
-        eventType = CorrelationView.createEventType(statementContext, additionalProps);
+        eventType = CorrelationView.createEventType(statementContext, additionalProps, streamNumber);
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)

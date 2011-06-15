@@ -32,13 +32,13 @@ public class TestSelectExprEvalProcessor extends TestCase
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
         MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(new EngineImportServiceImpl(true, true, true), null);
 
-        methodOne = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null, null);
+        methodOne = new SelectExprProcessorHelper(Collections.<Integer>emptyList(), selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null, null);
 
         InsertIntoDesc insertIntoDesc = new InsertIntoDesc(true, "Hello");
         insertIntoDesc.add("a");
         insertIntoDesc.add("b");
 
-        methodTwo = new SelectExprProcessorHelper(selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null, null);
+        methodTwo = new SelectExprProcessorHelper(Collections.<Integer>emptyList(), selectList, Collections.<SelectClauseStreamCompiledSpec>emptyList(), insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null, null);
     }
 
     public void testGetResultEventType() throws Exception

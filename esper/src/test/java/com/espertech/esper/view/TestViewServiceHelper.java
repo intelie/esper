@@ -113,7 +113,7 @@ public class TestViewServiceHelper extends TestCase
         // One child view under the top view that does not match
         testView = new SupportBeanClassView(TEST_CLASS);
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        EventType type = UnivariateStatisticsView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = UnivariateStatisticsView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         myLengthWindowView.addView(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeBean("longBoxed"), type, null));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
         assertEquals(1, result.getSecond().size());

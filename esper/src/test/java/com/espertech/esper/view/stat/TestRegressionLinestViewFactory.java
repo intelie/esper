@@ -38,7 +38,7 @@ public class TestRegressionLinestViewFactory extends TestCase
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
-        EventType type = RegressionLinestView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = RegressionLinestView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         assertFalse(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("price"), type, null)));
         assertFalse(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("volume"), SupportExprNodeFactory.makeIdentNodeMD("price"), type, null)));
         assertTrue(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"), type, null)));

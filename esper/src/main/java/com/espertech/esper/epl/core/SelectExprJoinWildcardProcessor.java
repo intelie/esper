@@ -15,7 +15,9 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.util.CollectionUtil;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +44,9 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
      * @param exprEvaluatorContext context for expression evalauation
      * @throws ExprValidationException if the expression validation failed 
      */
-    public SelectExprJoinWildcardProcessor(String[] streamNames,
+    public SelectExprJoinWildcardProcessor(Collection<Integer> assignedTypeNumberStack,
+                                           String statementId,
+                                           String[] streamNames,
                                            EventType[] streamTypes,
                                            EventAdapterService eventAdapterService,
                                            InsertIntoDesc insertIntoDesc,
@@ -95,7 +99,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
         }
         else
         {
-            resultEventType = eventAdapterService.createAnonymousMapType(eventTypeMap);
+            resultEventType = eventAdapterService.createAnonymousMapType(statementId + "_join_" + CollectionUtil.toString(assignedTypeNumberStack, "_"), eventTypeMap);
         }
     }
 

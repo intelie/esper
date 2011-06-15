@@ -172,7 +172,7 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
         }
 
         EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(revisioneventTypeName, EventTypeMetadata.TypeClass.REVISION);
-        revisionEventType = new RevisionEventType(metadata, eventTypeIdGenerator.nextId(revisioneventTypeName), propertyDesc, eventAdapterService);
+        revisionEventType = new RevisionEventType(metadata, eventTypeIdGenerator.getTypeId(revisioneventTypeName), propertyDesc, eventAdapterService);
     }
 
     public EventBean getValueAddEventBean(EventBean event)

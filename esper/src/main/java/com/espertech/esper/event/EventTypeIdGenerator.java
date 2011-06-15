@@ -1,5 +1,5 @@
 package com.espertech.esper.event;
 
 public interface EventTypeIdGenerator {
-    public int nextId(String eventTypeName);
+    public int getTypeId(String eventTypeName);
 }

@@ -69,7 +69,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
         typeDescriptors = PropertyUtility.getPerType(groups, spec.getChangesetPropertyNames(), spec.getKeyPropertyNames());
         EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(revisionEventTypeName, EventTypeMetadata.TypeClass.REVISION);
-        revisionEventType = new RevisionEventType(metadata, eventTypeIdGenerator.nextId(revisionEventTypeName), propertyDesc, eventAdapterService);
+        revisionEventType = new RevisionEventType(metadata, eventTypeIdGenerator.getTypeId(revisionEventTypeName), propertyDesc, eventAdapterService);
     }
 
     public EventBean getValueAddEventBean(EventBean event)

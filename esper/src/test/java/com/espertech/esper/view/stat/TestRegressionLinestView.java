@@ -22,7 +22,7 @@ public class TestRegressionLinestView extends TestCase
     public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        EventType type = RegressionLinestView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = RegressionLinestView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         myView = new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"), type, null);
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);

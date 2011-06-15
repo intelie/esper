@@ -19,7 +19,7 @@ public class TestSizeView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         myView = new SizeView(SupportStatementContextFactory.makeContext(), type, null);
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
@@ -86,7 +86,7 @@ public class TestSizeView extends TestCase
 
     public void testSchema()
     {
-        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null);
+        EventType type = SizeView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
         SizeView view = new SizeView(SupportStatementContextFactory.makeContext(), type, null);
 
         EventType eventType = view.getEventType();
