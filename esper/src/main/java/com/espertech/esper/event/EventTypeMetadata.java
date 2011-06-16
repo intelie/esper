@@ -29,14 +29,7 @@ public class EventTypeMetadata
      */
     protected EventTypeMetadata(String primaryName, Set<String> secondaryNames, TypeClass typeClass, boolean isApplicationPreConfiguredStatic, boolean applicationPreConfigured, boolean applicationConfigured, ApplicationType applicationType, boolean isPropertyAgnostic)
     {
-        if (typeClass.isPublic())
-        {
-            publicName = primaryName;
-        }
-        else
-        {
-            publicName = null;
-        }
+        this.publicName = primaryName;
         this.primaryName = primaryName;
         this.optionalSecondaryNames = secondaryNames;
         this.typeClass = typeClass;

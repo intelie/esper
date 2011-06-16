@@ -54,7 +54,7 @@ public class TestMergeViewFactory extends TestCase
         try
         {
             MergeViewFactory factory = new MergeViewFactory();
-            factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+            factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(params));
             factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, parents);
             fail();
         }
@@ -67,7 +67,7 @@ public class TestMergeViewFactory extends TestCase
     private void tryParameter(Object[] params, String[] fieldNames) throws Exception
     {
         MergeViewFactory factory = new MergeViewFactory();
-        factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(params));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, parents);
         MergeView view = (MergeView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldNames[0], view.getGroupFieldNames()[0].toExpressionString());

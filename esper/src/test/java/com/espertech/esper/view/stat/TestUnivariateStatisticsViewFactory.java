@@ -1,5 +1,6 @@
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.view.ViewFactoryContext;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
@@ -14,6 +15,7 @@ import com.espertech.esper.view.std.FirstElementView;
 public class TestUnivariateStatisticsViewFactory extends TestCase
 {
     private UnivariateStatisticsViewFactory factory;
+    private ViewFactoryContext viewFactoryContext = new ViewFactoryContext(null, 1, 1, null, null);
 
     public void setUp()
     {
@@ -32,7 +34,7 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price"}));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(new Object[] {"price"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
         EventType type = UnivariateStatisticsView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
@@ -45,13 +47,13 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 
-        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price"}));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(new Object[] {"price"}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
         assertEquals(Double.class, factory.getEventType().getPropertyType(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.getName()));
 
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"symbol"}));
+            factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(new Object[] {"symbol"}));
             factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
@@ -65,7 +67,7 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
     {
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+            factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(params));
             factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
@@ -77,7 +79,7 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
 
     private void tryParameter(Object[] params, String fieldName) throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(params));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         UnivariateStatisticsView view = (UnivariateStatisticsView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldName, view.getFieldExpression().toExpressionString());

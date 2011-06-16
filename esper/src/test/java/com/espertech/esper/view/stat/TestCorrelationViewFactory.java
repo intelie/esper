@@ -1,5 +1,6 @@
 package com.espertech.esper.view.stat;
 
+import com.espertech.esper.view.ViewFactoryContext;
 import junit.framework.TestCase;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
@@ -14,6 +15,7 @@ import com.espertech.esper.view.std.FirstElementView;
 public class TestCorrelationViewFactory extends TestCase
 {
     private CorrelationViewFactory factory;
+    private ViewFactoryContext viewFactoryContext = new ViewFactoryContext(null, 1, 1, null, null);
 
     public void setUp()
     {
@@ -33,7 +35,7 @@ public class TestCorrelationViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
+        factory.setViewParameters(new ViewFactoryContext(null, 1, 1, null, null), TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new FirstElementView()));
         EventType type = CorrelationView.createEventType(SupportStatementContextFactory.makeContext(), null, 1);
@@ -47,13 +49,13 @@ public class TestCorrelationViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 
-        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
         assertEquals(Double.class, factory.getEventType().getPropertyType(ViewFieldEnum.CORRELATION__CORRELATION.getName()));
 
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"symbol", "volume"}));
+            factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(new Object[] {"symbol", "volume"}));
             factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
@@ -67,7 +69,7 @@ public class TestCorrelationViewFactory extends TestCase
     {
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+            factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(params));
             factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
@@ -79,7 +81,7 @@ public class TestCorrelationViewFactory extends TestCase
 
     private void tryParameter(Object[] params, String fieldNameX, String fieldNameY) throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+        factory.setViewParameters(viewFactoryContext, TestViewSupport.toExprListMD(params));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         CorrelationView view = (CorrelationView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldNameX, view.getExpressionX().toExpressionString());
