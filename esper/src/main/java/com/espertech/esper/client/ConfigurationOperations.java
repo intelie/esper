@@ -431,4 +431,14 @@ public interface ConfigurationOperations
      * @return event type array
      */
     public EventType[] getEventTypes();
+
+    /**
+     * Add an name for an event type that represents legacy Java type (non-JavaBean style) events.
+     * <p>
+     * This operation cannot be used to change an existing type.
+     * @param eventTypeName is the name for the event type
+     * @param eventClass fully-qualified class name of the event type
+     * @param legacyEventTypeDesc descriptor containing property and mapping information for Legacy Java type events
+     */
+    public void addEventType(String eventTypeName, String eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc);
 }

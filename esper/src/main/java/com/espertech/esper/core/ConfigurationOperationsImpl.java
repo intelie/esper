@@ -500,4 +500,18 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     public EventType[] getEventTypes() {
         return eventAdapterService.getAllTypes();
     }
+
+    public void addEventType(String eventTypeName, String eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+    {
+        try {
+            Map<String, ConfigurationEventTypeLegacy> map = new HashMap<String, ConfigurationEventTypeLegacy>();
+            map.put(eventClass, legacyEventTypeDesc);
+            eventAdapterService.setClassLegacyConfigs(map);
+            eventAdapterService.addBeanType(eventTypeName, eventClass, false, false, false, true);
+        }
+        catch (EventAdapterException ex) {
+            throw new ConfigurationException("Failed to add legacy event type definition for type '" + eventTypeName + "': " + ex.getMessage(), ex);
+        }
+    }
+
 }

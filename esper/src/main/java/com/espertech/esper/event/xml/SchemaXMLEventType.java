@@ -130,6 +130,10 @@ public class SchemaXMLEventType extends BaseXMLEventType
         super.initialize(config.getXPathProperties().values(), additionalSchemaProps);
     }
 
+    public SchemaModel getSchemaModel() {
+        return schemaModel;
+    }
+
     protected FragmentEventType doResolveFragmentType(String property)
     {
         if ((!this.getConfigurationEventTypeXMLDOM().isAutoFragment()) || (this.getConfigurationEventTypeXMLDOM().isXPathPropertyExpr()))

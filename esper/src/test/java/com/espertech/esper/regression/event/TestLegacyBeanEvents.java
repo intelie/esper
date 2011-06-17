@@ -147,6 +147,9 @@ public class TestLegacyBeanEvents extends TestCase
     private void tryPublicAccessors(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)
     {
         Configuration config = SupportConfigFactory.getConfiguration();
+        epService = EPServiceProviderManager.getProvider(this.getClass().getName() + ".test1" + codeGeneration, config);
+        epService.initialize();
+
         ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);
         legacyDef.setCodeGeneration(codeGeneration);
@@ -157,15 +160,12 @@ public class TestLegacyBeanEvents extends TestCase
         legacyDef.addMethodProperty("explicitMArray", "readStringArray");
         legacyDef.addMethodProperty("explicitMIndexed", "readStringIndexed");
         legacyDef.addMethodProperty("explicitMMapped", "readMapByKey");
-        config.addEventType("MyLegacyEvent", SupportLegacyBean.class.getName(), legacyDef);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyLegacyEvent", SupportLegacyBean.class.getName(), legacyDef);
 
         legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);
         legacyDef.setCodeGeneration(ConfigurationEventTypeLegacy.CodeGeneration.DISABLED);
-        config.addEventType("MyLegacyNestedEvent", SupportLegacyBean.LegacyNested.class.getName(), legacyDef);
-
-        epService = EPServiceProviderManager.getProvider(this.getClass().getName() + ".test1" + codeGeneration, config);
-        epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addEventType("MyLegacyNestedEvent", SupportLegacyBean.LegacyNested.class.getName(), legacyDef);
 
         // assert type metadata
         EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByName("MyLegacyEvent");
@@ -176,8 +176,8 @@ public class TestLegacyBeanEvents extends TestCase
         assertEquals("MyLegacyEvent", type.getMetadata().getPublicName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
-        assertEquals(true, type.getMetadata().isApplicationPreConfigured());
-        assertEquals(true, type.getMetadata().isApplicationPreConfiguredStatic());
+        assertEquals(false, type.getMetadata().isApplicationPreConfigured());
+        assertEquals(false, type.getMetadata().isApplicationPreConfiguredStatic());
 
         String statementText = "select " +
                     "fieldLegacyVal as fieldSimple," +
