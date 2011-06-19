@@ -87,6 +87,10 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         initialize(false);
     }
 
+    public ConfigurationEventTypeLegacy getOptionalLegacyDef() {
+        return optionalLegacyDef;
+    }
+
     public String getName()
     {
         return metadata.getPublicName();

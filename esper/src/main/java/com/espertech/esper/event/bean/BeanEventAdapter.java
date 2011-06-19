@@ -124,6 +124,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
             eventType = typesPerJavaBean.get(clazz);
             if (eventType != null)
             {
+                eventTypeIdGenerator.assignedType(name, eventType);
                 return eventType;
             }
 
