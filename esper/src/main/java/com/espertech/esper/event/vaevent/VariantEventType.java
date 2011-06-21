@@ -32,6 +32,7 @@ public class VariantEventType implements EventTypeSPI
     private final EventPropertyDescriptor[] propertyDescriptors;
     private final Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private final int eventTypeId;
+    private final ConfigurationVariantStream config;
 
     /**
      * Ctor.
@@ -39,12 +40,14 @@ public class VariantEventType implements EventTypeSPI
      * @param propertyResStrategy stragegy for resolving properties
      * @param metadata event type metadata
      */
-    public VariantEventType(EventTypeMetadata metadata, int eventTypeId, VariantSpec variantSpec, VariantPropResolutionStrategy propertyResStrategy)
+    public VariantEventType(EventTypeMetadata metadata, int eventTypeId, VariantSpec variantSpec, VariantPropResolutionStrategy propertyResStrategy, ConfigurationVariantStream config)
     {
         this.metadata = metadata;
         this.eventTypeId = eventTypeId;
         this.variants = variantSpec.getEventTypes();
         this.propertyResStrategy = propertyResStrategy;
+        this.config = config;
+        
         propertyDesc = new HashMap<String, VariantPropertyDesc>();
 
         for (EventType type : variants)
@@ -103,6 +106,10 @@ public class VariantEventType implements EventTypeSPI
 
     public int getEventTypeId() {
         return eventTypeId;
+    }
+
+    public ConfigurationVariantStream getConfig() {
+        return config;
     }
 
     public EventPropertyGetter getGetter(String property)

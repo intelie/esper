@@ -88,7 +88,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
     public void addVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator) throws ConfigurationException
     {
         VariantSpec variantSpec = validateVariantStream(variantStreamname, variantStreamConfig, eventAdapterService);
-        VAEVariantProcessor processor = new VAEVariantProcessor(variantSpec, eventTypeIdGenerator);
+        VAEVariantProcessor processor = new VAEVariantProcessor(variantSpec, eventTypeIdGenerator, variantStreamConfig);
         eventAdapterService.addTypeByName(variantStreamname, processor.getValueAddEventType());
         variantProcessors.put(variantStreamname, processor);
     }
@@ -155,6 +155,9 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
     public EventType getValueAddUnderlyingType(String name)
     {
         RevisionSpec spec = specificationsByRevisionName.get(name);
+        if (spec == null) {
+            return null;
+        }
         return spec.getBaseEventType();
     }
 

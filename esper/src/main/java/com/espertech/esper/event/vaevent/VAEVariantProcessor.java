@@ -41,7 +41,7 @@ public class VAEVariantProcessor implements ValueAddEventProcessor
      * Ctor.
      * @param variantSpec specifies how to handle the disparate events
      */
-    public VAEVariantProcessor(VariantSpec variantSpec, EventTypeIdGenerator eventTypeIdGenerator)
+    public VAEVariantProcessor(VariantSpec variantSpec, EventTypeIdGenerator eventTypeIdGenerator, ConfigurationVariantStream config)
     {
         this.variantSpec = variantSpec;
 
@@ -56,7 +56,7 @@ public class VAEVariantProcessor implements ValueAddEventProcessor
         }
 
         EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(variantSpec.getVariantStreamName(), EventTypeMetadata.TypeClass.VARIANT);
-        variantEventType = new VariantEventType(metadata, eventTypeIdGenerator.getTypeId(variantSpec.getVariantStreamName()), variantSpec, strategy);
+        variantEventType = new VariantEventType(metadata, eventTypeIdGenerator.getTypeId(variantSpec.getVariantStreamName()), variantSpec, strategy, config);
     }
 
     public EventType getValueAddEventType()

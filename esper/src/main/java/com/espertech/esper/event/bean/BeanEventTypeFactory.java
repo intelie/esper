@@ -38,4 +38,6 @@ public interface BeanEventTypeFactory
      * @return property resolution style
      */
     public Configuration.PropertyResolutionStyle getDefaultPropertyResolutionStyle();
+
+    public BeanEventType[] getCachedTypes();
 }

@@ -77,16 +77,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
     }
 
-    public Map<String, EventType> getEventTypes(boolean includeClassCache) {
-        if (!includeClassCache) {
-            return Collections.unmodifiableMap(nameToTypeMap);
-        }
-        Map<String, EventType> result = new HashMap<String, EventType>();
-        result.putAll(nameToTypeMap);
-        for (BeanEventType entry : beanEventAdapter.getTypesPerJavaBean().values()) {
-            result.put(entry.getName(), entry);
-        }
-        return result;
+    public Map<String, EventType> getDeclaredEventTypes() {
+        return new HashMap<String, EventType>(nameToTypeMap);
     }
 
     public Set<WriteablePropertyDescriptor> getWriteableProperties(EventType eventType)

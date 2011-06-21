@@ -339,7 +339,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
     public void replaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config) throws ConfigurationException {
         SchemaModel schemaModel = null;
-        if (config.getSchemaResource() != null)
+        if (config.getSchemaResource() != null || config.getSchemaText() != null)
         {
             try
             {

@@ -14,7 +14,6 @@ import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.xml.SchemaModel;
 import com.espertech.esper.event.bean.BeanEventTypeFactory;
-import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import org.w3c.dom.Node;
@@ -24,7 +23,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -340,5 +338,5 @@ public interface EventAdapterService
 
     public EventType replaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel);
 
-    public Map<String, EventType> getEventTypes(boolean includeClassCache);
+    public Map<String, EventType> getDeclaredEventTypes();
 }

@@ -40,9 +40,6 @@ public class TestEventAdapterServiceImpl extends TestCase
         assertEquals(Map.class, eventType.getUnderlyingType());
         assertEquals(1, eventType.getPropertyNames().length);
         assertEquals("key1", eventType.getPropertyNames()[0]);
-        
-        Map<String, EventType> types = adapterService.getEventTypes(true);
-        assertEquals(0, types.size());
     }
 
     public void testGetType()
@@ -56,11 +53,6 @@ public class TestEventAdapterServiceImpl extends TestCase
         assertSame(typeTwo, typeTwo);
 
         assertNull(adapterService.getExistsTypeByName("xx"));
-
-        Map<String, EventType> types = adapterService.getEventTypes(true);
-        assertEquals(4, types.size());
-        types = adapterService.getEventTypes(false);
-        assertEquals(1, types.size());
     }
 
     public void testAddInvalid()

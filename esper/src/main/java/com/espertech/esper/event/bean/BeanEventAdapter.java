@@ -14,6 +14,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeIdGenerator;
 import com.espertech.esper.event.EventTypeMetadata;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,8 +52,9 @@ public class BeanEventAdapter implements BeanEventTypeFactory
         this.eventTypeIdGenerator = eventTypeIdGenerator;
     }
 
-    public Map<Class, BeanEventType> getTypesPerJavaBean() {
-        return typesPerJavaBean;
+    public BeanEventType[] getCachedTypes() {
+        Collection<BeanEventType> types = typesPerJavaBean.values();
+        return types.toArray(new BeanEventType[types.size()]);
     }
 
     /**
