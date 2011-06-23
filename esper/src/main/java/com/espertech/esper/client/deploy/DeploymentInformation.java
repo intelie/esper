@@ -1,11 +1,12 @@
 package com.espertech.esper.client.deploy;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
  * Available information about deployment made.
  */
-public class DeploymentInformation
+public class DeploymentInformation implements Serializable
 {
     private String deploymentId;
     private Module module;

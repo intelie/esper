@@ -1,12 +1,13 @@
 package com.espertech.esper.client.deploy;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Set;
 
 /**
  * Statement level information for deployed modules.
  */
-public class DeploymentInformationItem
+public class DeploymentInformationItem implements Serializable
 {
     private String statementName;
     private String expression;

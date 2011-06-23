@@ -2,6 +2,8 @@ package com.espertech.esper.core.deploy;
 
 import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.deploy.Module;
+import com.espertech.esper.client.deploy.ModuleItem;
 import com.espertech.esper.client.deploy.ParseException;
 import com.espertech.esper.core.StatementEventTypeRef;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
@@ -14,16 +16,96 @@ import org.antlr.runtime.Token;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 public class EPLModuleUtil
 {
     private static Log log = LogFactory.getLog(EPLModuleUtil.class);
+
+    /**
+     * Newline character.
+     */
+    public static final String newline = System.getProperty("line.separator");
+
+    public static Module readInternal(InputStream stream, String resourceName) throws IOException, ParseException
+    {
+        BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+        StringWriter buffer = new StringWriter();
+        String strLine;
+        while ((strLine = br.readLine()) != null)   {
+            buffer.append(strLine);
+            buffer.append(newline);
+        }
+        stream.close();
+
+        return parseInternal(buffer.toString(), resourceName);
+    }
+
+    public static Module parseInternal(String buffer, String resourceName) throws IOException, ParseException {
+
+        List<EPLModuleParseItem> semicolonSegments = EPLModuleUtil.parse(buffer.toString());
+        List<ParseNode> nodes = new ArrayList<ParseNode>();
+        for (EPLModuleParseItem segment : semicolonSegments) {
+            nodes.add(EPLModuleUtil.getModule(segment, resourceName));
+        }
+
+        String moduleName = null;
+        int count = 0;
+        for (ParseNode node : nodes) {
+            if (node instanceof ParseNodeComment) {
+                continue;
+            }
+            if (node instanceof ParseNodeModule) {
+                if (moduleName != null) {
+                    throw new ParseException("Duplicate use of the 'module' keyword for resource '" + resourceName + "'");
+                }
+                if (count > 0) {
+                    throw new ParseException("The 'module' keyword must be the first declaration in the module file for resource '" + resourceName + "'");
+                }
+                moduleName = ((ParseNodeModule) node).getModuleName();
+            }
+            count++;
+        }
+
+        Set<String> uses = new LinkedHashSet<String>();
+        Set<String> imports = new LinkedHashSet<String>();
+        count = 0;
+        for (ParseNode node : nodes) {
+            if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeModule)) {
+                continue;
+            }
+            String message = "The 'uses' and 'import' keywords must be the first declaration in the module file or follow the 'module' declaration";
+            if (node instanceof ParseNodeUses) {
+                if (count > 0) {
+                    throw new ParseException(message);
+                }
+                uses.add(((ParseNodeUses) node).getUses());
+                continue;
+            }
+            if (node instanceof ParseNodeImport) {
+                if (count > 0) {
+                    throw new ParseException(message);
+                }
+                imports.add(((ParseNodeImport) node).getImported());
+                continue;
+            }
+            count++;
+        }
+
+        List<ModuleItem> items = new ArrayList<ModuleItem>();
+        for (ParseNode node : nodes) {
+            if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeExpression)) {
+                boolean isComments = (node instanceof ParseNodeComment);
+                items.add(new ModuleItem(node.getItem().getExpression(), isComments, node.getItem().getLineNum(), node.getItem().getStartChar(), node.getItem().getEndChar()));
+            }
+        }
+
+        return new Module(moduleName, resourceName, uses, imports, items, buffer);
+    }
 
     public static List<EventType> undeployTypes(Set<String> referencedTypes, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService)
     {
@@ -188,5 +270,52 @@ public class EPLModuleUtil
             statements.add(new EPLModuleParseItem(current.toString().trim(), lineNum == null ? 0 : lineNum, 0, 0));
         }
         return statements;
+    }
+
+    public static Module readFile(File file) throws IOException, ParseException {
+        FileInputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            return EPLModuleUtil.readInternal(inputStream, file.getAbsolutePath());
+        }
+        finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    log.debug("Error closing input stream", e);
+                }
+            }
+        }
+    }
+
+    public static Module readResource(String resource) throws IOException, ParseException {
+        String stripped = resource.startsWith("/") ? resource.substring(1) : resource;
+
+        InputStream stream = null;
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader!=null) {
+            stream = classLoader.getResourceAsStream( stripped );
+        }
+        if ( stream == null ) {
+            stream = EPDeploymentAdminImpl.class.getResourceAsStream( resource );
+        }
+        if ( stream == null ) {
+            stream = EPDeploymentAdminImpl.class.getClassLoader().getResourceAsStream( stripped );
+        }
+        if ( stream == null ) {
+           throw new IOException("Failed to find resource '" + resource + "' in classpath");
+        }
+
+        try {
+            return EPLModuleUtil.readInternal(stream, resource);
+        }
+        finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                log.debug("Error closing input stream", e);
+            }
+        }
     }
 }

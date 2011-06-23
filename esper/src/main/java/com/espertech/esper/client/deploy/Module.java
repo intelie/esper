@@ -1,5 +1,6 @@
 package com.espertech.esper.client.deploy;
 
+import java.io.Serializable;
 import java.util.Set;
 import java.util.List;
 import java.io.StringWriter;
@@ -14,7 +15,7 @@ import java.io.StringWriter;
  * <p>
  * The archive name and user object are opportunities to attach additional deployment information.
  */
-public class Module {
+public class Module implements Serializable {
     private String name;
     private String uri;
     private Set<String> uses;

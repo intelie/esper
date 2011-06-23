@@ -1,9 +1,11 @@
 package com.espertech.esper.client.deploy;
 
+import java.io.Serializable;
+
 /**
  * Options for use in deployment of a module to control the behavior of the deploy operation.
  */
-public class DeploymentOptions {
+public class DeploymentOptions implements Serializable {
 
     private boolean compile = true;
     private boolean compileOnly = false;

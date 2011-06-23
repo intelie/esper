@@ -1,11 +1,13 @@
 package com.espertech.esper.client.deploy;
 
+import java.io.Serializable;
+
 /**
  * Represents an EPL statement as part of a {@link Module}.
  * <p>
  * Character position start and end are only available for non-comment only.
  */
-public class ModuleItem {
+public class ModuleItem implements Serializable {
     private String expression;
     private boolean commentOnly;
     private int lineNumber;

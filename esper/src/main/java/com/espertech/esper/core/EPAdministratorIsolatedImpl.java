@@ -50,9 +50,14 @@ public class EPAdministratorIsolatedImpl implements EPAdministratorIsolatedSPI
 
     public EPStatement createEPL(String eplStatement, String statementName, Object userObject) throws EPException
     {
+        return createEPLStatementId(eplStatement, statementName, userObject, null)  ;
+    }
+
+    public EPStatement createEPLStatementId(String eplStatement, String statementName, Object userObject, String statementId) throws EPException
+    {
         SelectClauseStreamSelectorEnum defaultStreamSelector = SelectClauseStreamSelectorEnum.mapFromSODA(unisolatedServices.getConfigSnapshot().getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
         StatementSpecRaw statementSpec = EPAdministratorHelper.compileEPL(eplStatement, eplStatement, true, statementName, unisolatedServices, defaultStreamSelector);
-        EPStatement statement = unisolatedServices.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, services, null);
+        EPStatement statement = unisolatedServices.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, services, statementId);
         EPStatementSPI stmtSpi = (EPStatementSPI) statement;
         stmtSpi.getStatementContext().setInternalEventEngineRouteDest(isolatedRuntime);
         stmtSpi.setServiceIsolated(isolatedServiceName);

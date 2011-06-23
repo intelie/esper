@@ -9,6 +9,8 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPAdministratorIsolated;
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EPStatement;
 
 /**
  * Implementation for the admin interface.
@@ -20,4 +22,6 @@ public interface EPAdministratorIsolatedSPI extends EPAdministratorIsolated
      * @param name to add
      */
     public void addStatement(String name);
+
+    public EPStatement createEPLStatementId(String eplStatement, String statementName, Object userObject, String statementId) throws EPException;
 }

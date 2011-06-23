@@ -8,21 +8,23 @@
  **************************************************************************************/
 package com.espertech.esper.core.deploy;
 
+import com.espertech.esper.client.EPAdministratorIsolated;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPServiceProviderIsolated;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.deploy.*;
+import com.espertech.esper.core.EPAdministratorIsolatedSPI;
 import com.espertech.esper.core.EPAdministratorSPI;
 import com.espertech.esper.core.StatementEventTypeRef;
 import com.espertech.esper.core.StatementIsolationService;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.util.DependencyGraph;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
@@ -31,11 +33,6 @@ import java.util.*;
  */
 public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 {
-    /**
-     * Newline character.
-     */
-    public static final String newline = System.getProperty("line.separator");
-    
     private static Log log = LogFactory.getLog(EPDeploymentAdminImpl.class);
 
     private final EPAdministratorSPI epService;
@@ -43,6 +40,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
     private final StatementEventTypeRef statementEventTypeRef;
     private final EventAdapterService eventAdapterService;
     private final StatementIsolationService statementIsolationService;
+    private final StatementIdGenerator optionalStatementIdGenerator;
 
     /**
      * Ctor.
@@ -52,13 +50,14 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
      * @param eventAdapterService event wrap service
      * @param statementIsolationService for isolated statement execution
      */
-    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService, StatementIsolationService statementIsolationService)
+    public EPDeploymentAdminImpl(EPAdministratorSPI epService, DeploymentStateService deploymentStateService, StatementEventTypeRef statementEventTypeRef, EventAdapterService eventAdapterService, StatementIsolationService statementIsolationService, StatementIdGenerator optionalStatementIdGenerator)
     {
         this.epService = epService;
         this.deploymentStateService = deploymentStateService;
         this.statementEventTypeRef = statementEventTypeRef;
         this.eventAdapterService = eventAdapterService;
         this.statementIsolationService = statementIsolationService;
+        this.optionalStatementIdGenerator = optionalStatementIdGenerator;
     }
 
     public Module read(InputStream stream, String uri) throws IOException, ParseException
@@ -66,27 +65,14 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         if (log.isDebugEnabled()) {
             log.debug("Reading module from input stream");
         }
-        return readInternal(stream, uri);
+        return EPLModuleUtil.readInternal(stream, uri);
     }
 
     public Module read(File file) throws IOException, ParseException {
         if (log.isDebugEnabled()) {
             log.debug("Reading resource '" + file.getAbsolutePath() + "'");
         }
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-            return readInternal(inputStream, file.getAbsolutePath());
-        }
-        finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    log.debug("Error closing input stream", e);
-                }
-            }            
-        }
+        return EPLModuleUtil.readFile(file);
     }
 
     public Module read(URL url) throws IOException, ParseException {
@@ -94,40 +80,14 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         {
             log.debug( "Reading resource from url: " + url.toString() );
         }
-        return readInternal(url.openStream(), url.toString());
+        return EPLModuleUtil.readInternal(url.openStream(), url.toString());
     }
 
     public Module read(String resource) throws IOException, ParseException {
         if (log.isDebugEnabled()) {
             log.debug("Reading resource '" + resource + "'");
         }
-        String stripped = resource.startsWith("/") ? resource.substring(1) : resource;
-
-        InputStream stream = null;
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader!=null) {
-            stream = classLoader.getResourceAsStream( stripped );
-        }
-        if ( stream == null ) {
-            stream = EPDeploymentAdminImpl.class.getResourceAsStream( resource );
-        }
-        if ( stream == null ) {
-            stream = EPDeploymentAdminImpl.class.getClassLoader().getResourceAsStream( stripped );
-        }
-        if ( stream == null ) {
-           throw new IOException("Failed to find resource '" + resource + "' in classpath");
-        }
-
-        try {
-            return readInternal(stream, resource);
-        }
-        finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                log.debug("Error closing input stream", e);
-            }
-        }
+        return EPLModuleUtil.readResource(resource);
     }
 
     public synchronized DeploymentResult deploy(Module module, DeploymentOptions options) throws DeploymentActionException
@@ -145,6 +105,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         if (log.isDebugEnabled()) {
             log.debug("Deploying module " + module);
         }
+        List<String> imports;
         if (module.getImports() != null) {
             for (String imported : module.getImports()) {
                 if (log.isDebugEnabled()) {
@@ -152,6 +113,10 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 }
                 epService.getConfiguration().addImport(imported);
             }
+            imports = new ArrayList<String>(module.getImports());
+        }
+        else {
+             imports = Collections.emptyList();
         }
 
         if (options.isCompile()) {
@@ -183,12 +148,25 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             try {
 
                 EPStatement stmt;
-                if (options.getIsolatedServiceProvider() == null) {
-                    stmt = epService.createEPL(item.getExpression());
+                if (optionalStatementIdGenerator == null) {
+                    if (options.getIsolatedServiceProvider() == null) {
+                        stmt = epService.createEPL(item.getExpression());
+                    }
+                    else {
+                        EPServiceProviderIsolated unit = statementIsolationService.getIsolationUnit(options.getIsolatedServiceProvider(), -1);
+                        stmt = unit.getEPAdministrator().createEPL(item.getExpression(), null, null);
+                    }
                 }
                 else {
-                    EPServiceProviderIsolated unit = statementIsolationService.getIsolationUnit(options.getIsolatedServiceProvider(), -1);
-                    stmt = unit.getEPAdministrator().createEPL(item.getExpression(), null, null);
+                    String statementId = optionalStatementIdGenerator.getNextStatementId();
+                    if (options.getIsolatedServiceProvider() == null) {
+                        stmt = epService.createEPLStatementId(item.getExpression(), null, null, statementId);
+                    }
+                    else {
+                        EPServiceProviderIsolated unit = statementIsolationService.getIsolationUnit(options.getIsolatedServiceProvider(), -1);
+                        EPAdministratorIsolatedSPI spi = (EPAdministratorIsolatedSPI) unit.getEPAdministrator();
+                        stmt = spi.createEPLStatementId(item.getExpression(), null, null, statementId);
+                    }
                 }
                 statementNames.add(new DeploymentInformationItem(stmt.getName(), stmt.getText()));
                 statements.add(stmt);
@@ -201,7 +179,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
             catch (EPException ex) {
                 exceptions.add(new DeploymentItemException(ex.getMessage(), item.getExpression(), ex, item.getLineNumber()));
                 if (options.isFailFast()) {
-                    break;                        
+                    break;
                 }
             }
         }
@@ -247,7 +225,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         if (log.isDebugEnabled()) {
             log.debug("Module " + module + " was successfully deployed.");
         }
-        return new DeploymentResult(desc.getDeploymentId(), Collections.unmodifiableList(statements));
+        return new DeploymentResult(desc.getDeploymentId(), Collections.unmodifiableList(statements), imports);
     }
 
     private DeploymentActionException buildException(String msg, Module module, List<DeploymentItemException> exceptions)
@@ -282,7 +260,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 
     public Module parse(String eplModuleText) throws IOException, ParseException
     {
-        return parseInternal(eplModuleText, null);
+        return EPLModuleUtil.parseInternal(eplModuleText, null);
     }
 
     public synchronized UndeploymentResult undeployRemove(String deploymentId) throws DeploymentNotFoundException {
@@ -422,7 +400,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                     }
                 }
             }
-            
+
             if ((proposedModule.getName() == null) || (proposedModule.getUses() == null)) {
                 continue;
             }
@@ -507,7 +485,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
                 reverseDeployList.add(proposedModules.get(root));
             }
         }
-        
+
         Collections.reverse(reverseDeployList);
         return new DeploymentOrder(reverseDeployList);
     }
@@ -527,7 +505,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 
     public synchronized DeploymentResult readDeploy(InputStream stream, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentActionException
     {
-        Module module = readInternal(stream, moduleURI);
+        Module module = EPLModuleUtil.readInternal(stream, moduleURI);
         return deployQuick(module, moduleURI, moduleArchive, userObject);
     }
 
@@ -543,7 +521,7 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
 
     public synchronized DeploymentResult parseDeploy(String buffer, String moduleURI, String moduleArchive, Object userObject) throws IOException, ParseException, DeploymentOrderException, DeploymentActionException
     {
-        Module module = parseInternal(buffer, moduleURI);
+        Module module = EPLModuleUtil.parseInternal(buffer, moduleURI);
         return deployQuick(module, moduleURI, moduleArchive, userObject);
     }
 
@@ -587,81 +565,5 @@ public class EPDeploymentAdminImpl implements EPDeploymentAdmin
         module.setUserObject(userObject);
         getDeploymentOrder(Collections.singletonList(module), null);
         return deploy(module, null);
-    }
-
-    private Module readInternal(InputStream stream, String resourceName) throws IOException, ParseException
-    {
-        BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-        StringWriter buffer = new StringWriter();
-        String strLine;
-        while ((strLine = br.readLine()) != null)   {
-            buffer.append(strLine);
-            buffer.append(newline);
-        }
-        stream.close();
-
-        return parseInternal(buffer.toString(), resourceName);
-    }
-
-    private Module parseInternal(String buffer, String resourceName) throws IOException, ParseException {
-
-        List<EPLModuleParseItem> semicolonSegments = EPLModuleUtil.parse(buffer.toString());
-        List<ParseNode> nodes = new ArrayList<ParseNode>();
-        for (EPLModuleParseItem segment : semicolonSegments) {
-            nodes.add(EPLModuleUtil.getModule(segment, resourceName));
-        }
-
-        String moduleName = null;
-        int count = 0;
-        for (ParseNode node : nodes) {
-            if (node instanceof ParseNodeComment) {
-                continue;
-            }
-            if (node instanceof ParseNodeModule) {
-                if (moduleName != null) {
-                    throw new ParseException("Duplicate use of the 'module' keyword for resource '" + resourceName + "'");
-                }
-                if (count > 0) {
-                    throw new ParseException("The 'module' keyword must be the first declaration in the module file for resource '" + resourceName + "'");
-                }
-                moduleName = ((ParseNodeModule) node).getModuleName();
-            }
-            count++;
-        }
-
-        Set<String> uses = new LinkedHashSet<String>();
-        Set<String> imports = new LinkedHashSet<String>();
-        count = 0;
-        for (ParseNode node : nodes) {
-            if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeModule)) {
-                continue;
-            }
-            String message = "The 'uses' and 'import' keywords must be the first declaration in the module file or follow the 'module' declaration";
-            if (node instanceof ParseNodeUses) {
-                if (count > 0) {
-                    throw new ParseException(message);
-                }
-                uses.add(((ParseNodeUses) node).getUses());
-                continue;
-            }
-            if (node instanceof ParseNodeImport) {
-                if (count > 0) {
-                    throw new ParseException(message);
-                }
-                imports.add(((ParseNodeImport) node).getImported());
-                continue;
-            }
-            count++;
-        }
-
-        List<ModuleItem> items = new ArrayList<ModuleItem>();
-        for (ParseNode node : nodes) {
-            if ((node instanceof ParseNodeComment) || (node instanceof ParseNodeExpression)) {
-                boolean isComments = (node instanceof ParseNodeComment);
-                items.add(new ModuleItem(node.getItem().getExpression(), isComments, node.getItem().getLineNum(), node.getItem().getStartChar(), node.getItem().getEndChar()));
-            }
-        }
-
-        return new Module(moduleName, resourceName, uses, imports, items, buffer);
     }
 }

@@ -11,16 +11,18 @@ public class DeploymentResult
 {
     private final String deploymentId;
     private final List<EPStatement> statements;
+    private final List<String> imports;
 
     /**
      * Ctor.
      * @param deploymentId deployment id
      * @param statements statements deployed and started
      */
-    public DeploymentResult(String deploymentId, List<EPStatement> statements)
+    public DeploymentResult(String deploymentId, List<EPStatement> statements, List<String> imports)
     {
         this.deploymentId = deploymentId;
         this.statements = statements;
+        this.imports = imports;
     }
 
     /**
@@ -39,5 +41,9 @@ public class DeploymentResult
     public List<EPStatement> getStatements()
     {
         return statements;
+    }
+
+    public List<String> getImports() {
+        return imports;
     }
 }

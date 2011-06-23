@@ -9,6 +9,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.core.deploy.DeploymentStateService;
 import com.espertech.esper.core.thread.ThreadingOption;
 import com.espertech.esper.core.thread.ThreadingService;
 import com.espertech.esper.epl.core.EngineImportService;
@@ -285,6 +286,20 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             throw new EPServiceDestroyedException(engineURI);
         }
         return engine.getServices().getStatementContextFactory();
+    }
+
+    public StatementIsolationService getStatementIsolationService() {
+        if (engine == null) {
+            throw new EPServiceDestroyedException(engineURI);
+        }
+        return engine.getServices().getStatementIsolationService();
+    }
+
+    public DeploymentStateService getDeploymentStateService() {
+        if (engine == null) {
+            throw new EPServiceDestroyedException(engineURI);
+        }
+        return engine.getServices().getDeploymentStateService();
     }
 
     public synchronized void destroy()

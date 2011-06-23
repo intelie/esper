@@ -39,7 +39,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         this.services = adminContext.getServices();
         this.configurationOperations = adminContext.getConfigurationOperations();
         this.defaultStreamSelector = adminContext.getDefaultStreamSelector();
-        this.deploymentAdminService = new EPDeploymentAdminImpl(this, adminContext.getServices().getDeploymentStateService(), adminContext.getServices().getStatementEventTypeRefService(), adminContext.getServices().getEventAdapterService(), adminContext.getServices().getStatementIsolationService());
+        this.deploymentAdminService = new EPDeploymentAdminImpl(this, adminContext.getServices().getDeploymentStateService(), adminContext.getServices().getStatementEventTypeRefService(), adminContext.getServices().getEventAdapterService(), adminContext.getServices().getStatementIsolationService(), null);
     }
 
     public EPDeploymentAdmin getDeploymentAdmin()
@@ -72,14 +72,9 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         return createEPLStmt(eplStatement, statementName, null, null);
     }
 
-    public EPStatement createEPLStatementId(String eplStatement, String statementName, String statementId) throws EPException
+    public EPStatement createEPLStatementId(String eplStatement, String statementName, Object userObject, String statementId) throws EPException
     {
-        return createEPLStmt(eplStatement, statementName, null, statementId);
-    }
-
-    public EPStatement createEPLStatementId(String eplStatement, String statementId) throws EPException
-    {
-        return createEPLStmt(eplStatement, null, null, statementId);
+        return createEPLStmt(eplStatement, statementName, userObject, statementId);
     }
 
     public EPStatement createEPL(String eplStatement, String statementName, Object userObject) throws EPException
@@ -117,13 +112,21 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         return create(sodaStatement, null);
     }
 
-    public EPStatement create(EPStatementObjectModel sodaStatement, String statementName, Object userObject) throws EPException
+    public EPStatement createModelStatementId(EPStatementObjectModel sodaStatement, String statementName, Object userObject, String statementId) throws EPException {
+        return create(sodaStatement, statementName, userObject, statementId);
+    }
+
+    public EPStatement create(EPStatementObjectModel sodaStatement, String statementName, Object userObject) throws EPException {
+        return create(sodaStatement, statementName, userObject, null);
+    }
+
+    public EPStatement create(EPStatementObjectModel sodaStatement, String statementName, Object userObject, String statementId) throws EPException
     {
         // Specifies the statement
         StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService(), services.getConfigSnapshot(), services.getSchedulingService(), services.getEngineURI(), services.getPatternNodeFactory(), services.getNamedWindowService());
         String eplStatement = sodaStatement.toEPL();
 
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null, null);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject, null, statementId);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
