@@ -21,7 +21,7 @@ public class TestViewResolutionService extends TestCase
 
     public void setUp()
     {
-        service = new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews(), null);
+        service = new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews(), null, null);
     }
 
     public void testInitializeFromConfig() throws Exception
@@ -95,7 +95,7 @@ public class TestViewResolutionService extends TestCase
 
         PluggableObjectCollection desc = new PluggableObjectCollection();
         desc.addViews(configs, Collections.<ConfigurationPlugInVirtualDataWindow>emptyList());
-        return new ViewResolutionServiceImpl(desc, null);
+        return new ViewResolutionServiceImpl(desc, null, null);
     }
 
     private static final Log log = LogFactory.getLog(TestViewResolutionService.class);

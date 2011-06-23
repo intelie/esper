@@ -57,7 +57,7 @@ public class SupportStatementContextFactory
                 new ScheduleBucket(1),
                 SupportEventAdapterService.getService(),
                 null,
-                new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews(), null),
+                new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews(), null, null),
                 new PatternObjectResolutionServiceImpl(null),
                 null,
                 null,

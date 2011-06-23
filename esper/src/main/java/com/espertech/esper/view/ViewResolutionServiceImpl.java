@@ -8,12 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.view;
 
+import com.espertech.esper.client.hook.VirtualDataWindowFactory;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.spec.PluggableObjectEntry;
 import com.espertech.esper.epl.spec.PluggableObjectType;
 import com.espertech.esper.epl.virtualdw.VirtualDWViewFactory;
 import com.espertech.esper.epl.virtualdw.VirtualDWViewFactoryImpl;
+import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,15 +30,17 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
 
     private final PluggableObjectCollection viewObjects;
     private final String optionalNamedWindowName;
+    private final Class virtualDataWindowViewFactory;
 
     /**
      * Ctor.
      * @param viewObjects is the view objects to use for resolving views, can be both built-in and plug-in views.
      */
-    public ViewResolutionServiceImpl(PluggableObjectCollection viewObjects, String optionalNamedWindowName)
+    public ViewResolutionServiceImpl(PluggableObjectCollection viewObjects, String optionalNamedWindowName, Class virtualDataWindowViewFactory)
     {
         this.viewObjects = viewObjects;
         this.optionalNamedWindowName = optionalNamedWindowName;
+        this.virtualDataWindowViewFactory = virtualDataWindowViewFactory;
     }
 
     public ViewFactory create(String nameSpace, String name) throws ViewProcessingException
@@ -56,6 +60,11 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
             {
                 if (pair.getSecond().getType() == PluggableObjectType.VIEW )
                 {
+                    // Handle named windows in a configuration that always declares a system-wide virtual view factory
+                    if (optionalNamedWindowName != null && virtualDataWindowViewFactory != null) {
+                        return new VirtualDWViewFactoryImpl(virtualDataWindowViewFactory, optionalNamedWindowName, null);
+                    }
+
                     viewFactoryClass = pair.getFirst();
                 }
                 else if (pair.getSecond().getType() == PluggableObjectType.VIRTUALDW)

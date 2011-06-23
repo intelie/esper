@@ -150,7 +150,6 @@ public abstract class ViewFactorySupport implements ViewFactory
         if (!visitor.isPlain())
         {
             String message = "Invalid view parameter expression " + index + ", " + visitor.getMessage() + " are not allowed within the expression";
-            log.error(message);
             throw new ViewParameterException(message);
         }
 

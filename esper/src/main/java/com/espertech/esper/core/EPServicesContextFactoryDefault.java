@@ -102,7 +102,19 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         ExceptionHandlingService exceptionHandlingService = initExceptionHandling(epServiceProvider.getURI(), configSnapshot.getEngineDefaults().getExceptionHandling(), configSnapshot.getEngineDefaults().getConditionHandling());
 
         // Statement context factory
-        StatementContextFactory statementContextFactory = new StatementContextFactoryDefault(plugInViews, plugInPatternObj);
+        Class systemVirtualDWViewFactory = null;
+        if (configSnapshot.getEngineDefaults().getAlternativeContext().getVirtualDataWindowViewFactory() != null) {
+            try {
+                systemVirtualDWViewFactory = Class.forName(configSnapshot.getEngineDefaults().getAlternativeContext().getVirtualDataWindowViewFactory());
+                if (!JavaClassHelper.isImplementsInterface(systemVirtualDWViewFactory, VirtualDataWindowFactory.class)) {
+                    throw new ConfigurationException("Class " + systemVirtualDWViewFactory.getName() + " does not implement the interface " + VirtualDataWindowFactory.class.getName());
+                }
+            }
+            catch (ClassNotFoundException e) {
+                throw new ConfigurationException("Failed to look up class " + systemVirtualDWViewFactory);
+            }
+        }
+        StatementContextFactory statementContextFactory = new StatementContextFactoryDefault(plugInViews, plugInPatternObj, systemVirtualDWViewFactory);
 
         OutputConditionFactory outputConditionFactory = new OutputConditionFactoryDefault();
 
