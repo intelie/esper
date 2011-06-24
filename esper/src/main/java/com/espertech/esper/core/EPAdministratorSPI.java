@@ -68,4 +68,5 @@ public interface EPAdministratorSPI extends EPAdministrator
     public EPStatementObjectModel mapRawToSODA(StatementSpecRaw raw);
     public EPStatement createEPLStatementId(String eplStatement, String statementName, Object userObject, String statementId) throws EPException;
     public EPStatement createModelStatementId(EPStatementObjectModel sodaStatement, String statementName, Object userObject, String statementId) throws EPException;
+    public EPStatement createPatternStatementId(String pattern, String statementName, Object userObject, String statementId) throws EPException;
 }

@@ -49,7 +49,7 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public EPStatement createPattern(String onExpression) throws EPException
     {
-        return createPatternStmt(onExpression, null, null);
+        return createPatternStmt(onExpression, null, null, null);
     }
 
     public EPStatement createEPL(String eplStatement) throws EPException
@@ -59,12 +59,12 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public EPStatement createPattern(String expression, String statementName) throws EPException
     {
-        return createPatternStmt(expression, statementName, null);
+        return createPatternStmt(expression, statementName, null, null);
     }
 
     public EPStatement createPattern(String expression, String statementName, Object userObject) throws EPException
     {
-        return createPatternStmt(expression, statementName, userObject);
+        return createPatternStmt(expression, statementName, userObject, null);
     }
 
     public EPStatement createEPL(String eplStatement, String statementName) throws EPException
@@ -84,7 +84,11 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public EPStatement createPattern(String expression, Object userObject) throws EPException
     {
-        return createPatternStmt(expression, null, userObject);
+        return createPatternStmt(expression, null, userObject, null);
+    }
+
+    public EPStatement createPatternStatementId(String pattern, String statementName, Object userObject, String statementId) throws EPException {
+        return createPatternStmt(pattern, statementName, userObject, statementId);
     }
 
     public EPStatement createEPL(String eplStatement, Object userObject) throws EPException
@@ -92,10 +96,10 @@ public class EPAdministratorImpl implements EPAdministratorSPI
         return createEPLStmt(eplStatement, null, userObject, null);
     }
 
-    private EPStatement createPatternStmt(String expression, String statementName, Object userObject) throws EPException
+    private EPStatement createPatternStmt(String expression, String statementName, Object userObject, String statementId) throws EPException
     {
         StatementSpecRaw rawPattern = EPAdministratorHelper.compilePattern(expression, expression, true, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
-        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName, userObject, null, null);
+        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName, userObject, null, statementId);
     }
 
     private EPStatement createEPLStmt(String eplStatement, String statementName, Object userObject, String statementId) throws EPException
@@ -246,7 +250,6 @@ public class EPAdministratorImpl implements EPAdministratorSPI
 
     public StatementSpecRaw compileEPLToRaw(String epl) {
         return EPAdministratorHelper.compileEPL(epl, epl, true, null, services, defaultStreamSelector);
-
     }
 
     public EPStatementObjectModel mapRawToSODA(StatementSpecRaw raw) {
