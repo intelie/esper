@@ -11,6 +11,7 @@ package com.espertech.esper.client;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.epl.spec.SubstitutionParameterExpression;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Map;
  * a list of substitution parameters, to be mapped into an internal representation upon
  * creation.
  */
-public class EPPreparedStatementImpl implements EPPreparedStatement
+public class EPPreparedStatementImpl implements EPPreparedStatement, Serializable
 {
     private EPStatementObjectModel model;
     private Map<Integer, SubstitutionParameterExpression> subParams;

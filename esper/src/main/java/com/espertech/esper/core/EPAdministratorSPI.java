@@ -2,6 +2,7 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPAdministrator;
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EPPreparedStatementImpl;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.epl.expression.ExprNode;
@@ -66,7 +67,9 @@ public interface EPAdministratorSPI extends EPAdministrator
 
     public StatementSpecRaw compileEPLToRaw(String epl);
     public EPStatementObjectModel mapRawToSODA(StatementSpecRaw raw);
+    public StatementSpecRaw mapSODAToRaw(EPStatementObjectModel model);
     public EPStatement createEPLStatementId(String eplStatement, String statementName, Object userObject, String statementId) throws EPException;
     public EPStatement createModelStatementId(EPStatementObjectModel sodaStatement, String statementName, Object userObject, String statementId) throws EPException;
     public EPStatement createPatternStatementId(String pattern, String statementName, Object userObject, String statementId) throws EPException;
+    public EPStatement createPreparedEPLStatementId(EPPreparedStatementImpl prepared, String statementName, Object userObject, String statementId) throws EPException;
 }
