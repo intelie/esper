@@ -1304,6 +1304,7 @@ public class ConfigurationEngineDefaults implements Serializable
         private String admin;
         private String eventTypeIdGeneratorFactory;
         private String virtualDataWindowViewFactory;
+        private String statementMetadataFactory;
 
         /**
          * Class name of runtime provider.
@@ -1355,6 +1356,14 @@ public class ConfigurationEngineDefaults implements Serializable
 
         public String getVirtualDataWindowViewFactory() {
             return virtualDataWindowViewFactory;
+        }
+
+        public String getStatementMetadataFactory() {
+            return statementMetadataFactory;
+        }
+
+        public void setStatementMetadataFactory(String statementMetadataFactory) {
+            this.statementMetadataFactory = statementMetadataFactory;
         }
     }
 

@@ -1,9 +1,11 @@
 package com.espertech.esper.core;
 
+import java.io.Serializable;
+
 /**
  * Statement metadata.
  */
-public class StatementMetadata
+public class StatementMetadata implements Serializable
 {
     private StatementType statementType;
 

@@ -75,6 +75,7 @@ public final class EPServicesContext
     private DeploymentStateService deploymentStateService;
     private ExceptionHandlingService exceptionHandlingService;
     private PatternNodeFactory patternNodeFactory;
+    private StatementMetadataFactory statementMetadataFactory;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -147,7 +148,8 @@ public final class EPServicesContext
                              DeploymentStateService deploymentStateService,
                              ExceptionHandlingService exceptionHandlingService,
                              PatternNodeFactory patternNodeFactory,
-                             EventTypeIdGenerator eventTypeIdGenerator)
+                             EventTypeIdGenerator eventTypeIdGenerator,
+                             StatementMetadataFactory statementMetadataFactory)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -185,6 +187,7 @@ public final class EPServicesContext
         this.exceptionHandlingService = exceptionHandlingService;
         this.patternNodeFactory = patternNodeFactory;
         this.eventTypeIdGenerator = eventTypeIdGenerator;
+        this.statementMetadataFactory = statementMetadataFactory;
     }
 
     public PatternNodeFactory getPatternNodeFactory() {
@@ -615,5 +618,9 @@ public final class EPServicesContext
 
     public EventTypeIdGenerator getEventTypeIdGenerator() {
         return eventTypeIdGenerator;
+    }
+
+    public StatementMetadataFactory getStatementMetadataFactory() {
+        return statementMetadataFactory;
     }
 }

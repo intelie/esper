@@ -10,6 +10,7 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 
 /**
@@ -53,7 +54,7 @@ public interface StatementLifecycleSvc
      * @param isolationUnitServices isolated service services
      * @return started statement
      */
-    public EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices, String statementId);
+    public EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices, String statementId, EPStatementObjectModel optionalModel);
 
     /**
      * Start statement by statement id.

@@ -148,6 +148,14 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         DeploymentStateService deploymentStateService = new DeploymentStateServiceImpl();
 
+        StatementMetadataFactory stmtMetadataFactory;
+        if (configSnapshot.getEngineDefaults().getAlternativeContext().getStatementMetadataFactory() == null) {
+            stmtMetadataFactory = new StatementMetadataFactoryDefault();
+        }
+        else {
+            stmtMetadataFactory = (StatementMetadataFactory) JavaClassHelper.instantiate(StatementMetadataFactory.class, configSnapshot.getEngineDefaults().getAlternativeContext().getStatementMetadataFactory());
+        }
+
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
@@ -155,7 +163,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
                 namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
                 statementVariableRef, configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService,
-                deploymentStateService, exceptionHandlingService, new PatternNodeFactoryImpl(), eventTypeIdGenerator);
+                deploymentStateService, exceptionHandlingService, new PatternNodeFactoryImpl(), eventTypeIdGenerator, stmtMetadataFactory);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

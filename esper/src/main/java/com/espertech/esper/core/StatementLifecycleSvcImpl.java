@@ -11,6 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.annotation.Hint;
 import com.espertech.esper.client.annotation.Name;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.annotation.AnnotationUtil;
 import com.espertech.esper.epl.core.MethodResolutionService;
@@ -109,14 +110,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // called after services are activated, to begin statement loading from store
     }
 
-    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices, String statementId)
+    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices, String statementId, EPStatementObjectModel optionalModel)
     {
         String assignedStatementId = statementId;
         if (assignedStatementId == null) {
             assignedStatementId = UuidGenerator.generate();
         }
 
-        EPStatementDesc desc = createStoppedAssignName(statementSpec, expression, isPattern, optStatementName, assignedStatementId, null, userObject, isolationUnitServices);
+        EPStatementDesc desc = createStoppedAssignName(statementSpec, expression, isPattern, optStatementName, assignedStatementId, null, userObject, isolationUnitServices, optionalModel);
         start(statementId, desc, true, false, false);
         return desc.getEpStatement();
     }
@@ -133,7 +134,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param isolationUnitServices isolated service services
      * @return started statement
      */
-    protected synchronized EPStatementDesc createStoppedAssignName(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject, EPIsolationUnitServices isolationUnitServices)
+    protected synchronized EPStatementDesc createStoppedAssignName(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject, EPIsolationUnitServices isolationUnitServices, EPStatementObjectModel optionalModel)
     {
         boolean nameProvided = false;
         String statementName = statementId;
@@ -162,7 +163,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             nameProvided = true;
         }
 
-        return createStopped(statementSpec, expression, isPattern, statementName, nameProvided, statementId, optAdditionalContext, userObject, isolationUnitServices, false);
+        return createStopped(statementSpec, expression, isPattern, statementName, nameProvided, statementId, optAdditionalContext, userObject, isolationUnitServices, false, optionalModel);
     }
 
     /**
@@ -188,7 +189,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                                                          Map<String, Object> optAdditionalContext,
                                                          Object userObject,
                                                          EPIsolationUnitServices isolationUnitServices,
-                                                         boolean isFailed)
+                                                         boolean isFailed,
+                                                         EPStatementObjectModel optionalModel)
     {
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
@@ -250,57 +252,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // add variable references
         services.getStatementVariableRefService().addReferences(statementName, compiledSpec.getVariableReferences());
 
-        // determine statement type
-        StatementType statementType = null;
-        if (statementSpec.getCreateVariableDesc() != null) {
-            statementType = StatementType.CREATE_VARIABLE;
-        }
-        else if (statementSpec.getCreateWindowDesc() != null) {
-            statementType = StatementType.CREATE_WINDOW;
-        }
-        else if (statementSpec.getOnTriggerDesc() != null) {
-            if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_DELETE) {
-                statementType = StatementType.ON_DELETE;
-            }
-            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_UPDATE) {
-                statementType = StatementType.ON_UPDATE;
-            }
-            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SELECT) {
-                if (statementSpec.getInsertIntoDesc() != null) {
-                    statementType = StatementType.ON_INSERT;
-                }
-                else {
-                    statementType = StatementType.ON_SELECT;
-                }
-            }
-            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SET) {
-                statementType = StatementType.ON_SET;
-            }
-            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_MERGE) {
-                statementType = StatementType.ON_MERGE;
-            }
-            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SPLITSTREAM) {
-                statementType = StatementType.ON_SPLITSTREAM;
-            }
-        }
-        else if (statementSpec.getInsertIntoDesc() != null) {
-            statementType = StatementType.INSERT_INTO;
-        }
-        else if (isPattern) {
-            statementType = StatementType.PATTERN;
-        }
-        else if (statementSpec.getUpdateDesc() != null) {
-            statementType = StatementType.UPDATE;
-        }
-        else if (statementSpec.getCreateIndexDesc() != null) {
-            statementType = StatementType.CREATE_INDEX;
-        }
-        else if (statementSpec.getCreateSchemaDesc() != null) {
-            statementType = StatementType.CREATE_SCHEMA;
-        }
-        if (statementType == null) {
-            statementType = StatementType.SELECT;
-        }
+        // create metadata
+        StatementMetadata statementMetadata = services.getStatementMetadataFactory().create(new StatementMetadataFactoryContext(statementName, statementId, statementContext, statementSpec, expression, isPattern, optionalModel));
 
         eventProcessingRWLock.acquireWriteLock();
         try
@@ -312,7 +265,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             long timeLastStateChange = services.getSchedulingService().getTime();
             EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, statementSpec.getExpressionNoAnnotations(), isPattern,
                     services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout,
-                    services.getTimeSource(), new StatementMetadata(statementType), userObject, compiledSpec.getAnnotations(), statementContext, isFailed, nameProvided);
+                    services.getTimeSource(), statementMetadata, userObject, compiledSpec.getAnnotations(), statementContext, isFailed, nameProvided);
 
             boolean isInsertInto = statementSpec.getInsertIntoDesc() != null;
             boolean isDistinct = statementSpec.getSelectClauseSpec().isDistinct();
