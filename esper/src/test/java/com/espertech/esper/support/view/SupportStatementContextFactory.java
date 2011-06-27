@@ -6,6 +6,8 @@ import com.espertech.esper.core.ExceptionHandlingService;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.StatementResultServiceImpl;
 import com.espertech.esper.core.StatementFilterVersion;
+import com.espertech.esper.epl.spec.PluggableObjectCollection;
+import com.espertech.esper.epl.spec.PluggableObjectRegistryImpl;
 import com.espertech.esper.event.EventTypeIdGeneratorImpl;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.ScheduleBucket;
@@ -57,7 +59,7 @@ public class SupportStatementContextFactory
                 new ScheduleBucket(1),
                 SupportEventAdapterService.getService(),
                 null,
-                new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews(), null, null),
+                new ViewResolutionServiceImpl(new PluggableObjectRegistryImpl(new PluggableObjectCollection[] {ViewEnumHelper.getBuiltinViews()}), null, null),
                 new PatternObjectResolutionServiceImpl(null),
                 null,
                 null,

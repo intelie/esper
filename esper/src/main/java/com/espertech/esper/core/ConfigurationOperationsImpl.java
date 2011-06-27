@@ -13,6 +13,7 @@ import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineSettingsService;
 import com.espertech.esper.epl.metric.MetricReportingService;
+import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.variable.VariableExistsException;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.variable.VariableService;
@@ -45,6 +46,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     private final MetricReportingService metricReportingService;
     private final StatementEventTypeRef statementEventTypeRef;
     private final StatementVariableRef statementVariableRef;
+    private final PluggableObjectCollection plugInViews;
 
     /**
      * Ctor.
@@ -65,7 +67,8 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
                                        ValueAddEventService valueAddEventService,
                                        MetricReportingService metricReportingService,
                                        StatementEventTypeRef statementEventTypeRef,
-                                       StatementVariableRef statementVariableRef)
+                                       StatementVariableRef statementVariableRef,
+                                       PluggableObjectCollection plugInViews)
     {
         this.eventAdapterService = eventAdapterService;
         this.eventTypeIdGenerator = eventTypeIdGenerator;
@@ -76,11 +79,21 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         this.metricReportingService = metricReportingService;
         this.statementEventTypeRef = statementEventTypeRef;
         this.statementVariableRef = statementVariableRef;
+        this.plugInViews = plugInViews;
     }
 
     public void addEventTypeAutoName(String javaPackageName)
     {
         eventAdapterService.addAutoNamePackage(javaPackageName);
+    }
+
+    public void addPlugInView(String namespace, String name, String viewFactoryClass)
+    {
+        ConfigurationPlugInView configurationPlugInView = new ConfigurationPlugInView();
+        configurationPlugInView.setNamespace(namespace);
+        configurationPlugInView.setName(name);
+        configurationPlugInView.setFactoryClassName(viewFactoryClass);
+        plugInViews.addViews(Collections.singletonList(configurationPlugInView), Collections.<ConfigurationPlugInVirtualDataWindow>emptyList());
     }
 
     public void addPlugInAggregationFunction(String functionName, String aggregationClassName)

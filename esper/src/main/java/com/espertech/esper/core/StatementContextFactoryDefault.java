@@ -17,10 +17,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
 import com.espertech.esper.epl.join.base.JoinSetComposerFactoryImpl;
 import com.espertech.esper.epl.metric.StatementMetricHandle;
-import com.espertech.esper.epl.spec.CreateWindowDesc;
-import com.espertech.esper.epl.spec.OnTriggerDesc;
-import com.espertech.esper.epl.spec.OnTriggerWindowDesc;
-import com.espertech.esper.epl.spec.PluggableObjectCollection;
+import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.filter.FilterServiceSPI;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.schedule.ScheduleBucket;
@@ -38,7 +35,7 @@ import java.util.Map;
  */
 public class StatementContextFactoryDefault implements StatementContextFactory
 {
-    private final PluggableObjectCollection viewClasses;
+    private final PluggableObjectRegistryImpl viewRegistry;
     private final PluggableObjectCollection patternObjectClasses;
     private final Class systemVirtualDWViewFactory;
 
@@ -49,9 +46,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
      */
     public StatementContextFactoryDefault(PluggableObjectCollection viewPlugIns, PluggableObjectCollection plugInPatternObj, Class systemVirtualDWViewFactory)
     {
-        viewClasses = new PluggableObjectCollection();
-        viewClasses.addObjects(viewPlugIns);
-        viewClasses.addObjects(ViewEnumHelper.getBuiltinViews());
+        viewRegistry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[] {ViewEnumHelper.getBuiltinViews(), viewPlugIns});
+
         this.systemVirtualDWViewFactory = systemVirtualDWViewFactory;
 
         patternObjectClasses = new PluggableObjectCollection();
@@ -119,7 +115,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
 
         PatternContextFactory patternContextFactory = new PatternContextFactoryDefault();
 
-        ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(viewClasses, optionalCreateNamedWindowName, systemVirtualDWViewFactory);
+        ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(viewRegistry, optionalCreateNamedWindowName, systemVirtualDWViewFactory);
         PatternObjectResolutionService patternResolutionService = new PatternObjectResolutionServiceImpl(patternObjectClasses);
 
         SchedulingServiceSPI schedulingService = engineServices.getSchedulingService();

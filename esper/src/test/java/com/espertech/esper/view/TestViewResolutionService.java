@@ -1,13 +1,14 @@
 package com.espertech.esper.view;
 
-import com.espertech.esper.client.ConfigurationPlugInVirtualDataWindow;
-import junit.framework.TestCase;
 import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.ConfigurationPlugInView;
+import com.espertech.esper.client.ConfigurationPlugInVirtualDataWindow;
+import com.espertech.esper.epl.spec.PluggableObjectCollection;
+import com.espertech.esper.epl.spec.PluggableObjectRegistryImpl;
 import com.espertech.esper.support.view.SupportViewFactoryOne;
 import com.espertech.esper.support.view.SupportViewFactoryTwo;
 import com.espertech.esper.view.stat.UnivariateStatisticsViewFactory;
-import com.espertech.esper.epl.spec.PluggableObjectCollection;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -21,7 +22,8 @@ public class TestViewResolutionService extends TestCase
 
     public void setUp()
     {
-        service = new ViewResolutionServiceImpl(ViewEnumHelper.getBuiltinViews(), null, null);
+        PluggableObjectRegistryImpl registry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[] {ViewEnumHelper.getBuiltinViews()});
+        service = new ViewResolutionServiceImpl(registry, null, null);
     }
 
     public void testInitializeFromConfig() throws Exception
@@ -95,7 +97,8 @@ public class TestViewResolutionService extends TestCase
 
         PluggableObjectCollection desc = new PluggableObjectCollection();
         desc.addViews(configs, Collections.<ConfigurationPlugInVirtualDataWindow>emptyList());
-        return new ViewResolutionServiceImpl(desc, null, null);
+        PluggableObjectRegistryImpl registry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[] {desc});
+        return new ViewResolutionServiceImpl(registry, null, null);
     }
 
     private static final Log log = LogFactory.getLog(TestViewResolutionService.class);

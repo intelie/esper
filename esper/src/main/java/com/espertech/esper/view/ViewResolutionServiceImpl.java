@@ -12,6 +12,7 @@ import com.espertech.esper.client.hook.VirtualDataWindowFactory;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.spec.PluggableObjectEntry;
+import com.espertech.esper.epl.spec.PluggableObjectRegistry;
 import com.espertech.esper.epl.spec.PluggableObjectType;
 import com.espertech.esper.epl.virtualdw.VirtualDWViewFactory;
 import com.espertech.esper.epl.virtualdw.VirtualDWViewFactoryImpl;
@@ -28,7 +29,7 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
 {
     private static final Log log = LogFactory.getLog(ViewResolutionServiceImpl.class);
 
-    private final PluggableObjectCollection viewObjects;
+    private final PluggableObjectRegistry viewObjects;
     private final String optionalNamedWindowName;
     private final Class virtualDataWindowViewFactory;
 
@@ -36,7 +37,7 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
      * Ctor.
      * @param viewObjects is the view objects to use for resolving views, can be both built-in and plug-in views.
      */
-    public ViewResolutionServiceImpl(PluggableObjectCollection viewObjects, String optionalNamedWindowName, Class virtualDataWindowViewFactory)
+    public ViewResolutionServiceImpl(PluggableObjectRegistry viewObjects, String optionalNamedWindowName, Class virtualDataWindowViewFactory)
     {
         this.viewObjects = viewObjects;
         this.optionalNamedWindowName = optionalNamedWindowName;
@@ -52,32 +53,28 @@ public class ViewResolutionServiceImpl implements ViewResolutionService
 
         Class viewFactoryClass = null;
 
-        Map<String, Pair<Class, PluggableObjectEntry>> namespaceMap = viewObjects.getPluggables().get(nameSpace);
-        if (namespaceMap != null)
+        Pair<Class, PluggableObjectEntry> pair = viewObjects.lookup(nameSpace, name);
+        if (pair != null)
         {
-            Pair<Class, PluggableObjectEntry> pair = namespaceMap.get(name);
-            if (pair != null)
+            if (pair.getSecond().getType() == PluggableObjectType.VIEW )
             {
-                if (pair.getSecond().getType() == PluggableObjectType.VIEW )
-                {
-                    // Handle named windows in a configuration that always declares a system-wide virtual view factory
-                    if (optionalNamedWindowName != null && virtualDataWindowViewFactory != null) {
-                        return new VirtualDWViewFactoryImpl(virtualDataWindowViewFactory, optionalNamedWindowName, null);
-                    }
+                // Handle named windows in a configuration that always declares a system-wide virtual view factory
+                if (optionalNamedWindowName != null && virtualDataWindowViewFactory != null) {
+                    return new VirtualDWViewFactoryImpl(virtualDataWindowViewFactory, optionalNamedWindowName, null);
+                }
 
-                    viewFactoryClass = pair.getFirst();
+                viewFactoryClass = pair.getFirst();
+            }
+            else if (pair.getSecond().getType() == PluggableObjectType.VIRTUALDW)
+            {
+                if (optionalNamedWindowName == null) {
+                    throw new ViewProcessingException("Virtual data window requires use with a named window in the create-window syntax");
                 }
-                else if (pair.getSecond().getType() == PluggableObjectType.VIRTUALDW)
-                {
-                    if (optionalNamedWindowName == null) {
-                        throw new ViewProcessingException("Virtual data window requires use with a named window in the create-window syntax");
-                    }
-                    return new VirtualDWViewFactoryImpl(pair.getFirst(), optionalNamedWindowName, pair.getSecond().getCustomConfigs());
-                }
-                else
-                {
-                    throw new ViewProcessingException("Invalid object type '" + pair.getSecond() + "' for view '" + name + "'");
-                }
+                return new VirtualDWViewFactoryImpl(pair.getFirst(), optionalNamedWindowName, pair.getSecond().getCustomConfigs());
+            }
+            else
+            {
+                throw new ViewProcessingException("Invalid object type '" + pair.getSecond() + "' for view '" + name + "'");
             }
         }
 

@@ -441,4 +441,6 @@ public interface ConfigurationOperations
      * @param legacyEventTypeDesc descriptor containing property and mapping information for Legacy Java type events
      */
     public void addEventType(String eventTypeName, String eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc);
+
+    public void addPlugInView(String namespace, String name, String viewFactoryClass);
 }

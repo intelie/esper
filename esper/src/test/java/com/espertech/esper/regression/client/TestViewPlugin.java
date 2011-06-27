@@ -17,7 +17,6 @@ public class TestViewPlugin extends TestCase
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addEventType("A", SupportMarketDataBean.class);
-        configuration.addPlugInView("mynamespace", "trendspotter", MyTrendSpotterViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "flushedsimple", MyFlushedSimpleViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "invalid", String.class.getName());
         epService = EPServiceProviderManager.getProvider("TestViewPlugin", configuration);
@@ -45,6 +44,7 @@ public class TestViewPlugin extends TestCase
 
     public void testPlugInViewTrend()
     {
+        epService.getEPAdministrator().getConfiguration().addPlugInView("mynamespace", "trendspotter", MyTrendSpotterViewFactory.class.getName());
         String text = "select irstream * from A.mynamespace:trendspotter(price)";
         EPStatement stmt = epService.getEPAdministrator().createEPL(text);
         stmt.addListener(testListener);
