@@ -21,28 +21,36 @@ public class ExprMinMaxAggrNode extends ExprAggregateNodeBase
     private final MinMaxTypeEnum minMaxTypeEnum;
     private static final long serialVersionUID = -7828413362615586145L;
 
+    private final boolean hasFilter;
+
     /**
      * Ctor.
      * @param distinct - indicator whether distinct values of all values min/max
      * @param minMaxTypeEnum - enum for whether to minimum or maximum compute
      */
-    public ExprMinMaxAggrNode(boolean distinct, MinMaxTypeEnum minMaxTypeEnum)
+    public ExprMinMaxAggrNode(boolean distinct, MinMaxTypeEnum minMaxTypeEnum, boolean hasFilter)
     {
         super(distinct);
         this.minMaxTypeEnum = minMaxTypeEnum;
+        this.hasFilter = hasFilter;
     }
 
     public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        if (this.getChildNodes().size() != 1)
+        if (this.getChildNodes().size() == 0 || this.getChildNodes().size() > 2)
         {
-            throw new ExprValidationException(minMaxTypeEnum.toString() + " node must have exactly 1 child node");
+            throw new ExprValidationException(minMaxTypeEnum.toString() + " node must have either 1 or 2 child nodes");
         }
+
         ExprNode child = this.getChildNodes().get(0);
-
         boolean hasDataWindows = ExprNodeUtility.hasRemoveStream(child, streamTypeService);
-
-        return new ExprMinMaxAggrNodeFactory(minMaxTypeEnum, child.getExprEvaluator().getType(), hasDataWindows, super.isDistinct());
+        if (hasFilter) {
+            if (this.getChildNodes().size() < 2) {
+                throw new ExprValidationException(minMaxTypeEnum.toString() + "-filtered aggregation function must have a filter expression as a second parameter");
+            }
+            super.validateFilter(this.getChildNodes().get(1).getExprEvaluator());
+        }
+        return new ExprMinMaxAggrNodeFactory(minMaxTypeEnum, child.getExprEvaluator().getType(), hasDataWindows, super.isDistinct(), hasFilter);
     }
 
     public final boolean equalsNodeAggregate(ExprAggregateNode node)

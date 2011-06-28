@@ -61,6 +61,6 @@ public class FloatSumAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeSumAggregator(Float.class);
+        return methodResolutionService.makeSumAggregator(Float.class, false);
     }
 }

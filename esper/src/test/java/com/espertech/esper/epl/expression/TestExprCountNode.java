@@ -11,7 +11,7 @@ public class TestExprCountNode extends TestExprAggregateNodeAdapter
     {
         super.validatedNodeToTest = makeNode(5, Integer.class);
 
-        wildcardCount = new ExprCountNode(false);
+        wildcardCount = new ExprCountNode(false, false);
         SupportExprNodeFactory.validate3Stream(wildcardCount);
     }
 
@@ -30,13 +30,13 @@ public class TestExprCountNode extends TestExprAggregateNodeAdapter
     public void testEqualsNode() throws Exception
     {
         assertTrue(validatedNodeToTest.equalsNode(validatedNodeToTest));
-        assertFalse(validatedNodeToTest.equalsNode(new ExprSumNode(false)));
+        assertFalse(validatedNodeToTest.equalsNode(new ExprSumNode(false, false)));
         assertTrue(wildcardCount.equalsNode(wildcardCount));
     }
 
     private ExprCountNode makeNode(Object value, Class type) throws Exception
     {
-        ExprCountNode countNode = new ExprCountNode(false);
+        ExprCountNode countNode = new ExprCountNode(false, false);
         countNode.addChildNode(new SupportExprNode(value, type));
         SupportExprNodeFactory.validate3Stream(countNode);
         return countNode;

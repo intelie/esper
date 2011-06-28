@@ -224,7 +224,12 @@ where sensor.sensorId = loc.sensorId</pre></div>
       <answer>
         <p>
           We recommend keeping your EPL statements simple and easy-to-read. 
+        </p>
+        <p>
           Consider splitting a single, complex statement into multiple EPL statements, where the first statement produces data via insert-into into a stream that a second statement consumes.
+        </p>
+        <p>
+          Consider using expression declarations, which allow factoring out common expressions into a "expression abc{...}".
         </p>
       </answer>
     </faq>    
@@ -273,6 +278,22 @@ where sensor.sensorId = loc.sensorId</pre></div>
       </answer>
     </faq>    
     
+    <faq id="Event Aggregation-2">
+      <question>How to I compute a percentage?</question>
+      <answer>
+        <p>
+          Let's assume we have an event that indicates whether an item is black or white. Assume the boolean-type "black" property is true when the 
+          item is black. 
+        </p>
+        <p>
+          Most aggregation functions allow passing a filter expression as a parameter to the aggregation function.
+          This solution passes the boolean "black" property as the filter expression to the count aggregation function to compute the
+          running percentage of items that are black compared to all items:
+        </p>
+	<div class="source"><pre>select count(*, black)/count(*) as pct from BlackWhiteItem</pre></div>      
+      </answer>
+    </faq>   
+
     <faq id="correlate">
       <question>How do I correlate events arriving in 2 or more streams?</question>
       <answer>

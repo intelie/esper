@@ -63,6 +63,6 @@ public class NumIntegerSumAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeSumAggregator(null);
+        return methodResolutionService.makeSumAggregator(null, false);
     }
 }

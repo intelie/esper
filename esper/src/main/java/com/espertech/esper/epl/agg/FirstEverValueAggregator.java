@@ -15,7 +15,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
  */
 public class FirstEverValueAggregator implements AggregationMethod
 {
-    private final Class type;
+    protected final Class type;
     private boolean isSet;
     private Object firstValue;
 
@@ -58,6 +58,6 @@ public class FirstEverValueAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeFirstEverValueAggregator(type);
+        return methodResolutionService.makeFirstEverValueAggregator(type, false);
     }
 }

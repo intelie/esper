@@ -18,8 +18,8 @@ import com.espertech.esper.collection.SortedRefCountedSet;
  */
 public class MinMaxAggregator implements AggregationMethod
 {
-    private final MinMaxTypeEnum minMaxTypeEnum;
-    private final Class returnType;
+    protected final MinMaxTypeEnum minMaxTypeEnum;
+    protected final Class returnType;
 
     private SortedRefCountedSet<Object> refSet;
 
@@ -78,6 +78,6 @@ public class MinMaxAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, returnType, true);
+        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, returnType, true, false);
     }
 }

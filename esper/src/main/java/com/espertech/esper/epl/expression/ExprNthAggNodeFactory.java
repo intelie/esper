@@ -40,7 +40,7 @@ public class ExprNthAggNodeFactory implements AggregationMethodFactory
         if (!isDistinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, childType);
+        return methodResolutionService.makeDistinctAggregator(method, childType, false);
     }
 
     public AggregationAccessor getAccessor()

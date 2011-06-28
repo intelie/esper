@@ -10,13 +10,15 @@ public class ExprMinMaxAggrNodeFactory implements AggregationMethodFactory
     private final Class type;
     private final boolean hasDataWindows;
     private final boolean distinct;
+    private final boolean hasFilter;
 
-    public ExprMinMaxAggrNodeFactory(MinMaxTypeEnum minMaxTypeEnum, Class type, boolean hasDataWindows, boolean distinct)
+    public ExprMinMaxAggrNodeFactory(MinMaxTypeEnum minMaxTypeEnum, Class type, boolean hasDataWindows, boolean distinct, boolean hasFilter)
     {
         this.minMaxTypeEnum = minMaxTypeEnum;
         this.type = type;
         this.hasDataWindows = hasDataWindows;
         this.distinct = distinct;
+        this.hasFilter = hasFilter;
     }
 
     public AggregationAccessor getAccessor()
@@ -26,11 +28,11 @@ public class ExprMinMaxAggrNodeFactory implements AggregationMethodFactory
 
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
-        AggregationMethod method = methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, type, hasDataWindows);
+        AggregationMethod method = methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, type, hasDataWindows, hasFilter);
         if (!distinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, type);
+        return methodResolutionService.makeDistinctAggregator(method, type, hasFilter);
     }
 
     public AggregationSpec getSpec(boolean isMatchRecognize)

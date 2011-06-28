@@ -31,6 +31,13 @@ public class CountStarProjectionExpression extends ExpressionBase
 
     public void toPrecedenceFreeEPL(StringWriter writer)
     {
-        writer.write("count(*)");
+        writer.write("count(*");
+        String delimiter = "";
+        for (Expression param : this.getChildren()) {
+            writer.write(delimiter);
+            delimiter = ", ";
+            param.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+        }
+        writer.write(")");
     }
 }

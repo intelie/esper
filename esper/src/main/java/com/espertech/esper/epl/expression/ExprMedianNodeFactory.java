@@ -15,11 +15,13 @@ public class ExprMedianNodeFactory implements AggregationMethodFactory
 {
     private final boolean isDistinct;
     private final Class aggregatedValueType;
+    private final boolean hasFilter;
 
-    public ExprMedianNodeFactory(boolean isDistinct, Class aggregatedValueType)
+    public ExprMedianNodeFactory(boolean isDistinct, Class aggregatedValueType, boolean hasFilter)
     {
         this.isDistinct = isDistinct;
         this.aggregatedValueType = aggregatedValueType;
+        this.hasFilter = hasFilter;
     }
 
     public Class getResultType()
@@ -34,11 +36,11 @@ public class ExprMedianNodeFactory implements AggregationMethodFactory
 
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
-        AggregationMethod method = methodResolutionService.makeMedianAggregator();
+        AggregationMethod method = methodResolutionService.makeMedianAggregator(hasFilter);
         if (!isDistinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, aggregatedValueType);
+        return methodResolutionService.makeDistinctAggregator(method, aggregatedValueType, hasFilter);
     }
 
     public AggregationAccessor getAccessor()

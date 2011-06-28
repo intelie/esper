@@ -11,7 +11,6 @@ package com.espertech.esper.epl.parse;
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPAdministratorHelper;
@@ -563,6 +562,21 @@ public class EPLTreeWalker extends EsperEPL2Ast
                     astRowRegexNodeMap.remove(childNode);
                 }
             }
+        }
+
+        switch (node.getType())
+        {
+            case SUM:
+            case AVG:
+            case COUNT:
+            case MEDIAN:
+            case STDDEV:
+            case AVEDEV:
+            case FIRST_AGGREG:
+            case LAST_AGGREG:
+            case WINDOW_AGGREG:
+                postLeaveAggregate(node);
+                break;
         }
     }
 
@@ -1946,12 +1960,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
     	log.debug(".leaveLibFunctionOld");
 
         String childNodeText = node.getChild(0).getText();
-        if ((childNodeText.toLowerCase().equals("max")) || (childNodeText.toLowerCase().equals("min")))
-        {
-            handleMinMax(node);
-            return;
-        }
-
         if (node.getChild(0).getType() == CLASS_IDENT)
         {
             String className = node.getChild(0).getText();
@@ -2001,6 +2009,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
         catch (EngineImportException e)
         {
             throw new IllegalStateException("Error resolving aggregation: " + e.getMessage(), e);
+        }
+
+        if ((childNodeText.toLowerCase().equals("max")) || (childNodeText.toLowerCase().equals("min")) ||
+            (childNodeText.toLowerCase().equals("fmax")) || (childNodeText.toLowerCase().equals("fmin")))
+        {
+            handleMinMax(node);
+            return;
         }
 
         // try built-in expanded set of aggregation functions
@@ -2212,12 +2227,14 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         // Determine min or max
         Tree childNode = libNode.getChild(0);
+        String childNodeText = childNode.getText().toLowerCase();
         MinMaxTypeEnum minMaxTypeEnum;
-        if (childNode.getText().equals("min"))
+        boolean filtered = childNodeText.startsWith("f");
+        if (childNodeText.equals("min") || childNodeText.equals("fmin"))
         {
             minMaxTypeEnum = MinMaxTypeEnum.MIN;
         }
-        else if (childNode.getText().equals("max"))
+        else if (childNodeText.equals("max") || childNodeText.equals("fmax"))
         {
             minMaxTypeEnum = MinMaxTypeEnum.MAX;
         }
@@ -2235,14 +2252,14 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         // Error if more then 3 nodes with distinct since it's an aggregate function
-        if ((libNode.getChildCount() > 4) && (isDistinct))
+        if ((libNode.getChildCount() > 4) && (isDistinct) && !filtered)
         {
             throw new ASTWalkException("The distinct keyword is not valid in per-row min and max " +
                     "functions with multiple sub-expressions");
         }
 
         ExprNode minMaxNode;
-        if ((!isDistinct) && (libNode.getChildCount() > 3))
+        if ((!isDistinct) && (libNode.getChildCount() > 3) && !filtered)
         {
             // use the row function
             minMaxNode = new ExprMinMaxRowNode(minMaxTypeEnum);
@@ -2250,7 +2267,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         else
         {
             // use the aggregation function
-            minMaxNode = new ExprMinMaxAggrNode(isDistinct, minMaxTypeEnum);
+            minMaxNode = new ExprMinMaxAggrNode(isDistinct, minMaxTypeEnum, filtered);
         }
         astExprNodeMap.put(libNode, minMaxNode);
     }
@@ -2273,28 +2290,31 @@ public class EPLTreeWalker extends EsperEPL2Ast
             isDistinct = true;
         }
 
+        // NOTE: Also see "postLeaveAggregate" below which appends the filter expression
+        boolean hasFilter = ASTUtil.findFirstNode(node, AGG_FILTER_EXPR) != null;
+
         ExprAggregateNode aggregateNode;
         ExprNode childNode = null;
 
         switch (node.getType())
         {
             case AVG:
-                aggregateNode = new ExprAvgNode(isDistinct);
+                aggregateNode = new ExprAvgNode(isDistinct, hasFilter);
                 break;
             case SUM:
-                aggregateNode = new ExprSumNode(isDistinct);
+                aggregateNode = new ExprSumNode(isDistinct, hasFilter);
                 break;
             case COUNT:
-                aggregateNode = new ExprCountNode(isDistinct);
+                aggregateNode = new ExprCountNode(isDistinct, hasFilter);
                 break;
             case MEDIAN:
-                aggregateNode = new ExprMedianNode(isDistinct);
+                aggregateNode = new ExprMedianNode(isDistinct, hasFilter);
                 break;
             case STDDEV:
-                aggregateNode = new ExprStddevNode(isDistinct);
+                aggregateNode = new ExprStddevNode(isDistinct, hasFilter);
                 break;
             case AVEDEV:
-                aggregateNode = new ExprAvedevNode(isDistinct);
+                aggregateNode = new ExprAvedevNode(isDistinct, hasFilter);
                 break;
             case FIRST_AGGREG:
             case WINDOW_AGGREG:
@@ -2336,6 +2356,17 @@ public class EPLTreeWalker extends EsperEPL2Ast
             aggregateNode.addChildNode(childNode);
         }
         astExprNodeMap.put(node, aggregateNode);
+    }
+
+    private void postLeaveAggregate(Tree node)
+    {
+        Tree optionalFilterNode = ASTUtil.findFirstNode(node, AGG_FILTER_EXPR);
+        if (optionalFilterNode == null) {
+            return;
+        }
+        ExprNode currentAggNode = astExprNodeMap.get(node);
+        ExprNode filter = astExprNodeMap.remove(optionalFilterNode.getChild(0));
+        currentAggNode.addChildNode(filter);
     }
 
     private void leaveRelationalOp(Tree node)

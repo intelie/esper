@@ -567,12 +567,12 @@ regExpExpr
 	;
 	
 builtinFunc
-	: 	^(f=SUM (DISTINCT)? valueExpr) { leaveNode($f); }
-	|	^(f=AVG (DISTINCT)? valueExpr) { leaveNode($f); }
-	|	^(f=COUNT ((DISTINCT)? valueExpr)? ) { leaveNode($f); }
-	|	^(f=MEDIAN (DISTINCT)? valueExpr) { leaveNode($f); }
-	|	^(f=STDDEV (DISTINCT)? valueExpr) { leaveNode($f); }
-	|	^(f=AVEDEV (DISTINCT)? valueExpr) { leaveNode($f); }
+	: 	^(f=SUM (DISTINCT)? valueExpr aggregationFilterExpr?) { leaveNode($f); }
+	|	^(f=AVG (DISTINCT)? valueExpr aggregationFilterExpr?) { leaveNode($f); }
+	|	^(f=COUNT ((DISTINCT)? valueExpr)? aggregationFilterExpr?) { leaveNode($f); }
+	|	^(f=MEDIAN (DISTINCT)? valueExpr aggregationFilterExpr?) { leaveNode($f); }
+	|	^(f=STDDEV (DISTINCT)? valueExpr aggregationFilterExpr?) { leaveNode($f); }
+	|	^(f=AVEDEV (DISTINCT)? valueExpr aggregationFilterExpr?) { leaveNode($f); }
 	|	^(f=LAST_AGGREG (DISTINCT)? accessValueExpr? valueExpr?) { leaveNode($f); }
 	|	^(f=FIRST_AGGREG (DISTINCT)? accessValueExpr? valueExpr?) { leaveNode($f); }
 	|	^(f=WINDOW_AGGREG (DISTINCT)? accessValueExpr?) { leaveNode($f); }
@@ -587,6 +587,10 @@ builtinFunc
 	| 	^(f=CAST valueExpr CLASS_IDENT) { leaveNode($f); }
 	| 	^(f=EXISTS eventPropertyExpr[true]) { leaveNode($f); }
 	|	^(f=CURRENT_TIMESTAMP {}) { leaveNode($f); }
+	;
+
+aggregationFilterExpr
+	:	^(AGG_FILTER_EXPR valueExpr)
 	;
 
 accessValueExpr

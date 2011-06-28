@@ -5,6 +5,7 @@ Changes in version 4.3.0
 ------------------------
 Major API or EPL changes
   - Support for specifing consumption on pattern filters
+  - Support for filter expressions as part of aggregation functions
   
 
 Changes in version 4.2.0

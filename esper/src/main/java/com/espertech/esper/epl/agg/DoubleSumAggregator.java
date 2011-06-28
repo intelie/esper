@@ -61,7 +61,7 @@ public class DoubleSumAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeSumAggregator(Double.class);
+        return methodResolutionService.makeSumAggregator(Double.class, false);
     }
 }
 

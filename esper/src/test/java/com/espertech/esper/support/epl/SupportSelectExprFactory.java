@@ -49,7 +49,7 @@ public class SupportSelectExprFactory
 
     public static List<SelectClauseElementCompiled> makeAggregateSelectListWithProps() throws Exception
     {
-        ExprNode top = new ExprSumNode(false);
+        ExprNode top = new ExprSumNode(false, false);
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         top.addChildNode(identNode);
 
@@ -60,7 +60,7 @@ public class SupportSelectExprFactory
 
     public static List<SelectClauseElementCompiled> makeAggregatePlusNoAggregate() throws Exception
     {
-        ExprNode top = new ExprSumNode(false);
+        ExprNode top = new ExprSumNode(false, false);
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         top.addChildNode(identNode);
 
@@ -80,7 +80,7 @@ public class SupportSelectExprFactory
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         selectionList.add(new SelectClauseExprCompiledSpec(identNode, null));
 
-        ExprNode top = new ExprSumNode(false);
+        ExprNode top = new ExprSumNode(false, false);
         identNode = SupportExprNodeFactory.makeIdentNode("intPrimitive", "s0");
         top.addChildNode(identNode);
         selectionList.add(new SelectClauseExprCompiledSpec(top, null));
@@ -97,7 +97,7 @@ public class SupportSelectExprFactory
         */
 
         ExprNode top = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
-        ExprNode c1 = new ExprSumNode(false);
+        ExprNode c1 = new ExprSumNode(false, false);
         ExprNode c1_1 = new SupportExprNode(5);
         ExprNode c2 = new SupportExprNode(10);
 

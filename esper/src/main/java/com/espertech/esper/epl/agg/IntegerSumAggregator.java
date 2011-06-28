@@ -61,6 +61,6 @@ public class IntegerSumAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeSumAggregator(Integer.class);
+        return methodResolutionService.makeSumAggregator(Integer.class, false);
     }
 }

@@ -51,12 +51,22 @@ public class MinProjectionExpression extends ExpressionBase
 
     public void toPrecedenceFreeEPL(StringWriter writer)
     {
-        writer.write("min(");
+        if (this.getChildren().size() > 1) {
+            writer.write("fmin(");
+        }
+        else {
+            writer.write("min(");
+        }
         if (distinct)
         {
             writer.write("distinct ");
         }
-        this.getChildren().get(0).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+        String delimiter = "";
+        for (Expression param : this.getChildren()) {
+            writer.write(delimiter);
+            delimiter = ", ";
+            param.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+        }
         writer.write(")");
     }
 

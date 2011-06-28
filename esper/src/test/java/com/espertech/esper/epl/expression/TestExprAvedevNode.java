@@ -24,7 +24,7 @@ public class TestExprAvedevNode extends TestExprAggregateNodeAdapter
     public void testEqualsNode() throws Exception
     {
         assertTrue(validatedNodeToTest.equalsNode(validatedNodeToTest));
-        assertFalse(validatedNodeToTest.equalsNode(new ExprStddevNode(false)));
+        assertFalse(validatedNodeToTest.equalsNode(new ExprStddevNode(false, false)));
     }
 
     public void testAggregateFunction()
@@ -60,7 +60,7 @@ public class TestExprAvedevNode extends TestExprAggregateNodeAdapter
 
     private ExprAvedevNode makeNode(Object value, Class type) throws Exception
     {
-        ExprAvedevNode avedevNode = new ExprAvedevNode(false);
+        ExprAvedevNode avedevNode = new ExprAvedevNode(false, false);
         avedevNode.addChildNode(new SupportExprNode(value, type));
         SupportExprNodeFactory.validate3Stream(avedevNode);
         return avedevNode;

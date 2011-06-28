@@ -23,12 +23,12 @@ public class TestExprStddevNode extends TestExprAggregateNodeAdapter
     public void testEqualsNode() throws Exception
     {
         assertTrue(validatedNodeToTest.equalsNode(validatedNodeToTest));
-        assertFalse(validatedNodeToTest.equalsNode(new ExprSumNode(false)));
+        assertFalse(validatedNodeToTest.equalsNode(new ExprSumNode(false, false)));
     }
 
     private ExprStddevNode makeNode(Object value, Class type) throws Exception
     {
-        ExprStddevNode stddevNode = new ExprStddevNode(false);
+        ExprStddevNode stddevNode = new ExprStddevNode(false, false);
         stddevNode.addChildNode(new SupportExprNode(value, type));
         SupportExprNodeFactory.validate3Stream(stddevNode);
         return stddevNode;

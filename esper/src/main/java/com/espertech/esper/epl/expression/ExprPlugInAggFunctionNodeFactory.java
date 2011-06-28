@@ -32,7 +32,7 @@ public class ExprPlugInAggFunctionNodeFactory implements AggregationMethodFactor
         if (!distinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, aggregatedValueType);
+        return methodResolutionService.makeDistinctAggregator(method, aggregatedValueType,false);
     }
 
     public AggregationAccessor getAccessor()

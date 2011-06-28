@@ -12,7 +12,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
 
     public void setUp() throws Exception
     {
-        sumNode = new ExprSumNode(false);
+        sumNode = new ExprSumNode(false, false);
 
         super.validatedNodeToTest = makeNode(5, Integer.class);
     }
@@ -23,12 +23,12 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
         SupportExprNodeFactory.validate3Stream(sumNode);
         assertEquals(Integer.class, sumNode.getType());
 
-        sumNode = new ExprSumNode(false);
+        sumNode = new ExprSumNode(false, false);
         sumNode.addChildNode(new SupportExprNode(Float.class));
         SupportExprNodeFactory.validate3Stream(sumNode);
         assertEquals(Float.class, sumNode.getType());
 
-        sumNode = new ExprSumNode(false);
+        sumNode = new ExprSumNode(false, false);
         sumNode.addChildNode(new SupportExprNode(Short.class));
         SupportExprNodeFactory.validate3Stream(sumNode);
         assertEquals(Integer.class, sumNode.getType());
@@ -41,7 +41,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
         arithNodeChild.addChildNode(new SupportExprNode(4));
         arithNodeChild.addChildNode(new SupportExprNode(2));
 
-        sumNode = new ExprSumNode(false);
+        sumNode = new ExprSumNode(false, false);
         sumNode.addChildNode(arithNodeChild);
 
         assertEquals("sum((4-2))", sumNode.toExpressionString());
@@ -92,7 +92,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
 
     private ExprSumNode makeNode(Object value, Class type) throws Exception
     {
-        ExprSumNode sumNode = new ExprSumNode(false);
+        ExprSumNode sumNode = new ExprSumNode(false, false);
         sumNode.addChildNode(new SupportExprNode(value, type));
         SupportExprNodeFactory.validate3Stream(sumNode);
         return sumNode;

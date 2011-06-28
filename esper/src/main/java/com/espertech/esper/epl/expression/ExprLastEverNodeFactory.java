@@ -14,10 +14,11 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 public class ExprLastEverNodeFactory implements AggregationMethodFactory
 {
     private final Class childType;
+    private final boolean hasFilter;
 
-    public ExprLastEverNodeFactory(Class childType)
-    {
+    public ExprLastEverNodeFactory(Class childType, boolean hasFilter) {
         this.childType = childType;
+        this.hasFilter = hasFilter;
     }
 
     public Class getResultType()
@@ -32,7 +33,7 @@ public class ExprLastEverNodeFactory implements AggregationMethodFactory
 
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeLastEverValueAggregator(childType);
+        return methodResolutionService.makeLastEverValueAggregator(childType, hasFilter);
     }
 
     public AggregationAccessor getAccessor()

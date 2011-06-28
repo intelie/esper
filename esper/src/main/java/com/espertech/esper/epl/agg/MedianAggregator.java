@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.epl.agg;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.collection.SortedDoubleVector;
 
@@ -81,6 +80,6 @@ public class MedianAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeMedianAggregator();
+        return methodResolutionService.makeMedianAggregator(false);
     }
 }

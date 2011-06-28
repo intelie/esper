@@ -882,7 +882,7 @@ from Trade.std:groupwin(symbol).win:length(10)</programlisting>
 		</para>
 
 		<para>
-			The EPL language extends the standard SQL aggregation functions by useful aggregation functions that can track a data window or compute event rates. Your application may also add its own aggregation function as <xref linkend="custom-aggregation-function"/> describes.
+			The EPL language extends the standard SQL aggregation functions by allowing filters and by further useful aggregation functions that can track a data window or compute event rates, for example. Your application may also add its own aggregation function as <xref linkend="custom-aggregation-function"/> describes.
 		</para>
 		
 		<para>
@@ -914,74 +914,115 @@ from Trade.std:groupwin(symbol).win:length(10)</programlisting>
 					</thead>
 					<tbody>
 						<row>
-							<entry>avedev([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>avedev([all|distinct] <emphasis>expression</emphasis> [, <emphasis>filter_expr</emphasis>])</entry>
 							<entry>
 								<para>
 									Mean deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
 								</para>
+								<para>
+									The optional filter expression limits the values considered for computing the mean deviation.
+								</para>
 							</entry>
 						</row>
 						<row>
-							<entry>avg([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>avg([all|distinct] <emphasis>expression</emphasis> [, <emphasis>filter_expr</emphasis>])</entry>
 							<entry>
 								<para>
 									Average of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
 								</para>
+								<para>
+									The optional filter expression limits the values considered for computing the average.
+								</para>
 							</entry>
 						</row>
 						<row>
-							<entry>count([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>count([all|distinct] <emphasis>expression</emphasis> [, <emphasis>filter_expr</emphasis>])</entry>
 							<entry>
 								<para>
 									Number of the (distinct) non-null values in the expression, returning a value of <literal>long</literal> type.
 								</para>
+								<para>
+									The optional filter expression limits the values considered for the count.
+								</para>
 							</entry>
 						</row>
 						<row>
-							<entry>count(*)</entry>
+							<entry>count(* [, <emphasis>filter_expr</emphasis>])</entry>
 							<entry>
 								<para>
 									Number of events, returning a value of <literal>long</literal> type.
 								</para>
+								<para>
+									The optional filter expression limits the values considered for the count.
+								</para>
 							</entry>
 						</row>
 						<row>
-							<entry>max([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									max([all|distinct] <emphasis>expression</emphasis>)
+								</para>
+								<para>
+									fmax([all|distinct] <emphasis>expression</emphasis>, <emphasis>filter_expr</emphasis>)
+								</para>
+							</entry>
 							<entry>
 								<para>
 									Highest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
 								</para>
+								<para>
+									Use <literal>fmax</literal> to provide a filter expression that limits the values considered for computing the maximum.
+								</para>
 							</entry>
 						</row>
 						<row>
-							<entry>median([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>median([all|distinct] <emphasis>expression</emphasis> [, <emphasis>filter_expr</emphasis>])</entry>
 							<entry>
 								<para>
 									Median (distinct) value in the expression, returning a value of <literal>double</literal> type. Double Not-a-Number (NaN) values are ignored in the median computation.
 								</para>
+								<para>
+									The optional filter expression limits the values considered for computing the median.
+								</para>
 							</entry>
 						</row>
 						<row>
-							<entry>min([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>
+								<para>
+									min([all|distinct] <emphasis>expression</emphasis>)
+								</para>
+								<para>
+									fmin([all|distinct] <emphasis>expression</emphasis>, <emphasis>filter_expr</emphasis>)
+								</para>
+							</entry>
 							<entry>
 								<para>
 									Lowest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
 								</para>
-							</entry>
-						</row>
-						<row>
-							<entry>stddev([all|distinct] <emphasis>expression</emphasis>)</entry>
-							<entry>
 								<para>
-									Standard deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
+									Use <literal>fmin</literal> to provide a filter expression that limits the values considered for computing the maximum.
 								</para>
 							</entry>
 						</row>
 						<row>
-							<entry>sum([all|distinct] <emphasis>expression</emphasis>)</entry>
+							<entry>stddev([all|distinct] <emphasis>expression</emphasis> [, <emphasis>filter_expr</emphasis>])</entry>
+							<entry>
+								<para>
+									Standard deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
+								</para>
+								<para>
+									The optional filter expression limits the values considered for computing the standard deviation.
+								</para>
+							</entry>
+						</row>
+						<row>
+							<entry>sum([all|distinct] <emphasis>expression</emphasis> [, <emphasis>filter_expr</emphasis>])</entry>
 							<entry>
 								<para>
 									Totals the (distinct) values in the expression, returning a value of <literal>long, double, float or integer</literal> type depending on the expression.
+								</para>
+								<para>
+									The optional filter expression limits the values considered for computing the total.
 								</para>
 							</entry>
 						</row>
@@ -992,6 +1033,26 @@ from Trade.std:groupwin(symbol).win:length(10)</programlisting>
 			<para>
 				If your application provides double-type values to an aggregation function, avoid using Not-a-Number (NaN) and infinity. Also when using double-type values, round-off errors (or rounding errors) may occur due to double-type precision. Consider rounding your result value to the desired precision.
 			</para>
+			
+			<para>
+			  Each of the aggregation functions above takes an optional filter expression as a parameter. The filter expression must return a boolean-type value and applies to the events considered for the aggregation. 
+			  If a filter expression is provided, then only if the filter expression returns a value of true does the engine update the aggregation for that event or combination of events. 
+			</para>
+			
+			<para>
+			  Consider the following example, which computes the quantity fraction of buy orders among all orders:
+			</para>
+			<programlisting>select sum(quantity, side='buy') / sum(quantity) as buy_fraction from Orders</programlisting>
+
+			<para>
+				Use the <literal>fmin</literal> and <literal>fmax</literal> aggregation functions instead of the <literal>min</literal> and <literal>max</literal> aggregation functions when providing a filter expression (the <literal>min</literal> and <literal>max</literal> functions are also single-row functions).
+			</para>
+
+			<para>
+			  The next example computes the minimum quantity for buy orders and a separate minimum quantity for sell orders:
+			</para>
+			<programlisting>select fmin(quantity, side='buy'), fmin(quantity, side = 'sell') from Orders</programlisting>
+			
 		</sect2>
 	
 		<sect2 id="epl-function-aggregation-dwtrack">
@@ -1178,7 +1239,7 @@ from SensorEvent.win:time(10 sec)</programlisting>
 					</thead>
 					<tbody>
 						<row>
-							<entry>firstever(<emphasis>expression</emphasis>)</entry>
+							<entry>firstever(<emphasis>expression</emphasis> [, <emphasis>filter_expr</emphasis>])</entry>
 							<entry>
 								<para>
 									The <literal>firstever</literal> aggregation function returns the very first value ever. If used with <literal>group by</literal> it returns the first value ever for that group.
@@ -1186,10 +1247,17 @@ from SensorEvent.win:time(10 sec)</programlisting>
 								<para>
 									If used with a data window, the result of the function does not change as data points leave a data window. Use the <literal>first</literal> or <literal>prevtail</literal> function to return values relative to a data window.
 								</para>
+								<para>
+									The optional filter expression limits the values considered for retaining the first-ever value.
+								</para>
+								<para>
+									The next example statement outputs the first price ever for sell orders:
+								</para>
+								<programlisting>select firstever(price, side='sell') from Order</programlisting>
 							</entry>
 						</row>
 						<row>
-							<entry>lastever(<emphasis>expression</emphasis>)</entry>
+							<entry>lastever(<emphasis>expression</emphasis> [, <emphasis>filter_expr</emphasis>])</entry>
 							<entry>
 								<para>
 									Returns the last value or last value per group, if used with <literal>group by</literal>.
@@ -1204,6 +1272,13 @@ output every 5 sec</programlisting>
 								<para>
 									If used with a data window, the result of the function does not change as data points leave a data window (for example when all data points leave the data window). Use the <literal>last</literal> or <literal>prev</literal> function to return values relative to a data window.
 								</para>
+								<para>
+									The optional filter expression limits the values considered for retaining the last-ever value.
+								</para>
+								<para>
+									The next example statement outputs the last price (ever) for sell orders:
+								</para>
+								<programlisting>select lastever(price, side='sell') from Order</programlisting>
 							</entry>
 						</row>
 						<row>

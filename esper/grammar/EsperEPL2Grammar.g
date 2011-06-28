@@ -279,6 +279,7 @@ tokens
 	MERGE_INS;
 	MERGE_DEL;
 	NEW_ITEM;
+   	AGG_FILTER_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -1357,18 +1358,18 @@ arrayExpression
 	;
 
 builtinFunc
-	: SUM^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
-	| AVG^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
+	: SUM^ LPAREN! (ALL! | DISTINCT)? expression aggregationFilterExpr? RPAREN!
+	| AVG^ LPAREN! (ALL! | DISTINCT)? expression aggregationFilterExpr? RPAREN!
 	| COUNT^ LPAREN!
 		(
 			((ALL! | DISTINCT)? expression)
 		|
 			(STAR!) 
 		)
-		RPAREN!
-	| MEDIAN^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
-	| STDDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
-	| AVEDEV^ LPAREN! (ALL! | DISTINCT)? expression RPAREN!
+		aggregationFilterExpr? RPAREN!
+	| MEDIAN^ LPAREN! (ALL! | DISTINCT)? expression aggregationFilterExpr? RPAREN!
+	| STDDEV^ LPAREN! (ALL! | DISTINCT)? expression aggregationFilterExpr? RPAREN!
+	| AVEDEV^ LPAREN! (ALL! | DISTINCT)? expression aggregationFilterExpr? RPAREN!
 	| firstAggregation
 	| lastAggregation
 	| windowAggregation
@@ -1419,9 +1420,9 @@ accessAggExpr
 	|	expression -> ^(ACCESS_AGG expression)
 	;
 
-
-maxFunc
-	: (MAX^ | MIN^) LPAREN! expression (COMMA! expression (COMMA! expression)* )? RPAREN!
+aggregationFilterExpr
+	:	COMMA expression
+		-> ^(AGG_FILTER_EXPR expression)
 	;
 	
 eventPropertyOrLibFunction

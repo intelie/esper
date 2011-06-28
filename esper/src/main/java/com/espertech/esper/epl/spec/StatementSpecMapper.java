@@ -1328,22 +1328,22 @@ public class StatementSpecMapper
         }
         else if (expr instanceof CountStarProjectionExpression)
         {
-            return new ExprCountNode(false);
+            return new ExprCountNode(false, !expr.getChildren().isEmpty());
         }
         else if (expr instanceof CountProjectionExpression)
         {
             CountProjectionExpression count = (CountProjectionExpression) expr;
-            return new ExprCountNode(count.isDistinct());
+            return new ExprCountNode(count.isDistinct(), expr.getChildren().size() > 1);
         }
         else if (expr instanceof AvgProjectionExpression)
         {
             AvgProjectionExpression avg = (AvgProjectionExpression) expr;
-            return new ExprAvgNode(avg.isDistinct());
+            return new ExprAvgNode(avg.isDistinct(), expr.getChildren().size() > 1);
         }
         else if (expr instanceof SumProjectionExpression)
         {
             SumProjectionExpression avg = (SumProjectionExpression) expr;
-            return new ExprSumNode(avg.isDistinct());
+            return new ExprSumNode(avg.isDistinct(), expr.getChildren().size() > 1);
         }
         else if (expr instanceof BetweenExpression)
         {
@@ -1371,12 +1371,12 @@ public class StatementSpecMapper
         else if (expr instanceof MinProjectionExpression)
         {
             MinProjectionExpression method = (MinProjectionExpression) expr;
-            return new ExprMinMaxAggrNode(method.isDistinct(), MinMaxTypeEnum.MIN);
+            return new ExprMinMaxAggrNode(method.isDistinct(), MinMaxTypeEnum.MIN, expr.getChildren().size() > 1);
         }
         else if (expr instanceof MaxProjectionExpression)
         {
             MaxProjectionExpression method = (MaxProjectionExpression) expr;
-            return new ExprMinMaxAggrNode(method.isDistinct(), MinMaxTypeEnum.MAX);
+            return new ExprMinMaxAggrNode(method.isDistinct(), MinMaxTypeEnum.MAX, expr.getChildren().size() > 1);
         }
         else if (expr instanceof NotExpression)
         {
@@ -1429,17 +1429,17 @@ public class StatementSpecMapper
         else if (expr instanceof MedianProjectionExpression)
         {
             MedianProjectionExpression median = (MedianProjectionExpression) expr;
-            return new ExprMedianNode(median.isDistinct());
+            return new ExprMedianNode(median.isDistinct(), expr.getChildren().size() > 1);
         }
         else if (expr instanceof AvedevProjectionExpression)
         {
             AvedevProjectionExpression node = (AvedevProjectionExpression) expr;
-            return new ExprAvedevNode(node.isDistinct());
+            return new ExprAvedevNode(node.isDistinct(), expr.getChildren().size() > 1);
         }
         else if (expr instanceof StddevProjectionExpression)
         {
             StddevProjectionExpression node = (StddevProjectionExpression) expr;
-            return new ExprStddevNode(node.isDistinct());
+            return new ExprStddevNode(node.isDistinct(), expr.getChildren().size() > 1);
         }
         else if (expr instanceof LastEverProjectionExpression)
         {

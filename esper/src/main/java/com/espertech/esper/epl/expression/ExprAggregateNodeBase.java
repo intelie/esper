@@ -15,10 +15,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.util.JavaClassHelper;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Base expression node that represents an aggregation function such as 'sum' or 'count'.
@@ -170,21 +167,26 @@ public abstract class ExprAggregateNodeBase extends ExprNodeBase implements Expr
      * @return numeric type of single child
      * @throws com.espertech.esper.epl.expression.ExprValidationException if the validation failed
      */
-    protected final Class validateSingleNumericChild(StreamTypeService streamTypeService)
+    protected final Class validateNumericChildAllowFilter(StreamTypeService streamTypeService, boolean hasFilter)
         throws ExprValidationException
     {
-        if (this.getChildNodes().size() != 1)
+        if (this.getChildNodes().size() == 0 || this.getChildNodes().size() > 2)
         {
-            throw new ExprValidationException(getAggregationFunctionName() + " node must have exactly 1 child node");
+            throw new ExprValidationException(getAggregationFunctionName() + " node must have at least 1 or maximum 2 child nodes");
         }
 
+        // validate child expression (filter expression is actually always the first expression)
         ExprNode child = this.getChildNodes().get(0);
+        if (hasFilter) {
+            validateFilter(getChildNodes().get(1).getExprEvaluator());
+        }
+
         Class childType = child.getExprEvaluator().getType();
         if (!JavaClassHelper.isNumeric(childType))
         {
             throw new ExprValidationException("Implicit conversion from datatype '" +
                     childType.getSimpleName() +
-                    "' to numeric is not allowed");
+                    "' to numeric is not allowed for aggregation function '" + getAggregationFunctionName() + "'");
         }
 
         return childType;
@@ -217,5 +219,13 @@ public abstract class ExprAggregateNodeBase extends ExprNodeBase implements Expr
         buffer.append(')');
 
         return buffer.toString();
+    }
+
+    public void validateFilter(ExprEvaluator filterEvaluator) throws ExprValidationException{
+        if (JavaClassHelper.getBoxedType(filterEvaluator.getType()) != Boolean.class) {
+            throw new ExprValidationException("Invalid filter expression parameter to the aggregation function '" +
+                    getAggregationFunctionName() +
+                    "' is expected to return a boolean value but returns " + JavaClassHelper.getClassNameFullyQualPretty(filterEvaluator.getType()));
+        }
     }
 }

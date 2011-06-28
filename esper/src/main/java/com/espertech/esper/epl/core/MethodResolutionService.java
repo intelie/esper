@@ -110,28 +110,28 @@ public interface MethodResolutionService
      * @param isIgnoreNull is true to ignore nulls, or false to count nulls
      * @return aggregator
      */
-    public AggregationMethod makeCountAggregator(boolean isIgnoreNull);
+    public AggregationMethod makeCountAggregator(boolean isIgnoreNull, boolean hasFilter);
 
     /**
      * Makes a new first-value aggregator.
      * @param type of value
      * @return aggregator
      */
-    public AggregationMethod makeFirstEverValueAggregator(Class type);
+    public AggregationMethod makeFirstEverValueAggregator(Class type, boolean hasFilter);
 
     /**
      * Makes a new last-value aggregator.
      * @param type of value
      * @return aggregator
      */
-    public AggregationMethod makeLastEverValueAggregator(Class type);
+    public AggregationMethod makeLastEverValueAggregator(Class type, boolean hasFilter);
 
     /**
      * Makes a new sum-aggregator.
      * @param type is the type to be summed up, i.e. float, long etc.
      * @return aggregator
      */
-    public AggregationMethod makeSumAggregator(Class type);
+    public AggregationMethod makeSumAggregator(Class type, boolean hasFilter);
 
     public Class getSumAggregatorType(Class inputValueType);
 
@@ -141,27 +141,28 @@ public interface MethodResolutionService
      * @param childType is the return type of the inner expression to aggregate, if any
      * @return aggregator
      */
-    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod, Class childType);
+    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod, Class childType, boolean hasFilter);
 
     /**
      * Makes a new avg-aggregator.
      * @param type the expression return type
      * @return aggregator
      */
-    public AggregationMethod makeAvgAggregator(Class type);
+    public AggregationMethod makeAvgAggregator(Class type, boolean hasFilter);
     public Class getAvgAggregatorType(Class childType);
 
     /**
      * Makes a new avedev-aggregator.
      * @return aggregator
      */
-    public AggregationMethod makeAvedevAggregator();
+    public AggregationMethod makeAvedevAggregator(boolean hasFilter);
 
     /**
      * Makes a new median-aggregator.
      * @return aggregator
+     * @param hasFilter
      */
-    public AggregationMethod makeMedianAggregator();
+    public AggregationMethod makeMedianAggregator(boolean hasFilter);
 
     /**
      * Makes a new min-max-aggregator.
@@ -170,13 +171,13 @@ public interface MethodResolutionService
      * @param isHasDataWindows true for has data windows
      * @return aggregator to use
      */
-    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxType, Class targetType, boolean isHasDataWindows);
+    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxType, Class targetType, boolean isHasDataWindows, boolean hasFilter);
 
     /**
      * Makes a new stddev-aggregator.
      * @return aggregator
      */
-    public AggregationMethod makeStddevAggregator();
+    public AggregationMethod makeStddevAggregator(boolean hasFilter);
 
     /**
      * Makes a new rate-aggregator.
@@ -233,4 +234,6 @@ public interface MethodResolutionService
     public long getCurrentRowCount(AggregationMethod[] aggregators, AggregationAccess[] accesses);
 
     public AggregationAccess makeAccessStreamId(boolean isJoin, int streamId, MultiKeyUntyped mk);
+
+
 }

@@ -95,13 +95,20 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return engineImportService.resolveMethod(clazz, methodName, paramTypes);
     }
 
-    public AggregationMethod makeCountAggregator(boolean isIgnoreNull)
+    public AggregationMethod makeCountAggregator(boolean isIgnoreNull, boolean hasFilter)
     {
-        if (isIgnoreNull)
-        {
-            return new NonNullCountAggregator();
+        if (!hasFilter) {
+            if (isIgnoreNull) {
+                return new NonNullCountAggregator();
+            }
+            return new CountAggregator();
         }
-        return new CountAggregator();
+        else {
+            if (isIgnoreNull) {
+                return new NonNullCountFilterAggregator();
+            }
+            return new CountFilterAggregator();
+        }
     }
 
     public AggregationSupport resolveAggregation(String functionName) throws EngineImportUndefinedException, EngineImportException
@@ -114,33 +121,62 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return engineImportService.resolveSingleRow(functionName);
     }
 
-    public AggregationMethod makeSumAggregator(Class type)
+    public AggregationMethod makeSumAggregator(Class type, boolean hasFilter)
     {
-        if (type == BigInteger.class)
-        {
-            return new BigIntegerSumAggregator();
+        if (!hasFilter) {
+            if (type == BigInteger.class)
+            {
+                return new BigIntegerSumAggregator();
+            }
+            if (type == BigDecimal.class)
+            {
+                return new BigDecimalSumAggregator();
+            }
+            if ((type == Long.class) || (type == long.class))
+            {
+                return new LongSumAggregator();
+            }
+            if ((type == Integer.class) || (type == int.class))
+            {
+                return new IntegerSumAggregator();
+            }
+            if ((type == Double.class) || (type == double.class))
+            {
+                return new DoubleSumAggregator();
+            }
+            if ((type == Float.class) || (type == float.class))
+            {
+                return new FloatSumAggregator();
+            }
+            return new NumIntegerSumAggregator();
         }
-        if (type == BigDecimal.class)
-        {
-            return new BigDecimalSumAggregator();
+        else {
+            if (type == BigInteger.class)
+            {
+                return new BigIntegerSumFilterAggregator();
+            }
+            if (type == BigDecimal.class)
+            {
+                return new BigDecimalSumFilterAggregator();
+            }
+            if ((type == Long.class) || (type == long.class))
+            {
+                return new LongSumFilterAggregator();
+            }
+            if ((type == Integer.class) || (type == int.class))
+            {
+                return new IntegerSumFilterAggregator();
+            }
+            if ((type == Double.class) || (type == double.class))
+            {
+                return new DoubleSumFilterAggregator();
+            }
+            if ((type == Float.class) || (type == float.class))
+            {
+                return new FloatSumFilterAggregator();
+            }
+            return new NumIntegerSumFilterAggregator();
         }
-        if ((type == Long.class) || (type == long.class))
-        {
-            return new LongSumAggregator();
-        }
-        if ((type == Integer.class) || (type == int.class))
-        {
-            return new IntegerSumAggregator();
-        }
-        if ((type == Double.class) || (type == double.class))
-        {
-            return new DoubleSumAggregator();
-        }
-        if ((type == Float.class) || (type == float.class))
-        {
-            return new FloatSumAggregator();
-        }
-        return new NumIntegerSumAggregator();
     }
 
     public Class getSumAggregatorType(Class type)
@@ -172,13 +208,23 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return Integer.class;
     }
 
-    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod, Class childType)
+    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod, Class childType, boolean hasFilter)
     {
+        if (hasFilter) {
+            return new DistinctValueFilterAggregator(aggregationMethod, childType);
+        }
         return new DistinctValueAggregator(aggregationMethod, childType);
     }
 
-    public AggregationMethod makeAvgAggregator(Class type)
+    public AggregationMethod makeAvgAggregator(Class type, boolean hasFilter)
     {
+        if (hasFilter) {
+            if ((type == BigDecimal.class) || (type == BigInteger.class))
+            {
+                return new BigDecimalAvgFilterAggregator();
+            }
+            return new AvgFilterAggregator();
+        }
         if ((type == BigDecimal.class) || (type == BigInteger.class))
         {
             return new BigDecimalAvgAggregator();
@@ -195,34 +241,59 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return Double.class;
     }
 
-    public AggregationMethod makeAvedevAggregator()
+    public AggregationMethod makeAvedevAggregator(boolean hasFilter)
     {
-        return new AvedevAggregator();
-    }
-
-    public AggregationMethod makeMedianAggregator()
-    {
-        return new MedianAggregator();
-    }
-
-    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Class targetType, boolean isHasDataWindows)
-    {
-        if (!isHasDataWindows) {
-            return new MinMaxEverAggregator(minMaxTypeEnum, targetType);
+        if (!hasFilter) {
+            return new AvedevAggregator();
         }
-        return new MinMaxAggregator(minMaxTypeEnum, targetType);
+        else {
+            return new AvedevFilterAggregator();
+        }
     }
 
-    public AggregationMethod makeStddevAggregator()
+    public AggregationMethod makeMedianAggregator(boolean hasFilter)
     {
-        return new StddevAggregator();
+        if (!hasFilter) {
+            return new MedianAggregator();
+        }
+        return new MedianFilterAggregator();
     }
 
-    public AggregationMethod makeFirstEverValueAggregator(Class type) {
+    public AggregationMethod makeMinMaxAggregator(MinMaxTypeEnum minMaxTypeEnum, Class targetType, boolean isHasDataWindows, boolean hasFilter)
+    {
+        if (!hasFilter) {
+            if (!isHasDataWindows) {
+                return new MinMaxEverAggregator(minMaxTypeEnum, targetType);
+            }
+            return new MinMaxAggregator(minMaxTypeEnum, targetType);
+        }
+        else {
+            if (!isHasDataWindows) {
+                return new MinMaxEverFilterAggregator(minMaxTypeEnum, targetType);
+            }
+            return new MinMaxFilterAggregator(minMaxTypeEnum, targetType);
+        }
+    }
+
+    public AggregationMethod makeStddevAggregator(boolean hasFilter)
+    {
+        if (!hasFilter) {
+            return new StddevAggregator();
+        }
+        return new StddevFilterAggregator();
+    }
+
+    public AggregationMethod makeFirstEverValueAggregator(Class type, boolean hasFilter) {
+        if (hasFilter) {
+            return new FirstEverValueFilterAggregator(type);
+        }
         return new FirstEverValueAggregator(type);
     }
 
-    public AggregationMethod makeLastEverValueAggregator(Class type) {
+    public AggregationMethod makeLastEverValueAggregator(Class type, boolean hasFilter) {
+        if (hasFilter) {
+            return new LastEverValueFilterAggregator(type);
+        }
         return new LastEverValueAggregator(type);
     }
 

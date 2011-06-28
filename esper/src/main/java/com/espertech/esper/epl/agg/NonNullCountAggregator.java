@@ -53,6 +53,6 @@ public class NonNullCountAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeCountAggregator(true);
+        return methodResolutionService.makeCountAggregator(true, false);
     }
 }

@@ -65,10 +65,10 @@ public class ExprAccessAggNodeFactory implements AggregationMethodFactory
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
         if (accessType == AggregationAccessType.FIRST) {
-            return methodResolutionService.makeFirstEverValueAggregator(resultType);
+            return methodResolutionService.makeFirstEverValueAggregator(resultType, false);
         }
         else if (accessType == AggregationAccessType.LAST) {
-            return methodResolutionService.makeLastEverValueAggregator(resultType);
+            return methodResolutionService.makeLastEverValueAggregator(resultType, false);
         }
         throw new RuntimeException("Window aggregation function is not available");
     }

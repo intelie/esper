@@ -16,12 +16,14 @@ public class ExprSumNodeFactory implements AggregationMethodFactory
     private final Class resultType;
     private final Class inputValueType;
     private final boolean isDistinct;
+    private final boolean hasFilter;
 
-    public ExprSumNodeFactory(MethodResolutionService methodResolutionService, Class inputValueType, boolean isDistinct)
+    public ExprSumNodeFactory(MethodResolutionService methodResolutionService, Class inputValueType, boolean isDistinct, boolean hasFilter)
     {
         this.inputValueType = inputValueType;
         this.isDistinct = isDistinct;
         this.resultType = methodResolutionService.getSumAggregatorType(inputValueType);
+        this.hasFilter = hasFilter;
     }
 
     public AggregationSpec getSpec(boolean isMatchRecognize)
@@ -36,11 +38,11 @@ public class ExprSumNodeFactory implements AggregationMethodFactory
 
     public AggregationMethod getPrototypeAggregator(MethodResolutionService methodResolutionService)
     {
-        AggregationMethod method = methodResolutionService.makeSumAggregator(inputValueType);
+        AggregationMethod method = methodResolutionService.makeSumAggregator(inputValueType, hasFilter);
         if (!isDistinct) {
             return method;
         }
-        return methodResolutionService.makeDistinctAggregator(method, inputValueType);
+        return methodResolutionService.makeDistinctAggregator(method, inputValueType, hasFilter);
     }
 
     public AggregationAccessor getAccessor()

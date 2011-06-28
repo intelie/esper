@@ -61,7 +61,7 @@ public class LongSumAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeSumAggregator(Long.class);
+        return methodResolutionService.makeSumAggregator(Long.class, false);
     }
 }
 

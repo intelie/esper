@@ -15,7 +15,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
  */
 public class LastEverValueAggregator implements AggregationMethod
 {
-    private final Class type;
+    protected final Class type;
     private Object lastValue;
 
     /**
@@ -52,6 +52,6 @@ public class LastEverValueAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeLastEverValueAggregator(type);
+        return methodResolutionService.makeLastEverValueAggregator(type, false);
     }
 }

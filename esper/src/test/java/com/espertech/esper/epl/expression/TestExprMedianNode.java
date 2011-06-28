@@ -23,12 +23,12 @@ public class TestExprMedianNode extends TestExprAggregateNodeAdapter
     public void testEqualsNode() throws Exception
     {
         assertTrue(validatedNodeToTest.equalsNode(validatedNodeToTest));
-        assertFalse(validatedNodeToTest.equalsNode(new ExprSumNode(false)));
+        assertFalse(validatedNodeToTest.equalsNode(new ExprSumNode(false, false)));
     }
 
     private ExprMedianNode makeNode(Object value, Class type) throws Exception
     {
-        ExprMedianNode medianNode = new ExprMedianNode(false);
+        ExprMedianNode medianNode = new ExprMedianNode(false, false);
         medianNode.addChildNode(new SupportExprNode(value, type));
         SupportExprNodeFactory.validate3Stream(medianNode);
         return medianNode;

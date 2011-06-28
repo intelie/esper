@@ -57,7 +57,12 @@ public class MedianProjectionExpression extends ExpressionBase
         {
             writer.write("distinct ");
         }
-        this.getChildren().get(0).toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+        String delimiter = "";
+        for (Expression param : this.getChildren()) {
+            writer.write(delimiter);
+            delimiter = ", ";
+            param.toEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+        }
         writer.write(")");
     }
 

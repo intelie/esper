@@ -19,19 +19,22 @@ public class ExprSumNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = 208249604168283643L;
 
+    private final boolean hasFilter;
+
     /**
      * Ctor.
      * @param distinct - flag indicating unique or non-unique value aggregation
      */
-    public ExprSumNode(boolean distinct)
+    public ExprSumNode(boolean distinct, boolean hasFilter)
     {
         super(distinct);
+        this.hasFilter = hasFilter;
     }
 
     public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        Class childType = super.validateSingleNumericChild(streamTypeService);
-        return new ExprSumNodeFactory(methodResolutionService, childType, super.isDistinct());
+        Class childType = super.validateNumericChildAllowFilter(streamTypeService, hasFilter);
+        return new ExprSumNodeFactory(methodResolutionService, childType, super.isDistinct(), hasFilter);
     }
 
     protected String getAggregationFunctionName()

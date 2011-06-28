@@ -70,6 +70,6 @@ public class DistinctValueAggregator implements AggregationMethod
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
         AggregationMethod innerCopy = inner.newAggregator(methodResolutionService);
-        return methodResolutionService.makeDistinctAggregator(innerCopy, childType);
+        return methodResolutionService.makeDistinctAggregator(innerCopy, childType, false);
     }
 }

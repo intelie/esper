@@ -20,8 +20,8 @@ public class MinMaxEverAggregator implements AggregationMethod
 {
     private static final Log log = LogFactory.getLog(MinMaxEverAggregator.class);
 
-    private final MinMaxTypeEnum minMaxTypeEnum;
-    private final Class returnType;
+    protected final MinMaxTypeEnum minMaxTypeEnum;
+    protected final Class returnType;
 
     private Comparable currentMinMax;
 
@@ -82,6 +82,6 @@ public class MinMaxEverAggregator implements AggregationMethod
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, returnType, false);
+        return methodResolutionService.makeMinMaxAggregator(minMaxTypeEnum, returnType, false, false);
     }
 }

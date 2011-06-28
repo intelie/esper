@@ -191,7 +191,7 @@ public class SupportExprNodeFactory
     public static ExprNode makeSumAndFactorNode() throws Exception
     {
         // sum node
-        ExprSumNode sum = new ExprSumNode(false);
+        ExprSumNode sum = new ExprSumNode(false, false);
         ExprIdentNode ident = new ExprIdentNodeImpl("intPrimitive", "s0");
         sum.addChildNode(ident);
 
@@ -207,7 +207,7 @@ public class SupportExprNodeFactory
 
     public static ExprAggregateNode makeSumAggregateNode() throws Exception
     {
-        ExprSumNode top = new ExprSumNode(false);
+        ExprSumNode top = new ExprSumNode(false, false);
         ExprIdentNode ident = new ExprIdentNodeImpl("intPrimitive", "s0");
         top.addChildNode(ident);
 
@@ -218,7 +218,7 @@ public class SupportExprNodeFactory
 
     public static ExprNode makeCountNode(Object value, Class type) throws Exception
     {
-        ExprCountNode countNode = new ExprCountNode(false);
+        ExprCountNode countNode = new ExprCountNode(false, false);
         countNode.addChildNode(new SupportExprNode(value, type));
         SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[] {10, 20});
         countNode.setAggregationResultFuture(future, 1);

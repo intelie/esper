@@ -30,11 +30,14 @@ public class ExprFirstEverNode extends ExprAggregateNodeBase
 
     public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        if (this.getChildNodes().size() != 1)
+        if (this.getChildNodes().size() > 2)
         {
-            throw new ExprValidationException("First aggregation node must have 1 child nodes");
+            throw new ExprValidationException("First aggregation node must have less then 2 child nodes");
         }
-        return new ExprFirstEverNodeFactory(this.getChildNodes().get(0).getExprEvaluator().getType());
+        if (this.getChildNodes().size() == 2) {
+            super.validateFilter(this.getChildNodes().get(1).getExprEvaluator());
+        }
+        return new ExprFirstEverNodeFactory(this.getChildNodes().get(0).getExprEvaluator().getType(), this.getChildNodes().size() == 2);
     }
 
     protected String getAggregationFunctionName()

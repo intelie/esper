@@ -19,37 +19,45 @@ public class ExprCountNode extends ExprAggregateNodeBase
 {
     private static final long serialVersionUID = 1859320277242087598L;
 
+    private final boolean hasFilter;
+
     /**
      * Ctor.
      * @param distinct - flag indicating unique or non-unique value aggregation
      */
-    public ExprCountNode(boolean distinct)
+    public ExprCountNode(boolean distinct, boolean hasFilter)
     {
         super(distinct);
+        this.hasFilter = hasFilter;
     }
 
     public AggregationMethodFactory validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprEvaluatorContext exprEvaluatorContext) throws ExprValidationException
     {
-        Class childType = null;
-        if (this.getChildNodes().size() > 0)
+        if (this.getChildNodes().size() > 2)
         {
-            childType = this.getChildNodes().get(0).getExprEvaluator().getType();
+            throw new ExprValidationException("Count node must have less then 2 child nodes");
         }
 
-        // Empty child node list signals count(*), does not ignore nulls
-        if (this.getChildNodes().isEmpty())
-        {
-            return new ExprCountNodeFactory(false, super.isDistinct, childType);
+        Class childType = null;
+        boolean ignoreNulls = false;
+
+        if (this.getChildNodes().isEmpty()) {
+            // defaults
         }
-        else
-        {
-            // else ignore nulls
-            if (this.getChildNodes().size() != 1)
-            {
-                throw new ExprValidationException("Count node must have zero or 1 child nodes");
+        else if (this.getChildNodes().size() == 1) {
+            if (!hasFilter) {
+                childType = this.getChildNodes().get(0).getExprEvaluator().getType();
+                ignoreNulls = true;
             }
-            return new ExprCountNodeFactory(true, super.isDistinct, childType);
+            else {
+                super.validateFilter(this.getChildNodes().get(0).getExprEvaluator());
+            }
         }
+        else if (this.getChildNodes().size() == 2) {
+            childType = this.getChildNodes().get(0).getExprEvaluator().getType();
+            ignoreNulls = true;
+        }
+        return new ExprCountNodeFactory(ignoreNulls, super.isDistinct, childType, hasFilter);
     }
 
     protected String getAggregationFunctionName()
